@@ -5,7 +5,10 @@ import 'package:flutter/material.dart';
 
 enum TabItem {
   home(Icons.home, '홈', HomeFragment()),
-  favorite(Icons.star, '즐겨찾기', FavoriteFragment(isShowBackButton: false));
+  chat(Icons.question_answer, '채팅', HomeFragment()),
+  communityBoard(Icons.home, '콘서트 목록', HomeFragment()),
+  concertList(Icons.format_list_bulleted, '게시판', HomeFragment()),
+  favorite(Icons.person, '마이', FavoriteFragment(isShowBackButton: false));
 
   final IconData activeIcon;
   final IconData inActiveIcon;

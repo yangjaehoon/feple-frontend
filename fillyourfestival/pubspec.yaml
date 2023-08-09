@@ -110,8 +110,10 @@ flutter:
     - assets/image/icon/
     - assets/image/flag/
     - assets/image/darkmode/
+    - assets/image/artist/
     - assets/translations/
     - assets/
+    -
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

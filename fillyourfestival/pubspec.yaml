@@ -53,6 +53,7 @@ dependencies:
 
   #ui - resource
   eva_icons_flutter: ^3.1.0
+  cupertino_icons: ^1.0.2
   google_fonts: ^4.0.4
   easy_localization: ^3.0.2
   flutter_cache_manager: ^3.3.0
@@ -76,6 +77,9 @@ dependencies:
 
   card_swiper: ^3.0.1
   firebase_core: ^2.15.1
+  firebase_auth: ^4.6.3
+  cloud_firestore: ^4.8.2
+  firebase_database: ^10.2.5
 
 dev_dependencies:
   flutter_test:

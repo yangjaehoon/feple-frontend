@@ -21,10 +21,13 @@ class HomeFragment extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.black,
-      child: Stack(
+      child: const Stack(
         children: [
           SingleChildScrollView(
-            padding: EdgeInsets.only(top: 60, bottom: 50,), // 상단바 부분만큼 띄워줌(stack이여서),
+            padding: EdgeInsets.only(
+              top: 60,
+              bottom: 50,
+            ), // 상단바 부분만큼 띄워줌(stack이여서),
             child: Column(
               children: [
                 ConcertListSwiper(),

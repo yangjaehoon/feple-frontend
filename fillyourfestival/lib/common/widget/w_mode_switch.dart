@@ -16,9 +16,9 @@ class ModeSwitch extends StatefulWidget {
     required this.value,
     required this.onChanged,
     required this.height,
-    this.activeThumbColor = Colors.white,
+    this.activeThumbColor = Colors.black,
     this.activeThumbImage,
-    this.inactiveThumbColor = Colors.white,
+    this.inactiveThumbColor = Colors.black,
     this.inactiveThumbImage,
   }) : super(key: key);
 
@@ -39,7 +39,9 @@ class _ModeSwitchState extends State<ModeSwitch> {
           'Light'
               .text
               .size(14)
-              .color(widget.value ? context.appColors.inActivate : context.appColors.activate)
+              .color(widget.value
+                  ? context.appColors.inActivate
+                  : context.appColors.activate)
               .bold
               .makeWithDefaultFont(),
           const Width(5),
@@ -58,8 +60,11 @@ class _ModeSwitchState extends State<ModeSwitch> {
                 ),
                 AnimatedContainer(
                   duration: duration,
-                  padding: EdgeInsets.symmetric(horizontal: (2 / 25) * widget.height),
-                  alignment: widget.value ? Alignment.centerRight : Alignment.centerLeft,
+                  padding: EdgeInsets.symmetric(
+                      horizontal: (2 / 25) * widget.height),
+                  alignment: widget.value
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
                   child: Stack(
                     children: [
                       Container(
@@ -88,7 +93,9 @@ class _ModeSwitchState extends State<ModeSwitch> {
           'Dark'
               .text
               .size(14)
-              .color(widget.value ? context.appColors.activate : context.appColors.inActivate)
+              .color(widget.value
+                  ? context.appColors.activate
+                  : context.appColors.inActivate)
               .bold
               .makeWithDefaultFont(),
         ],

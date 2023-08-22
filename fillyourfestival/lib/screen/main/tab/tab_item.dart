@@ -1,14 +1,16 @@
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/screen/main/tab/favorite/f_favorite.dart';
+import 'package:fast_app_base/screen/main/tab/chat/f_chat.dart';
+import 'package:fast_app_base/screen/main/tab/community_board/f_community_board.dart';
+import 'package:fast_app_base/screen/main/tab/concert_list/f_concert_list.dart';
 import 'package:fast_app_base/screen/main/tab/home/f_home.dart';
 import 'package:flutter/material.dart';
 
 enum TabItem {
   home(Icons.home, '홈', HomeFragment()),
-  chat(Icons.question_answer, '채팅', HomeFragment()),
-  communityBoard(Icons.home, '콘서트 목록', HomeFragment()),
-  concertList(Icons.format_list_bulleted, '게시판', HomeFragment()),
-  favorite(Icons.person, '마이', FavoriteFragment(isShowBackButton: false));
+  chat(Icons.question_answer, '채팅', ChatFragment()),
+  communityBoard(Icons.whatshot, '콘서트 목록', ConcertListFragment()),
+  concertList(Icons.format_list_bulleted, '게시판', CommunityBoardFragment()),
+  favorite(Icons.person, '마이',  HomeFragment());
 
   final IconData activeIcon;
   final IconData inActiveIcon;

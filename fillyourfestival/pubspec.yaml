@@ -74,6 +74,9 @@ dependencies:
   freezed_annotation: ^2.2.0
   json_annotation: ^4.8.0
 
+  card_swiper: ^3.0.1
+  firebase_core: ^2.15.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -111,6 +114,7 @@ flutter:
     - assets/image/flag/
     - assets/image/darkmode/
     - assets/image/artist/
+    - assets/image/poster/
     - assets/translations/
     - assets/
     -

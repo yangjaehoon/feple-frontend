@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>335733810987-krm732md5tsajjbpf0507aelp3008cp5.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.335733810987-krm732md5tsajjbpf0507aelp3008cp5</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDBih94wx0sumQcijXSRaj3SfzEI8Szv0U</string>
+	<key>GCM_SENDER_ID</key>
+	<string>335733810987</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.fastAppBase</string>
+	<key>PROJECT_ID</key>
+	<string>fill-your-festival-suchang</string>
+	<key>STORAGE_BUCKET</key>
+	<string>fill-your-festival-suchang.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:335733810987:ios:4ada81ae78a51ea058476e</string>
+	<key>DATABASE_URL</key>
+	<string>https://fill-your-festival-suchang-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>

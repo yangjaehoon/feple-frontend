@@ -12,9 +12,9 @@ class CircleArtistWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: Artists.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3, // 한 줄에 3개의 이미지
@@ -28,7 +28,7 @@ class CircleArtistWidget extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ArtistPage()),
+              MaterialPageRoute(builder: (context) => const ArtistPage()),
             );
             print(Artists[index].name);
           },

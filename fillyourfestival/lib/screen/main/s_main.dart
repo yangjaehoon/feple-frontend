@@ -85,7 +85,7 @@ class MainScreenState extends State<MainScreen>
     return isFirstRouteInCurrentTab;
   }
 
-  Widget _buildBottomNavigationBar(BuildContext context) {
+  Widget  _buildBottomNavigationBar(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
         boxShadow: [

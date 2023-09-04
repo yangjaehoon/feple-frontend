@@ -10,23 +10,26 @@ enum TabItem {
   chat(Icons.question_answer, '채팅', ChatFragment()),
   communityBoard(Icons.whatshot, '콘서트 목록', ConcertListFragment()),
   concertList(Icons.format_list_bulleted, '게시판', CommunityBoardFragment()),
-  favorite(Icons.person, '마이',  HomeFragment());
+  favorite(Icons.person, '마이', HomeFragment());
 
   final IconData activeIcon;
   final IconData inActiveIcon;
   final String tabName;
   final Widget firstPage;
 
-  const TabItem(this.activeIcon, this.tabName, this.firstPage, {IconData? inActiveIcon})
+  const TabItem(this.activeIcon, this.tabName, this.firstPage,
+      {IconData? inActiveIcon})
       : inActiveIcon = inActiveIcon ?? activeIcon;
 
-  BottomNavigationBarItem toNavigationBarItem(BuildContext context, {required bool isActivated}) {
+  BottomNavigationBarItem toNavigationBarItem(BuildContext context,
+      {required bool isActivated}) {
     return BottomNavigationBarItem(
         icon: Icon(
           key: ValueKey(tabName),
           isActivated ? activeIcon : inActiveIcon,
-          color:
-              isActivated ? context.appColors.iconButton : context.appColors.iconButtonInactivate,
+          color: isActivated
+              ? context.appColors.iconButton
+              : context.appColors.iconButtonInactivate,
         ),
         label: tabName);
   }

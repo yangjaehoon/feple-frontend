@@ -3,6 +3,8 @@ import 'package:fast_app_base/screen/main/tab/home/vo/artist_dummy.dart';
 import 'package:fast_app_base/screen/main/tab/home/vo/vo_artist.dart';
 import 'package:flutter/material.dart';
 
+import 'artist_page/f_artist_page.dart';
+
 class CircleArtistWidget extends StatelessWidget {
   const CircleArtistWidget({super.key});
 
@@ -22,8 +24,16 @@ class CircleArtistWidget extends StatelessWidget {
       ),
       // 전체 이미지 개수
       itemBuilder: (BuildContext context, int index) {
-        return Column(
-          children: [
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ArtistPage()),
+            );
+            print(Artists[index].name);
+          },
+          child: Column(
+            children: [
               Expanded(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20.0),
@@ -35,19 +45,12 @@ class CircleArtistWidget extends StatelessWidget {
                   ),
                 ),
               ),
-            SizedBox(height: 10,),
-            Text(Artists[index].name),
-          ],
+              const SizedBox(height: 10),
+              Text(Artists[index].name),
+            ],
+          ),
         );
       },
-      // ClipRRect(
-      //   borderRadius: BorderRadius.circular(20.0),
-      //   child: Image.asset(
-      //     artist.faceImagePath,
-      //     width: 90,
-      //   ),
-      // ),
-      // Text(artist.name),
     );
   }
 }

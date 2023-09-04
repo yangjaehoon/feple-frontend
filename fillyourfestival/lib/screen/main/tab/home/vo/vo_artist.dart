@@ -3,6 +3,9 @@ class Artist {
   final String faceImagePath;
   int fanCount = 0;
 
-  Artist(this.name, this.faceImagePath);
+  Artist({
+    required this.name,
+    required this.faceImagePath,
+    this.fanCount = 0,
+  });
 }
-

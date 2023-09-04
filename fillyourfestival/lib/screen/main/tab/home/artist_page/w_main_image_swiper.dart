@@ -1,23 +1,24 @@
 import 'dart:ui';
 
-import 'package:card_swiper/card_swiper.dart';
-import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_splash/cli_commands.dart';
+import 'package:card_swiper/card_swiper.dart';
 
-class ConcertListSwiper extends StatefulWidget {
-  const ConcertListSwiper({super.key});
+import '../../../../../common/constant/app_colors.dart';
+
+class MainImageSwiper extends StatefulWidget {
+  const MainImageSwiper({super.key});
 
   @override
-  State<ConcertListSwiper> createState() => _ConcertListSwiperState();
+  State<MainImageSwiper> createState() => _MainImageSwiperState();
 }
 
-class _ConcertListSwiperState extends State<ConcertListSwiper> {
-  final List<String> posterList = [
+class _MainImageSwiperState extends State<MainImageSwiper> {
+  final List<String> ftvArtImgList = [
     'assets/image/poster/hiphopplaya_poster.jpg',
     'assets/image/poster/psy_poster.jpg',
     'assets/image/poster/rapbeat_poster.jpg',
     'assets/image/poster/waterbomb_poster.jpg',
+    //나중에 아티스트 개인별 페스티벌 정방향(1:1)사진 등록
   ];
 
   @override
@@ -30,13 +31,13 @@ class _ConcertListSwiperState extends State<ConcertListSwiper> {
           Swiper(
             scale: 0.9,
             //viewportFraction: 0.9,
-            itemCount: posterList.length,
+            itemCount: ftvArtImgList.length,
             autoplay: true,
             itemBuilder: (BuildContext context, int index) {
               return Stack(
                 children: [
                   Image.asset(
-                    posterList[index],
+                    ftvArtImgList[index],
                     width: double.infinity,
                     fit: BoxFit.cover,
                   ),
@@ -57,7 +58,7 @@ class _ConcertListSwiperState extends State<ConcertListSwiper> {
               padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
               child: Swiper(
                 outer: true,
-                itemCount: posterList.length,
+                itemCount: ftvArtImgList.length,
                 viewportFraction: 0.6,
                 // 위젯크기(포스터 크기)
                 scale: 0.8,
@@ -76,7 +77,7 @@ class _ConcertListSwiperState extends State<ConcertListSwiper> {
                 autoplayDisableOnInteraction: true,
                 // autoplay is disabled when use swipes.
                 itemBuilder: (BuildContext context, int index) {
-                  return Image.asset(posterList[index]);
+                  return Image.asset(ftvArtImgList[index]);
                 }, //control: SwiperControl(),
               ),
             ),

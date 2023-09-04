@@ -1,6 +1,8 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
 
+import '../../w_menu_drawer.dart';
+
 class FyfAppBar extends StatefulWidget {
   const FyfAppBar({super.key});
 
@@ -21,7 +23,7 @@ class _FyfAppBarState extends State<FyfAppBar> {
         children: [
           IconButton(
             icon: Icon(Icons.menu),
-            onPressed: () {},
+            onPressed: ()=> openDrawer(context),
           ),
           const Text(
             "Fill your Festival",
@@ -64,5 +66,9 @@ class _FyfAppBarState extends State<FyfAppBar> {
         ],
       ),
     );
+  }
+
+  void openDrawer(BuildContext context) {
+    Scaffold.of(context).openDrawer();
   }
 }

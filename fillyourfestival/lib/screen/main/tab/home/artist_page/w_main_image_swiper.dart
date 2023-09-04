@@ -21,67 +21,39 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
     //나중에 아티스트 개인별 페스티벌 정방향(1:1)사진 등록
   ];
 
+  final PageController _pageController = PageController(
+    viewportFraction: 0.6,
+  );
+
+
+  int currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 300,
-      width: double.infinity,
       child: Stack(
         children: [
-          Swiper(
-            scale: 0.9,
-            //viewportFraction: 0.9,
+          PageView.builder(
+            controller: _pageController,
             itemCount: ftvArtImgList.length,
-            autoplay: true,
-            itemBuilder: (BuildContext context, int index) {
-              return Stack(
+            //scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    ftvArtImgList[index],
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                  BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                    child: Container(
-                      color: Colors.black.withOpacity(0.5),
-                    ),
-                  ),
+                  Container(
+                    height: 300,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(ftvArtImgList[index])
+                        )
+                      ),
+                  )
                 ],
               );
             },
-          ),
-          SizedBox(
-            //color: AppColors.grey, //이걸로 사이즈 확인
-            //height: 350,
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
-              child: Swiper(
-                outer: true,
-                itemCount: ftvArtImgList.length,
-                viewportFraction: 0.6,
-                // 위젯크기(포스터 크기)
-                scale: 0.8,
-                // 사진간의 간격
-                pagination: const SwiperPagination(
-                  alignment: Alignment.bottomCenter,
-                  margin: EdgeInsets.all(10),
-                  builder: DotSwiperPaginationBuilder(
-                    size: 5.0,
-                    space: 3.0,
-                    activeColor: AppColors.brightBlue,
-                    color: AppColors.middleGrey,
-                  ),
-                ),
-                autoplay: true,
-                autoplayDisableOnInteraction: true,
-                // autoplay is disabled when use swipes.
-                itemBuilder: (BuildContext context, int index) {
-                  return Image.asset(ftvArtImgList[index]);
-                }, //control: SwiperControl(),
-              ),
-            ),
-          ),
+          )
         ],
       ),
     );

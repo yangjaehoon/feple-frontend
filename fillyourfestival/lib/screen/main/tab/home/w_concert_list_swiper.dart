@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_splash/cli_commands.dart';
 
 class ConcertListSwiper extends StatefulWidget {
   const ConcertListSwiper({super.key});
@@ -54,7 +53,7 @@ class _ConcertListSwiperState extends State<ConcertListSwiper> {
             //color: AppColors.grey, //이걸로 사이즈 확인
             //height: 350,
             child: Padding(
-              padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
+              padding: const EdgeInsets.fromLTRB(0, 30, 0, 0),
               child: Swiper(
                 outer: true,
                 itemCount: posterList.length,

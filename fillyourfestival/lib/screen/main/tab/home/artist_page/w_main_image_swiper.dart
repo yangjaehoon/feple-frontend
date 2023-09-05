@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
 
 class MainImageSwiper extends StatefulWidget {
@@ -20,6 +21,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
 
   final PageController _pageController = PageController(
     viewportFraction: 0.55,
+    //initialPage: 999,
   );
 
   int _currentPage = 0;
@@ -39,6 +41,24 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
       if (_pageController.page == null) return;
       _scroll.value = _pageController.page!;
     });
+
+    Timer.periodic(
+      Duration(seconds: 2),
+          (Timer timer) {
+        if (_currentPage < ftvArtImgList.length) {
+          _currentPage++;
+        }
+        else {
+          _currentPage = 0;
+        }
+
+        _pageController.animateToPage(
+          _currentPage,
+          duration: Duration(milliseconds: 350),
+          curve: Curves.easeIn,
+        );
+      },
+    );
   }
 
   @override

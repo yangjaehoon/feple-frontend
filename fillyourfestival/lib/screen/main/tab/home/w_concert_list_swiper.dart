@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:card_swiper/card_swiper.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
 
@@ -21,6 +20,7 @@ class _ConcertListSwiperState extends State<ConcertListSwiper> {
 
   final PageController _pageController = PageController(
     viewportFraction: 0.55,
+    //initialPage: 1000,
   );
 
   int _currentPage = 0;
@@ -29,6 +29,7 @@ class _ConcertListSwiperState extends State<ConcertListSwiper> {
 
   void _onPageChanged(int newPage) {
     setState(() {
+      //newPage = newPage % posterList.length;
       _currentPage = newPage;
     });
   }
@@ -36,10 +37,30 @@ class _ConcertListSwiperState extends State<ConcertListSwiper> {
   @override
   void initState() {
     super.initState();
-    _pageController.addListener(() {
-      if (_pageController.page == null) return;
-      _scroll.value = _pageController.page!;
-    });
+    _pageController.addListener(
+      () {
+        if (_pageController.page == null) return;
+        _scroll.value = _pageController.page!;
+      },
+    );
+
+    Timer.periodic(
+      Duration(seconds: 2),
+      (Timer timer) {
+        if (_currentPage < posterList.length) {
+          _currentPage++;
+        }
+        else {
+           _currentPage = 0;
+         }
+
+        _pageController.animateToPage(
+          _currentPage,
+          duration: Duration(milliseconds: 350),
+          curve: Curves.easeIn,
+        );
+      },
+    );
   }
 
   @override
@@ -79,14 +100,16 @@ class _ConcertListSwiperState extends State<ConcertListSwiper> {
             onPageChanged: _onPageChanged,
             controller: _pageController,
             itemCount: posterList.length,
-            //scrollDirection: Axis.horizontal,
             itemBuilder: (context, index) {
+              //index = index % posterList.length;
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ValueListenableBuilder(
                     valueListenable: _scroll,
                     builder: (context, scroll, child) {
+                      print(scroll);
+                      //print(index);
                       final difference = (scroll - index).abs();
                       final scale = 1 - (difference * 0.2);
                       return Transform.scale(

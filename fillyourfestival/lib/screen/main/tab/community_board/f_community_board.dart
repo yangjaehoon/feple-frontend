@@ -1,7 +1,7 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/screen/dialog/d_message.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_app_bar.dart';
-
+import 'package:fast_app_base/screen/main/tab/community_board/w_community_post.dart';
 import 'package:flutter/material.dart';
 
 import '../../../dialog/d_color_bottom.dart';
@@ -18,14 +18,14 @@ class CommunityBoardFragment extends StatelessWidget {
       color: Colors.black,
       child: const Stack(
         children: [
-          SingleChildScrollView(
+          Padding(
             padding: EdgeInsets.only(
               top: 60,
               bottom: 50,
             ), // 상단바 부분만큼 띄워줌(stack이여서),
             child: Column(
               children: [
-                //CommunityPost(), 수정 필요함
+                Expanded(child: CommunityPost()),
               ],
             ),
           ),

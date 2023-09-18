@@ -1,9 +1,5 @@
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/widget/round_button_theme.dart';
-import 'package:fast_app_base/common/widget/w_round_button.dart';
 import 'package:fast_app_base/screen/dialog/d_message.dart';
-import 'package:fast_app_base/screen/main/tab/home/vo/artist_dummy.dart';
-import 'package:fast_app_base/screen/main/tab/home/vo/vo_artist.dart';
 import 'package:fast_app_base/screen/main/tab/home/w_circle_artist.dart';
 import 'package:fast_app_base/screen/main/tab/home/w_concert_list_swiper.dart';
 import 'package:fast_app_base/screen/main/tab/home/w_fyf_app_bar.dart';

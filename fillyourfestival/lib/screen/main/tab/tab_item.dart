@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 enum TabItem {
   home(Icons.home, '홈', HomeFragment()),
   chat(Icons.question_answer, '채팅', ChatFragment()),
-  communityBoard(Icons.whatshot, '콘서트 목록', ConcertListFragment()),
-  concertList(Icons.format_list_bulleted, '게시판', CommunityBoardFragment()),
+  concertList(Icons.whatshot, '콘서트 목록', ConcertListFragment()),
+  communityBoard(Icons.format_list_bulleted, '게시판', CommunityBoardFragment()),
   favorite(Icons.person, '마이', HomeFragment());
 
   final IconData activeIcon;

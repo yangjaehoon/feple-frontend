@@ -81,6 +81,7 @@ dependencies:
   cloud_firestore: ^4.8.2
   firebase_database: ^10.2.5
   fluttertoast: ^8.2.1
+  youtube_player_flutter: ^8.1.2
 
 dev_dependencies:
   flutter_test:
@@ -119,6 +120,7 @@ flutter:
     - assets/image/flag/
     - assets/image/darkmode/
     - assets/image/artist/
+    - assets/image/artist_ftv/
     - assets/image/poster/
     - assets/translations/
     - assets/

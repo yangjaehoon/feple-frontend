@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:fast_app_base/common/common.dart';
+import 'package:fast_app_base/screen/main/tab/home/artist_page/w_artist_name_like.dart';
 import 'package:flutter/material.dart';
 
 class MainImageSwiper extends StatefulWidget {
@@ -12,10 +13,13 @@ class MainImageSwiper extends StatefulWidget {
 
 class _MainImageSwiperState extends State<MainImageSwiper> {
   final List<String> ftvArtImgList = [
-    'assets/image/poster/hiphopplaya_poster.jpg',
-    'assets/image/poster/psy_poster.jpg',
-    'assets/image/poster/rapbeat_poster.jpg',
-    'assets/image/poster/waterbomb_poster.jpg',
+    'assets/image/artist_ftv/1.jpg',
+    'assets/image/artist_ftv/2.jpg',
+    'assets/image/artist_ftv/3.jpg',
+    'assets/image/artist_ftv/4.jpg',
+    'assets/image/artist_ftv/5.jpg',
+    'assets/image/artist_ftv/6.jpg',
+
     //나중에 아티스트 개인별 페스티벌 정방향(1:1)사진 등록
   ];
 
@@ -70,7 +74,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 300,
+      height: 350,
       child: Stack(
         children: [
           AnimatedSwitcher(
@@ -100,43 +104,47 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
             itemCount: ftvArtImgList.length,
             //scrollDirection: Axis.horizontal,
             itemBuilder: (context, index) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ValueListenableBuilder(
-                    valueListenable: _scroll,
-                    builder: (context, scroll, child) {
-                      final difference = (scroll - index).abs();
-                      final scale = 1 - (difference * 0.2);
-                      return Transform.scale(
-                        scale: scale,
-                        child: Container(
-                          height: 254.5,
-                          width: 180,
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.4),
-                                blurRadius: 10,
-                                spreadRadius: 2,
-                                offset: Offset(0, 8),
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(0,40,0,20),
+                child: Column(
+                  //mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ValueListenableBuilder(
+                      valueListenable: _scroll,
+                      builder: (context, scroll, child) {
+                        final difference = (scroll - index).abs();
+                        final scale = 1 - (difference * 0.2);
+                        return Transform.scale(
+                          scale: scale,
+                          child: Container(
+                            height: 200,
+                            width: 200,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.4),
+                                  blurRadius: 10,
+                                  spreadRadius: 2,
+                                  offset: Offset(0, 8),
+                                ),
+                              ],
+                              image: DecorationImage(
+                                image: AssetImage(ftvArtImgList[index]),
+                                fit: BoxFit.fill,
                               ),
-                            ],
-                            image: DecorationImage(
-                              image: AssetImage(ftvArtImgList[index]),
-                              fit: BoxFit.fill,
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
+                        );
+                      },
+                    ),
+                  ],
+                ),
               );
             },
-          )
+          ),
+          ArtistNameLike(),
         ],
       ),
     );

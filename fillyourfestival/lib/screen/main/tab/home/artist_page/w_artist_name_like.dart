@@ -13,32 +13,49 @@ class ArtistNameLike extends StatefulWidget {
 class _ArtistNameLikeState extends State<ArtistNameLike> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Row(children: [
-          Text(
-            Artists[1].name,
-            style: const TextStyle(
-              fontSize: 36,
-              color: Colors.white,
-            ),
-          ),
-        ]),
-        const SizedBox(width: 8.0),
-        Row(
+    return Positioned(
+      left: 0,
+      bottom: 0,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 5, 12, 3),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const Text('좋아요 '),
-            const Text('145만 '),
-            IconButton(
-              icon: const Icon(Icons.heart_broken),
-              onPressed: () {
-                flutterToast();
-              },
+            Row(
+              children: [
+                Text(
+                  Artists[0].name,
+                  style: const TextStyle(
+                    fontSize: 36,
+                    color: Colors.white,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.textsms),
+                ),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.calendar_month_outlined),
+                )
+              ],
+            ),
+            const SizedBox(width: 8.0),
+            Row(
+              children: [
+                const Text('좋아요 '),
+                IconButton(
+                  icon: const Icon(Icons.heart_broken),
+                  onPressed: () {
+                    flutterToast();
+                  },
+                ),
+                const Text('145만 '),
+              ],
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 }

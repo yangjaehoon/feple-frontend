@@ -23,9 +23,7 @@ class _ConcertListSwiperState extends State<ConcertListSwiper> {
 
   void _onPageChanged(int newPage) {
     setState(() {
-      if (_currentPage != null) {
         _currentPage = newPage;
-      }
     });
   }
 

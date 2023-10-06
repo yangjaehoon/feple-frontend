@@ -1,3 +1,4 @@
+import 'package:fast_app_base/screen/main/tab/home/artist_page/w_calender.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:ui';
@@ -35,7 +36,12 @@ class _ArtistNameLikeState extends State<ArtistNameLike> {
                   icon: const Icon(Icons.textsms),
                 ),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const MyHomePage()),
+                    );
+                  },
                   icon: const Icon(Icons.calendar_month_outlined),
                 )
               ],

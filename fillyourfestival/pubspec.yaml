@@ -81,7 +81,9 @@ dependencies:
   cloud_firestore: ^4.8.2
   firebase_database: ^10.2.5
   fluttertoast: ^8.2.1
-  youtube_player_flutter: ^8.1.2
+  http: ^1.1.0
+  googleapis: ^11.4.0
+  syncfusion_flutter_calendar: ^23.1.38
 
 dev_dependencies:
   flutter_test:
@@ -124,7 +126,7 @@ flutter:
     - assets/image/poster/
     - assets/translations/
     - assets/
-    -
+    - lib/auth/secrets.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

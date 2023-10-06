@@ -124,6 +124,7 @@ flutter:
     - assets/image/artist/
     - assets/image/artist_ftv/
     - assets/image/poster/
+    - assets/image/chat_room/
     - assets/translations/
     - assets/
     - lib/auth/secrets.json

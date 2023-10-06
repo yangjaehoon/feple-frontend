@@ -17,7 +17,7 @@ class HomeFragment extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.black,
-      child: const Stack(
+      child: Stack(
         children: [
           SingleChildScrollView(
             padding: EdgeInsets.only(
@@ -32,7 +32,7 @@ class HomeFragment extends StatelessWidget {
             ),
           ),
           //CircleArtistWidget(),
-          FyfAppBar(),
+          FyfAppBar("Fill your Festival"),
         ],
       ),
     );

@@ -1,5 +1,9 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:typed_data';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ImgUpload extends StatefulWidget {
   const ImgUpload({super.key});
@@ -10,6 +14,11 @@ class ImgUpload extends StatefulWidget {
 
 class _ImgUploadState extends State<ImgUpload> {
   final _formKey = GlobalKey<FormState>();
+
+  final db = FirebaseFirestore.instance;
+  final storage = FirebaseStorage.instance;
+  Uint8List? imageData;
+  XFile? image;
 
   TextEditingController titleTEC = TextEditingController();
   TextEditingController locTEC = TextEditingController();
@@ -31,31 +40,37 @@ class _ImgUploadState extends State<ImgUpload> {
           padding: const EdgeInsets.all(18.0),
           child: Column(
             children: [
-              Align(
-                alignment: Alignment.center,
-                child: Container(
-                  margin: EdgeInsets.all(20),
-                  height: 240,
-                  width: 240,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200]!,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        color: Colors.black,
-                        Icons.add,
-                      ),
-                      Text(
-                        "아티스트 사진 추가",
-                        style: TextStyle(
+              GestureDetector(
+                onTap: () async{
+                  final ImagePicker picker = ImagePicker();
+                  image = await picker.pickImage(source: ImageSource.gallery);
+                },
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Container(
+                    margin: EdgeInsets.all(20),
+                    height: 240,
+                    width: 240,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200]!,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
                           color: Colors.black,
+                          Icons.add,
                         ),
-                      ),
-                    ],
+                        Text(
+                          "아티스트 사진 추가",
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

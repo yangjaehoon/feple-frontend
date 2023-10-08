@@ -1,3 +1,4 @@
+import 'package:fast_app_base/screen/main/tab/home/artist_page/img_collection/w_img_collection.dart';
 import 'package:fast_app_base/screen/main/tab/home/artist_page/w_calender.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -43,6 +44,15 @@ class _ArtistNameLikeState extends State<ArtistNameLike> {
                     );
                   },
                   icon: const Icon(Icons.calendar_month_outlined),
+                ),
+                IconButton(
+                  onPressed: (){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ImgCollection()),
+                    );
+                  },
+                  icon: const Icon(Icons.image),
                 )
               ],
             ),

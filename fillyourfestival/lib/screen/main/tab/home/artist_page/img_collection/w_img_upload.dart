@@ -3,7 +3,10 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../../../../../../model/artist_img.dart';
 
 class ImgUpload extends StatefulWidget {
   const ImgUpload({super.key});
@@ -21,16 +24,30 @@ class _ImgUploadState extends State<ImgUpload> {
   XFile? image;
 
   TextEditingController titleTEC = TextEditingController();
-  TextEditingController locTEC = TextEditingController();
+  TextEditingController ftvNameTEC = TextEditingController();
 
-  Future addImage() async{
-    if(imageData != null){
+  Future<Uint8List> imageCompressList(Uint8List list) async {
+    var result = await FlutterImageCompress.compressWithList(list, quality: 50);
+    return result;
+  }
+
+  Future addImage() async {
+    if (imageData != null) {
       //storage에 저장할 파일 이름
-      final storageRef = storage.ref().child("${DateTime.now().millisecondsSinceEpoch}_${
-      image?.name ?? "??"}.jpg");
-      await storageRef.putData(imageData!);
-      }
+      final storageRef = storage.ref().child(
+          "${DateTime.now().millisecondsSinceEpoch}_${image?.name ?? "??"}");
+      final compressedData = await imageCompressList(imageData!);
+      await storageRef.putData(compressedData!);
+      final downloadLink = await storageRef.getDownloadURL();
+      final sampleData = ArtistImg(
+        title: titleTEC.text,
+        ftvName: ftvNameTEC.text,
+        imgUrl: downloadLink,
+        timestamp: DateTime.now().millisecondsSinceEpoch,
+      );
+      final doc = await db.collection("ArtistImg").add(sampleData.toJson());
     }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,21 +86,23 @@ class _ImgUploadState extends State<ImgUpload> {
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: Colors.grey),
                     ),
-                    child:imageData == null ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          color: Colors.black,
-                          Icons.add,
-                        ),
-                        Text(
-                          "아티스트 사진 추가",
-                          style: TextStyle(
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ): Image.memory(imageData!, fit: BoxFit.cover),
+                    child: imageData == null
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                color: Colors.black,
+                                Icons.add,
+                              ),
+                              Text(
+                                "아티스트 사진 추가",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          )
+                        : Image.memory(imageData!, fit: BoxFit.cover),
                   ),
                 ),
               ),
@@ -109,7 +128,7 @@ class _ImgUploadState extends State<ImgUpload> {
                       height: 12,
                     ),
                     TextFormField(
-                      controller: locTEC,
+                      controller: ftvNameTEC,
                       decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: "페스티벌 이름",

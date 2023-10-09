@@ -76,17 +76,17 @@ dependencies:
   json_annotation: ^4.8.1
 
   card_swiper: ^3.0.1
-  firebase_core: ^2.15.1
-  firebase_auth: ^4.6.3
+  firebase_core: ^2.17.0
+  firebase_auth: ^4.10.1
   firebase_storage: ^11.2.8
-  cloud_firestore: ^4.8.2
-  firebase_database: ^10.2.5
-  fluttertoast: ^8.2.1
+  cloud_firestore: ^4.9.3
+  firebase_database: ^10.2.7
+  fluttertoast: ^8.2.2
   http: ^1.1.0
   googleapis: ^11.4.0
-  syncfusion_flutter_calendar: ^23.1.38
-  file_picker: ^5.3.3
-  flutter_image_compress: ^2.0.3
+  syncfusion_flutter_calendar: ^23.1.39
+  file_picker: ^5.5.0
+  flutter_image_compress: ^2.0.4
   image_picker: ^1.0.4
 
 dev_dependencies:

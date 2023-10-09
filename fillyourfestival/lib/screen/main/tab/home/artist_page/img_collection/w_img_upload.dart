@@ -23,6 +23,15 @@ class _ImgUploadState extends State<ImgUpload> {
   TextEditingController titleTEC = TextEditingController();
   TextEditingController locTEC = TextEditingController();
 
+  Future addImage() async{
+    if(imageData != null){
+      //storage에 저장할 파일 이름
+      final storageRef = storage.ref().child("${DateTime.now().millisecondsSinceEpoch}_${
+      image?.name ?? "??"}.jpg");
+      await storageRef.putData(imageData!);
+      }
+    }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +39,9 @@ class _ImgUploadState extends State<ImgUpload> {
         title: const Text("사진 올리기"),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              addImage();
+            },
             icon: const Icon(Icons.send),
           ),
         ],
@@ -41,9 +52,11 @@ class _ImgUploadState extends State<ImgUpload> {
           child: Column(
             children: [
               GestureDetector(
-                onTap: () async{
+                onTap: () async {
                   final ImagePicker picker = ImagePicker();
                   image = await picker.pickImage(source: ImageSource.gallery);
+                  imageData = await image?.readAsBytes();
+                  setState(() {});
                 },
                 child: Align(
                   alignment: Alignment.center,
@@ -56,7 +69,7 @@ class _ImgUploadState extends State<ImgUpload> {
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: Colors.grey),
                     ),
-                    child: Column(
+                    child:imageData == null ? Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
@@ -70,7 +83,7 @@ class _ImgUploadState extends State<ImgUpload> {
                           ),
                         ),
                       ],
-                    ),
+                    ): Image.memory(imageData!, fit: BoxFit.cover),
                   ),
                 ),
               ),
@@ -82,12 +95,11 @@ class _ImgUploadState extends State<ImgUpload> {
                     TextFormField(
                       controller: titleTEC,
                       decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: "작품명",
-                        hintText: "작품명을 입력하세요."
-                      ),
-                      validator: (value){
-                        if(value == null || value.isEmpty){
+                          border: OutlineInputBorder(),
+                          labelText: "작품명",
+                          hintText: "작품명을 입력하세요."),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
                           return "필수 입력 항목입니다.";
                         }
                         return null;
@@ -101,10 +113,9 @@ class _ImgUploadState extends State<ImgUpload> {
                       decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: "페스티벌 이름",
-                          hintText: "페스티벌 위치나 이름을 입력하세요."
-                      ),
-                      validator: (value){
-                        if(value == null || value.isEmpty){
+                          hintText: "페스티벌 위치나 이름을 입력하세요."),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
                           return "필수 입력 항목입니다.";
                         }
                         return null;

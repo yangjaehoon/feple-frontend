@@ -3,7 +3,6 @@ import 'package:fast_app_base/screen/main/tab/home/artist_page/w_main_image_swip
 import 'package:fast_app_base/screen/main/tab/home/artist_page/w_ftv_shorts.dart';
 
 import 'package:flutter/material.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class ArtistPage extends StatefulWidget {
   const ArtistPage({super.key});

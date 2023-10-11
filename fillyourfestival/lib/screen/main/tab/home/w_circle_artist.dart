@@ -1,6 +1,5 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/screen/main/tab/home/vo/artist_dummy.dart';
-import 'package:fast_app_base/screen/main/tab/home/vo/vo_artist.dart';
 import 'package:flutter/material.dart';
 
 import 'artist_page/f_artist_page.dart';

@@ -73,19 +73,26 @@ dependencies:
   retrofit: ^4.0.1
   freezed: ^2.3.4
   freezed_annotation: ^2.2.0
-  json_annotation: ^4.8.0
+  json_annotation: ^4.8.1
 
   card_swiper: ^3.0.1
-  firebase_core: ^2.15.1
-  firebase_auth: ^4.6.3
-  cloud_firestore: ^4.8.2
-  firebase_database: ^10.2.5
-  fluttertoast: ^8.2.1
-  youtube_player_flutter: ^8.1.2
+  firebase_core: ^2.17.0
+  firebase_auth: ^4.10.1
+  firebase_storage: ^11.2.8
+  cloud_firestore: ^4.9.3
+  firebase_database: ^10.2.7
+  fluttertoast: ^8.2.2
+  http: ^1.1.0
+  googleapis: ^11.4.0
+  syncfusion_flutter_calendar: ^23.1.39
+  file_picker: ^5.5.0
+  flutter_image_compress: ^2.0.4
+  image_picker: ^1.0.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -94,12 +101,13 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
   retrofit_generator: '5.0.0'
-  build_runner: '2.3.3'
+  build_runner: ^2.4.5
   json_serializable: ^6.6.1
   isar_generator: 3.1.0
   mock_web_server: ^5.0.0-nullsafety.1
   flutter_oss_licenses: ^2.0.1
   test: ^1.22.0
+  freezed: ^2.3.5
 
 
 
@@ -122,9 +130,10 @@ flutter:
     - assets/image/artist/
     - assets/image/artist_ftv/
     - assets/image/poster/
+    - assets/image/chat_room/
     - assets/translations/
     - assets/
-    -
+    - lib/auth/secrets.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

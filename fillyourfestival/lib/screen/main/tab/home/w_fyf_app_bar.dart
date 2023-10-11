@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import '../../w_menu_drawer.dart';
 
 class FyfAppBar extends StatefulWidget {
-  const FyfAppBar({super.key});
+  String appbarTitle ='';
+
+  FyfAppBar(@required this.appbarTitle, {super.key});
 
   @override
   State<FyfAppBar> createState() => _FyfAppBarState();
@@ -25,8 +27,8 @@ class _FyfAppBarState extends State<FyfAppBar> {
             icon: Icon(Icons.menu),
             onPressed: ()=> openDrawer(context),
           ),
-          const Text(
-            "Fill your Festival",
+          Text(
+            widget.appbarTitle,
             style: TextStyle(
               fontSize: 22,
             ),

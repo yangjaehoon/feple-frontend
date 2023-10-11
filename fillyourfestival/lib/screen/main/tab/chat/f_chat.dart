@@ -1,15 +1,39 @@
+import 'package:fast_app_base/screen/main/tab/chat/w_fan_chat.dart';
+import 'package:fast_app_base/screen/main/tab/chat/w_my_chat.dart';
+import 'package:fast_app_base/screen/main/tab/chat/w_today_ftv_chat.dart';
 import 'package:flutter/material.dart';
 
-class ChatFragment extends StatefulWidget {
-  const ChatFragment({super.key});
+import '../home/w_fyf_app_bar.dart';
 
-  @override
-  State<ChatFragment> createState() => _ChatFragmentState();
-}
 
-class _ChatFragmentState extends State<ChatFragment> {
+class ChatFragment extends StatelessWidget {
+  const ChatFragment({
+    Key? key,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Container(
+      color: Colors.black,
+      child: Stack(
+        children: [
+          const SingleChildScrollView(
+            padding: EdgeInsets.only(
+              top: 60,
+              bottom: 50,
+            ), // 상단바 부분만큼 띄워줌(stack이여서),
+            child: Column(
+              children: [
+                TodayFtvChat(),
+                MyChat(),
+                FanChat(),
+              ],
+            ),
+          ),
+          //CircleArtistWidget(),
+          FyfAppBar("채팅방"),
+        ],
+      ),
+    );
   }
 }

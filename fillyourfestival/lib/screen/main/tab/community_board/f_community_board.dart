@@ -1,7 +1,9 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/screen/dialog/d_message.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_app_bar.dart';
-import 'package:fast_app_base/screen/main/tab/community_board/w_community_post.dart';
+import 'package:fast_app_base/screen/main/tab/community_board/w_community_hot_board.dart';
+import 'package:fast_app_base/screen/main/tab/community_board/w_community_free_board.dart';
+import 'package:fast_app_base/screen/main/tab/community_board/w_community_getuser_board.dart';
 import 'package:flutter/material.dart';
 
 import '../../../dialog/d_color_bottom.dart';
@@ -18,18 +20,21 @@ class CommunityBoardFragment extends StatelessWidget {
       color: Colors.black,
       child: const Stack(
         children: [
-          Padding(
-            padding: EdgeInsets.only(
-              top: 60,
-              bottom: 50,
-            ), // 상단바 부분만큼 띄워줌(stack이여서),
-            child: Column(
-              children: [
-                Expanded(child: CommunityPost()),
-              ],
+          SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: 60,
+                bottom: 40,
+              ), // 상단바 부분만큼 띄워줌(stack이여서),
+              child: Column(
+                children: [
+                  HotBoard(),
+                  FreeBoard(),
+                  GetUserBoard(),
+                ],
+              ),
             ),
           ),
-          //CircleArtistWidget(),
           CommunityBoardAppBar(),
         ],
       ),

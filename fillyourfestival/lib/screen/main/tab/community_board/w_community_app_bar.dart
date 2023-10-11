@@ -17,12 +17,8 @@ class _CommunityBoardAppBarState extends State<CommunityBoardAppBar> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => openDrawer(context),
-          ),
           const Text(
-            "Community Board",
+            " Community Board",
             style: TextStyle(
               fontSize: 22,
             ),

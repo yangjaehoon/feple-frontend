@@ -1,16 +1,17 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fast_app_base/screen/main/tab/community_board/w_community_write_board.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class CommunityPost extends StatefulWidget {
-  const CommunityPost({super.key});
+  final String boardname;
+  const CommunityPost({super.key, required this.boardname});
 
   @override
   State<CommunityPost> createState() => _CommunityPostState();
 }
 
 class _CommunityPostState extends State<CommunityPost> {
-  DatabaseReference ref = FirebaseDatabase.instance.ref('board/post');
+  DatabaseReference ref = FirebaseDatabase.instance.ref('board/GetuserBoard');
 
   //firebase의 경우 기본적으로 앱 다시 시작 또는 페이지 새로고침 후 사용자의 인증 상태가 유지되도록 지원
 
@@ -18,30 +19,66 @@ class _CommunityPostState extends State<CommunityPost> {
 
   Future setpost() async {
     await ref.set({
-      hashCode : "post name",
-      "first": "first_post",
-      "second": "second_post",
+      // "user_post" : FirebaseAuth.instance.currentUser?.uid, // 현재 user의 uid를 가져오는 법 (고유값)
+      // "HotBoard" : "Post",
+      // "FreeBoard" : "Post",
+      // "GetuserBoard" : "Post",
+      "Post": "Comment",
     });
-  } //post들을 입력하는 영역
+  }
 
   Future getpost() async {
-    final snapshot = await ref.child('second').get();
+    setpost();
+    final snapshot = await ref.child('Post').get();
     return snapshot.value;
+  }
+
+  // ignore: prefer_typing_uninitialized_variables
+  var chooseboard;
+  
+  void initstate() {
+    if (widget.boardname == "GetuserBoard") {
+      chooseboard = "동행구하기 게시판";
+    } else if (widget.boardname == "FreeBoard") {
+      chooseboard = "자유 게시판";
+    } else if (widget.boardname == "HotBoard") {
+      chooseboard = "인기 게시판";
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(itemBuilder: (BuildContext context, int index) {
-      return Container(
-        height: 50,
-        color: const Color.fromARGB(255, 0, 0, 0),
-        child: FutureBuilder(
-            future: getpost(),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              return Text(snapshot.data.toString());
-            }),
-        //entries[index]
-      );
-    }); //Entry ${entries[index]}
+    initstate();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(chooseboard),
+      ),
+      body: Stack(
+        children: [
+          ListView.builder(
+            shrinkWrap: true,
+            itemBuilder: (BuildContext context, int index) {
+              return Container(
+                height: 50,
+                color: const Color.fromARGB(255, 0, 0, 0),
+                child: FutureBuilder(
+                  future: getpost(),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    return Text(snapshot.data.toString());
+                  },
+                ), //entries[index]
+              );
+            },
+          ), //Entry ${entries[index]}
+          Positioned(
+            bottom: 50,
+            left: 150,
+            child: PencilWidget(
+              boardname: widget.boardname,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

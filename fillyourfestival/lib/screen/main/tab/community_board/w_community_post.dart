@@ -1,10 +1,21 @@
-import 'package:fast_app_base/screen/main/tab/community_board/w_community_write_board.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:fast_app_base/screen/main/tab/community_board/w_community_write_board.dart';
 
 class CommunityPost extends StatefulWidget {
   final String boardname;
-  const CommunityPost({super.key, required this.boardname});
+  final List<String> boardTitle;
+  final List<String> boardDay;
+  final List<String> boardFavorite;
+  final List<String> boardComment;
+
+  const CommunityPost(
+      {super.key,
+      required this.boardname,
+      required this.boardTitle,
+      required this.boardDay,
+      required this.boardFavorite,
+      required this.boardComment});
 
   @override
   State<CommunityPost> createState() => _CommunityPostState();
@@ -35,7 +46,7 @@ class _CommunityPostState extends State<CommunityPost> {
 
   // ignore: prefer_typing_uninitialized_variables
   var chooseboard;
-  
+
   void initstate() {
     if (widget.boardname == "GetuserBoard") {
       chooseboard = "동행구하기 게시판";
@@ -55,23 +66,41 @@ class _CommunityPostState extends State<CommunityPost> {
       ),
       body: Stack(
         children: [
-          ListView.builder(
-            shrinkWrap: true,
-            itemBuilder: (BuildContext context, int index) {
-              return Container(
-                height: 50,
-                color: const Color.fromARGB(255, 0, 0, 0),
-                child: FutureBuilder(
-                  future: getpost(),
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    return Text(snapshot.data.toString());
-                  },
-                ), //entries[index]
-              );
-            },
-          ), //Entry ${entries[index]}
+          SizedBox(
+            height: 600,
+            child: ListView.separated(
+              shrinkWrap: true,
+              itemCount: widget.boardTitle.length,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  title: Text(
+                    widget.boardTitle[index],
+                  ),
+                  subtitle: Text(widget.boardDay[index]),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.favorite_rounded),
+                      Text(
+                        widget.boardFavorite[index],
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                      const Icon(Icons.comment),
+                      Text(
+                        widget.boardComment[index],
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                return const Divider(thickness: 2);
+              },
+            ),
+          ),
           Positioned(
-            bottom: 50,
+            bottom: 40,
             left: 150,
             child: PencilWidget(
               boardname: widget.boardname,
@@ -82,3 +111,13 @@ class _CommunityPostState extends State<CommunityPost> {
     );
   }
 }
+// return Container(
+//   height: 50,
+//   color: const Color.fromARGB(255, 0, 0, 0),
+//   child: FutureBuilder(
+//     future: getpost(),
+//     builder: (BuildContext context, AsyncSnapshot snapshot) {
+//       return Text(snapshot.data.toString());
+//     },
+//   ), //entries[index]
+// );  //Entry ${entries[index]}

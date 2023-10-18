@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:fast_app_base/screen/main/tab/chat/w_chatting_room.dart';
 
 class TodayFtvChat extends StatefulWidget {
   const TodayFtvChat({super.key});
@@ -17,8 +18,8 @@ class _TodayFtvChatState extends State<TodayFtvChat> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 0, 8.0),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(0, 0, 0, 8.0),
             child: Text(
               "Today's Festival",
               style: TextStyle(fontSize: 20),
@@ -38,13 +39,26 @@ class _TodayFtvChatState extends State<TodayFtvChat> {
                         children: [
                           Padding(
                             padding: const EdgeInsets.all(3.0),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10.0),
-                              child: Image.asset(
-                                "assets/image/chat_room/hanyohan_chat.jpg",
-                                fit: BoxFit.cover,
-                                width: 150,
-                                height: 200,
+                            child: Material(
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: ((context) =>
+                                          const ChattingRoom()),
+                                    ),
+                                  );
+                                },
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  child: Image.asset(
+                                    "assets/image/chat_room/hanyohan_chat.jpg",
+                                    fit: BoxFit.cover,
+                                    width: 150,
+                                    height: 200,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
@@ -58,8 +72,8 @@ class _TodayFtvChatState extends State<TodayFtvChat> {
                               ),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(5.0),
+                          const Padding(
+                            padding: EdgeInsets.all(5.0),
                             child: Text("한요한 채팅방"),
                           ),
                         ],

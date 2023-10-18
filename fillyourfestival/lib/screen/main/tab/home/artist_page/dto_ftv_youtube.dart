@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../../../../../auth/keys.dart';
+import 'package:fast_app_base/auth/keys.dart';
+
 
 
 Future<List<String>> fetchMostViewedNewsThumbnail() async {

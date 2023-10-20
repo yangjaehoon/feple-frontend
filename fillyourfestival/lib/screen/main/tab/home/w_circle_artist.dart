@@ -23,11 +23,12 @@ class CircleArtistWidget extends StatelessWidget {
       ),
       // 전체 이미지 개수
       itemBuilder: (BuildContext context, int index) {
+        final String artistName = Artists[index].name;
         return GestureDetector(
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const ArtistPage()),
+              MaterialPageRoute(builder: (context) => ArtistPage(artistName: artistName)),
             );
             print(Artists[index].name);
           },

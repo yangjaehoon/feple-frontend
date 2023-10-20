@@ -6,7 +6,9 @@ import 'dart:ui';
 import '../vo/artist_dummy.dart';
 
 class ArtistNameLike extends StatefulWidget {
-  const ArtistNameLike({super.key});
+  const ArtistNameLike({super.key, required this.artistName});
+
+  final String artistName;
 
   @override
   State<ArtistNameLike> createState() => _ArtistNameLikeState();
@@ -40,16 +42,19 @@ class _ArtistNameLikeState extends State<ArtistNameLike> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const MyHomePage()),
+                      MaterialPageRoute(
+                          builder: (context) => const MyHomePage()),
                     );
                   },
                   icon: const Icon(Icons.calendar_month_outlined),
                 ),
                 IconButton(
-                  onPressed: (){
+                  onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const ImgCollection()),
+                      MaterialPageRoute(
+                          builder: (context) =>
+                               ImgCollection(artistName: widget.artistName)),
                     );
                   },
                   icon: const Icon(Icons.image),

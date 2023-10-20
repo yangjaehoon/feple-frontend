@@ -9,7 +9,9 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../../../model/artist_img.dart';
 
 class ImgUpload extends StatefulWidget {
-  const ImgUpload({super.key});
+  const ImgUpload({super.key, required this.artistName});
+
+  final String artistName;
 
   @override
   State<ImgUpload> createState() => _ImgUploadState();
@@ -26,6 +28,7 @@ class _ImgUploadState extends State<ImgUpload> {
   TextEditingController titleTEC = TextEditingController();
   TextEditingController ftvNameTEC = TextEditingController();
 
+  //파이어베이스 용량 적으니 일단 압축해서 사진 올려줌
   Future<Uint8List> imageCompressList(Uint8List list) async {
     var result = await FlutterImageCompress.compressWithList(list, quality: 50);
     return result;
@@ -35,7 +38,7 @@ class _ImgUploadState extends State<ImgUpload> {
     if (imageData != null) {
       //storage에 저장할 파일 이름
       final storageRef = storage.ref().child(
-          "${DateTime.now().millisecondsSinceEpoch}_${image?.name ?? "??"}");
+          "/artist_img/${widget.artistName}/${widget.artistName}_${DateTime.now().millisecondsSinceEpoch}_${image?.name ?? "??"}");
       final compressedData = await imageCompressList(imageData!);
       await storageRef.putData(compressedData!);
       final downloadLink = await storageRef.getDownloadURL();
@@ -111,9 +114,10 @@ class _ImgUploadState extends State<ImgUpload> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text(widget.artistName),
                     TextFormField(
                       controller: titleTEC,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: "작품명",
                           hintText: "작품명을 입력하세요."),
@@ -124,12 +128,12 @@ class _ImgUploadState extends State<ImgUpload> {
                         return null;
                       },
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 12,
                     ),
                     TextFormField(
                       controller: ftvNameTEC,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: "페스티벌 이름",
                           hintText: "페스티벌 위치나 이름을 입력하세요."),

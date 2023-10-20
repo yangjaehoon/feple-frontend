@@ -2,7 +2,9 @@ import 'package:fast_app_base/screen/main/tab/home/artist_page/img_collection/w_
 import 'package:flutter/material.dart';
 
 class ImgCollection extends StatefulWidget {
-  const ImgCollection({super.key});
+  const ImgCollection({super.key, required this.artistName});
+
+  final String artistName;
 
   @override
   State<ImgCollection> createState() => _ImgCollectionState();
@@ -32,10 +34,10 @@ class _ImgCollectionState extends State<ImgCollection> {
           right: 10,
           child: FloatingActionButton(
             child: const Icon(Icons.add),
-            onPressed: (){
+            onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ImgUpload()),
+                MaterialPageRoute(builder: (context) => ImgUpload(artistName: widget.artistName)),
               );
             },
           ),

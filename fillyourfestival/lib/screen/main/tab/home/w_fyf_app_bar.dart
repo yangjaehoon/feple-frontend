@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import '../../w_menu_drawer.dart';
 
 class FyfAppBar extends StatefulWidget {
-  String appbarTitle ='';
+
 
   FyfAppBar(@required this.appbarTitle, {super.key});
+
+  String appbarTitle ='';
 
   @override
   State<FyfAppBar> createState() => _FyfAppBarState();

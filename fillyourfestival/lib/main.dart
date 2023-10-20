@@ -5,8 +5,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:fast_app_base/controller/auth_controller.dart';
 import 'common/data/preference/app_preferences.dart';
 import 'package:get/get.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  final bindings = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: bindings);
   await Firebase.initializeApp().then((value) => Get.put(AuthController()));
 
   await EasyLocalization.ensureInitialized();

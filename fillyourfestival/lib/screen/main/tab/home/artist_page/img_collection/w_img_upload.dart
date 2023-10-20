@@ -87,7 +87,7 @@ class _ImgUploadState extends State<ImgUpload> {
                       border: Border.all(color: Colors.grey),
                     ),
                     child: imageData == null
-                        ? Column(
+                        ? const Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(

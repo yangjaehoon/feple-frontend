@@ -1,9 +1,9 @@
-import 'package:fast_app_base/screen/main/tab/home/artist_page/img_collection/w_img_collection.dart';
 import 'package:fast_app_base/screen/main/tab/home/artist_page/w_calender.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:ui';
 import '../vo/artist_dummy.dart';
+import 'img_collection/f_img_collection.dart';
 
 class ArtistNameLike extends StatefulWidget {
   const ArtistNameLike({super.key, required this.artistName});

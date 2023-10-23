@@ -19,7 +19,7 @@ class HomeFragment extends StatelessWidget {
       color: Colors.black,
       child: Stack(
         children: [
-          SingleChildScrollView(
+          const SingleChildScrollView(
             padding: EdgeInsets.only(
               top: 60,
               bottom: 50,

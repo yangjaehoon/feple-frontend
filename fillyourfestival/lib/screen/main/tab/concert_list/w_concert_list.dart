@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 
-class ImgCollectionWidget extends StatefulWidget {
-  const ImgCollectionWidget({super.key, required this.artistName});
-
-  final String artistName;
+class ConcertListWidget extends StatefulWidget {
+  const ConcertListWidget({super.key});
 
   @override
-  State<ImgCollectionWidget> createState() => _ImgCollectionWidgetState();
+  State<ConcertListWidget> createState() => _ConcertListWidgetState();
 }
 
-class _ImgCollectionWidgetState extends State<ImgCollectionWidget> {
+class _ConcertListWidgetState extends State<ConcertListWidget> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -19,11 +17,11 @@ class _ImgCollectionWidgetState extends State<ImgCollectionWidget> {
       itemBuilder: (context, index) {
         return Container(
           height: 160,
-          margin: EdgeInsets.only(bottom: 16),
+          margin: EdgeInsets.only(top: 16, bottom: 16, left: 16),
           child: Row(
             children: [
               Container(
-                width: 160,
+                width: 113,
                 decoration: BoxDecoration(
                   color: Colors.grey[900],
                   borderRadius: BorderRadius.circular(16),
@@ -31,7 +29,7 @@ class _ImgCollectionWidgetState extends State<ImgCollectionWidget> {
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 16.0),
+                  padding: const EdgeInsets.only(left: 24.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -39,7 +37,7 @@ class _ImgCollectionWidgetState extends State<ImgCollectionWidget> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text(
-                            "사진 이름",
+                            "페스티벌 이름",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
@@ -58,12 +56,12 @@ class _ImgCollectionWidgetState extends State<ImgCollectionWidget> {
                         ],
                       ),
                       const Padding(
-                        padding: EdgeInsets.only(top: 8.0),
+                        padding: EdgeInsets.only(top: 12.0),
                         child: Text(
-                          "사진에 대한 내용 설명, "
-                              "이사진은 언제 찍었고,"
-                              " 이사진은 어디서 찍었고"
-                              "어떠한 모습이 잘담긴 것 같아서 올린다.",
+                          "페스티벌 이름: 싸이 흠뻑쇼\n"
+                              "참여 아티스트: 싸이, 성시경\n"
+                              "장소: 올림픽 공원\n"
+                              "날짜: 23/11/30",
                         ),
                       ),
                     ],

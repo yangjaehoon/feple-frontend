@@ -30,7 +30,7 @@ class _ImgCollectionState extends State<ImgCollection> {
               ],
             ),
           ),
-          FyfAppBar("사진 모아보기"),
+          const FyfAppBar("사진 모아보기"),
           Positioned(
             bottom: 40,
             right: 10,

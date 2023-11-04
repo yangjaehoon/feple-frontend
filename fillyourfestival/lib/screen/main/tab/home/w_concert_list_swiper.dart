@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:card_swiper/card_swiper.dart';
-import 'package:fast_app_base/common/common.dart';
+import 'package:fast_app_base/screen/main/tab/home/concert_information/f_festival_information.dart';
 import 'package:flutter/material.dart';
 
 class ConcertListSwiper extends StatefulWidget {
@@ -23,7 +23,7 @@ class _ConcertListSwiperState extends State<ConcertListSwiper> {
 
   void _onPageChanged(int newPage) {
     setState(() {
-        _currentPage = newPage;
+      _currentPage = newPage;
     });
   }
 
@@ -31,23 +31,23 @@ class _ConcertListSwiperState extends State<ConcertListSwiper> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Container(
-          height: 300,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(
-                posterList[_currentPage],
+        Container(//포스터 뒷배경 blur처리한 화면
+            height: 300,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(
+                  posterList[_currentPage],
+                ),
+                fit: BoxFit.cover,
               ),
-              fit: BoxFit.cover,
+            ),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+              child: Container(
+                color: Colors.black.withOpacity(0.2),
+              ),
             ),
           ),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-            child: Container(
-              color: Colors.black.withOpacity(0.2),
-            ),
-          ),
-        ),
         SizedBox(
           height: 300,
           child: Padding(
@@ -66,24 +66,29 @@ class _ConcertListSwiperState extends State<ConcertListSwiper> {
                 ),
               ),
               itemBuilder: (BuildContext context, int index) {
-                return ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                    posterList[index ?? 0],
-                    fit: BoxFit.fill,
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => FestivalInformationFragment(posterName : posterList[index])),
+                    );
+                  },
+                  child:  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.asset(
+                      posterList[index ?? 0],
+                      fit: BoxFit.fill,
+                    ),
                   ),
                 );
               },
               layout: SwiperLayout.CUSTOM,
               customLayoutOption: CustomLayoutOption(
                 startIndex: -1,
-                stateCount: posterList.length-1,
+                stateCount: posterList.length - 1,
               )
-                ..addRotate([
-                  -45.0 / 180,
-                  0.0,
-                  45.0 / 180
-                ])..addTranslate([
+                ..addRotate([-45.0 / 180, 0.0, 45.0 / 180])
+                ..addTranslate([
                   Offset(-370.0, -40.0),
                   Offset(0.0, 0.0),
                   Offset(370.0, -40.0)

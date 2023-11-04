@@ -16,7 +16,7 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.black,
-      child: Stack(
+      child: const Stack(
         children: [
           SingleChildScrollView(
             padding: EdgeInsets.only(

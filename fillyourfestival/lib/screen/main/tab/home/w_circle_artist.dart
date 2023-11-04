@@ -30,6 +30,7 @@ class CircleArtistWidget extends StatelessWidget {
               context,
               MaterialPageRoute(builder: (context) => ArtistPage(artistName: artistName)),
             );
+            //TODO: 밑에 print문 지워야함
             print(Artists[index].name);
           },
           child: Column(

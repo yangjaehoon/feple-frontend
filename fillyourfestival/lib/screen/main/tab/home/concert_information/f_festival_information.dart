@@ -1,4 +1,5 @@
 import 'package:fast_app_base/screen/main/tab/home/concert_information/w_festival_poster.dart';
+import 'package:fast_app_base/screen/main/tab/home/concert_information/w_festival_timetable.dart';
 import 'package:fast_app_base/screen/main/tab/home/w_fyf_app_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +23,8 @@ class FestivalInformationFragment extends StatelessWidget {
             child: Column(
               children: [
                 FestivalPoster(posterName: posterName),
-                Placeholder(),
+                Placeholder( fallbackHeight: 70,),
+                FestivalTimetable(),
               ],
             ),
           ),

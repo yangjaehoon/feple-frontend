@@ -12,17 +12,28 @@ class FestivalPoster extends StatefulWidget {
 class _FestivalPosterState extends State<FestivalPoster> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(16),
-      height: 300,
-      child:  ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Image.asset(
-          widget.posterName,
-          fit: BoxFit.fill,
+    return Row(
+      children: [
+        Container(
+          alignment: Alignment.centerLeft,
+          margin: EdgeInsets.all(16),
+          height: 300,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Image.asset(
+              widget.posterName,
+              fit: BoxFit.fill,
+            ),
+          ),
         ),
-      ),
-
+        Column(
+          children: [
+            Text("페스티벌 이름: "),
+            Text("페스티벌 날짜: "),
+            Text("페스티벌 장소: "),
+          ],
+        ),
+      ],
     );
   }
 }

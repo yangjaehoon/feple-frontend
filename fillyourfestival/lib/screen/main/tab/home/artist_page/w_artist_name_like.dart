@@ -1,7 +1,6 @@
-import 'package:fast_app_base/screen/main/tab/home/artist_page/w_calender.dart';
+import 'package:fast_app_base/screen/main/tab/home/artist_page/w_ftv_calender.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'dart:ui';
 import '../vo/artist_dummy.dart';
 import 'img_collection/f_img_collection.dart';
 
@@ -28,6 +27,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike> {
             Row(
               children: [
                 Text(
+                  //artist name
                   Artists[0].name,
                   style: const TextStyle(
                     fontSize: 36,
@@ -35,26 +35,29 @@ class _ArtistNameLikeState extends State<ArtistNameLike> {
                   ),
                 ),
                 IconButton(
+                  //artist chat room
                   onPressed: () {},
                   icon: const Icon(Icons.textsms),
                 ),
                 IconButton(
+                  // artist calender
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const MyHomePage()),
+                          builder: (context) => const FtvCalender()),
                     );
                   },
                   icon: const Icon(Icons.calendar_month_outlined),
                 ),
                 IconButton(
+                  //artist gallery
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) =>
-                               ImgCollection(artistName: widget.artistName)),
+                              ImgCollection(artistName: widget.artistName)),
                     );
                   },
                   icon: const Icon(Icons.image),
@@ -62,17 +65,31 @@ class _ArtistNameLikeState extends State<ArtistNameLike> {
               ],
             ),
             const SizedBox(width: 8.0),
-            Row(
-              children: [
-                const Text('좋아요 '),
-                IconButton(
-                  icon: const Icon(Icons.heart_broken),
-                  onPressed: () {
-                    flutterToast();
-                  },
-                ),
-                const Text('145만 '),
-              ],
+            SizedBox(
+              child: Row(
+                children: [
+                  const Text('좋아요 '),
+                  IconButton(
+                    icon: const Icon(Icons.heart_broken),
+                    onPressed: () {
+                      flutterToast();
+                    },
+                  ),
+                  const Text('145만 '),
+                  SizedBox(width:8.0),
+                  ElevatedButton(
+                    onPressed: () {},
+                    child: Text('팔로우'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.lightBlue,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)
+                      )
+                    ),
+                  )
+                ],
+              ),
             ),
           ],
         ),

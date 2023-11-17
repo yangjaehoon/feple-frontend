@@ -18,23 +18,23 @@ class _FestivalPosterState extends State<FestivalPoster> {
       height: 250,
       child: Stack(
         children: [
-            Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(widget.posterName),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(
-                  sigmaX: 5,
-                  sigmaY: 5,
-                ),
-                child: Container(
-                  color: Colors.black.withOpacity(0.5),
-                ),
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(widget.posterName),
+                fit: BoxFit.cover,
               ),
             ),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: 5,
+                sigmaY: 5,
+              ),
+              child: Container(
+                color: Colors.black.withOpacity(0.5),
+              ),
+            ),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -51,12 +51,24 @@ class _FestivalPosterState extends State<FestivalPoster> {
                 ),
               ),
               Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(style: TextStyle(fontSize: 30),"랩비트 페스티벌 "),
-                  Text(style: TextStyle(fontSize: 20),"날짜: 2023.12.25 "),
-                  Text(style: TextStyle(fontSize: 20),"장소: 과천 서울랜드 "),
+                  Text(style: TextStyle(fontSize: 30), "랩비트 페스티벌"),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(style: TextStyle(fontSize: 20), "날짜: 2023.12.25 "),
+                      Text(style: TextStyle(fontSize: 20), "장소: 과천 서울랜드 "),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.calendar_month_outlined),
+                      SizedBox(width: 5),
+                      Icon(Icons.wb_cloudy),
+                    ],
+                  ),
                 ],
               ),
             ],

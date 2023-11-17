@@ -20,73 +20,72 @@ class _ArtistNameLikeState extends State<ArtistNameLike> {
       left: 0,
       bottom: 0,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 5, 12, 3),
+        padding: const EdgeInsets.fromLTRB(20, 0, 12, 0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Text(
-                  //artist name
-                  Artists[0].name,
-                  style: const TextStyle(
-                    fontSize: 36,
-                    color: Colors.white,
+                Container(
+                  height: 50,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: Text(
+                      //artist name
+                      Artists[0].name,
+                      style: const TextStyle(
+                        fontSize: 36,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
-                IconButton(
-                  //artist chat room
+                const Text(
+                  style: TextStyle(fontSize: 20),
+                  '145만 ',
+                ),
+                SizedBox(width: 8.0),
+                ElevatedButton(
                   onPressed: () {},
-                  icon: const Icon(Icons.textsms),
-                ),
-                IconButton(
-                  // artist calender
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const FtvCalender()),
-                    );
-                  },
-                  icon: const Icon(Icons.calendar_month_outlined),
-                ),
-                IconButton(
-                  //artist gallery
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              ImgCollection(artistName: widget.artistName)),
-                    );
-                  },
-                  icon: const Icon(Icons.image),
-                )
-              ],
-            ),
-            const SizedBox(width: 8.0),
-            SizedBox(
-              child: Row(
-                children: [
-                  const Text('좋아요 '),
-                  IconButton(
-                    icon: const Icon(Icons.heart_broken),
-                    onPressed: () {
-                      flutterToast();
-                    },
-                  ),
-                  const Text('145만 '),
-                  SizedBox(width:8.0),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: Text('팔로우'),
-                    style: ElevatedButton.styleFrom(
+                  child: Text('팔로우'),
+                  style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.lightBlue,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)
-                      )
-                    ),
+                          borderRadius: BorderRadius.circular(12))),
+                ),
+              ],
+            ),
+            SizedBox(
+              child: Row(
+                children: [
+                  IconButton(
+                    //artist chat room
+                    onPressed: () {},
+                    icon: const Icon(Icons.textsms),
+                  ),
+                  IconButton(
+                    // artist calender
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const FtvCalender()),
+                      );
+                    },
+                    icon: const Icon(Icons.calendar_month_outlined),
+                  ),
+                  IconButton(
+                    //artist gallery
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ImgCollection(artistName: widget.artistName)),
+                      );
+                    },
+                    icon: const Icon(Icons.image),
                   )
                 ],
               ),

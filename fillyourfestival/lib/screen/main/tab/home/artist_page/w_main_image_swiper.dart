@@ -79,7 +79,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
       height: 350,
       child: Stack(
         children: [
-          AnimatedSwitcher(
+          AnimatedSwitcher(//뒤에 배경 blur처리한 부분
             duration: Duration(milliseconds: 500),
             child: Container(
               key: ValueKey(_currentPage),
@@ -100,51 +100,53 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
               ),
             ),
           ),
-          PageView.builder(
-            onPageChanged: _onPageChanged,
-            controller: _pageController,
-            itemCount: ftvArtImgList.length,
-            //scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.fromLTRB(0,40,0,20),
-                child: Column(
-                  //mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ValueListenableBuilder(
-                      valueListenable: _scroll,
-                      builder: (context, scroll, child) {
-                        final difference = (scroll - index).abs();
-                        final scale = 1 - (difference * 0.2);
-                        return Transform.scale(
-                          scale: scale,
-                          child: Container(
-                            height: 200,
-                            width: 200,
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.4),
-                                  blurRadius: 10,
-                                  spreadRadius: 2,
-                                  offset: Offset(0, 8),
+          Container(
+            height: 250,
+            child: PageView.builder(
+              onPageChanged: _onPageChanged,
+              controller: _pageController,
+              itemCount: ftvArtImgList.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(0,30,0,20),
+                  child: Column(
+                    children: [
+                      ValueListenableBuilder(
+                        valueListenable: _scroll,
+                        builder: (context, scroll, child) {
+                          final difference = (scroll - index).abs();
+                          final scale = 1 - (difference * 0.2);
+                          return Transform.scale(
+                            scale: scale,
+                            child: Container(
+                              height: 200,
+                              width: 200,
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.4),
+                                    blurRadius: 10,
+                                    spreadRadius: 2,
+                                    offset: Offset(0, 8),
+                                  ),
+                                ],
+                                image: DecorationImage(
+
+                                  image: AssetImage(ftvArtImgList[index]),
+                                  fit: BoxFit.cover,
                                 ),
-                              ],
-                              image: DecorationImage(
-                                image: AssetImage(ftvArtImgList[index]),
-                                fit: BoxFit.fill,
                               ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              );
-            },
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
           ArtistNameLike(artistName: widget.artistName),
         ],

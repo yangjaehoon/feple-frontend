@@ -26,7 +26,7 @@ class HomeFragment extends StatelessWidget {
             ), // 상단바 부분만큼 띄워줌(stack이여서),
             child: Column(
               children: [
-                ConcertListSwiper(),
+                ConcertListSwiperWidget(),
                 CircleArtistWidget(),
               ],
             ),

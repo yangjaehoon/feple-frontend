@@ -137,6 +137,7 @@ flutter:
     - assets/image/artist_ftv/
     - assets/image/poster/
     - assets/image/chat_room/
+    - assets/image/ftv_certification/
     - assets/translations/
     - assets/
     - lib/auth/secrets.json

@@ -4,14 +4,14 @@ import 'package:card_swiper/card_swiper.dart';
 import 'package:fast_app_base/screen/main/tab/home/concert_information/f_festival_information.dart';
 import 'package:flutter/material.dart';
 
-class ConcertListSwiper extends StatefulWidget {
-  const ConcertListSwiper({super.key});
+class ConcertListSwiperWidget extends StatefulWidget {
+  const ConcertListSwiperWidget({super.key});
 
   @override
-  State<ConcertListSwiper> createState() => _ConcertListSwiperState();
+  State<ConcertListSwiperWidget> createState() => _ConcertListSwiperWidgetState();
 }
 
-class _ConcertListSwiperState extends State<ConcertListSwiper> {
+class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
   final List<String> posterList = [
     'assets/image/poster/hiphopplaya_poster.jpg',
     'assets/image/poster/psy_poster.jpg',

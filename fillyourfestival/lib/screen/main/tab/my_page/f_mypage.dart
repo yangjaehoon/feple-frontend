@@ -1,5 +1,6 @@
 import 'package:fast_app_base/screen/main/tab/my_page/w_follow_artists.dart';
 import 'package:fast_app_base/screen/main/tab/my_page/w_ftv_certification.dart';
+import 'package:fast_app_base/screen/main/tab/my_page/w_my_post_comment.dart';
 import 'package:fast_app_base/screen/main/tab/my_page/w_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -28,6 +29,7 @@ class _MypageFragmentState extends State<MypageFragment> {
             child: Column(
               children: [
                 ProfileWidget(),
+                MyPostCommentWidget(),
                 FtvCertificationWidget(),
                 FollowArtistsWidget(),
 

@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 void main() async {
   final bindings = WidgetsFlutterBinding.ensureInitialized();
-  FlutterNativeSplash.preserve(widgetsBinding: bindings);
+  //FlutterNativeSplash.preserve(widgetsBinding: bindings);
   await Firebase.initializeApp().then((value) => Get.put(AuthController()));
 
   await EasyLocalization.ensureInitialized();

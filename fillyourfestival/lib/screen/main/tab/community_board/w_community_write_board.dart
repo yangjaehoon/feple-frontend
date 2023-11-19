@@ -1,28 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-
-class PencilWidget extends StatelessWidget {
-  final String boardname;
-  const PencilWidget({super.key, required this.boardname});
-
-  @override
-  Widget build(BuildContext context) {
-    return FloatingActionButton.extended(
-      backgroundColor: Colors.grey[800],
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => WritePost(boardname: boardname,)),
-        );
-      },
-      label: const Text('글 쓰기'),
-      icon: const Icon(
-        Icons.edit,
-        color: Colors.red,
-      ),
-    );
-  }
-}
+import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:core';
 
 class WritePost extends StatefulWidget {
   final String boardname;
@@ -33,15 +12,27 @@ class WritePost extends StatefulWidget {
 }
 
 class _WritePostState extends State<WritePost> {
-  
-  void initstate(){
-    if (widget.boardname == "HotBoard") {
-      DatabaseReference ref = FirebaseDatabase.instance.ref('board/HotBoard');
+  var nameController = TextEditingController();
+  var contentController = TextEditingController();
 
-    }
-    else if (widget.boardname == "GetuserBoard"){
-      DatabaseReference ref = FirebaseDatabase.instance.ref('board/GetuserBoard');
-    }
+  DatabaseReference? ref;
+
+  Future updatepost() async {
+    String boardref = 'board/${widget.boardname}/Post';
+    ref = FirebaseDatabase.instance.ref(boardref);
+    String title = nameController.text.trim();
+    String content = contentController.text.trim();
+    DateTime now = DateTime.now();
+    ref?.update({
+      title: {
+        "userId": FirebaseAuth.instance.currentUser?.uid,
+        "content": content,
+        "time": now.toString(),
+        "heart": 0,
+        "favorite": 0,
+        "comments": "Hello",
+      }
+    });
   }
 
   @override
@@ -51,32 +42,38 @@ class _WritePostState extends State<WritePost> {
         title: const Text('글 쓰기'),
         actions: <Widget>[
           ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12))),
-              onPressed: () {},
-              child: const Text("완료")),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12))),
+            onPressed: () {
+              updatepost();
+              Navigator.pop(context);
+            },
+            child: const Text("완료"),
+          ),
         ],
       ),
-      body: const Column(
-        children: [
-          TextField(
-            decoration:
-                InputDecoration(border: InputBorder.none, hintText: '제목'),
-          ),
-          Divider(
-            thickness: 2,
-            height: 1,
-            color: Colors.white,
-          ),
-          TextField(
-            //textAlign: TextAlign.justify,
-            maxLines: null,
-            decoration: InputDecoration(
-                border: InputBorder.none, hintText: '내용을 입력하세요.'),
-          ),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(
+                  border: InputBorder.none, hintText: '제목'),
+            ),
+            const Divider(
+              thickness: 2,
+              height: 1,
+              color: Colors.white,
+            ),
+            TextField(
+              controller: contentController,
+              decoration: const InputDecoration(
+                  border: InputBorder.none, hintText: '내용을 입력하세요.'),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -26,17 +26,19 @@ class _ChattingRoomState extends State<ChattingRoom> {
           ),
         ],
       ),
-      body: const Column(
-        children: [
-          SizedBox(
-            height: 400,
-            child: Messages(),
-          ),
-          Positioned(
-            bottom: 50,
-            child: NewMessage(),
-          ),
-        ],
+      body: const SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              height: 400,
+              child: Messages(),
+            ),
+            Positioned(
+              bottom: 50,
+              child: NewMessage(),
+            ),
+          ],
+        ),
       ),
     );
   }

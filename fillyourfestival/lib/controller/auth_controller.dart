@@ -3,14 +3,11 @@ import 'package:get/get.dart';
 import 'package:fast_app_base/login/login.dart';
 import 'package:fast_app_base/app.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
 
 class AuthController extends GetxController {
   static AuthController instance = Get.find();
   late Rx<User?> _user;
   FirebaseAuth authentication = FirebaseAuth.instance;
-
-  DatabaseReference ref = FirebaseDatabase.instance.ref("users");
 
   @override
   void onReady() {
@@ -32,11 +29,6 @@ class AuthController extends GetxController {
     try {
       await authentication.signInWithEmailAndPassword(
           email: email, password: password);
-
-      await ref.set({
-        "hashCode": hashCode,
-        "name": email,
-      });
 
     } catch (e) {
       Get.snackbar(

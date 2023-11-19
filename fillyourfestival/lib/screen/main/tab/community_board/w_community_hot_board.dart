@@ -62,9 +62,13 @@ class _HotBoardState extends State<HotBoard> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: ((context) =>
-                        CommunityPost(boardname: "HotBoard", boardTitle: hotboardTitle, boardDay: hotboardDay,
-                          boardFavorite: hotboardFavorite, boardComment: hotboardComment)),
+                    builder: ((context) => CommunityPost(
+                          boardname: "HotBoard",
+                          boardTitle: hotboardTitle,
+                          boardDay: hotboardDay,
+                          boardFavorite: hotboardFavorite,
+                          boardComment: hotboardComment,
+                        )),
                   ),
                 );
               },
@@ -121,9 +125,6 @@ class _HotBoardState extends State<HotBoard> {
                       ),
                     ],
                   ),
-                  // onTap: () {
-                  //   print(hotboardName[index]);
-                  // });
                 );
               },
             ),

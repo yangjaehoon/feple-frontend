@@ -22,47 +22,34 @@ class CommunityPost extends StatefulWidget {
 }
 
 class _CommunityPostState extends State<CommunityPost> {
-  DatabaseReference ref = FirebaseDatabase.instance.ref('board/GetuserBoard');
-
-  //firebase의 경우 기본적으로 앱 다시 시작 또는 페이지 새로고침 후 사용자의 인증 상태가 유지되도록 지원
-
-  final List<String> entries = <String>[];
-
-  Future setpost() async {
-    await ref.set({
-      // "user_post" : FirebaseAuth.instance.currentUser?.uid, // 현재 user의 uid를 가져오는 법 (고유값)
-      // "HotBoard" : "Post",
-      // "FreeBoard" : "Post",
-      // "GetuserBoard" : "Post",
-      "Post": "Comment",
-    });
-  }
-
-  Future getpost() async {
-    setpost();
-    final snapshot = await ref.child('Post').get();
-    return snapshot.value;
-  }
-
-  // ignore: prefer_typing_uninitialized_variables
-  var chooseboard;
+  DatabaseReference? ref;
 
   void initstate() {
-    if (widget.boardname == "GetuserBoard") {
-      chooseboard = "동행구하기 게시판";
-    } else if (widget.boardname == "FreeBoard") {
-      chooseboard = "자유 게시판";
-    } else if (widget.boardname == "HotBoard") {
-      chooseboard = "인기 게시판";
-    }
+    String boardref = 'board/${widget.boardname}';
+    ref = FirebaseDatabase.instance.ref(boardref);
+    setpost();
   }
+  //firebase의 경우 기본적으로 앱 다시 시작 또는 페이지 새로고침 후 사용자의 인증 상태가 유지되도록 지원
+
+  // final List<String> entries = <String>[];
+  Future setpost() async {
+    ref?.set({});
+  }
+
+  // Future getpost() async {
+  //   final snapshot = await ref?.child('Post').get();
+  //   return snapshot?.value;
+  // }
+
+  // ignore: prefer_typing_uninitialized_variables
+  // var chooseboard;
 
   @override
   Widget build(BuildContext context) {
     initstate();
     return Scaffold(
       appBar: AppBar(
-        title: Text(chooseboard),
+        title: Text(widget.boardname),
       ),
       body: Stack(
         children: [
@@ -102,8 +89,23 @@ class _CommunityPostState extends State<CommunityPost> {
           Positioned(
             bottom: 40,
             left: 150,
-            child: PencilWidget(
-              boardname: widget.boardname,
+            child: FloatingActionButton.extended(
+              backgroundColor: Colors.grey[800],
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => WritePost(
+                      boardname: widget.boardname,
+                    ),
+                  ),
+                );
+              },
+              label: const Text('글 쓰기'),
+              icon: const Icon(
+                Icons.edit,
+                color: Colors.red,
+              ),
             ),
           ),
         ],

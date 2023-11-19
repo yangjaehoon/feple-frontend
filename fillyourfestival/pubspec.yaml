@@ -78,7 +78,7 @@ dependencies:
   card_swiper: ^3.0.1
   firebase_core: ^2.17.0
   firebase_auth: ^4.10.1
-  firebase_storage: ^11.2.8
+  firebase_storage: ^11.5.1
   cloud_firestore: ^4.9.3
   firebase_database: ^10.2.7
   fluttertoast: ^8.2.2

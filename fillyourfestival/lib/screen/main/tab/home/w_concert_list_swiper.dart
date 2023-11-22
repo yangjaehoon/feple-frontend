@@ -11,19 +11,11 @@ class ConcertListSwiperWidget extends StatefulWidget {
   const ConcertListSwiperWidget({super.key});
 
   @override
-  State<ConcertListSwiperWidget> createState() => _ConcertListSwiperWidgetState();
+  State<ConcertListSwiperWidget> createState() =>
+      _ConcertListSwiperWidgetState();
 }
 
 class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
-  // final List<String> posterList = [
-  //   'assets/image/poster/hiphopplaya_poster.jpg',
-  //   'assets/image/poster/psy_poster.jpg',
-  //   'assets/image/poster/rapbeat_poster.jpg',
-  //   'assets/image/poster/waterbomb_poster.jpg',
-  // ];
-
-
-
   int _currentPage = 0;
 
   void _onPageChanged(int newPage) {
@@ -37,16 +29,15 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
   @override
   Widget build(BuildContext context) {
     final poster = Provider.of<PosterProvider>(context);
-    print("Poster length: ${poster.posters.length}");
-    print(poster.toString());
 
-    if(poster.posters == null || poster.posters.isEmpty) {
+    if (poster.posters == null || poster.posters.isEmpty) {
       // poster.posters가 비어 있다면 또는 null이면 로딩 중을 나타내는 UI를 반환
       return CircularProgressIndicator();
     }
     return Stack(
       children: [
-        Container(//포스터 뒷배경 blur처리한 화면
+        Container(
+          //포스터 뒷배경 blur처리한 화면
           height: 300,
           decoration: BoxDecoration(
             image: DecorationImage(
@@ -82,25 +73,16 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
                 ),
               ),
               itemBuilder: (BuildContext context, int index) {
-                print("itemBuilder index: $index");
-                print("startIndex: ${CustomLayoutOption(
-                  startIndex: -1,
-                  stateCount: poster.posters.length-1,
-                ).startIndex}");
-                print("stateCount: ${CustomLayoutOption(
-                  startIndex: -1,
-                  stateCount: poster.posters.length-1,
-                ).stateCount}");
-                print(poster.posters[index].imgUrl);
-                return
-                  GestureDetector(
+                return GestureDetector(
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => FestivalInformationFragment(posterName : poster.posters[index].id)),
+                      MaterialPageRoute(
+                          builder: (context) => FestivalInformationFragment(
+                              poster: poster.posters[index])),
                     );
                   },
-                  child:  ClipRRect(
+                  child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: Image.network(
                       poster.posters[index].imgUrl,

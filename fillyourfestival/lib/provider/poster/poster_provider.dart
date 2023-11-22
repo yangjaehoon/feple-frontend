@@ -41,7 +41,6 @@ class PosterProvider extends ChangeNotifier {
 
   Future<String> getFirebaseStorageUrl(String imagePath) async {
     try {
-      // 'posters'가 Firebase Storage 버킷의 이름이라고 가정합니다.
       Reference ref = FirebaseStorage.instance.ref('posters').child(imagePath);
       String downloadURL = await ref.getDownloadURL();
       return downloadURL;

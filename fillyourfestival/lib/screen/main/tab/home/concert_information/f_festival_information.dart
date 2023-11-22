@@ -1,3 +1,4 @@
+import 'package:fast_app_base/model/poster_model.dart';
 import 'package:fast_app_base/screen/main/tab/home/concert_information/w_festival_poster.dart';
 import 'package:fast_app_base/screen/main/tab/home/concert_information/w_festival_timetable.dart';
 import 'package:fast_app_base/screen/main/tab/home/w_fyf_app_bar.dart';
@@ -7,10 +8,10 @@ import 'package:flutter/material.dart';
 class FestivalInformationFragment extends StatelessWidget {
   
   const FestivalInformationFragment({
-    Key? key, required this.posterName
+    Key? key, required this.poster
   }) : super(key: key);
 
-  final String posterName;
+  final PosterModel poster;
   
   @override
   Widget build(BuildContext context) {
@@ -48,7 +49,7 @@ class FestivalInformationFragment extends StatelessWidget {
             ), // 상단바 부분만큼 띄워줌(stack이여서),
             child: Column(
               children: [
-                FestivalPoster(posterName: posterName),
+                FestivalPoster(poster: poster),
                 Container(
                   padding: const EdgeInsets.all(10),
                   width: 500,

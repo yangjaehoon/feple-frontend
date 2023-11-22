@@ -14,7 +14,6 @@ void main() async {
   final bindings = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: bindings);
   await Firebase.initializeApp().then((value) => Get.put(AuthController()));
-
   await EasyLocalization.ensureInitialized();
   await AppPreferences.init();
 

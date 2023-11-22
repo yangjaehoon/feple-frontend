@@ -28,7 +28,7 @@ class _ImgUploadState extends State<ImgUpload> {
   TextEditingController titleTEC = TextEditingController();
   TextEditingController ftvNameTEC = TextEditingController();
 
-  //파이어베이스 용량 적으니 일단 압축해서 사진 올려줌
+  // 파이어베이스 용량 적으니 일단 압축해서 사진 올려줌
   Future<Uint8List> imageCompressList(Uint8List list) async {
     var result = await FlutterImageCompress.compressWithList(list, quality: 50);
     return result;
@@ -36,7 +36,7 @@ class _ImgUploadState extends State<ImgUpload> {
 
   Future addImage() async {
     if (imageData != null) {
-      //storage에 저장할 파일 이름
+      // storage에 저장할 파일 이름
       final storageRef = storage.ref().child(
           "/artist_img/${widget.artistName}/${widget.artistName}_${DateTime.now().millisecondsSinceEpoch}_${image?.name ?? "??"}");
       final compressedData = await imageCompressList(imageData!);
@@ -60,7 +60,10 @@ class _ImgUploadState extends State<ImgUpload> {
         actions: [
           IconButton(
             onPressed: () {
-              addImage();
+              // 폼 검증을 수행하여 유효한 경우에만 이미지 추가
+              if (_formKey.currentState?.validate() ?? false) {
+                addImage();
+              }
             },
             icon: const Icon(Icons.send),
           ),
@@ -91,20 +94,20 @@ class _ImgUploadState extends State<ImgUpload> {
                     ),
                     child: imageData == null
                         ? const Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                color: Colors.black,
-                                Icons.add,
-                              ),
-                              Text(
-                                "아티스트 사진 추가",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ],
-                          )
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          color: Colors.black,
+                          Icons.add,
+                        ),
+                        Text(
+                          "아티스트 사진 추가",
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    )
                         : Image.memory(imageData!, fit: BoxFit.cover),
                   ),
                 ),

@@ -4,8 +4,10 @@ import 'package:fast_app_base/screen/main/tab/tab_item.dart';
 import 'package:fast_app_base/screen/main/tab/tab_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:provider/provider.dart';
 
 import '../../common/common.dart';
+import '../../provider/poster/poster_provider.dart';
 import 'w_menu_drawer.dart';
 
 class MainScreen extends StatefulWidget {
@@ -37,7 +39,10 @@ class MainScreenState extends State<MainScreen>
   static double get bottomNavigationBarBorderRadius => 30.0;
 
   @override
-  FutureOr<void> afterFirstLayout(BuildContext context){
+  FutureOr<void> afterFirstLayout(BuildContext context) async{
+    //splash 화면이 실행되는 동안 처리할 작업
+    //PosterProvider();// fetchPosters를 호출하여 데이터를 가져옴
+    //await getArtistInfo(),
     delay((){
       FlutterNativeSplash.remove();
     }, 1500.ms);

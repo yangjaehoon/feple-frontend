@@ -32,22 +32,22 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
     return Stack(
       children: [
         Container(//포스터 뒷배경 blur처리한 화면
-            height: 300,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(
-                  posterList[_currentPage],
-                ),
-                fit: BoxFit.cover,
+          height: 300,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(
+                posterList[_currentPage],
               ),
-            ),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-              child: Container(
-                color: Colors.black.withOpacity(0.2),
-              ),
+              fit: BoxFit.cover,
             ),
           ),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Container(
+              color: Colors.black.withOpacity(0.2),
+            ),
+          ),
+        ),
         SizedBox(
           height: 300,
           child: Padding(

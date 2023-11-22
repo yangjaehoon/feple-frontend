@@ -20,9 +20,6 @@ class PosterProvider extends ChangeNotifier {
       QuerySnapshot querySnapshot =
       await FirebaseFirestore.instance.collection('poster').get();
 
-
-
-
       _posters = await Future.wait(querySnapshot.docs.map((doc) async {
         Reference _ref = FirebaseStorage.instance.ref().child(doc['imgUrl']);
         String _imgUrl = await _ref.getDownloadURL();

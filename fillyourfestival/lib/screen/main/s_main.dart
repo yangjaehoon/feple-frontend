@@ -1,5 +1,6 @@
 import 'package:after_layout/after_layout.dart';
 import 'package:fast_app_base/common/cli_common.dart';
+import 'package:fast_app_base/login/login.dart';
 import 'package:fast_app_base/screen/main/tab/tab_item.dart';
 import 'package:fast_app_base/screen/main/tab/tab_navigator.dart';
 import 'package:flutter/material.dart';
@@ -13,12 +14,13 @@ import 'w_menu_drawer.dart';
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
+
   @override
   State<MainScreen> createState() => MainScreenState();
 }
 
 class MainScreenState extends State<MainScreen>
-    with SingleTickerProviderStateMixin, AfterLayoutMixin {
+    with SingleTickerProviderStateMixin{
   TabItem _currentTab = TabItem.home;
   final tabs = [
     TabItem.home,
@@ -37,16 +39,6 @@ class MainScreenState extends State<MainScreen>
   bool get extendBody => true;
 
   static double get bottomNavigationBarBorderRadius => 30.0;
-
-  @override
-  FutureOr<void> afterFirstLayout(BuildContext context) async{
-    //splash 화면이 실행되는 동안 처리할 작업
-    //PosterProvider();// fetchPosters를 호출하여 데이터를 가져옴
-    //await getArtistInfo(),
-    delay((){
-      FlutterNativeSplash.remove();
-    }, 1500.ms);
-  }
 
   @override
   void initState() {

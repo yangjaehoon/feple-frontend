@@ -1,7 +1,8 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:fast_app_base/screen/main/tab/chat/w_chatting_room.dart';
+import 'package:provider/provider.dart';
+import '../../../../provider/poster/poster_provider.dart';
 
 class TodayFtvChat extends StatefulWidget {
   const TodayFtvChat({super.key});
@@ -13,6 +14,7 @@ class TodayFtvChat extends StatefulWidget {
 class _TodayFtvChatState extends State<TodayFtvChat> {
   @override
   Widget build(BuildContext context) {
+    final poster = Provider.of<PosterProvider>(context);
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Column(
@@ -33,7 +35,6 @@ class _TodayFtvChatState extends State<TodayFtvChat> {
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
-                      // 수평 리스트 아이템을 생성합니다.
                       return Stack(
                         alignment: Alignment.bottomCenter,
                         children: [
@@ -45,15 +46,15 @@ class _TodayFtvChatState extends State<TodayFtvChat> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: ((context) =>
-                                          const ChattingRoom()),
+                                      builder: ((context) => ChattingRoom(
+                                          chattingroomname: poster.posters[index].name)),
                                     ),
                                   );
                                 },
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(10.0),
-                                  child: Image.asset(
-                                    "assets/image/chat_room/hanyohan_chat.jpg",
+                                  child: Image(
+                                    image: NetworkImage(poster.posters[index].imgUrl),
                                     fit: BoxFit.cover,
                                     width: 150,
                                     height: 200,
@@ -72,14 +73,19 @@ class _TodayFtvChatState extends State<TodayFtvChat> {
                               ),
                             ),
                           ),
-                          const Padding(
-                            padding: EdgeInsets.all(5.0),
-                            child: Text("한요한 채팅방"),
+                          Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Text(
+                              poster.posters[index].name,
+                              style: const TextStyle(
+                                color: Colors.black,
+                              ),
+                            ),
                           ),
                         ],
                       );
                     },
-                    childCount: 10, // 아이템의 개수
+                    childCount: poster.posters.length, // 아이템의 개수
                   ),
                 ),
               ],

@@ -1,37 +1,67 @@
+import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_post.dart';
 
+class Post {
+  final List<String> comments;
+  final String content, userId, time;
+  final int heart, favorite;
+
+  Post(
+      {required this.comments,
+      required this.content,
+      required this.userId,
+      required this.time,
+      required this.heart,
+      required this.favorite});
+
+  factory Post.fromJson(json) {
+    json.forEach((key, value) {});
+    return Post(
+      comments: List<String>.from(json['comments']),
+      content: json['content'] as String,
+      favorite: json['favorite'] as int,
+      heart: json['heart'] as int,
+      time: json['time'] as String,
+      userId: json['userId'] as String,
+    );
+  }
+}
+
 class HotBoard extends StatefulWidget {
-  const HotBoard({super.key});
+  final String boardname;
+
+  const HotBoard({super.key, required this.boardname});
 
   @override
   State<StatefulWidget> createState() => _HotBoardState();
 }
 
 class _HotBoardState extends State<HotBoard> {
-  List<String> hotboardTitle = [
-    '한요한 대박이에요!!',
-    '애쉬아일랜드 너무 멋있다..',
-    '릴러말즈 사랑해',
-  ];
+  DatabaseReference? ref;
+  late Future postFuture;
 
-  List<String> hotboardDay = [
-    '10/15',
-    '10/14',
-    '10/13',
-  ];
+  @override
+  void initState() {
+    super.initState();
+    String boardref = 'board/${widget.boardname}';
+    ref = FirebaseDatabase.instance.ref(boardref);
+    postFuture = getpost();
+  }
 
-  List<String> hotboardFavorite = [
-    '13',
-    '60',
-    '777',
-  ];
+  Future getpost() async {
+    final snapshot = await ref?.child('Post').get();
+    if (snapshot!.exists) {
+      return snapshot.value;
+    } else {
+      setpost();
+    }
+  }
 
-  List<String> hotboardComment = [
-    '4',
-    '9',
-    '14',
-  ];
+  Future setpost() async {
+    ref?.set({});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,13 +92,8 @@ class _HotBoardState extends State<HotBoard> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: ((context) => CommunityPost(
-                          boardname: "HotBoard",
-                          boardTitle: hotboardTitle,
-                          boardDay: hotboardDay,
-                          boardFavorite: hotboardFavorite,
-                          boardComment: hotboardComment,
-                        )),
+                    builder: ((context) =>
+                        const CommunityPost(boardname: "HotBoard")),
                   ),
                 );
               },
@@ -99,33 +124,54 @@ class _HotBoardState extends State<HotBoard> {
             color: Colors.black,
           ),
           Expanded(
-            child: ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemExtent: 50,
-              itemCount: hotboardTitle.length,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  title: Text(
-                    hotboardTitle[index],
-                  ),
-                  subtitle: Text(hotboardDay[index]),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.favorite_rounded),
-                      Text(
-                        hotboardFavorite[index],
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                      const Icon(Icons.comment),
-                      Text(
-                        hotboardComment[index],
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                    ],
-                  ),
-                );
+            child: FutureBuilder(
+              future: postFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasData) {
+                  final posttitle = snapshot.data as Map;
+                  return ListView.separated(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (context, int index) {
+                        final postdata =
+                            Post.fromJson(posttitle.valuesList()[index]);
+                        return ListTile(
+                          title: Text(
+                            posttitle.keysList()[index],
+                          ),
+                          subtitle: Text(postdata.time),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.favorite_rounded),
+                              Text(
+                                postdata.favorite.toString(),
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                              const Icon(Icons.comment),
+                              Text(
+                                postdata.comments.length.toString(),
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      separatorBuilder: (BuildContext context, int index) {
+                        return const Divider(thickness: 2);
+                      });
+                } else if (snapshot.hasError) {
+                  return const Center(
+                    child: Text('데이터를 가져오는 중 오류가 발생했습니다.'),
+                  );
+                } else {
+                  return const CircularProgressIndicator();
+                }
               },
             ),
           ),

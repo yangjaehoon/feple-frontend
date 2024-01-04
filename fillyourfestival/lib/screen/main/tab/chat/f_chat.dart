@@ -15,9 +15,9 @@ class ChatFragment extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.black,
-      child: Stack(
+      child: const Stack(
         children: [
-          const SingleChildScrollView(
+          SingleChildScrollView(
             padding: EdgeInsets.only(
               top: 60,
               bottom: 50,
@@ -25,8 +25,8 @@ class ChatFragment extends StatelessWidget {
             child: Column(
               children: [
                 TodayFtvChat(),
-                MyChat(),
-                FanChat(),
+                //MyChat(),
+                //FanChat(),
               ],
             ),
           ),

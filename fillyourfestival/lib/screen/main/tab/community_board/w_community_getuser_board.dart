@@ -1,37 +1,67 @@
+import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_post.dart';
 
+class Post {
+  final List<String> comments;
+  final String content, userId, time;
+  final int heart, favorite;
+
+  Post(
+      {required this.comments,
+      required this.content,
+      required this.userId,
+      required this.time,
+      required this.heart,
+      required this.favorite});
+
+  factory Post.fromJson(json) {
+    json.forEach((key, value) {});
+    return Post(
+      comments: List<String>.from(json['comments']),
+      content: json['content'] as String,
+      favorite: json['favorite'] as int,
+      heart: json['heart'] as int,
+      time: json['time'] as String,
+      userId: json['userId'] as String,
+    );
+  }
+}
+
 class GetUserBoard extends StatefulWidget {
-  const GetUserBoard({super.key});
+  final String boardname;
+
+  const GetUserBoard({super.key, required this.boardname});
 
   @override
   State<GetUserBoard> createState() => _GetUserBoardState();
 }
 
 class _GetUserBoardState extends State<GetUserBoard> {
-  List<String> getuserboardTitle = [
-    '랩비트 페스티벌 같이 가실분 있나요?',
-    '같이 페스티벌 가실분~?',
-    '페스티벌 갈 사람 구합니다.',
-  ];
+  DatabaseReference? ref;
+  late Future postFuture;
 
-  List<String> getuserboardDay = [
-    '10/16',
-    '10/16',
-    '10/16',
-  ];
+  @override
+  void initState() {
+    super.initState();
+    String boardref = 'board/${widget.boardname}';
+    ref = FirebaseDatabase.instance.ref(boardref);
+    postFuture = getpost();
+  }
 
-  List<String> getuserboardFavorite = [
-    '0',
-    '0',
-    '0',
-  ];
+  Future getpost() async {
+    final snapshot = await ref?.child('Post').get();
+    if (snapshot!.exists) {
+      return snapshot.value;
+    } else {
+      setpost();
+    }
+  }
 
-  List<String> getuserboardComment = [
-    '6',
-    '1',
-    '1',
-  ];
+  Future setpost() async {
+    ref?.set({});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,8 +93,7 @@ class _GetUserBoardState extends State<GetUserBoard> {
                     context,
                     MaterialPageRoute(
                       builder: ((context) =>
-                          CommunityPost(boardname: "GetuserBoard", boardTitle: getuserboardTitle, boardDay: getuserboardDay,
-                          boardFavorite: getuserboardFavorite, boardComment: getuserboardComment)),
+                          const CommunityPost(boardname: "GetuserBoard")),
                     ));
               },
               child: const Row(
@@ -94,36 +123,54 @@ class _GetUserBoardState extends State<GetUserBoard> {
             color: Colors.black,
           ),
           Expanded(
-            child: ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemExtent: 50,
-              itemCount: getuserboardTitle.length,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  title: Text(
-                    getuserboardTitle[index],
-                  ),
-                  subtitle: Text(getuserboardDay[index]),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.favorite_rounded),
-                      Text(
-                        getuserboardFavorite[index],
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                      const Icon(Icons.comment),
-                      Text(
-                        getuserboardComment[index],
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                    ],
-                  ),
-                  // onTap: () {
-                  //   print(hotboardName[index]);
-                  // }); //여기서부터는 firebase랑 연동해서 해야함.
-                );
+            child: FutureBuilder(
+              future: postFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasData) {
+                  final posttitle = snapshot.data as Map;
+                  return ListView.separated(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (context, int index) {
+                        final postdata =
+                            Post.fromJson(posttitle.valuesList()[index]);
+                        return ListTile(
+                          title: Text(
+                            posttitle.keysList()[index],
+                          ),
+                          subtitle: Text(postdata.time),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.favorite_rounded),
+                              Text(
+                                postdata.favorite.toString(),
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                              const Icon(Icons.comment),
+                              Text(
+                                postdata.comments.length.toString(),
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      separatorBuilder: (BuildContext context, int index) {
+                        return const Divider(thickness: 2);
+                      });
+                } else if (snapshot.hasError) {
+                  return const Center(
+                    child: Text('데이터를 가져오는 중 오류가 발생했습니다.'),
+                  );
+                } else {
+                  return const CircularProgressIndicator();
+                }
               },
             ),
           ),

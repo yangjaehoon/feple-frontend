@@ -3,7 +3,8 @@ import 'w_message.dart';
 import 'w_newmessage.dart';
 
 class ChattingRoom extends StatefulWidget {
-  const ChattingRoom({super.key});
+  final String chattingroomname;
+  const ChattingRoom({super.key, required this.chattingroomname});
 
   @override
   State<ChattingRoom> createState() => _ChattingRoomState();
@@ -14,7 +15,7 @@ class _ChattingRoomState extends State<ChattingRoom> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('한요한 채팅방'),
+        title: Text(widget.chattingroomname),
         actions: [
           IconButton(
             onPressed: () {},
@@ -26,16 +27,20 @@ class _ChattingRoomState extends State<ChattingRoom> {
           ),
         ],
       ),
-      body: const SingleChildScrollView(
-        child: Column(
+      body: SingleChildScrollView(
+        child: Stack(
           children: [
-            SizedBox(
-              height: 400,
-              child: Messages(),
-            ),
-            Positioned(
-              bottom: 50,
-              child: NewMessage(),
+            Column(
+              children: [
+                SizedBox(
+                  height: 400,
+                  child: Messages(chattingroomname: widget.chattingroomname),
+                ),
+                Positioned(
+                  bottom: 50,
+                  child: NewMessage(chattingroomname: widget.chattingroomname),
+                ),
+              ],
             ),
           ],
         ),

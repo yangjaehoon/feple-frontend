@@ -15,29 +15,6 @@ class FestivalInformationFragment extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    List<String> hotboardTitle = [
-      '한요한 대박이에요!!',
-      '애쉬아일랜드 너무 멋있다..',
-      '릴러말즈 사랑해',
-    ];
-
-    List<String> hotboardDay = [
-      '10/15',
-      '10/14',
-      '10/13',
-    ];
-
-    List<String> hotboardFavorite = [
-      '13',
-      '60',
-      '777',
-    ];
-
-    List<String> hotboardComment = [
-      '4',
-      '9',
-      '14',
-    ];
     return Container(
       color: Colors.black,
       child: Stack(
@@ -65,8 +42,7 @@ class FestivalInformationFragment extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: ((context) =>
-                              CommunityPost(boardname: "festivalboard", boardTitle: hotboardTitle, boardDay: hotboardDay,
-                              boardFavorite: hotboardFavorite, boardComment: hotboardComment)),
+                              const CommunityPost(boardname: "festivalboard")),
                         ),
                       );
                     },

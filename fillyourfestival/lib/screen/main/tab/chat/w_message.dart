@@ -3,13 +3,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Messages extends StatelessWidget {
-  const Messages({super.key});
+  final String chattingroomname;
+  const Messages({super.key, required this.chattingroomname});
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
       stream: FirebaseFirestore.instance
-          .collection('chat')
+          .collection(chattingroomname)
           .orderBy('time', descending: true)
           .snapshots(),
       builder: (context,

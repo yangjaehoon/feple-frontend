@@ -3,7 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NewMessage extends StatefulWidget {
-  const NewMessage({super.key});
+  final String chattingroomname;
+  const NewMessage({super.key, required this.chattingroomname});
 
   @override
   State<NewMessage> createState() => _NewMessageState();
@@ -14,7 +15,7 @@ class _NewMessageState extends State<NewMessage> {
   var _userEnterMessage = '';
   void _sendMessage() {
     FocusScope.of(context).unfocus();
-    FirebaseFirestore.instance.collection('chat').add({
+    FirebaseFirestore.instance.collection(widget.chattingroomname).add({
       'text': _userEnterMessage,
       'time': Timestamp.now(),
       'userId': FirebaseAuth.instance.currentUser?.uid,

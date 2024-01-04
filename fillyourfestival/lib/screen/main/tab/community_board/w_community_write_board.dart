@@ -30,7 +30,7 @@ class _WritePostState extends State<WritePost> {
         "time": now.toString(),
         "heart": 0,
         "favorite": 0,
-        "comments": "Hello",
+        "comments": ["Hello", "suchang"],
       }
     });
   }

@@ -40,7 +40,7 @@ class _ImgUploadState extends State<ImgUpload> {
       final storageRef = storage.ref().child(
           "/artist_img/${widget.artistName}/${widget.artistName}_${DateTime.now().millisecondsSinceEpoch}_${image?.name ?? "??"}");
       final compressedData = await imageCompressList(imageData!);
-      await storageRef.putData(compressedData!);
+      await storageRef.putData(compressedData);
       final downloadLink = await storageRef.getDownloadURL();
       final sampleData = ArtistImg(
         title: titleTEC.text,
@@ -84,7 +84,7 @@ class _ImgUploadState extends State<ImgUpload> {
                 child: Align(
                   alignment: Alignment.center,
                   child: Container(
-                    margin: EdgeInsets.all(20),
+                    margin: const EdgeInsets.all(20),
                     height: 240,
                     width: 240,
                     decoration: BoxDecoration(
@@ -94,20 +94,20 @@ class _ImgUploadState extends State<ImgUpload> {
                     ),
                     child: imageData == null
                         ? const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          color: Colors.black,
-                          Icons.add,
-                        ),
-                        Text(
-                          "아티스트 사진 추가",
-                          style: TextStyle(
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    )
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                color: Colors.black,
+                                Icons.add,
+                              ),
+                              Text(
+                                "아티스트 사진 추가",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          )
                         : Image.memory(imageData!, fit: BoxFit.cover),
                   ),
                 ),
@@ -117,7 +117,13 @@ class _ImgUploadState extends State<ImgUpload> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(widget.artistName),
+                    Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: Text(
+                          widget.artistName,
+                          style: Theme.of(context).textTheme.headlineMedium,
+                        ) //아티스트 이름,
+                        ),
                     TextFormField(
                       controller: titleTEC,
                       decoration: const InputDecoration(

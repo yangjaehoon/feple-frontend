@@ -30,7 +30,8 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
   Widget build(BuildContext context) {
     final poster = Provider.of<PosterProvider>(context);
 
-    if (poster.posters == null || poster.posters.isEmpty) {
+    //if (poster.posters == null || poster.posters.isEmpty) {
+    if (poster.posters.isEmpty) {
       // poster.posters가 비어 있다면 또는 null이면 로딩 중을 나타내는 UI를 반환
       return CircularProgressIndicator();
     }

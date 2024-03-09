@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:fast_app_base/auth/keys.dart';
 
+import '../../../../../auth/get_api_key.dart';
+
 Future<List<String>> fetchMostViewedNewsThumbnail() async {
   final apiKey = await getApiKey();
   final query = '한요한 페스티벌';
@@ -25,17 +27,4 @@ Future<List<String>> fetchMostViewedNewsThumbnail() async {
     }
   }
   return thumbnails;
-}
-
-
-Future<String> getApiKey() async {
-  try {
-    final secret =
-    await SecretLoader(secretPath: 'lib/auth/secrets.json').load();
-    return secret.apikey;
-  } catch (e) {
-    // 예외 처리: API 키를 가져오지 못한 경우
-    print('Error getting API key: $e');
-    return ''; // 빈 문자열 또는 다른 기본값을 반환
-  }
 }

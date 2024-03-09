@@ -74,6 +74,10 @@ dependencies:
   freezed_annotation: ^2.2.0
   json_annotation: ^4.8.1
 
+  #naver_map
+  flutter_naver_map: ^1.2.1
+
+
   card_swiper: ^3.0.1
   firebase_core: ^2.25.5
   firebase_auth: ^4.17.6

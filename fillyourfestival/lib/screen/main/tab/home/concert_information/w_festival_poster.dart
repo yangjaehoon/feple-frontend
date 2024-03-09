@@ -5,6 +5,7 @@ import 'package:fast_app_base/screen/main/tab/home/concert_information/weather/s
 import 'package:flutter/material.dart';
 
 import '../../../../../model/poster_model.dart';
+import 'ftv_map/ftv_map_widget.dart';
 
 class FestivalPoster extends StatefulWidget {
   const FestivalPoster({super.key, required this.poster});
@@ -85,10 +86,19 @@ class _FestivalPosterState extends State<FestivalPoster> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Loading())
+                                    builder: (context) => const Loading())
                             );
                           }
                         ),
+                        GestureDetector(
+                          child: Icon(Icons.location_on_sharp),
+                          onTap: (){
+                            Navigator.push(
+                            context,
+                              MaterialPageRoute(builder: (context)=> const FtvMapWidget())
+                            );
+                        }
+                        )
                       ],
                     ),
                   ],

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/cli_common.dart';
 import 'package:fast_app_base/common/common.dart';
@@ -8,14 +10,25 @@ import 'package:flutter/material.dart';
 import 'package:fast_app_base/login/login.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fast_app_base/controller/auth_controller.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'auth/get_api_key.dart';
 import 'common/data/preference/app_preferences.dart';
 
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
+Future<void> _initializeNaverMap() async {
+  final naveMapApiKey = await getApiKey();
+  await NaverMapSdk.instance.initialize(
+    clientId: naveMapApiKey,
+    onAuthFailed: (e) => log("네이버맵 인증오류 : $e", name: "onAuthFailed"),
+  );
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await _initializeNaverMap();
   final bindings = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: bindings);
   await Firebase.initializeApp().then((value) => Get.put(AuthController()));

@@ -19,7 +19,7 @@ import 'common/data/preference/app_preferences.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 Future<void> _initializeNaverMap() async {
-  final naveMapApiKey = await getApiKey();
+  final naveMapApiKey = await getApiKey("naver_map_client_id");
   await NaverMapSdk.instance.initialize(
     clientId: naveMapApiKey,
     onAuthFailed: (e) => log("네이버맵 인증오류 : $e", name: "onAuthFailed"),

@@ -7,7 +7,7 @@ import '../../../../../auth/get_api_key.dart';
 
 
 Future<List<Map<String,String>>> fetchMostViewedNewsThumbnail() async {
-  final apiKey = await getApiKey();
+  final apiKey = await getApiKey('youtube_api_key');
   final query = '한요한 페스티벌';
   List<Map<String,String>> youtubeInfo = [];
 

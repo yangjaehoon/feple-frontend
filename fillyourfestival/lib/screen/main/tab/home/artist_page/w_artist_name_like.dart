@@ -31,8 +31,8 @@ class _ArtistNameLikeState extends State<ArtistNameLike> {
                   child: Padding(
                     padding: const EdgeInsets.only(right: 12.0),
                     child: Text(
-                      //artist name
-                      Artists[0].name,
+                      //Artists[0].name,
+                      widget.artistName,
                       style: const TextStyle(
                         fontSize: 36,
                         color: Colors.white,

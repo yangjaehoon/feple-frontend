@@ -6,9 +6,9 @@ import '../../../../../auth/get_api_key.dart';
 
 
 
-Future<List<Map<String,String>>> fetchMostViewedNewsThumbnail() async {
+Future<List<Map<String,String>>> fetchMostViewedNewsThumbnail(String artistName) async {
   final apiKey = await getApiKey('youtube_api_key');
-  final query = '한요한 페스티벌';
+  final query = '$artistName 페스티벌';
   List<Map<String,String>> youtubeInfo = [];
 
   final url = Uri.parse(

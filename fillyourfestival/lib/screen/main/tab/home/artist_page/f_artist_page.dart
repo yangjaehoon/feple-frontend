@@ -21,7 +21,7 @@ class _ArtistPageState extends State<ArtistPage> {
           child: Column(
             children: [
               MainImageSwiper(artistName: widget.artistName),
-              const FtvYoutube(),
+              FtvYoutube(artistName: widget.artistName),
             ],
           ),
         ),

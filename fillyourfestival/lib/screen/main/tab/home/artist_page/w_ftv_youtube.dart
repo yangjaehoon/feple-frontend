@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'dto_ftv_youtube.dart';
 
 class FtvYoutube extends StatefulWidget {
-  const FtvYoutube({super.key});
+  const FtvYoutube({super.key, required this.artistName});
+
+  final String artistName;
 
   @override
   State<FtvYoutube> createState() => _FtvYoutubeState();
@@ -14,7 +16,7 @@ class _FtvYoutubeState extends State<FtvYoutube> {
     return SizedBox(
       height: 400,
       child: FutureBuilder<List<Map<String, String>>>(
-        future: fetchMostViewedNewsThumbnail(),
+        future: fetchMostViewedNewsThumbnail(widget.artistName),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return CircularProgressIndicator();

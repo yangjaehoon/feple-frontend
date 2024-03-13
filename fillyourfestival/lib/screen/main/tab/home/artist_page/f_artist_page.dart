@@ -1,4 +1,5 @@
 import 'package:fast_app_base/screen/main/tab/home/artist_page/w_ftv_youtube.dart';
+import 'package:fast_app_base/screen/main/tab/home/artist_page/w_ftv_youtube_shorts.dart';
 import 'package:fast_app_base/screen/main/tab/home/artist_page/w_main_image_swiper.dart';
 
 import 'package:flutter/material.dart';
@@ -21,6 +22,7 @@ class _ArtistPageState extends State<ArtistPage> {
           child: Column(
             children: [
               MainImageSwiper(artistName: widget.artistName),
+              FtvYoutubeShorts(artistName: widget.artistName),
               FtvYoutube(artistName: widget.artistName),
             ],
           ),

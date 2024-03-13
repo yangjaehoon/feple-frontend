@@ -31,27 +31,27 @@ final swings = Artist(
 );
 final ph1 = Artist(
   name: "PH-1",
-  faceImagePath: "assets/image/artist/swings.jpg",
+  faceImagePath: "assets/image/artist/ph1.jpg",
 );
 final beo = Artist(
   name: "비오",
-  faceImagePath: "assets/image/artist/swings.jpg",
+  faceImagePath: "assets/image/artist/beo.jpg",
 );
 final justhis = Artist(
   name: "저스디스",
-  faceImagePath: "assets/image/artist/swings.jpg",
+  faceImagePath: "assets/image/artist/justhis.jpg",
 );
 final chin = Artist(
   name: "친",
-  faceImagePath: "assets/image/artist/swings.jpg",
+  faceImagePath: "assets/image/artist/chin.jpg",
 );
 final jaypark = Artist(
   name: "박재범",
-  faceImagePath: "assets/image/artist/swings.jpg",
+  faceImagePath: "assets/image/artist/jaypark.jpg",
 );
 final bignaughty = Artist(
   name: "빅나티",
-  faceImagePath: "assets/image/artist/swings.jpg",
+  faceImagePath: "assets/image/artist/bignaughty.jpg",
 );
 
 void main() {

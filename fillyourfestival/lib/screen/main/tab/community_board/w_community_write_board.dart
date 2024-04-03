@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:core';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class WritePost extends StatefulWidget {
   final String boardname;
@@ -15,24 +15,42 @@ class _WritePostState extends State<WritePost> {
   var nameController = TextEditingController();
   var contentController = TextEditingController();
 
-  DatabaseReference? ref;
+  String _response = ''; //응답 값 저장
 
-  Future updatepost() async {
-    String boardref = 'board/${widget.boardname}/Post';
-    ref = FirebaseDatabase.instance.ref(boardref);
+  Future<void> updatepost() async {
+    String boarduri = '';
+    if (widget.boardname == "FreeBoard") {
+      boarduri = 'http://10.0.2.2:8080/freeboards/save';
+    } else if (widget.boardname == "HotBoard") {
+      boarduri = 'http://10.0.2.2:8080/hotboards/save';
+    } else if (widget.boardname == "GetuserBoard") {
+      boarduri = 'http://10.0.2.2:8080/getuserboards/save';
+    }
+
     String title = nameController.text.trim();
     String content = contentController.text.trim();
     DateTime now = DateTime.now();
-    ref?.update({
-      title: {
-        "userId": FirebaseAuth.instance.currentUser?.uid,
-        "content": content,
-        "time": now.toString(),
-        "heart": 0,
-        "favorite": 0,
-        "comments": ["Hello", "suchang"],
-      }
-    });
+    String formattedDateTime = now.toIso8601String();
+    Map<String, dynamic> postData = {
+      "nickname": "unknown", //TODO 나중에 닉네임 입력 받으면 그걸로 업데이트 해야함
+      "postname": title,
+      "content": content,
+      "comments" : ["hello"],
+      "datetime": formattedDateTime
+    };
+
+    final response = await http.post(
+      Uri.parse(boarduri),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(postData),
+    );
+    if (response.statusCode == 200) {
+      _response = response.body;
+    } else {
+      throw Exception('Failed to send data');
+    }
   }
 
   @override

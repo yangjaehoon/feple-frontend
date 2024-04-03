@@ -1,7 +1,9 @@
+import 'package:fast_app_base/screen/main/tab/my_page/d_myinformation.dart';
 import 'package:flutter/material.dart';
 
 class ProfileWidget extends StatefulWidget {
-  const ProfileWidget({super.key});
+  Future<MyInfo> myInfo;
+  ProfileWidget({super.key, required this.myInfo});
 
   @override
   State<ProfileWidget> createState() => _ProfileWidgetState();
@@ -37,20 +39,22 @@ class _ProfileWidgetState extends State<ProfileWidget> {
             ),
           ],
         ),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    onPressed: (){print('눌림');},
-                    child: Text('프로필 수정'),
-                  ),
+        Expanded(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    print('눌림');
+                  },
+                  child: Text('프로필 수정'),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
+        ),
       ],
     );
   }

@@ -1,17 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:fast_app_base/screen/main/tab/community_board/d_post.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'dart:core';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class EnralgePost extends StatefulWidget {
-  final String boardname;
-  final String posttitle;
-  final Post postdata;
-  const EnralgePost(
+  String boardname;
+  int id;
+  String nickname;
+  String postname;
+  String content;
+  List<String> comments;
+  int heart;
+  String datetime;
+  int favorite;
+  //final List<String> comments;
+  EnralgePost(
       {super.key,
       required this.boardname,
-      required this.posttitle,
-      required this.postdata});
+      required this.id,
+      required this.nickname,
+      required this.postname,
+      required this.content,
+      required this.comments,
+      required this.heart,
+      required this.datetime,
+      required this.favorite});
 
   @override
   State<EnralgePost> createState() => _EnralgePostState();
@@ -20,20 +33,37 @@ class EnralgePost extends StatefulWidget {
 class _EnralgePostState extends State<EnralgePost> {
   var commentController = TextEditingController();
 
-  DatabaseReference? ref;
-
-  Future updatepost() async {
-    String boardref = 'board/${widget.boardname}/Post/${widget.posttitle}';
-    ref = FirebaseDatabase.instance.ref(boardref);
-    widget.postdata.comments.add(commentController.text.trim());
-    ref?.update({
-      "userId": widget.postdata.userId,
-      "content": widget.postdata.content,
-      "time": widget.postdata.time,
-      "heart": widget.postdata.heart,
-      "favorite": widget.postdata.favorite,
-      "comments": widget.postdata.comments
-    });
+  void updatepost() async {
+    String boarduri = '';
+    if (widget.boardname == "FreeBoard") {
+      boarduri = 'http://10.0.2.2:8080/freeboards/update';
+    } else if (widget.boardname == "HotBoard") {
+      boarduri = 'http://10.0.2.2:8080/hotboards/update';
+    } else if (widget.boardname == "GetuserBoard") {
+      boarduri = 'http://10.0.2.2:8080/getuserboards/update';
+    }
+    Map<String, dynamic> requestData = {
+      "id": widget.id,
+      "nickname": widget.nickname,
+      "postname": widget.postname,
+      "content": widget.content,
+      "comments": widget.comments.cast<String>(),
+      "heart": widget.heart,
+      "datetime": widget.datetime,
+      "favorite": widget.favorite,
+    };
+    final response = await http.post(
+      Uri.parse(boarduri),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(requestData),
+    );
+    if (response.statusCode == 200) {
+      print("update");
+    } else {
+      print('Failed to load post');
+    }
   }
 
   @override
@@ -54,7 +84,7 @@ class _EnralgePostState extends State<EnralgePost> {
                     child: Align(
                       alignment: Alignment.topLeft,
                       child: Text(
-                        widget.posttitle,
+                        widget.postname,
                         style:
                             const TextStyle(fontSize: 20, color: Colors.white),
                       ),
@@ -70,7 +100,7 @@ class _EnralgePostState extends State<EnralgePost> {
                     height: 200,
                     child: Align(
                       alignment: Alignment.topLeft,
-                      child: Text(widget.postdata.content),
+                      child: Text(widget.content),
                     ),
                   ),
                   Align(
@@ -80,14 +110,14 @@ class _EnralgePostState extends State<EnralgePost> {
                       children: [
                         const Icon(Icons.favorite_rounded),
                         Text(
-                          widget.postdata.heart.toString(),
+                          widget.heart.toString(),
                           style: const TextStyle(fontSize: 20),
                         ),
                         const Icon(Icons.comment),
-                        Text(
-                          widget.postdata.comments.length.toString(),
-                          style: const TextStyle(fontSize: 20),
-                        ),
+                        // Text(
+                        //   widget.postdata.comments.length.toString(),
+                        //   style: const TextStyle(fontSize: 20),
+                        // ), //TODO 댓글(comment)관련 작업해야함
                       ],
                     ),
                   ),
@@ -96,7 +126,7 @@ class _EnralgePostState extends State<EnralgePost> {
                       FloatingActionButton.extended(
                         backgroundColor: Colors.black,
                         onPressed: () {
-                          widget.postdata.heart = widget.postdata.heart + 1;
+                          widget.heart = widget.heart + 1;
                           updatepost();
                         },
                         label: const Text('좋아요'),
@@ -108,8 +138,7 @@ class _EnralgePostState extends State<EnralgePost> {
                       FloatingActionButton.extended(
                         backgroundColor: Colors.black,
                         onPressed: () {
-                          widget.postdata.favorite =
-                              widget.postdata.favorite + 1;
+                          widget.favorite = widget.favorite + 1;
                           updatepost();
                         },
                         label: const Text('즐겨찾기'),
@@ -120,29 +149,29 @@ class _EnralgePostState extends State<EnralgePost> {
                       ),
                     ],
                   ),
-                  ListView.separated(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: widget.postdata.comments.length,
-                    itemBuilder: (context, int index) {
-                      return ListTile(
-                        title: Text(
-                          widget.postdata.userId,
-                        ),
-                        subtitle: Text(widget.postdata.comments[index]),
-                      );
-                    },
-                    separatorBuilder: (BuildContext context, int index) {
-                      return const Divider(thickness: 2);
-                    },
-                  ),
+                  // ListView.separated(
+                  //   physics: const NeverScrollableScrollPhysics(),
+                  //   shrinkWrap: true,
+                  //   itemCount: widget.comments.length,
+                  //   itemBuilder: (context, int index) {
+                  //     return ListTile(
+                  //       title: Text(
+                  //         widget.userId,
+                  //       ),
+                  //       subtitle: Text(widget.comments[index]),
+                  //     );
+                  //   },
+                  //   separatorBuilder: (BuildContext context, int index) {
+                  //     return const Divider(thickness: 2);
+                  //   },
+                  // ), //TODO 댓글(comment)관련 작업해야함
                   //TODO BottomNavigationBar 없애기 작업
                   Positioned(
                     top: 300,
                     child: TextField(
                       controller: commentController,
                       decoration: const InputDecoration(
-                        border: InputBorder.none, hintText: '댓글을 입력하세요.'),
+                          border: InputBorder.none, hintText: '댓글을 입력하세요.'),
                     ),
                   ),
                 ],

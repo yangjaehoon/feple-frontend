@@ -5,12 +5,12 @@ import 'package:get/get.dart';
 
 class SignupPage extends StatelessWidget {
   const SignupPage({Key? key}) : super(key: key);
-
+    
   @override
   Widget build(BuildContext context) {
     var emailController = TextEditingController();
     var passwordController = TextEditingController();
-
+    
     return Scaffold(
       backgroundColor: Colors.grey[300],
       body: SafeArea(

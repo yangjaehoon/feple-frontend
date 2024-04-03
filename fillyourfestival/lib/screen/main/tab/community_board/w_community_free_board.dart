@@ -1,33 +1,8 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_post.dart';
-
-class Post {
-  final List<String> comments;
-  final String content, userId, time;
-  final int heart, favorite;
-
-  Post(
-      {required this.comments,
-      required this.content,
-      required this.userId,
-      required this.time,
-      required this.heart,
-      required this.favorite});
-
-  factory Post.fromJson(json) {
-    json.forEach((key, value) {});
-    return Post(
-      comments: List<String>.from(json['comments']),
-      content: json['content'] as String,
-      favorite: json['favorite'] as int,
-      heart: json['heart'] as int,
-      time: json['time'] as String,
-      userId: json['userId'] as String,
-    );
-  }
-}
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class FreeBoard extends StatefulWidget {
   final String boardname;
@@ -39,28 +14,15 @@ class FreeBoard extends StatefulWidget {
 }
 
 class _FreeBoardState extends State<FreeBoard> {
-  DatabaseReference? ref;
-  late Future postFuture;
 
-  @override
-  void initState() {
-    super.initState();
-    String boardref = 'board/${widget.boardname}';
-    ref = FirebaseDatabase.instance.ref(boardref);
-    postFuture = getpost();
-  }
-
-  Future getpost() async {
-    final snapshot = await ref?.child('Post').get();
-    if (snapshot!.exists) {
-      return snapshot.value;
+  Future<List<dynamic>> getpost() async {
+    final response =
+        await http.get(Uri.parse('http://10.0.2.2:8080/freeboards/previews'));
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
     } else {
-      setpost();
+      throw Exception('Failed to load free boards');
     }
-  }
-
-  Future setpost() async {
-    ref?.set({});
   }
 
   @override
@@ -123,56 +85,58 @@ class _FreeBoardState extends State<FreeBoard> {
             color: Colors.black,
           ),
           Expanded(
-            child: FutureBuilder(
-              future: postFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else if (snapshot.hasData) {
-                  final posttitle = snapshot.data as Map;
-                  return ListView.separated(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (context, int index) {
-                        final postdata =
-                            Post.fromJson(posttitle.valuesList()[index]);
-                        return ListTile(
-                          title: Text(
-                            posttitle.keysList()[index],
-                          ),
-                          subtitle: Text(postdata.time),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.favorite_rounded),
-                              Text(
-                                postdata.favorite.toString(),
-                                style: const TextStyle(fontSize: 20),
+            child: FutureBuilder<List<dynamic>>(
+                future: getpost(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Failed to load data: ${snapshot.error}'),
+                    );
+                  } else {
+                    List<dynamic> postDataList = snapshot.data!;
+                    if (postDataList.isEmpty) {
+                      return const Center(
+                        child: Text('No data available.'),
+                      );
+                    } else {
+                      return ListView.separated(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: postDataList.length,
+                          itemBuilder: (context, int index) {
+                            Map<String, dynamic> postData = postDataList[index];
+                            return ListTile(
+                              title: Text(
+                                postData['postname'],
                               ),
-                              const Icon(Icons.comment),
-                              Text(
-                                postdata.comments.length.toString(),
-                                style: const TextStyle(fontSize: 20),
+                              subtitle: Text(postData['datetime']),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.favorite_rounded),
+                                  Text(
+                                    postData['favorite'].toString(),
+                                    style: const TextStyle(fontSize: 20),
+                                  ),
+                                  const Icon(Icons.comment),
+                                  Text(
+                                    postData['comments'].length.toString(),
+                                    style: const TextStyle(fontSize: 20),
+                                  ),
+                                ], //TODO comments나중에 수정 필요함
                               ),
-                            ],
-                          ),
-                        );
-                      },
-                      separatorBuilder: (BuildContext context, int index) {
-                        return const Divider(thickness: 2);
-                      });
-                } else if (snapshot.hasError) {
-                  return const Center(
-                    child: Text('데이터를 가져오는 중 오류가 발생했습니다.'),
-                  );
-                } else {
-                  return const CircularProgressIndicator();
-                }
-              },
-            ),
+                            );
+                          },
+                          separatorBuilder: (BuildContext context, int index) {
+                            return const Divider(thickness: 2);
+                          });
+                    }
+                  }
+                }),
           ),
         ],
       ),

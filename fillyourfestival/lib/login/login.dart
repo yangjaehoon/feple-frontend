@@ -121,7 +121,7 @@ class LoginPage extends StatelessWidget {
                   children: [
                     const Text('Not a member?'),
                     GestureDetector(
-                      onTap: () => Get.to(() => const SignupPage()),
+                      onTap: () => Get.to(() => SignupPage()),
                       child: const Text(
                         ' Register Now!',
                         style: TextStyle(

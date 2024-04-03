@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:fast_app_base/login/login.dart';
@@ -8,6 +10,29 @@ class AuthController extends GetxController {
   static AuthController instance = Get.find();
   late Rx<User?> _user;
   FirebaseAuth authentication = FirebaseAuth.instance;
+
+  String _response = '';
+
+  Future<void> sendData() async {
+    Map<String, dynamic> postData = {
+      "nickname": "unknown",
+      "uid": FirebaseAuth.instance.currentUser?.uid,
+      "follow_artist": []
+    };
+
+    final response = await http.post(
+      Uri.parse('http://10.0.2.2:8080/users/save'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(postData),
+    );
+    if (response.statusCode == 200) {
+      _response = response.body;
+    } else {
+      throw Exception('Failed to send data');
+    }
+  }
 
   @override
   void onReady() {
@@ -29,7 +54,6 @@ class AuthController extends GetxController {
     try {
       await authentication.signInWithEmailAndPassword(
           email: email, password: password);
-
     } catch (e) {
       Get.snackbar(
         "Error message",
@@ -52,6 +76,7 @@ class AuthController extends GetxController {
     try {
       await authentication.createUserWithEmailAndPassword(
           email: email, password: password);
+      sendData();
     } catch (e) {
       Get.snackbar(
         "Error message",

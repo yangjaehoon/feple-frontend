@@ -21,7 +21,7 @@ class AuthController extends GetxController {
     };
 
     final response = await http.post(
-      Uri.parse('http://10.0.2.2:8080/users/save'),
+      Uri.parse('http://13.209.108.218:8080/users/save'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

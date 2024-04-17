@@ -18,11 +18,11 @@ class _CommunityPostState extends State<CommunityPost> {
   Future<List<dynamic>> getpost() async {
     String boarduri = '';
     if (widget.boardname == "FreeBoard") {
-      boarduri = 'http://10.0.2.2:8080/freeboards/all';
+      boarduri = 'http://13.209.108.218:8080/freeboards/all';
     } else if (widget.boardname == "HotBoard") {
-      boarduri = 'http://10.0.2.2:8080/hotboards/all';
+      boarduri = 'http://13.209.108.218:8080/hotboards/all';
     } else if (widget.boardname == "GetuserBoard") {
-      boarduri = 'http://10.0.2.2:8080/getuserboards/all';
+      boarduri = 'http://13.209.108.218:8080/getuserboards/all';
     }
     final response = await http.get(Uri.parse(boarduri));
     if (response.statusCode == 200) {

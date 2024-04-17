@@ -17,7 +17,7 @@ class _FreeBoardState extends State<FreeBoard> {
 
   Future<List<dynamic>> getpost() async {
     final response =
-        await http.get(Uri.parse('http://10.0.2.2:8080/freeboards/previews'));
+        await http.get(Uri.parse('http://13.209.108.218:8080/freeboards/previews'));
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {

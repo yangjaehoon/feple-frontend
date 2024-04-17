@@ -21,7 +21,7 @@ class _MypageFragmentState extends State<MypageFragment> {
   Future<MyInfo> fetchUser() async {
     String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
     final response = await http.get(
-      Uri.parse('http://10.0.2.2:8080/users/getuser?id=$uid'),
+      Uri.parse('http://13.209.108.218:8080/users/getuser?id=$uid'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

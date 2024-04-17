@@ -20,11 +20,11 @@ class _WritePostState extends State<WritePost> {
   Future<void> updatepost() async {
     String boarduri = '';
     if (widget.boardname == "FreeBoard") {
-      boarduri = 'http://10.0.2.2:8080/freeboards/save';
+      boarduri = 'http://13.209.108.218:8080/freeboards/save';
     } else if (widget.boardname == "HotBoard") {
-      boarduri = 'http://10.0.2.2:8080/hotboards/save';
+      boarduri = 'http://13.209.108.218:8080/hotboards/save';
     } else if (widget.boardname == "GetuserBoard") {
-      boarduri = 'http://10.0.2.2:8080/getuserboards/save';
+      boarduri = 'http://13.209.108.218:8080/getuserboards/save';
     }
 
     String title = nameController.text.trim();

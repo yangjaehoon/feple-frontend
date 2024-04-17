@@ -36,11 +36,11 @@ class _EnralgePostState extends State<EnralgePost> {
   void updatepost() async {
     String boarduri = '';
     if (widget.boardname == "FreeBoard") {
-      boarduri = 'http://10.0.2.2:8080/freeboards/update';
+      boarduri = 'http://13.209.108.218:8080/freeboards/update';
     } else if (widget.boardname == "HotBoard") {
-      boarduri = 'http://10.0.2.2:8080/hotboards/update';
+      boarduri = 'http://13.209.108.218:8080/hotboards/update';
     } else if (widget.boardname == "GetuserBoard") {
-      boarduri = 'http://10.0.2.2:8080/getuserboards/update';
+      boarduri = 'http://13.209.108.218:8080/getuserboards/update';
     }
     Map<String, dynamic> requestData = {
       "id": widget.id,

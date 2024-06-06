@@ -4,8 +4,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/cli_common.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/provider/poster/poster_provider.dart';
-import 'package:fast_app_base/screen/main/s_main.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter/material.dart';
 import 'package:fast_app_base/login/login.dart';
 import 'package:firebase_core/firebase_core.dart';

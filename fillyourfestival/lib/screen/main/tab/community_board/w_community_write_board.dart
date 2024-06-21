@@ -35,7 +35,7 @@ class _WritePostState extends State<WritePost> {
       "nickname": "unknown", //TODO 나중에 닉네임 입력 받으면 그걸로 업데이트 해야함
       "postname": title,
       "content": content,
-      "comments" : ["hello"],
+      //"comments" : [],
       "datetime": formattedDateTime
     };
 

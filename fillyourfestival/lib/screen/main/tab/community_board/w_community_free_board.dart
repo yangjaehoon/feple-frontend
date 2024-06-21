@@ -123,10 +123,10 @@ class _FreeBoardState extends State<FreeBoard> {
                                     style: const TextStyle(fontSize: 20),
                                   ),
                                   const Icon(Icons.comment),
-                                  Text(
-                                    postData['comments'].length.toString(),
-                                    style: const TextStyle(fontSize: 20),
-                                  ),
+                                  // Text(
+                                  //   postData['comments'].length.toString(),
+                                  //   style: const TextStyle(fontSize: 20),
+                                  // ),
                                 ], //TODO comments나중에 수정 필요함
                               ),
                             );

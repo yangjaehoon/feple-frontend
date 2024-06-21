@@ -15,7 +15,7 @@ class CommunityPost extends StatefulWidget {
 }
 
 class _CommunityPostState extends State<CommunityPost> {
-  Future<List<dynamic>> getpost() async {
+  Stream<List<dynamic>> getpost() async* {
     String boarduri = '';
     if (widget.boardname == "FreeBoard") {
       boarduri = 'http://13.209.108.218:8080/freeboards/all';
@@ -26,7 +26,7 @@ class _CommunityPostState extends State<CommunityPost> {
     }
     final response = await http.get(Uri.parse(boarduri));
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      yield json.decode(response.body);
     } else {
       throw Exception('Failed to load free boards');
     }
@@ -41,8 +41,8 @@ class _CommunityPostState extends State<CommunityPost> {
       body: Stack(children: [
         SizedBox(
           height: 600,
-          child: FutureBuilder(
-              future: getpost(),
+          child: StreamBuilder(
+              stream: getpost(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
@@ -75,7 +75,7 @@ class _CommunityPostState extends State<CommunityPost> {
                                       nickname: postData['nickname'],
                                       postname: postData['postname'],
                                       content: postData['content'],
-                                      comments: List<String>.from(postData['comments']),
+                                      //comments: List<String>.from(postData['comments']),
                                       heart: postData['heart'],
                                       datetime: postData['datetime'],
                                       favorite: postData['favorite'],
@@ -96,10 +96,10 @@ class _CommunityPostState extends State<CommunityPost> {
                                 style: const TextStyle(fontSize: 20),
                               ),
                               const Icon(Icons.comment),
-                              Text(
-                                postData['comments'].length.toString(),
-                                style: const TextStyle(fontSize: 20),
-                              ),
+                              // Text(
+                              //   postData['comments'].length.toString(),
+                              //   style: const TextStyle(fontSize: 20),
+                              // ),
                             ],
                           ),
                         );

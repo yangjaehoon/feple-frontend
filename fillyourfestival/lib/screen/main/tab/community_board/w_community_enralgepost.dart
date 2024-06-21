@@ -9,7 +9,7 @@ class EnralgePost extends StatefulWidget {
   String nickname;
   String postname;
   String content;
-  List<String> comments;
+  //List<String> comments;
   int heart;
   String datetime;
   int favorite;
@@ -21,7 +21,7 @@ class EnralgePost extends StatefulWidget {
       required this.nickname,
       required this.postname,
       required this.content,
-      required this.comments,
+      //required this.comments,
       required this.heart,
       required this.datetime,
       required this.favorite});
@@ -47,7 +47,7 @@ class _EnralgePostState extends State<EnralgePost> {
       "nickname": widget.nickname,
       "postname": widget.postname,
       "content": widget.content,
-      "comments": widget.comments.cast<String>(),
+      //"comments": widget.comments.cast<String>(),
       "heart": widget.heart,
       "datetime": widget.datetime,
       "favorite": widget.favorite,

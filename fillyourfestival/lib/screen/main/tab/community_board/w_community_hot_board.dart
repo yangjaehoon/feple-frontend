@@ -123,10 +123,10 @@ class _HotBoardState extends State<HotBoard> {
                                     style: const TextStyle(fontSize: 20),
                                   ),
                                   const Icon(Icons.comment),
-                                  Text(
-                                    postData['comments'].length.toString(),
-                                    style: const TextStyle(fontSize: 20),
-                                  ),
+                                  // Text(
+                                  //   postData['comments'].length.toString(),
+                                  //   style: const TextStyle(fontSize: 20),
+                                  // ),
                                 ], //TODO comments 나중에 수정해야함
                               ),
                             );

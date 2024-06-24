@@ -1,7 +1,7 @@
 class User {
   int? id;
   String? nickname;
-  String? uid;
+  String uid;
 
   int? post_Num;
   int? commnet_Num;
@@ -12,7 +12,7 @@ class User {
   //String? email;
   //String? password;
 
-  User({this.id, this.nickname, this.uid});
+  User({this.id, this.nickname, required this.uid});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(

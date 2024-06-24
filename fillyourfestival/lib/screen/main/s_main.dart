@@ -29,7 +29,8 @@ class MainScreenState extends State<MainScreen>
     TabItem.concertList,
     TabItem.favorite,
   ];
-  final List<GlobalKey<NavigatorState>> navigatorKeys = [];
+  //final List<GlobalKey<NavigatorState>> navigatorKeys = [];
+  final List<GlobalKey<NavigatorState>> navigatorKeys = List.generate(5, (_) => GlobalKey<NavigatorState>());
 
   int get _currentIndex => tabs.indexOf(_currentTab);
 

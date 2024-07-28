@@ -77,6 +77,9 @@ dependencies:
   #naver_map
   flutter_naver_map: ^1.2.1
 
+  #kakao
+  kakao_flutter_sdk_user: ^1.7.0
+
 
   card_swiper: ^3.0.1
   firebase_core: ^2.25.5

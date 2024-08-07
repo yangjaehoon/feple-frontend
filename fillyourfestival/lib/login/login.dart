@@ -260,6 +260,7 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                 ),
+                getKakaoLoginButton(),
                 const SizedBox(
                   height: 25,
                 ),
@@ -286,17 +287,15 @@ class LoginPage extends StatelessWidget {
         ),
       ),
     );
-
-
   }
 
   Widget getKakaoLoginButton() {
     return InkWell(
-      onTap: (){
+      onTap: () {
         signInWithKakao();
       },
       child: Card(
-        margin: const EdgeInsets.fromLTRB(20,20,20,0),
+        margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
         elevation: 2,
         child: Container(
@@ -305,14 +304,18 @@ class LoginPage extends StatelessWidget {
             color: Colors.yellow,
             borderRadius: BorderRadius.circular(7),
           ),
-          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Image.asset('kakao_login_medium_narrow.png',height: 30),
-            const SizedBox(
-              width: 10,
-            ),
-            const Text("Sign In with Kakao",
-            style: TextStyle(color: Colors.white, fontSize:17))
-          ],),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/image/login/kakao_login_medium_narrow.png',
+                  height: 30),
+              const SizedBox(
+                width: 10,
+              ),
+              // const Text("Sign In with Kakao",
+              // style: TextStyle(color: Colors.white, fontSize:17))
+            ],
+          ),
         ),
       ),
     );

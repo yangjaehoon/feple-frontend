@@ -140,12 +140,20 @@
 // }
 
 import 'package:fast_app_base/login/signup.dart';
+import 'package:fast_app_base/main.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+
+
+//import 'package:firebase_auth/firebase_auth.dart' as firebase_auth_provider;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../controller/auth_provider.dart';
+import '../app.dart';
+import '../controller/auth_provider.dart' as auth;
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -232,7 +240,10 @@ class LoginPage extends StatelessWidget {
                 GestureDetector(
                   onTap: () async {
                     try {
-                      await Provider.of<AuthProvider>(context, listen: false)
+                      print(await KakaoSdk.origin);
+
+                      await Provider.of<auth.AuthProvider>(context,
+                              listen: false)
                           .login(emailController.text.trim(),
                               passwordController.text.trim());
                     } catch (e) {
@@ -260,7 +271,7 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                getKakaoLoginButton(),
+                getKakaoLoginButton(context),
                 const SizedBox(
                   height: 25,
                 ),
@@ -273,6 +284,7 @@ class LoginPage extends StatelessWidget {
                         context,
                         MaterialPageRoute(builder: (context) => SignupPage()),
                       ),
+
                       child: const Text(
                         ' Register Now!',
                         style: TextStyle(
@@ -289,10 +301,10 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  Widget getKakaoLoginButton() {
+  Widget getKakaoLoginButton(BuildContext context) {
     return InkWell(
       onTap: () {
-        signInWithKakao();
+        signInWithKakao(context);
       },
       child: Card(
         margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
@@ -321,37 +333,69 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  Future<void> signInWithKakao() async {
-    // 카카오 로그인 구현 예제
-
-    // 카카오톡 실행 가능 여부 확인
-    // 카카오톡 실행이 가능하면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
+  Future<void> signInWithKakao(BuildContext context) async {
     if (await isKakaoTalkInstalled()) {
       try {
-        await UserApi.instance.loginWithKakaoTalk();
-        print('카카오톡으로 로그인 성공');
-      } catch (error) {
-        print('카카오톡으로 로그인 실패 $error');
+        print("들어옴");
+        var provider = OAuthProvider("oidc.kakao");
+        print("oidc 통과");
+        OAuthToken token = await UserApi.instance.loginWithKakaoTalk();
+        var credential = provider.credential(
+          idToken: token.idToken,
+          accessToken: token.accessToken,
+        );
+        await FirebaseAuth.instance.signInWithCredential(credential);
+        Navigator.pop(context);
 
-        // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
-        // 의도적인 로그인 취소로 보고 카카오계정으로 로그인 시도 없이 로그인 취소로 처리 (예: 뒤로 가기)
+        print('카카오톡으로 로그인 성공');
+        Fluttertoast.showToast(msg: '카톡 로그인 성공 1');
+      } catch (error) {
+        Fluttertoast.showToast(msg: 'Error Type: ${error.runtimeType}, $error');
+
+        print('카카오톡으로 로그인 실패 $error');
+        // 예외 처리 코드 추가 가능
         if (error is PlatformException && error.code == 'CANCELED') {
           return;
         }
-        // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인
         try {
-          await UserApi.instance.loginWithKakaoAccount();
+          var provider = OAuthProvider("oidc.kakao");
+          OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+          var credential = provider.credential(
+            idToken: token.idToken,
+            accessToken: token.accessToken,
+          );
+          await FirebaseAuth.instance.signInWithCredential(credential);
+          Navigator.pop(context);
+
           print('카카오계정으로 로그인 성공');
+          Fluttertoast.showToast(msg: '카톡 로그인 성공2');
         } catch (error) {
           print('카카오계정으로 로그인 실패 $error');
+          Fluttertoast.showToast(
+              msg: 'Error Type: ${error.runtimeType}, $error');
+          // 예외 처리 코드 추가 가능
         }
       }
-    } else {
+    }
+    //핸드폰으로 테스트 할때는 카카오톡 깔려있으니 잠시 주석
+    else {
       try {
-        await UserApi.instance.loginWithKakaoAccount();
+        print("테스트1");
+        var provider = OAuthProvider("oidc.kakao");
+        OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+        print("테스트2");
+        var credential = provider.credential(
+          idToken: token.idToken,
+          accessToken: token.accessToken,
+        );
+        await FirebaseAuth.instance.signInWithCredential(credential);
+        print("테스트3");
+        Navigator.pop(context);
+
         print('카카오계정으로 로그인 성공');
       } catch (error) {
         print('카카오계정으로 로그인 실패 $error');
+        // 예외 처리 코드 추가 가능
       }
     }
   }

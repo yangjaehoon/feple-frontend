@@ -81,13 +81,14 @@ dependencies:
   kakao_flutter_sdk_user: ^1.7.0
 
 
+
   card_swiper: ^3.0.1
   firebase_core: ^2.25.5
   firebase_auth: ^4.17.6
   firebase_storage: ^11.6.7
   cloud_firestore: ^4.15.6
   firebase_database: ^10.4.7
-  fluttertoast: ^8.2.2
+  fluttertoast: ^8.2.8
   http: ^1.1.0
   googleapis: ^11.4.0
   syncfusion_flutter_calendar: ^25.2.7

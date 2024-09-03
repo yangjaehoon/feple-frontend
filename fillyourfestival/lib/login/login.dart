@@ -334,6 +334,9 @@ class LoginPage extends StatelessWidget {
   }
 
   Future<void> signInWithKakao(BuildContext context) async {
+
+    final authProvider = Provider.of<auth.AuthProvider>(context, listen: false);
+
     if (await isKakaoTalkInstalled()) {
       try {
         print("들어옴");
@@ -345,9 +348,13 @@ class LoginPage extends StatelessWidget {
           accessToken: token.accessToken,
         );
         await FirebaseAuth.instance.signInWithCredential(credential);
+
+        await authProvider.sendData(); //데베에 보내주기
+
         Navigator.pop(context);
 
         print('카카오톡으로 로그인 성공');
+
         Fluttertoast.showToast(msg: '카톡 로그인 성공 1');
       } catch (error) {
         Fluttertoast.showToast(msg: 'Error Type: ${error.runtimeType}, $error');

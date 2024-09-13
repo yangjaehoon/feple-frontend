@@ -104,6 +104,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 class AuthProvider with ChangeNotifier {
@@ -128,6 +129,9 @@ class AuthProvider with ChangeNotifier {
       "uid": _auth.currentUser?.uid,
       "follow_artist": []
     };
+
+    //print(postData['uid']); //uid값 확인
+    Fluttertoast.showToast(msg: postData['uid']);
 
     final response = await http.post(
       Uri.parse('http://13.209.108.218:8080/users/save'),

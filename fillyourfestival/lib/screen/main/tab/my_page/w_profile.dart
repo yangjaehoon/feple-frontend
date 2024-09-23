@@ -116,7 +116,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                 children: [
                   Text(
                     // 사용자 이름 표시
-                    user.uid,
+                    user.nickname!,
                     style: TextStyle(fontSize: 30),
                   ),
                   ElevatedButton(onPressed:(){

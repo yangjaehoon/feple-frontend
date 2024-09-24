@@ -5,6 +5,7 @@ import 'dart:convert';
 
 class WritePost extends StatefulWidget {
   final String boardname;
+
   const WritePost({super.key, required this.boardname});
 
   @override

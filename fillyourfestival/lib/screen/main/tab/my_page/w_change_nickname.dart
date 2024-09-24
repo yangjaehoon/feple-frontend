@@ -19,18 +19,19 @@ class _ChangeNicknameState extends State<ChangeNickname> {
 
   String _response = '';
 
-  Future<void> updatepost() async {
-    String nicknameuri = 'http://13.209.108.218:8080/users/nickname';
+  Future<void> updatepost(uid) async {
+    String nicknameuri = 'http://13.209.108.218:8080/users/nickname?uid=$uid';
 
     String nickname = nicknameController.text.trim();
-    Map<String, dynamic> postData = {"nickname": nickname};
+    // print("mmmmmmmmmmmmmmmmmmmmmmmmmmm");
+    // print(uid);
 
-    final response = await http.post(
+    final response = await http.patch(
       Uri.parse(nicknameuri),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(postData),
+      body: nickname,
     );
     if (response.statusCode == 200) {
       _response = response.body;
@@ -43,8 +44,6 @@ class _ChangeNicknameState extends State<ChangeNickname> {
   Widget build(BuildContext context) {
     UserProvider userProvider = Provider.of<UserProvider>(context);
     User? user = userProvider.user;
-
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     return Scaffold(
         body: Column(
@@ -63,16 +62,10 @@ class _ChangeNicknameState extends State<ChangeNickname> {
           ),
           ElevatedButton(
               onPressed: () async {
-                updatepost();
+                updatepost(user!.uid);
                 Navigator.pop(context);
               },
               child: Text("확인")),
         ]));
   }
-
-// void updateNickname() async{
-//   Map<String, dynamic> requestData = {
-//     "nickname": ,
-//   }
-// }
 }

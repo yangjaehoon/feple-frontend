@@ -4,6 +4,10 @@ import 'package:fast_app_base/screen/main/tab/community_board/w_community_post.d
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../../../../config.dart';
+import '../../../../model/post_model.dart';
+import '../../../../service/post_service.dart';
+
 class FreeBoard extends StatefulWidget {
   final String boardname;
 
@@ -14,16 +18,7 @@ class FreeBoard extends StatefulWidget {
 }
 
 class _FreeBoardState extends State<FreeBoard> {
-
-  Future<List<dynamic>> getpost() async {
-    final response =
-        await http.get(Uri.parse('http://13.209.108.218:8080/freeboards/previews'));
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to load free boards');
-    }
-  }
+  final PostService postService = PostService();
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +81,7 @@ class _FreeBoardState extends State<FreeBoard> {
           ),
           Expanded(
             child: FutureBuilder<List<dynamic>>(
-                future: getpost(),
+                future: postService.fetchFreePosts(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
@@ -97,7 +92,7 @@ class _FreeBoardState extends State<FreeBoard> {
                       child: Text('Failed to load data: ${snapshot.error}'),
                     );
                   } else {
-                    List<dynamic> postDataList = snapshot.data!;
+                    List postDataList = snapshot.data!;
                     if (postDataList.isEmpty) {
                       return const Center(
                         child: Text('No data available.'),
@@ -108,18 +103,18 @@ class _FreeBoardState extends State<FreeBoard> {
                           shrinkWrap: true,
                           itemCount: postDataList.length,
                           itemBuilder: (context, int index) {
-                            Map<String, dynamic> postData = postDataList[index];
+                            Post postData = postDataList[index];
                             return ListTile(
                               title: Text(
-                                postData['postname'],
+                                postData.title,
                               ),
-                              subtitle: Text(postData['datetime']),
+                              subtitle: Text(postData.nickname),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   const Icon(Icons.favorite_rounded),
                                   Text(
-                                    postData['favorite'].toString(),
+                                    postData.likeCount.toString(),
                                     style: const TextStyle(fontSize: 20),
                                   ),
                                   const Icon(Icons.comment),

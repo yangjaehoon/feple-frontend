@@ -1,4 +1,5 @@
 import 'package:fast_app_base/common/common.dart';
+import 'package:fast_app_base/config.dart';
 import 'package:flutter/material.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_write_board.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_enralgepost.dart';
@@ -15,10 +16,10 @@ class CommunityPost extends StatefulWidget {
 }
 
 class _CommunityPostState extends State<CommunityPost> {
-  Stream<List<dynamic>> getpost() async* {
+  Stream<List<dynamic>> getPosts() async* {
     String boarduri = '';
     if (widget.boardname == "FreeBoard") {
-      boarduri = 'http://13.209.108.218:8080/freeboards/all';
+      boarduri = '$baseUrl/freeboards/all';
     } else if (widget.boardname == "HotBoard") {
       boarduri = 'http://13.209.108.218:8080/hotboards/all';
     } else if (widget.boardname == "GetuserBoard") {
@@ -41,8 +42,8 @@ class _CommunityPostState extends State<CommunityPost> {
       body: Stack(children: [
         SizedBox(
           height: 600,
-          child: StreamBuilder(
-              stream: getpost(),
+          child: StreamBuilder<List<dynamic>>(
+              stream: getPosts(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
@@ -63,7 +64,8 @@ class _CommunityPostState extends State<CommunityPost> {
                       shrinkWrap: true,
                       itemCount: postDataList.length,
                       itemBuilder: (context, int index) {
-                        Map<String, dynamic> postData = postDataList[index];
+                        Map<String, dynamic> postData =
+                            postDataList[index] as Map<String, dynamic>;
                         return ListTile(
                           onTap: () {
                             Navigator.push(
@@ -71,7 +73,7 @@ class _CommunityPostState extends State<CommunityPost> {
                               MaterialPageRoute(
                                 builder: ((context) => EnralgePost(
                                       boardname: widget.boardname,
-                                      id : postData['id'],
+                                      id: postData['id'],
                                       nickname: postData['nickname'],
                                       postname: postData['postname'],
                                       content: postData['content'],
@@ -84,15 +86,15 @@ class _CommunityPostState extends State<CommunityPost> {
                             );
                           },
                           title: Text(
-                            postData['postname'],
+                            postData['title'],
                           ),
-                          subtitle: Text(postData['datetime']),
+                          subtitle: Text(postData['content']),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               const Icon(Icons.favorite_rounded),
                               Text(
-                                postData['favorite'].toString(),
+                                postData['likeCount'].toString(),
                                 style: const TextStyle(fontSize: 20),
                               ),
                               const Icon(Icons.comment),
@@ -101,6 +103,13 @@ class _CommunityPostState extends State<CommunityPost> {
                               //   style: const TextStyle(fontSize: 20),
                               // ),
                             ],
+                          ),
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.blueAccent,
+                            child: Text(
+                              postData['nickname'][0],
+                              style: const TextStyle(color: Colors.white),
+                            ),
                           ),
                         );
                       },

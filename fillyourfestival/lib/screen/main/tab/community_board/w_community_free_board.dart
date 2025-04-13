@@ -81,7 +81,7 @@ class _FreeBoardState extends State<FreeBoard> {
           ),
           Expanded(
             child: FutureBuilder<List<dynamic>>(
-                future: postService.fetchFreePosts(),
+                future: postService.fetchPosts('FreeBoard'),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(

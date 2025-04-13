@@ -1,8 +1,12 @@
 import 'package:fast_app_base/common/common.dart';
+import 'package:fast_app_base/config.dart';
 import 'package:flutter/material.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_post.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../../../../model/post_model.dart';
+import '../../../../service/post_service.dart';
+
 
 class GetUserBoard extends StatefulWidget {
   final String boardname;
@@ -14,15 +18,7 @@ class GetUserBoard extends StatefulWidget {
 }
 
 class _GetUserBoardState extends State<GetUserBoard> {
-  Future<List<dynamic>> getpost() async {
-    final response =
-        await http.get(Uri.parse('http://13.209.108.218:8080/getuserboards/previews'));
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to load getuser boards');
-    }
-  }
+  final PostService postService = PostService();
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +81,7 @@ class _GetUserBoardState extends State<GetUserBoard> {
           ),
           Expanded(
             child: FutureBuilder<List<dynamic>>(
-                future: getpost(),
+                future: postService.fetchPosts('MateBoard'),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
@@ -107,18 +103,18 @@ class _GetUserBoardState extends State<GetUserBoard> {
                           shrinkWrap: true,
                           itemCount: postDataList.length,
                           itemBuilder: (context, int index) {
-                            Map<String, dynamic> postData = postDataList[index];
+                            Post postData = postDataList[index];
                             return ListTile(
                               title: Text(
-                                postData['postname'],
+                                postData.title,
                               ),
-                              subtitle: Text(postData['datetime']),
+                              subtitle: Text(postData.nickname),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   const Icon(Icons.favorite_rounded),
                                   Text(
-                                    postData['favorite'].toString(),
+                                    postData.likeCount.toString(),
                                     style: const TextStyle(fontSize: 20),
                                   ),
                                   const Icon(Icons.comment),

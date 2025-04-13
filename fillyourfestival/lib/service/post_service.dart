@@ -6,16 +6,28 @@ import '../config.dart';
 
 class PostService {
 
-  Future<List<Post>> fetchFreePosts() async {
-    final url = Uri.parse('$baseUrl/posts/free');
+  Future<List<Post>> fetchPosts(String boardType) async {
+    String endpoint;
+    switch (boardType) {
+      case 'FreeBoard':
+        endpoint = 'posts/free';
+        break;
+      case 'MateBoard':
+        endpoint = 'posts/mate';
+        break;
+    // 추가 게시판 타입이 있으면 여기 추가
+      default:
+        throw Exception('Unknown board type');
+    }
+
+    final url = Uri.parse('$baseUrl/$endpoint');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      // JSON 파싱: 리스트 형태의 JSON 배열로부터 List<Post> 생성
-      final List<dynamic> jsonList = json.decode(response.body);
+      final List<dynamic> jsonList = json.decode(utf8.decode(response.bodyBytes));
       return jsonList.map((json) => Post.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to load posts');
+      throw Exception('$boardType 데이터를 불러오는데 실패했습니다.');
     }
   }
 }

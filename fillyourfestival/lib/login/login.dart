@@ -139,9 +139,11 @@
 //   }
 // }
 
+import 'package:fast_app_base/config.dart';
 import 'package:fast_app_base/login/signup.dart';
 import 'package:fast_app_base/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart' as http;
 
 
 
@@ -348,6 +350,8 @@ class LoginPage extends StatelessWidget {
           accessToken: token.accessToken,
         );
         await FirebaseAuth.instance.signInWithCredential(credential);
+        await sendAccessTokenToServer(token.accessToken);
+
 
         await authProvider.sendData(); //데베에 보내주기
 
@@ -372,6 +376,8 @@ class LoginPage extends StatelessWidget {
             accessToken: token.accessToken,
           );
           await FirebaseAuth.instance.signInWithCredential(credential);
+          await sendAccessTokenToServer(token.accessToken);
+
           Navigator.pop(context);
 
           print('카카오계정으로 로그인 성공');
@@ -396,6 +402,8 @@ class LoginPage extends StatelessWidget {
           accessToken: token.accessToken,
         );
         await FirebaseAuth.instance.signInWithCredential(credential);
+        await sendAccessTokenToServer(token.accessToken);
+
         print("테스트3");
         Navigator.pop(context);
 
@@ -404,6 +412,22 @@ class LoginPage extends StatelessWidget {
         print('카카오계정으로 로그인 실패 $error');
         // 예외 처리 코드 추가 가능
       }
+    }
+  }
+
+  Future<void> sendAccessTokenToServer(String accessToken) async{
+    final response = await http.post(
+      Uri.parse('http://$baseUrl/auth/kakao'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    if(response.statusCode == 200){
+      print('Spring 서버 로그인 성공: ${response.body}');
+    }else{
+      print('Spring 서버 로그인 실패: ${response.body}');
     }
   }
 }

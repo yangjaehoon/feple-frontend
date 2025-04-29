@@ -1,7 +1,9 @@
 class User {
-  int? id;
-  String? nickname;
-  String uid;
+  final int? id;
+  final String? nickname;
+  final String uid;
+
+  final String profileImageUrl;
 
   int? post_Num;
   int? commnet_Num;
@@ -12,13 +14,18 @@ class User {
   //String? email;
   //String? password;
 
-  User({this.id, this.nickname, required this.uid});
+  User(
+      {this.id,
+      this.nickname,
+      required this.uid,
+      required this.profileImageUrl});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],
       nickname: json['nickname'],
       uid: json['uid'],
+      profileImageUrl: json['profileImageUrl'],
     );
   }
 }

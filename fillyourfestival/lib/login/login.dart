@@ -139,12 +139,13 @@
 //   }
 // }
 
+import 'dart:convert';
+
 import 'package:fast_app_base/config.dart';
 import 'package:fast_app_base/login/signup.dart';
 import 'package:fast_app_base/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
-
 
 
 //import 'package:firebase_auth/firebase_auth.dart' as firebase_auth_provider;
@@ -156,6 +157,7 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../app.dart';
 import '../controller/auth_provider.dart' as auth;
+import '../model/user_model.dart' as app;
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -415,9 +417,9 @@ class LoginPage extends StatelessWidget {
     }
   }
 
-  Future<void> sendAccessTokenToServer(String accessToken) async{
+  Future<app.User> sendAccessTokenToServer(String accessToken) async{
     final response = await http.post(
-      Uri.parse('http://$baseUrl/auth/kakao'),
+      Uri.parse('$baseUrl/auth/kakao'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
@@ -426,8 +428,12 @@ class LoginPage extends StatelessWidget {
 
     if(response.statusCode == 200){
       print('Spring 서버 로그인 성공: ${response.body}');
+      final json = jsonDecode(response.body);
+      return app.User.fromJson(json);
     }else{
       print('Spring 서버 로그인 실패: ${response.body}');
+      throw Exception('Spring 서버 로그인 실패: ${response.statusCode} ${response.body}');
+
     }
   }
 }

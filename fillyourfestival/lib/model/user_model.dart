@@ -1,6 +1,6 @@
 class User {
   final int? id;
-  final String? nickname;
+  String nickname;
   final String uid;
 
   final String profileImageUrl;
@@ -16,9 +16,11 @@ class User {
 
   User(
       {this.id,
-      this.nickname,
+      String? nickname,
       required this.uid,
-      required this.profileImageUrl});
+      required this.profileImageUrl
+      }): nickname = (nickname != null && nickname.isNotEmpty)
+        ? nickname : 'guest';
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(

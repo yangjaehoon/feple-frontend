@@ -80,6 +80,9 @@ import '../../../../model/user_model.dart';
 import '../../../../provider/user_provider.dart';
 
 class ProfileWidget extends StatefulWidget {
+  final int userId;
+  const ProfileWidget({ required this.userId, Key? key }) : super(key: key);
+
   @override
   State<ProfileWidget> createState() => _ProfileWidgetState();
 }
@@ -88,27 +91,37 @@ class _ProfileWidgetState extends State<ProfileWidget> {
   @override
   void initState() {
     super.initState();
+    context.read<UserProvider>().fetchUser(widget.userId);
+
+
+    //final userProvider = Provider.of<UserProvider>(context, listen: false);
+    //final userId = userProvider.user?.id;
+    //if (userId != null) {
+    //  userProvider.fetchUser(userId);
+    //}
+
     // initState에서 fetchUserData 호출
-    Provider.of<UserProvider>(context, listen: false).fetchUserData();
+    //Provider.of<UserProvider>(context, listen: false).fetchUser(userProvider.id);
   }
 
   @override
   Widget build(BuildContext context) {
-    // UserProvider를 통해 user 데이터 가져오기
-    UserProvider userProvider = Provider.of<UserProvider>(context);
-    User? user = userProvider.user;
+    final user = Provider.of<UserProvider>(context).user;
+    if (user == null) {
+      print("⏳ ProfileWidget: user == null, 로딩중...");
+      return Center(child: CircularProgressIndicator());
+    }
 
-
-    return user == null
-        ? Center(child: CircularProgressIndicator()) // 로딩 중일 때
-        : Row(
+    print("🎉 ProfileWidget: user 불러오기 완료! nickname=${user.nickname}");
+    return Row(
             children: [
               Padding(
                 padding: EdgeInsets.all(12.0),
                 child: CircleAvatar(
                   // 프로필 이미지
                   radius: 50,
-                  backgroundImage: AssetImage('assets/image/basic_profile.png'),
+                  //backgroundImage: AssetImage('assets/image/basic_profile.png'),
+                  backgroundImage: NetworkImage(user.profileImageUrl),
                 ),
               ),
               Column(
@@ -116,7 +129,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                 children: [
                   Text(
                     // 사용자 이름 표시
-                    user.nickname!,
+                    user.nickname,
                     style: TextStyle(fontSize: 30),
                   ),
                   ElevatedButton(onPressed:(){

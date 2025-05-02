@@ -143,21 +143,18 @@ import 'dart:convert';
 
 import 'package:fast_app_base/config.dart';
 import 'package:fast_app_base/login/signup.dart';
-import 'package:fast_app_base/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
-
-//import 'package:firebase_auth/firebase_auth.dart' as firebase_auth_provider;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../app.dart';
 import '../controller/auth_provider.dart' as auth;
 import '../model/user_model.dart' as app;
+import '../provider/user_provider.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -354,6 +351,10 @@ class LoginPage extends StatelessWidget {
         await FirebaseAuth.instance.signInWithCredential(credential);
         await sendAccessTokenToServer(token.accessToken);
 
+        final userProvider = Provider.of<UserProvider>(context, listen: false);
+        final me = await sendAccessTokenToServer(token.accessToken);
+        Provider.of<UserProvider>(context, listen: false).setUser(me);
+
 
         await authProvider.sendData(); //데베에 보내주기
 
@@ -429,7 +430,7 @@ class LoginPage extends StatelessWidget {
     if(response.statusCode == 200){
       print('Spring 서버 로그인 성공: ${response.body}');
       final json = jsonDecode(response.body);
-      return app.User.fromJson(json);
+      return app.User.fromJson(jsonDecode(response.body));
     }else{
       print('Spring 서버 로그인 실패: ${response.body}');
       throw Exception('Spring 서버 로그인 실패: ${response.statusCode} ${response.body}');

@@ -62,7 +62,7 @@ class _ChangeNicknameState extends State<ChangeNickname> {
           ),
           ElevatedButton(
               onPressed: () async {
-                updatepost(user!.uid);
+                updatepost(user!.id);
                 Navigator.pop(context);
               },
               child: Text("확인")),

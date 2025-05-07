@@ -153,6 +153,7 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../controller/auth_provider.dart' as auth;
+import '../main.dart';
 import '../model/user_model.dart' as app;
 import '../provider/user_provider.dart';
 
@@ -351,14 +352,18 @@ class LoginPage extends StatelessWidget {
         await FirebaseAuth.instance.signInWithCredential(credential);
         await sendAccessTokenToServer(token.accessToken);
 
-        final userProvider = Provider.of<UserProvider>(context, listen: false);
+        //final userProvider = Provider.of<UserProvider>(context, listen: false);
         final me = await sendAccessTokenToServer(token.accessToken);
-        Provider.of<UserProvider>(context, listen: false).setUser(me);
+        //Provider.of<UserProvider>(context, listen: false).setUser(me);
+        context.read<UserProvider>().setUser(me);
 
 
         await authProvider.sendData(); //데베에 보내주기
 
-        Navigator.pop(context);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => MyApp()), // 메인 탭이 있는 루트 페이지
+        );
 
         print('카카오톡으로 로그인 성공');
 
@@ -366,7 +371,7 @@ class LoginPage extends StatelessWidget {
       } catch (error) {
         Fluttertoast.showToast(msg: 'Error Type: ${error.runtimeType}, $error');
 
-        print('카카오톡으로 로그인 실패 $error');
+        print('카카오톡으로 로그인 실패1 $error');
         // 예외 처리 코드 추가 가능
         if (error is PlatformException && error.code == 'CANCELED') {
           return;
@@ -381,12 +386,15 @@ class LoginPage extends StatelessWidget {
           await FirebaseAuth.instance.signInWithCredential(credential);
           await sendAccessTokenToServer(token.accessToken);
 
-          Navigator.pop(context);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => MyApp()), // 메인 탭이 있는 루트 페이지
+          );
 
-          print('카카오계정으로 로그인 성공');
+          print('카카오계정으로 로그인 성공2');
           Fluttertoast.showToast(msg: '카톡 로그인 성공2');
         } catch (error) {
-          print('카카오계정으로 로그인 실패 $error');
+          print('카카오계정으로 로그인 실패2 $error');
           Fluttertoast.showToast(
               msg: 'Error Type: ${error.runtimeType}, $error');
           // 예외 처리 코드 추가 가능
@@ -408,7 +416,10 @@ class LoginPage extends StatelessWidget {
         await sendAccessTokenToServer(token.accessToken);
 
         print("테스트3");
-        Navigator.pop(context);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => MyApp()), // 메인 탭이 있는 루트 페이지
+        );
 
         print('카카오계정으로 로그인 성공');
       } catch (error) {

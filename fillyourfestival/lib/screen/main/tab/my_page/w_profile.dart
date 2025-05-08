@@ -108,7 +108,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
         return Center(child: CircularProgressIndicator());
       }
 
-      print("🎉 ProfileWidget: user 불러오기 완료! nickname=${user.nickname}");
+      print("🎉 ProfileWidget: user 불러오기 완료! nickname=${user.id}");
       return Row(
         children: [
           Padding(
@@ -125,7 +125,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
             children: [
               Text(
                 // 사용자 이름 표시
-                user.nickname,
+                'guest${user.id}',
                 style: TextStyle(fontSize: 30),
               ),
               ElevatedButton(

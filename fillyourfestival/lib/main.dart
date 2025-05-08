@@ -75,7 +75,7 @@ class MyApp extends StatelessWidget {
       home: Consumer<AuthProvider>(
         builder: (context, auth, _) {
           if (auth.user == null) {
-            return const LoginPage();
+            return LoginPage();
           } else {
             return const App();
           }

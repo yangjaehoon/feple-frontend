@@ -17,20 +17,18 @@ class User {
 
   User(
       {required this.id,
-      required String nickname,
+      String? nickname,
       //required this.uid,
       required this.profileImageUrl})
-      : nickname = nickname.isNotEmpty ? nickname : 'guest';
+      : nickname =
+            (nickname != null && nickname.isNotEmpty) ? nickname : 'guest';
 
   factory User.fromJson(Map<String, dynamic> json) {
-
-    final rawNick = (json['nickname'] as String?)?.trim() ?? '';
-
     return User(
-      id: json['id'],
-      nickname: rawNick,
+      id: json['id'] as int,
+      nickname: json['nickname'] as String?,
       //uid: json['uid'],
-      profileImageUrl: json['profileImageUrl'],
+      profileImageUrl: json['profileImageUrl'] as String,
     );
   }
 }

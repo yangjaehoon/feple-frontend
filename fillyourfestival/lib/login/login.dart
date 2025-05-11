@@ -280,14 +280,10 @@ class _LoginPageState extends State<LoginPage> {
         );
         await FirebaseAuth.instance.signInWithCredential(credential);
 
-        print("테스트2.5");
         final me = await sendAccessTokenToServer(token.accessToken);
-        print("미 출력");
         print(me.profileImageUrl);
 
         userProvider.setUser(me);
-
-        print("테스트3");
 
         navigator.pushReplacement(
           MaterialPageRoute(builder: (_) => MyApp()),

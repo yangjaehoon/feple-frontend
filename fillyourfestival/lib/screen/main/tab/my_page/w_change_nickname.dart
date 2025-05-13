@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+import '../../../../config.dart';
 import '../../../../controller/auth_provider.dart';
 import '../../../../model/user_model.dart';
 import '../../../../provider/user_provider.dart';
@@ -19,19 +20,18 @@ class _ChangeNicknameState extends State<ChangeNickname> {
 
   String _response = '';
 
-  Future<void> updatepost(uid) async {
-    String nicknameuri = 'http://13.209.108.218:8080/users/nickname?uid=$uid';
+  Future<void> updatepost(id) async {
 
     String nickname = nicknameController.text.trim();
     // print("mmmmmmmmmmmmmmmmmmmmmmmmmmm");
     // print(uid);
 
-    final response = await http.patch(
-      Uri.parse(nicknameuri),
-      headers: <String, String>{
+    final response = await http.put(
+      Uri.parse('$baseUrl/users/$id'),
+      headers: {
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: nickname,
+      body: jsonEncode({'nickname':nickname}),
     );
     if (response.statusCode == 200) {
       _response = response.body;
@@ -62,8 +62,19 @@ class _ChangeNicknameState extends State<ChangeNickname> {
           ),
           ElevatedButton(
               onPressed: () async {
-                updatepost(user!.id);
-                Navigator.pop(context);
+                try{
+                  await updatepost(user!.id);
+                  await userProvider.fetchUser(user.id);
+
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('닉네임이 변경되었습니다.')),
+                  );
+                }catch(e){
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('닉네임 변경에 실패했습니다.\n$e')),
+                  );
+                }
               },
               child: Text("확인")),
         ]));

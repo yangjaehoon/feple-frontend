@@ -19,7 +19,7 @@ class _CommunityPostState extends State<CommunityPost> {
   Stream<List<dynamic>> getPosts() async* {
     String boarduri = '';
     if (widget.boardname == "FreeBoard") {
-      boarduri = '$baseUrl/freeboards/all';
+      boarduri = '$baseUrl/';
     } else if (widget.boardname == "HotBoard") {
       boarduri = 'http://13.209.108.218:8080/hotboards/all';
     } else if (widget.boardname == "GetuserBoard") {

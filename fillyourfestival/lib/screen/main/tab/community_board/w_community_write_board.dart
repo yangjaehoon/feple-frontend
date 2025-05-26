@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:core';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'dart:convert';
+
+import '../../../../config.dart';
+import '../../../../provider/user_provider.dart';
 
 class WritePost extends StatefulWidget {
   final String boardname;
@@ -13,44 +17,66 @@ class WritePost extends StatefulWidget {
 }
 
 class _WritePostState extends State<WritePost> {
-  var nameController = TextEditingController();
-  var contentController = TextEditingController();
+  final _titleController = TextEditingController();
+  final _contentController = TextEditingController();
+  bool _isSubmitting = false;
 
-  String _response = ''; //응답 값 저장
+  static const _endpoints = {
+    'FreeBoard': '/posts/free',
+    'HotBoard': '/posts/hot',
+    'GetuserBoard': '/posts/user',
+  };
 
-  Future<void> updatepost() async {
-    String boarduri = '';
-    if (widget.boardname == "FreeBoard") {
-      boarduri = 'http://13.209.108.218:8080/freeboards/save';
-    } else if (widget.boardname == "HotBoard") {
-      boarduri = 'http://13.209.108.218:8080/hotboards/save';
-    } else if (widget.boardname == "GetuserBoard") {
-      boarduri = 'http://13.209.108.218:8080/getuserboards/save';
+  Future<void> _submit() async {
+    final title = _titleController.text.trim();
+    final content = _contentController.text.trim();
+
+    if (title.isEmpty || content.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('제목과 내용을 모두 입력해주세요.')),
+      );
+      return;
     }
 
-    String title = nameController.text.trim();
-    String content = contentController.text.trim();
-    DateTime now = DateTime.now();
-    String formattedDateTime = now.toIso8601String();
-    Map<String, dynamic> postData = {
-      "nickname": "unknown", //TODO 나중에 닉네임 입력 받으면 그걸로 업데이트 해야함
-      "postname": title,
-      "content": content,
-      //"comments" : [],
-      "datetime": formattedDateTime
+    final urlPath = _endpoints[widget.boardname];
+    if (urlPath == null) {
+      throw Exception('알 수 없는 게시판: ${widget.boardname}');
+    }
+    final uri = Uri.parse('$baseUrl$urlPath');
+
+    final user = context.read<UserProvider>().user;
+    if (user == null) {
+      throw Exception('로그인 정보가 없습니다.');
+    }
+    setState(() => _isSubmitting = true);
+
+    final body = {
+      'userId' : user.id,
+      'title': title,
+      'content': content,
+      'nickname': user.nickname,
+      'createdAt': DateTime.now().toIso8601String(),
     };
 
-    final response = await http.post(
-      Uri.parse(boarduri),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(postData),
-    );
-    if (response.statusCode == 200) {
-      _response = response.body;
-    } else {
-      throw Exception('Failed to send data');
+    try {
+      final response = await http.post(
+        uri,
+        headers: {'Content-Type': 'application/json; charset=UTF-8'},
+        body: jsonEncode(body),
+      );
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('게시글이 성공적으로 등록되었습니다.')));
+        Navigator.of(context).pop();
+      } else {
+        throw Exception('서버 오류: ${response.statusCode}');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('게시글 등록에 실패했습니다.\n$e')),
+      );
+    } finally {
+      setState(() => _isSubmitting = false);
     }
   }
 
@@ -59,39 +85,42 @@ class _WritePostState extends State<WritePost> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('글 쓰기'),
-        actions: <Widget>[
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12))),
-            onPressed: () {
-              updatepost();
-              Navigator.pop(context);
-            },
-            child: const Text("완료"),
+        actions: [
+          TextButton(
+            onPressed: _isSubmitting ? null : () => _submit(),
+            child: _isSubmitting
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('완료', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(
-                  border: InputBorder.none, hintText: '제목'),
-            ),
-            const Divider(
-              thickness: 2,
-              height: 1,
-              color: Colors.white,
-            ),
-            TextField(
-              controller: contentController,
-              decoration: const InputDecoration(
-                  border: InputBorder.none, hintText: '내용을 입력하세요.'),
-            ),
-          ],
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              TextField(
+                controller: _titleController,
+                decoration: const InputDecoration(
+                  hintText: '제목을 입력하세요',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _contentController,
+                maxLines: null,
+                decoration: const InputDecoration(
+                  hintText: '내용을 입력하세요',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -24,7 +24,7 @@ class _WritePostState extends State<WritePost> {
   static const _endpoints = {
     'FreeBoard': '/posts/free',
     'HotBoard': '/posts/hot',
-    'GetuserBoard': '/posts/user',
+    'GetuserBoard': '/posts/mate',
   };
 
   Future<void> _submit() async {

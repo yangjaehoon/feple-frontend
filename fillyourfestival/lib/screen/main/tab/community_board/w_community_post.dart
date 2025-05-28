@@ -19,11 +19,11 @@ class _CommunityPostState extends State<CommunityPost> {
   Stream<List<dynamic>> getPosts() async* {
     String boarduri = '';
     if (widget.boardname == "FreeBoard") {
-      boarduri = '$baseUrl/';
+      boarduri = '$baseUrl/posts/free';
     } else if (widget.boardname == "HotBoard") {
-      boarduri = 'http://13.209.108.218:8080/hotboards/all';
+      boarduri = '$baseUrl/posts/hot';
     } else if (widget.boardname == "GetuserBoard") {
-      boarduri = 'http://13.209.108.218:8080/getuserboards/all';
+      boarduri = '$baseUrl/posts/mate';
     }
     final response = await http.get(Uri.parse(boarduri));
     if (response.statusCode == 200) {

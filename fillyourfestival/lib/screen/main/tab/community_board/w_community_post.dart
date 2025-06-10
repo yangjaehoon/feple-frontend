@@ -16,7 +16,7 @@ class CommunityPost extends StatefulWidget {
 }
 
 class _CommunityPostState extends State<CommunityPost> {
-  Stream<List<dynamic>> getPosts() async* {
+  Future<List<Map<String, dynamic>>> getPosts() async {
     String boarduri = '';
     if (widget.boardname == "FreeBoard") {
       boarduri = '$baseUrl/posts/free';
@@ -27,7 +27,8 @@ class _CommunityPostState extends State<CommunityPost> {
     }
     final response = await http.get(Uri.parse(boarduri));
     if (response.statusCode == 200) {
-      yield json.decode(response.body);
+      final List<dynamic> parsed = json.decode(response.body);
+      return parsed.map((e) => e as Map<String, dynamic>).toList();
     } else {
       throw Exception('Failed to load free boards');
     }
@@ -42,8 +43,8 @@ class _CommunityPostState extends State<CommunityPost> {
       body: Stack(children: [
         SizedBox(
           height: 600,
-          child: StreamBuilder<List<dynamic>>(
-              stream: getPosts(),
+          child: FutureBuilder<List<Map<String, dynamic>>>(
+              future: getPosts(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
@@ -53,7 +54,10 @@ class _CommunityPostState extends State<CommunityPost> {
                   return Center(
                     child: Text('Failed to load data: ${snapshot.error}'),
                   );
-                } else {
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No data available.'));
+                }
+                else {
                   List<dynamic> postDataList = snapshot.data!;
                   if (postDataList.isEmpty) {
                     return const Center(
@@ -75,12 +79,12 @@ class _CommunityPostState extends State<CommunityPost> {
                                       boardname: widget.boardname,
                                       id: postData['id'],
                                       nickname: postData['nickname'],
-                                      postname: postData['postname'],
+                                      title: postData['title'],
                                       content: postData['content'],
                                       //comments: List<String>.from(postData['comments']),
-                                      heart: postData['heart'],
-                                      datetime: postData['datetime'],
-                                      favorite: postData['favorite'],
+                                      heart: postData['likeCount'],
+                                      //datetime: postData['datetime'],
+                                      //favorite: postData['favorite'],
                                     )),
                               ),
                             );

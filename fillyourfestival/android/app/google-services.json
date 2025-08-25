@@ -13,12 +13,7 @@
           "package_name": "com.example.fast_app_base"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "335733810987-qdmg8gapnqbq6vj7ea6ob7c1kqaqv0nm.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
           "current_key": "AIzaSyCbqtD5xJBg_jV_pOr7CfezGAXzr8G-5ks"
@@ -26,19 +21,7 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "335733810987-qdmg8gapnqbq6vj7ea6ob7c1kqaqv0nm.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "335733810987-4ppahtvcgm8ql98140b79hbud203k3jj.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.fyf"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     },
@@ -49,12 +32,7 @@
           "package_name": "com.example.fyf"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "335733810987-qdmg8gapnqbq6vj7ea6ob7c1kqaqv0nm.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
           "current_key": "AIzaSyCbqtD5xJBg_jV_pOr7CfezGAXzr8G-5ks"
@@ -62,19 +40,7 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "335733810987-qdmg8gapnqbq6vj7ea6ob7c1kqaqv0nm.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "335733810987-4ppahtvcgm8ql98140b79hbud203k3jj.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.fyf"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

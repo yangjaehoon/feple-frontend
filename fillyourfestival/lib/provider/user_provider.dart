@@ -47,7 +47,7 @@ class UserProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('userJson', jsonEncode({
       'id': me.id,
-      //'nickname': me.nickname,
+      'nickname': me.nickname,
       'profileImageUrl': me.profileImageUrl,
     }));
   }

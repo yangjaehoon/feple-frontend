@@ -95,7 +95,8 @@ class _FestivalPosterState extends State<FestivalPoster> {
                           onTap: (){
                             Navigator.push(
                             context,
-                              MaterialPageRoute(builder: (context)=> const FtvMapWidget())
+                              //MaterialPageRoute(builder: (context)=> const FtvMapWidget())
+                              MaterialPageRoute(builder: (context)=> Scaffold())
                             );
                         }
                         )

@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:fast_app_base/login/login.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fast_app_base/controller/auth_provider.dart';
-import 'package:flutter_naver_map/flutter_naver_map.dart';
+//import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
 import 'app.dart';
@@ -19,15 +19,15 @@ import 'common/data/preference/app_preferences.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import 'controller/auth_provider.dart';
-
-Future<void> _initializeNaverMap() async {
-  final naverMapApiKey = await getApiKey("naver_map_client_id");
-  await NaverMapSdk.instance.initialize(
-    clientId: naverMapApiKey,
-    onAuthFailed: (e) => log("네이버맵 인증오류 : $e", name: "onAuthFailed"),
-  );
-}
-
+/*
+// Future<void> _initializeNaverMap() async {
+//   final naverMapApiKey = await getApiKey("naver_map_client_id");
+//    await NaverMapSdk.instance.initialize(
+//      clientId: naverMapApiKey,
+//      onAuthFailed: (e) => log("네이버맵 인증오류 : $e", name: "onAuthFailed"),
+//    );
+// }
+*/
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -35,7 +35,7 @@ void main() async {
   FlutterNativeSplash.preserve(widgetsBinding: bindings);
 
   await Firebase.initializeApp();
-  await _initializeNaverMap();
+  //await _initializeNaverMap();
   await EasyLocalization.ensureInitialized();
   await AppPreferences.init();
 
@@ -71,6 +71,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     FlutterNativeSplash.remove();
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(primaryColor: Colors.blue),
       home: Consumer<AuthProvider>(
         builder: (context, auth, _) {

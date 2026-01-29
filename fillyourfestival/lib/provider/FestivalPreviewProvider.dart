@@ -51,7 +51,7 @@ class FestivalPreviewProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final uri = Uri.parse('$baseUrl/api/festivals?page=$_page&size=$_size');
+      final uri = Uri.parse('$baseUrl/festivals?page=$_page&size=$_size');
       final res = await http.get(uri);
 
       if (res.statusCode != 200) {

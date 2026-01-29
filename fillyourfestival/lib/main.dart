@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/cli_common.dart';
 import 'package:fast_app_base/common/common.dart';
+import 'package:fast_app_base/provider/FestivalPreviewProvider.dart';
 import 'package:fast_app_base/provider/poster/poster_provider.dart';
 import 'package:fast_app_base/provider/user_provider.dart';
 import 'package:flutter/material.dart';
@@ -57,6 +58,9 @@ void main() async {
               create: (context) => PosterProvider()),
           ChangeNotifierProvider<UserProvider>(
               create: (context) => UserProvider()),
+          ChangeNotifierProvider(
+            create: (_) => FestivalPreviewProvider(baseUrl: 'http://10.0.2.2:8080'),
+          ),
         ],
         child: const MyApp(),
       ),

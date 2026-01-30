@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import '../../model/FestivalPreview.dart';
 
 Widget buildFestivalPreviewCard(FestivalPreview festival) {
+  debugPrint('imgUrl=${festival.posterUrl}');
+
   return Container(
     height: 160,
     margin: EdgeInsets.only(top: 16, bottom: 16, left: 16),

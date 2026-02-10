@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class PosterModel with ChangeNotifier {
   //final FutureBuilder<QuerySnapshot<Object?>> collectionPoster;
 
-  final String id;
+  final int id;
   final String title;
   final String description;
   final String location;
@@ -19,5 +19,19 @@ class PosterModel with ChangeNotifier {
       required this.location,
       required this.startDate,
       required this.endDate,
-      required this.posterUrl});
+      required this.posterUrl,
+      }
+      );
+
+  factory PosterModel.fromJson(Map<String, dynamic> json) {
+    return PosterModel(
+      id: json['id'],
+      title: json['title'],
+      description: json['description'],
+      location: json['location'],
+      startDate: json['startDate'],
+      endDate: json['endDate'],
+      posterUrl: json['posterUrl'],
+    );
+  }
 }

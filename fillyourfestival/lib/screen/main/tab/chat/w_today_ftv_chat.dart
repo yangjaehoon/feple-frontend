@@ -47,14 +47,14 @@ class _TodayFtvChatState extends State<TodayFtvChat> {
                                     context,
                                     MaterialPageRoute(
                                       builder: ((context) => ChattingRoom(
-                                          chattingroomname: poster.posters[index].name)),
+                                          chattingroomname: poster.posters[index].title)),
                                     ),
                                   );
                                 },
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(10.0),
                                   child: Image(
-                                    image: NetworkImage(poster.posters[index].imgUrl),
+                                    image: NetworkImage(poster.posters[index].posterUrl),
                                     fit: BoxFit.cover,
                                     width: 150,
                                     height: 200,
@@ -76,7 +76,7 @@ class _TodayFtvChatState extends State<TodayFtvChat> {
                           Padding(
                             padding: const EdgeInsets.all(5.0),
                             child: Text(
-                              poster.posters[index].name,
+                              poster.posters[index].title,
                               style: const TextStyle(
                                 color: Colors.black,
                               ),

@@ -25,11 +25,15 @@ class PosterProvider extends ChangeNotifier {
         String imgUrl = await ref.getDownloadURL();
 
         return PosterModel(
-          date: doc['date'],
           id: doc['id'],
-          imgUrl: imgUrl,
+          title: doc['title'],
+          description: doc['description'],
           location: doc['location'],
-          name: doc['name'],
+          startDate: doc['startDate'],
+          endDate: doc['endDate'],
+          posterUrl: doc['posterUrl'],
+
+
         );
       }).toList());
 

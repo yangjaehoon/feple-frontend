@@ -14,7 +14,7 @@ Widget buildPosterCard(PosterModel poster) {
             color: Colors.grey[900],
             borderRadius: BorderRadius.circular(16),
             image: DecorationImage(
-              image: NetworkImage(poster.imgUrl),
+              image: NetworkImage(poster.posterUrl),
               //image: NetworkImage('ftv_poster/waterbomb_poster.jpg'),
               fit: BoxFit.cover,
             ),
@@ -30,7 +30,7 @@ Widget buildPosterCard(PosterModel poster) {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      poster.name ?? '페스티벌 이름',
+                      poster.title ?? '페스티벌 이름',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
@@ -51,10 +51,10 @@ Widget buildPosterCard(PosterModel poster) {
                 Padding(
                   padding: EdgeInsets.only(top: 12.0),
                   child: Text(
-                    "페스티벌 이름: ${poster.name}\n"
+                    "페스티벌 이름: ${poster.title}\n"
                     //"참여 아티스트: ${poster['artists']}\n"
                         "장소: ${poster.location}\n"
-                        "날짜: ${poster.date}",
+                        "날짜: ${poster.startDate}",
                   ),
                 ),
               ],

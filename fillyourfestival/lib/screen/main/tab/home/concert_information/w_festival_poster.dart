@@ -26,7 +26,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: NetworkImage(widget.poster.imgUrl),
+                image: NetworkImage(widget.poster.posterUrl),
                 fit: BoxFit.cover,
               ),
             ),
@@ -52,7 +52,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: Image.network(
-                      widget.poster.imgUrl,
+                      widget.poster.posterUrl,
                       fit: BoxFit.fill,
                     ),
                   ),
@@ -64,12 +64,12 @@ class _FestivalPosterState extends State<FestivalPoster> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(widget.poster.name,
+                    Text(widget.poster.title,
                         softWrap: true, style: TextStyle(fontSize: 30)),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("날짜: ${widget.poster.date}",
+                        Text("날짜: ${widget.poster.startDate}",
                             style: TextStyle(fontSize: 20)),
                         Text("장소: ${widget.poster.location}",
                             softWrap: true,

@@ -44,7 +44,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
             image: DecorationImage(
               image: NetworkImage(
                 //posterList[_currentPage],
-                poster.posters[_currentPage].imgUrl,
+                poster.posters[_currentPage].posterUrl,
               ),
               fit: BoxFit.cover,
             ),
@@ -86,7 +86,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: Image.network(
-                      poster.posters[index].imgUrl,
+                      poster.posters[index].posterUrl,
                       fit: BoxFit.fill,
                     ),
                   ),

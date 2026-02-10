@@ -16,21 +16,14 @@ class FestivalPreviewProvider extends ChangeNotifier {
   List<FestivalPreview> get items => List.unmodifiable(_items);
 
   bool _isLoading = false;
-
   bool get isLoading => _isLoading;
-
   bool _isLoadingMore = false;
-
   bool get isLoadingMore => _isLoadingMore;
-
   String? _error;
-
   String? get error => _error;
-
   int _page = 0;
   final int _size = 20;
   bool _hasMore = true;
-
   bool get hasMore => _hasMore;
 
   Future<void> refresh() async {

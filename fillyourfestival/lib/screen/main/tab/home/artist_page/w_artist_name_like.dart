@@ -1,19 +1,71 @@
 import 'package:fast_app_base/screen/main/tab/home/artist_page/w_ftv_calender.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
+import '../../../../../config.dart' as AppConfig;
 import '../vo/artist_dummy.dart';
 import 'img_collection/f_img_collection.dart';
 
 class ArtistNameLike extends StatefulWidget {
-  const ArtistNameLike({super.key, required this.artistName});
+  const ArtistNameLike({super.key, required this.artistName, required this.artistId});
 
   final String artistName;
+  final int artistId;
 
   @override
   State<ArtistNameLike> createState() => _ArtistNameLikeState();
 }
 
 class _ArtistNameLikeState extends State<ArtistNameLike> {
+  bool isFollowed = false;
+  int followCount = 0;
+  bool isLoading = false;
+
+  Future<void> toggleFollow(int artistId) async {
+    if (isLoading) return;
+    setState(() => isLoading = true);
+
+    final baseUrl = AppConfig.baseUrl;
+    final url = Uri.parse('$baseUrl/artists/$artistId/follow');
+
+    try {
+      final response = isFollowed
+          ? await http.delete(url, headers: {
+        'Content-Type': 'application/json',
+        // 'Authorization': 'Bearer $accessToken',
+      })
+          : await http.post(url, headers: {
+        'Content-Type': 'application/json',
+        // 'Authorization': 'Bearer $accessToken',
+      });
+
+      if (!mounted) return; // async 후 setState 안전장치(권장) [web:420]
+
+      if (response.statusCode == 200 ||
+          response.statusCode == 201 ||
+          response.statusCode == 204) {
+        setState(() {
+          if (isFollowed) {
+            isFollowed = false;
+            if (followCount > 0) followCount--;
+          } else {
+            isFollowed = true;
+            followCount++;
+          }
+        });
+      } else {
+        setState(() {}); // 필요하면 에러 상태 변수 추가
+      }
+    } catch (e) {
+      if (!mounted) return; // [web:420]
+      // 에러 처리
+    } finally {
+      if (!mounted) return; // [web:420]
+      setState(() => isLoading = false);
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -107,3 +159,4 @@ void flutterToast() {
     toastLength: Toast.LENGTH_LONG,
   );
 }
+

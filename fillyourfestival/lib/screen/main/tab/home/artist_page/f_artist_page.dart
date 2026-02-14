@@ -5,9 +5,10 @@ import 'package:fast_app_base/screen/main/tab/home/artist_page/w_main_image_swip
 import 'package:flutter/material.dart';
 
 class ArtistPage extends StatefulWidget {
-  const ArtistPage({super.key, required this.artistName});
+  const ArtistPage({super.key, required this.artistName, required this.artistId});
 
   final String artistName;
+  final int artistId;
 
   @override
   State<ArtistPage> createState() => _ArtistPageState();
@@ -21,7 +22,7 @@ class _ArtistPageState extends State<ArtistPage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              MainImageSwiper(artistName: widget.artistName),
+              MainImageSwiper(artistName: widget.artistName, artistId: widget.artistId),
               FtvYoutubeShorts(artistName: widget.artistName),
               FtvYoutube(artistName: widget.artistName),
             ],

@@ -46,3 +46,5 @@ app.*.map.json
 #인증 API키
 /lib/auth
 /lib/config.dart
+
+lib/config/app_config.dart

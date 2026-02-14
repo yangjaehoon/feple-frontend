@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../config.dart';
 import '../model/FestivalPreview.dart';
 
 class FestivalPreviewProvider extends ChangeNotifier {
-  final String baseUrl;
 
-  FestivalPreviewProvider({required this.baseUrl}) {
+  FestivalPreviewProvider() {
     refresh();
   }
 

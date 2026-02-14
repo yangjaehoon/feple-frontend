@@ -3,6 +3,7 @@ import 'package:fast_app_base/provider/poster/get_img_url.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import '../../config.dart';
 import '../../model/poster_model.dart';
 
 
@@ -12,8 +13,6 @@ class PosterProvider extends ChangeNotifier {
   List<PosterModel> get posters => _posters;
 
   final Dio _dio = Dio();
-
-  final String baseUrl = 'http://10.0.2.2:8080';
 
   PosterProvider() {
     fetchPosters();

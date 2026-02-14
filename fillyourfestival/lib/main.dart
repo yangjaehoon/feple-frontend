@@ -59,7 +59,7 @@ void main() async {
           ChangeNotifierProvider<UserProvider>(
               create: (context) => UserProvider()),
           ChangeNotifierProvider(
-            create: (_) => FestivalPreviewProvider(baseUrl: 'http://10.0.2.2:8080'),
+            create: (_) => FestivalPreviewProvider(),
           ),
         ],
         child: const MyApp(),

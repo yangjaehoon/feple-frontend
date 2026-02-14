@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../config.dart';
 import '../model/artist_model.dart';
-
-const String baseUrl = 'http://<서버주소>:<포트>'; // 너 백엔드 주소로 변경
 
 Future<List<Artist>> fetchArtists() async {
   final res = await http.get(Uri.parse('$baseUrl/artists'));

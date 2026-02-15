@@ -5,7 +5,11 @@ import 'package:fast_app_base/screen/main/tab/home/artist_page/w_artist_name_lik
 import 'package:flutter/material.dart';
 
 class MainImageSwiper extends StatefulWidget {
-  const MainImageSwiper({super.key, required this.artistName, required this.artistId, required this.followerCount});
+  const MainImageSwiper({
+    super.key, required this.artistName,
+    required this.artistId,
+    required this.followerCount
+  });
 
   final int followerCount;
   final String artistName;
@@ -33,8 +37,9 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   );
 
   int _currentPage = 0;
+  final ValueNotifier<double> _scroll = ValueNotifier(0.0);
 
-  ValueNotifier<double> _scroll = ValueNotifier(0.0);
+  Timer? _timer;
 
   void _onPageChanged(int newPage) {
     setState(() {
@@ -45,32 +50,34 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   @override
   void initState() {
     super.initState();
+
     _pageController.addListener(() {
-      if (_pageController.page == null) return;
-      _scroll.value = _pageController.page!;
+      final p = _pageController.page;
+      if (p == null) return;
+      _scroll.value = p;
     });
 
-    Timer.periodic(
-      Duration(seconds: 2),
-          (Timer timer) {
-        if (_currentPage < ftvArtImgList.length) {
-          _currentPage++;
-        }
-        else {
-          _currentPage = 0;
-        }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _timer = Timer.periodic(const Duration(seconds: 2), (_) async {
+        if (!mounted) return;
+        if (!_pageController.hasClients) return; // attach 안 됐으면 스킵 [web:452]
 
+        final nextPage = (_currentPage + 1) % ftvArtImgList.length;
+
+        // animateToPage가 실행되며 onPageChanged에서 _currentPage 갱신됨
         _pageController.animateToPage(
-          _currentPage,
-          duration: Duration(milliseconds: 350),
+          nextPage,
+          duration: const Duration(milliseconds: 350),
           curve: Curves.easeIn,
         );
-      },
-    );
+      });
+    });
   }
 
   @override
   void dispose() {
+    _timer?.cancel();
+    _scroll.dispose();
     _pageController.dispose();
     super.dispose();
   }

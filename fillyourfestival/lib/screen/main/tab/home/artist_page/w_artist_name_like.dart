@@ -42,11 +42,12 @@ class _ArtistNameLikeState extends State<ArtistNameLike> {
 
   Future<void> _initFollowState() async {
     try {
-      final followed = await _followApi.isFollowed(widget.artistId);
+      final status = await _followApi.getFollowStatus(widget.artistId);
 
       if (!mounted) return;
       setState(() {
-        isFollowed = followed;
+        isFollowed = status.followed;
+        followCount = status.followerCount;
       });
     } catch (e) {
     }
@@ -119,7 +120,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike> {
                 const SizedBox(width: 8.0),
                 SizedBox(width: 8.0),
                 ElevatedButton(
-                  onPressed: isLoading ? null : () => toggleFollow,
+                  onPressed: isLoading ? null : toggleFollow,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isFollowed ? Colors.grey : Colors.lightBlue,
                     foregroundColor: Colors.white,

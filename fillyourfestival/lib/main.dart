@@ -73,9 +73,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primaryColor: Colors.blue),
-      home: Consumer<AuthProvider>(
-        builder: (context, auth, _) {
-          if (auth.user == null) {
+      home: Consumer<UserProvider>(
+        builder: (context, userProvider, _) {
+          if (userProvider.user == null) {
             return LoginPage();
           } else {
             return const App();

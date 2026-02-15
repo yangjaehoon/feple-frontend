@@ -19,6 +19,7 @@ class DioClient {
         if (jwt != null && jwt.isNotEmpty) {
           options.headers['Authorization'] = 'Bearer $jwt';
         }
+        print('JWT attach: ${jwt?.substring(0, 10)}...');
         handler.next(options);
       },
     ),

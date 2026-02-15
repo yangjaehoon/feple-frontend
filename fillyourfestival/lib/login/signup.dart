@@ -221,14 +221,14 @@ class SignupPage extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () async {
-                    try {
-                      await Provider.of<AuthProvider>(context, listen: false)
-                          .register(emailController.text.trim(), passwordController.text.trim());
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Registration failed: $e')),
-                      );
-                    }
+                    // try {
+                    //   await Provider.of<AuthProvider>(context, listen: false)
+                    //       .register(emailController.text.trim(), passwordController.text.trim());
+                    // } catch (e) {
+                    //   ScaffoldMessenger.of(context).showSnackBar(
+                    //     SnackBar(content: Text('Registration failed: $e')),
+                    //   );
+                    // }
                   },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 25.0),

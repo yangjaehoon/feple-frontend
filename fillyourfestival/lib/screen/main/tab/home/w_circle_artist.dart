@@ -43,7 +43,8 @@ class CircleArtistWidget extends StatelessWidget {
                     builder: (context) =>
                         ArtistPage(
                             artistName: artist.name,
-                            artistId: artist.id
+                            artistId: artist.id,
+                            followerCounter: artist.followerCount
                         ),
                   ),
                 );

@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+//import 'package:cloud_firestore/cloud_firestore.dart';
+//import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
@@ -20,8 +20,8 @@ class ImgUpload extends StatefulWidget {
 class _ImgUploadState extends State<ImgUpload> {
   final _formKey = GlobalKey<FormState>();
 
-  final db = FirebaseFirestore.instance;
-  final storage = FirebaseStorage.instance;
+  //final db = FirebaseFirestore.instance;
+  //final storage = FirebaseStorage.instance;
   Uint8List? imageData;
   XFile? image;
 
@@ -36,19 +36,19 @@ class _ImgUploadState extends State<ImgUpload> {
 
   Future addImage() async {
     if (imageData != null) {
-      // storage에 저장할 파일 이름
-      final storageRef = storage.ref().child(
-          "/artist_img/${widget.artistName}/${widget.artistName}_${DateTime.now().millisecondsSinceEpoch}_${image?.name ?? "??"}");
-      final compressedData = await imageCompressList(imageData!);
-      await storageRef.putData(compressedData);
-      final downloadLink = await storageRef.getDownloadURL();
-      final sampleData = ArtistImg(
-        title: titleTEC.text,
-        ftvName: ftvNameTEC.text,
-        imgUrl: downloadLink,
-        timestamp: DateTime.now().millisecondsSinceEpoch,
-      );
-      final doc = await db.collection("ArtistImg").add(sampleData.toJson());
+      // // storage에 저장할 파일 이름
+      // final storageRef = storage.ref().child(
+      //     "/artist_img/${widget.artistName}/${widget.artistName}_${DateTime.now().millisecondsSinceEpoch}_${image?.name ?? "??"}");
+      // final compressedData = await imageCompressList(imageData!);
+      // await storageRef.putData(compressedData);
+      // final downloadLink = await storageRef.getDownloadURL();
+      // final sampleData = ArtistImg(
+      //   title: titleTEC.text,
+      //   ftvName: ftvNameTEC.text,
+      //   imgUrl: downloadLink,
+      //   timestamp: DateTime.now().millisecondsSinceEpoch,
+      // );
+      // final doc = await db.collection("ArtistImg").add(sampleData.toJson());
     }
   }
 

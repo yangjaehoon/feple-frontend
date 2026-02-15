@@ -5,8 +5,9 @@ import 'package:fast_app_base/screen/main/tab/home/artist_page/w_artist_name_lik
 import 'package:flutter/material.dart';
 
 class MainImageSwiper extends StatefulWidget {
-  const MainImageSwiper({super.key, required this.artistName, required this.artistId});
+  const MainImageSwiper({super.key, required this.artistName, required this.artistId, required this.followerCount});
 
+  final int followerCount;
   final String artistName;
   final int artistId;
 
@@ -149,7 +150,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
               },
             ),
           ),
-          ArtistNameLike(artistName: widget.artistName, artistId: widget.artistId,),
+          ArtistNameLike(artistName: widget.artistName, artistId: widget.artistId,initialFollowerCount: widget.followerCount),
         ],
       ),
     );

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:fast_app_base/config.dart';
 import 'package:fast_app_base/login/signup.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -10,6 +9,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../app.dart';
+import '../auth/token_store.dart';
 import '../controller/auth_provider.dart' as auth;
 import '../main.dart';
 import '../model/user_model.dart' as app;
@@ -105,12 +106,12 @@ class _LoginPageState extends State<LoginPage> {
                 GestureDetector(
                   onTap: () async {
                     try {
-                      print(await KakaoSdk.origin);
-
-                      await Provider.of<auth.AuthProvider>(context,
-                              listen: false)
-                          .login(emailController.text.trim(),
-                              passwordController.text.trim());
+                      // print(await KakaoSdk.origin);
+                      //
+                      // await Provider.of<auth.AuthProvider>(context,
+                      //         listen: false)
+                      //     .login(emailController.text.trim(),
+                      //         passwordController.text.trim());
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Login failed: $e')),
@@ -149,7 +150,6 @@ class _LoginPageState extends State<LoginPage> {
                         context,
                         MaterialPageRoute(builder: (context) => SignupPage()),
                       ),
-
                       child: const Text(
                         ' Register Now!',
                         style: TextStyle(
@@ -199,105 +199,37 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> signInWithKakao(BuildContext context) async {
-
     final userProvider = context.read<UserProvider>();
 
-    final authProvider = Provider.of<auth.AuthProvider>(context, listen: false);
-    final navigator   = Navigator.of(context);
+    try {
+      OAuthToken token;
 
-    if (await isKakaoTalkInstalled()) {
-      try {
-        print("들어옴");
-        var provider = OAuthProvider("oidc.kakao");
-        print("oidc 통과");
-        OAuthToken token = await UserApi.instance.loginWithKakaoTalk();
-        var credential = provider.credential(
-          idToken: token.idToken,
-          accessToken: token.accessToken,
-        );
-        await FirebaseAuth.instance.signInWithCredential(credential);
-        await sendAccessTokenToServer(token.accessToken);
-
-        //final userProvider = Provider.of<UserProvider>(context, listen: false);
-        final me = await sendAccessTokenToServer(token.accessToken);
-        //Provider.of<UserProvider>(context, listen: false).setUser(me);
-        context.read<UserProvider>().setUser(me);
-
-
-        await authProvider.sendData(); //데베에 보내주기
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => MyApp()), // 메인 탭이 있는 루트 페이지
-        );
-
-        print('카카오톡으로 로그인 성공');
-
-        Fluttertoast.showToast(msg: '카톡 로그인 성공 1');
-      } catch (error) {
-        Fluttertoast.showToast(msg: 'Error Type: ${error.runtimeType}, $error');
-
-        print('카카오톡으로 로그인 실패1 $error');
-        // 예외 처리 코드 추가 가능
-        if (error is PlatformException && error.code == 'CANCELED') {
-          return;
-        }
+      if (await isKakaoTalkInstalled()) {
         try {
-          var provider = OAuthProvider("oidc.kakao");
-          OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
-          var credential = provider.credential(
-            idToken: token.idToken,
-            accessToken: token.accessToken,
-          );
-          await FirebaseAuth.instance.signInWithCredential(credential);
-          await sendAccessTokenToServer(token.accessToken);
-
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => MyApp()), // 메인 탭이 있는 루트 페이지
-          );
-
-          print('카카오계정으로 로그인 성공2');
-          Fluttertoast.showToast(msg: '카톡 로그인 성공2');
+          token = await UserApi.instance.loginWithKakaoTalk();
         } catch (error) {
-          print('카카오계정으로 로그인 실패2 $error');
-          Fluttertoast.showToast(
-              msg: 'Error Type: ${error.runtimeType}, $error');
-          // 예외 처리 코드 추가 가능
+          // 카톡 로그인 실패하면 계정 로그인으로 폴백
+          token = await UserApi.instance.loginWithKakaoAccount();
         }
+      } else {
+        token = await UserApi.instance.loginWithKakaoAccount();
       }
-    }
-    //핸드폰으로 테스트 할때는 카카오톡 깔려있으니 잠시 주석
-    else {
-      try {
-        print("테스트1");
-        var provider = OAuthProvider("oidc.kakao");
-        OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
-        print("테스트2");
-        var credential = provider.credential(
-          idToken: token.idToken,
-          accessToken: token.accessToken,
-        );
-        await FirebaseAuth.instance.signInWithCredential(credential);
 
-        final me = await sendAccessTokenToServer(token.accessToken);
-        print(me.profileImageUrl);
+      final me = await sendAccessTokenToServer(token.accessToken);
+      userProvider.setUser(me);
 
-        userProvider.setUser(me);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const App()), // App import 되어있어야 함
+      );
 
-        navigator.pushReplacement(
-          MaterialPageRoute(builder: (_) => MyApp()),
-        );
-
-        print('카카오계정으로 로그인 성공');
-      } catch (error) {
-        print('카카오계정으로 로그인 실패 $error');
-        // 예외 처리 코드 추가 가능
-      }
+      Fluttertoast.showToast(msg: '카카오 로그인 성공');
+    } catch (e) {
+      Fluttertoast.showToast(msg: '카카오 로그인 실패: $e');
     }
   }
 
-  Future<app.User> sendAccessTokenToServer(String accessToken) async{
+  Future<app.User> sendAccessTokenToServer(String accessToken) async {
     final response = await http.post(
       Uri.parse('$baseUrl/auth/kakao'),
       headers: {
@@ -306,14 +238,19 @@ class _LoginPageState extends State<LoginPage> {
       },
     );
 
-    if(response.statusCode == 200){
-      print('Spring 서버 로그인 성공: ${response.body}');
-      final json = jsonDecode(response.body);
-      return app.User.fromJson(jsonDecode(response.body));
-    }else{
-      print('Spring 서버 로그인 실패: ${response.body}');
-      throw Exception('Spring 서버 로그인 실패: ${response.statusCode} ${response.body}');
-
+    if (response.statusCode != 200) {
+      throw Exception(
+          'Spring 서버 로그인 실패: ${response.statusCode} ${response.body}');
     }
+
+    final json = jsonDecode(response.body) as Map<String, dynamic>;
+
+    // 1) 우리 JWT 저장
+    final ourJwt = json['accessToken'] as String;
+    await TokenStore.saveAccessToken(ourJwt);
+
+    // 2) user 파싱해서 리턴
+    final userJson = json['user'] as Map<String, dynamic>;
+    return app.User.fromJson(userJson);
   }
 }

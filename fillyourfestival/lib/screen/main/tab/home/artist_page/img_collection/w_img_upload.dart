@@ -51,7 +51,10 @@ class _ImgUploadState extends State<ImgUpload> {
 
     final presignRes = await dio.post(
       '$baseUrl/artists/$artistId/photos/presign',
-      data: {'contentType': contentType, 'extension': extension},
+      data: {
+        'contentType': contentType,
+        'extension': extension,
+      },
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
 
@@ -69,13 +72,20 @@ class _ImgUploadState extends State<ImgUpload> {
 
     await dio.post(
       '$baseUrl/artists/$artistId/photos',
-      data: {'objectKey': presign.objectKey, 'contentType': contentType},
+      data: {
+        'objectKey': presign.objectKey,
+        'contentType': contentType,
+        'title': titleTEC.text,
+        'description': ftvNameTEC.text,
+      },
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
 
     if (!mounted) return;
     Navigator.pop(context, true);
   }
+
+  bool isUploading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -84,19 +94,21 @@ class _ImgUploadState extends State<ImgUpload> {
         title: const Text("사진 올리기"),
         actions: [
           IconButton(
-            onPressed: () async {
+            onPressed: isUploading ? null: () async {
               if (_formKey.currentState?.validate() ?? false) {
                 try {
                   await addImage();
                 } on DioException catch (e) {
                   debugPrint('status=${e.response?.statusCode}');
-                  debugPrint('data=${e.response?.data}'); // 서버 500 원인 확인용 [web:837]
+                  debugPrint('data=${e.response?.data}');
                 } catch (e) {
                   debugPrint('upload error: $e');
                 }
               }
             },
-            icon: const Icon(Icons.send),
+            icon: isUploading
+                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                : const Icon(Icons.send)
           ),
         ],
       ),

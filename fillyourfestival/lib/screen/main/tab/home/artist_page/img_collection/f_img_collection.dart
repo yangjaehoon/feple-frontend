@@ -4,7 +4,8 @@ import 'package:fast_app_base/screen/main/tab/home/artist_page/img_collection/w_
 import '../../w_fyf_app_bar.dart';
 
 class ImgCollection extends StatefulWidget {
-  const ImgCollection({super.key, required this.artistName, required this.artistId});
+  const ImgCollection(
+      {super.key, required this.artistName, required this.artistId});
 
   final String artistName;
   final int artistId;
@@ -14,6 +15,9 @@ class ImgCollection extends StatefulWidget {
 }
 
 class _ImgCollectionState extends State<ImgCollection> {
+
+  final GlobalKey<ImgCollectionWidgetState> _imgCollectionKey = GlobalKey<ImgCollectionWidgetState>();
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -27,7 +31,11 @@ class _ImgCollectionState extends State<ImgCollection> {
             ),
             child: Column(
               children: [
-                ImgCollectionWidget(artistName: widget.artistName),
+                ImgCollectionWidget(
+                  key: _imgCollectionKey,
+                  artistName: widget.artistName,
+                  artistId: widget.artistId,
+                ),
               ],
             ),
           ),
@@ -36,14 +44,21 @@ class _ImgCollectionState extends State<ImgCollection> {
             bottom: 40,
             right: 10,
             child: FloatingActionButton(
-              child: const Icon(Icons.add),
-              onPressed: () {
-                Navigator.push(
+              child: const Icon(Icons.add_photo_alternate),
+              onPressed: () async {
+                final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>
-                          ImgUpload(artistName: widget.artistName, artistId: widget.artistId,)),
+                    builder: (context) => ImgUpload(
+                      artistName: widget.artistName,
+                      artistId: widget.artistId,
+                    ),
+                  ),
                 );
+                if (result == true) {
+                  _imgCollectionKey.currentState?.refresh();
+                }
+
               },
             ),
           ),

@@ -156,7 +156,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                ImgCollection(artistName: widget.artistName)
+                                ImgCollection(artistName: widget.artistName, artistId: widget.artistId,)
                           ),
                       );
                     },

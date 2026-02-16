@@ -1,16 +1,17 @@
 import 'dart:typed_data';
-
-//import 'package:cloud_firestore/cloud_firestore.dart';
-//import 'package:firebase_storage/firebase_storage.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-
-import '../../../../../../model/artist_img.dart';
+import '../../../../../../auth/token_store.dart';
+import '../../../../../../config.dart';
+import 'dto_presign_response.dart';
 
 class ImgUpload extends StatefulWidget {
-  const ImgUpload({super.key, required this.artistName});
+  const ImgUpload({super.key, required this.artistId, required this.artistName});
 
+  final int artistId;
   final String artistName;
 
   @override
@@ -20,36 +21,60 @@ class ImgUpload extends StatefulWidget {
 class _ImgUploadState extends State<ImgUpload> {
   final _formKey = GlobalKey<FormState>();
 
-  //final db = FirebaseFirestore.instance;
-  //final storage = FirebaseStorage.instance;
   Uint8List? imageData;
   XFile? image;
 
   TextEditingController titleTEC = TextEditingController();
   TextEditingController ftvNameTEC = TextEditingController();
 
-  // 파이어베이스 용량 적으니 일단 압축해서 사진 올려줌
   Future<Uint8List> imageCompressList(Uint8List list) async {
     var result = await FlutterImageCompress.compressWithList(list, quality: 50);
     return result;
   }
 
-  Future addImage() async {
-    if (imageData != null) {
-      // // storage에 저장할 파일 이름
-      // final storageRef = storage.ref().child(
-      //     "/artist_img/${widget.artistName}/${widget.artistName}_${DateTime.now().millisecondsSinceEpoch}_${image?.name ?? "??"}");
-      // final compressedData = await imageCompressList(imageData!);
-      // await storageRef.putData(compressedData);
-      // final downloadLink = await storageRef.getDownloadURL();
-      // final sampleData = ArtistImg(
-      //   title: titleTEC.text,
-      //   ftvName: ftvNameTEC.text,
-      //   imgUrl: downloadLink,
-      //   timestamp: DateTime.now().millisecondsSinceEpoch,
-      // );
-      // final doc = await db.collection("ArtistImg").add(sampleData.toJson());
+  Future<void> addImage() async {
+    if (imageData == null) return;
+
+    final compressedData = await imageCompressList(imageData!);
+
+    const contentType = 'image/jpeg';
+    const extension = 'jpg';
+
+    final token = await TokenStore.readAccessToken();
+    if (token == null || token.isEmpty) {
+      throw Exception('로그인이 필요합니다(토큰 없음)');
     }
+
+    final artistId = widget.artistId;
+
+    final dio = Dio();
+
+    final presignRes = await dio.post(
+      '$baseUrl/artists/$artistId/photos/presign',
+      data: {'contentType': contentType, 'extension': extension},
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+
+    final presign = PresignResponse.fromJson(presignRes.data);
+
+    final putRes = await http.put(
+      Uri.parse(presign.uploadUrl),
+      headers: {'Content-Type': contentType},
+      body: compressedData,
+    );
+
+    if (putRes.statusCode < 200 || putRes.statusCode >= 300) {
+      throw Exception('S3 upload failed: ${putRes.statusCode} ${putRes.body}');
+    }
+
+    await dio.post(
+      '$baseUrl/artists/$artistId/photos',
+      data: {'objectKey': presign.objectKey, 'contentType': contentType},
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+
+    if (!mounted) return;
+    Navigator.pop(context, true);
   }
 
   @override
@@ -59,10 +84,16 @@ class _ImgUploadState extends State<ImgUpload> {
         title: const Text("사진 올리기"),
         actions: [
           IconButton(
-            onPressed: () {
-              // 폼 검증을 수행하여 유효한 경우에만 이미지 추가
+            onPressed: () async {
               if (_formKey.currentState?.validate() ?? false) {
-                addImage();
+                try {
+                  await addImage();
+                } on DioException catch (e) {
+                  debugPrint('status=${e.response?.statusCode}');
+                  debugPrint('data=${e.response?.data}'); // 서버 500 원인 확인용 [web:837]
+                } catch (e) {
+                  debugPrint('upload error: $e');
+                }
               }
             },
             icon: const Icon(Icons.send),

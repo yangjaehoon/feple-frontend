@@ -4,9 +4,10 @@ import 'package:fast_app_base/screen/main/tab/home/artist_page/img_collection/w_
 import '../../w_fyf_app_bar.dart';
 
 class ImgCollection extends StatefulWidget {
-  const ImgCollection({super.key, required this.artistName});
+  const ImgCollection({super.key, required this.artistName, required this.artistId});
 
   final String artistName;
+  final int artistId;
 
   @override
   State<ImgCollection> createState() => _ImgCollectionState();
@@ -41,7 +42,7 @@ class _ImgCollectionState extends State<ImgCollection> {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          ImgUpload(artistName: widget.artistName)),
+                          ImgUpload(artistName: widget.artistName, artistId: widget.artistId,)),
                 );
               },
             ),

@@ -95,6 +95,10 @@ class _ImgUploadState extends State<ImgUpload> {
         actions: [
           IconButton(
             onPressed: isUploading ? null: () async {
+              final token = await TokenStore.readAccessToken();
+              debugPrint('token=$token');
+              debugPrint('tokenPrefix=${token?.substring(0, 10)}');
+
               if (_formKey.currentState?.validate() ?? false) {
                 try {
                   await addImage();

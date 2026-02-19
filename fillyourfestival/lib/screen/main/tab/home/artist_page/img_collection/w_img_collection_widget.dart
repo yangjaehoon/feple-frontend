@@ -7,10 +7,7 @@ import 'dto_artist_photo_response.dart';
 
 class ImgCollectionWidget extends StatefulWidget {
   const ImgCollectionWidget(
-      {super.key,
-        required this.artistId,
-        required this.artistName
-      });
+      {super.key, required this.artistId, required this.artistName});
 
   final int artistId;
   final String artistName;
@@ -33,6 +30,40 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
     loadPhotos();
   }
 
+  Future<void> toggleLike(int photoId) async {
+    try {
+      final token = await TokenStore.readAccessToken();
+      final dio = Dio();
+
+      await dio.post(
+        '$baseUrl/artists/${widget.artistId}/photos/$photoId/like',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      setState(() {
+        final photoIndex = photos.indexWhere((p) => p.photoId == photoId);
+        if (photoIndex != -1) {
+          final photo = photos[photoIndex];
+          photos[photoIndex] = ArtistPhotoResponse(
+            photoId: photo.photoId,
+            url: photo.url,
+            uploaderUserId: photo.uploaderUserId,
+            createdAt: photo.createdAt,
+            title: photo.title,
+            description: photo.description,
+            likecount:
+                photo.isLiked ? photo.likecount - 1 : photo.likecount + 1,
+            isLiked: !photo.isLiked,
+          );
+          // 좋아요 순 재정렬
+          photos.sort((a, b) => b.likecount.compareTo(a.likecount));
+        }
+      });
+    } catch (e) {
+      debugPrint('toggle like error: $e');
+      // Rollback은 복잡하니 refresh 호출
+      refresh();
+    }
+  }
 
   Future<void> loadPhotos() async {
     try {
@@ -107,12 +138,36 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            photo.title,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
+                          IconButton(
+                            onPressed: () => toggleLike(photo.photoId!),
+                            icon: Icon(
+                              photo.isLiked
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: photo.isLiked ? Colors.red : Colors.grey,
+                              size: 28,
                             ),
+                            padding: EdgeInsets.zero,
+                            constraints:
+                                BoxConstraints(minWidth: 36, minHeight: 36),
+                          ),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              photo.title,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            '${photo.likecount}',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w500),
                           ),
                           PopupMenuButton(
                             itemBuilder: (context) => [

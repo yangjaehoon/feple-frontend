@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import '../config.dart';
+import '../auth/token_store.dart';
 import '../model/user_model.dart';
 import '../network/dio_client.dart';
+import 'package:dio/dio.dart';
 
 class UserProvider with ChangeNotifier {
   User? _user;
@@ -54,5 +54,25 @@ class UserProvider with ChangeNotifier {
       'nickname': me.nickname,
       'profileImageUrl': me.profileImageUrl,
     }));
+  }
+
+  Future<void> fetchUserFromToken(String token) async {
+    try {
+      final dio = DioClient.dio;
+      final res = await dio.get(
+        '/users/me',
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+
+      _user = User.fromJson(res.data);
+      notifyListeners();
+    } catch (e) {
+      print('fetchUserFromToken error: $e');
+      _user = null;
+      await TokenStore.clear();
+      rethrow;
+    }
   }
 }

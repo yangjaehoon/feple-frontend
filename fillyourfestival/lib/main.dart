@@ -13,6 +13,7 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
 import 'app.dart';
 import 'auth/get_api_key.dart';
+import 'auth/token_store.dart';
 import 'common/data/preference/app_preferences.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
@@ -76,6 +77,7 @@ class MyApp extends StatelessWidget {
       home: Consumer<UserProvider>(
         builder: (context, userProvider, _) {
           if (userProvider.user == null) {
+            _tryAutoLogin(context, userProvider);
             return LoginPage();
           } else {
             return const App();
@@ -86,5 +88,19 @@ class MyApp extends StatelessWidget {
       supportedLocales: context.supportedLocales,
       locale: context.locale,
     );
+  }
+
+  Future<void> _tryAutoLogin(BuildContext context, UserProvider userProvider) async {
+    try {
+      final token = await TokenStore.readAccessToken();
+      if (token != null) {
+        await userProvider.fetchUserFromToken(token);
+        if (userProvider.user != null) {
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const App()));
+        }
+      }
+    } catch (e) {
+      log('Auto login failed: $e');
+    }
   }
 }

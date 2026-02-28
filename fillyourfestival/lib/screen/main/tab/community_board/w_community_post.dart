@@ -16,7 +16,15 @@ class CommunityPost extends StatefulWidget {
 }
 
 class _CommunityPostState extends State<CommunityPost> {
-  Future<List<Map<String, dynamic>>> getPosts() async {
+  late Future<List<Map<String, dynamic>>> _postsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _postsFuture = _fetchPosts();
+  }
+
+  Future<List<Map<String, dynamic>>> _fetchPosts() async {
     String boarduri = '';
     if (widget.boardname == "FreeBoard") {
       boarduri = '$baseUrl/posts/free';
@@ -27,11 +35,17 @@ class _CommunityPostState extends State<CommunityPost> {
     }
     final response = await http.get(Uri.parse(boarduri));
     if (response.statusCode == 200) {
-      final List<dynamic> parsed = json.decode(response.body);
+      final List<dynamic> parsed = json.decode(utf8.decode(response.bodyBytes));
       return parsed.map((e) => e as Map<String, dynamic>).toList();
     } else {
       throw Exception('Failed to load free boards');
     }
+  }
+
+  void _refresh() {
+    setState(() {
+      _postsFuture = _fetchPosts();
+    });
   }
 
   @override
@@ -44,7 +58,7 @@ class _CommunityPostState extends State<CommunityPost> {
         SizedBox(
           height: 600,
           child: FutureBuilder<List<Map<String, dynamic>>>(
-              future: getPosts(),
+              future: _postsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
@@ -138,7 +152,7 @@ class _CommunityPostState extends State<CommunityPost> {
                     boardname: widget.boardname,
                   ),
                 ),
-              );
+              ).then((_) => _refresh());
             },
             label: const Text('글 쓰기'),
             icon: const Icon(

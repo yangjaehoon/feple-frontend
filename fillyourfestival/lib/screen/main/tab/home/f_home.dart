@@ -32,7 +32,7 @@ class HomeFragment extends StatelessWidget {
             ),
           ),
           //CircleArtistWidget(),
-          FyfAppBar("Fill your Festival"),
+          FyfAppBar("Feple"),
         ],
       ),
     );

@@ -1,3 +1,5 @@
+import 'package:fast_app_base/common/common.dart';
+import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'dart:core';
 import 'dart:convert';
@@ -133,40 +135,51 @@ class _EnralgePostState extends State<EnralgePost> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.boardname),
+        backgroundColor: colors.appBarColor,
+        foregroundColor: Colors.white,
       ),
       body: Container(
-        color: Colors.black,
+        color: colors.backgroundMain,
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Title
               Text(
                 widget.title,
-                style: const TextStyle(fontSize: 20, color: Colors.white),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: colors.textTitle,
+                ),
               ),
               const SizedBox(height: 4),
+              // Author
               Text(
                 widget.nickname,
-                style: const TextStyle(fontSize: 13, color: Colors.white54),
+                style: TextStyle(fontSize: 13, color: colors.textSecondary),
               ),
-              const Divider(
-                thickness: 2,
+              Divider(
+                thickness: 1,
                 height: 24,
-                color: Color.fromARGB(255, 110, 110, 110),
+                color: colors.listDivider,
               ),
+              // Content
               Text(
                 widget.content,
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: colors.textTitle, fontSize: 15),
               ),
-              const Divider(
-                thickness: 2,
+              Divider(
+                thickness: 1,
                 height: 40,
-                color: Color.fromARGB(255, 110, 110, 110),
+                color: colors.listDivider,
               ),
+              // Like & comment count
               Row(
                 children: [
                   GestureDetector(
@@ -175,34 +188,44 @@ class _EnralgePostState extends State<EnralgePost> {
                       children: [
                         Icon(
                           Icons.favorite_rounded,
-                          color: _liked ? const Color(0xFFFF6B9D) : Colors.white54,
+                          color: _liked
+                              ? AppColors.kawaiiPink
+                              : colors.textSecondary,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           widget.heart.toString(),
-                          style: const TextStyle(fontSize: 16, color: Colors.white),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: colors.textTitle,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(width: 16),
-                  const Icon(Icons.comment, color: Colors.white54),
+                  Icon(Icons.comment_rounded, color: colors.textSecondary),
                   const SizedBox(width: 4),
                   Text(
                     _comments.length.toString(),
-                    style: const TextStyle(fontSize: 16, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: colors.textTitle,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 24),
-              // 댓글 목록
+              // Comment list
               if (_comments.isNotEmpty)
                 ListView.separated(
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: _comments.length,
-                  separatorBuilder: (_, __) => const Divider(
-                    color: Color.fromARGB(255, 60, 60, 60),
+                  separatorBuilder: (_, __) => Divider(
+                    color: colors.listDivider,
                     height: 1,
                   ),
                   itemBuilder: (context, index) {
@@ -212,10 +235,11 @@ class _EnralgePostState extends State<EnralgePost> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const CircleAvatar(
+                          CircleAvatar(
                             radius: 16,
-                            backgroundColor: Colors.blueAccent,
-                            child: Icon(Icons.person, size: 18, color: Colors.white),
+                            backgroundColor: colors.activate,
+                            child: const Icon(Icons.person,
+                                size: 18, color: Colors.white),
                           ),
                           const SizedBox(width: 10),
                           Expanded(
@@ -224,8 +248,8 @@ class _EnralgePostState extends State<EnralgePost> {
                               children: [
                                 Text(
                                   'User ${c['userId']}',
-                                  style: const TextStyle(
-                                    color: Colors.white70,
+                                  style: TextStyle(
+                                    color: colors.textSecondary,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -233,7 +257,7 @@ class _EnralgePostState extends State<EnralgePost> {
                                 const SizedBox(height: 2),
                                 Text(
                                   c['content'] as String,
-                                  style: const TextStyle(color: Colors.white),
+                                  style: TextStyle(color: colors.textTitle),
                                 ),
                               ],
                             ),
@@ -244,39 +268,45 @@ class _EnralgePostState extends State<EnralgePost> {
                   },
                 ),
               const SizedBox(height: 16),
-              // 댓글 입력
+              // Comment input
               Container(
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(50, 255, 255, 255),
-                  borderRadius: BorderRadius.circular(8),
+                  color: colors.surface,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: colors.listDivider),
                 ),
                 child: Row(
                   children: [
                     Expanded(
                       child: TextField(
                         controller: _commentController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: '댓글을 입력하세요.',
-                          hintStyle: TextStyle(color: Colors.white54),
+                          hintStyle: TextStyle(color: colors.textSecondary),
                           filled: true,
                           fillColor: Colors.transparent,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 8),
                         ),
-                        style: const TextStyle(color: Colors.white),
+                        style: TextStyle(color: colors.textTitle),
                         maxLines: null,
                       ),
                     ),
                     const SizedBox(width: 4),
                     _isSubmitting
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 24,
                             height: 24,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: colors.activate,
+                            ),
                           )
                         : IconButton(
                             onPressed: _commentSubmit,
-                            icon: const Icon(Icons.send, color: Colors.white),
+                            icon: Icon(Icons.send_rounded,
+                                color: colors.activate),
                           ),
                     const SizedBox(width: 4),
                   ],

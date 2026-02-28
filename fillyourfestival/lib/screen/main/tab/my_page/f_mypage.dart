@@ -46,7 +46,7 @@ class _MypageFragmentState extends State<MypageFragment> {
             ),
           ),
           //CircleArtistWidget(),
-          FyfAppBar("Fill your Festival"),
+          FyfAppBar("Feple"),
         ],
       ),
     );

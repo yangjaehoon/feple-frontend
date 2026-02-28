@@ -94,7 +94,7 @@ class _WritePostState extends State<WritePost> {
                     height: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Text('완료', style: TextStyle(color: Colors.white)),
+                : Text('완료', style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black)),
           ),
         ],
       ),

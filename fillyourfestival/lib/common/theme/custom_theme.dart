@@ -34,10 +34,40 @@ ThemeData lightTheme = ThemeData(
     useMaterial3: true,
     visualDensity: VisualDensity.adaptivePlatformDensity,
     brightness: Brightness.light,
-    // textTheme: CustomGoogleFonts.diphylleiaTextTheme(
-    //   ThemeData(brightness: Brightness.light).textTheme,
-    // ),
-    colorScheme: ColorScheme.fromSeed(seedColor: CustomTheme.light.appColors.seedColor));
+    scaffoldBackgroundColor: AppColors.backgroundLight,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.skyBlue,
+      brightness: Brightness.light,
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      foregroundColor: AppColors.textMain,
+    ),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: AppColors.surfaceWhite,
+      selectedItemColor: AppColors.skyBlue,
+      unselectedItemColor: AppColors.textMuted,
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.skyBlue,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        elevation: 0,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      ),
+    ),
+    cardTheme: CardThemeData(
+      color: AppColors.surfaceWhite,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+    ),
+);
 
 const darkColorSeed = Color(0xbcd5ff7e);
 ThemeData darkTheme = ThemeData(
@@ -45,8 +75,5 @@ ThemeData darkTheme = ThemeData(
     visualDensity: VisualDensity.adaptivePlatformDensity,
     brightness: Brightness.dark,
     scaffoldBackgroundColor: AppColors.veryDarkGrey,
-    // textTheme: GoogleFonts.nanumMyeongjoTextTheme(
-    //   ThemeData(brightness: Brightness.dark).textTheme,
-    // ),
     colorScheme: ColorScheme.fromSeed(
         seedColor: CustomTheme.dark.appColors.seedColor, brightness: Brightness.dark));

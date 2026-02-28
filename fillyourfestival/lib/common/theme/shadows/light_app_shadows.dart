@@ -5,37 +5,37 @@ class LightAppShadows extends AbsThemeShadows {
   const LightAppShadows();
 
   @override
-  BoxShadow get buttonShadow => const BoxShadow(
-        offset: Offset(4, 4),
-        blurRadius: 5,
-        color: Color.fromARGB(255, 227, 227, 227),
+  BoxShadow get buttonShadow => BoxShadow(
+        offset: const Offset(0, 4),
+        blurRadius: 20,
+        color: AppColors.skyBlue.withOpacity(0.2),
       );
 
   @override
   BoxShadow get thickTextShadow => const BoxShadow(
-        offset: Offset(4, 4),
-        blurRadius: 5,
-        color: Color.fromARGB(255, 227, 227, 227),
+        offset: Offset(0, 2),
+        blurRadius: 8,
+        color: Color.fromARGB(20, 0, 0, 0),
       );
 
   @override
-  BoxShadow get defaultShadow => const BoxShadow(
-        offset: Offset(5, 5),
-        blurRadius: 10,
-        color: Color.fromARGB(255, 69, 69, 69),
+  BoxShadow get defaultShadow => BoxShadow(
+        offset: const Offset(0, 4),
+        blurRadius: 12,
+        color: AppColors.skyBlue.withOpacity(0.15),
       );
 
   @override
   BoxShadow get textShadow => const BoxShadow(
-        offset: Offset(4, 4),
-        blurRadius: 5,
-        color: Color.fromARGB(255, 227, 227, 227),
+        offset: Offset(0, 2),
+        blurRadius: 4,
+        color: Color.fromARGB(15, 0, 0, 0),
       );
 
   @override
-  BoxShadow get buttonShadowSmall => const BoxShadow(
-        offset: Offset(4, 4),
-        blurRadius: 5,
-        color: Color.fromARGB(255, 227, 227, 227),
+  BoxShadow get buttonShadowSmall => BoxShadow(
+        offset: const Offset(0, 2),
+        blurRadius: 10,
+        color: AppColors.skyBlue.withOpacity(0.12),
       );
 }

@@ -1,4 +1,5 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/screen/opensource/s_opensource.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -41,12 +42,19 @@ class _MenuDrawerState extends State<MenuDrawer> {
           child: Tap(
             onTap: () {},
             child: Container(
-              width: 240,
+              width: 260,
               padding: const EdgeInsets.only(top: 10),
               decoration: BoxDecoration(
                   borderRadius: const BorderRadius.only(
-                      topRight: Radius.circular(5), bottomRight: Radius.circular(5)),
-                  color: context.colors.background),
+                      topRight: Radius.circular(24), bottomRight: Radius.circular(24)),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.skyBlue.withOpacity(0.1),
+                      blurRadius: 30,
+                      offset: const Offset(5, 0),
+                    ),
+                  ]),
               child: isSmallScreen(context)
                   ? SingleChildScrollView(
                       child: getMenus(context),
@@ -68,35 +76,51 @@ class _MenuDrawerState extends State<MenuDrawer> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Stack(
-            children: [
-              Align(
-                alignment: Alignment.topRight,
-                child: IconButton(
-                  icon: const Icon(EvaIcons.close),
+          // Drawer header
+          Container(
+            padding: const EdgeInsets.fromLTRB(20, 16, 10, 16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppColors.skyBlue.withOpacity(0.1),
+                  AppColors.kawaiiPink.withOpacity(0.05),
+                ],
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Fill your Festival ✨',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textMain,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(EvaIcons.close, color: AppColors.textMuted),
                   onPressed: () {
                     closeDrawer(context);
                   },
-                  padding: const EdgeInsets.only(
-                    top: 0,
-                    right: 20,
-                    left: 20,
-                  ),
                 ),
-              )
-            ],
+              ],
+            ),
           ),
-          const Height(10),
-          const Line(),
+          Divider(color: Colors.grey.shade100, height: 1),
           _MenuWidget(
             'opensource'.tr(),
+            icon: Icons.code_rounded,
             onTap: () async {
               Nav.push(const OpensourceScreen());
             },
           ),
-          const Line(),
+          Divider(color: Colors.grey.shade100, height: 1, indent: 16, endIndent: 16),
           _MenuWidget(
             'clear_cache'.tr(),
+            icon: Icons.cleaning_services_rounded,
             onTap: () async {
               final manager = DefaultCacheManager();
               await manager.emptyCache();
@@ -105,7 +129,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
               }
             },
           ),
-          const Line(),
+          Divider(color: Colors.grey.shade100, height: 1, indent: 16, endIndent: 16),
           isSmallScreen(context) ? const Height(10) : const EmptyExpanded(),
           MouseRegion(
             cursor: SystemMouseCursors.click,
@@ -135,6 +159,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
                       child: '© 2023. Bansook Nam. all rights reserved.'
                           .selectableText
                           .size(10)
+                          .color(AppColors.textMuted)
                           .makeWithDefaultFont()),
                   onTap: () async {},
                 ),
@@ -164,9 +189,9 @@ class _MenuDrawerState extends State<MenuDrawer> {
                 padding: const EdgeInsets.only(left: 5, right: 5),
                 margin: const EdgeInsets.only(left: 15, right: 20),
                 decoration: BoxDecoration(
-                    border: Border.all(color: context.appColors.veryBrightGrey),
-                    borderRadius: BorderRadius.circular(10),
-                    color: context.appColors.drawerBg,
+                    border: Border.all(color: Colors.grey.shade200),
+                    borderRadius: BorderRadius.circular(16),
+                    color: Colors.white,
                     boxShadow: [context.appShadows.buttonShadowSmall]),
                 child: Row(
                   children: [
@@ -185,7 +210,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
                       value: describeEnum(currentLanguage).capitalizeFirst,
                       underline: const SizedBox.shrink(),
                       elevation: 1,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ],
                 )),
@@ -204,7 +229,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
           describeEnum(language)
               .capitalizeFirst!
               .text
-              .color(Theme.of(context).textTheme.bodyLarge?.color)
+              .color(AppColors.textMain)
               .size(12)
               .makeWithDefaultFont(),
         ],
@@ -215,13 +240,9 @@ class _MenuDrawerState extends State<MenuDrawer> {
   Widget flag(String path) {
     return SimpleShadow(
       opacity: 0.5,
-      // Default: 0.5
       color: Colors.grey,
-      // Default: Black
       offset: const Offset(2, 2),
-      // Default: Offset(2, 2)
       sigma: 2,
-      // Default: 2
       child: Image.asset(
         path,
         width: 20,
@@ -232,9 +253,10 @@ class _MenuDrawerState extends State<MenuDrawer> {
 
 class _MenuWidget extends StatelessWidget {
   final String text;
+  final IconData? icon;
   final Function() onTap;
 
-  const _MenuWidget(this.text, {Key? key, required this.onTap}) : super(key: key);
+  const _MenuWidget(this.text, {Key? key, required this.onTap, this.icon}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -246,10 +268,14 @@ class _MenuWidget extends StatelessWidget {
           padding: const EdgeInsets.only(left: 15, right: 20),
           child: Row(
             children: [
+              if (icon != null) ...[
+                Icon(icon, color: AppColors.skyBlue, size: 20),
+                const SizedBox(width: 12),
+              ],
               Expanded(
                   child: text.text
                       .textStyle(defaultFontStyle())
-                      .color(context.appColors.drawerText)
+                      .color(AppColors.textMain)
                       .size(15)
                       .make()),
             ],

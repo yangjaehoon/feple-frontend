@@ -1,4 +1,5 @@
 
+import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/model/poster_model.dart';
 import 'package:flutter/material.dart';
 
@@ -8,39 +9,58 @@ Widget buildFestivalPreviewCard(FestivalPreview festival) {
   debugPrint('imgUrl=${festival.posterUrl}');
 
   return Container(
-    height: 160,
-    margin: EdgeInsets.only(top: 16, bottom: 16, left: 16),
+    height: 140,
+    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      boxShadow: [
+        BoxShadow(
+          color: AppColors.skyBlue.withOpacity(0.12),
+          blurRadius: 20,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    ),
     child: Row(
       children: [
         Container(
-          width: 113,
+          width: 110,
+          margin: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Colors.grey[900],
+            color: AppColors.backgroundLight,
             borderRadius: BorderRadius.circular(16),
             image: DecorationImage(
               image: NetworkImage(festival.posterUrl),
-              //image: NetworkImage('ftv_poster/waterbomb_poster.jpg'),
               fit: BoxFit.cover,
             ),
           ),
         ),
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.only(left: 24.0),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      festival.title ?? '페스티벌 이름',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
+                    Expanded(
+                      child: Text(
+                        festival.title ?? '페스티벌 이름',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 16,
+                          color: AppColors.textMain,
+                          letterSpacing: -0.3,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     PopupMenuButton(
+                      icon: const Icon(Icons.more_vert_rounded,
+                          color: AppColors.textMuted, size: 20),
                       itemBuilder: (context) => [
                         const PopupMenuItem(
                           child: Text("리뷰"),
@@ -52,14 +72,41 @@ Widget buildFestivalPreviewCard(FestivalPreview festival) {
                     ),
                   ],
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: 12.0),
-                  child: Text(
-                    "페스티벌 이름: ${festival.title}\n"
-                    //"참여 아티스트: ${poster['artists']}\n"
-                        "장소: ${festival.location}\n"
-                        "날짜: ${festival.startDate}",
-                  ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Icon(Icons.location_on_rounded,
+                        color: AppColors.skyBlue, size: 14),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        festival.location ?? '',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textMuted,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(Icons.calendar_today_rounded,
+                        color: AppColors.skyBlue, size: 14),
+                    const SizedBox(width: 4),
+                    Text(
+                      festival.startDate ?? '',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textMuted,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

@@ -1,5 +1,6 @@
 import 'package:after_layout/after_layout.dart';
 import 'package:fast_app_base/common/cli_common.dart';
+import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/login/login.dart';
 import 'package:fast_app_base/screen/main/tab/tab_item.dart';
 import 'package:fast_app_base/screen/main/tab/tab_navigator.dart';
@@ -29,7 +30,6 @@ class MainScreenState extends State<MainScreen>
     TabItem.concertList,
     TabItem.favorite,
   ];
-  //final List<GlobalKey<NavigatorState>> navigatorKeys = [];
   final List<GlobalKey<NavigatorState>> navigatorKeys = List.generate(5, (_) => GlobalKey<NavigatorState>());
 
   int get _currentIndex => tabs.indexOf(_currentTab);
@@ -52,10 +52,10 @@ class MainScreenState extends State<MainScreen>
     return WillPopScope(
       onWillPop: _handleBackPressed,
       child: Scaffold(
-        extendBody: extendBody, //bottomNavigationBar 아래 영역 까지 그림
+        extendBody: extendBody,
         drawer: const MenuDrawer(),
         body: Container(
-          color: context.appColors.seedColor.getMaterialColorValues[200],
+          color: AppColors.backgroundLight,
           padding: EdgeInsets.only(
               bottom: extendBody ? 60 - bottomNavigationBarBorderRadius : 0),
           child: SafeArea(
@@ -89,15 +89,24 @@ class MainScreenState extends State<MainScreen>
         return false;
       }
     }
-    // maybePop 가능하면 나가지 않는다.
     return isFirstRouteInCurrentTab;
   }
 
-  Widget  _buildBottomNavigationBar(BuildContext context) {
+  Widget _buildBottomNavigationBar(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(bottomNavigationBarBorderRadius),
+          topRight: Radius.circular(bottomNavigationBarBorderRadius),
+        ),
         boxShadow: [
-          BoxShadow(color: Colors.black26, spreadRadius: 0, blurRadius: 10),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            spreadRadius: 0,
+            blurRadius: 20,
+            offset: const Offset(0, -5),
+          ),
         ],
       ),
       child: ClipRRect(
@@ -108,12 +117,16 @@ class MainScreenState extends State<MainScreen>
         child: BottomNavigationBar(
           items: navigationBarItems(context),
           currentIndex: _currentIndex,
-          selectedItemColor: context.appColors.text,
-          unselectedItemColor: context.appColors.iconButtonInactivate,
+          selectedItemColor: AppColors.skyBlue,
+          unselectedItemColor: AppColors.textMuted,
+          backgroundColor: Colors.white,
           onTap: _handleOnTapNavigationBarItem,
           showSelectedLabels: true,
           showUnselectedLabels: true,
           type: BottomNavigationBarType.fixed,
+          selectedFontSize: 11,
+          unselectedFontSize: 10,
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
         ),
       ),
     );
@@ -143,8 +156,8 @@ class MainScreenState extends State<MainScreen>
           key: ValueKey(label),
           activate ? iconData : inActivateIconData,
           color: activate
-              ? context.appColors.iconButton
-              : context.appColors.iconButtonInactivate,
+              ? AppColors.skyBlue
+              : AppColors.textMuted,
         ),
         label: label);
   }

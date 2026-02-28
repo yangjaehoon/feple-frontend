@@ -13,28 +13,39 @@ class _CommunityBoardAppBarState extends State<CommunityBoardAppBar> {
   Widget build(BuildContext context) {
     return Container(
       height: 60,
-      color: context.appColors.appBarBackground,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [
+            AppColors.skyBlue,
+            AppColors.skyBlueLight,
+          ],
+        ),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
-            " Community Board",
-            style: TextStyle(
-              fontSize: 22,
+          const Padding(
+            padding: EdgeInsets.only(left: 16),
+            child: Text(
+              "Community Board",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+                letterSpacing: -0.3,
+              ),
             ),
           ),
           const Spacer(),
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.search_rounded, color: Colors.white),
             onPressed: () {},
           ),
-          Stack(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.more_vert),
-                onPressed: () {},
-              ),
-            ],
+          IconButton(
+            icon: const Icon(Icons.more_vert_rounded, color: Colors.white),
+            onPressed: () {},
           ),
         ],
       ),

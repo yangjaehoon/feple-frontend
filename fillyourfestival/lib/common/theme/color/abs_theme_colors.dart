@@ -8,43 +8,43 @@ typedef ColorProvider = Color Function();
 abstract class AbstractThemeColors {
   const AbstractThemeColors();
 
-  Color get seedColor => const Color(0xff26ff8c);
+  Color get seedColor => AppColors.skyBlue;
 
   Color get veryBrightGrey => AppColors.brightGrey;
 
-  Color get drawerBg => const Color.fromARGB(255, 255, 255, 255);
+  Color get drawerBg => AppColors.surfaceWhite;
 
-  Color get scrollableItem => const Color.fromARGB(255, 57, 57, 57);
+  Color get scrollableItem => AppColors.textMain;
 
-  Color get iconButton => const Color.fromARGB(255, 0, 0, 0);
+  Color get iconButton => AppColors.skyBlue;
 
-  Color get iconButtonInactivate => const Color.fromARGB(255, 162, 162, 162);
+  Color get iconButtonInactivate => AppColors.textMuted;
 
   Color get inActivate => const Color.fromARGB(255, 200, 207, 220);
 
-  Color get activate => const Color.fromARGB(255, 63, 72, 95);
+  Color get activate => AppColors.skyBlue;
 
-  Color get badgeBg => AppColors.blueGreen;
+  Color get badgeBg => AppColors.sunnyYellow;
 
-  Color get textBadgeText => Colors.white;
+  Color get textBadgeText => AppColors.textMain;
 
   Color get badgeBorder => Colors.transparent;
 
-  Color get divider => const Color.fromARGB(255, 228, 228, 228);
+  Color get divider => const Color.fromARGB(255, 238, 238, 238);
 
-  Color get text => AppColors.darkGrey;
+  Color get text => AppColors.textMain;
 
-  Color get hintText => AppColors.middleGrey;
+  Color get hintText => AppColors.textMuted;
 
-  Color get focusedBorder => AppColors.darkGrey;
+  Color get focusedBorder => AppColors.skyBlue;
 
-  Color get confirmText => AppColors.blue;
+  Color get confirmText => AppColors.skyBlue;
 
-  Color get drawerText => text;
+  Color get drawerText => AppColors.textMain;
 
-  Color get snackbarBgColor => AppColors.mediumBlue;
+  Color get snackbarBgColor => AppColors.skyBlue;
 
-  Color get blueButtonBackground => AppColors.darkBlue;
+  Color get blueButtonBackground => AppColors.skyBlue;
 
-  Color get appBarBackground => const Color.fromARGB(255, 16, 16, 18);
+  Color get appBarBackground => AppColors.skyBlue;
 }

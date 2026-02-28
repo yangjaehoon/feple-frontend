@@ -1,3 +1,4 @@
+import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
 import '../../../../model/artist_model.dart';
 import '../../../../provider/artist_provider.dart';
@@ -9,68 +10,128 @@ class CircleArtistWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Artist>>(
-      future: fetchArtists(), // GET /artists 호출해서 List<Artist> 반환
+      future: fetchArtists(),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: CircularProgressIndicator(color: AppColors.skyBlue),
+            ),
+          );
         }
         if (snapshot.hasError) {
-          return Center(child: Text('아티스트 로딩 실패: ${snapshot.error}'));
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text(
+                '아티스트 로딩 실패: ${snapshot.error}',
+                style: const TextStyle(color: AppColors.textMuted),
+              ),
+            ),
+          );
         }
 
         final artists = snapshot.data ?? [];
 
-        return GridView.builder(
-          padding: const EdgeInsets.all(20),
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: artists.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3, // 한 줄에 3개의 이미지
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 5,
-            //childAspectRatio: 0.66
-          ),
-          // 전체 이미지 개수
-          itemBuilder: (BuildContext context, int index) {
-            final artist = artists[index];
-
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        ArtistPage(
-                            artistName: artist.name,
-                            artistId: artist.id,
-                            followerCounter: artist.followerCount
-                        ),
+        return Padding(
+          padding: const EdgeInsets.only(top: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  '아티스트 🎤',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textMain,
+                    letterSpacing: -0.3,
                   ),
-                );
-                //TODO: 밑에 print문 지워야함
-                print(artist.name);
-              },
-              child: Column(
-                children: [
-                  Expanded(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20.0),
-                      child: Image.network(
-                        artist.profileImageUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stack) =>
-                        const ColoredBox(color: Colors.black12),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  //Text(Artists[index].name),
-                  Text(artist.name),
-                ],
+                ),
               ),
-            );
-          },
+              const SizedBox(height: 12),
+              GridView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: artists.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 12,
+                  childAspectRatio: 0.75,
+                ),
+                itemBuilder: (BuildContext context, int index) {
+                  final artist = artists[index];
+
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ArtistPage(
+                              artistName: artist.name,
+                              artistId: artist.id,
+                              followerCounter: artist.followerCount),
+                        ),
+                      );
+                    },
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.skyBlue.withOpacity(0.15),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20.0),
+                              child: Image.network(
+                                artist.profileImageUrl,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stack) =>
+                                    Container(
+                                  decoration: BoxDecoration(
+                                    color: AppColors.skyBlue.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: const Icon(
+                                    Icons.person_rounded,
+                                    color: AppColors.skyBlue,
+                                    size: 40,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          artist.name,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textMain,
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         );
       },
     );

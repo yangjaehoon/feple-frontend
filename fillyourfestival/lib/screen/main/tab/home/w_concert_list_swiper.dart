@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:card_swiper/card_swiper.dart';
+import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/screen/main/tab/home/concert_information/f_festival_information.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -30,29 +31,38 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
   Widget build(BuildContext context) {
     final poster = Provider.of<PosterProvider>(context);
 
-    //if (poster.posters == null || poster.posters.isEmpty) {
     if (poster.posters.isEmpty) {
-      // poster.posters가 비어 있다면 또는 null이면 로딩 중을 나타내는 UI를 반환
-      return CircularProgressIndicator();
+      return const Center(
+        child: CircularProgressIndicator(
+          color: AppColors.skyBlue,
+        ),
+      );
     }
     return Stack(
       children: [
         Container(
-          //포스터 뒷배경 blur처리한 화면
           height: 300,
           decoration: BoxDecoration(
             image: DecorationImage(
               image: NetworkImage(
-                //posterList[_currentPage],
                 poster.posters[_currentPage].posterUrl,
               ),
               fit: BoxFit.cover,
             ),
           ),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
             child: Container(
-              color: Colors.black.withOpacity(0.2),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    AppColors.skyBlue.withOpacity(0.3),
+                    AppColors.backgroundLight.withOpacity(0.6),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
@@ -67,10 +77,12 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
               autoplay: true,
               duration: 300,
               itemCount: poster.posters.length,
-              pagination: const SwiperPagination(
+              pagination: SwiperPagination(
                 builder: DotSwiperPaginationBuilder(
-                  activeColor: Colors.blue,
-                  color: Colors.grey,
+                  activeColor: AppColors.skyBlue,
+                  color: AppColors.skyBlue.withOpacity(0.3),
+                  activeSize: 10,
+                  size: 7,
                 ),
               ),
               itemBuilder: (BuildContext context, int index) {
@@ -83,11 +95,23 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
                               poster: poster.posters[index])),
                     );
                   },
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.network(
-                      poster.posters[index].posterUrl,
-                      fit: BoxFit.fill,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.skyBlue.withOpacity(0.2),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.network(
+                        poster.posters[index].posterUrl,
+                        fit: BoxFit.fill,
+                      ),
                     ),
                   ),
                 );

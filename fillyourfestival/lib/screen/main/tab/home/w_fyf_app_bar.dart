@@ -1,11 +1,9 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
 
-import '../../w_menu_drawer.dart';
+
 
 class FyfAppBar extends StatefulWidget {
-
-
   const FyfAppBar(this.appbarTitle, {super.key});
 
   final String appbarTitle;
@@ -21,29 +19,41 @@ class _FyfAppBarState extends State<FyfAppBar> {
   Widget build(BuildContext context) {
     return Container(
       height: 60,
-      color: context.appColors.appBarBackground,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [
+            AppColors.skyBlue,
+            AppColors.skyBlueLight,
+          ],
+        ),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: ()=> openDrawer(context),
+            icon: const Icon(Icons.menu_rounded, color: Colors.white),
+            onPressed: () => openDrawer(context),
           ),
           Text(
             widget.appbarTitle,
-            style: TextStyle(
-              fontSize: 22,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+              letterSpacing: -0.3,
             ),
           ),
           const Spacer(),
           IconButton(
-            icon: Icon(Icons.search),
+            icon: const Icon(Icons.search_rounded, color: Colors.white),
             onPressed: () {},
           ),
           Stack(
             children: [
               IconButton(
-                icon: Icon(Icons.notifications),
+                icon: const Icon(Icons.notifications_rounded, color: Colors.white),
                 onPressed: () {
                   setState(
                     () {
@@ -57,11 +67,12 @@ class _FyfAppBarState extends State<FyfAppBar> {
                     top: 10,
                     right: 10,
                     child: Container(
-                      width: 6,
-                      height: 6,
+                      width: 8,
+                      height: 8,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.red,
+                        color: Colors.redAccent,
+                        border: Border.all(color: Colors.white, width: 1.5),
                       ),
                     ),
                   ),

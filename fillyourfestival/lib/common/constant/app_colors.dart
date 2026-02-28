@@ -1,6 +1,33 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
+  // === Kawaii / Pastel Palette (from HTML mockups) ===
+
+  // Primary & Secondary
+  static const Color skyBlue = Color(0xFF5CC0EB);
+  static const Color skyBlueLight = Color(0xFFA1DDF5);
+  static const Color sunnyYellow = Color(0xFFFDE74C);
+  static const Color sunnyYellowLight = Color(0xFFFFE68C);
+
+  // Kawaii Accents
+  static const Color kawaiiPink = Color(0xFFFFB7D2);
+  static const Color kawaiiPurple = Color(0xFFE0C3FC);
+  static const Color kawaiiMint = Color(0xFFB5EADD);
+  static const Color accentPink = Color(0xFFF9A8D4);
+  static const Color accentPurple = Color(0xFFD8B4FE);
+
+  // Backgrounds
+  static const Color backgroundLight = Color(0xFFF6F7F8);
+  static const Color backgroundCreamy = Color(0xFFFFFDFA);
+  static const Color surfaceWhite = Color(0xFFFFFFFF);
+
+  // Text Colors
+  static const Color textMain = Color(0xFF2D3748);
+  static const Color textMuted = Color(0xFF718096);
+  static const Color textDark = Color(0xFF0E171B);
+  static const Color textBlueMuted = Color(0xFF4F8196);
+
+  // Legacy (kept for backward compat)
   static const Color veryDarkGrey = Color.fromARGB(255, 18, 18, 18);
   static const Color darkGrey = Color.fromARGB(255, 45, 45, 45);
   static const Color grey = Color.fromARGB(255, 139, 139, 139);

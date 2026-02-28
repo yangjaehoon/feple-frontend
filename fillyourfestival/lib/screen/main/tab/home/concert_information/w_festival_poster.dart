@@ -1,7 +1,7 @@
 import 'dart:ui';
 
+import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/screen/main/tab/home/concert_information/weather/screens/loading.dart';
-import 'package:fast_app_base/screen/main/tab/home/concert_information/weather/screens/weather_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../model/poster_model.dart';
@@ -19,6 +19,7 @@ class FestivalPoster extends StatefulWidget {
 class _FestivalPosterState extends State<FestivalPoster> {
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return SizedBox(
       height: 250,
       child: Stack(
@@ -36,7 +37,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
                 sigmaY: 5,
               ),
               child: Container(
-                color: Colors.black.withOpacity(0.5),
+                color: colors.swiperOverlay.withOpacity(0.5),
               ),
             ),
           ),
@@ -47,8 +48,18 @@ class _FestivalPosterState extends State<FestivalPoster> {
                 flex: 2,
                 child: Container(
                   alignment: Alignment.centerLeft,
-                  margin: EdgeInsets.all(16),
+                  margin: const EdgeInsets.all(16),
                   height: 200,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: colors.cardShadow.withOpacity(0.2),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: Image.network(
@@ -65,41 +76,89 @@ class _FestivalPosterState extends State<FestivalPoster> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(widget.poster.title,
-                        softWrap: true, style: TextStyle(fontSize: 30)),
+                        softWrap: true,
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        )),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("날짜: ${widget.poster.startDate}",
-                            style: TextStyle(fontSize: 20)),
-                        Text("장소: ${widget.poster.location}",
-                            softWrap: true,
-                            style: TextStyle(fontSize: 20)),
+                        Row(
+                          children: [
+                            Icon(Icons.calendar_today_rounded,
+                                color: colors.accentColor, size: 16),
+                            const SizedBox(width: 6),
+                            Text("${widget.poster.startDate}",
+                                style: const TextStyle(
+                                    fontSize: 15, color: Colors.white70)),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(Icons.location_on_rounded,
+                                color: colors.accentColor, size: 16),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text("${widget.poster.location}",
+                                  softWrap: true,
+                                  style: const TextStyle(
+                                      fontSize: 15, color: Colors.white70)),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                     Row(
                       children: [
-                        Icon(Icons.calendar_month_outlined),
-                        SizedBox(width: 5),
+                        Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(Icons.calendar_month_outlined,
+                              color: Colors.white, size: 20),
+                        ),
+                        const SizedBox(width: 8),
                         GestureDetector(
-                            child: Icon(Icons.wb_cloudy),
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(Icons.wb_cloudy_rounded,
+                                color: Colors.white, size: 20),
+                          ),
                           onTap: () {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const Loading())
-                            );
-                          }
+                                    builder: (context) => const Loading()));
+                          },
                         ),
+                        const SizedBox(width: 8),
                         GestureDetector(
-                          child: Icon(Icons.location_on_sharp),
-                          onTap: (){
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(Icons.location_on_rounded,
+                                color: Colors.white, size: 20),
+                          ),
+                          onTap: () {
                             Navigator.push(
-                            context,
-                              //MaterialPageRoute(builder: (context)=> const FtvMapWidget())
-                              MaterialPageRoute(builder: (context)=> Scaffold())
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Scaffold()),
                             );
-                        }
-                        )
+                          },
+                        ),
                       ],
                     ),
                   ],

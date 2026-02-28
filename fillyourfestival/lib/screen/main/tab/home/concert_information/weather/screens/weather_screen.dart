@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
+import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:timer_builder/timer_builder.dart';
 import 'package:intl/intl.dart';
 import '../model/model.dart';
@@ -45,10 +44,6 @@ class _WeatherScreenState extends State<WeatherScreen> {
     icon = model.getWeatherIcon(condition);
     airIcon = model.getAirIcon(index);
     airState = model.getAirCondition(index);
-
-
-    print(temp);
-    print(cityName);
   }
 
   String? getSystemTime() {
@@ -58,34 +53,35 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-          //title:Text(''),
           backgroundColor: Colors.transparent,
           elevation: 0.0,
           leading: IconButton(
-            icon: Icon(Icons.near_me),
+            icon: const Icon(Icons.near_me_rounded, color: Colors.white),
             onPressed: () {},
-            iconSize: 30.0,
+            iconSize: 28.0,
           ),
           actions: [
             IconButton(
               onPressed: () {},
-              iconSize: 30.0,
-              icon: Icon(
-                Icons.location_searching,
+              iconSize: 28.0,
+              icon: const Icon(
+                Icons.location_searching_rounded,
+                color: Colors.white,
               ),
             )
           ],
         ),
         body: Container(
-          color: Color(0xFF5ACCFF),
+          color: colors.appBarColor,
           child: Stack(
             children: [
               Container(),
               Container(
-                  padding: EdgeInsets.all(20.0),
+                  padding: const EdgeInsets.all(20.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -97,9 +93,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                             Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  SizedBox(
-                                    height: 150.0,
-                                  ),
+                                  const SizedBox(height: 150.0),
                                   Text(
                                     '$cityName',
                                     style: GoogleFonts.lato(
@@ -111,9 +105,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                   Row(
                                     children: [
                                       TimerBuilder.periodic(
-                                        (Duration(minutes: 1)),
+                                        (const Duration(minutes: 1)),
                                         builder: (context) {
-                                          print('${getSystemTime()}');
                                           return Text(
                                             '${getSystemTime()}',
                                             style: GoogleFonts.lato(
@@ -138,7 +131,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '${temp}\u2103',
+                                  '$temp\u2103',
                                   style: GoogleFonts.lato(
                                     fontSize: 85.0,
                                     fontWeight: FontWeight.w300,
@@ -148,15 +141,12 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                 Row(
                                   children: [
                                     icon!,
-                                    SizedBox(
-                                      width: 10.0,
-                                    ),
-                                    Text('Clear sky',
+                                    const SizedBox(width: 10.0),
+                                    Text('$des',
                                         style: GoogleFonts.lato(
                                           fontSize: 16.0,
-                                            color: Colors.white,
-                                        ),
-                                    )
+                                          color: Colors.white,
+                                        ))
                                   ],
                                 )
                               ],
@@ -166,7 +156,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                       ),
                       Column(
                         children: [
-                          Divider(
+                          const Divider(
                             height: 15.0,
                             thickness: 2.0,
                             color: Colors.white30,
@@ -183,14 +173,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                       color: Colors.white,
                                     ),
                                   ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-
+                                  const SizedBox(height: 10.0),
                                   airIcon!,
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
+                                  const SizedBox(height: 10.0),
                                   airState!,
                                 ],
                               ),
@@ -203,27 +188,21 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                       color: Colors.white,
                                     ),
                                   ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-
+                                  const SizedBox(height: 10.0),
                                   Text(
-                                    '${dust1}',
+                                    '$dust1',
                                     style: GoogleFonts.lato(
                                       fontSize: 24.0,
                                       color: Colors.white,
                                     ),
                                   ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
+                                  const SizedBox(height: 10.0),
                                   Text(
                                     '㎍/m³',
                                     style: GoogleFonts.lato(
                                         fontSize: 14.0,
                                         color: Colors.white,
-                                        fontWeight: FontWeight.bold
-                                    ),
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),
@@ -236,27 +215,21 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                       color: Colors.white,
                                     ),
                                   ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-
+                                  const SizedBox(height: 10.0),
                                   Text(
-                                    '${dust2}',
+                                    '$dust2',
                                     style: GoogleFonts.lato(
                                       fontSize: 24.0,
                                       color: Colors.white,
                                     ),
                                   ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
+                                  const SizedBox(height: 10.0),
                                   Text(
                                     '㎍/m³',
                                     style: GoogleFonts.lato(
                                         fontSize: 14.0,
                                         color: Colors.white,
-                                        fontWeight: FontWeight.bold
-                                    ),
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),

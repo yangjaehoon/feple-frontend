@@ -152,7 +152,7 @@ class _HotBoardState extends State<HotBoard> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(Icons.favorite_rounded,
-                                      color: colors.accentColor, size: 18),
+                                      color: AppColors.kawaiiPink, size: 18),
                                   const SizedBox(width: 4),
                                   Text(
                                     postData['favorite'].toString(),

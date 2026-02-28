@@ -175,7 +175,7 @@ class _EnralgePostState extends State<EnralgePost> {
                       children: [
                         Icon(
                           Icons.favorite_rounded,
-                          color: _liked ? Colors.red : Colors.white54,
+                          color: _liked ? const Color(0xFFFF6B9D) : Colors.white54,
                         ),
                         const SizedBox(width: 4),
                         Text(

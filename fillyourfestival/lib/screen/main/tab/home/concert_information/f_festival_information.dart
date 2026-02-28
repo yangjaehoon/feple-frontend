@@ -1,3 +1,4 @@
+import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/model/poster_model.dart';
 import 'package:fast_app_base/screen/main/tab/home/concert_information/w_festival_poster.dart';
 import 'package:fast_app_base/screen/main/tab/home/concert_information/w_festival_timetable.dart';
@@ -15,25 +16,28 @@ class FestivalInformationFragment extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Container(
-      color: Colors.black,
+      color: colors.backgroundMain,
       child: Stack(
         children: [
           SingleChildScrollView(
             padding: const EdgeInsets.only(
               top: 60,
               bottom: 50,
-            ), // 상단바 부분만큼 띄워줌(stack이여서),
+            ),
             child: Column(
               children: [
                 FestivalPoster(poster: poster),
+                // Festival board link banner
                 Container(
                   padding: const EdgeInsets.all(10),
-                  width: 500,
-                  height: 40,
-                  decoration: const BoxDecoration(
-                    color: Color.fromARGB(255, 34, 34, 34),
-                    borderRadius: BorderRadius.only(
+                  width: double.infinity,
+                  height: 44,
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: colors.appBarColor,
+                    borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(20), topRight: Radius.circular(20)),
                   ),
                   child: InkWell(
@@ -46,21 +50,29 @@ class FestivalInformationFragment extends StatelessWidget {
                         ),
                       );
                     },
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           "festivalboard",
-                          style: TextStyle(fontSize: 15, color: Colors.white),
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                        Wrap(
-                          crossAxisAlignment: WrapCrossAlignment.center,
+                        Row(
                           children: [
                             Text(
                               "이동",
-                              style: TextStyle(fontSize: 13, color: Colors.white),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.white70,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                            Icon(Icons.arrow_forward, color: Colors.white),
+                            const Icon(Icons.arrow_forward_ios_rounded,
+                                color: Colors.white70, size: 14),
                           ],
                         ),
                       ],

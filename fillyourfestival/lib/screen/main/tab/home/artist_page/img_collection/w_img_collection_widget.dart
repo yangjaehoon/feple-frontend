@@ -144,7 +144,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
                               photo.isLiked
                                   ? Icons.favorite
                                   : Icons.favorite_border,
-                              color: photo.isLiked ? Colors.red : Colors.grey,
+                              color: photo.isLiked ? const Color(0xFFFF6B9D) : Colors.grey,
                               size: 28,
                             ),
                             padding: EdgeInsets.zero,

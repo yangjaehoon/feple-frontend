@@ -92,7 +92,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                   ),
                   child: Icon(
                     Icons.favorite_rounded,
-                    color: colors.accentColor,
+                    color: AppColors.kawaiiPink,
                     size: 18,
                   ),
                 ),

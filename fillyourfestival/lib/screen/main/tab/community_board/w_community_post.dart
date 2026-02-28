@@ -110,7 +110,7 @@ class _CommunityPostState extends State<CommunityPost> {
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.favorite_rounded),
+                              const Icon(Icons.favorite_rounded, color: Color(0xFFFF6B9D)),
                               Text(
                                 postData['likeCount'].toString(),
                                 style: const TextStyle(fontSize: 20),

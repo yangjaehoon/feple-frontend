@@ -68,10 +68,16 @@ class UserProvider with ChangeNotifier {
 
       _user = User.fromJson(res.data);
       notifyListeners();
-    } catch (e) {
+    } on DioException catch (e) {
       print('fetchUserFromToken error: $e');
-      _user = null;
-      await TokenStore.clear();
+      // 401/403: 토큰 만료 → 로그아웃 처리
+      final status = e.response?.statusCode;
+      if (status == 401 || status == 403) {
+        _user = null;
+        await TokenStore.clear();
+        notifyListeners();
+      }
+      // 그 외 오류(404, 네트워크 등)는 기존 user 유지
       rethrow;
     }
   }

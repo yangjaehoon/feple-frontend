@@ -1,3 +1,4 @@
+import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -9,46 +10,19 @@ class FollowArtistsWidget extends StatefulWidget {
 }
 
 class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
-  List<Map<String, dynamic>> follow_artist = [
-    {
-      "id": 1,
-      "name": "ashisland",
-      "path": "assets/image/artist/ashisland.jpg",
-    },
-    {
-      "id": 2,
-      "name": "changmo",
-      "path": "assets/image/artist/changmo.jpg",
-    },
-    {
-      "id": 3,
-      "name": "hanyohan",
-      "path": "assets/image/artist/hanyohan.jpg",
-    },
-    {
-      "id": 4,
-      "name": "kimseungmin",
-      "path": "assets/image/artist/kimseungmin.jpg",
-    },
-    {
-      "id": 5,
-      "name": "lellamarz",
-      "path": "assets/image/artist/lellamarz.jpg",
-    },
-    {
-      "id": 6,
-      "name": "loco",
-      "path": "assets/image/artist/loco.jpg",
-    },
-    {
-      "id": 7,
-      "name": "swings",
-      "path": "assets/image/artist/swings.jpg",
-    },
+  List<Map<String, dynamic>> followArtist = [
+    {"id": 1, "name": "ashisland", "path": "assets/image/artist/ashisland.jpg"},
+    {"id": 2, "name": "changmo", "path": "assets/image/artist/changmo.jpg"},
+    {"id": 3, "name": "hanyohan", "path": "assets/image/artist/hanyohan.jpg"},
+    {"id": 4, "name": "kimseungmin", "path": "assets/image/artist/kimseungmin.jpg"},
+    {"id": 5, "name": "lellamarz", "path": "assets/image/artist/lellamarz.jpg"},
+    {"id": 6, "name": "loco", "path": "assets/image/artist/loco.jpg"},
+    {"id": 7, "name": "swings", "path": "assets/image/artist/swings.jpg"},
   ];
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -57,20 +31,17 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
           child: Row(
             children: [
               Container(
-                width: 3,
-                height: 20,
+                width: 3, height: 20,
                 decoration: BoxDecoration(
-                  color: AppColors.kawaiiPink,
+                  color: colors.sectionBarPink,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 '팔로우 아티스트 🎤',
                 style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.textMain,
+                  fontSize: 18, fontWeight: FontWeight.w800, color: colors.textTitle,
                 ),
               ),
             ],
@@ -81,9 +52,9 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            itemCount: follow_artist.length,
+            itemCount: followArtist.length,
             itemBuilder: (BuildContext context, int index) {
-              Map<String, dynamic> artist = follow_artist[index];
+              final artist = followArtist[index];
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
@@ -92,26 +63,17 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
                       padding: const EdgeInsets.all(3),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          colors: [
-                            AppColors.kawaiiPink,
-                            AppColors.kawaiiPurple,
-                          ],
-                        ),
+                        gradient: LinearGradient(colors: colors.followRingGradient),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.kawaiiPink.withOpacity(0.2),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
+                            color: colors.cardShadow.withOpacity(0.2),
+                            blurRadius: 8, offset: const Offset(0, 2),
                           ),
                         ],
                       ),
                       child: Container(
                         padding: const EdgeInsets.all(2),
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                        ),
+                        decoration: BoxDecoration(shape: BoxShape.circle, color: colors.surface),
                         child: CircleAvatar(
                           radius: 50,
                           backgroundImage: AssetImage(artist['path']),
@@ -122,11 +84,7 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
                       padding: const EdgeInsets.only(top: 6.0),
                       child: Text(
                         artist['name'],
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textMain,
-                        ),
+                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textTitle),
                       ),
                     )
                   ],

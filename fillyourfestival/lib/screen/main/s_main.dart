@@ -55,7 +55,7 @@ class MainScreenState extends State<MainScreen>
         extendBody: extendBody,
         drawer: const MenuDrawer(),
         body: Container(
-          color: AppColors.backgroundLight,
+          color: context.appColors.backgroundMain,
           padding: EdgeInsets.only(
               bottom: extendBody ? 60 - bottomNavigationBarBorderRadius : 0),
           child: SafeArea(
@@ -93,16 +93,17 @@ class MainScreenState extends State<MainScreen>
   }
 
   Widget _buildBottomNavigationBar(BuildContext context) {
+    final colors = context.appColors;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.bottomNavBg,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(bottomNavigationBarBorderRadius),
           topRight: Radius.circular(bottomNavigationBarBorderRadius),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: colors.bottomNavShadow.withOpacity(0.05),
             spreadRadius: 0,
             blurRadius: 20,
             offset: const Offset(0, -5),
@@ -117,9 +118,9 @@ class MainScreenState extends State<MainScreen>
         child: BottomNavigationBar(
           items: navigationBarItems(context),
           currentIndex: _currentIndex,
-          selectedItemColor: AppColors.skyBlue,
-          unselectedItemColor: AppColors.textMuted,
-          backgroundColor: Colors.white,
+          selectedItemColor: colors.activate,
+          unselectedItemColor: colors.textSecondary,
+          backgroundColor: colors.bottomNavBg,
           onTap: _handleOnTapNavigationBarItem,
           showSelectedLabels: true,
           showUnselectedLabels: true,
@@ -151,13 +152,14 @@ class MainScreenState extends State<MainScreen>
 
   BottomNavigationBarItem bottomItem(bool activate, IconData iconData,
       IconData inActivateIconData, String label) {
+    final colors = context.appColors;
     return BottomNavigationBarItem(
         icon: Icon(
           key: ValueKey(label),
           activate ? iconData : inActivateIconData,
           color: activate
-              ? AppColors.skyBlue
-              : AppColors.textMuted,
+              ? colors.activate
+              : colors.textSecondary,
         ),
         label: label);
   }

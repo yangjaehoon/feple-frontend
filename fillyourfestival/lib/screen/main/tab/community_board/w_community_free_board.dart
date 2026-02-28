@@ -23,16 +23,17 @@ class _FreeBoardState extends State<FreeBoard> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Container(
       width: double.infinity,
       height: 210,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.surface,
         borderRadius: const BorderRadius.all(Radius.circular(20)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.skyBlue.withOpacity(0.12),
+            color: colors.cardShadow.withOpacity(0.12),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
@@ -49,8 +50,8 @@ class _FreeBoardState extends State<FreeBoard> {
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
                 colors: [
-                  AppColors.kawaiiMint,
-                  AppColors.skyBlue.withOpacity(0.7),
+                  colors.freeBoardGradientStart,
+                  colors.freeBoardGradientEnd,
                 ],
               ),
               borderRadius: const BorderRadius.only(
@@ -104,23 +105,23 @@ class _FreeBoardState extends State<FreeBoard> {
                 future: postService.fetchPosts('FreeBoard'),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(color: AppColors.skyBlue),
+                    return Center(
+                      child: CircularProgressIndicator(color: colors.loadingIndicator),
                     );
                   } else if (snapshot.hasError) {
                     return Center(
                       child: Text(
                         'Failed to load data: ${snapshot.error}',
-                        style: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+                        style: TextStyle(color: colors.textSecondary, fontSize: 13),
                       ),
                     );
                   } else {
                     List postDataList = snapshot.data!;
                     if (postDataList.isEmpty) {
-                      return const Center(
+                      return Center(
                         child: Text(
                           'No data available.',
-                          style: TextStyle(color: AppColors.textMuted),
+                          style: TextStyle(color: colors.textSecondary),
                         ),
                       );
                     } else {
@@ -134,16 +135,16 @@ class _FreeBoardState extends State<FreeBoard> {
                               dense: true,
                               title: Text(
                                 postData.title,
-                                style: const TextStyle(
-                                  color: AppColors.textMain,
+                                style: TextStyle(
+                                  color: colors.textTitle,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 14,
                                 ),
                               ),
                               subtitle: Text(
                                 postData.nickname,
-                                style: const TextStyle(
-                                  color: AppColors.textMuted,
+                                style: TextStyle(
+                                  color: colors.textSecondary,
                                   fontSize: 12,
                                 ),
                               ),
@@ -155,14 +156,14 @@ class _FreeBoardState extends State<FreeBoard> {
                                   const SizedBox(width: 4),
                                   Text(
                                     postData.likeCount.toString(),
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                         fontSize: 14,
-                                        color: AppColors.textMain,
+                                        color: colors.textTitle,
                                         fontWeight: FontWeight.w600),
                                   ),
                                   const SizedBox(width: 10),
-                                  const Icon(Icons.chat_bubble_outline_rounded,
-                                      color: AppColors.skyBlue, size: 16),
+                                  Icon(Icons.chat_bubble_outline_rounded,
+                                      color: colors.activate, size: 16),
                                 ],
                               ),
                             );
@@ -170,7 +171,7 @@ class _FreeBoardState extends State<FreeBoard> {
                           separatorBuilder: (BuildContext context, int index) {
                             return Divider(
                               thickness: 1,
-                              color: Colors.grey.shade100,
+                              color: colors.listDivider,
                               indent: 16,
                               endIndent: 16,
                             );

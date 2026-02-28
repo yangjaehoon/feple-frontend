@@ -1,5 +1,4 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/screen/opensource/s_opensource.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -26,12 +25,8 @@ class MenuDrawer extends StatefulWidget {
 
 class _MenuDrawerState extends State<MenuDrawer> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Material(
       color: Colors.transparent,
       child: SafeArea(
@@ -47,10 +42,10 @@ class _MenuDrawerState extends State<MenuDrawer> {
               decoration: BoxDecoration(
                   borderRadius: const BorderRadius.only(
                       topRight: Radius.circular(24), bottomRight: Radius.circular(24)),
-                  color: Colors.white,
+                  color: colors.surface,
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.skyBlue.withOpacity(0.1),
+                      color: colors.cardShadow.withOpacity(0.1),
                       blurRadius: 30,
                       offset: const Offset(5, 0),
                     ),
@@ -71,6 +66,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
       context.deviceHeight < MenuDrawer.minHeightForScrollView;
 
   Container getMenus(BuildContext context) {
+    final colors = context.appColors;
     return Container(
       constraints: BoxConstraints(minHeight: context.deviceHeight),
       child: Column(
@@ -84,24 +80,24 @@ class _MenuDrawerState extends State<MenuDrawer> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  AppColors.skyBlue.withOpacity(0.1),
-                  AppColors.kawaiiPink.withOpacity(0.05),
+                  colors.appBarGradientStart.withOpacity(0.15),
+                  colors.appBarGradientEnd.withOpacity(0.08),
                 ],
               ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Fill your Festival ✨',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.textMain,
+                    color: colors.textTitle,
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(EvaIcons.close, color: AppColors.textMuted),
+                  icon: Icon(EvaIcons.close, color: colors.textSecondary),
                   onPressed: () {
                     closeDrawer(context);
                   },
@@ -109,7 +105,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
               ],
             ),
           ),
-          Divider(color: Colors.grey.shade100, height: 1),
+          Divider(color: colors.listDivider, height: 1),
           _MenuWidget(
             'opensource'.tr(),
             icon: Icons.code_rounded,
@@ -117,7 +113,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
               Nav.push(const OpensourceScreen());
             },
           ),
-          Divider(color: Colors.grey.shade100, height: 1, indent: 16, endIndent: 16),
+          Divider(color: colors.listDivider, height: 1, indent: 16, endIndent: 16),
           _MenuWidget(
             'clear_cache'.tr(),
             icon: Icons.cleaning_services_rounded,
@@ -129,7 +125,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
               }
             },
           ),
-          Divider(color: Colors.grey.shade100, height: 1, indent: 16, endIndent: 16),
+          Divider(color: colors.listDivider, height: 1, indent: 16, endIndent: 16),
           isSmallScreen(context) ? const Height(10) : const EmptyExpanded(),
           MouseRegion(
             cursor: SystemMouseCursors.click,
@@ -159,7 +155,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
                       child: '© 2023. Bansook Nam. all rights reserved.'
                           .selectableText
                           .size(10)
-                          .color(AppColors.textMuted)
+                          .color(colors.textSecondary)
                           .makeWithDefaultFont()),
                   onTap: () async {},
                 ),
@@ -181,7 +177,9 @@ class _MenuDrawerState extends State<MenuDrawer> {
     }
   }
 
-  Widget getLanguageOption(BuildContext context) => Row(
+  Widget getLanguageOption(BuildContext context) {
+    final colors = context.appColors;
+    return Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Tap(
@@ -189,9 +187,9 @@ class _MenuDrawerState extends State<MenuDrawer> {
                 padding: const EdgeInsets.only(left: 5, right: 5),
                 margin: const EdgeInsets.only(left: 15, right: 20),
                 decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade200),
+                    border: Border.all(color: colors.listDivider),
                     borderRadius: BorderRadius.circular(16),
-                    color: Colors.white,
+                    color: colors.surface,
                     boxShadow: [context.appShadows.buttonShadowSmall]),
                 child: Row(
                   children: [
@@ -218,8 +216,10 @@ class _MenuDrawerState extends State<MenuDrawer> {
           ),
         ],
       );
+  }
 
   DropdownMenuItem<String> menu(Language language) {
+    final colors = context.appColors;
     return DropdownMenuItem(
       value: describeEnum(language).capitalizeFirst,
       child: Row(
@@ -229,7 +229,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
           describeEnum(language)
               .capitalizeFirst!
               .text
-              .color(AppColors.textMain)
+              .color(colors.textTitle)
               .size(12)
               .makeWithDefaultFont(),
         ],
@@ -260,6 +260,7 @@ class _MenuWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return SizedBox(
       height: 55,
       child: Tap(
@@ -269,13 +270,13 @@ class _MenuWidget extends StatelessWidget {
           child: Row(
             children: [
               if (icon != null) ...[
-                Icon(icon, color: AppColors.skyBlue, size: 20),
+                Icon(icon, color: colors.activate, size: 20),
                 const SizedBox(width: 12),
               ],
               Expanded(
                   child: text.text
                       .textStyle(defaultFontStyle())
-                      .color(AppColors.textMain)
+                      .color(colors.textTitle)
                       .size(15)
                       .make()),
             ],

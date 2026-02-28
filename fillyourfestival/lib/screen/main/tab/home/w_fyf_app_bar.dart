@@ -1,8 +1,6 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
 
-
-
 class FyfAppBar extends StatefulWidget {
   const FyfAppBar(this.appbarTitle, {super.key});
 
@@ -17,24 +15,16 @@ class _FyfAppBarState extends State<FyfAppBar> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Container(
       height: 60,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: [
-            AppColors.skyBlue,
-            AppColors.skyBlueLight,
-          ],
-        ),
-      ),
+      color: colors.appBarColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
             icon: const Icon(Icons.menu_rounded, color: Colors.white),
-            onPressed: () => openDrawer(context),
+            onPressed: () => Scaffold.of(context).openDrawer(),
           ),
           Text(
             widget.appbarTitle,
@@ -55,35 +45,29 @@ class _FyfAppBarState extends State<FyfAppBar> {
               IconButton(
                 icon: const Icon(Icons.notifications_rounded, color: Colors.white),
                 onPressed: () {
-                  setState(
-                    () {
-                      _showRedDot = !_showRedDot;
-                    },
-                  );
+                  setState(() {
+                    _showRedDot = !_showRedDot;
+                  });
                 },
               ),
               if (_showRedDot)
                 Positioned(
-                    top: 10,
-                    right: 10,
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.redAccent,
-                        border: Border.all(color: Colors.white, width: 1.5),
-                      ),
+                  top: 10,
+                  right: 10,
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.redAccent,
+                      border: Border.all(color: Colors.white, width: 1.5),
                     ),
                   ),
+                ),
             ],
           ),
         ],
       ),
     );
-  }
-
-  void openDrawer(BuildContext context) {
-    Scaffold.of(context).openDrawer();
   }
 }

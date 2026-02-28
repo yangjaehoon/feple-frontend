@@ -1,3 +1,4 @@
+import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
 import '../../../../model/artist_model.dart';
@@ -9,14 +10,15 @@ class CircleArtistWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return FutureBuilder<List<Artist>>(
       future: fetchArtists(),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
-          return const Center(
+          return Center(
             child: Padding(
-              padding: EdgeInsets.all(20),
-              child: CircularProgressIndicator(color: AppColors.skyBlue),
+              padding: const EdgeInsets.all(20),
+              child: CircularProgressIndicator(color: colors.loadingIndicator),
             ),
           );
         }
@@ -26,7 +28,7 @@ class CircleArtistWidget extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               child: Text(
                 '아티스트 로딩 실패: ${snapshot.error}',
-                style: const TextStyle(color: AppColors.textMuted),
+                style: TextStyle(color: colors.textSecondary),
               ),
             ),
           );
@@ -39,14 +41,14 @@ class CircleArtistWidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
                   '아티스트 🎤',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.textMain,
+                    color: colors.textTitle,
                     letterSpacing: -0.3,
                   ),
                 ),
@@ -86,7 +88,7 @@ class CircleArtistWidget extends StatelessWidget {
                               borderRadius: BorderRadius.circular(20.0),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.skyBlue.withOpacity(0.15),
+                                  color: colors.cardShadow.withOpacity(0.15),
                                   blurRadius: 12,
                                   offset: const Offset(0, 4),
                                 ),
@@ -100,12 +102,12 @@ class CircleArtistWidget extends StatelessWidget {
                                 errorBuilder: (context, error, stack) =>
                                     Container(
                                   decoration: BoxDecoration(
-                                    color: AppColors.skyBlue.withOpacity(0.1),
+                                    color: colors.activate.withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.person_rounded,
-                                    color: AppColors.skyBlue,
+                                    color: colors.activate,
                                     size: 40,
                                   ),
                                 ),
@@ -116,10 +118,10 @@ class CircleArtistWidget extends StatelessWidget {
                         const SizedBox(height: 8),
                         Text(
                           artist.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.textMain,
+                            color: colors.textTitle,
                           ),
                           textAlign: TextAlign.center,
                           maxLines: 1,

@@ -1,4 +1,4 @@
-import 'package:fast_app_base/common/constant/app_colors.dart';
+import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/screen/main/tab/chat/w_fan_chat.dart';
 import 'package:fast_app_base/screen/main/tab/chat/w_my_chat.dart';
 import 'package:fast_app_base/screen/main/tab/chat/w_today_ftv_chat.dart';
@@ -15,7 +15,7 @@ class ChatFragment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.backgroundLight,
+      color: context.appColors.backgroundMain,
       child: const Stack(
         children: [
           SingleChildScrollView(

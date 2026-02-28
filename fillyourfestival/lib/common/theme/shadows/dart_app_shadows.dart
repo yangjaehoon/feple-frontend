@@ -5,37 +5,37 @@ class DarkAppShadows extends AbsThemeShadows {
   const DarkAppShadows();
 
   @override
-  BoxShadow get buttonShadow => const BoxShadow(
-        offset: Offset(4, 4),
-        blurRadius: 5,
-        color: Color.fromARGB(255, 110, 110, 110),
+  BoxShadow get buttonShadow => BoxShadow(
+        offset: const Offset(0, 4),
+        blurRadius: 20,
+        color: Colors.black.withOpacity(0.4),
       );
 
   @override
-  BoxShadow get thickTextShadow => const BoxShadow(
-        offset: Offset(1, 1),
-        blurRadius: 5,
-        color: Color.fromARGB(255, 197, 197, 197),
+  BoxShadow get thickTextShadow => BoxShadow(
+        offset: const Offset(0, 2),
+        blurRadius: 8,
+        color: Colors.black.withOpacity(0.5),
       );
 
   @override
-  BoxShadow get defaultShadow => const BoxShadow(
-        offset: Offset(1, 1),
-        blurRadius: 3,
-        color: Color.fromARGB(255, 81, 81, 81),
+  BoxShadow get defaultShadow => BoxShadow(
+        offset: const Offset(0, 4),
+        blurRadius: 12,
+        color: Colors.black.withOpacity(0.3),
       );
 
   @override
-  BoxShadow get textShadow => const BoxShadow(
-        offset: Offset(1, 1),
-        blurRadius: 3,
-        color: Color.fromARGB(255, 81, 81, 81),
+  BoxShadow get textShadow => BoxShadow(
+        offset: const Offset(0, 2),
+        blurRadius: 4,
+        color: Colors.black.withOpacity(0.4),
       );
 
   @override
-  BoxShadow get buttonShadowSmall => const BoxShadow(
-        offset: Offset(1, 1),
-        blurRadius: 3,
-        color: Color.fromARGB(255, 81, 81, 81),
+  BoxShadow get buttonShadowSmall => BoxShadow(
+        offset: const Offset(0, 2),
+        blurRadius: 10,
+        color: Colors.black.withOpacity(0.25),
       );
 }

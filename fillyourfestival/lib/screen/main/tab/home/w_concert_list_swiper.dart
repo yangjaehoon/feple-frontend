@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:card_swiper/card_swiper.dart';
+import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/screen/main/tab/home/concert_information/f_festival_information.dart';
 import 'package:flutter/material.dart';
@@ -21,20 +22,19 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
 
   void _onPageChanged(int newPage) {
     setState(() {
-      if (_currentPage != null) {
-        _currentPage = newPage;
-      }
+      _currentPage = newPage;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final poster = Provider.of<PosterProvider>(context);
+    final colors = context.appColors;
 
     if (poster.posters.isEmpty) {
-      return const Center(
+      return Center(
         child: CircularProgressIndicator(
-          color: AppColors.skyBlue,
+          color: colors.loadingIndicator,
         ),
       );
     }
@@ -58,8 +58,8 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    AppColors.skyBlue.withOpacity(0.3),
-                    AppColors.backgroundLight.withOpacity(0.6),
+                    colors.swiperOverlayStart.withOpacity(0.3),
+                    colors.swiperOverlayEnd.withOpacity(0.6),
                   ],
                 ),
               ),
@@ -79,8 +79,8 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
               itemCount: poster.posters.length,
               pagination: SwiperPagination(
                 builder: DotSwiperPaginationBuilder(
-                  activeColor: AppColors.skyBlue,
-                  color: AppColors.skyBlue.withOpacity(0.3),
+                  activeColor: colors.activate,
+                  color: colors.activate.withOpacity(0.3),
                   activeSize: 10,
                   size: 7,
                 ),
@@ -100,7 +100,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.skyBlue.withOpacity(0.2),
+                          color: colors.cardShadow.withOpacity(0.2),
                           blurRadius: 20,
                           offset: const Offset(0, 8),
                         ),
@@ -123,9 +123,9 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
               )
                 ..addRotate([-45.0 / 180, 0.0, 45.0 / 180])
                 ..addTranslate([
-                  Offset(-370.0, -40.0),
-                  Offset(0.0, 0.0),
-                  Offset(370.0, -40.0)
+                  const Offset(-370.0, -40.0),
+                  const Offset(0.0, 0.0),
+                  const Offset(370.0, -40.0)
                 ]),
               itemWidth: 180,
               itemHeight: 254.5,

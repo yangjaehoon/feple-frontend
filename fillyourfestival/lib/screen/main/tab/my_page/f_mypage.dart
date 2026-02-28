@@ -1,4 +1,4 @@
-import 'package:fast_app_base/common/constant/app_colors.dart';
+import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/screen/main/tab/my_page/w_follow_artists.dart';
 import 'package:fast_app_base/screen/main/tab/my_page/w_ftv_certification.dart';
 import 'package:fast_app_base/screen/main/tab/my_page/w_my_post_comment.dart';
@@ -28,7 +28,7 @@ class _MypageFragmentState extends State<MypageFragment> {
       return Center(child: CircularProgressIndicator());
     }
     return Container(
-      color: AppColors.backgroundLight,
+      color: context.appColors.backgroundMain,
       child: Stack(
         children: [
           SingleChildScrollView(

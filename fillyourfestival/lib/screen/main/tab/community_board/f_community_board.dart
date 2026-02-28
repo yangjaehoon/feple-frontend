@@ -18,7 +18,7 @@ class CommunityBoardFragment extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return Container(
-      color: AppColors.backgroundLight,
+      color: context.appColors.backgroundMain,
       child: const Stack(
         children: [
           SingleChildScrollView(

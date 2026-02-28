@@ -45,4 +45,6 @@ class LightAppColors extends AbstractThemeColors {
 
   @override
   Color get snackbarBgColor => AppColors.skyBlue;
+
+  // All theme-aware getters use defaults from AbstractThemeColors (light palette)
 }

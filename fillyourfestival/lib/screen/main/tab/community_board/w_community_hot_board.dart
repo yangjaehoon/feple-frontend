@@ -27,16 +27,17 @@ class _HotBoardState extends State<HotBoard> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Container(
       width: double.infinity,
       height: 210,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.surface,
         borderRadius: const BorderRadius.all(Radius.circular(20)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.skyBlue.withOpacity(0.12),
+            color: colors.cardShadow.withOpacity(0.12),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
@@ -53,8 +54,8 @@ class _HotBoardState extends State<HotBoard> {
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
                 colors: [
-                  AppColors.skyBlue,
-                  AppColors.skyBlueLight,
+                  colors.hotBoardGradientStart,
+                  colors.hotBoardGradientEnd,
                 ],
               ),
               borderRadius: const BorderRadius.only(
@@ -75,7 +76,7 @@ class _HotBoardState extends State<HotBoard> {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.local_fire_department_rounded,
+                      Icon(Icons.local_fire_department_rounded,
                           color: AppColors.sunnyYellow, size: 18),
                       const SizedBox(width: 6),
                       const Text(
@@ -109,25 +110,25 @@ class _HotBoardState extends State<HotBoard> {
                 future: getpost(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
+                    return Center(
                       child: CircularProgressIndicator(
-                        color: AppColors.skyBlue,
+                        color: colors.loadingIndicator,
                       ),
                     );
                   } else if (snapshot.hasError) {
                     return Center(
                       child: Text(
                         'Failed to load data: ${snapshot.error}',
-                        style: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+                        style: TextStyle(color: colors.textSecondary, fontSize: 13),
                       ),
                     );
                   } else {
                     List<dynamic> postDataList = snapshot.data!;
                     if (postDataList.isEmpty) {
-                      return const Center(
+                      return Center(
                         child: Text(
                           'No data available.',
-                          style: TextStyle(color: AppColors.textMuted),
+                          style: TextStyle(color: colors.textSecondary),
                         ),
                       );
                     } else {
@@ -141,35 +142,35 @@ class _HotBoardState extends State<HotBoard> {
                               dense: true,
                               title: Text(
                                 postData['postname'],
-                                style: const TextStyle(
-                                  color: AppColors.textMain,
+                                style: TextStyle(
+                                  color: colors.textTitle,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 14,
                                 ),
                               ),
                               subtitle: Text(
                                 postData['datetime'],
-                                style: const TextStyle(
-                                  color: AppColors.textMuted,
+                                style: TextStyle(
+                                  color: colors.textSecondary,
                                   fontSize: 12,
                                 ),
                               ),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.favorite_rounded,
+                                  const Icon(Icons.favorite_rounded,
                                       color: AppColors.kawaiiPink, size: 18),
                                   const SizedBox(width: 4),
                                   Text(
                                     postData['favorite'].toString(),
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                         fontSize: 14,
-                                        color: AppColors.textMain,
+                                        color: colors.textTitle,
                                         fontWeight: FontWeight.w600),
                                   ),
                                   const SizedBox(width: 10),
                                   Icon(Icons.chat_bubble_outline_rounded,
-                                      color: AppColors.skyBlue, size: 16),
+                                      color: colors.activate, size: 16),
                                 ],
                               ),
                             );
@@ -177,7 +178,7 @@ class _HotBoardState extends State<HotBoard> {
                           separatorBuilder: (BuildContext context, int index) {
                             return Divider(
                               thickness: 1,
-                              color: Colors.grey.shade100,
+                              color: colors.listDivider,
                               indent: 16,
                               endIndent: 16,
                             );

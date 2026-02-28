@@ -16,7 +16,7 @@ class HomeFragment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.backgroundLight,
+      color: context.appColors.backgroundMain,
       child: Stack(
         children: [
           const SingleChildScrollView(

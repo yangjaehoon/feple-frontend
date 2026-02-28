@@ -69,11 +69,44 @@ ThemeData lightTheme = ThemeData(
     ),
 );
 
-const darkColorSeed = Color(0xbcd5ff7e);
+const _darkBg = Color(0xFF111C21);
+const _darkSurface = Color(0xFF1A2C38);
+
 ThemeData darkTheme = ThemeData(
     useMaterial3: true,
     visualDensity: VisualDensity.adaptivePlatformDensity,
     brightness: Brightness.dark,
-    scaffoldBackgroundColor: AppColors.veryDarkGrey,
+    scaffoldBackgroundColor: _darkBg,
     colorScheme: ColorScheme.fromSeed(
-        seedColor: CustomTheme.dark.appColors.seedColor, brightness: Brightness.dark));
+      seedColor: AppColors.skyBlue,
+      brightness: Brightness.dark,
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      foregroundColor: Color(0xFFE8EDF2),
+    ),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: _darkSurface,
+      selectedItemColor: AppColors.skyBlueLight,
+      unselectedItemColor: Color(0xFF8CA0B3),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.skyBlue,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        elevation: 0,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      ),
+    ),
+    cardTheme: CardThemeData(
+      color: _darkSurface,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+    ),
+);

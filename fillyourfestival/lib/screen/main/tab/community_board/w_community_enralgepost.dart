@@ -13,13 +13,8 @@ class EnralgePost extends StatefulWidget {
   String nickname;
   String title;
   String content;
-
-  //List<String> comments;
   int heart;
 
-  //String datetime;
-  //int favorite;
-  //final List<String> comments;
   EnralgePost({
     super.key,
     required this.boardname,
@@ -27,10 +22,7 @@ class EnralgePost extends StatefulWidget {
     required this.nickname,
     required this.title,
     required this.content,
-    //required this.comments,
     required this.heart,
-    //required this.datetime,
-    //required this.favorite
   });
 
   @override
@@ -39,14 +31,28 @@ class EnralgePost extends StatefulWidget {
 
 class _EnralgePostState extends State<EnralgePost> {
   final _commentController = TextEditingController();
-
   bool _isSubmitting = false;
+  List<Map<String, dynamic>> _comments = [];
+  bool _liked = false;
 
-  static const _endpoints = {
-    'FreeBoard': '/posts/free',
-    'HotBoard': '/posts/hot',
-    'GetuserBoard': '/posts/mate',
-  };
+  @override
+  void initState() {
+    super.initState();
+    _fetchComments();
+  }
+
+  Future<void> _fetchComments() async {
+    final uri = Uri.parse('$baseUrl/comments/post/${widget.id}');
+    try {
+      final response = await http.get(uri);
+      if (response.statusCode == 200) {
+        final List<dynamic> parsed = json.decode(utf8.decode(response.bodyBytes));
+        setState(() {
+          _comments = parsed.map((e) => e as Map<String, dynamic>).toList();
+        });
+      }
+    } catch (_) {}
+  }
 
   Future<void> _commentSubmit() async {
     final comment = _commentController.text.trim();
@@ -58,29 +64,34 @@ class _EnralgePostState extends State<EnralgePost> {
       return;
     }
 
-    final commentUri = Uri.parse('baseUrl/comment');
     final user = context.read<UserProvider>().user;
     if (user == null) {
-      throw Exception('로그인 정보가 없습니다.');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('로그인 정보가 없습니다.')),
+      );
+      return;
     }
+
     setState(() => _isSubmitting = true);
 
     final body = {
-      'content':comment,
-      'post':widget.id,
-      'user': user.id,
+      'content': comment,
+      'postId': widget.id,
+      'userId': user.id,
     };
 
     try {
       final response = await http.post(
-        commentUri,
+        Uri.parse('$baseUrl/comments'),
         headers: {'Content-Type': 'application/json; charset=UTF-8'},
         body: jsonEncode(body),
       );
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('게시글이 성공적으로 등록되었습니다.')));
-        Navigator.of(context).pop();
+        _commentController.clear();
+        await _fetchComments();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('댓글이 등록되었습니다.')),
+        );
       } else {
         throw Exception('서버 오류: ${response.statusCode}');
       }
@@ -93,35 +104,31 @@ class _EnralgePostState extends State<EnralgePost> {
     }
   }
 
-  void updatepost() async {
-    final urlPath = _endpoints[widget.boardname];
-    if (urlPath == null) {
-      throw Exception('알 수 없는 게시판: ${widget.boardname}');
-    }
-    final uri = Uri.parse('$baseUrl$urlPath');
+  Future<void> _toggleLike() async {
+    final user = context.read<UserProvider>().user;
+    if (user == null) return;
 
-    Map<String, dynamic> requestData = {
-      "id": widget.id,
-      "nickname": widget.nickname,
-      "title": widget.title,
-      "content": widget.content,
-      //"comments": widget.comments.cast<String>(),
-      //"heart": widget.heart,
-      //"datetime": widget.datetime,
-      //"favorite": widget.favorite,
-    };
-    final response = await http.post(
-      uri,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(requestData),
-    );
-    if (response.statusCode == 200) {
-      print("update");
-    } else {
-      print('Failed to load post');
+    final uri = Uri.parse('$baseUrl/posts/${widget.id}/like?userId=${user.id}');
+    try {
+      final response = await http.post(uri);
+      if (response.statusCode == 200) {
+        final bool liked = json.decode(response.body) as bool;
+        setState(() {
+          _liked = liked;
+          widget.heart = liked ? widget.heart + 1 : widget.heart - 1;
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('좋아요 처리에 실패했습니다.\n$e')),
+      );
     }
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
   }
 
   @override
@@ -141,6 +148,11 @@ class _EnralgePostState extends State<EnralgePost> {
                 widget.title,
                 style: const TextStyle(fontSize: 20, color: Colors.white),
               ),
+              const SizedBox(height: 4),
+              Text(
+                widget.nickname,
+                style: const TextStyle(fontSize: 13, color: Colors.white54),
+              ),
               const Divider(
                 thickness: 2,
                 height: 24,
@@ -152,82 +164,91 @@ class _EnralgePostState extends State<EnralgePost> {
               ),
               const Divider(
                 thickness: 2,
-                height: 80,
+                height: 40,
                 color: Color.fromARGB(255, 110, 110, 110),
               ),
               Row(
                 children: [
-                  const Icon(Icons.favorite_rounded, color: Colors.red),
-                  const SizedBox(width: 4),
-                  Text(
-                    widget.heart.toString(),
-                    style: const TextStyle(fontSize: 20, color: Colors.white),
-                  ),
-                  const SizedBox(width: 16),
-                  const Icon(Icons.comment, color: Colors.white),
-                  // Text(
-                  //   widget.postdata.comments.length.toString(),
-                  //   style: const TextStyle(fontSize: 20),
-                  // ), //TODO 댓글(comment)관련 작업해야함
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  FloatingActionButton.extended(
-                    backgroundColor: Colors.black,
-                    onPressed: () {
-                      setState(() {
-                        widget.heart++;
-                      });
-                      updatepost();
-                    },
-                    label: const Text('좋아요'),
-                    icon: const Icon(
-                      Icons.favorite_rounded,
-                      color: Colors.red,
+                  GestureDetector(
+                    onTap: _toggleLike,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.favorite_rounded,
+                          color: _liked ? Colors.red : Colors.white54,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          widget.heart.toString(),
+                          style: const TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ],
                     ),
                   ),
-                  // FloatingActionButton.extended(
-                  //   backgroundColor: Colors.black,
-                  //   onPressed: () {
-                  //     widget.favorite = widget.favorite + 1;
-                  //     updatepost();
-                  //   },
-                  //   label: const Text('즐겨찾기'),
-                  //   icon: const Icon(
-                  //     Icons.grade,
-                  //     color: Colors.yellow,
-                  //   ),
-                  // ),
+                  const SizedBox(width: 16),
+                  const Icon(Icons.comment, color: Colors.white54),
+                  const SizedBox(width: 4),
+                  Text(
+                    _comments.length.toString(),
+                    style: const TextStyle(fontSize: 16, color: Colors.white),
+                  ),
                 ],
               ),
-              // ListView.separated(
-              //   physics: const NeverScrollableScrollPhysics(),
-              //   shrinkWrap: true,
-              //   itemCount: widget.comments.length,
-              //   itemBuilder: (context, int index) {
-              //     return ListTile(
-              //       title: Text(
-              //         widget.userId,
-              //       ),
-              //       subtitle: Text(widget.comments[index]),
-              //     );
-              //   },
-              //   separatorBuilder: (BuildContext context, int index) {
-              //     return const Divider(thickness: 2);
-              //   },
-              // ), //TODO 댓글(comment)관련 작업해야함
-              //TODO BottomNavigationBar 없애기 작업
               const SizedBox(height: 24),
-
-              // Positioned(
-              //top: 300,
-              //child: TextField(
+              // 댓글 목록
+              if (_comments.isNotEmpty)
+                ListView.separated(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: _comments.length,
+                  separatorBuilder: (_, __) => const Divider(
+                    color: Color.fromARGB(255, 60, 60, 60),
+                    height: 1,
+                  ),
+                  itemBuilder: (context, index) {
+                    final c = _comments[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const CircleAvatar(
+                            radius: 16,
+                            backgroundColor: Colors.blueAccent,
+                            child: Icon(Icons.person, size: 18, color: Colors.white),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'User ${c['userId']}',
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  c['content'] as String,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              const SizedBox(height: 16),
+              // 댓글 입력
               Container(
                 decoration: BoxDecoration(
                   color: const Color.fromARGB(50, 255, 255, 255),
-                  borderRadius: BorderRadius.circular(8), // 필요시 둥근 모서리 추가
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   children: [
@@ -240,16 +261,28 @@ class _EnralgePostState extends State<EnralgePost> {
                           hintStyle: TextStyle(color: Colors.white54),
                           filled: true,
                           fillColor: Colors.transparent,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         ),
                         style: const TextStyle(color: Colors.white),
                         maxLines: null,
                       ),
                     ),
-                    SizedBox(width:8),
-                    IconButton(onPressed: (){}, icon: Icon(Icons.send)),
+                    const SizedBox(width: 4),
+                    _isSubmitting
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : IconButton(
+                            onPressed: _commentSubmit,
+                            icon: const Icon(Icons.send, color: Colors.white),
+                          ),
+                    const SizedBox(width: 4),
                   ],
                 ),
               ),
+              const SizedBox(height: 40),
             ],
           ),
         ),

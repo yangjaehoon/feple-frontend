@@ -33,7 +33,7 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
               Container(
                 width: 3, height: 20,
                 decoration: BoxDecoration(
-                  color: colors.sectionBarPink,
+                  color: colors.sectionBarColor,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -63,7 +63,7 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
                       padding: const EdgeInsets.all(3),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        gradient: LinearGradient(colors: colors.followRingGradient),
+                        color: colors.followRingColor,
                         boxShadow: [
                           BoxShadow(
                             color: colors.cardShadow.withOpacity(0.2),

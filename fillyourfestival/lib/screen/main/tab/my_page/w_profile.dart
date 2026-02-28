@@ -44,7 +44,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
       child: Column(
         children: [
-          // Profile Image with kawaii ring
+          // Profile Image with solid ring
           Stack(
             children: [
               Container(
@@ -53,9 +53,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                 padding: const EdgeInsets.all(3),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: colors.profileRingGradient,
-                  ),
+                  color: colors.profileRingColor,
                   boxShadow: [
                     BoxShadow(
                       color: colors.cardShadow.withOpacity(0.2),
@@ -92,9 +90,9 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                       ),
                     ],
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.favorite_rounded,
-                    color: AppColors.kawaiiPink,
+                    color: colors.accentColor,
                     size: 18,
                   ),
                 ),
@@ -102,7 +100,6 @@ class _ProfileWidgetState extends State<ProfileWidget> {
             ],
           ),
           const SizedBox(height: 16),
-          // Nickname
           Text(
             user.nickname,
             style: TextStyle(
@@ -113,7 +110,6 @@ class _ProfileWidgetState extends State<ProfileWidget> {
             ),
           ),
           const SizedBox(height: 4),
-          // Level badge
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
@@ -130,7 +126,6 @@ class _ProfileWidgetState extends State<ProfileWidget> {
             ),
           ),
           const SizedBox(height: 16),
-          // Action buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -171,18 +166,11 @@ class _ProfileWidgetState extends State<ProfileWidget> {
     final colors = context.appColors;
     return Container(
       decoration: BoxDecoration(
-        gradient: isPrimary
-            ? LinearGradient(
-                colors: [colors.actionBtnGradientStart, colors.actionBtnGradientEnd],
-              )
-            : null,
-        color: isPrimary ? null : colors.actionBtnSecondaryBg,
+        color: isPrimary ? colors.actionBtnPrimary : colors.actionBtnSecondaryBg,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: isPrimary
-                ? colors.cardShadow.withOpacity(0.3)
-                : colors.cardShadow.withOpacity(0.04),
+            color: colors.cardShadow.withOpacity(isPrimary ? 0.3 : 0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),

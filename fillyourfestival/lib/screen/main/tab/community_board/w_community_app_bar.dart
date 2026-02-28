@@ -14,16 +14,7 @@ class _CommunityBoardAppBarState extends State<CommunityBoardAppBar> {
     final colors = context.appColors;
     return Container(
       height: 60,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: [
-            colors.appBarGradientStart,
-            colors.appBarGradientEnd,
-          ],
-        ),
-      ),
+      color: colors.appBarColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

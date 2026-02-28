@@ -50,14 +50,7 @@ class _HotBoardState extends State<HotBoard> {
             width: double.infinity,
             height: 44,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [
-                  colors.hotBoardGradientStart,
-                  colors.hotBoardGradientEnd,
-                ],
-              ),
+              color: colors.hotBoardHeader,
               borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20)),
             ),
@@ -77,7 +70,7 @@ class _HotBoardState extends State<HotBoard> {
                   Row(
                     children: [
                       Icon(Icons.local_fire_department_rounded,
-                          color: AppColors.sunnyYellow, size: 18),
+                          color: colors.accentColor, size: 18),
                       const SizedBox(width: 6),
                       const Text(
                         "인기 게시판",
@@ -158,8 +151,8 @@ class _HotBoardState extends State<HotBoard> {
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.favorite_rounded,
-                                      color: AppColors.kawaiiPink, size: 18),
+                                  Icon(Icons.favorite_rounded,
+                                      color: colors.accentColor, size: 18),
                                   const SizedBox(width: 4),
                                   Text(
                                     postData['favorite'].toString(),

@@ -72,18 +72,11 @@ class _MenuDrawerState extends State<MenuDrawer> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Drawer header
+          // Drawer header — solid color, no gradient
           Container(
             padding: const EdgeInsets.fromLTRB(20, 16, 10, 16),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  colors.appBarGradientStart.withOpacity(0.15),
-                  colors.appBarGradientEnd.withOpacity(0.08),
-                ],
-              ),
+              color: colors.drawerHeaderBg.withOpacity(0.1),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -165,10 +158,6 @@ class _MenuDrawerState extends State<MenuDrawer> {
         ],
       ),
     );
-  }
-
-  void toggleTheme() {
-    ThemeUtil.toggleTheme(context);
   }
 
   void closeDrawer(BuildContext context) {

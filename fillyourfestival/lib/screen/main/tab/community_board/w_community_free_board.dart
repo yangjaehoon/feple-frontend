@@ -46,14 +46,7 @@ class _FreeBoardState extends State<FreeBoard> {
             width: double.infinity,
             height: 44,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [
-                  colors.freeBoardGradientStart,
-                  colors.freeBoardGradientEnd,
-                ],
-              ),
+              color: colors.freeBoardHeader,
               borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20)),
             ),
@@ -151,8 +144,8 @@ class _FreeBoardState extends State<FreeBoard> {
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.favorite_rounded,
-                                      color: AppColors.kawaiiPink, size: 18),
+                                  Icon(Icons.favorite_rounded,
+                                      color: colors.accentColor, size: 18),
                                   const SizedBox(width: 4),
                                   Text(
                                     postData.likeCount.toString(),

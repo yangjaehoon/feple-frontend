@@ -8,7 +8,6 @@ import 'package:http/http.dart' as http;
 import '../../../../model/post_model.dart';
 import '../../../../service/post_service.dart';
 
-
 class GetUserBoard extends StatefulWidget {
   final String boardname;
 
@@ -46,14 +45,7 @@ class _GetUserBoardState extends State<GetUserBoard> {
             width: double.infinity,
             height: 44,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [
-                  colors.getUserBoardGradientStart,
-                  colors.getUserBoardGradientEnd,
-                ],
-              ),
+              color: colors.getUserBoardHeader,
               borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20)),
             ),
@@ -151,8 +143,8 @@ class _GetUserBoardState extends State<GetUserBoard> {
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.favorite_rounded,
-                                      color: AppColors.kawaiiPink, size: 18),
+                                  Icon(Icons.favorite_rounded,
+                                      color: colors.accentColor, size: 18),
                                   const SizedBox(width: 4),
                                   Text(
                                     postData.likeCount.toString(),

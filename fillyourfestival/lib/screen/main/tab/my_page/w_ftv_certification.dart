@@ -31,7 +31,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
               Container(
                 width: 3, height: 20,
                 decoration: BoxDecoration(
-                  color: colors.sectionBarMint,
+                  color: colors.sectionBarColor,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -61,7 +61,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
                       padding: const EdgeInsets.all(3),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        gradient: LinearGradient(colors: colors.certRingGradient),
+                        color: colors.certRingColor,
                         boxShadow: [
                           BoxShadow(
                             color: colors.cardShadow.withOpacity(0.15),

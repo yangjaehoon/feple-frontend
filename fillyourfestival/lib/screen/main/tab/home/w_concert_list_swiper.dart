@@ -53,16 +53,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
             child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    colors.swiperOverlayStart.withOpacity(0.3),
-                    colors.swiperOverlayEnd.withOpacity(0.6),
-                  ],
-                ),
-              ),
+              color: colors.swiperOverlay.withOpacity(0.5),
             ),
           ),
         ),

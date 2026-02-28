@@ -70,7 +70,7 @@ class _HotBoardState extends State<HotBoard> {
                   Row(
                     children: [
                       Icon(Icons.local_fire_department_rounded,
-                          color: colors.accentColor, size: 18),
+                          color: Colors.white, size: 18),
                       const SizedBox(width: 6),
                       const Text(
                         "인기 게시판",

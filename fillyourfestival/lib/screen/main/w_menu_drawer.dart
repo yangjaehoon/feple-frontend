@@ -82,7 +82,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Fill your Festival ✨',
+                  'Feple',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,

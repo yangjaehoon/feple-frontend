@@ -39,7 +39,7 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
               ),
               const SizedBox(width: 8),
               Text(
-                '팔로우 아티스트 🎤',
+                '팔로우 아티스트 ',
                 style: TextStyle(
                   fontSize: 18, fontWeight: FontWeight.w800, color: colors.textTitle,
                 ),

@@ -37,7 +37,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
               ),
               const SizedBox(width: 8),
               Text(
-                '페스티벌 인증 🎪',
+                '페스티벌 인증',
                 style: TextStyle(
                   fontSize: 18, fontWeight: FontWeight.w800, color: colors.textTitle,
                 ),

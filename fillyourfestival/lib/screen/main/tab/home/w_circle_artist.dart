@@ -44,7 +44,7 @@ class CircleArtistWidget extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
-                  '아티스트 🎤',
+                  '아티스트',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w800,

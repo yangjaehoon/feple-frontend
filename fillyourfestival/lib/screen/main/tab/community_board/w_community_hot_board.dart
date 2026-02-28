@@ -30,7 +30,7 @@ class _HotBoardState extends State<HotBoard> {
     final colors = context.appColors;
     return Container(
       width: double.infinity,
-      height: 210,
+      height: 350,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: colors.surface,
@@ -133,6 +133,9 @@ class _HotBoardState extends State<HotBoard> {
                             Map<String, dynamic> postData = postDataList[index];
                             return ListTile(
                               dense: true,
+                              visualDensity: const VisualDensity(vertical: -3),
+                              minVerticalPadding: 0,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                               title: Text(
                                 postData['postname'],
                                 style: TextStyle(

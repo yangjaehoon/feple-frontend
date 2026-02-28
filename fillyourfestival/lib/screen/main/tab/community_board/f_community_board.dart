@@ -25,7 +25,7 @@ class CommunityBoardFragment extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.only(
                 top: 60,
-                bottom: 40,
+                bottom: 100,
               ), // 상단바 부분만큼 띄워줌(stack이여서),
               child: Column(
                 children: [
@@ -56,36 +56,6 @@ class CommunityBoardFragment extends StatelessWidget {
               .centered()
               .pSymmetric(h: 10, v: 5),
         ));
-  }
-
-  Future<void> showConfirmDialog(BuildContext context) async {
-    final confirmDialogResult = await ConfirmDialog(
-      '오늘 기분이 좋나요?',
-      buttonText: "네",
-      cancelButtonText: "아니오",
-    ).show();
-    debugPrint(confirmDialogResult?.isSuccess.toString());
-
-    confirmDialogResult?.runIfSuccess((data) {
-      ColorBottomSheet(
-        '❤️',
-        context: context,
-        backgroundColor: Colors.yellow.shade200,
-      ).show();
-    });
-
-    confirmDialogResult?.runIfFailure((data) {
-      ColorBottomSheet(
-        '❤️힘내여',
-        backgroundColor: Colors.yellow.shade300,
-        textColor: Colors.redAccent,
-      ).show();
-    });
-  }
-
-  Future<void> showMessageDialog() async {
-    final result = await MessageDialog("안녕하세요").show();
-    debugPrint(result.toString());
   }
 
   void openDrawer(BuildContext context) {

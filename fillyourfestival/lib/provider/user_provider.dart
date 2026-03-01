@@ -33,6 +33,14 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> _loadFromPrefs() async {
+    // JWT 토큰이 없으면 로그인 페이지로 돌아가야 하므로 user를 복원하지 않음
+    final token = await TokenStore.readAccessToken();
+    if (token == null) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('userJson');
+      return;
+    }
+
     final prefs = await SharedPreferences.getInstance();
     final jsonString = prefs.getString('userJson');
     if (jsonString != null) {
@@ -40,8 +48,6 @@ class UserProvider with ChangeNotifier {
       _user = User.fromJson(data);
       notifyListeners();
     }
-    else
-      print("왜 없쥐~~");
   }
 
   Future<void> setUser(User me) async{

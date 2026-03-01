@@ -46,6 +46,9 @@ class _ChangeNicknameState extends State<ChangeNickname> {
     User? user = userProvider.user;
 
     return Scaffold(
+        appBar: AppBar(
+          title: const Text('닉네임 변경'),
+        ),
         body: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,

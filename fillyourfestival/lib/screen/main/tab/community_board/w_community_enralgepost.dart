@@ -187,10 +187,10 @@ class _EnralgePostState extends State<EnralgePost> {
                     child: Row(
                       children: [
                         Icon(
-                          Icons.favorite_rounded,
-                          color: _liked
-                              ? AppColors.kawaiiPink
-                              : colors.textSecondary,
+                          _liked
+                              ? Icons.favorite_rounded
+                              : Icons.favorite_border_rounded,
+                          color: AppColors.kawaiiPink,
                         ),
                         const SizedBox(width: 4),
                         Text(

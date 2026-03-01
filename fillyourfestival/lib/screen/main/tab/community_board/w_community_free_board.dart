@@ -147,7 +147,7 @@ class _FreeBoardState extends State<FreeBoard> {
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.favorite_rounded,
+                                  Icon(Icons.favorite_border_rounded,
                                       color: AppColors.kawaiiPink, size: 18),
                                   const SizedBox(width: 4),
                                   Text(

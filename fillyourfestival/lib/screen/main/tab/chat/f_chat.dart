@@ -1,5 +1,6 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
+import 'package:fast_app_base/common/util/responsive_size.dart';
 import 'package:fast_app_base/screen/main/tab/chat/w_fan_chat.dart';
 import 'package:fast_app_base/screen/main/tab/chat/w_my_chat.dart';
 import 'package:fast_app_base/screen/main/tab/chat/w_today_ftv_chat.dart';
@@ -15,16 +16,17 @@ class ChatFragment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rs = ResponsiveSize(context);
     return Container(
       color: context.appColors.backgroundMain,
-      child: const Stack(
+      child: Stack(
         children: [
           SingleChildScrollView(
             padding: EdgeInsets.only(
-              top: AppDimens.scrollPaddingTop,
-              bottom: AppDimens.scrollPaddingBottom,
-            ), // 상단바 부분만큼 띄워줌(stack이여서),
-            child: Column(
+              top: rs.h(AppDimens.scrollPaddingTop),
+              bottom: rs.h(AppDimens.scrollPaddingBottom),
+            ),
+            child: const Column(
               children: [
                 //TodayFtvChat(),
                 //MyChat(),
@@ -32,7 +34,6 @@ class ChatFragment extends StatelessWidget {
               ],
             ),
           ),
-          //CircleArtistWidget(),
           FepleAppBar("채팅방"),
         ],
       ),

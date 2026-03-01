@@ -1,6 +1,7 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
+import 'package:fast_app_base/common/util/responsive_size.dart';
 import 'package:fast_app_base/model/post_model.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_post.dart';
 import 'package:fast_app_base/service/post_service.dart';
@@ -42,9 +43,10 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final rs = ResponsiveSize(context);
     return Container(
       width: double.infinity,
-      height: AppDimens.boardCardHeight,
+      height: rs.h(AppDimens.boardCardHeight),
       margin: const EdgeInsets.symmetric(horizontal: AppDimens.paddingHorizontal, vertical: AppDimens.paddingVertical),
       decoration: BoxDecoration(
         color: colors.surface,
@@ -60,7 +62,7 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
       child: Column(
         children: [
           // ── Header ──
-          _buildHeader(context, colors),
+          _buildHeader(context, colors, rs),
           // ── Post list ──
           Expanded(child: _buildPostList(colors)),
         ],
@@ -68,11 +70,11 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
     );
   }
 
-  Widget _buildHeader(BuildContext context, AbstractThemeColors colors) {
+  Widget _buildHeader(BuildContext context, AbstractThemeColors colors, ResponsiveSize rs) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppDimens.paddingHorizontal, vertical: 10),
       width: double.infinity,
-      height: AppDimens.boardHeaderHeight,
+      height: rs.h(AppDimens.boardHeaderHeight),
       decoration: BoxDecoration(
         color: widget.headerColorFn(colors),
         borderRadius: const BorderRadius.only(

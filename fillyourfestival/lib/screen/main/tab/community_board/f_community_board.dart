@@ -1,5 +1,6 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
+import 'package:fast_app_base/common/util/responsive_size.dart';
 import 'package:fast_app_base/screen/main/tab/home/w_feple_app_bar.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_hot_board.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_free_board.dart';
@@ -13,17 +14,18 @@ class CommunityBoardFragment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rs = ResponsiveSize(context);
     return Container(
       color: context.appColors.backgroundMain,
-      child: const Stack(
+      child: Stack(
         children: [
           SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.only(
-                top: AppDimens.scrollPaddingTop,
-                bottom: AppDimens.scrollPaddingBottomLarge,
+                top: rs.h(AppDimens.scrollPaddingTop),
+                bottom: rs.h(AppDimens.scrollPaddingBottomLarge),
               ),
-              child: Column(
+              child: const Column(
                 children: [
                   HotBoard(boardname: "HotBoard"),
                   FreeBoard(boardname: "FreeBoard"),

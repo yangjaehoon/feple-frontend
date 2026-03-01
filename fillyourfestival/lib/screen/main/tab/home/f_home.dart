@@ -1,5 +1,6 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
+import 'package:fast_app_base/common/util/responsive_size.dart';
 import 'package:fast_app_base/screen/main/tab/home/w_circle_artist.dart';
 import 'package:fast_app_base/screen/main/tab/home/w_concert_list_swiper.dart';
 import 'package:fast_app_base/screen/main/tab/home/w_feple_app_bar.dart';
@@ -12,16 +13,17 @@ class HomeFragment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rs = ResponsiveSize(context);
     return Container(
       color: context.appColors.backgroundMain,
       child: Stack(
         children: [
-          const SingleChildScrollView(
+          SingleChildScrollView(
             padding: EdgeInsets.only(
-              top: AppDimens.scrollPaddingTop,
-              bottom: AppDimens.scrollPaddingBottom,
+              top: rs.h(AppDimens.scrollPaddingTop),
+              bottom: rs.h(AppDimens.scrollPaddingBottom),
             ),
-            child: Column(
+            child: const Column(
               children: [
                 ConcertListSwiperWidget(),
                 CircleArtistWidget(),

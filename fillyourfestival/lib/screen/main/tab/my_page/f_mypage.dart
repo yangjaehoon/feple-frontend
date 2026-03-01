@@ -1,5 +1,6 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
+import 'package:fast_app_base/common/util/responsive_size.dart';
 import 'package:fast_app_base/screen/main/tab/my_page/w_follow_artists.dart';
 import 'package:fast_app_base/screen/main/tab/my_page/w_ftv_certification.dart';
 import 'package:fast_app_base/screen/main/tab/my_page/w_my_post_comment.dart';
@@ -18,13 +19,11 @@ class MypageFragment extends StatefulWidget {
 
 class _MypageFragmentState extends State<MypageFragment> {
 
-
   @override
   Widget build(BuildContext context) {
-
     final me = context.watch<UserProvider>().user;
+    final rs = ResponsiveSize(context);
 
-    // 아직 불러오기 전이면 로딩
     if (me == null) {
       return Center(child: CircularProgressIndicator());
     }
@@ -33,21 +32,20 @@ class _MypageFragmentState extends State<MypageFragment> {
       child: Stack(
         children: [
           SingleChildScrollView(
-            padding: const EdgeInsets.only(
-              top: AppDimens.scrollPaddingTop,
-              bottom: AppDimens.scrollPaddingBottom,
-            ), // 상단바 부분만큼 띄워줌(stack이여서),
+            padding: EdgeInsets.only(
+              top: rs.h(AppDimens.scrollPaddingTop),
+              bottom: rs.h(AppDimens.scrollPaddingBottom),
+            ),
             child: Column(
               children: [
-                ProfileWidget(userId: me.id,), // Todo nickname, level 2개 넘겨주기
-                MyPostCommentWidget(), // Todo post_num, comment_num, bookmark_num 3개 넘겨주기
-                FtvCertificationWidget(), 
-                FollowArtistsWidget(), // Todo follow_artist 넘겨주기
+                ProfileWidget(userId: me.id,),
+                MyPostCommentWidget(),
+                FtvCertificationWidget(),
+                FollowArtistsWidget(),
               ],
             ),
           ),
-          //CircleArtistWidget(),
-          FepleAppBar("마이페이지"),
+          FepleAppBar("Feple"),
         ],
       ),
     );

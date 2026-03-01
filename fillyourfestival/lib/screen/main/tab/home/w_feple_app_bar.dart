@@ -1,5 +1,6 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
+import 'package:fast_app_base/common/util/responsive_size.dart';
 import 'package:flutter/material.dart';
 
 class FepleAppBar extends StatefulWidget {
@@ -17,8 +18,9 @@ class _FepleAppBarState extends State<FepleAppBar> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final rs = ResponsiveSize(context);
     return Container(
-      height: AppDimens.appBarHeight,
+      height: rs.h(AppDimens.appBarHeight),
       color: colors.appBarColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -29,8 +31,8 @@ class _FepleAppBarState extends State<FepleAppBar> {
           ),
           Text(
             widget.appbarTitle,
-            style: const TextStyle(
-              fontSize: 20,
+            style: TextStyle(
+              fontSize: rs.sp(AppDimens.fontSizeTitle),
               fontWeight: FontWeight.w700,
               color: Colors.white,
               letterSpacing: -0.3,

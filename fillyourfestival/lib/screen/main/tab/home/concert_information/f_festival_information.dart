@@ -1,5 +1,6 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
+import 'package:fast_app_base/common/util/responsive_size.dart';
 import 'package:fast_app_base/model/poster_model.dart';
 import 'package:fast_app_base/screen/main/tab/home/concert_information/w_festival_poster.dart';
 import 'package:fast_app_base/screen/main/tab/home/concert_information/w_festival_timetable.dart';
@@ -18,14 +19,15 @@ class FestivalInformationFragment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final rs = ResponsiveSize(context);
     return Container(
       color: colors.backgroundMain,
       child: Stack(
         children: [
           SingleChildScrollView(
-            padding: const EdgeInsets.only(
-              top: AppDimens.scrollPaddingTop,
-              bottom: AppDimens.scrollPaddingBottom,
+            padding: EdgeInsets.only(
+              top: rs.h(AppDimens.scrollPaddingTop),
+              bottom: rs.h(AppDimens.scrollPaddingBottom),
             ),
             child: Column(
               children: [

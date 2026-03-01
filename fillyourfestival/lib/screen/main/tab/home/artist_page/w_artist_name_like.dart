@@ -69,7 +69,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike> {
       });
 
       Fluttertoast.showToast(
-        msg: isFollowed ? '팔로우 완료' : '언팔로우 완료',
+        msg: isFollowed ? '팔로우 완료' : '팔로우 취소',
         gravity: ToastGravity.BOTTOM,
       );
     } catch (e) {

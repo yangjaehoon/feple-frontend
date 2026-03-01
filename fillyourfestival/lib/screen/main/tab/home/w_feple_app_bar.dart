@@ -1,4 +1,5 @@
 import 'package:fast_app_base/common/common.dart';
+import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 class FepleAppBar extends StatefulWidget {
@@ -17,7 +18,7 @@ class _FepleAppBarState extends State<FepleAppBar> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return Container(
-      height: 60,
+      height: AppDimens.appBarHeight,
       color: colors.appBarColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

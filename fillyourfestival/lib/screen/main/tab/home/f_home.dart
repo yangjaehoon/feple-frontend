@@ -1,12 +1,9 @@
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/screen/dialog/d_message.dart';
+import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:fast_app_base/screen/main/tab/home/w_circle_artist.dart';
 import 'package:fast_app_base/screen/main/tab/home/w_concert_list_swiper.dart';
 import 'package:fast_app_base/screen/main/tab/home/w_feple_app_bar.dart';
 import 'package:flutter/material.dart';
-
-import '../../../dialog/d_color_bottom.dart';
-import '../../../dialog/d_confirm.dart';
 
 class HomeFragment extends StatelessWidget {
   const HomeFragment({
@@ -21,9 +18,9 @@ class HomeFragment extends StatelessWidget {
         children: [
           const SingleChildScrollView(
             padding: EdgeInsets.only(
-              top: 60,
-              bottom: 50,
-            ), // 상단바 부분만큼 띄워줌(stack이여서),
+              top: AppDimens.scrollPaddingTop,
+              bottom: AppDimens.scrollPaddingBottom,
+            ),
             child: Column(
               children: [
                 ConcertListSwiperWidget(),
@@ -31,30 +28,9 @@ class HomeFragment extends StatelessWidget {
               ],
             ),
           ),
-          //CircleArtistWidget(),
           FepleAppBar("Feple"),
         ],
       ),
     );
-  }
-
-  void showSnackbar(BuildContext context) {
-    context.showSnackbar('snackbar 입니다.',
-        extraButton: Tap(
-          onTap: () {
-            context.showErrorSnackbar('error');
-          },
-          child: '에러 보여주기 버튼'
-              .text
-              .white
-              .size(13)
-              .make()
-              .centered()
-              .pSymmetric(h: 10, v: 5),
-        ));
-  }
-
-  void openDrawer(BuildContext context) {
-    Scaffold.of(context).openDrawer();
   }
 }

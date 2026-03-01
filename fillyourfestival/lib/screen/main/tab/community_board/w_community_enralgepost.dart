@@ -1,7 +1,6 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'dart:core';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -10,14 +9,14 @@ import '../../../../config.dart';
 import '../../../../provider/user_provider.dart';
 
 class EnralgePost extends StatefulWidget {
-  String boardname;
-  int id;
-  String nickname;
-  String title;
-  String content;
-  int heart;
+  final String boardname;
+  final int id;
+  final String nickname;
+  final String title;
+  final String content;
+  final int heart;
 
-  EnralgePost({
+  const EnralgePost({
     super.key,
     required this.boardname,
     required this.id,
@@ -36,10 +35,12 @@ class _EnralgePostState extends State<EnralgePost> {
   bool _isSubmitting = false;
   List<Map<String, dynamic>> _comments = [];
   bool _liked = false;
+  late int _heartCount;
 
   @override
   void initState() {
     super.initState();
+    _heartCount = widget.heart;
     _fetchComments();
   }
 
@@ -117,7 +118,7 @@ class _EnralgePostState extends State<EnralgePost> {
         final bool liked = json.decode(response.body) as bool;
         setState(() {
           _liked = liked;
-          widget.heart = liked ? widget.heart + 1 : widget.heart - 1;
+          _heartCount = liked ? _heartCount + 1 : _heartCount - 1;
         });
       }
     } catch (e) {
@@ -194,7 +195,7 @@ class _EnralgePostState extends State<EnralgePost> {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          widget.heart.toString(),
+                          _heartCount.toString(),
                           style: TextStyle(
                             fontSize: 16,
                             color: colors.textTitle,

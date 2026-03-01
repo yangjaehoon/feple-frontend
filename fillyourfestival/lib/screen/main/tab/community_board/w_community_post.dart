@@ -1,11 +1,10 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
-import 'package:fast_app_base/config.dart';
 import 'package:flutter/material.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_write_board.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_enralgepost.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:fast_app_base/service/post_service.dart';
+import 'package:fast_app_base/model/post_model.dart';
 
 class CommunityPost extends StatefulWidget {
   final String boardname;
@@ -17,35 +16,28 @@ class CommunityPost extends StatefulWidget {
 }
 
 class _CommunityPostState extends State<CommunityPost> {
-  late Future<List<Map<String, dynamic>>> _postsFuture;
+  final PostService _postService = PostService();
+  late Future<List<Post>> _postsFuture;
+
+  /// PostService에 넘길 boardType으로 변환
+  String get _serviceBoardType {
+    switch (widget.boardname) {
+      case 'GetuserBoard':
+        return 'MateBoard';
+      default:
+        return widget.boardname;
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    _postsFuture = _fetchPosts();
-  }
-
-  Future<List<Map<String, dynamic>>> _fetchPosts() async {
-    String boarduri = '';
-    if (widget.boardname == "FreeBoard") {
-      boarduri = '$baseUrl/posts/free';
-    } else if (widget.boardname == "HotBoard") {
-      boarduri = '$baseUrl/posts/hot';
-    } else if (widget.boardname == "GetuserBoard") {
-      boarduri = '$baseUrl/posts/mate';
-    }
-    final response = await http.get(Uri.parse(boarduri));
-    if (response.statusCode == 200) {
-      final List<dynamic> parsed = json.decode(utf8.decode(response.bodyBytes));
-      return parsed.map((e) => e as Map<String, dynamic>).toList();
-    } else {
-      throw Exception('Failed to load free boards');
-    }
+    _postsFuture = _postService.fetchPosts(_serviceBoardType);
   }
 
   void _refresh() {
     setState(() {
-      _postsFuture = _fetchPosts();
+      _postsFuture = _postService.fetchPosts(_serviceBoardType);
     });
   }
 
@@ -59,128 +51,121 @@ class _CommunityPostState extends State<CommunityPost> {
         foregroundColor: Colors.white,
       ),
       backgroundColor: colors.backgroundMain,
-      body: Stack(children: [
-        SizedBox(
-          height: 600,
-          child: FutureBuilder<List<Map<String, dynamic>>>(
-              future: _postsFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: CircularProgressIndicator(color: colors.loadingIndicator),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text(
-                      'Failed to load data: ${snapshot.error}',
-                      style: TextStyle(color: colors.textSecondary),
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: colors.activate,
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => WritePost(boardname: widget.boardname),
+            ),
+          ).then((_) => _refresh());
+        },
+        label: const Text(
+          '글 쓰기',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+        ),
+        icon: const Icon(Icons.edit_rounded, color: Colors.white),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      body: FutureBuilder<List<Post>>(
+        future: _postsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(color: colors.loadingIndicator),
+            );
+          }
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'Failed to load data: ${snapshot.error}',
+                style: TextStyle(color: colors.textSecondary),
+              ),
+            );
+          }
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(
+              child: Text(
+                'No data available.',
+                style: TextStyle(color: colors.textSecondary),
+              ),
+            );
+          }
+
+          final posts = snapshot.data!;
+          return ListView.separated(
+            padding: const EdgeInsets.only(bottom: 80),
+            itemCount: posts.length,
+            itemBuilder: (context, index) {
+              final post = posts[index];
+              return ListTile(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => EnralgePost(
+                        boardname: widget.boardname,
+                        id: post.id,
+                        nickname: post.nickname,
+                        title: post.title,
+                        content: post.content,
+                        heart: post.likeCount,
+                      ),
                     ),
                   );
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(
-                    child: Text('No data available.',
-                        style: TextStyle(color: colors.textSecondary)),
-                  );
-                } else {
-                  List<dynamic> postDataList = snapshot.data!;
-                  return ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: postDataList.length,
-                    itemBuilder: (context, int index) {
-                      Map<String, dynamic> postData =
-                          postDataList[index] as Map<String, dynamic>;
-                      return ListTile(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: ((context) => EnralgePost(
-                                    boardname: widget.boardname,
-                                    id: postData['id'],
-                                    nickname: postData['nickname'],
-                                    title: postData['title'],
-                                    content: postData['content'],
-                                    heart: postData['likeCount'],
-                                  )),
-                            ),
-                          );
-                        },
-                        title: Text(
-                          postData['title'],
-                          style: TextStyle(
-                            color: colors.textTitle,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        subtitle: Text(
-                          postData['content'],
-                          style: TextStyle(color: colors.textSecondary),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.favorite_border_rounded,
-                                color: Color(0xFFFF6B9D), size: 18),
-                            const SizedBox(width: 4),
-                            Text(
-                              postData['likeCount'].toString(),
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: colors.textTitle,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Icon(Icons.comment_rounded,
-                                color: colors.textSecondary, size: 16),
-                          ],
-                        ),
-                        leading: CircleAvatar(
-                          backgroundColor: colors.activate,
-                          child: Text(
-                            postData['nickname'][0],
-                            style: const TextStyle(
-                                color: Colors.white, fontWeight: FontWeight.w700),
-                          ),
-                        ),
-                      );
-                    },
-                    separatorBuilder: (BuildContext context, int index) {
-                      return Divider(
-                        thickness: 1,
-                        color: colors.listDivider,
-                      );
-                    },
-                  );
-                }
-              }),
-        ),
-        Positioned(
-          bottom: 40,
-          left: 150,
-          child: FloatingActionButton.extended(
-            backgroundColor: colors.activate,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => WritePost(
-                    boardname: widget.boardname,
+                },
+                title: Text(
+                  post.title,
+                  style: TextStyle(
+                    color: colors.textTitle,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-              ).then((_) => _refresh());
+                subtitle: Text(
+                  post.content,
+                  style: TextStyle(color: colors.textSecondary),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.favorite_border_rounded,
+                        color: AppColors.kawaiiPink, size: 18),
+                    const SizedBox(width: 4),
+                    Text(
+                      post.likeCount.toString(),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: colors.textTitle,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Icon(Icons.comment_rounded,
+                        color: colors.textSecondary, size: 16),
+                  ],
+                ),
+                leading: CircleAvatar(
+                  backgroundColor: colors.activate,
+                  child: Text(
+                    post.nickname.isNotEmpty ? post.nickname[0] : '?',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              );
             },
-            label: const Text('글 쓰기',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
-            icon: const Icon(
-              Icons.edit_rounded,
-              color: Colors.white,
+            separatorBuilder: (_, __) => Divider(
+              thickness: 1,
+              color: colors.listDivider,
             ),
-          ),
-        ),
-      ]),
+          );
+        },
+      ),
     );
   }
 }

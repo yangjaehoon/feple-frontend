@@ -1,4 +1,5 @@
 import 'package:fast_app_base/common/common.dart';
+import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:fast_app_base/model/poster_model.dart';
 import 'package:fast_app_base/screen/main/tab/home/concert_information/w_festival_poster.dart';
 import 'package:fast_app_base/screen/main/tab/home/concert_information/w_festival_timetable.dart';
@@ -23,8 +24,8 @@ class FestivalInformationFragment extends StatelessWidget {
         children: [
           SingleChildScrollView(
             padding: const EdgeInsets.only(
-              top: 60,
-              bottom: 50,
+              top: AppDimens.scrollPaddingTop,
+              bottom: AppDimens.scrollPaddingBottom,
             ),
             child: Column(
               children: [

@@ -1,4 +1,5 @@
 import 'package:fast_app_base/common/common.dart';
+import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:fast_app_base/screen/main/tab/my_page/w_follow_artists.dart';
 import 'package:fast_app_base/screen/main/tab/my_page/w_ftv_certification.dart';
 import 'package:fast_app_base/screen/main/tab/my_page/w_my_post_comment.dart';
@@ -33,8 +34,8 @@ class _MypageFragmentState extends State<MypageFragment> {
         children: [
           SingleChildScrollView(
             padding: const EdgeInsets.only(
-              top: 60,
-              bottom: 50,
+              top: AppDimens.scrollPaddingTop,
+              bottom: AppDimens.scrollPaddingBottom,
             ), // 상단바 부분만큼 띄워줌(stack이여서),
             child: Column(
               children: [

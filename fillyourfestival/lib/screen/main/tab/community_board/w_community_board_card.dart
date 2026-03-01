@@ -1,5 +1,6 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
+import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:fast_app_base/model/post_model.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_post.dart';
 import 'package:fast_app_base/service/post_service.dart';
@@ -43,15 +44,15 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
     final colors = context.appColors;
     return Container(
       width: double.infinity,
-      height: 350,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      height: AppDimens.boardCardHeight,
+      margin: const EdgeInsets.symmetric(horizontal: AppDimens.paddingHorizontal, vertical: AppDimens.paddingVertical),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: const BorderRadius.all(Radius.circular(20)),
+        borderRadius: const BorderRadius.all(Radius.circular(AppDimens.cardRadius)),
         boxShadow: [
           BoxShadow(
             color: colors.cardShadow.withOpacity(0.12),
-            blurRadius: 20,
+            blurRadius: AppDimens.cardRadius,
             offset: const Offset(0, 4),
           ),
         ],
@@ -69,14 +70,14 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
 
   Widget _buildHeader(BuildContext context, AbstractThemeColors colors) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: AppDimens.paddingHorizontal, vertical: 10),
       width: double.infinity,
-      height: 44,
+      height: AppDimens.boardHeaderHeight,
       decoration: BoxDecoration(
         color: widget.headerColorFn(colors),
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+          topLeft: Radius.circular(AppDimens.cardRadius),
+          topRight: Radius.circular(AppDimens.cardRadius),
         ),
       ),
       child: InkWell(
@@ -93,12 +94,12 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
           children: [
             Row(
               children: [
-                Icon(widget.icon, color: Colors.white, size: 18),
+                Icon(widget.icon, color: Colors.white, size: AppDimens.iconSizeLg),
                 const SizedBox(width: 6),
                 Text(
                   widget.title,
                   style: const TextStyle(
-                    fontSize: 15,
+                    fontSize: AppDimens.fontSizeLg,
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
                   ),
@@ -110,13 +111,13 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
                 Text(
                   "더보기",
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: AppDimens.fontSizeSm,
                     color: Colors.white70,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 Icon(Icons.arrow_forward_ios_rounded,
-                    color: Colors.white70, size: 14),
+                    color: Colors.white70, size: AppDimens.iconSizeSm),
               ],
             ),
           ],
@@ -164,7 +165,7 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
               visualDensity: const VisualDensity(vertical: -3),
               minVerticalPadding: 0,
               contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                  const EdgeInsets.symmetric(horizontal: AppDimens.paddingHorizontal, vertical: 0),
               title: Text(
                 post.title,
                 style: TextStyle(
@@ -184,19 +185,19 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.favorite_border_rounded,
-                      color: AppColors.kawaiiPink, size: 18),
+                      color: AppColors.kawaiiPink, size: AppDimens.iconSizeLg),
                   const SizedBox(width: 4),
                   Text(
                     post.likeCount.toString(),
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: AppDimens.fontSizeMd,
                       color: colors.textTitle,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(width: 10),
                   Icon(Icons.chat_bubble_outline_rounded,
-                      color: colors.activate, size: 16),
+                      color: colors.activate, size: AppDimens.iconSizeMd),
                 ],
               ),
             );
@@ -204,8 +205,8 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
           separatorBuilder: (_, __) => Divider(
             thickness: 1,
             color: colors.listDivider,
-            indent: 16,
-            endIndent: 16,
+            indent: AppDimens.paddingHorizontal,
+            endIndent: AppDimens.paddingHorizontal,
           ),
         );
       },

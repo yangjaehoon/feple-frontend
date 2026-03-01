@@ -1,4 +1,5 @@
 import 'package:fast_app_base/screen/main/tab/home/artist_page/img_collection/w_img_upload.dart';
+import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:fast_app_base/screen/main/tab/home/artist_page/img_collection/w_img_collection_widget.dart';
 import '../../w_feple_app_bar.dart';
@@ -26,8 +27,8 @@ class _ImgCollectionState extends State<ImgCollection> {
         children: [
           SingleChildScrollView(
             padding: EdgeInsets.only(
-              top: 60,
-              bottom: 50,
+              top: AppDimens.scrollPaddingTop,
+              bottom: AppDimens.scrollPaddingBottom,
             ),
             child: Column(
               children: [

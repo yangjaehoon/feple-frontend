@@ -1,11 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
-import '../../../../config.dart';
-import '../../../../controller/auth_provider.dart';
 import '../../../../model/user_model.dart';
+import '../../../../network/dio_client.dart';
 import '../../../../provider/user_provider.dart';
 
 class ChangeNickname extends StatefulWidget {
@@ -18,26 +14,16 @@ class ChangeNickname extends StatefulWidget {
 class _ChangeNicknameState extends State<ChangeNickname> {
   var nicknameController = TextEditingController();
 
-  String _response = '';
+  Future<void> _updateNickname(UserProvider userProvider, int id) async {
+    final nickname = nicknameController.text.trim();
 
-  Future<void> updatepost(id) async {
-
-    String nickname = nicknameController.text.trim();
-    // print("mmmmmmmmmmmmmmmmmmmmmmmmmmm");
-    // print(uid);
-
-    final response = await http.put(
-      Uri.parse('$baseUrl/users/$id'),
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode({'nickname':nickname}),
+    final resp = await DioClient.dio.put(
+      '/users/$id',
+      data: {'nickname': nickname},
     );
-    if (response.statusCode == 200) {
-      _response = response.body;
-    } else {
-      throw Exception('Failed to send data');
-    }
+
+    final updated = User.fromJson(resp.data as Map<String, dynamic>);
+    await userProvider.setUser(updated);
   }
 
   @override
@@ -65,15 +51,13 @@ class _ChangeNicknameState extends State<ChangeNickname> {
           ),
           ElevatedButton(
               onPressed: () async {
-                try{
-                  await updatepost(user!.id);
-                  await userProvider.fetchUser(user.id);
-
+                try {
+                  await _updateNickname(userProvider, user!.id);
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('닉네임이 변경되었습니다.')),
                   );
-                }catch(e){
+                } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('닉네임 변경에 실패했습니다.\n$e')),
                   );

@@ -2,7 +2,7 @@ import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/model/poster_model.dart';
 import 'package:fast_app_base/screen/main/tab/home/concert_information/w_festival_poster.dart';
 import 'package:fast_app_base/screen/main/tab/home/concert_information/w_festival_timetable.dart';
-import 'package:fast_app_base/screen/main/tab/home/w_fyf_app_bar.dart';
+import 'package:fast_app_base/screen/main/tab/home/w_feple_app_bar.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_post.dart';
 import 'package:flutter/material.dart';
 
@@ -83,7 +83,7 @@ class FestivalInformationFragment extends StatelessWidget {
               ],
             ),
           ),
-          const FyfAppBar("페스티벌 상세 페이지"),
+          const FepleAppBar("페스티벌 상세 페이지"),
         ],
       ),
     );

@@ -1,7 +1,7 @@
 import 'package:fast_app_base/screen/main/tab/home/artist_page/img_collection/w_img_upload.dart';
 import 'package:flutter/material.dart';
 import 'package:fast_app_base/screen/main/tab/home/artist_page/img_collection/w_img_collection_widget.dart';
-import '../../w_fyf_app_bar.dart';
+import '../../w_feple_app_bar.dart';
 
 class ImgCollection extends StatefulWidget {
   const ImgCollection(
@@ -39,7 +39,7 @@ class _ImgCollectionState extends State<ImgCollection> {
               ],
             ),
           ),
-          const FyfAppBar("사진 모아보기"),
+          const FepleAppBar("사진 모아보기"),
           Positioned(
             bottom: 40,
             right: 10,

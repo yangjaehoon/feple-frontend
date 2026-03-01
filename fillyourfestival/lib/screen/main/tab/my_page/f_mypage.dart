@@ -6,7 +6,7 @@ import 'package:fast_app_base/screen/main/tab/my_page/w_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../provider/user_provider.dart';
-import '../home/w_fyf_app_bar.dart';
+import '../home/w_feple_app_bar.dart';
 
 class MypageFragment extends StatefulWidget {
   const MypageFragment({super.key});
@@ -46,7 +46,7 @@ class _MypageFragmentState extends State<MypageFragment> {
             ),
           ),
           //CircleArtistWidget(),
-          FyfAppBar("Feple"),
+          FepleAppBar("마이페이지"),
         ],
       ),
     );

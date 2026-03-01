@@ -4,7 +4,7 @@ import 'package:fast_app_base/screen/main/tab/chat/w_my_chat.dart';
 import 'package:fast_app_base/screen/main/tab/chat/w_today_ftv_chat.dart';
 import 'package:flutter/material.dart';
 
-import '../home/w_fyf_app_bar.dart';
+import '../home/w_feple_app_bar.dart';
 
 
 class ChatFragment extends StatelessWidget {
@@ -32,7 +32,7 @@ class ChatFragment extends StatelessWidget {
             ),
           ),
           //CircleArtistWidget(),
-          FyfAppBar("채팅방"),
+          FepleAppBar("채팅방"),
         ],
       ),
     );

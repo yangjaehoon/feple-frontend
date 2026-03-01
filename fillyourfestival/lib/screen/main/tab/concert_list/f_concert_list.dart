@@ -4,7 +4,7 @@ import 'package:fast_app_base/screen/main/tab/concert_list/w_concert_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../home/w_fyf_app_bar.dart';
+import '../home/w_feple_app_bar.dart';
 
 class ConcertListFragment extends StatefulWidget {
   const ConcertListFragment({super.key});
@@ -32,7 +32,7 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
                 ],
               ),
             ),
-            FyfAppBar("페스티벌 일정 상세보기"),
+            FepleAppBar("페스티벌 일정 상세보기"),
           ],
         ),
 

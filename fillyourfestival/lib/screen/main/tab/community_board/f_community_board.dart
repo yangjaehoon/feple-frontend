@@ -1,13 +1,9 @@
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/screen/dialog/d_message.dart';
-import 'package:fast_app_base/screen/main/tab/community_board/w_community_app_bar.dart';
+import 'package:fast_app_base/screen/main/tab/home/w_feple_app_bar.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_hot_board.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_free_board.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_getuser_board.dart';
 import 'package:flutter/material.dart';
-
-import '../../../dialog/d_color_bottom.dart';
-import '../../../dialog/d_confirm.dart';
 
 class CommunityBoardFragment extends StatelessWidget {
   const CommunityBoardFragment({
@@ -36,7 +32,7 @@ class CommunityBoardFragment extends StatelessWidget {
               ),
             ),
           ),
-          CommunityBoardAppBar(),
+          FepleAppBar("게시판"),
         ],
       ),
     );

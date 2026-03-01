@@ -9,6 +9,9 @@ class PostService {
   Future<List<Post>> fetchPosts(String boardType) async {
     String endpoint;
     switch (boardType) {
+      case 'HotBoard':
+        endpoint = 'posts/hot';
+        break;
       case 'FreeBoard':
         endpoint = 'posts/free';
         break;

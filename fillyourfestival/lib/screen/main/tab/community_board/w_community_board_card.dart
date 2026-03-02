@@ -3,25 +3,17 @@ import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:fast_app_base/common/util/responsive_size.dart';
 import 'package:fast_app_base/model/post_model.dart';
+import 'package:fast_app_base/screen/main/tab/community_board/w_board_card_header.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_post.dart';
 import 'package:fast_app_base/service/post_service.dart';
 import 'package:flutter/material.dart';
 
 /// 게시판 미리보기 카드 — 3개 게시판(인기/자유/동행)이 공유하는 공용 위젯
 class CommunityBoardCard extends StatefulWidget {
-  /// 헤더에 표시할 제목
   final String title;
-
-  /// 헤더 앞 아이콘
   final IconData icon;
-
-  /// 헤더 배경색 (context.appColors에서 가져옴)
   final Color Function(AbstractThemeColors) headerColorFn;
-
-  /// PostService에 넘길 boardType (예: 'HotBoard')
   final String serviceBoardType;
-
-  /// CommunityPost 페이지에 넘길 boardname (예: 'HotBoard')
   final String boardname;
 
   const CommunityBoardCard({
@@ -47,10 +39,13 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
     return Container(
       width: double.infinity,
       height: rs.h(AppDimens.boardCardHeight),
-      margin: const EdgeInsets.symmetric(horizontal: AppDimens.paddingHorizontal, vertical: AppDimens.paddingVertical),
+      margin: const EdgeInsets.symmetric(
+          horizontal: AppDimens.paddingHorizontal,
+          vertical: AppDimens.paddingVertical),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: const BorderRadius.all(Radius.circular(AppDimens.cardRadius)),
+        borderRadius: const BorderRadius.all(
+            Radius.circular(AppDimens.cardRadius)),
         boxShadow: [
           BoxShadow(
             color: colors.cardShadow.withOpacity(0.12),
@@ -61,69 +56,22 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
       ),
       child: Column(
         children: [
-          // ── Header ──
-          _buildHeader(context, colors, rs),
-          // ── Post list ──
+          BoardCardHeader(
+            icon: widget.icon,
+            title: widget.title,
+            headerColor: widget.headerColorFn(colors),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      CommunityPost(boardname: widget.boardname),
+                ),
+              );
+            },
+          ),
           Expanded(child: _buildPostList(colors)),
         ],
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context, AbstractThemeColors colors, ResponsiveSize rs) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppDimens.paddingHorizontal, vertical: 10),
-      width: double.infinity,
-      height: rs.h(AppDimens.boardHeaderHeight),
-      decoration: BoxDecoration(
-        color: widget.headerColorFn(colors),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(AppDimens.cardRadius),
-          topRight: Radius.circular(AppDimens.cardRadius),
-        ),
-      ),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => CommunityPost(boardname: widget.boardname),
-            ),
-          );
-        },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                Icon(widget.icon, color: Colors.white, size: AppDimens.iconSizeLg),
-                const SizedBox(width: 6),
-                Text(
-                  widget.title,
-                  style: const TextStyle(
-                    fontSize: AppDimens.fontSizeLg,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
-            const Row(
-              children: [
-                Text(
-                  "더보기",
-                  style: TextStyle(
-                    fontSize: AppDimens.fontSizeSm,
-                    color: Colors.white70,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Icon(Icons.arrow_forward_ios_rounded,
-                    color: Colors.white70, size: AppDimens.iconSizeSm),
-              ],
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -149,10 +97,8 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
         final postDataList = snapshot.data!;
         if (postDataList.isEmpty) {
           return Center(
-            child: Text(
-              'No data available.',
-              style: TextStyle(color: colors.textSecondary),
-            ),
+            child: Text('No data available.',
+                style: TextStyle(color: colors.textSecondary)),
           );
         }
 
@@ -166,28 +112,29 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
               dense: true,
               visualDensity: const VisualDensity(vertical: -3),
               minVerticalPadding: 0,
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: AppDimens.paddingHorizontal, vertical: 0),
+              contentPadding: const EdgeInsets.symmetric(
+                  horizontal: AppDimens.paddingHorizontal, vertical: 0),
               title: Text(
                 post.title,
                 style: TextStyle(
                   color: colors.textTitle,
                   fontWeight: FontWeight.w600,
-                  fontSize: 14,
+                  fontSize: AppDimens.fontSizeMd,
                 ),
               ),
               subtitle: Text(
                 post.nickname,
                 style: TextStyle(
                   color: colors.textSecondary,
-                  fontSize: 12,
+                  fontSize: AppDimens.fontSizeXs,
                 ),
               ),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.favorite_border_rounded,
-                      color: AppColors.kawaiiPink, size: AppDimens.iconSizeLg),
+                      color: AppColors.kawaiiPink,
+                      size: AppDimens.iconSizeLg),
                   const SizedBox(width: 4),
                   Text(
                     post.likeCount.toString(),
@@ -199,7 +146,8 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
                   ),
                   const SizedBox(width: 10),
                   Icon(Icons.chat_bubble_outline_rounded,
-                      color: colors.activate, size: AppDimens.iconSizeMd),
+                      color: colors.activate,
+                      size: AppDimens.iconSizeMd),
                 ],
               ),
             );

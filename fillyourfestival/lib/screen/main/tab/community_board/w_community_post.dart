@@ -1,8 +1,8 @@
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_write_board.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_enralgepost.dart';
+import 'package:fast_app_base/screen/main/tab/community_board/w_post_list_tile.dart';
 import 'package:fast_app_base/service/post_service.dart';
 import 'package:fast_app_base/model/post_model.dart';
 
@@ -19,7 +19,6 @@ class _CommunityPostState extends State<CommunityPost> {
   final PostService _postService = PostService();
   late Future<List<Post>> _postsFuture;
 
-  /// PostService에 넘길 boardType으로 변환
   String get _serviceBoardType {
     switch (widget.boardname) {
       case 'GetuserBoard':
@@ -78,18 +77,14 @@ class _CommunityPostState extends State<CommunityPost> {
           }
           if (snapshot.hasError) {
             return Center(
-              child: Text(
-                'Failed to load data: ${snapshot.error}',
-                style: TextStyle(color: colors.textSecondary),
-              ),
+              child: Text('Failed to load: ${snapshot.error}',
+                  style: TextStyle(color: colors.textSecondary)),
             );
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(
-              child: Text(
-                'No data available.',
-                style: TextStyle(color: colors.textSecondary),
-              ),
+              child: Text('No data available.',
+                  style: TextStyle(color: colors.textSecondary)),
             );
           }
 
@@ -99,7 +94,8 @@ class _CommunityPostState extends State<CommunityPost> {
             itemCount: posts.length,
             itemBuilder: (context, index) {
               final post = posts[index];
-              return ListTile(
+              return PostListTile(
+                post: post,
                 onTap: () {
                   Navigator.push(
                     context,
@@ -115,48 +111,6 @@ class _CommunityPostState extends State<CommunityPost> {
                     ),
                   );
                 },
-                title: Text(
-                  post.title,
-                  style: TextStyle(
-                    color: colors.textTitle,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                subtitle: Text(
-                  post.content,
-                  style: TextStyle(color: colors.textSecondary),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.favorite_border_rounded,
-                        color: AppColors.kawaiiPink, size: 18),
-                    const SizedBox(width: 4),
-                    Text(
-                      post.likeCount.toString(),
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: colors.textTitle,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Icon(Icons.comment_rounded,
-                        color: colors.textSecondary, size: 16),
-                  ],
-                ),
-                leading: CircleAvatar(
-                  backgroundColor: colors.activate,
-                  child: Text(
-                    post.nickname.isNotEmpty ? post.nickname[0] : '?',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
               );
             },
             separatorBuilder: (_, __) => Divider(

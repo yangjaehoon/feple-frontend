@@ -1,11 +1,10 @@
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-import 'package:fast_app_base/network/dio_client.dart';
-import 'dto_presign_response.dart';
+import 'package:fast_app_base/service/artist_photo_service.dart';
+
+import 'w_image_picker_box.dart';
 
 class ImgUpload extends StatefulWidget {
   const ImgUpload({super.key, required this.artistId, required this.artistName});
@@ -19,68 +18,45 @@ class ImgUpload extends StatefulWidget {
 
 class _ImgUploadState extends State<ImgUpload> {
   final _formKey = GlobalKey<FormState>();
+  final _photoService = ArtistPhotoService();
 
   Uint8List? imageData;
-  XFile? image;
-
   TextEditingController titleTEC = TextEditingController();
   TextEditingController ftvNameTEC = TextEditingController();
-
-  Future<Uint8List> imageCompressList(Uint8List list) async {
-    var result = await FlutterImageCompress.compressWithList(list, quality: 50);
-    return result;
-  }
-
-  Future<void> addImage() async {
-    if (imageData == null) return;
-
-    final compressedData = await imageCompressList(imageData!);
-
-    const contentType = 'image/jpeg';
-    const extension = 'jpg';
-
-
-
-    final artistId = widget.artistId;
-
-    // 1) presigned URL 요청 (내부 API → DioClient 사용)
-    final presignRes = await DioClient.dio.post(
-      '/artists/$artistId/photos/presign',
-      data: {
-        'contentType': contentType,
-        'extension': extension,
-      },
-    );
-
-    final presign = PresignResponse.fromJson(presignRes.data);
-
-    // 2) S3 업로드 (외부 URL → http 유지)
-    final putRes = await http.put(
-      Uri.parse(presign.uploadUrl),
-      headers: {'Content-Type': contentType},
-      body: compressedData,
-    );
-
-    if (putRes.statusCode < 200 || putRes.statusCode >= 300) {
-      throw Exception('S3 upload failed: ${putRes.statusCode} ${putRes.body}');
-    }
-
-    // 3) 업로드 완료 알림 (내부 API → DioClient 사용)
-    await DioClient.dio.post(
-      '/artists/$artistId/photos',
-      data: {
-        'objectKey': presign.objectKey,
-        'contentType': contentType,
-        'title': titleTEC.text,
-        'description': ftvNameTEC.text,
-      },
-    );
-
-    if (!mounted) return;
-    Navigator.pop(context, true);
-  }
-
   bool isUploading = false;
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final image = await picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      imageData = await image.readAsBytes();
+      setState(() {});
+    }
+  }
+
+  Future<void> _submit() async {
+    if (imageData == null) return;
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+
+    setState(() => isUploading = true);
+    try {
+      await _photoService.uploadPhoto(
+        artistId: widget.artistId,
+        imageData: imageData!,
+        title: titleTEC.text,
+        description: ftvNameTEC.text,
+      );
+      if (!mounted) return;
+      Navigator.pop(context, true);
+    } on DioException catch (e) {
+      debugPrint('status=${e.response?.statusCode}');
+      debugPrint('data=${e.response?.data}');
+    } catch (e) {
+      debugPrint('upload error: $e');
+    } finally {
+      if (mounted) setState(() => isUploading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,21 +65,12 @@ class _ImgUploadState extends State<ImgUpload> {
         title: const Text("사진 올리기"),
         actions: [
           IconButton(
-            onPressed: isUploading ? null: () async {
-              if (_formKey.currentState?.validate() ?? false) {
-                try {
-                  await addImage();
-                } on DioException catch (e) {
-                  debugPrint('status=${e.response?.statusCode}');
-                  debugPrint('data=${e.response?.data}');
-                } catch (e) {
-                  debugPrint('upload error: $e');
-                }
-              }
-            },
+            onPressed: isUploading ? null : _submit,
             icon: isUploading
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                : const Icon(Icons.send)
+                ? const SizedBox(
+                    width: 20, height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2))
+                : const Icon(Icons.send),
           ),
         ],
       ),
@@ -112,43 +79,10 @@ class _ImgUploadState extends State<ImgUpload> {
           padding: const EdgeInsets.all(18.0),
           child: Column(
             children: [
-              GestureDetector(
-                onTap: () async {
-                  final ImagePicker picker = ImagePicker();
-                  image = await picker.pickImage(source: ImageSource.gallery);
-                  imageData = await image?.readAsBytes();
-                  setState(() {});
-                },
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Container(
-                    margin: const EdgeInsets.all(20),
-                    height: 240,
-                    width: 240,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200]!,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey),
-                    ),
-                    child: imageData == null
-                        ? const Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                color: Colors.black,
-                                Icons.add,
-                              ),
-                              Text(
-                                "아티스트 사진 추가",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ],
-                          )
-                        : Image.memory(imageData!, fit: BoxFit.cover),
-                  ),
-                ),
+              ImagePickerBox(
+                imageData: imageData,
+                onTap: _pickImage,
+                label: '아티스트 사진 추가',
               ),
               Form(
                 key: _formKey,
@@ -156,44 +90,36 @@ class _ImgUploadState extends State<ImgUpload> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        child: Text(
-                          widget.artistName,
-                          style: Theme.of(context).textTheme.headlineMedium,
-                        ) //아티스트 이름,
-                        ),
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Text(
+                        widget.artistName,
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                    ),
                     TextFormField(
                       controller: titleTEC,
                       decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: "작품명",
-                          hintText: "작품명을 입력하세요."),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "필수 입력 항목입니다.";
-                        }
-                        return null;
-                      },
+                        border: OutlineInputBorder(),
+                        labelText: "작품명",
+                        hintText: "작품명을 입력하세요.",
+                      ),
+                      validator: (v) =>
+                          (v == null || v.isEmpty) ? "필수 입력 항목입니다." : null,
                     ),
-                    const SizedBox(
-                      height: 12,
-                    ),
+                    const SizedBox(height: 12),
                     TextFormField(
                       controller: ftvNameTEC,
                       decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: "페스티벌 이름",
-                          hintText: "페스티벌 위치나 이름을 입력하세요."),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "필수 입력 항목입니다.";
-                        }
-                        return null;
-                      },
+                        border: OutlineInputBorder(),
+                        labelText: "페스티벌 이름",
+                        hintText: "페스티벌 위치나 이름을 입력하세요.",
+                      ),
+                      validator: (v) =>
+                          (v == null || v.isEmpty) ? "필수 입력 항목입니다." : null,
                     ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
         ),

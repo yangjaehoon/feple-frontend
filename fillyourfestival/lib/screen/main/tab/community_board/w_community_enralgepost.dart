@@ -1,10 +1,11 @@
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../provider/user_provider.dart';
+import 'w_comment_section.dart';
+import 'w_like_comment_row.dart';
 
 class EnralgePost extends StatefulWidget {
   final String boardname;
@@ -42,6 +43,8 @@ class _EnralgePostState extends State<EnralgePost> {
     _fetchComments();
   }
 
+  // ── API 호출 ──
+
   Future<void> _fetchComments() async {
     try {
       final resp = await DioClient.dio.get('/comments/post/${widget.id}');
@@ -55,11 +58,10 @@ class _EnralgePostState extends State<EnralgePost> {
 
   Future<void> _commentSubmit() async {
     final comment = _commentController.text.trim();
-
     if (comment.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('댓글을 입력해주세요.'),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('댓글을 입력해주세요.')),
+      );
       return;
     }
 
@@ -73,17 +75,12 @@ class _EnralgePostState extends State<EnralgePost> {
 
     setState(() => _isSubmitting = true);
 
-    final body = {
-      'content': comment,
-      'postId': widget.id,
-      'userId': user.id,
-    };
-
     try {
-      await DioClient.dio.post(
-        '/comments',
-        data: body,
-      );
+      await DioClient.dio.post('/comments', data: {
+        'content': comment,
+        'postId': widget.id,
+        'userId': user.id,
+      });
       _commentController.clear();
       await _fetchComments();
       if (!mounted) return;
@@ -91,11 +88,12 @@ class _EnralgePostState extends State<EnralgePost> {
         const SnackBar(content: Text('댓글이 등록되었습니다.')),
       );
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('댓글 등록에 실패했습니다.\n$e')),
       );
     } finally {
-      setState(() => _isSubmitting = false);
+      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
@@ -127,6 +125,8 @@ class _EnralgePostState extends State<EnralgePost> {
     super.dispose();
   }
 
+  // ── UI ──
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -143,7 +143,7 @@ class _EnralgePostState extends State<EnralgePost> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Title
+              // 제목
               Text(
                 widget.title,
                 style: TextStyle(
@@ -153,158 +153,32 @@ class _EnralgePostState extends State<EnralgePost> {
                 ),
               ),
               const SizedBox(height: 4),
-              // Author
+              // 작성자
               Text(
                 widget.nickname,
                 style: TextStyle(fontSize: 13, color: colors.textSecondary),
               ),
-              Divider(
-                thickness: 1,
-                height: 24,
-                color: colors.listDivider,
-              ),
-              // Content
+              Divider(thickness: 1, height: 24, color: colors.listDivider),
+              // 본문
               Text(
                 widget.content,
                 style: TextStyle(color: colors.textTitle, fontSize: 15),
               ),
-              Divider(
-                thickness: 1,
-                height: 40,
-                color: colors.listDivider,
-              ),
-              // Like & comment count
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: _toggleLike,
-                    child: Row(
-                      children: [
-                        Icon(
-                          _liked
-                              ? Icons.favorite_rounded
-                              : Icons.favorite_border_rounded,
-                          color: AppColors.kawaiiPink,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          _heartCount.toString(),
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: colors.textTitle,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Icon(Icons.comment_rounded, color: colors.textSecondary),
-                  const SizedBox(width: 4),
-                  Text(
-                    _comments.length.toString(),
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: colors.textTitle,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+              Divider(thickness: 1, height: 40, color: colors.listDivider),
+              // 좋아요 + 댓글 수
+              LikeCommentRow(
+                liked: _liked,
+                heartCount: _heartCount,
+                commentCount: _comments.length,
+                onLikeTap: _toggleLike,
               ),
               const SizedBox(height: 24),
-              // Comment list
-              if (_comments.isNotEmpty)
-                ListView.separated(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: _comments.length,
-                  separatorBuilder: (_, __) => Divider(
-                    color: colors.listDivider,
-                    height: 1,
-                  ),
-                  itemBuilder: (context, index) {
-                    final c = _comments[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CircleAvatar(
-                            radius: 16,
-                            backgroundColor: colors.activate,
-                            child: const Icon(Icons.person,
-                                size: 18, color: Colors.white),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'User ${c['userId']}',
-                                  style: TextStyle(
-                                    color: colors.textSecondary,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  c['content'] as String,
-                                  style: TextStyle(color: colors.textTitle),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              const SizedBox(height: 16),
-              // Comment input
-              Container(
-                decoration: BoxDecoration(
-                  color: colors.surface,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: colors.listDivider),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _commentController,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: '댓글을 입력하세요.',
-                          hintStyle: TextStyle(color: colors.textSecondary),
-                          filled: true,
-                          fillColor: Colors.transparent,
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                        ),
-                        style: TextStyle(color: colors.textTitle),
-                        maxLines: null,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    _isSubmitting
-                        ? SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: colors.activate,
-                            ),
-                          )
-                        : IconButton(
-                            onPressed: _commentSubmit,
-                            icon: Icon(Icons.send_rounded,
-                                color: colors.activate),
-                          ),
-                    const SizedBox(width: 4),
-                  ],
-                ),
+              // 댓글 섹션
+              CommentSection(
+                comments: _comments,
+                controller: _commentController,
+                isSubmitting: _isSubmitting,
+                onSubmit: _commentSubmit,
               ),
               const SizedBox(height: 40),
             ],

@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:fast_app_base/network/dio_client.dart';
 
-import '../config.dart';
 import '../model/FestivalPreview.dart';
 
 class FestivalPreviewProvider extends ChangeNotifier {
@@ -44,14 +42,12 @@ class FestivalPreviewProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final uri = Uri.parse('$baseUrl/festivals?page=$_page&size=$_size');
-      final res = await http.get(uri);
+      final resp = await DioClient.dio.get(
+        '/festivals',
+        queryParameters: {'page': _page, 'size': _size},
+      );
 
-      if (res.statusCode != 200) {
-        throw Exception('HTTP ${res.statusCode}');
-      }
-
-      final decoded = jsonDecode(res.body);
+      final decoded = resp.data;
 
       final List<dynamic> list =
           decoded is List ? decoded : (decoded['content'] as List<dynamic>);

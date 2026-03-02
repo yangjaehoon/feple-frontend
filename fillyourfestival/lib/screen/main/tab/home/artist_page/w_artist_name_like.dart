@@ -1,7 +1,7 @@
 import 'package:fast_app_base/screen/main/tab/home/artist_page/w_ftv_calender.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:http/http.dart' as http;
+
 import '../../../../../api/artist_follow_api.dart';
 import '../../../../../api/follow_response.dart';
 import '../../../../../config.dart' as AppConfig;

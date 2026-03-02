@@ -1,11 +1,9 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:fast_app_base/network/dio_client.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../config.dart';
 import '../../../../provider/user_provider.dart';
 
 class EnralgePost extends StatefulWidget {
@@ -45,15 +43,13 @@ class _EnralgePostState extends State<EnralgePost> {
   }
 
   Future<void> _fetchComments() async {
-    final uri = Uri.parse('$baseUrl/comments/post/${widget.id}');
     try {
-      final response = await http.get(uri);
-      if (response.statusCode == 200) {
-        final List<dynamic> parsed = json.decode(utf8.decode(response.bodyBytes));
-        setState(() {
-          _comments = parsed.map((e) => e as Map<String, dynamic>).toList();
-        });
-      }
+      final resp = await DioClient.dio.get('/comments/post/${widget.id}');
+      setState(() {
+        _comments = (resp.data as List)
+            .map((e) => e as Map<String, dynamic>)
+            .toList();
+      });
     } catch (_) {}
   }
 
@@ -84,20 +80,16 @@ class _EnralgePostState extends State<EnralgePost> {
     };
 
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/comments'),
-        headers: {'Content-Type': 'application/json; charset=UTF-8'},
-        body: jsonEncode(body),
+      await DioClient.dio.post(
+        '/comments',
+        data: body,
       );
-      if (response.statusCode == 200) {
-        _commentController.clear();
-        await _fetchComments();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('댓글이 등록되었습니다.')),
-        );
-      } else {
-        throw Exception('서버 오류: ${response.statusCode}');
-      }
+      _commentController.clear();
+      await _fetchComments();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('댓글이 등록되었습니다.')),
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('댓글 등록에 실패했습니다.\n$e')),
@@ -111,17 +103,18 @@ class _EnralgePostState extends State<EnralgePost> {
     final user = context.read<UserProvider>().user;
     if (user == null) return;
 
-    final uri = Uri.parse('$baseUrl/posts/${widget.id}/like?userId=${user.id}');
     try {
-      final response = await http.post(uri);
-      if (response.statusCode == 200) {
-        final bool liked = json.decode(response.body) as bool;
-        setState(() {
-          _liked = liked;
-          _heartCount = liked ? _heartCount + 1 : _heartCount - 1;
-        });
-      }
+      final resp = await DioClient.dio.post(
+        '/posts/${widget.id}/like',
+        queryParameters: {'userId': user.id},
+      );
+      final bool liked = resp.data as bool;
+      setState(() {
+        _liked = liked;
+        _heartCount = liked ? _heartCount + 1 : _heartCount - 1;
+      });
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('좋아요 처리에 실패했습니다.\n$e')),
       );

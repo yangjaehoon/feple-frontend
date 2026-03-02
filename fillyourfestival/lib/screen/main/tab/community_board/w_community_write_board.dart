@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'dart:convert';
+import 'package:fast_app_base/service/post_service.dart';
 
-import '../../../../config.dart';
 import '../../../../provider/user_provider.dart';
 
 class WritePost extends StatefulWidget {
@@ -19,13 +16,18 @@ class WritePost extends StatefulWidget {
 class _WritePostState extends State<WritePost> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
+  final _postService = PostService();
   bool _isSubmitting = false;
 
-  static const _endpoints = {
-    'FreeBoard': '/posts/free',
-    'HotBoard': '/posts/hot',
-    'GetuserBoard': '/posts/mate',
-  };
+  /// boardname → PostService boardType 변환
+  String get _serviceBoardType {
+    switch (widget.boardname) {
+      case 'GetuserBoard':
+        return 'MateBoard';
+      default:
+        return widget.boardname;
+    }
+  }
 
   Future<void> _submit() async {
     final title = _titleController.text.trim();
@@ -38,45 +40,35 @@ class _WritePostState extends State<WritePost> {
       return;
     }
 
-    final urlPath = _endpoints[widget.boardname];
-    if (urlPath == null) {
-      throw Exception('알 수 없는 게시판: ${widget.boardname}');
-    }
-    final uri = Uri.parse('$baseUrl$urlPath');
-
     final user = context.read<UserProvider>().user;
     if (user == null) {
-      throw Exception('로그인 정보가 없습니다.');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('로그인 정보가 없습니다.')),
+      );
+      return;
     }
+
     setState(() => _isSubmitting = true);
 
-    final body = {
-      'userId' : user.id,
-      'title': title,
-      'content': content,
-      'nickname': user.nickname,
-      'createdAt': DateTime.now().toIso8601String(),
-    };
-
     try {
-      final response = await http.post(
-        uri,
-        headers: {'Content-Type': 'application/json; charset=UTF-8'},
-        body: jsonEncode(body),
+      await _postService.createPost(
+        boardType: _serviceBoardType,
+        userId: user.id,
+        title: title,
+        content: content,
+        nickname: user.nickname,
       );
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('게시글이 성공적으로 등록되었습니다.')));
-        Navigator.of(context).pop();
-      } else {
-        throw Exception('서버 오류: ${response.statusCode}');
-      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('게시글이 성공적으로 등록되었습니다.')));
+      Navigator.of(context).pop();
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('게시글 등록에 실패했습니다.\n$e')),
       );
     } finally {
-      setState(() => _isSubmitting = false);
+      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 

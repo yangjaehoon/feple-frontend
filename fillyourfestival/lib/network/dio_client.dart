@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import '../auth/token_store.dart';
 import '../config.dart' as AppConfig;
 
@@ -19,7 +20,9 @@ class DioClient {
         if (jwt != null && jwt.isNotEmpty) {
           options.headers['Authorization'] = 'Bearer $jwt';
         }
-        print('JWT attach: ${jwt?.substring(0, 10)}...');
+        if (kDebugMode) {
+          debugPrint('DioClient: JWT attached');
+        }
         handler.next(options);
       },
     ),

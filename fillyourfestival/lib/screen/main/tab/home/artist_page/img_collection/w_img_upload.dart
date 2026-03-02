@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-import '../../../../../../auth/token_store.dart';
-import '../../../../../../config.dart';
+import 'package:fast_app_base/network/dio_client.dart';
 import 'dto_presign_response.dart';
 
 class ImgUpload extends StatefulWidget {
@@ -40,26 +39,22 @@ class _ImgUploadState extends State<ImgUpload> {
     const contentType = 'image/jpeg';
     const extension = 'jpg';
 
-    final token = await TokenStore.readAccessToken();
-    if (token == null || token.isEmpty) {
-      throw Exception('로그인이 필요합니다(토큰 없음)');
-    }
+
 
     final artistId = widget.artistId;
 
-    final dio = Dio();
-
-    final presignRes = await dio.post(
-      '$baseUrl/artists/$artistId/photos/presign',
+    // 1) presigned URL 요청 (내부 API → DioClient 사용)
+    final presignRes = await DioClient.dio.post(
+      '/artists/$artistId/photos/presign',
       data: {
         'contentType': contentType,
         'extension': extension,
       },
-      options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
 
     final presign = PresignResponse.fromJson(presignRes.data);
 
+    // 2) S3 업로드 (외부 URL → http 유지)
     final putRes = await http.put(
       Uri.parse(presign.uploadUrl),
       headers: {'Content-Type': contentType},
@@ -70,15 +65,15 @@ class _ImgUploadState extends State<ImgUpload> {
       throw Exception('S3 upload failed: ${putRes.statusCode} ${putRes.body}');
     }
 
-    await dio.post(
-      '$baseUrl/artists/$artistId/photos',
+    // 3) 업로드 완료 알림 (내부 API → DioClient 사용)
+    await DioClient.dio.post(
+      '/artists/$artistId/photos',
       data: {
         'objectKey': presign.objectKey,
         'contentType': contentType,
         'title': titleTEC.text,
         'description': ftvNameTEC.text,
       },
-      options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
 
     if (!mounted) return;
@@ -95,10 +90,6 @@ class _ImgUploadState extends State<ImgUpload> {
         actions: [
           IconButton(
             onPressed: isUploading ? null: () async {
-              final token = await TokenStore.readAccessToken();
-              debugPrint('token=$token');
-              debugPrint('tokenPrefix=${token?.substring(0, 10)}');
-
               if (_formKey.currentState?.validate() ?? false) {
                 try {
                   await addImage();

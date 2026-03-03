@@ -15,19 +15,13 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> fetchUser(int userId) async {
-    print(" fetchUser 호출: userId=$userId");
-
     final resp = await DioClient.dio.get('/users/$userId');
-
-    print("  fetchUser 응답 상태: ${resp.statusCode}");
-    print("\n fetchUser 응답 바디: ${resp.data}");
 
     if (resp.statusCode == 200) {
       final data = resp.data is String ? jsonDecode(resp.data) : resp.data;
       _user = User.fromJson(data as Map<String, dynamic>);
       notifyListeners();
     } else {
-      print(" 사용자 정보 불러오기 실패");
       throw Exception('사용자 정보 불러오기 실패: ${resp.statusCode}');
     }
   }
@@ -51,7 +45,6 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> setUser(User me) async{
-    print("setUser 호출: id=${me.id}, nickname=${me.nickname}");
     _user = me;
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
@@ -75,8 +68,6 @@ class UserProvider with ChangeNotifier {
       _user = User.fromJson(res.data);
       notifyListeners();
     } on DioException catch (e) {
-      print('fetchUserFromToken error: $e');
-      // 401/403: 토큰 만료 → 로그아웃 처리
       final status = e.response?.statusCode;
       if (status == 401 || status == 403) {
         _user = null;

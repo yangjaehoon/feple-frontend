@@ -206,22 +206,16 @@ class _LoginPageState extends State<LoginPage> {
 
       if (await isKakaoTalkInstalled()) {
         try {
-          print('KAKAO: kakaoTalkInstalled=true');
           token = await UserApi.instance.loginWithKakaoTalk();
         } catch (error) {
           // 카톡 로그인 실패하면 계정 로그인으로 폴백
           token = await UserApi.instance.loginWithKakaoAccount();
         }
       } else {
-        print('KAKAO: kakaoTalkInstalled=false');
         token = await UserApi.instance.loginWithKakaoAccount();
       }
 
-      print('KAKAO: token received accessToken=${token.accessToken.substring(0, 10)}');
-
-      print('KAKAO: calling backend /auth/kakao');
       final me = await sendAccessTokenToServer(token.accessToken);
-      print('KAKAO: backend ok userId=${me.id}');
 
 
       userProvider.setUser(me);
@@ -257,7 +251,13 @@ class _LoginPageState extends State<LoginPage> {
     final ourJwt = json['accessToken'] as String;
     await TokenStore.saveAccessToken(ourJwt);
 
-    // 2) user 파싱해서 리턴
+    // 2) refresh token 저장
+    final refreshToken = json['refreshToken'] as String?;
+    if (refreshToken != null) {
+      await TokenStore.saveRefreshToken(refreshToken);
+    }
+
+    // 3) user 파싱해서 리턴
     final userJson = json['user'] as Map<String, dynamic>;
     return app.User.fromJson(userJson);
   }

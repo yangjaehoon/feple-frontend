@@ -21,22 +21,17 @@ class PostService {
     return jsonList.map((json) => Post.fromJson(json)).toList();
   }
 
-  /// 게시글 작성
+  /// 게시글 작성 (userId는 서버에서 JWT로 추출)
   Future<void> createPost({
     required String boardType,
-    required int userId,
     required String title,
     required String content,
-    required String nickname,
   }) async {
     await DioClient.dio.post(
       _endpointFor(boardType),
       data: {
-        'userId': userId,
         'title': title,
         'content': content,
-        'nickname': nickname,
-        'createdAt': DateTime.now().toIso8601String(),
       },
     );
   }

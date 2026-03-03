@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/config.dart';
 import 'package:fast_app_base/login/signup.dart';
 import 'package:http/http.dart' as http;
@@ -225,9 +226,17 @@ class _LoginPageState extends State<LoginPage> {
         MaterialPageRoute(builder: (_) => const App()), // App import 되어있어야 함
       );
 
-      Fluttertoast.showToast(msg: '카카오 로그인 성공');
+      Fluttertoast.showToast(
+        msg: '카카오 로그인 성공',
+        backgroundColor: AppColors.skyBlue,
+        textColor: Colors.white,
+      );
     } catch (e) {
-      Fluttertoast.showToast(msg: '카카오 로그인 실패: $e');
+      Fluttertoast.showToast(
+        msg: '카카오 로그인 실패: $e',
+        backgroundColor: AppColors.skyBlue,
+        textColor: Colors.white,
+      );
     }
   }
 

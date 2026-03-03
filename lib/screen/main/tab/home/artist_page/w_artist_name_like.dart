@@ -86,7 +86,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
         msg: isFollowed ? '💖 팔로우 완료' : '팔로우 취소',
         gravity: ToastGravity.BOTTOM,
         backgroundColor:
-            isFollowed ? AppColors.skyBlue : AppColors.textMuted,
+            isFollowed ? AppColors.skyBlue : AppColors.skyBlue,
         textColor: Colors.white,
         fontSize: 14,
       );
@@ -95,6 +95,8 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
       Fluttertoast.showToast(
         msg: '팔로우 처리 실패',
         gravity: ToastGravity.BOTTOM,
+        backgroundColor: AppColors.skyBlue,
+        textColor: Colors.white,
       );
     } finally {
       if (!mounted) return;

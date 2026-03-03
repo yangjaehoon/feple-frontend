@@ -5,7 +5,7 @@ class AppDimens {
   AppDimens._(); // 인스턴스화 방지
 
   // ── AppBar ──
-  static const double appBarHeight = 60.0;
+  static const double appBarHeight = 50.0;
 
   // ── Scroll padding (Stack 레이아웃에서 앱바/탭바 가림 방지) ──
   static const double scrollPaddingTop = appBarHeight;
@@ -17,8 +17,8 @@ class AppDimens {
   static const double cardRadius = 20.0;
   static const double cardRadiusSmall = 16.0;
   static const double cardRadiusTiny = 12.0;
-  static const double boardCardHeight = 350.0;
-  static const double boardHeaderHeight = 44.0;
+  static const double boardCardHeight = 280.0;
+  static const double boardHeaderHeight = 35.0;
 
   // ── Spacing ──
   static const double paddingHorizontal = 16.0;

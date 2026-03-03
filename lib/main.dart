@@ -65,19 +65,44 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      _tryAutoLogin(userProvider);
+    });
+  }
+
+  Future<void> _tryAutoLogin(UserProvider userProvider) async {
+    try {
+      final token = await TokenStore.readAccessToken();
+      if (token != null) {
+        await userProvider.fetchUserFromToken(token);
+      }
+    } catch (e) {
+      log('Auto login failed: $e');
+    } finally {
+      FlutterNativeSplash.remove();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    FlutterNativeSplash.remove();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primaryColor: Colors.blue),
       home: Consumer<UserProvider>(
         builder: (context, userProvider, _) {
           if (userProvider.user == null) {
-            _tryAutoLogin(context, userProvider);
             return LoginPage();
           } else {
             return const App();
@@ -88,20 +113,6 @@ class MyApp extends StatelessWidget {
       supportedLocales: context.supportedLocales,
       locale: context.locale,
     );
-  }
-
-  Future<void> _tryAutoLogin(BuildContext context, UserProvider userProvider) async {
-    try {
-      final token = await TokenStore.readAccessToken();
-      if (token != null) {
-        await userProvider.fetchUserFromToken(token);
-        if (userProvider.user != null) {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const App()));
-        }
-      }
-    } catch (e) {
-      log('Auto login failed: $e');
-    }
   }
 }
 

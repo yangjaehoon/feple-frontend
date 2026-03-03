@@ -53,10 +53,8 @@ class _WritePostState extends State<WritePost> {
     try {
       await _postService.createPost(
         boardType: _serviceBoardType,
-        userId: user.id,
         title: title,
         content: content,
-        nickname: user.nickname,
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context)

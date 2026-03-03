@@ -1,3 +1,4 @@
+import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/screen/main/tab/home/artist_page/w_ftv_youtube.dart';
 // import 'package:fast_app_base/screen/main/tab/home/artist_page/w_ftv_youtube_shorts.dart';
 import 'package:fast_app_base/screen/main/tab/home/artist_page/w_main_image_swiper.dart';
@@ -20,7 +21,18 @@ class ArtistPage extends StatefulWidget {
 class _ArtistPageState extends State<ArtistPage> {
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_rounded),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(widget.artistName),
+        backgroundColor: colors.appBarColor,
+        foregroundColor: Colors.white,
+      ),
+      backgroundColor: colors.backgroundMain,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(

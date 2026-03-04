@@ -5,15 +5,12 @@ import 'package:fast_app_base/login/signup.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../app.dart';
 import '../auth/token_store.dart';
 import '../controller/auth_provider.dart' as auth;
-import '../main.dart';
 import '../model/user_model.dart' as app;
 import '../provider/user_provider.dart';
 
@@ -25,140 +22,136 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    var emailController = TextEditingController();
-    var passwordController = TextEditingController();
-
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: AppColors.backgroundCreamy,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 28),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  Icons.phone_android,
-                  size: 100,
+                // ── 로고 영역 ──
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Image.asset(
+                    'assets/image/login/feple_logo.png',
+                    width: 120,
+                    height: 120,
+                    fit: BoxFit.contain,
+                  ),
                 ),
-                const SizedBox(
-                  height: 30,
-                ),
-                Text(
-                  'Hello',
-                  style: GoogleFonts.bebasNeue(fontSize: 36.0),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 28),
+
+                // ── 환영 텍스트 ──
                 const Text(
-                  'Welcome back',
+                  '환영합니다!',
                   style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textMain,
+                    letterSpacing: -0.5,
                   ),
                 ),
-                const SizedBox(
-                  height: 50,
+                const SizedBox(height: 8),
+                const Text(
+                  '페플과 함께 축제를 즐겨보세요',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: AppColors.textMuted,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12),
+                const SizedBox(height: 40),
+
+                // ── 이메일 입력 ──
+                _buildTextField(
+                  controller: emailController,
+                  hintText: '이메일',
+                  icon: Icons.mail_outline_rounded,
+                ),
+                const SizedBox(height: 14),
+
+                // ── 비밀번호 입력 ──
+                _buildTextField(
+                  controller: passwordController,
+                  hintText: '비밀번호',
+                  icon: Icons.lock_outline_rounded,
+                  obscureText: true,
+                ),
+                const SizedBox(height: 24),
+
+                // ── 로그인 버튼 ──
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      // 일반 로그인 로직 (현재 비활성)
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.skyBlue,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20.0),
-                      child: TextField(
-                        controller: emailController,
-                        decoration: const InputDecoration(
-                            border: InputBorder.none, hintText: 'Email'),
+                    child: const Text(
+                      '로그인',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(12)),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20.0),
-                      child: TextField(
-                        controller: passwordController,
-                        obscureText: true,
-                        decoration: const InputDecoration(
-                            border: InputBorder.none, hintText: 'Password'),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                GestureDetector(
-                  onTap: () async {
-                    try {
-                      // print(await KakaoSdk.origin);
-                      //
-                      // await Provider.of<auth.AuthProvider>(context,
-                      //         listen: false)
-                      //     .login(emailController.text.trim(),
-                      //         passwordController.text.trim());
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Login failed: $e')),
-                      );
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(12)),
-                      child: const Center(
-                        child: Text(
-                          'Sign in',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                getKakaoLoginButton(context),
-                const SizedBox(
-                  height: 25,
-                ),
+                const SizedBox(height: 14),
+
+                // ── 카카오 로그인 ──
+                _buildKakaoLoginButton(context),
+                const SizedBox(height: 28),
+
+                // ── 회원가입 링크 ──
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Not a member?'),
+                    const Text(
+                      '아직 회원이 아니신가요?',
+                      style: TextStyle(
+                        color: AppColors.textMuted,
+                        fontSize: 14,
+                      ),
+                    ),
                     GestureDetector(
                       onTap: () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => SignupPage()),
+                        MaterialPageRoute(
+                            builder: (context) => const SignupPage()),
                       ),
                       child: const Text(
-                        ' Register Now!',
+                        ' 회원가입',
                         style: TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold),
+                          color: AppColors.skyBlue,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                        ),
                       ),
-                    )
+                    ),
                   ],
-                )
+                ),
               ],
             ),
           ),
@@ -167,33 +160,61 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget getKakaoLoginButton(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        signInWithKakao(context);
-      },
-      child: Card(
-        margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
-        elevation: 2,
-        child: Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: Colors.yellow,
-            borderRadius: BorderRadius.circular(7),
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hintText,
+    required IconData icon,
+    bool obscureText = false,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: obscureText,
+      style: const TextStyle(fontSize: 15, color: AppColors.textMain),
+      decoration: InputDecoration(
+        prefixIcon: Icon(icon, color: AppColors.skyBlue, size: 22),
+        hintText: hintText,
+        hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 15),
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: AppColors.skyBlueLight.withOpacity(0.5)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: AppColors.skyBlueLight.withOpacity(0.4)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: AppColors.skyBlue, width: 2),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildKakaoLoginButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton(
+        onPressed: () => signInWithKakao(context),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFFEE500),
+          foregroundColor: const Color(0xFF3C1E1E),
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset('assets/image/login/kakao_login_medium_narrow.png',
-                  height: 30),
-              const SizedBox(
-                width: 10,
-              ),
-              // const Text("Sign In with Kakao",
-              // style: TextStyle(color: Colors.white, fontSize:17))
-            ],
-          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset('assets/image/login/kakao_login_medium_narrow.png',
+                height: 24),
+            const SizedBox(width: 8),
+          ],
         ),
       ),
     );
@@ -209,7 +230,6 @@ class _LoginPageState extends State<LoginPage> {
         try {
           token = await UserApi.instance.loginWithKakaoTalk();
         } catch (error) {
-          // 카톡 로그인 실패하면 계정 로그인으로 폴백
           token = await UserApi.instance.loginWithKakaoAccount();
         }
       } else {
@@ -218,12 +238,11 @@ class _LoginPageState extends State<LoginPage> {
 
       final me = await sendAccessTokenToServer(token.accessToken);
 
-
       userProvider.setUser(me);
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const App()), // App import 되어있어야 함
+        MaterialPageRoute(builder: (_) => const App()),
       );
 
       Fluttertoast.showToast(
@@ -256,17 +275,14 @@ class _LoginPageState extends State<LoginPage> {
 
     final json = jsonDecode(response.body) as Map<String, dynamic>;
 
-    // 1) 우리 JWT 저장
     final ourJwt = json['accessToken'] as String;
     await TokenStore.saveAccessToken(ourJwt);
 
-    // 2) refresh token 저장
     final refreshToken = json['refreshToken'] as String?;
     if (refreshToken != null) {
       await TokenStore.saveRefreshToken(refreshToken);
     }
 
-    // 3) user 파싱해서 리턴
     final userJson = json['user'] as Map<String, dynamic>;
     return app.User.fromJson(userJson);
   }

@@ -1,3 +1,4 @@
+import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/service/post_service.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,9 @@ class _ArtistWritePostState extends State<ArtistWritePost> {
 
     if (title.isEmpty || content.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(backgroundColor: AppColors.skyBlue, content: Text('제목과 내용을 모두 입력해주세요.')),
+        const SnackBar(
+            backgroundColor: AppColors.skyBlue,
+            content: Text('제목과 내용을 모두 입력해주세요.')),
       );
       return;
     }
@@ -43,13 +46,16 @@ class _ArtistWritePostState extends State<ArtistWritePost> {
         content: content,
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(backgroundColor: AppColors.skyBlue, content: Text('게시글이 성공적으로 등록되었습니다.')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          backgroundColor: AppColors.skyBlue,
+          content: Text('게시글이 성공적으로 등록되었습니다.')));
       Navigator.of(context).pop();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(backgroundColor: AppColors.skyBlue, content: Text('게시글 등록에 실패했습니다.\n$e')),
+        SnackBar(
+            backgroundColor: AppColors.skyBlue,
+            content: Text('게시글 등록에 실패했습니다.\n$e')),
       );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -65,9 +71,16 @@ class _ArtistWritePostState extends State<ArtistWritePost> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_rounded),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: Text('${widget.artistName} 게시판 글쓰기'),
+        backgroundColor: colors.appBarColor,
+        foregroundColor: Colors.white,
         actions: [
           TextButton(
             onPressed: _isSubmitting ? null : () => _submit(),
@@ -75,19 +88,16 @@ class _ArtistWritePostState extends State<ArtistWritePost> {
                 ? const SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: Colors.white),
                   )
-                : Text(
-                    '완료',
+                : const Text('완료',
                     style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white
-                          : Colors.black,
-                    ),
-                  ),
+                        color: Colors.white, fontWeight: FontWeight.w700)),
           ),
         ],
       ),
+      backgroundColor: colors.backgroundMain,
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
@@ -95,18 +105,37 @@ class _ArtistWritePostState extends State<ArtistWritePost> {
             children: [
               TextField(
                 controller: _titleController,
-                decoration: const InputDecoration(
+                style: TextStyle(color: colors.textTitle),
+                decoration: InputDecoration(
                   hintText: '제목을 입력하세요',
-                  border: OutlineInputBorder(),
+                  hintStyle: TextStyle(color: colors.textSecondary),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide:
+                        BorderSide(color: colors.activate, width: 2),
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: _contentController,
                 maxLines: null,
-                decoration: const InputDecoration(
+                minLines: 8,
+                style: TextStyle(color: colors.textTitle),
+                decoration: InputDecoration(
                   hintText: '내용을 입력하세요',
-                  border: OutlineInputBorder(),
+                  hintStyle: TextStyle(color: colors.textSecondary),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide:
+                        BorderSide(color: colors.activate, width: 2),
+                  ),
                 ),
               ),
             ],

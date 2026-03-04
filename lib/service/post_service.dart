@@ -57,4 +57,26 @@ class PostService {
       },
     );
   }
+
+  /// 페스티벌 게시판 목록 조회
+  Future<List<Post>> fetchFestivalPosts(int festivalId) async {
+    final resp = await DioClient.dio.get('/posts/festival/$festivalId');
+    final List<dynamic> jsonList = resp.data as List<dynamic>;
+    return jsonList.map((json) => Post.fromJson(json)).toList();
+  }
+
+  /// 페스티벌 게시판 글 작성
+  Future<void> createFestivalPost({
+    required int festivalId,
+    required String title,
+    required String content,
+  }) async {
+    await DioClient.dio.post(
+      '/posts/festival/$festivalId',
+      data: {
+        'title': title,
+        'content': content,
+      },
+    );
+  }
 }

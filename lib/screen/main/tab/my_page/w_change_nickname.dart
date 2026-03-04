@@ -1,3 +1,4 @@
+import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../model/user_model.dart';
@@ -55,11 +56,11 @@ class _ChangeNicknameState extends State<ChangeNickname> {
                   await _updateNickname(userProvider, user!.id);
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('닉네임이 변경되었습니다.')),
+                    SnackBar(backgroundColor: AppColors.skyBlue, content: Text('닉네임이 변경되었습니다.')),
                   );
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('닉네임 변경에 실패했습니다.\n$e')),
+                    SnackBar(backgroundColor: AppColors.skyBlue, content: Text('닉네임 변경에 실패했습니다.\n$e')),
                   );
                 }
               },

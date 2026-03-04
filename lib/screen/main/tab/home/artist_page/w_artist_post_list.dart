@@ -49,24 +49,27 @@ class _ArtistPostListScreenState extends State<ArtistPostListScreen> {
         foregroundColor: Colors.white,
       ),
       backgroundColor: colors.backgroundMain,
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: colors.activate,
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => ArtistWritePost(
-                artistId: widget.artistId,
-                artistName: widget.artistName,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 60),
+        child: FloatingActionButton.extended(
+          backgroundColor: colors.activate,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ArtistWritePost(
+                  artistId: widget.artistId,
+                  artistName: widget.artistName,
+                ),
               ),
-            ),
-          ).then((_) => _refresh());
-        },
-        label: const Text(
-          '글 쓰기',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+            ).then((_) => _refresh());
+          },
+          label: const Text(
+            '글 쓰기',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+          ),
+          icon: const Icon(Icons.edit_rounded, color: Colors.white),
         ),
-        icon: const Icon(Icons.edit_rounded, color: Colors.white),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: FutureBuilder<List<Post>>(

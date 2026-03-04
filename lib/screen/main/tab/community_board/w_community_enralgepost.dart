@@ -60,7 +60,7 @@ class _EnralgePostState extends State<EnralgePost> {
     final comment = _commentController.text.trim();
     if (comment.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('댓글을 입력해주세요.')),
+        const SnackBar(backgroundColor: AppColors.skyBlue, content: Text('댓글을 입력해주세요.')),
       );
       return;
     }
@@ -68,7 +68,7 @@ class _EnralgePostState extends State<EnralgePost> {
     final user = context.read<UserProvider>().user;
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('로그인 정보가 없습니다.')),
+        const SnackBar(backgroundColor: AppColors.skyBlue, content: Text('로그인 정보가 없습니다.')),
       );
       return;
     }
@@ -85,12 +85,12 @@ class _EnralgePostState extends State<EnralgePost> {
       await _fetchComments();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('댓글이 등록되었습니다.')),
+        const SnackBar(backgroundColor: AppColors.skyBlue, content: Text('댓글이 등록되었습니다.')),
       );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('댓글 등록에 실패했습니다.\n$e')),
+        SnackBar(backgroundColor: AppColors.skyBlue, content: Text('댓글 등록에 실패했습니다.\n$e')),
       );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -114,7 +114,7 @@ class _EnralgePostState extends State<EnralgePost> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('좋아요 처리에 실패했습니다.\n$e')),
+        SnackBar(backgroundColor: AppColors.skyBlue, content: Text('좋아요 처리에 실패했습니다.\n$e')),
       );
     }
   }

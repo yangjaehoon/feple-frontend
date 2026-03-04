@@ -1,3 +1,4 @@
+import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,10 +25,10 @@ class CommentList extends StatelessWidget {
                     try {
                       await provider.deleteComment(comment.id);
                       ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('댓글이 삭제되었습니다.')));
+                          SnackBar(backgroundColor: AppColors.skyBlue, content: Text('댓글이 삭제되었습니다.')));
                     } catch (e) {
                       ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text('삭제 실패: $e')));
+                          .showSnackBar(SnackBar(backgroundColor: AppColors.skyBlue, content: Text('삭제 실패: $e')));
                     }
                   }));
         });

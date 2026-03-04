@@ -1,3 +1,4 @@
+import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fast_app_base/service/post_service.dart';
@@ -35,7 +36,7 @@ class _WritePostState extends State<WritePost> {
 
     if (title.isEmpty || content.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('제목과 내용을 모두 입력해주세요.')),
+        const SnackBar(backgroundColor: AppColors.skyBlue, content: Text('제목과 내용을 모두 입력해주세요.')),
       );
       return;
     }
@@ -43,7 +44,7 @@ class _WritePostState extends State<WritePost> {
     final user = context.read<UserProvider>().user;
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('로그인 정보가 없습니다.')),
+        const SnackBar(backgroundColor: AppColors.skyBlue, content: Text('로그인 정보가 없습니다.')),
       );
       return;
     }
@@ -58,12 +59,12 @@ class _WritePostState extends State<WritePost> {
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('게시글이 성공적으로 등록되었습니다.')));
+          .showSnackBar(const SnackBar(backgroundColor: AppColors.skyBlue, content: Text('게시글이 성공적으로 등록되었습니다.')));
       Navigator.of(context).pop();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('게시글 등록에 실패했습니다.\n$e')),
+        SnackBar(backgroundColor: AppColors.skyBlue, content: Text('게시글 등록에 실패했습니다.\n$e')),
       );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);

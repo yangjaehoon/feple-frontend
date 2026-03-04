@@ -1,4 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fast_app_base/common/common.dart';
+import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../../../../../../auth/token_store.dart';
@@ -60,7 +62,6 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
       });
     } catch (e) {
       debugPrint('toggle like error: $e');
-      // Rollback은 복잡하니 refresh 호출
       refresh();
     }
   }
@@ -93,101 +94,170 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
+
     if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 80),
+          child: CircularProgressIndicator(color: colors.loadingIndicator),
+        ),
+      );
     }
 
     if (photos.isEmpty) {
-      return const Center(child: Text('아직 등록된 사진이 없습니다.'));
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 80),
+          child: Column(
+            children: [
+              Icon(Icons.photo_library_outlined,
+                  size: 48, color: colors.textSecondary),
+              const SizedBox(height: 12),
+              Text(
+                '아직 등록된 사진이 없습니다.',
+                style: TextStyle(
+                  color: colors.textSecondary,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
-    return ListView.builder(
+    return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: photos.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final photo = photos[index];
         return Container(
-          height: 160,
-          margin: EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: colors.cardShadow.withOpacity(0.08),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
           child: Row(
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: CachedNetworkImage(
-                  imageUrl: photo.url,
-                  width: 160,
-                  height: 160,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Container(
-                    color: Colors.grey[300],
-                    child: const Center(child: CircularProgressIndicator()),
+              // 이미지 썸네일 + 하트 오버레이
+              Stack(
+                children: [
+                  GestureDetector(
+                    onDoubleTap: () {
+                      toggleLike(photo.photoId!);
+                    },
+                    child: ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      bottomLeft: Radius.circular(16),
+                    ),
+                    child: CachedNetworkImage(
+                      imageUrl: photo.url,
+                      width: 195,
+                      height: 195,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        width: 195,
+                        height: 195,
+                        color: colors.listDivider,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: colors.loadingIndicator,
+                            strokeWidth: 2,
+                          ),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        width: 195,
+                        height: 195,
+                        color: colors.listDivider,
+                        child: Icon(Icons.broken_image_rounded,
+                            color: colors.textSecondary),
+                      ),
+                    ),
                   ),
-                  errorWidget: (context, url, error) => Container(
-                    color: Colors.grey[300],
-                    child: const Icon(Icons.error),
                   ),
-                ),
+                  // 좋아요 버튼 (왼쪽 아래)
+                  Positioned(
+                    left: 6,
+                    bottom: 6,
+                    child: GestureDetector(
+                      onTap: () => toggleLike(photo.photoId!),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.45),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              photo.isLiked
+                                  ? Icons.favorite_rounded
+                                  : Icons.favorite_border_rounded,
+                              color: photo.isLiked
+                                  ? AppColors.kawaiiPink
+                                  : Colors.white,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${photo.likecount}',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
+
+              // 정보 영역
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 16.0),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconButton(
-                            onPressed: () => toggleLike(photo.photoId!),
-                            icon: Icon(
-                              photo.isLiked
-                                  ? Icons.favorite
-                                  : Icons.favorite_border,
-                              color: photo.isLiked ? const Color(0xFFFF6B9D) : Colors.grey,
-                              size: 28,
-                            ),
-                            padding: EdgeInsets.zero,
-                            constraints:
-                                BoxConstraints(minWidth: 36, minHeight: 36),
-                          ),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              photo.title,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            '${photo.likecount}',
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w500),
-                          ),
-                          PopupMenuButton(
-                            itemBuilder: (context) => [
-                              const PopupMenuItem(
-                                child: Text("리뷰"),
-                              ),
-                              const PopupMenuItem(
-                                child: Text("삭제"),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(
-                          photo.description,
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
+                      // 제목
+                      Text(
+                        photo.title,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                          color: colors.textTitle,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 6),
+
+                      // 설명
+                      Text(
+                        photo.description,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: colors.textSecondary,
+                        ),
+                        maxLines: 4,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),

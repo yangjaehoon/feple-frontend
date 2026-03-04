@@ -1,4 +1,6 @@
 import 'dart:typed_data';
+import 'package:fast_app_base/common/common.dart';
+import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
 
 /// 이미지 선택/미리보기 박스
@@ -16,6 +18,7 @@ class ImagePickerBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return GestureDetector(
       onTap: onTap,
       child: Align(
@@ -25,22 +28,42 @@ class ImagePickerBox extends StatelessWidget {
           height: 240,
           width: 240,
           decoration: BoxDecoration(
-            color: Colors.grey[200]!,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey),
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: AppColors.skyBlueLight,
+              width: 1.5,
+              strokeAlign: BorderSide.strokeAlignInside,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: colors.cardShadow.withOpacity(0.08),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: imageData == null
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.add, color: Colors.black),
+                    Icon(Icons.add_photo_alternate_rounded,
+                        color: AppColors.skyBlue, size: 40),
+                    const SizedBox(height: 8),
                     Text(
                       label,
-                      style: const TextStyle(color: Colors.black),
+                      style: TextStyle(
+                        color: colors.textSecondary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 )
-              : Image.memory(imageData!, fit: BoxFit.cover),
+              : ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Image.memory(imageData!, fit: BoxFit.cover),
+                ),
         ),
       ),
     );

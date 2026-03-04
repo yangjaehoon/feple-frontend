@@ -44,6 +44,14 @@ class UserProvider with ChangeNotifier {
     }
   }
 
+  Future<void> logout() async {
+    await TokenStore.clear();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('userJson');
+    _user = null;
+    notifyListeners();
+  }
+
   Future<void> setUser(User me) async{
     _user = me;
     notifyListeners();

@@ -1,7 +1,10 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:fast_app_base/login/login.dart';
+import 'package:fast_app_base/provider/user_provider.dart';
 import 'package:fast_app_base/screen/opensource/s_opensource.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get_utils/src/extensions/string_extensions.dart';
 import 'package:simple_shadow/simple_shadow.dart';
@@ -119,6 +122,22 @@ class _MenuDrawerState extends State<MenuDrawer> {
             },
           ),
           Divider(color: colors.listDivider, height: 1, indent: 16, endIndent: 16),
+          Divider(color: colors.listDivider, height: 1, indent: 16, endIndent: 16),
+          _MenuWidget(
+            '로그아웃',
+            icon: Icons.logout_rounded,
+            color: Colors.red[400],
+            onTap: () async {
+              closeDrawer(context);
+              await context.read<UserProvider>().logout();
+              if (context.mounted) {
+                Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const LoginPage()),
+                  (_) => false,
+                );
+              }
+            },
+          ),
           isSmallScreen(context) ? const Height(10) : const EmptyExpanded(),
           MouseRegion(
             cursor: SystemMouseCursors.click,
@@ -244,12 +263,15 @@ class _MenuWidget extends StatelessWidget {
   final String text;
   final IconData? icon;
   final Function() onTap;
+  final Color? color;
 
-  const _MenuWidget(this.text, {Key? key, required this.onTap, this.icon}) : super(key: key);
+  const _MenuWidget(this.text, {Key? key, required this.onTap, this.icon, this.color}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final effectiveColor = color ?? colors.activate;
+    final textColor = color ?? colors.textTitle;
     return SizedBox(
       height: 55,
       child: Tap(
@@ -259,13 +281,13 @@ class _MenuWidget extends StatelessWidget {
           child: Row(
             children: [
               if (icon != null) ...[
-                Icon(icon, color: colors.activate, size: 20),
+                Icon(icon, color: effectiveColor, size: 20),
                 const SizedBox(width: 12),
               ],
               Expanded(
                   child: text.text
                       .textStyle(defaultFontStyle())
-                      .color(colors.textTitle)
+                      .color(textColor)
                       .size(15)
                       .make()),
             ],

@@ -1,271 +1,140 @@
-// import 'package:flutter/material.dart';
-// import 'package:fast_app_base/controller/auth_provider.dart';
-// import 'package:google_fonts/google_fonts.dart';
-// import 'package:get/get.dart';
-//
-// class SignupPage extends StatelessWidget {
-//   const SignupPage({Key? key}) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     var emailController = TextEditingController();
-//     var passwordController = TextEditingController();
-//
-//     return Scaffold(
-//       backgroundColor: Colors.grey[300],
-//       body: SafeArea(
-//         child: Center(
-//           child: SingleChildScrollView(
-//             child: Column(
-//               mainAxisAlignment: MainAxisAlignment.center,
-//               children: [
-//                 const Icon(
-//                   Icons.card_travel_outlined,
-//                   color: Colors.deepPurple,
-//                   size: 100,
-//                 ),
-//                 const SizedBox(
-//                   height: 30,
-//                 ),
-//                 Text(
-//                   'Sign Up',
-//                   style: GoogleFonts.bebasNeue(fontSize: 36.0),
-//                 ),
-//                 const SizedBox(
-//                   height: 10,
-//                 ),
-//                 Text('Thank you for join us',
-//                     style: GoogleFonts.bebasNeue(fontSize: 28)),
-//                 const SizedBox(
-//                   height: 50,
-//                 ),
-//                 Padding(
-//                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
-//                   child: Container(
-//                     decoration: BoxDecoration(
-//                       color: Colors.grey[200],
-//                       border: Border.all(color: Colors.white),
-//                       borderRadius: BorderRadius.circular(12),
-//                     ),
-//                     child: Padding(
-//                       padding: const EdgeInsets.only(left: 20.0),
-//                       child: TextField(
-//                         controller: emailController,
-//                         decoration: const InputDecoration(
-//                             border: InputBorder.none, hintText: 'Email'),
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//                 const SizedBox(
-//                   height: 10,
-//                 ),
-//                 Padding(
-//                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
-//                   child: Container(
-//                     decoration: BoxDecoration(
-//                         color: Colors.grey[200],
-//                         border: Border.all(color: Colors.white),
-//                         borderRadius: BorderRadius.circular(12)),
-//                     child: Padding(
-//                       padding: const EdgeInsets.only(left: 20.0),
-//                       child: TextField(
-//                         controller: passwordController,
-//                         obscureText: true,
-//                         decoration: const InputDecoration(
-//                             border: InputBorder.none, hintText: 'Password'),
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//                 const SizedBox(
-//                   height: 10,
-//                 ),
-//                 GestureDetector(
-//                   onTap: () {
-//                     AuthController.instance.register(
-//                         emailController.text.trim(),
-//                         passwordController.text.trim());
-//                   },
-//                   child: Container(
-//                     child: Padding(
-//                       padding: const EdgeInsets.symmetric(horizontal: 25.0),
-//                       child: Container(
-//                         padding: const EdgeInsets.all(20),
-//                         decoration: BoxDecoration(
-//                             color: Colors.red,
-//                             borderRadius: BorderRadius.circular(12)),
-//                         child: const Center(
-//                           child: Text(
-//                             'Sign up',
-//                             style: TextStyle(
-//                                 color: Colors.white,
-//                                 fontSize: 16,
-//                                 fontWeight: FontWeight.bold),
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//                 const SizedBox(
-//                   height: 25,
-//                 ),
-//                 Row(
-//                   mainAxisAlignment: MainAxisAlignment.center,
-//                   children: [
-//                     const Text('Already registered?'),
-//                     GestureDetector(
-//                       onTap: () => Get.back(),
-//                       child: const Text(
-//                         ' Go back Login page!',
-//                         style: TextStyle(
-//                             color: Colors.blue, fontWeight: FontWeight.bold),
-//                       ),
-//                     )
-//                   ],
-//                 )
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-
+import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-import '../controller/auth_provider.dart';
-
-class SignupPage extends StatelessWidget {
+class SignupPage extends StatefulWidget {
   const SignupPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    var emailController = TextEditingController();
-    var passwordController = TextEditingController();
+  State<SignupPage> createState() => _SignupPageState();
+}
 
+class _SignupPageState extends State<SignupPage> {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: AppColors.backgroundCreamy,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 28),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  Icons.card_travel_outlined,
-                  color: Colors.deepPurple,
-                  size: 100,
+                // ── 아이콘 ──
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: AppColors.skyBlue.withOpacity(0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.person_add_rounded,
+                    size: 40,
+                    color: AppColors.skyBlue,
+                  ),
                 ),
-                const SizedBox(
-                  height: 30,
+                const SizedBox(height: 24),
+
+                // ── 환영 텍스트 ──
+                const Text(
+                  '회원가입',
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textMain,
+                    letterSpacing: -0.5,
+                  ),
                 ),
-                Text(
-                  'Sign Up',
-                  style: GoogleFonts.bebasNeue(fontSize: 36.0),
+                const SizedBox(height: 8),
+                const Text(
+                  '페플에 가입하고 축제를 즐겨보세요!',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textMuted,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-                const SizedBox(
-                  height: 10,
+                const SizedBox(height: 36),
+
+                // ── 이메일 입력 ──
+                _buildTextField(
+                  controller: emailController,
+                  hintText: '이메일',
+                  icon: Icons.mail_outline_rounded,
                 ),
-                Text('Thank you for joining us',
-                    style: GoogleFonts.bebasNeue(fontSize: 28)),
-                const SizedBox(
-                  height: 50,
+                const SizedBox(height: 14),
+
+                // ── 비밀번호 입력 ──
+                _buildTextField(
+                  controller: passwordController,
+                  hintText: '비밀번호',
+                  icon: Icons.lock_outline_rounded,
+                  obscureText: true,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12),
+                const SizedBox(height: 28),
+
+                // ── 가입 버튼 ──
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      // 회원가입 로직 (현재 비활성)
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.skyBlue,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20.0),
-                      child: TextField(
-                        controller: emailController,
-                        decoration: const InputDecoration(
-                            border: InputBorder.none, hintText: 'Email'),
+                    child: const Text(
+                      '가입하기',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(12)),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20.0),
-                      child: TextField(
-                        controller: passwordController,
-                        obscureText: true,
-                        decoration: const InputDecoration(
-                            border: InputBorder.none, hintText: 'Password'),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                GestureDetector(
-                  onTap: () async {
-                    // try {
-                    //   await Provider.of<AuthProvider>(context, listen: false)
-                    //       .register(emailController.text.trim(), passwordController.text.trim());
-                    // } catch (e) {
-                    //   ScaffoldMessenger.of(context).showSnackBar(
-                    //     SnackBar(content: Text('Registration failed: $e')),
-                    //   );
-                    // }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(12)),
-                      child: const Center(
-                        child: Text(
-                          'Sign up',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 25,
-                ),
+                const SizedBox(height: 24),
+
+                // ── 로그인 페이지 링크 ──
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Already registered?'),
+                    const Text(
+                      '이미 계정이 있으신가요?',
+                      style: TextStyle(
+                        color: AppColors.textMuted,
+                        fontSize: 14,
+                      ),
+                    ),
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
                       child: const Text(
-                        ' Go back to Login page!',
+                        ' 로그인',
                         style: TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold),
+                          color: AppColors.skyBlue,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                        ),
                       ),
-                    )
+                    ),
                   ],
-                )
+                ),
               ],
             ),
           ),
@@ -273,5 +142,40 @@ class SignupPage extends StatelessWidget {
       ),
     );
   }
-}
 
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hintText,
+    required IconData icon,
+    bool obscureText = false,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: obscureText,
+      style: const TextStyle(fontSize: 15, color: AppColors.textMain),
+      decoration: InputDecoration(
+        prefixIcon: Icon(icon, color: AppColors.skyBlue, size: 22),
+        hintText: hintText,
+        hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 15),
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide:
+              BorderSide(color: AppColors.skyBlueLight.withOpacity(0.5)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide:
+              BorderSide(color: AppColors.skyBlueLight.withOpacity(0.4)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: AppColors.skyBlue, width: 2),
+        ),
+      ),
+    );
+  }
+}

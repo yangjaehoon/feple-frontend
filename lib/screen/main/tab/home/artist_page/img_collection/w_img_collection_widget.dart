@@ -1,10 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
+import 'package:fast_app_base/network/dio_client.dart';
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
-import '../../../../../../auth/token_store.dart';
-import '../../../../../../config.dart';
 import 'dto_artist_photo_response.dart';
 
 class ImgCollectionWidget extends StatefulWidget {
@@ -34,12 +32,8 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
 
   Future<void> toggleLike(int photoId) async {
     try {
-      final token = await TokenStore.readAccessToken();
-      final dio = Dio();
-
-      await dio.post(
-        '$baseUrl/artists/${widget.artistId}/photos/$photoId/like',
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      await DioClient.dio.post(
+        '/artists/${widget.artistId}/photos/$photoId/like',
       );
       setState(() {
         final photoIndex = photos.indexWhere((p) => p.photoId == photoId);
@@ -70,12 +64,8 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
     try {
       setState(() => isLoading = true);
 
-      final token = await TokenStore.readAccessToken();
-      final dio = Dio();
-
-      final res = await dio.get(
-        '$baseUrl/artists/${widget.artistId}/photos',
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      final res = await DioClient.dio.get(
+        '/artists/${widget.artistId}/photos',
       );
 
       if (res.statusCode == 200) {

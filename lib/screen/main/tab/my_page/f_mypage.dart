@@ -41,7 +41,7 @@ class _MypageFragmentState extends State<MypageFragment> {
                 ProfileWidget(userId: me.id,),
                 MyPostCommentWidget(userId: me.id),
                 FtvCertificationWidget(),
-                FollowArtistsWidget(),
+                FollowArtistsWidget(userId: me.id),
               ],
             ),
           ),

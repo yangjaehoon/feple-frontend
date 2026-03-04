@@ -7,6 +7,7 @@ class Post {
   final int commentCount;
   final String nickname;
   final int? artistId;
+  final String boardDisplayName;
 
   Post({
     required this.id,
@@ -17,6 +18,7 @@ class Post {
     this.commentCount = 0,
     required this.nickname,
     this.artistId,
+    this.boardDisplayName = '게시판',
   });
 
   // JSON에서 객체로 변환
@@ -30,6 +32,7 @@ class Post {
       commentCount: json['commentCount'] as int? ?? 0,
       nickname: json['nickname'] as String,
       artistId: json['artistId'] as int?,
+      boardDisplayName: json['boardDisplayName'] as String? ?? '게시판',
     );
   }
 }

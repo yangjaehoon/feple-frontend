@@ -1,6 +1,8 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/network/dio_client.dart';
+import 'package:fast_app_base/screen/main/tab/my_page/w_my_comments.dart';
+import 'package:fast_app_base/screen/main/tab/my_page/w_my_posts.dart';
 import 'package:flutter/material.dart';
 
 class MyPostCommentWidget extends StatefulWidget {
@@ -52,12 +54,18 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
                 label: '게시글',
                 value: postCount,
                 color: AppColors.skyBlue,
+                onTap: () => Navigator.push(context, MaterialPageRoute(
+                  builder: (_) => MyPostsScreen(userId: widget.userId),
+                )),
               ),
               _buildStatCard(context,
                 icon: Icons.chat_bubble_rounded,
                 label: '댓글',
                 value: commentCount,
                 color: AppColors.kawaiiPink,
+                onTap: () => Navigator.push(context, MaterialPageRoute(
+                  builder: (_) => MyCommentsScreen(userId: widget.userId),
+                )),
               ),
               _buildStatCard(context,
                 icon: Icons.bookmark_rounded,
@@ -78,46 +86,50 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
     required String label,
     required String value,
     required Color color,
+    VoidCallback? onTap,
   }) {
     final colors = context.appColors;
-    return Container(
-      height: 90,
-      width: 75,
-      decoration: BoxDecoration(
-        color: colors.statCardBg,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.listDivider),
-        boxShadow: [
-          BoxShadow(
-            color: colors.cardShadow.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(height: 6),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              color: colors.textSecondary,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 90,
+        width: 75,
+        decoration: BoxDecoration(
+          color: colors.statCardBg,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: colors.listDivider),
+          boxShadow: [
+            BoxShadow(
+              color: colors.cardShadow.withOpacity(0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
             ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-              color: colors.textTitle,
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: color, size: 24),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: colors.textSecondary,
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 2),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: colors.textTitle,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

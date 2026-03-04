@@ -58,7 +58,9 @@ class _EnralgePostState extends State<EnralgePost> {
           _liked = isLiked;
         });
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('loadPostState error: $e');
+    }
   }
 
   // ── API 호출 ──
@@ -71,7 +73,9 @@ class _EnralgePostState extends State<EnralgePost> {
             .map((e) => e as Map<String, dynamic>)
             .toList();
       });
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('fetchComments error: $e');
+    }
   }
 
   Future<void> _commentSubmit() async {

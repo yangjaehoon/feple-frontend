@@ -34,10 +34,11 @@ class _CommunityPostState extends State<CommunityPost> {
     _postsFuture = _postService.fetchPosts(_serviceBoardType);
   }
 
-  void _refresh() {
+  Future<void> _refresh() async {
     setState(() {
       _postsFuture = _postService.fetchPosts(_serviceBoardType);
     });
+    await _postsFuture;
   }
 
   @override
@@ -70,58 +71,72 @@ class _CommunityPostState extends State<CommunityPost> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: FutureBuilder<List<Post>>(
-        future: _postsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(color: colors.loadingIndicator),
-            );
-          }
-          if (snapshot.hasError) {
-            return Center(
-              child: Text('Failed to load: ${snapshot.error}',
-                  style: TextStyle(color: colors.textSecondary)),
-            );
-          }
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(
-              child: Text('No data available.',
-                  style: TextStyle(color: colors.textSecondary)),
-            );
-          }
-
-          final posts = snapshot.data!;
-          return ListView.separated(
-            padding: const EdgeInsets.only(bottom: 80),
-            itemCount: posts.length,
-            itemBuilder: (context, index) {
-              final post = posts[index];
-              return PostListTile(
-                post: post,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => EnralgePost(
-                        boardname: widget.boardname,
-                        id: post.id,
-                        nickname: post.nickname,
-                        title: post.title,
-                        content: post.content,
-                        heart: post.likeCount,
-                      ),
-                    ),
-                  ).then((_) => _refresh());
-                },
+      body: RefreshIndicator(
+        color: colors.activate,
+        onRefresh: _refresh,
+        child: FutureBuilder<List<Post>>(
+          future: _postsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(color: colors.loadingIndicator),
               );
-            },
-            separatorBuilder: (_, __) => Divider(
-              thickness: 1,
-              color: colors.listDivider,
-            ),
-          );
-        },
+            }
+            if (snapshot.hasError) {
+              return ListView(
+                children: [
+                  SizedBox(height: 200),
+                  Center(
+                    child: Text('Failed to load: ${snapshot.error}',
+                        style: TextStyle(color: colors.textSecondary)),
+                  ),
+                ],
+              );
+            }
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return ListView(
+                children: [
+                  SizedBox(height: 200),
+                  Center(
+                    child: Text('No data available.',
+                        style: TextStyle(color: colors.textSecondary)),
+                  ),
+                ],
+              );
+            }
+
+            final posts = snapshot.data!;
+            return ListView.separated(
+              padding: const EdgeInsets.only(bottom: 80),
+              itemCount: posts.length,
+              itemBuilder: (context, index) {
+                final post = posts[index];
+                return PostListTile(
+                  post: post,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => EnralgePost(
+                          boardname: widget.boardname,
+                          id: post.id,
+                          nickname: post.nickname,
+                          title: post.title,
+                          content: post.content,
+                          heart: post.likeCount,
+                        ),
+                      ),
+                    ).then((_) => _refresh());
+                  },
+                );
+              },
+              separatorBuilder: (_, __) => Divider(
+                thickness: 1,
+                color: colors.listDivider,
+              ),
+            );
+          },
+        ),
       ),
     );
   }

@@ -31,10 +31,11 @@ class _ArtistPostListScreenState extends State<ArtistPostListScreen> {
     _postsFuture = _postService.fetchArtistPosts(widget.artistId);
   }
 
-  void _refresh() {
+  Future<void> _refresh() async {
     setState(() {
       _postsFuture = _postService.fetchArtistPosts(widget.artistId);
     });
+    await _postsFuture;
   }
 
   String get _boardname => '${widget.artistName} 게시판';
@@ -72,58 +73,72 @@ class _ArtistPostListScreenState extends State<ArtistPostListScreen> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: FutureBuilder<List<Post>>(
-        future: _postsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(color: colors.loadingIndicator),
-            );
-          }
-          if (snapshot.hasError) {
-            return Center(
-              child: Text('Failed to load: ${snapshot.error}',
-                  style: TextStyle(color: colors.textSecondary)),
-            );
-          }
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(
-              child: Text('아직 게시글이 없습니다.',
-                  style: TextStyle(color: colors.textSecondary)),
-            );
-          }
-
-          final posts = snapshot.data!;
-          return ListView.separated(
-            padding: const EdgeInsets.only(bottom: 80),
-            itemCount: posts.length,
-            itemBuilder: (context, index) {
-              final post = posts[index];
-              return PostListTile(
-                post: post,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => EnralgePost(
-                        boardname: _boardname,
-                        id: post.id,
-                        nickname: post.nickname,
-                        title: post.title,
-                        content: post.content,
-                        heart: post.likeCount,
-                      ),
-                    ),
-                  ).then((_) => _refresh());
-                },
+      body: RefreshIndicator(
+        color: colors.activate,
+        onRefresh: _refresh,
+        child: FutureBuilder<List<Post>>(
+          future: _postsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(color: colors.loadingIndicator),
               );
-            },
-            separatorBuilder: (_, __) => Divider(
-              thickness: 1,
-              color: colors.listDivider,
-            ),
-          );
-        },
+            }
+            if (snapshot.hasError) {
+              return ListView(
+                children: [
+                  SizedBox(height: 200),
+                  Center(
+                    child: Text('Failed to load: ${snapshot.error}',
+                        style: TextStyle(color: colors.textSecondary)),
+                  ),
+                ],
+              );
+            }
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return ListView(
+                children: [
+                  SizedBox(height: 200),
+                  Center(
+                    child: Text('아직 게시글이 없습니다.',
+                        style: TextStyle(color: colors.textSecondary)),
+                  ),
+                ],
+              );
+            }
+
+            final posts = snapshot.data!;
+            return ListView.separated(
+              padding: const EdgeInsets.only(bottom: 80),
+              itemCount: posts.length,
+              itemBuilder: (context, index) {
+                final post = posts[index];
+                return PostListTile(
+                  post: post,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => EnralgePost(
+                          boardname: _boardname,
+                          id: post.id,
+                          nickname: post.nickname,
+                          title: post.title,
+                          content: post.content,
+                          heart: post.likeCount,
+                        ),
+                      ),
+                    ).then((_) => _refresh());
+                  },
+                );
+              },
+              separatorBuilder: (_, __) => Divider(
+                thickness: 1,
+                color: colors.listDivider,
+              ),
+            );
+          },
+        ),
       ),
     );
   }

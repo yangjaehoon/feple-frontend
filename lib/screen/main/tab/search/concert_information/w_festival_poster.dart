@@ -29,7 +29,9 @@ class _FestivalPosterState extends State<FestivalPoster> {
     try {
       final resp = await DioClient.dio.get('/festivals/${widget.poster.id}/liked');
       if (mounted) setState(() => _liked = resp.data as bool);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('loadLikeState error: $e');
+    }
   }
 
   Future<void> _toggleLike() async {
@@ -194,10 +196,11 @@ class _FestivalPosterState extends State<FestivalPoster> {
                                 color: Colors.white, size: 20),
                           ),
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Scaffold()),
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                backgroundColor: Color(0xFF5CC0EB),
+                                content: Text('지도 기능은 준비 중입니다.'),
+                              ),
                             );
                           },
                         ),

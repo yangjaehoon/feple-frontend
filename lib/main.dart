@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/cli_common.dart';
 import 'package:fast_app_base/common/common.dart';
+import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/provider/FestivalPreviewProvider.dart';
 import 'package:fast_app_base/provider/poster/poster_provider.dart';
 import 'package:fast_app_base/provider/user_provider.dart';
@@ -99,7 +100,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primaryColor: Colors.blue),
+      theme: ThemeData(primaryColor: AppColors.skyBlue),
       home: Consumer<UserProvider>(
         builder: (context, userProvider, _) {
           if (userProvider.user == null) {

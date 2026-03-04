@@ -52,7 +52,7 @@ class _ConcertListWidgetState extends State<ConcertListWidget> {
               ),
             );
           },
-          child: buildFestivalPreviewCard(item),
+          child: FestivalPreviewCard(festival: item),
         );
       },
     );

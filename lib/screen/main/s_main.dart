@@ -44,13 +44,21 @@ class MainScreenState extends State<MainScreen>
   @override
   void initState() {
     super.initState();
-    initNavigatorKeys();
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _handleBackPressed,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final navigator = _currentTabNavigationKey.currentState;
+        if (navigator != null && navigator.canPop()) {
+          navigator.pop();
+        } else if (_currentTab != TabItem.home) {
+          _changeTab(tabs.indexOf(TabItem.home));
+        }
+      },
       child: Scaffold(
         extendBody: extendBody,
         drawer: const MenuDrawer(),
@@ -80,17 +88,7 @@ class MainScreenState extends State<MainScreen>
               ))
           .toList());
 
-  Future<bool> _handleBackPressed() async {
-    final isFirstRouteInCurrentTab =
-        (await _currentTabNavigationKey.currentState?.maybePop() == false);
-    if (isFirstRouteInCurrentTab) {
-      if (_currentTab != TabItem.home) {
-        _changeTab(tabs.indexOf(TabItem.home));
-        return false;
-      }
-    }
-    return isFirstRouteInCurrentTab;
-  }
+
 
   Widget _buildBottomNavigationBar(BuildContext context) {
     final colors = context.appColors;
@@ -165,7 +163,9 @@ class MainScreenState extends State<MainScreen>
   }
 
   void _handleOnTapNavigationBarItem(int index) {
-    popAllHistory(navigatorKeys[index]);
+    if (tabs[index] == _currentTab) {
+      popAllHistory(navigatorKeys[index]);
+    }
     _changeTab(index);
   }
 
@@ -178,9 +178,4 @@ class MainScreenState extends State<MainScreen>
     }
   }
 
-  void initNavigatorKeys() {
-    for (final _ in tabs) {
-      navigatorKeys.add(GlobalKey<NavigatorState>());
-    }
-  }
 }

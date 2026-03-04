@@ -49,6 +49,15 @@ class PostListTile extends StatelessWidget {
           const SizedBox(width: 10),
           Icon(Icons.comment_rounded,
               color: colors.textSecondary, size: 16),
+          const SizedBox(width: 4),
+          Text(
+            post.commentCount.toString(),
+            style: TextStyle(
+              fontSize: 14,
+              color: colors.textTitle,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
       leading: CircleAvatar(

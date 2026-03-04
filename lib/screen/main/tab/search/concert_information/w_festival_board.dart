@@ -3,7 +3,7 @@ import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:fast_app_base/common/util/responsive_size.dart';
 import 'package:fast_app_base/model/post_model.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_board_card_header.dart';
-import 'package:fast_app_base/screen/main/tab/home/concert_information/w_festival_post_list.dart';
+import 'package:fast_app_base/screen/main/tab/search/concert_information/w_festival_post_list.dart';
 import 'package:fast_app_base/service/post_service.dart';
 import 'package:flutter/material.dart';
 

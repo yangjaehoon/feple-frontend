@@ -24,8 +24,8 @@ class MainScreenState extends State<MainScreen>
     with SingleTickerProviderStateMixin{
   TabItem _currentTab = TabItem.home;
   final tabs = [
+    TabItem.search,
     TabItem.home,
-    TabItem.chat,
     TabItem.communityBoard,
     TabItem.concertList,
     TabItem.favorite,

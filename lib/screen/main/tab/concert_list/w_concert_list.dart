@@ -1,6 +1,6 @@
 import 'package:fast_app_base/model/poster_model.dart';
 import 'package:fast_app_base/provider/poster/w_festival_preview_card.dart';
-import 'package:fast_app_base/screen/main/tab/home/concert_information/f_festival_information.dart';
+import 'package:fast_app_base/screen/main/tab/search/concert_information/f_festival_information.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

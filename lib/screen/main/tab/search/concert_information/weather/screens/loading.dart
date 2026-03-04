@@ -1,5 +1,5 @@
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/screen/main/tab/home/concert_information/weather/screens/weather_screen.dart';
+import 'package:fast_app_base/screen/main/tab/search/concert_information/weather/screens/weather_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../data/my_location.dart';

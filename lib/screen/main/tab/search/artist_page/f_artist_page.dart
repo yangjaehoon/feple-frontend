@@ -1,8 +1,8 @@
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/screen/main/tab/home/artist_page/w_ftv_youtube.dart';
-// import 'package:fast_app_base/screen/main/tab/home/artist_page/w_ftv_youtube_shorts.dart';
-import 'package:fast_app_base/screen/main/tab/home/artist_page/w_main_image_swiper.dart';
-import 'package:fast_app_base/screen/main/tab/home/artist_page/w_artist_board.dart';
+import 'package:fast_app_base/screen/main/tab/search/artist_page/w_ftv_youtube.dart';
+// import 'package:fast_app_base/screen/main/tab/search/artist_page/w_ftv_youtube_shorts.dart';
+import 'package:fast_app_base/screen/main/tab/search/artist_page/w_main_image_swiper.dart';
+import 'package:fast_app_base/screen/main/tab/search/artist_page/w_artist_board.dart';
 
 import 'package:flutter/material.dart';
 

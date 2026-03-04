@@ -1,16 +1,13 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:fast_app_base/common/util/responsive_size.dart';
-import 'package:fast_app_base/screen/main/tab/chat/w_fan_chat.dart';
-import 'package:fast_app_base/screen/main/tab/chat/w_my_chat.dart';
-import 'package:fast_app_base/screen/main/tab/chat/w_today_ftv_chat.dart';
+import 'package:fast_app_base/screen/main/tab/search/w_circle_artist.dart';
+import 'package:fast_app_base/screen/main/tab/search/w_concert_list_swiper.dart';
+import 'package:fast_app_base/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:flutter/material.dart';
 
-import '../home/w_feple_app_bar.dart';
-
-
-class ChatFragment extends StatelessWidget {
-  const ChatFragment({
+class SearchFragment extends StatelessWidget {
+  const SearchFragment({
     Key? key,
   }) : super(key: key);
 
@@ -28,13 +25,12 @@ class ChatFragment extends StatelessWidget {
             ),
             child: const Column(
               children: [
-                //TodayFtvChat(),
-                //MyChat(),
-                //FanChat(),
+                ConcertListSwiperWidget(),
+                CircleArtistWidget(),
               ],
             ),
           ),
-          FepleAppBar("채팅방"),
+          FepleAppBar("Feple"),
         ],
       ),
     );

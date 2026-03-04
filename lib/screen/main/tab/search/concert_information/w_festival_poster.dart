@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/network/dio_client.dart';
-import 'package:fast_app_base/screen/main/tab/home/concert_information/weather/screens/loading.dart';
+import 'package:fast_app_base/screen/main/tab/search/concert_information/weather/screens/loading.dart';
 import 'package:flutter/material.dart';
 import '../../../../../model/poster_model.dart';
 import 'ftv_map/ftv_map_widget.dart';

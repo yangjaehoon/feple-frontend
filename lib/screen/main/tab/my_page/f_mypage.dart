@@ -8,7 +8,7 @@ import 'package:fast_app_base/screen/main/tab/my_page/w_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../provider/user_provider.dart';
-import '../home/w_feple_app_bar.dart';
+import '../search/w_feple_app_bar.dart';
 
 class MypageFragment extends StatefulWidget {
   const MypageFragment({super.key});

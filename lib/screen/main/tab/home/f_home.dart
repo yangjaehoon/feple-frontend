@@ -1,10 +1,9 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:fast_app_base/common/util/responsive_size.dart';
-import 'package:fast_app_base/screen/main/tab/home/w_circle_artist.dart';
-import 'package:fast_app_base/screen/main/tab/home/w_concert_list_swiper.dart';
-import 'package:fast_app_base/screen/main/tab/home/w_feple_app_bar.dart';
 import 'package:flutter/material.dart';
+
+import '../search/w_feple_app_bar.dart';
 
 class HomeFragment extends StatelessWidget {
   const HomeFragment({
@@ -24,10 +23,7 @@ class HomeFragment extends StatelessWidget {
               bottom: rs.h(AppDimens.scrollPaddingBottom),
             ),
             child: const Column(
-              children: [
-                ConcertListSwiperWidget(),
-                CircleArtistWidget(),
-              ],
+              children: [],
             ),
           ),
           FepleAppBar("Feple"),

@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/screen/main/tab/home/artist_page/w_artist_name_like.dart';
+import 'package:fast_app_base/screen/main/tab/search/artist_page/w_artist_name_like.dart';
 import 'package:flutter/material.dart';
 
 class MainImageSwiper extends StatefulWidget {

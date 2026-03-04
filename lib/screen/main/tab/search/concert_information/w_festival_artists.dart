@@ -1,6 +1,6 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/network/dio_client.dart';
-import 'package:fast_app_base/screen/main/tab/home/artist_page/f_artist_page.dart';
+import 'package:fast_app_base/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:flutter/material.dart';
 
 class FestivalArtists extends StatefulWidget {

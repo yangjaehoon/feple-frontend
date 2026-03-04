@@ -6,7 +6,7 @@ import 'package:fast_app_base/screen/main/tab/concert_list/w_concert_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../home/w_feple_app_bar.dart';
+import '../search/w_feple_app_bar.dart';
 
 class ConcertListFragment extends StatefulWidget {
   const ConcertListFragment({super.key});

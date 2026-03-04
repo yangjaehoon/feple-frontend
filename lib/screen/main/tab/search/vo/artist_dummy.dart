@@ -1,4 +1,4 @@
-import 'package:fast_app_base/screen/main/tab/home/vo/vo_artist.dart';
+import 'package:fast_app_base/screen/main/tab/search/vo/vo_artist.dart';
 
 final hanyohan = Artist(
   name: "한요한",

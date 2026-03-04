@@ -22,16 +22,25 @@ class _HomeFragmentState extends State<HomeFragment> {
   late Future<List<_FollowedArtist>> _artistsFuture;
   late Future<List<PosterModel>> _festivalsFuture;
   int? _userId;
+  bool _wasVisible = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final user = context.read<UserProvider>().user;
-    if (user != null && _userId == null) {
-      _userId = user.id;
-      _artistsFuture = _fetchArtists(user.id);
-      _festivalsFuture = _fetchFestivals(user.id);
+    final isVisible = TickerMode.of(context);
+
+    if (user != null) {
+      if (_userId == null) {
+        _userId = user.id;
+        _artistsFuture = _fetchArtists(user.id);
+        _festivalsFuture = _fetchFestivals(user.id);
+      } else if (isVisible && !_wasVisible) {
+        _artistsFuture = _fetchArtists(_userId!);
+        _festivalsFuture = _fetchFestivals(_userId!);
+      }
     }
+    _wasVisible = isVisible;
   }
 
   Future<List<_FollowedArtist>> _fetchArtists(int userId) async {

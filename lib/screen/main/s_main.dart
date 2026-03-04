@@ -165,12 +165,7 @@ class MainScreenState extends State<MainScreen>
   }
 
   void _handleOnTapNavigationBarItem(int index) {
-    final oldTab = _currentTab;
-    final targetTab = tabs[index];
-    if (oldTab == targetTab) {
-      final navigationKey = _currentTabNavigationKey;
-      popAllHistory(navigationKey);
-    }
+    popAllHistory(navigatorKeys[index]);
     _changeTab(index);
   }
 

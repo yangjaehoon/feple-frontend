@@ -35,6 +35,7 @@ class FestivalTimetable extends StatelessWidget {
             backgroundColor: colors.surface,
           ),
           viewHeaderStyle: ViewHeaderStyle(
+            backgroundColor: colors.surface,
             dayTextStyle: TextStyle(
               color: colors.textSecondary,
               fontSize: 12,
@@ -43,6 +44,10 @@ class FestivalTimetable extends StatelessWidget {
           ),
           monthViewSettings: MonthViewSettings(
             monthCellStyle: MonthCellStyle(
+              backgroundColor: colors.surface,
+              todayBackgroundColor: colors.surface,
+              trailingDatesBackgroundColor: colors.surface,
+              leadingDatesBackgroundColor: colors.surface,
               textStyle: TextStyle(color: colors.textTitle, fontSize: 13),
               trailingDatesTextStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5)),
               leadingDatesTextStyle: TextStyle(color: colors.textSecondary.withOpacity(0.5)),

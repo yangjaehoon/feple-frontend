@@ -113,7 +113,7 @@ class _CommentTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'User ${comment['userId']}',
+                  comment['nickname'] as String? ?? 'User ${comment['userId']}',
                   style: TextStyle(
                     color: colors.textSecondary,
                     fontSize: 12,

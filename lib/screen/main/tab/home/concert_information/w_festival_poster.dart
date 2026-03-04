@@ -48,7 +48,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return SizedBox(
-      height: 250,
+      height: 180,
       child: Stack(
         children: [
           Container(
@@ -76,7 +76,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
                 child: Container(
                   alignment: Alignment.centerLeft,
                   margin: const EdgeInsets.all(16),
-                  height: 200,
+                  height: 140,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
@@ -105,7 +105,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
                     Text(widget.poster.title,
                         softWrap: true,
                         style: const TextStyle(
-                          fontSize: 28,
+                          fontSize: 20,
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
                         )),

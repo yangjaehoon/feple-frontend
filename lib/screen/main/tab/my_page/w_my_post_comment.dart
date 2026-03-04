@@ -1,43 +1,73 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
+import 'package:fast_app_base/network/dio_client.dart';
 import 'package:flutter/material.dart';
 
-class MyPostCommentWidget extends StatelessWidget {
-  const MyPostCommentWidget({super.key});
+class MyPostCommentWidget extends StatefulWidget {
+  final int userId;
+  const MyPostCommentWidget({super.key, required this.userId});
+
+  @override
+  State<MyPostCommentWidget> createState() => _MyPostCommentWidgetState();
+}
+
+class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
+  late Future<_UserStats> _statsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _statsFuture = _fetchStats();
+  }
+
+  Future<_UserStats> _fetchStats() async {
+    final resp = await DioClient.dio.get('/users/${widget.userId}/stats');
+    return _UserStats(
+      postCount: resp.data['postCount'] as int,
+      commentCount: resp.data['commentCount'] as int,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildStatCard(context,
-            icon: Icons.verified_rounded,
-            label: '인증 뱃지',
-            value: '5',
-            color: AppColors.sunnyYellow,
-          ),
-          _buildStatCard(context,
-            icon: Icons.article_rounded,
-            label: '게시글',
-            value: '23',
-            color: AppColors.skyBlue,
-          ),
-          _buildStatCard(context,
-            icon: Icons.chat_bubble_rounded,
-            label: '댓글',
-            value: '57',
-            color: AppColors.kawaiiPink,
-          ),
-          _buildStatCard(context,
-            icon: Icons.bookmark_rounded,
-            label: '북마크',
-            value: '10',
-            color: AppColors.kawaiiMint,
-          ),
-        ],
+      child: FutureBuilder<_UserStats>(
+        future: _statsFuture,
+        builder: (context, snapshot) {
+          final postCount = snapshot.data?.postCount.toString() ?? '-';
+          final commentCount = snapshot.data?.commentCount.toString() ?? '-';
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildStatCard(context,
+                icon: Icons.verified_rounded,
+                label: '인증 뱃지',
+                value: '0',
+                color: AppColors.sunnyYellow,
+              ),
+              _buildStatCard(context,
+                icon: Icons.article_rounded,
+                label: '게시글',
+                value: postCount,
+                color: AppColors.skyBlue,
+              ),
+              _buildStatCard(context,
+                icon: Icons.chat_bubble_rounded,
+                label: '댓글',
+                value: commentCount,
+                color: AppColors.kawaiiPink,
+              ),
+              _buildStatCard(context,
+                icon: Icons.bookmark_rounded,
+                label: '북마크',
+                value: '0',
+                color: AppColors.kawaiiMint,
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -91,4 +121,10 @@ class MyPostCommentWidget extends StatelessWidget {
       ),
     );
   }
+}
+
+class _UserStats {
+  final int postCount;
+  final int commentCount;
+  const _UserStats({required this.postCount, required this.commentCount});
 }

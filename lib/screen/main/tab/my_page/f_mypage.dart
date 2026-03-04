@@ -39,7 +39,7 @@ class _MypageFragmentState extends State<MypageFragment> {
             child: Column(
               children: [
                 ProfileWidget(userId: me.id,),
-                MyPostCommentWidget(),
+                MyPostCommentWidget(userId: me.id),
                 FtvCertificationWidget(),
                 FollowArtistsWidget(),
               ],

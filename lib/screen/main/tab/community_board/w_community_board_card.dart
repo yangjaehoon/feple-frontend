@@ -4,6 +4,7 @@ import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:fast_app_base/common/util/responsive_size.dart';
 import 'package:fast_app_base/model/post_model.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_board_card_header.dart';
+import 'package:fast_app_base/screen/main/tab/community_board/w_community_enralgepost.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_post.dart';
 import 'package:fast_app_base/service/post_service.dart';
 import 'package:flutter/material.dart';
@@ -114,6 +115,21 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
               minVerticalPadding: 0,
               contentPadding: const EdgeInsets.symmetric(
                   horizontal: AppDimens.paddingHorizontal, vertical: 0),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => EnralgePost(
+                      boardname: widget.boardname,
+                      id: post.id,
+                      nickname: post.nickname,
+                      title: post.title,
+                      content: post.content,
+                      heart: post.likeCount,
+                    ),
+                  ),
+                );
+              },
               title: Text(
                 post.title,
                 style: TextStyle(
@@ -148,6 +164,15 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
                   Icon(Icons.chat_bubble_outline_rounded,
                       color: colors.activate,
                       size: AppDimens.iconSizeMd),
+                  const SizedBox(width: 4),
+                  Text(
+                    post.commentCount.toString(),
+                    style: TextStyle(
+                      fontSize: AppDimens.fontSizeMd,
+                      color: colors.textTitle,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ],
               ),
             );

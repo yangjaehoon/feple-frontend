@@ -4,10 +4,7 @@ import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 import 'package:fast_app_base/screen/main/tab/home/concert_information/weather/screens/loading.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
 import '../../../../../model/poster_model.dart';
-import '../../../../../provider/user_provider.dart';
 import 'ftv_map/ftv_map_widget.dart';
 
 class FestivalPoster extends StatefulWidget {
@@ -36,12 +33,12 @@ class _FestivalPosterState extends State<FestivalPoster> {
   }
 
   Future<void> _toggleLike() async {
-    final user = context.read<UserProvider>().user;
-    if (user == null) return;
     try {
       final resp = await DioClient.dio.post('/festivals/${widget.poster.id}/like');
       if (mounted) setState(() => _liked = resp.data as bool);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('toggleLike error: $e');
+    }
   }
 
   @override

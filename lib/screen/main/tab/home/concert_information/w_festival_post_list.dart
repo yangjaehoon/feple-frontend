@@ -114,7 +114,7 @@ class _FestivalPostListScreenState extends State<FestivalPostListScreen> {
                         heart: post.likeCount,
                       ),
                     ),
-                  );
+                  ).then((_) => _refresh());
                 },
               );
             },

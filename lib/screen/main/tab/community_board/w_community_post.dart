@@ -112,7 +112,7 @@ class _CommunityPostState extends State<CommunityPost> {
                         heart: post.likeCount,
                       ),
                     ),
-                  );
+                  ).then((_) => _refresh());
                 },
               );
             },

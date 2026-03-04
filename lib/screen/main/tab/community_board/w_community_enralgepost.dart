@@ -41,6 +41,24 @@ class _EnralgePostState extends State<EnralgePost> {
     super.initState();
     _heartCount = widget.heart;
     _fetchComments();
+    _loadPostState();
+  }
+
+  Future<void> _loadPostState() async {
+    try {
+      final results = await Future.wait([
+        DioClient.dio.get('/posts/${widget.id}'),
+        DioClient.dio.get('/posts/${widget.id}/liked'),
+      ]);
+      final freshLikeCount = results[0].data['likeCount'] as int;
+      final isLiked = results[1].data as bool;
+      if (mounted) {
+        setState(() {
+          _heartCount = freshLikeCount;
+          _liked = isLiked;
+        });
+      }
+    } catch (_) {}
   }
 
   // ── API 호출 ──

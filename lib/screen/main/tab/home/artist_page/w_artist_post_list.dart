@@ -114,7 +114,7 @@ class _ArtistPostListScreenState extends State<ArtistPostListScreen> {
                         heart: post.likeCount,
                       ),
                     ),
-                  );
+                  ).then((_) => _refresh());
                 },
               );
             },

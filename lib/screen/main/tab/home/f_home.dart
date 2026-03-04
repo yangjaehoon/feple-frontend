@@ -43,6 +43,15 @@ class _HomeFragmentState extends State<HomeFragment> {
     _wasVisible = isVisible;
   }
 
+  void _refresh() {
+    if (_userId != null && mounted) {
+      setState(() {
+        _artistsFuture = _fetchArtists(_userId!);
+        _festivalsFuture = _fetchFestivals(_userId!);
+      });
+    }
+  }
+
   Future<List<_FollowedArtist>> _fetchArtists(int userId) async {
     final resp = await DioClient.dio.get('/users/$userId/following');
     return (resp.data as List).map((e) => _FollowedArtist.fromJson(e)).toList();
@@ -155,7 +164,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                       followerCounter: 0,
                     ),
                   ),
-                ),
+                ).then((_) => _refresh()),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Column(
@@ -243,7 +252,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                   MaterialPageRoute(
                     builder: (_) => FestivalInformationFragment(poster: festival),
                   ),
-                ),
+                ).then((_) => _refresh()),
                 child: Container(
                   width: 130,
                   margin: const EdgeInsets.only(right: 12),

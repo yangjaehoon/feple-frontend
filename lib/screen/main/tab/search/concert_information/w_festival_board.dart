@@ -24,6 +24,13 @@ class FestivalBoard extends StatefulWidget {
 
 class _FestivalBoardState extends State<FestivalBoard> {
   final PostService _postService = PostService();
+  late Future<List<Post>> _postsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _postsFuture = _postService.fetchFestivalPosts(widget.festivalId);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +80,7 @@ class _FestivalBoardState extends State<FestivalBoard> {
 
   Widget _buildPostList(AbstractThemeColors colors) {
     return FutureBuilder<List<Post>>(
-      future: _postService.fetchFestivalPosts(widget.festivalId),
+      future: _postsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(

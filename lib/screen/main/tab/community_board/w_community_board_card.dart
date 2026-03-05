@@ -32,6 +32,13 @@ class CommunityBoardCard extends StatefulWidget {
 
 class _CommunityBoardCardState extends State<CommunityBoardCard> {
   final PostService _postService = PostService();
+  late Future<List<dynamic>> _postsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _postsFuture = _postService.fetchPosts(widget.serviceBoardType);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +86,7 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
 
   Widget _buildPostList(AbstractThemeColors colors) {
     return FutureBuilder<List<dynamic>>(
-      future: _postService.fetchPosts(widget.serviceBoardType),
+      future: _postsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(

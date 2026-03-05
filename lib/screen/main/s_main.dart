@@ -42,11 +42,6 @@ class MainScreenState extends State<MainScreen>
   static double get bottomNavigationBarBorderRadius => 30.0;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,

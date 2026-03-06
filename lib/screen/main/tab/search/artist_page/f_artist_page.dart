@@ -1,5 +1,5 @@
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/screen/main/tab/search/artist_page/w_ftv_youtube.dart';
+import 'package:fast_app_base/screen/main/tab/search/artist_page/w_artist_schedule.dart';
 import 'package:fast_app_base/screen/main/tab/search/artist_page/w_main_image_swiper.dart';
 import 'package:fast_app_base/screen/main/tab/search/artist_page/w_artist_board.dart';
 
@@ -32,7 +32,7 @@ class ArtistPage extends StatelessWidget {
             children: [
               MainImageSwiper(artistName: artistName, artistId: artistId, followerCount: followerCounter),
               ArtistBoard(artistId: artistId, artistName: artistName),
-              FtvYoutube(artistName: artistName),
+              ArtistSchedule(artistId: artistId, artistName: artistName),
             ],
           ),
         ),

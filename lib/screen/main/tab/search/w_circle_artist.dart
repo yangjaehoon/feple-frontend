@@ -5,14 +5,27 @@ import '../../../../model/artist_model.dart';
 import '../../../../provider/artist_provider.dart';
 import 'artist_page/f_artist_page.dart';
 
-class CircleArtistWidget extends StatelessWidget {
+class CircleArtistWidget extends StatefulWidget {
   const CircleArtistWidget({super.key});
+
+  @override
+  State<CircleArtistWidget> createState() => _CircleArtistWidgetState();
+}
+
+class _CircleArtistWidgetState extends State<CircleArtistWidget> {
+  late final Future<List<Artist>> _artistsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _artistsFuture = fetchArtists();
+  }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return FutureBuilder<List<Artist>>(
-      future: fetchArtists(),
+      future: _artistsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return Center(
@@ -98,6 +111,7 @@ class CircleArtistWidget extends StatelessWidget {
                               borderRadius: BorderRadius.circular(20.0),
                               child: Image.network(
                                 artist.profileImageUrl,
+                                cacheWidth: 200,
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stack) =>
                                     Container(

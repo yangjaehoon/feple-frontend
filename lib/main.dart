@@ -5,7 +5,6 @@ import 'package:fast_app_base/common/cli_common.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/provider/FestivalPreviewProvider.dart';
-import 'package:fast_app_base/provider/poster/poster_provider.dart';
 import 'package:fast_app_base/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:fast_app_base/login/login.dart';
@@ -52,8 +51,6 @@ void main() async {
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (context) => AuthProvider()),
-          ChangeNotifierProvider<PosterProvider>(
-              create: (context) => PosterProvider()),
           ChangeNotifierProvider<UserProvider>(
               create: (context) => UserProvider()),
           ChangeNotifierProvider(

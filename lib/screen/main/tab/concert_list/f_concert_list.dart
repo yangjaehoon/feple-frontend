@@ -23,16 +23,16 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
         color: context.appColors.backgroundMain,
         child: Stack(
           children: [
-            SingleChildScrollView(
-              padding: EdgeInsets.only(
-                top: rs.h(AppDimens.scrollPaddingTop),
-                bottom: rs.h(AppDimens.scrollPaddingBottom),
-              ),
-              child: const Column(
-                children: [
-                  ConcertListWidget(),
-                ],
-              ),
+            CustomScrollView(
+              slivers: [
+                SliverPadding(
+                  padding: EdgeInsets.only(
+                    top: rs.h(AppDimens.scrollPaddingTop),
+                    bottom: rs.h(AppDimens.scrollPaddingBottom),
+                  ),
+                  sliver: const ConcertListWidget(),
+                ),
+              ],
             ),
             FepleAppBar("페스티벌 일정 상세보기"),
           ],

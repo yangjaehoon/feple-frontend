@@ -23,6 +23,7 @@ class MainScreen extends StatefulWidget {
 class MainScreenState extends State<MainScreen>
     with SingleTickerProviderStateMixin{
   TabItem _currentTab = TabItem.home;
+  final Set<int> _visitedTabs = {};
   final tabs = [
     TabItem.search,
     TabItem.home,
@@ -40,6 +41,12 @@ class MainScreenState extends State<MainScreen>
   bool get extendBody => true;
 
   static double get bottomNavigationBarBorderRadius => 30.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _visitedTabs.add(tabs.indexOf(TabItem.home));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,15 +78,17 @@ class MainScreenState extends State<MainScreen>
     );
   }
 
-  IndexedStack get pages => IndexedStack(
+  Widget get pages => IndexedStack(
       index: _currentIndex,
       children: tabs
           .mapIndexed((tab, index) => Offstage(
                 offstage: _currentTab != tab,
-                child: TabNavigator(
-                  navigatorKey: navigatorKeys[index],
-                  tabItem: tab,
-                ),
+                child: _visitedTabs.contains(index)
+                    ? TabNavigator(
+                        navigatorKey: navigatorKeys[index],
+                        tabItem: tab,
+                      )
+                    : const SizedBox.shrink(),
               ))
           .toList());
 
@@ -139,6 +148,7 @@ class MainScreenState extends State<MainScreen>
 
   void _changeTab(int index) {
     setState(() {
+      _visitedTabs.add(index);
       _currentTab = tabs[index];
     });
   }

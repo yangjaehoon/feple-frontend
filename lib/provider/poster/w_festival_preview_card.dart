@@ -36,7 +36,7 @@ class FestivalPreviewCard extends StatelessWidget {
               color: colors.backgroundMain,
               borderRadius: BorderRadius.circular(16),
               image: DecorationImage(
-                image: NetworkImage(festival.posterUrl),
+                image: ResizeImage(NetworkImage(festival.posterUrl), width: 220),
                 fit: BoxFit.cover,
               ),
             ),

@@ -87,58 +87,61 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
     final colors = context.appColors;
 
     if (isLoading) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 80),
-          child: CircularProgressIndicator(color: colors.loadingIndicator),
+      return SliverToBoxAdapter(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 80),
+            child: CircularProgressIndicator(color: colors.loadingIndicator),
+          ),
         ),
       );
     }
 
     if (photos.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 80),
-          child: Column(
-            children: [
-              Icon(Icons.photo_library_outlined,
-                  size: 48, color: colors.textSecondary),
-              const SizedBox(height: 12),
-              Text(
-                '아직 등록된 사진이 없습니다.',
-                style: TextStyle(
-                  color: colors.textSecondary,
-                  fontSize: 15,
+      return SliverToBoxAdapter(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 80),
+            child: Column(
+              children: [
+                Icon(Icons.photo_library_outlined,
+                    size: 48, color: colors.textSecondary),
+                const SizedBox(height: 12),
+                Text(
+                  '아직 등록된 사진이 없습니다.',
+                  style: TextStyle(
+                    color: colors.textSecondary,
+                    fontSize: 15,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );
     }
 
-    return ListView.separated(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
+    return SliverList.builder(
       itemCount: photos.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final photo = photos[index];
-        return Container(
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: colors.cardShadow.withOpacity(0.08),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              // 이미지 썸네일 + 하트 오버레이
+        return Padding(
+          padding: EdgeInsets.only(bottom: index == photos.length - 1 ? 0 : 12.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: colors.surface,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: colors.cardShadow.withOpacity(0.08),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                // 이미지 썸네일 + 하트 오버레이
               Stack(
                 children: [
                   GestureDetector(
@@ -255,8 +258,9 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
               ),
             ],
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
 }

@@ -7,7 +7,8 @@ import 'package:fast_app_base/screen/main/tab/search/concert_information/f_festi
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../provider/poster/poster_provider.dart';
+import '../../../../provider/FestivalPreviewProvider.dart';
+import '../../../../model/poster_model.dart';
 
 class ConcertListSwiperWidget extends StatefulWidget {
   const ConcertListSwiperWidget({super.key});
@@ -28,24 +29,29 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final poster = Provider.of<PosterProvider>(context);
+    final previewProvider = Provider.of<FestivalPreviewProvider>(context);
     final colors = context.appColors;
 
-    if (poster.posters.isEmpty) {
+    if (previewProvider.items.isEmpty) {
       return Center(
         child: CircularProgressIndicator(
           color: colors.loadingIndicator,
         ),
       );
     }
+    final items = previewProvider.items;
+    
     return Stack(
       children: [
         Container(
           height: 300,
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: NetworkImage(
-                poster.posters[_currentPage].posterUrl,
+              image: ResizeImage(
+                NetworkImage(
+                  items[_currentPage].posterUrl,
+                ),
+                width: 100,
               ),
               fit: BoxFit.cover,
             ),
@@ -67,7 +73,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
               scale: 0.6,
               autoplay: true,
               duration: 300,
-              itemCount: poster.posters.length,
+              itemCount: items.length,
               pagination: SwiperPagination(
                 builder: DotSwiperPaginationBuilder(
                   activeColor: colors.activate,
@@ -77,13 +83,23 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
                 ),
               ),
               itemBuilder: (BuildContext context, int index) {
+                final item = items[index];
                 return GestureDetector(
                   onTap: () {
+                    final poster = PosterModel(
+                      id: item.id,
+                      title: item.title,
+                      description: '',
+                      location: item.location,
+                      startDate: item.startDate,
+                      endDate: '',
+                      posterUrl: item.posterUrl,
+                    );
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => FestivalInformationFragment(
-                              poster: poster.posters[index])),
+                              poster: poster)),
                     );
                   },
                   child: Container(
@@ -100,7 +116,8 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: Image.network(
-                        poster.posters[index].posterUrl,
+                        item.posterUrl,
+                        cacheWidth: 360,
                         fit: BoxFit.fill,
                       ),
                     ),

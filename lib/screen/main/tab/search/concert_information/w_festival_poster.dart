@@ -53,7 +53,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: NetworkImage(widget.poster.posterUrl),
+                image: ResizeImage(NetworkImage(widget.poster.posterUrl), width: 100),
                 fit: BoxFit.cover,
               ),
             ),
@@ -90,6 +90,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
                     borderRadius: BorderRadius.circular(20),
                     child: Image.network(
                       widget.poster.posterUrl,
+                      cacheWidth: 300,
                       fit: BoxFit.fill,
                     ),
                   ),

@@ -54,13 +54,17 @@ class _ImgCollectionState extends State<ImgCollection> {
           child: const Icon(Icons.add_photo_alternate, color: Colors.white),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: ImgCollectionWidget(
-          key: _imgCollectionKey,
-          artistName: widget.artistName,
-          artistId: widget.artistId,
-        ),
+      body: CustomScrollView(
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.all(16),
+            sliver: ImgCollectionWidget(
+              key: _imgCollectionKey,
+              artistName: widget.artistName,
+              artistId: widget.artistId,
+            ),
+          ),
+        ],
       ),
     );
   }

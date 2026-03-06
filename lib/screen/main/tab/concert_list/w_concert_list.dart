@@ -19,16 +19,18 @@ class _ConcertListWidgetState extends State<ConcertListWidget> {
     final previewPoster = context.watch<FestivalPreviewProvider>();
 
     if (previewPoster.isLoading && previewPoster.items.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
+      return const SliverToBoxAdapter(
+        child: Center(child: CircularProgressIndicator()),
+      );
     }
 
     if (previewPoster.error != null && previewPoster.items.isEmpty) {
-      return Center(child: Text(previewPoster.error!));
+      return SliverToBoxAdapter(
+        child: Center(child: Text(previewPoster.error!)),
+      );
     }
 
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
+    return SliverList.builder(
       itemCount: previewPoster.items.length,
       itemBuilder: (context, index) {
         final item = previewPoster.items[index];

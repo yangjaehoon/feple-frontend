@@ -9,6 +9,7 @@ import 'package:fast_app_base/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../provider/like_notifier.dart';
 import '../../../../provider/user_provider.dart';
 
 class HomeFragment extends StatefulWidget {
@@ -22,17 +23,31 @@ class _HomeFragmentState extends State<HomeFragment> {
   late Future<List<_FollowedArtist>> _artistsFuture;
   late Future<List<PosterModel>> _festivalsFuture;
   int? _userId;
+  late LikeNotifier _likeNotifier;
+  bool _likeListenerAdded = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final user = context.read<UserProvider>().user;
 
+    if (!_likeListenerAdded) {
+      _likeNotifier = context.read<LikeNotifier>();
+      _likeNotifier.addListener(_refresh);
+      _likeListenerAdded = true;
+    }
+
+    final user = context.read<UserProvider>().user;
     if (user != null && _userId != user.id) {
       _userId = user.id;
       _artistsFuture = _fetchArtists(_userId!);
       _festivalsFuture = _fetchFestivals(_userId!);
     }
+  }
+
+  @override
+  void dispose() {
+    _likeNotifier.removeListener(_refresh);
+    super.dispose();
   }
 
   void _refresh() {

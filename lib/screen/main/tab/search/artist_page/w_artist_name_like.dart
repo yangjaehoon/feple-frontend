@@ -3,8 +3,11 @@ import 'package:fast_app_base/screen/main/tab/search/artist_page/w_ftv_calender.
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import 'package:provider/provider.dart';
+
 import '../../../../../api/artist_follow_api.dart';
 import '../../../../../api/follow_response.dart';
+import '../../../../../provider/like_notifier.dart';
 import 'img_collection/f_img_collection.dart';
 
 class ArtistNameLike extends StatefulWidget {
@@ -81,6 +84,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
         isFollowed = res.followed;
         followCount = res.followerCount;
       });
+      context.read<LikeNotifier>().notifyLikeChanged();
 
       Fluttertoast.showToast(
         msg: isFollowed ? '💖 팔로우 완료' : '팔로우 취소',

@@ -26,8 +26,8 @@ class MainScreenState extends State<MainScreen>
   final Set<int> _visitedTabs = {};
   final tabs = [
     TabItem.search,
-    TabItem.home,
     TabItem.communityBoard,
+    TabItem.home,
     TabItem.concertList,
     TabItem.favorite,
   ];

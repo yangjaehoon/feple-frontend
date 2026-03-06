@@ -1,5 +1,4 @@
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class FtvCertificationWidget extends StatefulWidget {
@@ -10,13 +9,7 @@ class FtvCertificationWidget extends StatefulWidget {
 }
 
 class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
-  List<Map<String, dynamic>> ftvCertification = [
-    {"id": 1, "title": "psy_show", "path": "assets/image/ftv_certification/psy_certification.jpg"},
-    {"id": 2, "title": "rapbeat", "path": "assets/image/ftv_certification/rapbeat_certification.jpg"},
-    {"id": 3, "title": "seouljazzftv", "path": "assets/image/ftv_certification/seouljazzftv_certification.jpg"},
-    {"id": 4, "title": "thecryground", "path": "assets/image/ftv_certification/thecryground_certification.jpg"},
-    {"id": 5, "title": "waterbomb", "path": "assets/image/ftv_certification/waterbomb_certification.jpg"},
-  ];
+  static const int _placeholderCount = 3;
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +43,8 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            itemCount: ftvCertification.length,
+            itemCount: _placeholderCount,
             itemBuilder: (BuildContext context, int index) {
-              final certification = ftvCertification[index];
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
@@ -61,10 +53,10 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
                       padding: const EdgeInsets.all(3),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: colors.certRingColor,
+                        color: colors.certRingColor.withValues(alpha: 0.3),
                         boxShadow: [
                           BoxShadow(
-                            color: colors.cardShadow.withOpacity(0.15),
+                            color: colors.cardShadow.withValues(alpha: 0.08),
                             blurRadius: 8, offset: const Offset(0, 2),
                           ),
                         ],
@@ -74,17 +66,26 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
                         decoration: BoxDecoration(shape: BoxShape.circle, color: colors.surface),
                         child: CircleAvatar(
                           radius: 50,
-                          backgroundImage: AssetImage(certification['path']),
+                          backgroundColor: colors.certRingColor.withValues(alpha: 0.15),
+                          child: Icon(
+                            Icons.add_photo_alternate_outlined,
+                            size: 30,
+                            color: colors.textTitle.withValues(alpha: 0.3),
+                          ),
                         ),
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 6.0),
                       child: Text(
-                        certification['title'],
-                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textTitle),
+                        '인증 없음',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: colors.textTitle.withValues(alpha: 0.35),
+                        ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               );

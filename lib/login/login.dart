@@ -10,7 +10,6 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
 import '../app.dart';
 import '../auth/token_store.dart';
-import '../controller/auth_provider.dart' as auth;
 import '../model/user_model.dart' as app;
 import '../provider/user_provider.dart';
 
@@ -24,6 +23,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -98,9 +98,7 @@ class _LoginPageState extends State<LoginPage> {
                   width: double.infinity,
                   height: 52,
                   child: ElevatedButton(
-                    onPressed: () async {
-                      // 일반 로그인 로직 (현재 비활성)
-                    },
+                    onPressed: _isLoading ? null : _loginWithEmail,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.skyBlue,
                       foregroundColor: Colors.white,
@@ -109,13 +107,23 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    child: const Text(
-                      '로그인',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor:
+                                  AlwaysStoppedAnimation(Colors.white),
+                            ),
+                          )
+                        : const Text(
+                            '로그인',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 14),
@@ -180,11 +188,11 @@ class _LoginPageState extends State<LoginPage> {
             const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: AppColors.skyBlueLight.withOpacity(0.5)),
+          borderSide: BorderSide(color: AppColors.skyBlueLight.withValues(alpha: 0.5)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: AppColors.skyBlueLight.withOpacity(0.4)),
+          borderSide: BorderSide(color: AppColors.skyBlueLight.withValues(alpha: 0.4)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
@@ -218,6 +226,57 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _loginWithEmail() async {
+    final email = emailController.text.trim();
+    final password = passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      Fluttertoast.showToast(
+        msg: '이메일과 비밀번호를 입력해주세요.',
+        backgroundColor: AppColors.skyBlue,
+        textColor: Colors.white,
+      );
+      return;
+    }
+
+    final userProvider = context.read<UserProvider>();
+    setState(() => _isLoading = true);
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email, 'password': password}),
+      );
+
+      if (response.statusCode != 200) {
+        final body = jsonDecode(response.body);
+        throw Exception(body['message'] ?? '로그인 실패');
+      }
+
+      final json = jsonDecode(response.body) as Map<String, dynamic>;
+      await TokenStore.saveAccessToken(json['accessToken'] as String);
+      final refreshToken = json['refreshToken'] as String?;
+      if (refreshToken != null) await TokenStore.saveRefreshToken(refreshToken);
+
+      final user = app.User.fromJson(json['user'] as Map<String, dynamic>);
+      if (!mounted) return;
+      userProvider.setUser(user);
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const App()),
+      );
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: '로그인 실패: $e',
+        backgroundColor: AppColors.skyBlue,
+        textColor: Colors.white,
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   Future<void> signInWithKakao(BuildContext context) async {

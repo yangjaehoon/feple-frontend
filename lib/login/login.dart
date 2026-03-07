@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
+import '../app.dart';
 import '../auth/token_store.dart';
 import '../model/user_model.dart' as app;
 import '../provider/user_provider.dart';
@@ -262,6 +263,11 @@ class _LoginPageState extends State<LoginPage> {
       final user = app.User.fromJson(json['user'] as Map<String, dynamic>);
       if (!mounted) return;
       userProvider.setUser(user);
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const App()),
+      );
     } catch (e) {
       Fluttertoast.showToast(
         msg: '로그인 실패: $e',
@@ -292,6 +298,11 @@ class _LoginPageState extends State<LoginPage> {
       final me = await sendAccessTokenToServer(token.accessToken);
 
       userProvider.setUser(me);
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const App()),
+      );
 
       Fluttertoast.showToast(
         msg: '카카오 로그인 성공',

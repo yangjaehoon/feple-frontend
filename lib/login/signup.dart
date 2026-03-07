@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import '../app.dart';
 import '../auth/token_store.dart';
 import '../model/user_model.dart' as app;
 import '../provider/user_provider.dart';
@@ -77,10 +76,8 @@ class _SignupPageState extends State<SignupPage> {
         textColor: Colors.white,
       );
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const App()),
-      );
+      if (!mounted) return;
+      Navigator.of(context).popUntil((route) => route.isFirst);
     } catch (e) {
       Fluttertoast.showToast(
         msg: '회원가입 실패: $e',

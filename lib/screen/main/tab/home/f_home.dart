@@ -1,8 +1,10 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:fast_app_base/common/util/responsive_size.dart';
+import 'package:fast_app_base/model/favorite_board.dart';
 import 'package:fast_app_base/model/poster_model.dart';
 import 'package:fast_app_base/network/dio_client.dart';
+import 'package:fast_app_base/screen/main/tab/home/w_favorite_boards_section.dart';
 import 'package:fast_app_base/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:fast_app_base/screen/main/tab/search/concert_information/f_festival_information.dart';
 import 'package:fast_app_base/screen/main/tab/search/w_feple_app_bar.dart';
@@ -22,6 +24,7 @@ class HomeFragment extends StatefulWidget {
 class _HomeFragmentState extends State<HomeFragment> {
   late Future<List<_FollowedArtist>> _artistsFuture;
   late Future<List<PosterModel>> _festivalsFuture;
+  late Future<List<FavoriteBoard>> _boardsFuture;
   int? _userId;
   late LikeNotifier _likeNotifier;
   bool _likeListenerAdded = false;
@@ -41,6 +44,7 @@ class _HomeFragmentState extends State<HomeFragment> {
       _userId = user.id;
       _artistsFuture = _fetchArtists(_userId!);
       _festivalsFuture = _fetchFestivals(_userId!);
+      _boardsFuture = _buildBoardsFuture();
     }
   }
 
@@ -55,6 +59,7 @@ class _HomeFragmentState extends State<HomeFragment> {
       setState(() {
         _artistsFuture = _fetchArtists(_userId!);
         _festivalsFuture = _fetchFestivals(_userId!);
+        _boardsFuture = _buildBoardsFuture();
       });
     }
   }
@@ -67,6 +72,27 @@ class _HomeFragmentState extends State<HomeFragment> {
   Future<List<PosterModel>> _fetchFestivals(int userId) async {
     final resp = await DioClient.dio.get('/users/$userId/liked-festivals');
     return (resp.data as List).map((e) => PosterModel.fromJson(e)).toList();
+  }
+
+  Future<List<FavoriteBoard>> _buildBoardsFuture() async {
+    final artists = await _artistsFuture;
+    final festivals = await _festivalsFuture;
+    return [
+      ...artists.map((a) => FavoriteBoard(
+            boardId: 'artist_${a.id}',
+            type: 'artist',
+            entityId: a.id,
+            entityName: a.name,
+            imageUrl: a.profileImageUrl,
+          )),
+      ...festivals.map((f) => FavoriteBoard(
+            boardId: 'festival_${f.id}',
+            type: 'festival',
+            entityId: f.id,
+            entityName: f.title,
+            imageUrl: f.posterUrl,
+          )),
+    ];
   }
 
   @override
@@ -98,6 +124,17 @@ class _HomeFragmentState extends State<HomeFragment> {
                 const SizedBox(height: 8),
                 _buildSectionHeader('좋아요한 페스티벌', colors),
                 _buildFestivalsSection(colors),
+                const SizedBox(height: 8),
+                FutureBuilder<List<FavoriteBoard>>(
+                  future: _boardsFuture,
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) return const SizedBox(height: 150);
+                    return FavoriteBoardsSection(
+                      allBoards: snapshot.data!,
+                      userId: _userId!,
+                    );
+                  },
+                ),
               ],
             ),
           ),

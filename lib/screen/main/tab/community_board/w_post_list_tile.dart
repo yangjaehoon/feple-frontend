@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
+import 'package:fast_app_base/common/theme/abstract_theme_colors.dart';
 import 'package:fast_app_base/model/post_model.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +15,30 @@ class PostListTile extends StatelessWidget {
     required this.post,
     required this.onTap,
   });
+
+  bool get _hasCustomImage {
+    final url = post.profileImageUrl;
+    return url != null && !url.contains('feple_logo');
+  }
+
+  Widget _buildAvatar(AbstractThemeColors colors) {
+    if (_hasCustomImage) {
+      return CircleAvatar(
+        backgroundImage: CachedNetworkImageProvider(post.profileImageUrl!),
+        backgroundColor: colors.activate,
+      );
+    }
+    return CircleAvatar(
+      backgroundColor: colors.activate,
+      child: Text(
+        post.nickname.isNotEmpty ? post.nickname[0] : '?',
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,16 +86,7 @@ class PostListTile extends StatelessWidget {
           ),
         ],
       ),
-      leading: CircleAvatar(
-        backgroundColor: colors.activate,
-        child: Text(
-          post.nickname.isNotEmpty ? post.nickname[0] : '?',
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
+      leading: _buildAvatar(colors),
     );
   }
 }

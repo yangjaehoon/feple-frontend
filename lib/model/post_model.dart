@@ -6,6 +6,7 @@ class Post {
   final int likeCount;
   final int commentCount;
   final String nickname;
+  final String? profileImageUrl;
   final int? artistId;
   final String boardDisplayName;
 
@@ -17,6 +18,7 @@ class Post {
     required this.likeCount,
     this.commentCount = 0,
     required this.nickname,
+    this.profileImageUrl,
     this.artistId,
     this.boardDisplayName = '게시판',
   });
@@ -31,6 +33,7 @@ class Post {
       likeCount: json['likeCount'] as int,
       commentCount: json['commentCount'] as int? ?? 0,
       nickname: json['nickname'] as String,
+      profileImageUrl: json['profileImageUrl'] as String?,
       artistId: json['artistId'] as int?,
       boardDisplayName: json['boardDisplayName'] as String? ?? '게시판',
     );

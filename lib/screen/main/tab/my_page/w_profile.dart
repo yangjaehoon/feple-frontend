@@ -45,59 +45,33 @@ class _ProfileWidgetState extends State<ProfileWidget> {
       child: Column(
         children: [
           // Profile Image with solid ring
-          Stack(
-            children: [
-              Container(
-                width: 110,
-                height: 110,
-                padding: const EdgeInsets.all(3),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: colors.profileRingColor,
-                  boxShadow: [
-                    BoxShadow(
-                      color: colors.cardShadow.withOpacity(0.2),
-                      blurRadius: 20,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+          Container(
+            width: 110,
+            height: 110,
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: colors.profileRingColor,
+              boxShadow: [
+                BoxShadow(
+                  color: colors.cardShadow.withOpacity(0.2),
+                  blurRadius: 20,
+                  offset: const Offset(0, 4),
                 ),
-                child: Container(
-                  padding: const EdgeInsets.all(3),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: colors.surface,
-                  ),
-                  child: CircleAvatar(
-                    radius: 48,
-                    backgroundImage: NetworkImage(user.profileImageUrl),
-                    backgroundColor: colors.backgroundMain,
-                  ),
-                ),
+              ],
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: colors.surface,
               ),
-              Positioned(
-                bottom: 2,
-                right: 2,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: colors.surface,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: colors.cardShadow.withOpacity(0.08),
-                        blurRadius: 8,
-                      ),
-                    ],
-                  ),
-                  child: Icon(
-                    Icons.favorite_rounded,
-                    color: AppColors.kawaiiPink,
-                    size: 18,
-                  ),
-                ),
+              child: CircleAvatar(
+                radius: 48,
+                backgroundImage: NetworkImage(user.profileImageUrl),
+                backgroundColor: colors.backgroundMain,
               ),
-            ],
+            ),
           ),
           const SizedBox(height: 16),
           Text(

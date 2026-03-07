@@ -13,6 +13,12 @@ import 'package:fast_app_base/common/data/preference/app_preferences.dart';
 import 'package:fast_app_base/common/language/language.dart';
 import 'package:fast_app_base/common/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:fast_app_base/provider/FestivalPreviewProvider.dart';
+import 'package:fast_app_base/provider/like_notifier.dart';
+import 'package:fast_app_base/provider/post_change_notifier.dart';
+import 'package:fast_app_base/provider/user_provider.dart';
+import 'package:fast_app_base/controller/auth_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,7 +35,7 @@ void main() {
 
   testWidgets('앱 실행 및 기본 세팅 확인', (WidgetTester tester) async {
     await pumpApp(tester);
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     // 1. Localizations test
     expect(currentLanguage, Language.korean); //startLocale: const Locale('ko') 이 설정되어 있으므로 한국어로 시작
@@ -52,5 +58,14 @@ Future<void> pumpApp(WidgetTester tester) async {
       fallbackLocale: const Locale('ko'),
       path: 'assets/translations',
       useOnlyLangCode: true,
-      child: const App()));
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => AuthProvider()),
+          ChangeNotifierProvider(create: (_) => UserProvider()),
+          ChangeNotifierProvider(create: (_) => FestivalPreviewProvider()),
+          ChangeNotifierProvider(create: (_) => LikeNotifier()),
+          ChangeNotifierProvider(create: (_) => PostChangeNotifier()),
+        ],
+        child: const App(),
+      )));
 }

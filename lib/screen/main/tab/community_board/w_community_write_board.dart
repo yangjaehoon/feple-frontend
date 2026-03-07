@@ -2,6 +2,7 @@ import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:fast_app_base/provider/post_change_notifier.dart';
 import 'package:fast_app_base/service/post_service.dart';
 
 import '../../../../provider/user_provider.dart';
@@ -70,6 +71,7 @@ class _WritePostState extends State<WritePost> {
         content: content,
       );
       if (!mounted) return;
+      context.read<PostChangeNotifier>().notifyPostChanged();
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: AppColors.skyBlue,
           content: Text('게시글이 성공적으로 등록되었습니다.')));

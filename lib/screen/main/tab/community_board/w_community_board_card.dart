@@ -6,8 +6,10 @@ import 'package:fast_app_base/model/post_model.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_board_card_header.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_enralgepost.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_post.dart';
+import 'package:fast_app_base/provider/post_change_notifier.dart';
 import 'package:fast_app_base/service/post_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 /// 게시판 미리보기 카드 — 3개 게시판(인기/자유/동행)이 공유하는 공용 위젯
 class CommunityBoardCard extends StatefulWidget {
@@ -33,11 +35,31 @@ class CommunityBoardCard extends StatefulWidget {
 class _CommunityBoardCardState extends State<CommunityBoardCard> {
   final PostService _postService = PostService();
   late Future<List<dynamic>> _postsFuture;
+  PostChangeNotifier? _postChangeNotifier;
 
   @override
   void initState() {
     super.initState();
     _postsFuture = _postService.fetchPosts(widget.serviceBoardType);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _postChangeNotifier = context.read<PostChangeNotifier>();
+      _postChangeNotifier!.addListener(_refreshPosts);
+    });
+  }
+
+  void _refreshPosts() {
+    if (mounted) {
+      setState(() {
+        _postsFuture = _postService.fetchPosts(widget.serviceBoardType);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _postChangeNotifier?.removeListener(_refreshPosts);
+    super.dispose();
   }
 
   @override

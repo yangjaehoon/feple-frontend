@@ -9,6 +9,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 
 import '../../common/common.dart';
+import '../../provider/post_change_notifier.dart';
 import '../../provider/poster/poster_provider.dart';
 import 'w_menu_drawer.dart';
 
@@ -170,6 +171,9 @@ class MainScreenState extends State<MainScreen>
   void _handleOnTapNavigationBarItem(int index) {
     if (tabs[index] == _currentTab) {
       popAllHistory(navigatorKeys[index]);
+    }
+    if (tabs[index] == TabItem.communityBoard) {
+      context.read<PostChangeNotifier>().notifyPostChanged();
     }
     _changeTab(index);
   }

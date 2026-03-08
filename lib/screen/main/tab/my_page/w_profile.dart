@@ -1,6 +1,6 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
-import 'package:fast_app_base/screen/main/tab/my_page/w_change_nickname.dart';
+import 'package:fast_app_base/screen/main/tab/my_page/w_edit_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -100,30 +100,18 @@ class _ProfileWidgetState extends State<ProfileWidget> {
             ),
           ),
           const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildActionButton(
+          _buildActionButton(
+            context,
+            label: '프로필 수정',
+            icon: Icons.edit_rounded,
+            onPressed: () {
+              Navigator.push(
                 context,
-                label: '닉네임 변경',
-                icon: Icons.edit_rounded,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ChangeNickname()),
-                  );
-                },
-              ),
-              const SizedBox(width: 12),
-              _buildActionButton(
-                context,
-                label: '프로필 수정',
-                icon: Icons.settings_rounded,
-                onPressed: () {},
-                isPrimary: true,
-              ),
-            ],
+                MaterialPageRoute(
+                    builder: (context) => const EditProfileWidget()),
+              );
+            },
+            isPrimary: true,
           ),
         ],
       ),

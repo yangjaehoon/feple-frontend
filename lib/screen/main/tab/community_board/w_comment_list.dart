@@ -24,9 +24,11 @@ class CommentList extends StatelessWidget {
                   onPressed: () async {
                     try {
                       await provider.deleteComment(comment.id);
+                      if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(backgroundColor: AppColors.skyBlue, content: Text('댓글이 삭제되었습니다.')));
+                          const SnackBar(backgroundColor: AppColors.skyBlue, content: Text('댓글이 삭제되었습니다.')));
                     } catch (e) {
+                      if (!context.mounted) return;
                       ScaffoldMessenger.of(context)
                           .showSnackBar(SnackBar(backgroundColor: AppColors.skyBlue, content: Text('삭제 실패: $e')));
                     }

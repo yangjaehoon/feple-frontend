@@ -149,6 +149,52 @@ class _MenuDrawerState extends State<MenuDrawer> {
               }
             },
           ),
+          Divider(color: colors.listDivider, height: 1, indent: 16, endIndent: 16),
+          _MenuWidget(
+            '회원탈퇴',
+            icon: Icons.person_remove_rounded,
+            color: Colors.red[300],
+            onTap: () async {
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('회원탈퇴'),
+                  content: const Text(
+                    '탈퇴하면 작성한 게시글, 댓글 등\n모든 데이터가 삭제됩니다.\n정말 탈퇴하시겠습니까?',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx, false),
+                      child: const Text('취소'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx, true),
+                      style: TextButton.styleFrom(foregroundColor: Colors.red),
+                      child: const Text('탈퇴'),
+                    ),
+                  ],
+                ),
+              );
+              if (confirmed != true || !mounted) return;
+              final userProvider = context.read<UserProvider>();
+              closeDrawer(context);
+              try {
+                await userProvider.deleteAccount();
+              } catch (_) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('탈퇴 처리 중 오류가 발생했습니다.')),
+                  );
+                }
+                return;
+              }
+              if (!mounted) return;
+              Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const LoginPage()),
+                (_) => false,
+              );
+            },
+          ),
           isSmallScreen(context) ? const Height(10) : const EmptyExpanded(),
           MouseRegion(
             cursor: SystemMouseCursors.click,

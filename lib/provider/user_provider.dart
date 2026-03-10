@@ -52,6 +52,13 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> deleteAccount() async {
+    final id = _user?.id;
+    if (id == null) return;
+    await DioClient.dio.delete('/users/$id');
+    await logout();
+  }
+
   Future<void> setUser(User me) async{
     _user = me;
     notifyListeners();

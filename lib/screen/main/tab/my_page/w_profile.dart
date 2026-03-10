@@ -68,7 +68,9 @@ class _ProfileWidgetState extends State<ProfileWidget> {
               ),
               child: CircleAvatar(
                 radius: 48,
-                backgroundImage: NetworkImage(user.profileImageUrl),
+                backgroundImage: (user.profileImageUrl != null && user.profileImageUrl!.isNotEmpty)
+                    ? NetworkImage(user.profileImageUrl!) as ImageProvider
+                    : const AssetImage('assets/image/feple_logo.png'),
                 backgroundColor: colors.backgroundMain,
               ),
             ),

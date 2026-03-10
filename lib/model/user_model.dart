@@ -4,7 +4,7 @@ class User {
 
   //final String uid;
 
-  final String profileImageUrl;
+  final String? profileImageUrl;
 
   int? postNum;
   int? commentNum;
@@ -19,7 +19,7 @@ class User {
       {required this.id,
       String? nickname,
       //required this.uid,
-      required this.profileImageUrl})
+      this.profileImageUrl})
       : nickname =
             (nickname != null && nickname.isNotEmpty) ? nickname : 'guest';
 
@@ -28,7 +28,7 @@ class User {
       id: json['id'] as int,
       nickname: json['nickname'] as String?,
       //uid: json['uid'],
-      profileImageUrl: json['profileImageUrl'] as String,
+      profileImageUrl: json['profileImageUrl'] as String?,
     );
   }
 }

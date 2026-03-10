@@ -176,14 +176,11 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                         radius: 48,
                         backgroundColor: colors.backgroundMain,
                         backgroundImage: _pickedImage != null
-                            ? FileImage(File(_pickedImage!.path))
-                            : (user != null
-                                ? NetworkImage(user.profileImageUrl)
-                                : null) as ImageProvider?,
-                        child: (_pickedImage == null && user == null)
-                            ? Icon(Icons.person_rounded,
-                                size: 40, color: colors.textSecondary)
-                            : null,
+                            ? FileImage(File(_pickedImage!.path)) as ImageProvider
+                            : (user != null && user.profileImageUrl != null && user.profileImageUrl!.isNotEmpty)
+                                ? NetworkImage(user.profileImageUrl!) as ImageProvider
+                                : const AssetImage('assets/image/feple_logo.png'),
+                        child: null,
                       ),
                     ),
                   ),

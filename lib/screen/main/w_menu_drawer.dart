@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get_utils/src/extensions/string_extensions.dart';
 import 'package:simple_shadow/simple_shadow.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../screen/dialog/d_message.dart';
 import '../../common/common.dart';
@@ -122,6 +123,16 @@ class _MenuDrawerState extends State<MenuDrawer> {
             },
           ),
           Divider(color: colors.listDivider, height: 1, indent: 16, endIndent: 16),
+          _MenuWidget(
+            '고객센터/문의사항',
+            icon: Icons.headset_mic_rounded,
+            onTap: () async {
+              final uri = Uri.parse('https://open.kakao.com/o/guLhbJki');
+              if (await canLaunchUrl(uri)) {
+                await launchUrl(uri, mode: LaunchMode.externalApplication);
+              }
+            },
+          ),
           Divider(color: colors.listDivider, height: 1, indent: 16, endIndent: 16),
           _MenuWidget(
             '로그아웃',

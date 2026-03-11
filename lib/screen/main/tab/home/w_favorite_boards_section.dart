@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/model/favorite_board.dart';
 import 'package:fast_app_base/screen/main/tab/search/artist_page/w_artist_post_list.dart';
@@ -96,7 +97,7 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
               ),
               const SizedBox(width: 8),
               Text(
-                '즐겨찾는 게시판',
+                'favorite_boards'.tr(),
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
@@ -121,7 +122,7 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             child: Text(
-              '표시할 게시판을 선택해주세요.',
+              'select_boards_prompt'.tr(),
               style: TextStyle(color: colors.textSecondary),
             ),
           )
@@ -306,7 +307,7 @@ class _BoardSettingsSheetState extends State<_BoardSettingsSheet> {
             child: Row(
               children: [
                 Text(
-                  '게시판 선택',
+                  'select_boards'.tr(),
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w800,
@@ -395,8 +396,8 @@ class _BoardSettingsSheetState extends State<_BoardSettingsSheet> {
                   ),
                   elevation: 0,
                 ),
-                child: const Text(
-                  '확인',
+                child: Text(
+                  'confirm'.tr(),
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/model/user_model.dart';
@@ -54,9 +55,9 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
     final newNickname = _nicknameController.text.trim();
     if (newNickname.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           backgroundColor: AppColors.skyBlue,
-          content: Text('닉네임을 입력해주세요.'),
+          content: Text('enter_nickname'.tr()),
         ),
       );
       return;
@@ -95,9 +96,9 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
       if (!mounted) return;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           backgroundColor: AppColors.skyBlue,
-          content: Text('프로필이 수정되었습니다.'),
+          content: Text('profile_updated'.tr()),
         ),
       );
     } catch (e) {
@@ -105,7 +106,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: AppColors.skyBlue,
-          content: Text('저장에 실패했습니다.\n$e'),
+          content: Text('save_failed'.tr(args: [e.toString()])),
         ),
       );
     } finally {
@@ -120,7 +121,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('프로필 수정'),
+        title: Text('edit_profile'.tr()),
         backgroundColor: colors.appBarColor,
         foregroundColor: Colors.white,
         actions: [
@@ -133,8 +134,8 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                     child: CircularProgressIndicator(
                         strokeWidth: 2, color: Colors.white),
                   )
-                : const Text(
-                    '저장',
+                : Text(
+                    'save'.tr(),
                     style: TextStyle(
                         color: Colors.white, fontWeight: FontWeight.w700),
                   ),
@@ -204,7 +205,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
             ),
             const SizedBox(height: 8),
             Text(
-              '사진 변경',
+              'change_photo'.tr(),
               style:
                   TextStyle(fontSize: 13, color: colors.textSecondary),
             ),
@@ -214,7 +215,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                '닉네임',
+                'nickname'.tr(),
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
@@ -227,7 +228,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
               controller: _nicknameController,
               style: TextStyle(fontSize: 16, color: colors.textTitle),
               decoration: InputDecoration(
-                hintText: 'ex) 페벌러',
+                hintText: 'nickname_hint'.tr(),
                 hintStyle: TextStyle(color: colors.textSecondary),
                 filled: true,
                 fillColor: colors.surface,
@@ -271,8 +272,8 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                         child: CircularProgressIndicator(
                             strokeWidth: 2, color: Colors.white),
                       )
-                    : const Text(
-                        '저장',
+                    : Text(
+                        'save'.tr(),
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w700),
                       ),

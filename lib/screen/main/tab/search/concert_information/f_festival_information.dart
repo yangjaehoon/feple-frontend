@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:fast_app_base/common/util/responsive_size.dart';
@@ -39,7 +40,7 @@ class FestivalInformationFragment extends StatelessWidget {
               ],
             ),
           ),
-          const FepleAppBar("페스티벌 상세 페이지"),
+          FepleAppBar('festival_detail'.tr()),
         ],
       ),
     );

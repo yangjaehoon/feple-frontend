@@ -29,7 +29,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace "com.example.fast_app_base"
+    namespace "com.dobino.feple"
     compileSdkVersion 36
 
     compileOptions {
@@ -48,7 +48,7 @@ android {
     ndkVersion flutter.ndkVersion
 
     defaultConfig {
-        applicationId "com.example.fast_app_base"
+        applicationId "com.dobino.feple"
         minSdkVersion 25
         targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()

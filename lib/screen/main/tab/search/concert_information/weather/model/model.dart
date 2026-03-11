@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
@@ -71,27 +72,27 @@ class Model {
   Widget? getAirCondition(int index) {
     if (index == 1) {
       return Text(
-        '"매우좋음"',
+        'air_very_good'.tr(),
         style: TextStyle(color: Colors.indigo, fontWeight: FontWeight.bold),
       );
     } else if (index == 2) {
       return Text(
-        '"좋음"',
+        'air_good'.tr(),
         style: TextStyle(color: Colors.indigo, fontWeight: FontWeight.bold),
       );
     } else if (index == 3) {
       return Text(
-        '"보통"',
+        'air_moderate'.tr(),
         style: TextStyle(color: Colors.indigo, fontWeight: FontWeight.bold),
       );
     } else if (index == 4) {
       return Text(
-        '"나쁨"',
+        'air_bad'.tr(),
         style: TextStyle(color: Colors.indigo, fontWeight: FontWeight.bold),
       );
     } else if (index == 5) {
       return Text(
-        '"매우나쁨"',
+        'air_very_bad'.tr(),
         style: TextStyle(color: Colors.indigo, fontWeight: FontWeight.bold),
       );
     }

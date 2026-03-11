@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/screen/main/tab/search/artist_page/w_ftv_calender.dart';
 import 'package:flutter/material.dart';
@@ -87,7 +88,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
       context.read<LikeNotifier>().notifyLikeChanged();
 
       Fluttertoast.showToast(
-        msg: isFollowed ? '💖 팔로우 완료' : '팔로우 취소',
+        msg: isFollowed ? 'follow_done'.tr() : 'follow_cancel'.tr(),
         gravity: ToastGravity.BOTTOM,
         backgroundColor:
             isFollowed ? AppColors.skyBlue : AppColors.skyBlue,
@@ -97,7 +98,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
     } catch (e) {
       if (!mounted) return;
       Fluttertoast.showToast(
-        msg: '팔로우 처리 실패',
+        msg: 'follow_failed'.tr(),
         gravity: ToastGravity.BOTTOM,
         backgroundColor: AppColors.skyBlue,
         textColor: Colors.white,
@@ -269,7 +270,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    isFollowed ? '팔로잉' : '팔로우',
+                    isFollowed ? 'following'.tr() : 'follow'.tr(),
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,

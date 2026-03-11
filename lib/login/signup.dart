@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/config.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,7 @@ class _SignupPageState extends State<SignupPage> {
 
     if (email.isEmpty || password.isEmpty) {
       Fluttertoast.showToast(
-        msg: '이메일과 비밀번호를 입력해주세요.',
+        msg: 'enter_email_password'.tr(),
         backgroundColor: AppColors.skyBlue,
         textColor: Colors.white,
       );
@@ -59,7 +60,7 @@ class _SignupPageState extends State<SignupPage> {
 
       if (response.statusCode != 200) {
         final body = jsonDecode(response.body);
-        throw Exception(body['message'] ?? '회원가입 실패');
+        throw Exception(body['message'] ?? 'signup_failed'.tr());
       }
 
       final json = jsonDecode(response.body) as Map<String, dynamic>;
@@ -72,7 +73,7 @@ class _SignupPageState extends State<SignupPage> {
       context.read<UserProvider>().setUser(user);
 
       Fluttertoast.showToast(
-        msg: '회원가입 완료! 환영합니다 🎉',
+        msg: 'signup_success'.tr(),
         backgroundColor: AppColors.skyBlue,
         textColor: Colors.white,
       );
@@ -84,7 +85,7 @@ class _SignupPageState extends State<SignupPage> {
       );
     } catch (e) {
       Fluttertoast.showToast(
-        msg: '회원가입 실패: $e',
+        msg: 'signup_failed_detail'.tr(args: [e.toString()]),
         backgroundColor: AppColors.skyBlue,
         textColor: Colors.white,
       );
@@ -121,8 +122,8 @@ class _SignupPageState extends State<SignupPage> {
                 const SizedBox(height: 24),
 
                 // ── 환영 텍스트 ──
-                const Text(
-                  '회원가입',
+                  Text(
+                  'signup'.tr(),
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.w800,
@@ -131,8 +132,8 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  '페플에 가입하고 축제를 즐겨보세요!',
+                  Text(
+                  'signup_subtitle'.tr(),
                   style: TextStyle(
                     fontSize: 14,
                     color: AppColors.textMuted,
@@ -144,7 +145,7 @@ class _SignupPageState extends State<SignupPage> {
                 // ── 이메일 입력 ──
                 _buildTextField(
                   controller: emailController,
-                  hintText: '이메일',
+                  hintText: 'email'.tr(),
                   icon: Icons.mail_outline_rounded,
                   keyboardType: TextInputType.emailAddress,
                 ),
@@ -153,7 +154,7 @@ class _SignupPageState extends State<SignupPage> {
                 // ── 비밀번호 입력 ──
                 _buildTextField(
                   controller: passwordController,
-                  hintText: '비밀번호',
+                  hintText: 'password'.tr(),
                   icon: Icons.lock_outline_rounded,
                   obscureText: true,
                 ),
@@ -162,7 +163,7 @@ class _SignupPageState extends State<SignupPage> {
                 // ── 닉네임 입력 ──
                 _buildTextField(
                   controller: nicknameController,
-                  hintText: '닉네임 (선택)',
+                  hintText: 'nickname_optional'.tr(),
                   icon: Icons.badge_outlined,
                 ),
                 const SizedBox(height: 28),
@@ -191,8 +192,8 @@ class _SignupPageState extends State<SignupPage> {
                                   AlwaysStoppedAnimation(Colors.white),
                             ),
                           )
-                        : const Text(
-                            '가입하기',
+                        : Text(
+                            'register'.tr(),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
@@ -206,8 +207,8 @@ class _SignupPageState extends State<SignupPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      '이미 계정이 있으신가요?',
+                      Text(
+                      'already_have_account'.tr(),
                       style: TextStyle(
                         color: AppColors.textMuted,
                         fontSize: 14,
@@ -215,8 +216,8 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: const Text(
-                        ' 로그인',
+                      child: Text(
+                        'login'.tr(),
                         style: TextStyle(
                           color: AppColors.skyBlue,
                           fontWeight: FontWeight.w700,

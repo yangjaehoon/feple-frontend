@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/model/post_model.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_enralgepost.dart';
@@ -37,7 +38,7 @@ class _FestivalPostListScreenState extends State<FestivalPostListScreen> {
     });
   }
 
-  String get _boardname => '${widget.festivalName} 게시판';
+  String get _boardname => 'name_board'.tr(args: [widget.festivalName]);
 
   @override
   Widget build(BuildContext context) {
@@ -64,8 +65,8 @@ class _FestivalPostListScreenState extends State<FestivalPostListScreen> {
               ),
             ).then((_) => _refresh());
           },
-          label: const Text(
-            '글 쓰기',
+          label: Text(
+            'write_post'.tr(),
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
           ),
           icon: const Icon(Icons.edit_rounded, color: Colors.white),
@@ -88,7 +89,7 @@ class _FestivalPostListScreenState extends State<FestivalPostListScreen> {
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(
-              child: Text('아직 게시글이 없습니다.',
+              child: Text('no_posts_yet'.tr(),
                   style: TextStyle(color: colors.textSecondary)),
             );
           }

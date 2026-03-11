@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/config.dart';
 import 'package:fast_app_base/login/signup.dart';
@@ -56,8 +57,8 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 28),
 
                 // ── 환영 텍스트 ──
-                const Text(
-                  '환영합니다!',
+                  Text(
+                  'welcome'.tr(),
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.w800,
@@ -66,8 +67,8 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  '페플과 함께 축제를 즐겨보세요',
+                  Text(
+                  'login_subtitle'.tr(),
                   style: TextStyle(
                     fontSize: 15,
                     color: AppColors.textMuted,
@@ -79,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                 // ── 이메일 입력 ──
                 _buildTextField(
                   controller: emailController,
-                  hintText: '이메일',
+                  hintText: 'email'.tr(),
                   icon: Icons.mail_outline_rounded,
                 ),
                 const SizedBox(height: 14),
@@ -87,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
                 // ── 비밀번호 입력 ──
                 _buildTextField(
                   controller: passwordController,
-                  hintText: '비밀번호',
+                  hintText: 'password'.tr(),
                   icon: Icons.lock_outline_rounded,
                   obscureText: true,
                 ),
@@ -117,8 +118,8 @@ class _LoginPageState extends State<LoginPage> {
                                   AlwaysStoppedAnimation(Colors.white),
                             ),
                           )
-                        : const Text(
-                            '로그인',
+                        : Text(
+                            'login'.tr(),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
@@ -136,8 +137,8 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      '아직 회원이 아니신가요?',
+                      Text(
+                      'not_member_yet'.tr(),
                       style: TextStyle(
                         color: AppColors.textMuted,
                         fontSize: 14,
@@ -149,8 +150,8 @@ class _LoginPageState extends State<LoginPage> {
                         MaterialPageRoute(
                             builder: (context) => const SignupPage()),
                       ),
-                      child: const Text(
-                        ' 회원가입',
+                      child: Text(
+                        'signup'.tr(),
                         style: TextStyle(
                           color: AppColors.skyBlue,
                           fontWeight: FontWeight.w700,
@@ -234,7 +235,7 @@ class _LoginPageState extends State<LoginPage> {
 
     if (email.isEmpty || password.isEmpty) {
       Fluttertoast.showToast(
-        msg: '이메일과 비밀번호를 입력해주세요.',
+        msg: 'enter_email_password'.tr(),
         backgroundColor: AppColors.skyBlue,
         textColor: Colors.white,
       );
@@ -252,7 +253,7 @@ class _LoginPageState extends State<LoginPage> {
 
       if (response.statusCode != 200) {
         final body = jsonDecode(response.body);
-        throw Exception(body['message'] ?? '로그인 실패');
+        throw Exception(body['message'] ?? 'login_failed'.tr());
       }
 
       final json = jsonDecode(response.body) as Map<String, dynamic>;
@@ -265,7 +266,7 @@ class _LoginPageState extends State<LoginPage> {
       userProvider.setUser(user);
     } catch (e) {
       Fluttertoast.showToast(
-        msg: '로그인 실패: $e',
+        msg: 'login_failed_detail'.tr(args: [e.toString()]),
         backgroundColor: AppColors.skyBlue,
         textColor: Colors.white,
       );
@@ -295,13 +296,13 @@ class _LoginPageState extends State<LoginPage> {
       userProvider.setUser(me);
 
       Fluttertoast.showToast(
-        msg: '카카오 로그인 성공',
+        msg: 'kakao_login_success'.tr(),
         backgroundColor: AppColors.skyBlue,
         textColor: Colors.white,
       );
     } catch (e) {
       Fluttertoast.showToast(
-        msg: '카카오 로그인 실패: $e',
+        msg: 'kakao_login_failed'.tr(args: [e.toString()]),
         backgroundColor: AppColors.skyBlue,
         textColor: Colors.white,
       );

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_write_board.dart';
@@ -63,8 +64,8 @@ class _CommunityPostState extends State<CommunityPost> {
               ),
             ).then((_) => _refresh());
           },
-          label: const Text(
-            '글 쓰기',
+          label: Text(
+            'write_post'.tr(),
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
           ),
           icon: const Icon(Icons.edit_rounded, color: Colors.white),

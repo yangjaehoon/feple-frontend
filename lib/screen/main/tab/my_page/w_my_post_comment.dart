@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/network/dio_client.dart';
@@ -45,13 +46,13 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
             children: [
               _buildStatCard(context,
                 icon: Icons.verified_rounded,
-                label: '인증 뱃지',
+                label: 'certification_badge'.tr(),
                 value: '0',
                 color: AppColors.sunnyYellow,
               ),
               _buildStatCard(context,
                 icon: Icons.article_rounded,
-                label: '게시글',
+                label: 'posts'.tr(),
                 value: postCount,
                 color: AppColors.skyBlue,
                 onTap: () => Navigator.push(context, MaterialPageRoute(
@@ -60,7 +61,7 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
               ),
               _buildStatCard(context,
                 icon: Icons.chat_bubble_rounded,
-                label: '댓글',
+                label: 'comments'.tr(),
                 value: commentCount,
                 color: AppColors.kawaiiPink,
                 onTap: () => Navigator.push(context, MaterialPageRoute(
@@ -69,7 +70,7 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
               ),
               _buildStatCard(context,
                 icon: Icons.bookmark_rounded,
-                label: '북마크',
+                label: 'bookmarks'.tr(),
                 value: '0',
                 color: AppColors.kawaiiMint,
               ),

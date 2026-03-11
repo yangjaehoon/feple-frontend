@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:fast_app_base/common/util/responsive_size.dart';
 import 'package:flutter/material.dart';
@@ -51,10 +52,10 @@ class BoardCardHeader extends StatelessWidget {
                 ),
               ],
             ),
-            const Row(
+            Row(
               children: [
                 Text(
-                  "더보기",
+                  'see_more'.tr(),
                   style: TextStyle(
                     fontSize: AppDimens.fontSizeSm,
                     color: Colors.white70,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/service/post_service.dart';
 import 'package:flutter/material.dart';
@@ -29,9 +30,9 @@ class _FestivalWritePostState extends State<FestivalWritePost> {
 
     if (title.isEmpty || content.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
             backgroundColor: AppColors.skyBlue,
-            content: Text('제목과 내용을 모두 입력해주세요.')),
+            content: Text('enter_title_content'.tr())),
       );
       return;
     }
@@ -46,9 +47,9 @@ class _FestivalWritePostState extends State<FestivalWritePost> {
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
             backgroundColor: AppColors.skyBlue,
-            content: Text('게시글이 성공적으로 등록되었습니다.')),
+            content: Text('post_success'.tr())),
       );
       Navigator.of(context).pop();
     } catch (e) {
@@ -56,7 +57,7 @@ class _FestivalWritePostState extends State<FestivalWritePost> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             backgroundColor: AppColors.skyBlue,
-            content: Text('게시글 등록에 실패했습니다.\n$e')),
+            content: Text('post_failed'.tr(args: [e.toString()]))),
       );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -74,7 +75,7 @@ class _FestivalWritePostState extends State<FestivalWritePost> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.festivalName} 게시판 글쓰기'),
+        title: Text('name_board_write'.tr(args: [widget.festivalName])),
         actions: [
           TextButton(
             onPressed: _isSubmitting ? null : () => _submit(),
@@ -85,7 +86,7 @@ class _FestivalWritePostState extends State<FestivalWritePost> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : Text(
-                    '완료',
+                    'done'.tr(),
                     style: TextStyle(
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.white
@@ -102,8 +103,8 @@ class _FestivalWritePostState extends State<FestivalWritePost> {
             children: [
               TextField(
                 controller: _titleController,
-                decoration: const InputDecoration(
-                  hintText: '제목을 입력하세요',
+                decoration: InputDecoration(
+                  hintText: 'enter_title'.tr(),
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -111,8 +112,8 @@ class _FestivalWritePostState extends State<FestivalWritePost> {
               TextField(
                 controller: _contentController,
                 maxLines: null,
-                decoration: const InputDecoration(
-                  hintText: '내용을 입력하세요',
+                decoration: InputDecoration(
+                  hintText: 'enter_content'.tr(),
                   border: OutlineInputBorder(),
                 ),
               ),

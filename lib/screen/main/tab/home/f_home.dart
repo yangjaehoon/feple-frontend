@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:fast_app_base/common/util/responsive_size.dart';
@@ -119,10 +120,10 @@ class _HomeFragmentState extends State<HomeFragment> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildSectionHeader('팔로우 아티스트', colors),
+                _buildSectionHeader('followed_artists'.tr(), colors),
                 _buildArtistsSection(colors),
                 const SizedBox(height: 8),
-                _buildSectionHeader('좋아요한 페스티벌', colors),
+                _buildSectionHeader('liked_festivals'.tr(), colors),
                 _buildFestivalsSection(colors),
                 const SizedBox(height: 8),
                 FutureBuilder<List<FavoriteBoard>>(
@@ -186,7 +187,7 @@ class _HomeFragmentState extends State<HomeFragment> {
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            child: Text('팔로우한 아티스트가 없습니다.', style: TextStyle(color: colors.textSecondary)),
+            child: Text('no_followed_artists'.tr(), style: TextStyle(color: colors.textSecondary)),
           );
         }
         final artists = snapshot.data!;
@@ -278,7 +279,7 @@ class _HomeFragmentState extends State<HomeFragment> {
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            child: Text('좋아요한 페스티벌이 없습니다.', style: TextStyle(color: colors.textSecondary)),
+            child: Text('no_liked_festivals'.tr(), style: TextStyle(color: colors.textSecondary)),
           );
         }
         final festivals = snapshot.data!;

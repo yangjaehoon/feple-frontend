@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 import 'package:fast_app_base/screen/main/tab/search/artist_page/f_artist_page.dart';
@@ -53,7 +54,7 @@ class _FestivalArtistsState extends State<FestivalArtists> {
               Icon(Icons.music_note_rounded, color: colors.activate, size: 18),
               const SizedBox(width: 6),
               Text(
-                '참여 아티스트',
+                'participating_artists'.tr(),
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,

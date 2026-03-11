@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
 
@@ -53,7 +54,7 @@ class CommentSection extends StatelessWidget {
                   controller: controller,
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: '댓글을 입력하세요.',
+                    hintText: 'enter_comment'.tr(),
                     hintStyle: TextStyle(color: colors.textSecondary),
                     filled: true,
                     fillColor: Colors.transparent,

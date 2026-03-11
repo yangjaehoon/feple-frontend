@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
 
@@ -30,7 +31,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
               ),
               const SizedBox(width: 8),
               Text(
-                '페스티벌 인증',
+                'festival_certification'.tr(),
                 style: TextStyle(
                   fontSize: 18, fontWeight: FontWeight.w800, color: colors.textTitle,
                 ),
@@ -78,7 +79,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
                     Padding(
                       padding: const EdgeInsets.only(top: 6.0),
                       child: Text(
-                        '인증 없음',
+                        'no_certification'.tr(),
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,

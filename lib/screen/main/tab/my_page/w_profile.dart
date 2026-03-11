@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/screen/main/tab/my_page/w_edit_profile.dart';
@@ -104,7 +105,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
           const SizedBox(height: 16),
           _buildActionButton(
             context,
-            label: '프로필 수정',
+            label: 'edit_profile'.tr(),
             icon: Icons.edit_rounded,
             onPressed: () {
               Navigator.push(

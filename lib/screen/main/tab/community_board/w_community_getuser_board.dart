@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_board_card.dart';
 import 'package:flutter/material.dart';
 
@@ -9,7 +10,7 @@ class GetUserBoard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CommunityBoardCard(
-      title: '동행구하기 게시판',
+      title: 'companion_board'.tr(),
       icon: Icons.people_rounded,
       headerColorFn: (colors) => colors.getUserBoardHeader,
       serviceBoardType: 'MateBoard',

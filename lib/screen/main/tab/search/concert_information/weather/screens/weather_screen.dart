@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -167,7 +168,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                               Column(
                                 children: [
                                   Text(
-                                    'AQI(대기질지수)',
+                                    'aqi_label'.tr(),
                                     style: GoogleFonts.lato(
                                       fontSize: 14.0,
                                       color: Colors.white,
@@ -182,7 +183,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                               Column(
                                 children: [
                                   Text(
-                                    '미세먼지',
+                                    'fine_dust'.tr(),
                                     style: GoogleFonts.lato(
                                       fontSize: 14.0,
                                       color: Colors.white,
@@ -209,7 +210,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                               Column(
                                 children: [
                                   Text(
-                                    '초미세먼지',
+                                    'ultra_fine_dust'.tr(),
                                     style: GoogleFonts.lato(
                                       fontSize: 14.0,
                                       color: Colors.white,

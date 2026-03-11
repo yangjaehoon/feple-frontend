@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/service/post_service.dart';
@@ -30,9 +31,9 @@ class _ArtistWritePostState extends State<ArtistWritePost> {
 
     if (title.isEmpty || content.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
             backgroundColor: AppColors.skyBlue,
-            content: Text('제목과 내용을 모두 입력해주세요.')),
+            content: Text('enter_title_content'.tr())),
       );
       return;
     }
@@ -46,16 +47,16 @@ class _ArtistWritePostState extends State<ArtistWritePost> {
         content: content,
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           backgroundColor: AppColors.skyBlue,
-          content: Text('게시글이 성공적으로 등록되었습니다.')));
+          content: Text('post_success'.tr())));
       Navigator.of(context).pop();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             backgroundColor: AppColors.skyBlue,
-            content: Text('게시글 등록에 실패했습니다.\n$e')),
+            content: Text('post_failed'.tr(args: [e.toString()]))),
       );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -78,7 +79,7 @@ class _ArtistWritePostState extends State<ArtistWritePost> {
           icon: const Icon(Icons.arrow_back_ios_rounded),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text('${widget.artistName} 게시판 글쓰기'),
+        title: Text('name_board_write'.tr(args: [widget.artistName])),
         backgroundColor: colors.appBarColor,
         foregroundColor: Colors.white,
         actions: [
@@ -91,7 +92,7 @@ class _ArtistWritePostState extends State<ArtistWritePost> {
                     child: CircularProgressIndicator(
                         strokeWidth: 2, color: Colors.white),
                   )
-                : const Text('완료',
+                : Text('done'.tr(),
                     style: TextStyle(
                         color: Colors.white, fontWeight: FontWeight.w700)),
           ),
@@ -107,7 +108,7 @@ class _ArtistWritePostState extends State<ArtistWritePost> {
                 controller: _titleController,
                 style: TextStyle(color: colors.textTitle),
                 decoration: InputDecoration(
-                  hintText: '제목을 입력하세요',
+                  hintText: 'enter_title'.tr(),
                   hintStyle: TextStyle(color: colors.textSecondary),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -126,7 +127,7 @@ class _ArtistWritePostState extends State<ArtistWritePost> {
                 minLines: 8,
                 style: TextStyle(color: colors.textTitle),
                 decoration: InputDecoration(
-                  hintText: '내용을 입력하세요',
+                  hintText: 'enter_content'.tr(),
                   hintStyle: TextStyle(color: colors.textSecondary),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:fast_app_base/common/util/responsive_size.dart';
@@ -51,7 +52,7 @@ class _ArtistBoardState extends State<ArtistBoard> {
         children: [
           BoardCardHeader(
             icon: Icons.forum_rounded,
-            title: '${widget.artistName} 게시판',
+            title: 'name_board'.tr(args: [widget.artistName]),
             headerColor: colors.activate,
             onTap: () {
               Navigator.push(
@@ -92,7 +93,7 @@ class _ArtistBoardState extends State<ArtistBoard> {
         final postDataList = snapshot.data ?? [];
         if (postDataList.isEmpty) {
           return Center(
-            child: Text('아직 게시글이 없습니다.',
+            child: Text('no_posts_yet'.tr(),
                 style: TextStyle(color: colors.textSecondary)),
           );
         }

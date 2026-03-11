@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 import 'package:fast_app_base/provider/like_notifier.dart';
@@ -203,9 +204,9 @@ class _FestivalPosterState extends State<FestivalPoster> {
                           ),
                           onTap: () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                backgroundColor: Color(0xFF5CC0EB),
-                                content: Text('지도 기능은 준비 중입니다.'),
+                              SnackBar(
+                                backgroundColor: const Color(0xFF5CC0EB),
+                                content: Text('map_not_ready'.tr()),
                               ),
                             );
                           },

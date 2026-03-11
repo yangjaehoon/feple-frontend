@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/model/post_model.dart';
 import 'package:fast_app_base/network/dio_client.dart';
@@ -31,7 +32,7 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
     final colors = context.appColors;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('내 게시글'),
+        title: Text('my_posts'.tr()),
         backgroundColor: colors.appBarColor,
         foregroundColor: Colors.white,
       ),
@@ -44,7 +45,7 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(
-              child: Text('작성한 게시글이 없습니다.', style: TextStyle(color: colors.textSecondary)),
+              child: Text('no_posts'.tr(), style: TextStyle(color: colors.textSecondary)),
             );
           }
           final posts = snapshot.data!;

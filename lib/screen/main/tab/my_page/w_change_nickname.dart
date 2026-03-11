@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +47,7 @@ class _ChangeNicknameState extends State<ChangeNickname> {
           icon: const Icon(Icons.arrow_back_ios_rounded),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('닉네임 변경'),
+        title: Text('change_nickname'.tr()),
         backgroundColor: colors.appBarColor,
         foregroundColor: Colors.white,
       ),
@@ -63,7 +64,7 @@ class _ChangeNicknameState extends State<ChangeNickname> {
             ),
             const SizedBox(height: 16),
             Text(
-              '변경할 닉네임을 입력해주세요',
+              'enter_new_nickname'.tr(),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -80,7 +81,7 @@ class _ChangeNicknameState extends State<ChangeNickname> {
                 fontWeight: FontWeight.w600,
               ),
               decoration: InputDecoration(
-                hintText: 'ex) 페벌러',
+                hintText: 'nickname_hint'.tr(),
                 hintStyle: TextStyle(color: colors.textSecondary),
                 filled: true,
                 fillColor: colors.surface,
@@ -112,15 +113,15 @@ class _ChangeNicknameState extends State<ChangeNickname> {
                     await _updateNickname(userProvider, user!.id);
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                           backgroundColor: AppColors.skyBlue,
-                          content: Text('닉네임이 변경되었습니다.')),
+                          content: Text('nickname_changed'.tr())),
                     );
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                           backgroundColor: AppColors.skyBlue,
-                          content: Text('닉네임 변경에 실패했습니다.\n$e')),
+                          content: Text('nickname_change_failed'.tr(args: [e.toString()]))),
                     );
                   }
                 },
@@ -132,8 +133,8 @@ class _ChangeNicknameState extends State<ChangeNickname> {
                   ),
                   elevation: 0,
                 ),
-                child: const Text(
-                  '확인',
+                child: Text(
+                  'confirm'.tr(),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,

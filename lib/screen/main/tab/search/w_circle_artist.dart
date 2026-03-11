@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -57,7 +58,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
-                  '아티스트',
+                  'artist'.tr(),
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w800,

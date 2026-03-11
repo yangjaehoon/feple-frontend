@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:fast_app_base/common/util/responsive_size.dart';
@@ -58,7 +59,7 @@ class _FestivalBoardState extends State<FestivalBoard> {
         children: [
           BoardCardHeader(
             icon: Icons.festival_rounded,
-            title: '${widget.festivalName} 게시판',
+            title: 'name_board'.tr(args: [widget.festivalName]),
             headerColor: colors.activate,
             onTap: () {
               Navigator.push(
@@ -99,7 +100,7 @@ class _FestivalBoardState extends State<FestivalBoard> {
         final postDataList = snapshot.data ?? [];
         if (postDataList.isEmpty) {
           return Center(
-            child: Text('아직 게시글이 없습니다.',
+            child: Text('no_posts_yet'.tr(),
                 style: TextStyle(color: colors.textSecondary)),
           );
         }

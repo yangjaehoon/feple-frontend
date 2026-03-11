@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_enralgepost.dart';
@@ -30,7 +31,7 @@ class _MyCommentsScreenState extends State<MyCommentsScreen> {
     final colors = context.appColors;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('내 댓글'),
+        title: Text('my_comments'.tr()),
         backgroundColor: colors.appBarColor,
         foregroundColor: Colors.white,
       ),
@@ -43,7 +44,7 @@ class _MyCommentsScreenState extends State<MyCommentsScreen> {
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(
-              child: Text('작성한 댓글이 없습니다.', style: TextStyle(color: colors.textSecondary)),
+              child: Text('no_comments'.tr(), style: TextStyle(color: colors.textSecondary)),
             );
           }
           final comments = snapshot.data!;

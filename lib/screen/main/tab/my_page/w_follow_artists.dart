@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +44,7 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
               ),
               const SizedBox(width: 8),
               Text(
-                '팔로우 아티스트 ',
+                'follow_artists'.tr(),
                 style: TextStyle(
                   fontSize: 18, fontWeight: FontWeight.w800, color: colors.textTitle,
                 ),
@@ -63,7 +64,7 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
             if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                child: Text('팔로우한 아티스트가 없습니다.', style: TextStyle(color: colors.textSecondary)),
+                child: Text('no_followed_artists'.tr(), style: TextStyle(color: colors.textSecondary)),
               );
             }
             final artists = snapshot.data!;

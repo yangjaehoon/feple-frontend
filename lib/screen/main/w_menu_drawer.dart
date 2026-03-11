@@ -124,7 +124,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
           ),
           Divider(color: colors.listDivider, height: 1, indent: 16, endIndent: 16),
           _MenuWidget(
-            '고객센터/문의사항',
+            'customer_service'.tr(),
             icon: Icons.headset_mic_rounded,
             onTap: () async {
               final uri = Uri.parse('https://open.kakao.com/o/guLhbJki');
@@ -135,7 +135,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
           ),
           Divider(color: colors.listDivider, height: 1, indent: 16, endIndent: 16),
           _MenuWidget(
-            '로그아웃',
+            'logout'.tr(),
             icon: Icons.logout_rounded,
             color: Colors.red[400],
             onTap: () async {
@@ -151,26 +151,26 @@ class _MenuDrawerState extends State<MenuDrawer> {
           ),
           Divider(color: colors.listDivider, height: 1, indent: 16, endIndent: 16),
           _MenuWidget(
-            '회원탈퇴',
+            'delete_account'.tr(),
             icon: Icons.person_remove_rounded,
             color: Colors.red[300],
             onTap: () async {
               final confirmed = await showDialog<bool>(
                 context: context,
                 builder: (ctx) => AlertDialog(
-                  title: const Text('회원탈퇴'),
-                  content: const Text(
-                    '탈퇴하면 작성한 게시글, 댓글 등\n모든 데이터가 삭제됩니다.\n정말 탈퇴하시겠습니까?',
+                  title: Text('delete_account'.tr()),
+                  content: Text(
+                    'delete_account_confirm'.tr(),
                   ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(ctx, false),
-                      child: const Text('취소'),
+                      child: Text('cancel'.tr()),
                     ),
                     TextButton(
                       onPressed: () => Navigator.pop(ctx, true),
                       style: TextButton.styleFrom(foregroundColor: Colors.red),
-                      child: const Text('탈퇴'),
+                      child: Text('delete_account'.tr()),
                     ),
                   ],
                 ),
@@ -183,7 +183,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
               } catch (_) {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('탈퇴 처리 중 오류가 발생했습니다.')),
+                    SnackBar(content: Text('delete_account_error'.tr())),
                   );
                 }
                 return;

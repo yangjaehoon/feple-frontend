@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:fast_app_base/common/util/responsive_size.dart';
@@ -34,7 +35,7 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
                 ),
               ],
             ),
-            FepleAppBar("페스티벌 일정 상세보기"),
+            FepleAppBar('festival_schedule'.tr()),
           ],
         ),
     );

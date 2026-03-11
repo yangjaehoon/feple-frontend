@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
 import 'package:fast_app_base/network/dio_client.dart';
@@ -82,7 +83,7 @@ class _EnralgePostState extends State<EnralgePost> {
     final comment = _commentController.text.trim();
     if (comment.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(backgroundColor: AppColors.skyBlue, content: Text('댓글을 입력해주세요.')),
+        SnackBar(backgroundColor: AppColors.skyBlue, content: Text('enter_comment_please'.tr())),
       );
       return;
     }
@@ -90,7 +91,7 @@ class _EnralgePostState extends State<EnralgePost> {
     final user = context.read<UserProvider>().user;
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(backgroundColor: AppColors.skyBlue, content: Text('로그인 정보가 없습니다.')),
+        SnackBar(backgroundColor: AppColors.skyBlue, content: Text('no_login_info'.tr())),
       );
       return;
     }
@@ -107,12 +108,12 @@ class _EnralgePostState extends State<EnralgePost> {
       await _fetchComments();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(backgroundColor: AppColors.skyBlue, content: Text('댓글이 등록되었습니다.')),
+        SnackBar(backgroundColor: AppColors.skyBlue, content: Text('comment_posted'.tr())),
       );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(backgroundColor: AppColors.skyBlue, content: Text('댓글 등록에 실패했습니다.\n$e')),
+        SnackBar(backgroundColor: AppColors.skyBlue, content: Text('comment_failed'.tr(args: [e.toString()]))),
       );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -136,7 +137,7 @@ class _EnralgePostState extends State<EnralgePost> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(backgroundColor: AppColors.skyBlue, content: Text('좋아요 처리에 실패했습니다.\n$e')),
+        SnackBar(backgroundColor: AppColors.skyBlue, content: Text('like_failed'.tr(args: [e.toString()]))),
       );
     }
   }

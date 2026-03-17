@@ -21,6 +21,8 @@ class ImgUpload extends StatefulWidget {
   State<ImgUpload> createState() => _ImgUploadState();
 }
 
+const _otherFestival = FestivalPreview(id: -1, title: '기타', location: '', posterUrl: '', startDate: '');
+
 class _ImgUploadState extends State<ImgUpload> {
   final _formKey = GlobalKey<FormState>();
   final _photoService = ArtistPhotoService();
@@ -63,7 +65,9 @@ class _ImgUploadState extends State<ImgUpload> {
         artistId: widget.artistId,
         imageData: imageData!,
         title: titleTEC.text,
-        description: _selectedFestival?.title ?? '',
+        description: (_selectedFestival == null || _selectedFestival!.id == -1)
+            ? ''
+            : _selectedFestival!.title,
       );
       if (!mounted) return;
       Navigator.pop(context, true);
@@ -173,12 +177,16 @@ class _ImgUploadState extends State<ImgUpload> {
                           hint: snapshot.connectionState != ConnectionState.done
                               ? const Text('불러오는 중...')
                               : const Text('페스티벌을 선택하세요'),
-                          items: festivals
-                              .map((f) => DropdownMenuItem(
-                                    value: f,
-                                    child: Text(f.title, overflow: TextOverflow.ellipsis),
-                                  ))
-                              .toList(),
+                          items: [
+                            ...festivals.map((f) => DropdownMenuItem(
+                                  value: f,
+                                  child: Text(f.title, overflow: TextOverflow.ellipsis),
+                                )),
+                            const DropdownMenuItem(
+                              value: _otherFestival,
+                              child: Text('기타'),
+                            ),
+                          ],
                           onChanged: (f) => setState(() => _selectedFestival = f),
                           validator: (_) =>
                               _selectedFestival == null ? '페스티벌을 선택해주세요.' : null,

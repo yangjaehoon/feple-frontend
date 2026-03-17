@@ -2,6 +2,8 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
+import 'package:fast_app_base/model/FestivalPreview.dart';
+import 'package:fast_app_base/network/dio_client.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:fast_app_base/service/artist_photo_service.dart';
@@ -25,8 +27,22 @@ class _ImgUploadState extends State<ImgUpload> {
 
   Uint8List? imageData;
   TextEditingController titleTEC = TextEditingController();
-  TextEditingController ftvNameTEC = TextEditingController();
+  FestivalPreview? _selectedFestival;
+  late final Future<List<FestivalPreview>> _festivalsFuture;
   bool isUploading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _festivalsFuture = _fetchFestivals();
+  }
+
+  Future<List<FestivalPreview>> _fetchFestivals() async {
+    final resp = await DioClient.dio.get('/festivals', queryParameters: {'page': 0, 'size': 200});
+    final decoded = resp.data;
+    final List<dynamic> list = decoded is List ? decoded : (decoded['content'] as List<dynamic>);
+    return list.map((e) => FestivalPreview.fromJson(e as Map<String, dynamic>)).toList();
+  }
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
@@ -47,7 +63,7 @@ class _ImgUploadState extends State<ImgUpload> {
         artistId: widget.artistId,
         imageData: imageData!,
         title: titleTEC.text,
-        description: ftvNameTEC.text,
+        description: _selectedFestival?.title ?? '',
       );
       if (!mounted) return;
       Navigator.pop(context, true);
@@ -64,7 +80,6 @@ class _ImgUploadState extends State<ImgUpload> {
   @override
   void dispose() {
     titleTEC.dispose();
-    ftvNameTEC.dispose();
     super.dispose();
   }
 
@@ -138,22 +153,37 @@ class _ImgUploadState extends State<ImgUpload> {
                           (v == null || v.isEmpty) ? '필수 입력 항목입니다.' : null,
                     ),
                     const SizedBox(height: 12),
-                    TextFormField(
-                      controller: ftvNameTEC,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: colors.activate, width: 2),
-                        ),
-                        labelText: '페스티벌 이름',
-                        hintText: '페스티벌 위치나 이름을 입력하세요.',
-                        labelStyle: TextStyle(color: colors.textSecondary),
-                      ),
-                      validator: (v) =>
-                          (v == null || v.isEmpty) ? '필수 입력 항목입니다.' : null,
+                    FutureBuilder<List<FestivalPreview>>(
+                      future: _festivalsFuture,
+                      builder: (context, snapshot) {
+                        final festivals = snapshot.data ?? [];
+                        return DropdownButtonFormField<FestivalPreview>(
+                          value: _selectedFestival,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: colors.activate, width: 2),
+                            ),
+                            labelText: '페스티벌',
+                            labelStyle: TextStyle(color: colors.textSecondary),
+                          ),
+                          hint: snapshot.connectionState != ConnectionState.done
+                              ? const Text('불러오는 중...')
+                              : const Text('페스티벌을 선택하세요'),
+                          items: festivals
+                              .map((f) => DropdownMenuItem(
+                                    value: f,
+                                    child: Text(f.title, overflow: TextOverflow.ellipsis),
+                                  ))
+                              .toList(),
+                          onChanged: (f) => setState(() => _selectedFestival = f),
+                          validator: (_) =>
+                              _selectedFestival == null ? '페스티벌을 선택해주세요.' : null,
+                        );
+                      },
                     ),
                   ],
                 ),

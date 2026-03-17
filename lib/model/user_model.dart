@@ -10,7 +10,7 @@ class User {
   int? commentNum;
   int? bookmarkNum;
 
-  int? level;
+  int level;
 
   //String? email;
   //String? password;
@@ -19,7 +19,8 @@ class User {
       {required this.id,
       String? nickname,
       //required this.uid,
-      this.profileImageUrl})
+      this.profileImageUrl,
+      this.level = 0})
       : nickname =
             (nickname != null && nickname.isNotEmpty) ? nickname : 'guest';
 

@@ -21,7 +21,7 @@ class FavoriteBoardsSection extends StatefulWidget {
 }
 
 class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
-  Set<String> _selectedIds = {};
+  List<String> _orderedSelectedIds = [];
   bool _prefsLoaded = false;
 
   String get _prefsKey => 'fav_boards_${widget.userId}';
@@ -37,16 +37,19 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
     final saved = prefs.getStringList(_prefsKey);
     if (!mounted) return;
     setState(() {
-      _selectedIds = saved == null
-          ? widget.allBoards.map((b) => b.boardId).toSet()
-          : saved.toSet();
+      if (saved == null) {
+        _orderedSelectedIds = widget.allBoards.map((b) => b.boardId).toList();
+      } else {
+        final validIds = widget.allBoards.map((b) => b.boardId).toSet();
+        _orderedSelectedIds = saved.where((id) => validIds.contains(id)).toList();
+      }
       _prefsLoaded = true;
     });
   }
 
-  Future<void> _savePrefs(Set<String> selected) async {
+  Future<void> _savePrefs(List<String> orderedSelected) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(_prefsKey, selected.toList());
+    await prefs.setStringList(_prefsKey, orderedSelected);
   }
 
   void _openSettings() {
@@ -58,10 +61,10 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
       ),
       builder: (_) => _BoardSettingsSheet(
         allBoards: widget.allBoards,
-        initialSelected: Set.from(_selectedIds),
-        onSave: (newSelected) {
-          setState(() => _selectedIds = newSelected);
-          _savePrefs(newSelected);
+        initialOrderedIds: List.from(_orderedSelectedIds),
+        onSave: (newOrderedIds) {
+          setState(() => _orderedSelectedIds = newOrderedIds);
+          _savePrefs(newOrderedIds);
         },
       ),
     );
@@ -75,8 +78,15 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
       return const SizedBox(height: 150);
     }
 
-    final selectedBoards = widget.allBoards
-        .where((b) => _selectedIds.contains(b.boardId))
+    final selectedBoards = _orderedSelectedIds
+        .map((id) {
+          try {
+            return widget.allBoards.firstWhere((b) => b.boardId == id);
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<FavoriteBoard>()
         .toList();
 
     return Column(
@@ -197,7 +207,6 @@ class _BoardTile extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // 이미지 or 기본 배경
               if (board.imageUrl != null && board.imageUrl!.isNotEmpty)
                 Image.network(
                   board.imageUrl!,
@@ -207,8 +216,6 @@ class _BoardTile extends StatelessWidget {
                 )
               else
                 _buildPlaceholder(),
-
-              // 하단 그라디언트 오버레이
               Positioned(
                 bottom: 0,
                 left: 0,
@@ -257,12 +264,12 @@ class _BoardTile extends StatelessWidget {
 
 class _BoardSettingsSheet extends StatefulWidget {
   final List<FavoriteBoard> allBoards;
-  final Set<String> initialSelected;
-  final void Function(Set<String>) onSave;
+  final List<String> initialOrderedIds;
+  final void Function(List<String>) onSave;
 
   const _BoardSettingsSheet({
     required this.allBoards,
-    required this.initialSelected,
+    required this.initialOrderedIds,
     required this.onSave,
   });
 
@@ -271,12 +278,31 @@ class _BoardSettingsSheet extends StatefulWidget {
 }
 
 class _BoardSettingsSheetState extends State<_BoardSettingsSheet> {
-  late Set<String> _selected;
+  late List<FavoriteBoard> _orderedBoards;
+  late Set<String> _checked;
 
   @override
   void initState() {
     super.initState();
-    _selected = Set.from(widget.initialSelected);
+    _checked = Set.from(widget.initialOrderedIds);
+
+    // 선택된 보드(저장된 순서) → 미선택 보드 순으로 정렬
+    final selectedInOrder = widget.initialOrderedIds
+        .map((id) {
+          try {
+            return widget.allBoards.firstWhere((b) => b.boardId == id);
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<FavoriteBoard>()
+        .toList();
+
+    final unselected = widget.allBoards
+        .where((b) => !_checked.contains(b.boardId))
+        .toList();
+
+    _orderedBoards = [...selectedInOrder, ...unselected];
   }
 
   @override
@@ -316,9 +342,8 @@ class _BoardSettingsSheetState extends State<_BoardSettingsSheet> {
                 ),
                 const Spacer(),
                 Text(
-                  '${_selected.length}/${widget.allBoards.length}',
-                  style:
-                      TextStyle(fontSize: 13, color: colors.textSecondary),
+                  '${_checked.length}/${_orderedBoards.length}',
+                  style: TextStyle(fontSize: 13, color: colors.textSecondary),
                 ),
               ],
             ),
@@ -326,50 +351,36 @@ class _BoardSettingsSheetState extends State<_BoardSettingsSheet> {
           const SizedBox(height: 8),
           Divider(color: colors.listDivider, height: 1),
 
-          // 목록
+          // 드래그 가능한 목록
           Flexible(
-            child: ListView.separated(
+            child: ReorderableListView.builder(
               shrinkWrap: true,
-              itemCount: widget.allBoards.length,
-              separatorBuilder: (_, __) =>
-                  Divider(color: colors.listDivider, height: 1),
-              itemBuilder: (_, index) {
-                final board = widget.allBoards[index];
-                final checked = _selected.contains(board.boardId);
-                return CheckboxListTile(
-                  value: checked,
+              itemCount: _orderedBoards.length,
+              onReorder: (oldIndex, newIndex) {
+                setState(() {
+                  if (newIndex > oldIndex) newIndex--;
+                  final item = _orderedBoards.removeAt(oldIndex);
+                  _orderedBoards.insert(newIndex, item);
+                });
+              },
+              itemBuilder: (context, index) {
+                final board = _orderedBoards[index];
+                final checked = _checked.contains(board.boardId);
+                return _BoardSettingsItem(
+                  key: ValueKey(board.boardId),
+                  board: board,
+                  checked: checked,
+                  index: index,
+                  colors: colors,
                   onChanged: (val) {
                     setState(() {
                       if (val == true) {
-                        _selected.add(board.boardId);
+                        _checked.add(board.boardId);
                       } else {
-                        _selected.remove(board.boardId);
+                        _checked.remove(board.boardId);
                       }
                     });
                   },
-                  activeColor: colors.activate,
-                  title: Text(
-                    board.displayName,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: colors.textTitle,
-                    ),
-                  ),
-                  secondary: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: board.imageUrl != null && board.imageUrl!.isNotEmpty
-                        ? Image.network(
-                            board.imageUrl!,
-                            width: 40,
-                            height: 40,
-                            fit: BoxFit.cover,
-                            cacheWidth: 80,
-                            errorBuilder: (_, __, ___) => _placeholder(colors),
-                          )
-                        : _placeholder(colors),
-                  ),
-                  controlAffinity: ListTileControlAffinity.trailing,
                 );
               },
             ),
@@ -385,7 +396,11 @@ class _BoardSettingsSheetState extends State<_BoardSettingsSheet> {
               height: 48,
               child: ElevatedButton(
                 onPressed: () {
-                  widget.onSave(Set.from(_selected));
+                  final orderedSelected = _orderedBoards
+                      .where((b) => _checked.contains(b.boardId))
+                      .map((b) => b.boardId)
+                      .toList();
+                  widget.onSave(orderedSelected);
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(
@@ -398,7 +413,7 @@ class _BoardSettingsSheetState extends State<_BoardSettingsSheet> {
                 ),
                 child: Text(
                   'confirm'.tr(),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
@@ -410,8 +425,76 @@ class _BoardSettingsSheetState extends State<_BoardSettingsSheet> {
       ),
     );
   }
+}
 
-  Widget _placeholder(AbstractThemeColors colors) {
+class _BoardSettingsItem extends StatelessWidget {
+  final FavoriteBoard board;
+  final bool checked;
+  final int index;
+  final AbstractThemeColors colors;
+  final ValueChanged<bool?> onChanged;
+
+  const _BoardSettingsItem({
+    super.key,
+    required this.board,
+    required this.checked,
+    required this.index,
+    required this.colors,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: colors.listDivider, width: 0.5),
+        ),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+        leading: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ReorderableDragStartListener(
+              index: index,
+              child: Icon(Icons.drag_handle_rounded,
+                  color: colors.textSecondary, size: 22),
+            ),
+            const SizedBox(width: 12),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: board.imageUrl != null && board.imageUrl!.isNotEmpty
+                  ? Image.network(
+                      board.imageUrl!,
+                      width: 40,
+                      height: 40,
+                      fit: BoxFit.cover,
+                      cacheWidth: 80,
+                      errorBuilder: (_, __, ___) => _placeholder(),
+                    )
+                  : _placeholder(),
+            ),
+          ],
+        ),
+        title: Text(
+          board.displayName,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: colors.textTitle,
+          ),
+        ),
+        trailing: Checkbox(
+          value: checked,
+          onChanged: onChanged,
+          activeColor: colors.activate,
+        ),
+      ),
+    );
+  }
+
+  Widget _placeholder() {
     return Container(
       width: 40,
       height: 40,

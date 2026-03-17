@@ -15,6 +15,7 @@ class CircleArtistWidget extends StatefulWidget {
 
 class _CircleArtistWidgetState extends State<CircleArtistWidget> {
   late final Future<List<Artist>> _artistsFuture;
+  String? _selectedGenre;
 
   @override
   void initState() {
@@ -48,7 +49,11 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
           );
         }
 
-        final artists = snapshot.data ?? [];
+        final allArtists = snapshot.data ?? [];
+        final genres = allArtists.map((a) => a.genre).toSet().toList()..sort();
+        final artists = _selectedGenre == null
+            ? allArtists
+            : allArtists.where((a) => a.genre == _selectedGenre).toList();
 
         return Padding(
           padding: const EdgeInsets.only(top: 16),
@@ -65,6 +70,26 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
                     color: colors.textTitle,
                     letterSpacing: -0.3,
                   ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 36,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  children: [
+                    _GenreChip(
+                      label: '전체',
+                      selected: _selectedGenre == null,
+                      onTap: () => setState(() => _selectedGenre = null),
+                    ),
+                    ...genres.map((genre) => _GenreChip(
+                          label: genre,
+                          selected: _selectedGenre == genre,
+                          onTap: () => setState(() => _selectedGenre = genre),
+                        )),
+                  ],
                 ),
               ),
               const SizedBox(height: 12),
@@ -151,6 +176,41 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
           ),
         );
       },
+    );
+  }
+}
+
+class _GenreChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _GenreChip({required this.label, required this.selected, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected ? colors.activate : colors.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected ? colors.activate : colors.listDivider,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: selected ? Colors.white : colors.textSecondary,
+          ),
+        ),
+      ),
     );
   }
 }

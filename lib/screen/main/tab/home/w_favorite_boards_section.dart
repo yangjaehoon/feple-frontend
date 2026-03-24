@@ -5,6 +5,7 @@ import 'package:fast_app_base/screen/main/tab/search/artist_page/w_artist_post_l
 import 'package:fast_app_base/screen/main/tab/search/concert_information/w_festival_post_list.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class FavoriteBoardsSection extends StatefulWidget {
   final List<FavoriteBoard> allBoards;
@@ -208,11 +209,11 @@ class _BoardTile extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               if (board.imageUrl != null && board.imageUrl!.isNotEmpty)
-                Image.network(
-                  board.imageUrl!,
+                CachedNetworkImage(
+                  imageUrl: board.imageUrl!,
                   fit: BoxFit.cover,
-                  cacheWidth: 220,
-                  errorBuilder: (_, __, ___) => _buildPlaceholder(),
+                  memCacheWidth: 220,
+                  errorWidget: (_, __, ___) => _buildPlaceholder(),
                 )
               else
                 _buildPlaceholder(),
@@ -465,13 +466,13 @@ class _BoardSettingsItem extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: board.imageUrl != null && board.imageUrl!.isNotEmpty
-                  ? Image.network(
-                      board.imageUrl!,
+                  ? CachedNetworkImage(
+                      imageUrl: board.imageUrl!,
                       width: 40,
                       height: 40,
                       fit: BoxFit.cover,
-                      cacheWidth: 80,
-                      errorBuilder: (_, __, ___) => _placeholder(),
+                      memCacheWidth: 80,
+                      errorWidget: (_, __, ___) => _placeholder(),
                     )
                   : _placeholder(),
             ),

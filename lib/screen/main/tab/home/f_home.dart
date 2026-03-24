@@ -12,6 +12,7 @@ import 'package:fast_app_base/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../../provider/like_notifier.dart';
 import '../../../../provider/user_provider.dart';
@@ -383,7 +384,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                         backgroundColor: colors.backgroundMain,
                         backgroundImage:
                             (artist.profileImageUrl != null && artist.profileImageUrl!.isNotEmpty)
-                                ? NetworkImage(artist.profileImageUrl!)
+                                ? CachedNetworkImageProvider(artist.profileImageUrl!, maxWidth: 150)
                                 : null,
                         child: (artist.profileImageUrl == null || artist.profileImageUrl!.isEmpty)
                             ? Icon(Icons.person_rounded, size: 28, color: colors.textSecondary)
@@ -461,11 +462,11 @@ class _HomeFragmentState extends State<HomeFragment> {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Image.network(
-                      festival.posterUrl,
-                      cacheWidth: 260,
+                    CachedNetworkImage(
+                      imageUrl: festival.posterUrl,
+                      memCacheWidth: 260,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
+                      errorWidget: (_, __, ___) => Container(
                         color: colors.surface,
                         child: Icon(Icons.image_not_supported_rounded,
                             color: colors.textSecondary),
@@ -626,13 +627,13 @@ class _ReorderSheetState extends State<_ReorderSheet> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: item.imageUrl != null && item.imageUrl!.isNotEmpty
-                              ? Image.network(
-                                  item.imageUrl!,
+                              ? CachedNetworkImage(
+                                  imageUrl: item.imageUrl!,
                                   width: 40,
                                   height: 40,
                                   fit: BoxFit.cover,
-                                  cacheWidth: 80,
-                                  errorBuilder: (_, __, ___) => _placeholder(colors),
+                                  memCacheWidth: 80,
+                                  errorWidget: (_, __, ___) => _placeholder(colors),
                                 )
                               : _placeholder(colors),
                         ),

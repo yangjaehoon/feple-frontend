@@ -5,6 +5,9 @@ import '../config.dart' as AppConfig;
 class DioClient {
   DioClient._();
 
+  /// 리프레시 토큰도 만료됐을 때 호출 → 로그인 화면으로 이동
+  static void Function()? onSessionExpired;
+
   static final Dio dio = Dio(
     BaseOptions(
       baseUrl: AppConfig.baseUrl,
@@ -45,6 +48,7 @@ class DioClient {
               return handler.resolve(retryResp);
             } catch (_) {
               await TokenStore.clear();
+              onSessionExpired?.call();
             }
           }
         }

@@ -3,6 +3,7 @@ import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
 import '../../../../model/artist_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../provider/artist_provider.dart';
 import 'artist_page/f_artist_page.dart';
 
@@ -135,11 +136,11 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(20.0),
-                              child: Image.network(
-                                artist.profileImageUrl,
-                                cacheWidth: 200,
+                              child: CachedNetworkImage(
+                                imageUrl: artist.profileImageUrl,
+                                memCacheWidth: 200,
                                 fit: BoxFit.cover,
-                                errorBuilder: (context, error, stack) =>
+                                errorWidget: (context, error, stack) =>
                                     Container(
                                   decoration: BoxDecoration(
                                     color: colors.activate.withOpacity(0.1),

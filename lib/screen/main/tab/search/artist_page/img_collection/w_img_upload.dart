@@ -21,7 +21,9 @@ class ImgUpload extends StatefulWidget {
   State<ImgUpload> createState() => _ImgUploadState();
 }
 
-const _otherFestival = FestivalPreview(id: -1, title: '기타', location: '', posterUrl: '', startDate: '');
+const _dailyFestival = FestivalPreview(id: -2, title: '일상 사진', location: '', posterUrl: '', startDate: '');
+const _snsFestival   = FestivalPreview(id: -3, title: 'SNS 사진',  location: '', posterUrl: '', startDate: '');
+const _otherFestival = FestivalPreview(id: -1, title: '기타',      location: '', posterUrl: '', startDate: '');
 
 class _ImgUploadState extends State<ImgUpload> {
   final _formKey = GlobalKey<FormState>();
@@ -40,10 +42,18 @@ class _ImgUploadState extends State<ImgUpload> {
   }
 
   Future<List<FestivalPreview>> _fetchFestivals() async {
-    final resp = await DioClient.dio.get('/festivals', queryParameters: {'page': 0, 'size': 200});
-    final decoded = resp.data;
-    final List<dynamic> list = decoded is List ? decoded : (decoded['content'] as List<dynamic>);
-    return list.map((e) => FestivalPreview.fromJson(e as Map<String, dynamic>)).toList();
+    final resp = await DioClient.dio.get('/artists/${widget.artistId}/schedule');
+    final List<dynamic> list = resp.data as List<dynamic>;
+    return list.map((e) {
+      final m = e as Map<String, dynamic>;
+      return FestivalPreview(
+        id: (m['festivalId'] as num).toInt(),
+        title: (m['title'] ?? '') as String,
+        location: (m['location'] ?? '') as String,
+        posterUrl: (m['posterUrl'] ?? '') as String,
+        startDate: m['startDate']?.toString() ?? '',
+      );
+    }).toList();
   }
 
   Future<void> _pickImage() async {
@@ -75,9 +85,7 @@ class _ImgUploadState extends State<ImgUpload> {
         artistId: widget.artistId,
         imageData: imageData!,
         title: titleTEC.text,
-        description: (_selectedFestival == null || _selectedFestival!.id == -1)
-            ? ''
-            : _selectedFestival!.title,
+        description: _selectedFestival!.id == -1 ? '' : _selectedFestival!.title,
       );
       if (!mounted) return;
       Navigator.pop(context, true);
@@ -200,10 +208,9 @@ class _ImgUploadState extends State<ImgUpload> {
                                   value: f,
                                   child: Text(f.title, overflow: TextOverflow.ellipsis),
                                 )),
-                            const DropdownMenuItem(
-                              value: _otherFestival,
-                              child: Text('기타'),
-                            ),
+                            const DropdownMenuItem(value: _dailyFestival, child: Text('일상 사진')),
+                            const DropdownMenuItem(value: _snsFestival,   child: Text('SNS 사진')),
+                            const DropdownMenuItem(value: _otherFestival, child: Text('기타')),
                           ],
                           onChanged: (f) => setState(() => _selectedFestival = f),
                           validator: (_) =>

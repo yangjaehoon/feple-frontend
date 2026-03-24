@@ -360,11 +360,14 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
 
                 // 정보 영역
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(14, 12, 4, 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                  child: SizedBox(
+                    height: 195,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(14, 12, 4, 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
                         // 제목 + 더보기 버튼
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -422,7 +425,6 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
 
                         // 카테고리 chip
                         if (photo.description.isNotEmpty) ...[
-                          const SizedBox(height: 6),
                           Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 3),
@@ -445,6 +447,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
                       ],
                     ),
                   ),
+                ),
                 ),
               ],
             ),

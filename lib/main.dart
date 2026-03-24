@@ -17,6 +17,7 @@ import 'app.dart';
 import 'auth/get_api_key.dart';
 import 'auth/token_store.dart';
 import 'common/data/preference/app_preferences.dart';
+import 'network/dio_client.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 /*
@@ -78,6 +79,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
+      DioClient.onSessionExpired = () => userProvider.logout();
       _tryAutoLogin(userProvider);
     });
   }

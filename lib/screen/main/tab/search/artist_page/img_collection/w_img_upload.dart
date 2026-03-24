@@ -55,9 +55,19 @@ class _ImgUploadState extends State<ImgUpload> {
     }
   }
 
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
   Future<void> _submit() async {
-    if (imageData == null) return;
-    if (!(_formKey.currentState?.validate() ?? false)) return;
+    if (imageData == null) {
+      _showSnackBar('사진을 선택해주세요.');
+      return;
+    }
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      _showSnackBar('입력하지 않은 항목이 있습니다.');
+      return;
+    }
 
     setState(() => isUploading = true);
     try {
@@ -74,8 +84,16 @@ class _ImgUploadState extends State<ImgUpload> {
     } on DioException catch (e) {
       debugPrint('status=${e.response?.statusCode}');
       debugPrint('data=${e.response?.data}');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('업로드 실패 (${e.response?.statusCode ?? 'network'})')),
+      );
     } catch (e) {
       debugPrint('upload error: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('업로드 중 오류가 발생했습니다.')),
+      );
     } finally {
       if (mounted) setState(() => isUploading = false);
     }

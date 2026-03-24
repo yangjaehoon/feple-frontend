@@ -90,11 +90,15 @@ class _ImgUploadState extends State<ImgUpload> {
       if (!mounted) return;
       Navigator.pop(context, true);
     } on DioException catch (e) {
-      debugPrint('status=${e.response?.statusCode}');
-      debugPrint('data=${e.response?.data}');
+      final status = e.response?.statusCode;
+      final body = e.response?.data?.toString() ?? '';
+      debugPrint('status=$status  data=$body');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('업로드 실패 (${e.response?.statusCode ?? 'network'})')),
+        SnackBar(
+          content: Text('업로드 실패 ($status): $body'),
+          duration: const Duration(seconds: 8),
+        ),
       );
     } catch (e) {
       debugPrint('upload error: $e');

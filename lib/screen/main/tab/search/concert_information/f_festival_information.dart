@@ -34,7 +34,11 @@ class FestivalInformationFragment extends StatelessWidget {
                 FestivalArtists(festivalId: poster.id),
                 FestivalBoard(
                     festivalId: poster.id, festivalName: poster.title),
-                const FestivalTimetable(),
+                FestivalTimetable(
+                  festivalId: poster.id,
+                  startDate: poster.startDate,
+                  endDate: poster.endDate,
+                ),
               ],
             ),
           ),

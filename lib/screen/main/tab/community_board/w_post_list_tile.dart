@@ -1,7 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
-import 'package:fast_app_base/common/theme/color/abs_theme_colors.dart';
 import 'package:fast_app_base/model/post_model.dart';
 import 'package:flutter/material.dart';
 
@@ -73,8 +71,7 @@ class PostListTile extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          Icon(Icons.comment_rounded,
-              color: colors.textSecondary, size: 16),
+          Icon(Icons.comment_rounded, color: colors.textSecondary, size: 16),
           const SizedBox(width: 4),
           Text(
             post.commentCount.toString(),

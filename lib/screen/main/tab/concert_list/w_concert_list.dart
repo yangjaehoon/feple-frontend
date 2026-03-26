@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import '../../../../provider/FestivalPreviewProvider.dart';
 
 class ConcertListWidget extends StatefulWidget {
-  const ConcertListWidget({Key? key}) : super(key: key);
+  const ConcertListWidget({super.key});
 
   @override
   State<ConcertListWidget> createState() => _ConcertListWidgetState();

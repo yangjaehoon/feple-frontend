@@ -8,7 +8,7 @@ import 'theme_util.dart';
 class CustomThemeApp extends StatefulWidget {
   final Widget child;
 
-  const CustomThemeApp({Key? key, required this.child}) : super(key: key);
+  const CustomThemeApp({super.key, required this.child});
 
   @override
   State<CustomThemeApp> createState() => _CustomThemeAppState();

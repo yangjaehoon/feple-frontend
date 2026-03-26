@@ -18,7 +18,7 @@ import '../../../../provider/like_notifier.dart';
 import '../../../../provider/user_provider.dart';
 
 class HomeFragment extends StatefulWidget {
-  const HomeFragment({Key? key}) : super(key: key);
+  const HomeFragment({super.key});
 
   @override
   State<HomeFragment> createState() => _HomeFragmentState();
@@ -92,12 +92,14 @@ class _HomeFragmentState extends State<HomeFragment> {
 
   Future<void> _saveArtistOrder(List<int> order) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(_artistOrderKey, order.map((e) => e.toString()).toList());
+    await prefs.setStringList(
+        _artistOrderKey, order.map((e) => e.toString()).toList());
   }
 
   Future<void> _saveFestivalOrder(List<int> order) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(_festivalOrderKey, order.map((e) => e.toString()).toList());
+    await prefs.setStringList(
+        _festivalOrderKey, order.map((e) => e.toString()).toList());
   }
 
   Future<void> _fetchAndSetArtists() async {
@@ -150,7 +152,8 @@ class _HomeFragmentState extends State<HomeFragment> {
     return (resp.data as List).map((e) => PosterModel.fromJson(e)).toList();
   }
 
-  List<FavoriteBoard> _buildBoards(List<_FollowedArtist> artists, List<PosterModel> festivals) {
+  List<FavoriteBoard> _buildBoards(
+      List<_FollowedArtist> artists, List<PosterModel> festivals) {
     return [
       ...artists.map((a) => FavoriteBoard(
             boardId: 'artist_${a.id}',
@@ -170,12 +173,14 @@ class _HomeFragmentState extends State<HomeFragment> {
   }
 
   // 저장된 순서 적용: order에 있는 id 순 → 나머지 뒤에 추가
-  List<T> _applyOrder<T>(List<T> items, List<int> order, int Function(T) getId) {
+  List<T> _applyOrder<T>(
+      List<T> items, List<int> order, int Function(T) getId) {
     if (order.isEmpty) return items;
     final map = {for (final item in items) getId(item): item};
     final ordered = order.where(map.containsKey).map((id) => map[id]!).toList();
     final orderedIds = order.toSet();
-    final rest = items.where((item) => !orderedIds.contains(getId(item))).toList();
+    final rest =
+        items.where((item) => !orderedIds.contains(getId(item))).toList();
     return [...ordered, ...rest];
   }
 
@@ -183,7 +188,8 @@ class _HomeFragmentState extends State<HomeFragment> {
     final artists = _artists;
     if (artists == null || artists.isEmpty) return;
     final items = _applyOrder(artists, _artistOrder, (a) => a.id)
-        .map((a) => _ReorderItem(id: a.id, name: a.name, imageUrl: a.profileImageUrl))
+        .map((a) =>
+            _ReorderItem(id: a.id, name: a.name, imageUrl: a.profileImageUrl))
         .toList();
     showModalBottomSheet(
       context: context,
@@ -206,7 +212,8 @@ class _HomeFragmentState extends State<HomeFragment> {
     final festivals = _festivals;
     if (festivals == null || festivals.isEmpty) return;
     final items = _applyOrder(festivals, _festivalOrder, (f) => f.id)
-        .map((f) => _ReorderItem(id: f.id, name: f.title, imageUrl: f.posterUrl))
+        .map(
+            (f) => _ReorderItem(id: f.id, name: f.title, imageUrl: f.posterUrl))
         .toList();
     showModalBottomSheet(
       context: context,
@@ -233,7 +240,8 @@ class _HomeFragmentState extends State<HomeFragment> {
     if (_userId == null) {
       return Container(
         color: colors.backgroundMain,
-        child: Center(child: CircularProgressIndicator(color: colors.loadingIndicator)),
+        child: Center(
+            child: CircularProgressIndicator(color: colors.loadingIndicator)),
       );
     }
 
@@ -312,7 +320,8 @@ class _HomeFragmentState extends State<HomeFragment> {
           if (onSettings != null) ...[
             const Spacer(),
             IconButton(
-              icon: Icon(Icons.settings_rounded, color: colors.textSecondary, size: 20),
+              icon: Icon(Icons.settings_rounded,
+                  color: colors.textSecondary, size: 20),
               onPressed: onSettings,
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
@@ -330,13 +339,15 @@ class _HomeFragmentState extends State<HomeFragment> {
     if (_artists == null) {
       return SizedBox(
         height: 110,
-        child: Center(child: CircularProgressIndicator(color: colors.loadingIndicator)),
+        child: Center(
+            child: CircularProgressIndicator(color: colors.loadingIndicator)),
       );
     }
     if (_artists!.isEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        child: Text('no_followed_artists'.tr(), style: TextStyle(color: colors.textSecondary)),
+        child: Text('no_followed_artists'.tr(),
+            style: TextStyle(color: colors.textSecondary)),
       );
     }
     final artists = _applyOrder(_artists!, _artistOrder, (a) => a.id);
@@ -378,16 +389,21 @@ class _HomeFragmentState extends State<HomeFragment> {
                     ),
                     child: Container(
                       padding: const EdgeInsets.all(2),
-                      decoration: BoxDecoration(shape: BoxShape.circle, color: colors.surface),
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle, color: colors.surface),
                       child: CircleAvatar(
                         radius: 32,
                         backgroundColor: colors.backgroundMain,
-                        backgroundImage:
-                            (artist.profileImageUrl != null && artist.profileImageUrl!.isNotEmpty)
-                                ? CachedNetworkImageProvider(artist.profileImageUrl!, maxWidth: 150)
-                                : null,
-                        child: (artist.profileImageUrl == null || artist.profileImageUrl!.isEmpty)
-                            ? Icon(Icons.person_rounded, size: 28, color: colors.textSecondary)
+                        backgroundImage: (artist.profileImageUrl != null &&
+                                artist.profileImageUrl!.isNotEmpty)
+                            ? CachedNetworkImageProvider(
+                                artist.profileImageUrl!,
+                                maxWidth: 150)
+                            : null,
+                        child: (artist.profileImageUrl == null ||
+                                artist.profileImageUrl!.isEmpty)
+                            ? Icon(Icons.person_rounded,
+                                size: 28, color: colors.textSecondary)
                             : null,
                       ),
                     ),
@@ -398,7 +414,9 @@ class _HomeFragmentState extends State<HomeFragment> {
                     child: Text(
                       artist.name,
                       style: TextStyle(
-                          fontSize: 11, fontWeight: FontWeight.w600, color: colors.textTitle),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: colors.textTitle),
                       textAlign: TextAlign.center,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -419,13 +437,15 @@ class _HomeFragmentState extends State<HomeFragment> {
     if (_festivals == null) {
       return SizedBox(
         height: 160,
-        child: Center(child: CircularProgressIndicator(color: colors.loadingIndicator)),
+        child: Center(
+            child: CircularProgressIndicator(color: colors.loadingIndicator)),
       );
     }
     if (_festivals!.isEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        child: Text('no_liked_festivals'.tr(), style: TextStyle(color: colors.textSecondary)),
+        child: Text('no_liked_festivals'.tr(),
+            style: TextStyle(color: colors.textSecondary)),
       );
     }
     final festivals = _applyOrder(_festivals!, _festivalOrder, (f) => f.id);
@@ -477,12 +497,16 @@ class _HomeFragmentState extends State<HomeFragment> {
                       left: 0,
                       right: 0,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 6),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             begin: Alignment.bottomCenter,
                             end: Alignment.topCenter,
-                            colors: [Colors.black.withOpacity(0.7), Colors.transparent],
+                            colors: [
+                              Colors.black.withOpacity(0.7),
+                              Colors.transparent
+                            ],
                           ),
                         ),
                         child: Text(
@@ -515,7 +539,8 @@ class _FollowedArtist {
   final String name;
   final String? profileImageUrl;
 
-  const _FollowedArtist({required this.id, required this.name, this.profileImageUrl});
+  const _FollowedArtist(
+      {required this.id, required this.name, this.profileImageUrl});
 
   factory _FollowedArtist.fromJson(Map<String, dynamic> json) {
     return _FollowedArtist(
@@ -626,16 +651,18 @@ class _ReorderSheetState extends State<_ReorderSheet> {
                         const SizedBox(width: 12),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: item.imageUrl != null && item.imageUrl!.isNotEmpty
-                              ? CachedNetworkImage(
-                                  imageUrl: item.imageUrl!,
-                                  width: 40,
-                                  height: 40,
-                                  fit: BoxFit.cover,
-                                  memCacheWidth: 80,
-                                  errorWidget: (_, __, ___) => _placeholder(colors),
-                                )
-                              : _placeholder(colors),
+                          child:
+                              item.imageUrl != null && item.imageUrl!.isNotEmpty
+                                  ? CachedNetworkImage(
+                                      imageUrl: item.imageUrl!,
+                                      width: 40,
+                                      height: 40,
+                                      fit: BoxFit.cover,
+                                      memCacheWidth: 80,
+                                      errorWidget: (_, __, ___) =>
+                                          _placeholder(colors),
+                                    )
+                                  : _placeholder(colors),
                         ),
                       ],
                     ),

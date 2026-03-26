@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/model/favorite_board.dart';
 import 'package:fast_app_base/screen/main/tab/search/artist_page/w_artist_post_list.dart';
@@ -42,7 +41,8 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
         _orderedSelectedIds = widget.allBoards.map((b) => b.boardId).toList();
       } else {
         final validIds = widget.allBoards.map((b) => b.boardId).toSet();
-        _orderedSelectedIds = saved.where((id) => validIds.contains(id)).toList();
+        _orderedSelectedIds =
+            saved.where((id) => validIds.contains(id)).toList();
       }
       _prefsLoaded = true;
     });
@@ -299,9 +299,8 @@ class _BoardSettingsSheetState extends State<_BoardSettingsSheet> {
         .whereType<FavoriteBoard>()
         .toList();
 
-    final unselected = widget.allBoards
-        .where((b) => !_checked.contains(b.boardId))
-        .toList();
+    final unselected =
+        widget.allBoards.where((b) => !_checked.contains(b.boardId)).toList();
 
     _orderedBoards = [...selectedInOrder, ...unselected];
   }

@@ -10,13 +10,12 @@ class CustomThemeHolder extends InheritedWidget {
   final Function(CustomTheme) changeTheme;
 
   CustomThemeHolder({
-    required Widget child,
+    required super.child,
     required this.theme,
     required this.changeTheme,
-    Key? key,
+    super.key,
   })  : appColors = theme.appColors,
-        appShadows = theme.appShadows,
-        super(key: key, child: child);
+        appShadows = theme.appShadows;
 
   @override
   bool updateShouldNotify(CustomThemeHolder oldWidget) {

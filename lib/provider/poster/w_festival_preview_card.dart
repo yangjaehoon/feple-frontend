@@ -1,5 +1,4 @@
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
 
 import '../../model/FestivalPreview.dart';
@@ -36,7 +35,8 @@ class FestivalPreviewCard extends StatelessWidget {
               color: colors.backgroundMain,
               borderRadius: BorderRadius.circular(16),
               image: DecorationImage(
-                image: ResizeImage(NetworkImage(festival.posterUrl), width: 220),
+                image:
+                    ResizeImage(NetworkImage(festival.posterUrl), width: 220),
                 fit: BoxFit.cover,
               ),
             ),

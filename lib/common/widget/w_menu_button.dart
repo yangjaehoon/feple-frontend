@@ -5,8 +5,8 @@ class MenuButton extends StatelessWidget {
 
   const MenuButton(
     this.controller, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

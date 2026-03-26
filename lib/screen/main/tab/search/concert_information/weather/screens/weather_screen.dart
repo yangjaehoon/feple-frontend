@@ -7,7 +7,8 @@ import 'package:intl/intl.dart';
 import '../model/model.dart';
 
 class WeatherScreen extends StatefulWidget {
-  WeatherScreen({this.parseWeatherData, this.parseAirPollution});
+  const WeatherScreen(
+      {super.key, this.parseWeatherData, this.parseAirPollution});
   final dynamic parseWeatherData;
   final dynamic parseAirPollution;
 

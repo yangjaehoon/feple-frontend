@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
 import 'package:fast_app_base/network/dio_client.dart';
@@ -70,9 +69,8 @@ class _EnralgePostState extends State<EnralgePost> {
     try {
       final resp = await DioClient.dio.get('/comments/post/${widget.id}');
       setState(() {
-        _comments = (resp.data as List)
-            .map((e) => e as Map<String, dynamic>)
-            .toList();
+        _comments =
+            (resp.data as List).map((e) => e as Map<String, dynamic>).toList();
       });
     } catch (e) {
       debugPrint('fetchComments error: $e');
@@ -83,7 +81,9 @@ class _EnralgePostState extends State<EnralgePost> {
     final comment = _commentController.text.trim();
     if (comment.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(backgroundColor: AppColors.skyBlue, content: Text('enter_comment_please'.tr())),
+        SnackBar(
+            backgroundColor: AppColors.skyBlue,
+            content: Text('enter_comment_please'.tr())),
       );
       return;
     }
@@ -91,7 +91,9 @@ class _EnralgePostState extends State<EnralgePost> {
     final user = context.read<UserProvider>().user;
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(backgroundColor: AppColors.skyBlue, content: Text('no_login_info'.tr())),
+        SnackBar(
+            backgroundColor: AppColors.skyBlue,
+            content: Text('no_login_info'.tr())),
       );
       return;
     }
@@ -108,12 +110,16 @@ class _EnralgePostState extends State<EnralgePost> {
       await _fetchComments();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(backgroundColor: AppColors.skyBlue, content: Text('comment_posted'.tr())),
+        SnackBar(
+            backgroundColor: AppColors.skyBlue,
+            content: Text('comment_posted'.tr())),
       );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(backgroundColor: AppColors.skyBlue, content: Text('comment_failed'.tr(args: [e.toString()]))),
+        SnackBar(
+            backgroundColor: AppColors.skyBlue,
+            content: Text('comment_failed'.tr(args: [e.toString()]))),
       );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -137,7 +143,9 @@ class _EnralgePostState extends State<EnralgePost> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(backgroundColor: AppColors.skyBlue, content: Text('like_failed'.tr(args: [e.toString()]))),
+        SnackBar(
+            backgroundColor: AppColors.skyBlue,
+            content: Text('like_failed'.tr(args: [e.toString()]))),
       );
     }
   }

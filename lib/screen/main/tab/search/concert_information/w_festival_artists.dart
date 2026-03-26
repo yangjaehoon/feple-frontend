@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 import 'package:fast_app_base/screen/main/tab/search/artist_page/f_artist_page.dart';
@@ -85,7 +84,8 @@ class _FestivalArtistsState extends State<FestivalArtists> {
     );
   }
 
-  Widget _buildArtistRow(List<_ArtistItem> artists, AbstractThemeColors colors) {
+  Widget _buildArtistRow(
+      List<_ArtistItem> artists, AbstractThemeColors colors) {
     return SizedBox(
       height: 90,
       child: ListView.separated(
@@ -236,7 +236,8 @@ class _ArtistItem {
     this.stageName,
   });
 
-  String get displayName => stageName?.isNotEmpty == true ? stageName! : artistName;
+  String get displayName =>
+      stageName?.isNotEmpty == true ? stageName! : artistName;
 
   factory _ArtistItem.fromJson(Map<String, dynamic> json) {
     return _ArtistItem(

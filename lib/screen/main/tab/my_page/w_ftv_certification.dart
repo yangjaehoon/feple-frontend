@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +22,8 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
           child: Row(
             children: [
               Container(
-                width: 3, height: 20,
+                width: 3,
+                height: 20,
                 decoration: BoxDecoration(
                   color: colors.sectionBarColor,
                   borderRadius: BorderRadius.circular(2),
@@ -33,7 +33,9 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
               Text(
                 'festival_certification'.tr(),
                 style: TextStyle(
-                  fontSize: 18, fontWeight: FontWeight.w800, color: colors.textTitle,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: colors.textTitle,
                 ),
               ),
             ],
@@ -58,16 +60,19 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
                         boxShadow: [
                           BoxShadow(
                             color: colors.cardShadow.withValues(alpha: 0.08),
-                            blurRadius: 8, offset: const Offset(0, 2),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
                       child: Container(
                         padding: const EdgeInsets.all(2),
-                        decoration: BoxDecoration(shape: BoxShape.circle, color: colors.surface),
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle, color: colors.surface),
                         child: CircleAvatar(
                           radius: 50,
-                          backgroundColor: colors.certRingColor.withValues(alpha: 0.15),
+                          backgroundColor:
+                              colors.certRingColor.withValues(alpha: 0.15),
                           child: Icon(
                             Icons.add_photo_alternate_outlined,
                             size: 30,

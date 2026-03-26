@@ -20,8 +20,8 @@ class MenuDrawer extends StatefulWidget {
   static const minHeightForScrollView = 380;
 
   const MenuDrawer({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<MenuDrawer> createState() => _MenuDrawerState();
@@ -45,7 +45,8 @@ class _MenuDrawerState extends State<MenuDrawer> {
               padding: const EdgeInsets.only(top: 10),
               decoration: BoxDecoration(
                   borderRadius: const BorderRadius.only(
-                      topRight: Radius.circular(24), bottomRight: Radius.circular(24)),
+                      topRight: Radius.circular(24),
+                      bottomRight: Radius.circular(24)),
                   color: colors.surface,
                   boxShadow: [
                     BoxShadow(
@@ -110,7 +111,8 @@ class _MenuDrawerState extends State<MenuDrawer> {
               Nav.push(const OpensourceScreen());
             },
           ),
-          Divider(color: colors.listDivider, height: 1, indent: 16, endIndent: 16),
+          Divider(
+              color: colors.listDivider, height: 1, indent: 16, endIndent: 16),
           _MenuWidget(
             'clear_cache'.tr(),
             icon: Icons.cleaning_services_rounded,
@@ -122,7 +124,8 @@ class _MenuDrawerState extends State<MenuDrawer> {
               }
             },
           ),
-          Divider(color: colors.listDivider, height: 1, indent: 16, endIndent: 16),
+          Divider(
+              color: colors.listDivider, height: 1, indent: 16, endIndent: 16),
           _MenuWidget(
             'customer_service'.tr(),
             icon: Icons.headset_mic_rounded,
@@ -133,7 +136,8 @@ class _MenuDrawerState extends State<MenuDrawer> {
               }
             },
           ),
-          Divider(color: colors.listDivider, height: 1, indent: 16, endIndent: 16),
+          Divider(
+              color: colors.listDivider, height: 1, indent: 16, endIndent: 16),
           _MenuWidget(
             'logout'.tr(),
             icon: Icons.logout_rounded,
@@ -149,7 +153,8 @@ class _MenuDrawerState extends State<MenuDrawer> {
               }
             },
           ),
-          Divider(color: colors.listDivider, height: 1, indent: 16, endIndent: 16),
+          Divider(
+              color: colors.listDivider, height: 1, indent: 16, endIndent: 16),
           _MenuWidget(
             'delete_account'.tr(),
             icon: Icons.person_remove_rounded,
@@ -245,42 +250,45 @@ class _MenuDrawerState extends State<MenuDrawer> {
   Widget getLanguageOption(BuildContext context) {
     final colors = context.appColors;
     return Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Tap(
-            child: Container(
-                padding: const EdgeInsets.only(left: 5, right: 5),
-                margin: const EdgeInsets.only(left: 15, right: 20),
-                decoration: BoxDecoration(
-                    border: Border.all(color: colors.listDivider),
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Tap(
+          child: Container(
+              padding: const EdgeInsets.only(left: 5, right: 5),
+              margin: const EdgeInsets.only(left: 15, right: 20),
+              decoration: BoxDecoration(
+                  border: Border.all(color: colors.listDivider),
+                  borderRadius: BorderRadius.circular(16),
+                  color: colors.surface,
+                  boxShadow: [context.appShadows.buttonShadowSmall]),
+              child: Row(
+                children: [
+                  const Width(10),
+                  DropdownButton<String>(
+                    items: [
+                      menu(currentLanguage),
+                      menu(Language.values
+                          .where((element) => element != currentLanguage)
+                          .first),
+                    ],
+                    onChanged: (value) async {
+                      if (value == null) {
+                        return;
+                      }
+                      await context
+                          .setLocale(Language.find(value.toLowerCase()).locale);
+                    },
+                    value: describeEnum(currentLanguage).capitalizeFirst,
+                    underline: const SizedBox.shrink(),
+                    elevation: 1,
                     borderRadius: BorderRadius.circular(16),
-                    color: colors.surface,
-                    boxShadow: [context.appShadows.buttonShadowSmall]),
-                child: Row(
-                  children: [
-                    const Width(10),
-                    DropdownButton<String>(
-                      items: [
-                        menu(currentLanguage),
-                        menu(Language.values.where((element) => element != currentLanguage).first),
-                      ],
-                      onChanged: (value) async {
-                        if (value == null) {
-                          return;
-                        }
-                        await context.setLocale(Language.find(value.toLowerCase()).locale);
-                      },
-                      value: describeEnum(currentLanguage).capitalizeFirst,
-                      underline: const SizedBox.shrink(),
-                      elevation: 1,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ],
-                )),
-            onTap: () async {},
-          ),
-        ],
-      );
+                  ),
+                ],
+              )),
+          onTap: () async {},
+        ),
+      ],
+    );
   }
 
   DropdownMenuItem<String> menu(Language language) {
@@ -322,7 +330,8 @@ class _MenuWidget extends StatelessWidget {
   final Function() onTap;
   final Color? color;
 
-  const _MenuWidget(this.text, {Key? key, required this.onTap, this.icon, this.color}) : super(key: key);
+  const _MenuWidget(this.text,
+      {super.key, required this.onTap, this.icon, this.color});
 
   @override
   Widget build(BuildContext context) {

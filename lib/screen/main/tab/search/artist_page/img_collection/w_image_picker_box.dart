@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
 
 /// 이미지 선택/미리보기 박스

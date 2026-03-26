@@ -30,7 +30,8 @@ class _FestivalPosterState extends State<FestivalPoster> {
 
   Future<void> _loadLikeState() async {
     try {
-      final resp = await DioClient.dio.get('/festivals/${widget.poster.id}/liked');
+      final resp =
+          await DioClient.dio.get('/festivals/${widget.poster.id}/liked');
       if (mounted) setState(() => _liked = resp.data as bool);
     } catch (e) {
       debugPrint('loadLikeState error: $e');
@@ -39,7 +40,8 @@ class _FestivalPosterState extends State<FestivalPoster> {
 
   Future<void> _toggleLike() async {
     try {
-      final resp = await DioClient.dio.post('/festivals/${widget.poster.id}/like');
+      final resp =
+          await DioClient.dio.post('/festivals/${widget.poster.id}/like');
       if (mounted) {
         setState(() => _liked = resp.data as bool);
         context.read<LikeNotifier>().notifyLikeChanged();
@@ -59,7 +61,8 @@ class _FestivalPosterState extends State<FestivalPoster> {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: ResizeImage(NetworkImage(widget.poster.posterUrl), width: 100),
+                image: ResizeImage(NetworkImage(widget.poster.posterUrl),
+                    width: 100),
                 fit: BoxFit.cover,
               ),
             ),
@@ -123,7 +126,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
                             Icon(Icons.calendar_today_rounded,
                                 color: colors.accentColor, size: 16),
                             const SizedBox(width: 6),
-                            Text("${widget.poster.startDate}",
+                            Text(widget.poster.startDate,
                                 style: const TextStyle(
                                     fontSize: 15, color: Colors.white70)),
                           ],
@@ -135,7 +138,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
                                 color: colors.accentColor, size: 16),
                             const SizedBox(width: 6),
                             Expanded(
-                              child: Text("${widget.poster.location}",
+                              child: Text(widget.poster.location,
                                   softWrap: true,
                                   style: const TextStyle(
                                       fontSize: 15, color: Colors.white70)),
@@ -157,7 +160,9 @@ class _FestivalPosterState extends State<FestivalPoster> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Icon(
-                              _liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                              _liked
+                                  ? Icons.favorite_rounded
+                                  : Icons.favorite_border_rounded,
                               color: _liked ? Colors.pink[200] : Colors.white,
                               size: 20,
                             ),

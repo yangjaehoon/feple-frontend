@@ -8,9 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dto_artist_photo_response.dart';
 
-const _dailyOption = FestivalPreview(id: -2, title: '일상 사진', location: '', posterUrl: '', startDate: '');
-const _snsOption   = FestivalPreview(id: -3, title: 'SNS 사진',  location: '', posterUrl: '', startDate: '');
-const _otherOption = FestivalPreview(id: -1, title: '기타',       location: '', posterUrl: '', startDate: '');
+const _dailyOption = FestivalPreview(
+    id: -2, title: '일상 사진', location: '', posterUrl: '', startDate: '');
+const _snsOption = FestivalPreview(
+    id: -3, title: 'SNS 사진', location: '', posterUrl: '', startDate: '');
+const _otherOption = FestivalPreview(
+    id: -1, title: '기타', location: '', posterUrl: '', startDate: '');
 
 class ImgCollectionWidget extends StatefulWidget {
   const ImgCollectionWidget(
@@ -300,86 +303,86 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                        // 제목 + 더보기 버튼
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                photo.title,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 16,
-                                  color: colors.textTitle,
+                          // 제목 + 더보기 버튼
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  photo.title,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 16,
+                                    color: colors.textTitle,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                maxLines: 2,
+                              ),
+                              if (isUploader)
+                                PopupMenuButton<String>(
+                                  padding: EdgeInsets.zero,
+                                  icon: Icon(Icons.more_vert_rounded,
+                                      color: colors.textSecondary, size: 20),
+                                  onSelected: (value) {
+                                    if (value == 'edit') {
+                                      _showEditBottomSheet(photo);
+                                    } else if (value == 'delete') {
+                                      _deletePhoto(photo.photoId);
+                                    }
+                                  },
+                                  itemBuilder: (_) => [
+                                    PopupMenuItem(
+                                      value: 'edit',
+                                      child: Row(children: [
+                                        Icon(Icons.edit_rounded,
+                                            size: 16,
+                                            color: colors.textSecondary),
+                                        const SizedBox(width: 8),
+                                        const Text('수정'),
+                                      ]),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 'delete',
+                                      child: Row(children: [
+                                        const Icon(Icons.delete_rounded,
+                                            size: 16, color: Colors.red),
+                                        const SizedBox(width: 8),
+                                        const Text('삭제',
+                                            style:
+                                                TextStyle(color: Colors.red)),
+                                      ]),
+                                    ),
+                                  ],
+                                ),
+                            ],
+                          ),
+
+                          // 카테고리 chip
+                          if (photo.description.isNotEmpty) ...[
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: colors.activate.withOpacity(0.12),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                photo.description,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: colors.activate,
+                                ),
+                                maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            if (isUploader)
-                              PopupMenuButton<String>(
-                                padding: EdgeInsets.zero,
-                                icon: Icon(Icons.more_vert_rounded,
-                                    color: colors.textSecondary, size: 20),
-                                onSelected: (value) {
-                                  if (value == 'edit') {
-                                    _showEditBottomSheet(photo);
-                                  } else if (value == 'delete') {
-                                    _deletePhoto(photo.photoId);
-                                  }
-                                },
-                                itemBuilder: (_) => [
-                                  PopupMenuItem(
-                                    value: 'edit',
-                                    child: Row(children: [
-                                      Icon(Icons.edit_rounded,
-                                          size: 16,
-                                          color: colors.textSecondary),
-                                      const SizedBox(width: 8),
-                                      const Text('수정'),
-                                    ]),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 'delete',
-                                    child: Row(children: [
-                                      const Icon(Icons.delete_rounded,
-                                          size: 16, color: Colors.red),
-                                      const SizedBox(width: 8),
-                                      const Text('삭제',
-                                          style:
-                                              TextStyle(color: Colors.red)),
-                                    ]),
-                                  ),
-                                ],
-                              ),
                           ],
-                        ),
-
-                        // 카테고리 chip
-                        if (photo.description.isNotEmpty) ...[
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: colors.activate.withOpacity(0.12),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              photo.description,
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: colors.activate,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
                         ],
-                      ],
+                      ),
                     ),
                   ),
-                ),
                 ),
               ],
             ),
@@ -506,7 +509,7 @@ class _EditPhotoSheetState extends State<_EditPhotoSheet> {
           ),
           const SizedBox(height: 12),
           DropdownButtonFormField<FestivalPreview>(
-            value: _selectedFestival,
+            initialValue: _selectedFestival,
             decoration: InputDecoration(
               labelText: '페스티벌',
               labelStyle: TextStyle(color: colors.textSecondary),
@@ -526,7 +529,7 @@ class _EditPhotoSheetState extends State<_EditPhotoSheet> {
                     child: Text(f.title, overflow: TextOverflow.ellipsis),
                   )),
               const DropdownMenuItem(value: _dailyOption, child: Text('일상 사진')),
-              const DropdownMenuItem(value: _snsOption,   child: Text('SNS 사진')),
+              const DropdownMenuItem(value: _snsOption, child: Text('SNS 사진')),
               const DropdownMenuItem(value: _otherOption, child: Text('기타')),
             ],
             onChanged: (f) => setState(() => _selectedFestival = f),
@@ -539,8 +542,9 @@ class _EditPhotoSheetState extends State<_EditPhotoSheet> {
               onPressed: () {
                 final newTitle = _titleCtrl.text.trim();
                 if (newTitle.isEmpty) return;
-                final newDesc =
-                    _selectedFestival?.id == -1 ? '' : (_selectedFestival?.title ?? '');
+                final newDesc = _selectedFestival?.id == -1
+                    ? ''
+                    : (_selectedFestival?.title ?? '');
                 Navigator.pop(context);
                 widget.onSave(newTitle, newDesc);
               },
@@ -552,8 +556,7 @@ class _EditPhotoSheetState extends State<_EditPhotoSheet> {
                 elevation: 0,
               ),
               child: const Text('저장',
-                  style:
-                      TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
             ),
           ),
         ],

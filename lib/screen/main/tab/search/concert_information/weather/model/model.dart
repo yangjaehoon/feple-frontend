@@ -67,6 +67,7 @@ class Model {
         height: 35.0,
       );
     }
+    return null;
   }
 
   Widget? getAirCondition(int index) {
@@ -96,5 +97,6 @@ class Model {
         style: TextStyle(color: Colors.indigo, fontWeight: FontWeight.bold),
       );
     }
+    return null;
   }
 }

@@ -18,14 +18,11 @@ class BoardCardHeader extends StatelessWidget {
     required this.onTap,
   });
 
-  @override
   Widget build(BuildContext context) {
-    final rs = ResponsiveSize(context);
     return Container(
       padding: const EdgeInsets.symmetric(
-          horizontal: AppDimens.paddingHorizontal, vertical: 10),
+          horizontal: AppDimens.paddingHorizontal, vertical: 12),
       width: double.infinity,
-      height: rs.h(AppDimens.boardHeaderHeight),
       decoration: BoxDecoration(
         color: headerColor,
         borderRadius: const BorderRadius.only(

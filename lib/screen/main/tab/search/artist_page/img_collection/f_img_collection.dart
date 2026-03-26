@@ -1,5 +1,4 @@
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/screen/main/tab/search/artist_page/img_collection/w_img_upload.dart';
 import 'package:flutter/material.dart';
 import 'package:fast_app_base/screen/main/tab/search/artist_page/img_collection/w_img_collection_widget.dart';

@@ -6,9 +6,8 @@ class RxnPreferenceItem<T, R extends Rxn<T>> extends NullablePreferenceItem<T> {
   final R _rxnValue;
   bool _isLoaded = false;
 
-  RxnPreferenceItem(String key, [T? defaultValue])
-      : _rxnValue = createRxnValue<T, R>(defaultValue),
-        super(key, defaultValue);
+  RxnPreferenceItem(super.key, [super.defaultValue])
+      : _rxnValue = createRxnValue<T, R>(defaultValue);
 
   void _load() {
     _isLoaded = true;

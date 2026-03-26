@@ -1,9 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import '../../config.dart';
 import '../../model/poster_model.dart';
 import '../../network/dio_client.dart';
-
 
 class PosterProvider extends ChangeNotifier {
   List<PosterModel> _posters = [];

@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_enralgepost.dart';
@@ -40,17 +39,21 @@ class _MyCommentsScreenState extends State<MyCommentsScreen> {
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator(color: colors.loadingIndicator));
+            return Center(
+                child:
+                    CircularProgressIndicator(color: colors.loadingIndicator));
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(
-              child: Text('no_comments'.tr(), style: TextStyle(color: colors.textSecondary)),
+              child: Text('no_comments'.tr(),
+                  style: TextStyle(color: colors.textSecondary)),
             );
           }
           final comments = snapshot.data!;
           return ListView.separated(
             itemCount: comments.length,
-            separatorBuilder: (_, __) => Divider(thickness: 1, color: colors.listDivider),
+            separatorBuilder: (_, __) =>
+                Divider(thickness: 1, color: colors.listDivider),
             itemBuilder: (context, index) {
               final c = comments[index];
               return ListTile(
@@ -71,7 +74,8 @@ class _MyCommentsScreenState extends State<MyCommentsScreen> {
                 },
                 title: Text(
                   c.content,
-                  style: TextStyle(color: colors.textTitle, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      color: colors.textTitle, fontWeight: FontWeight.w600),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -81,7 +85,8 @@ class _MyCommentsScreenState extends State<MyCommentsScreen> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                leading: Icon(Icons.chat_bubble_rounded, color: colors.activate, size: 20),
+                leading: Icon(Icons.chat_bubble_rounded,
+                    color: colors.activate, size: 20),
               );
             },
           );

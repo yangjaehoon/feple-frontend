@@ -1,6 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 import 'package:fast_app_base/screen/main/tab/my_page/w_my_comments.dart';
 import 'package:fast_app_base/screen/main/tab/my_page/w_my_posts.dart';
@@ -44,31 +42,39 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildStatCard(context,
+              _buildStatCard(
+                context,
                 icon: Icons.verified_rounded,
                 label: 'certification_badge'.tr(),
                 value: '0',
                 color: AppColors.sunnyYellow,
               ),
-              _buildStatCard(context,
+              _buildStatCard(
+                context,
                 icon: Icons.article_rounded,
                 label: 'posts'.tr(),
                 value: postCount,
                 color: AppColors.skyBlue,
-                onTap: () => Navigator.push(context, MaterialPageRoute(
-                  builder: (_) => MyPostsScreen(userId: widget.userId),
-                )),
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => MyPostsScreen(userId: widget.userId),
+                    )),
               ),
-              _buildStatCard(context,
+              _buildStatCard(
+                context,
                 icon: Icons.chat_bubble_rounded,
                 label: 'comments'.tr(),
                 value: commentCount,
                 color: AppColors.kawaiiPink,
-                onTap: () => Navigator.push(context, MaterialPageRoute(
-                  builder: (_) => MyCommentsScreen(userId: widget.userId),
-                )),
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => MyCommentsScreen(userId: widget.userId),
+                    )),
               ),
-              _buildStatCard(context,
+              _buildStatCard(
+                context,
                 icon: Icons.bookmark_rounded,
                 label: 'bookmarks'.tr(),
                 value: '0',

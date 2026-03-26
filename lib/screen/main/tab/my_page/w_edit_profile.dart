@@ -1,9 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/model/user_model.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 import 'package:fast_app_base/provider/user_provider.dart';
@@ -177,10 +175,15 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                         radius: 48,
                         backgroundColor: colors.backgroundMain,
                         backgroundImage: _pickedImage != null
-                            ? FileImage(File(_pickedImage!.path)) as ImageProvider
-                            : (user != null && user.profileImageUrl != null && user.profileImageUrl!.isNotEmpty)
-                                ? NetworkImage(user.profileImageUrl!) as ImageProvider
-                                : const AssetImage('assets/image/feple_logo.png'),
+                            ? FileImage(File(_pickedImage!.path))
+                                as ImageProvider
+                            : (user != null &&
+                                    user.profileImageUrl != null &&
+                                    user.profileImageUrl!.isNotEmpty)
+                                ? NetworkImage(user.profileImageUrl!)
+                                    as ImageProvider
+                                : const AssetImage(
+                                    'assets/image/feple_logo.png'),
                         child: null,
                       ),
                     ),
@@ -206,8 +209,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
             const SizedBox(height: 8),
             Text(
               'change_photo'.tr(),
-              style:
-                  TextStyle(fontSize: 13, color: colors.textSecondary),
+              style: TextStyle(fontSize: 13, color: colors.textSecondary),
             ),
             const SizedBox(height: 36),
 

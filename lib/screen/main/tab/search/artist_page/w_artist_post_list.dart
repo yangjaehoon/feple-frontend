@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/model/post_model.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_enralgepost.dart';
@@ -82,7 +81,8 @@ class _ArtistPostListScreenState extends State<ArtistPostListScreen> {
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(
-                child: CircularProgressIndicator(color: colors.loadingIndicator),
+                child:
+                    CircularProgressIndicator(color: colors.loadingIndicator),
               );
             }
             if (snapshot.hasError) {

@@ -12,7 +12,7 @@ class ModeSwitch extends StatefulWidget {
   final Image? inactiveThumbImage;
 
   const ModeSwitch({
-    Key? key,
+    super.key,
     required this.value,
     required this.onChanged,
     required this.height,
@@ -20,7 +20,7 @@ class ModeSwitch extends StatefulWidget {
     this.activeThumbImage,
     this.inactiveThumbColor = Colors.black,
     this.inactiveThumbImage,
-  }) : super(key: key);
+  });
 
   @override
   State<ModeSwitch> createState() => _ModeSwitchState();

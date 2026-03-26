@@ -4,7 +4,7 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 /// The hove page which hosts the calendar
 class FtvCalender extends StatefulWidget {
   /// Creates the home page to display teh calendar widget.
-  const FtvCalender({Key? key}) : super(key: key);
+  const FtvCalender({super.key});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -16,14 +16,14 @@ class _FtvCalenderState extends State<FtvCalender> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: SfCalendar(
-          view: CalendarView.month,
-          dataSource: MeetingDataSource(_getDataSource()),
-          // by default the month appointment display mode set as Indicator, we can
-          // change the display mode as appointment using the appointment display
-          // mode property
-          monthViewSettings: const MonthViewSettings(
-              appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
-        ));
+      view: CalendarView.month,
+      dataSource: MeetingDataSource(_getDataSource()),
+      // by default the month appointment display mode set as Indicator, we can
+      // change the display mode as appointment using the appointment display
+      // mode property
+      monthViewSettings: const MonthViewSettings(
+          appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
+    ));
   }
 
   List<Meeting> _getDataSource() {

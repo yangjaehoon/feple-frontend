@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +35,8 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
           child: Row(
             children: [
               Container(
-                width: 3, height: 20,
+                width: 3,
+                height: 20,
                 decoration: BoxDecoration(
                   color: colors.sectionBarColor,
                   borderRadius: BorderRadius.circular(2),
@@ -46,7 +46,9 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
               Text(
                 'follow_artists'.tr(),
                 style: TextStyle(
-                  fontSize: 18, fontWeight: FontWeight.w800, color: colors.textTitle,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: colors.textTitle,
                 ),
               ),
             ],
@@ -58,13 +60,17 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return SizedBox(
                 height: 160,
-                child: Center(child: CircularProgressIndicator(color: colors.loadingIndicator)),
+                child: Center(
+                    child: CircularProgressIndicator(
+                        color: colors.loadingIndicator)),
               );
             }
             if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                child: Text('no_followed_artists'.tr(), style: TextStyle(color: colors.textSecondary)),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                child: Text('no_followed_artists'.tr(),
+                    style: TextStyle(color: colors.textSecondary)),
               );
             }
             final artists = snapshot.data!;
@@ -88,21 +94,27 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
                             boxShadow: [
                               BoxShadow(
                                 color: colors.cardShadow.withOpacity(0.2),
-                                blurRadius: 8, offset: const Offset(0, 2),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
                               ),
                             ],
                           ),
                           child: Container(
                             padding: const EdgeInsets.all(2),
-                            decoration: BoxDecoration(shape: BoxShape.circle, color: colors.surface),
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle, color: colors.surface),
                             child: CircleAvatar(
                               radius: 50,
                               backgroundColor: colors.backgroundMain,
-                              backgroundImage: (artist.profileImageUrl != null && artist.profileImageUrl!.isNotEmpty)
-                                  ? NetworkImage(artist.profileImageUrl!)
-                                  : null,
-                              child: (artist.profileImageUrl == null || artist.profileImageUrl!.isEmpty)
-                                  ? Icon(Icons.person_rounded, size: 40, color: colors.textSecondary)
+                              backgroundImage:
+                                  (artist.profileImageUrl != null &&
+                                          artist.profileImageUrl!.isNotEmpty)
+                                      ? NetworkImage(artist.profileImageUrl!)
+                                      : null,
+                              child: (artist.profileImageUrl == null ||
+                                      artist.profileImageUrl!.isEmpty)
+                                  ? Icon(Icons.person_rounded,
+                                      size: 40, color: colors.textSecondary)
                                   : null,
                             ),
                           ),
@@ -111,7 +123,10 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
                           padding: const EdgeInsets.only(top: 6.0),
                           child: Text(
                             artist.name,
-                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textTitle),
+                            style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: colors.textTitle),
                           ),
                         ),
                       ],
@@ -132,7 +147,8 @@ class _FollowedArtist {
   final String name;
   final String? profileImageUrl;
 
-  const _FollowedArtist({required this.id, required this.name, this.profileImageUrl});
+  const _FollowedArtist(
+      {required this.id, required this.name, this.profileImageUrl});
 
   factory _FollowedArtist.fromJson(Map<String, dynamic> json) {
     return _FollowedArtist(

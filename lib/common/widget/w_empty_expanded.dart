@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class EmptyExpanded extends StatelessWidget {
   final int flex;
 
-  const EmptyExpanded({Key? key, this.flex = 1}) : super(key: key);
+  const EmptyExpanded({super.key, this.flex = 1});
 
   @override
   Widget build(BuildContext context) {

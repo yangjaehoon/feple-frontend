@@ -1,4 +1,4 @@
-library useful_extension;
+library;
 
 export './function_invokes.dart';
 export './kotlin_collections.dart';

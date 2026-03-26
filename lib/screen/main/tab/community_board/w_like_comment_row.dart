@@ -1,5 +1,4 @@
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
 
 /// 좋아요 + 댓글 수 표시 행
@@ -27,9 +26,7 @@ class LikeCommentRow extends StatelessWidget {
           child: Row(
             children: [
               Icon(
-                liked
-                    ? Icons.favorite_rounded
-                    : Icons.favorite_border_rounded,
+                liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
                 color: AppColors.kawaiiPink,
               ),
               const SizedBox(width: 4),

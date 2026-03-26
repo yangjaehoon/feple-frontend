@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:card_swiper/card_swiper.dart';
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/screen/main/tab/search/concert_information/f_festival_information.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -40,7 +39,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
       );
     }
     final items = previewProvider.items;
-    
+
     return Stack(
       children: [
         Container(
@@ -98,8 +97,8 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => FestivalInformationFragment(
-                              poster: poster)),
+                          builder: (context) =>
+                              FestivalInformationFragment(poster: poster)),
                     );
                   },
                   child: Container(

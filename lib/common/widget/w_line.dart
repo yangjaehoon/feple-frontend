@@ -4,11 +4,11 @@ import '../common.dart';
 
 class Line extends StatelessWidget {
   const Line({
-    Key? key,
+    super.key,
     this.color,
     this.height = 1,
     this.margin,
-  }) : super(key: key);
+  });
 
   final Color? color;
   final EdgeInsets? margin;

@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
-import 'package:fast_app_base/common/util/responsive_size.dart';
 import 'package:flutter/material.dart';
 
 /// 게시판 카드 상단 헤더 (아이콘 + 제목 + 더보기)

@@ -42,23 +42,25 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
 
     return Stack(
       children: [
-        Container(
-          height: 300,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: ResizeImage(
-                NetworkImage(
-                  items[_currentPage].posterUrl,
+        ClipRect(
+          child: Container(
+            height: 300,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: ResizeImage(
+                  NetworkImage(
+                    items[_currentPage].posterUrl,
+                  ),
+                  width: 100,
                 ),
-                width: 100,
+                fit: BoxFit.cover,
               ),
-              fit: BoxFit.cover,
             ),
-          ),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-            child: Container(
-              color: colors.swiperOverlay.withOpacity(0.5),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+              child: Container(
+                color: colors.swiperOverlay.withOpacity(0.5),
+              ),
             ),
           ),
         ),

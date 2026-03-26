@@ -41,6 +41,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
     final items = previewProvider.items;
 
     return Stack(
+      clipBehavior: Clip.none,
       children: [
         ClipRect(
           child: Container(
@@ -66,79 +67,77 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
         ),
         SizedBox(
           height: 300,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
-            child: Swiper(
-              onIndexChanged: _onPageChanged,
-              viewportFraction: 0.8,
-              scale: 0.6,
-              autoplay: true,
-              duration: 300,
-              itemCount: items.length,
-              pagination: SwiperPagination(
-                builder: DotSwiperPaginationBuilder(
-                  activeColor: colors.activate,
-                  color: colors.activate.withOpacity(0.3),
-                  activeSize: 10,
-                  size: 7,
-                ),
+          child: Swiper(
+            onIndexChanged: _onPageChanged,
+            viewportFraction: 0.8,
+            scale: 0.6,
+            autoplay: true,
+            duration: 300,
+            itemCount: items.length,
+            pagination: SwiperPagination(
+              margin: const EdgeInsets.only(bottom: 0),
+              builder: DotSwiperPaginationBuilder(
+                activeColor: colors.activate,
+                color: colors.activate.withOpacity(0.3),
+                activeSize: 10,
+                size: 7,
               ),
-              itemBuilder: (BuildContext context, int index) {
-                final item = items[index];
-                return GestureDetector(
-                  onTap: () {
-                    final poster = PosterModel(
-                      id: item.id,
-                      title: item.title,
-                      description: '',
-                      location: item.location,
-                      startDate: item.startDate,
-                      endDate: '',
-                      posterUrl: item.posterUrl,
-                    );
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              FestivalInformationFragment(poster: poster)),
-                    );
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: colors.cardShadow.withOpacity(0.2),
-                          blurRadius: 20,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.network(
-                        item.posterUrl,
-                        cacheWidth: 360,
-                        fit: BoxFit.fill,
+            ),
+            itemBuilder: (BuildContext context, int index) {
+              final item = items[index];
+              return GestureDetector(
+                onTap: () {
+                  final poster = PosterModel(
+                    id: item.id,
+                    title: item.title,
+                    description: '',
+                    location: item.location,
+                    startDate: item.startDate,
+                    endDate: '',
+                    posterUrl: item.posterUrl,
+                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            FestivalInformationFragment(poster: poster)),
+                  );
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: colors.cardShadow.withOpacity(0.2),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
                       ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.network(
+                      item.posterUrl,
+                      cacheWidth: 360,
+                      fit: BoxFit.fill,
                     ),
                   ),
-                );
-              },
-              layout: SwiperLayout.CUSTOM,
-              customLayoutOption: CustomLayoutOption(
-                startIndex: -1,
-                stateCount: 3,
-              )
-                ..addRotate([-45.0 / 180, 0.0, 45.0 / 180])
-                ..addTranslate([
-                  const Offset(-370.0, -40.0),
-                  const Offset(0.0, 0.0),
-                  const Offset(370.0, -40.0)
-                ]),
-              itemWidth: 180,
-              itemHeight: 254.5,
-            ),
+                ),
+              );
+            },
+            layout: SwiperLayout.CUSTOM,
+            customLayoutOption: CustomLayoutOption(
+              startIndex: -1,
+              stateCount: 3,
+            )
+              ..addRotate([-45.0 / 180, 0.0, 45.0 / 180])
+              ..addTranslate([
+                const Offset(-370.0, -20.0),
+                const Offset(0.0, 0.0),
+                const Offset(370.0, -20.0)
+              ]),
+            itemWidth: 180,
+            itemHeight: 254.5,
           ),
         ),
       ],

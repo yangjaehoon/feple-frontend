@@ -10,8 +10,12 @@ class FestivalPreviewProvider extends ChangeNotifier {
   }
 
   final List<FestivalPreview> _items = [];
-
   List<FestivalPreview> get items => List.unmodifiable(_items);
+
+  Set<String> _selectedGenres = {};
+  Set<String> _selectedRegions = {};
+  Set<String> get selectedGenres => Set.unmodifiable(_selectedGenres);
+  Set<String> get selectedRegions => Set.unmodifiable(_selectedRegions);
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -23,6 +27,30 @@ class FestivalPreviewProvider extends ChangeNotifier {
   final int _size = 20;
   bool _hasMore = true;
   bool get hasMore => _hasMore;
+
+  void toggleGenre(String genre) {
+    if (_selectedGenres.contains(genre)) {
+      _selectedGenres.remove(genre);
+    } else {
+      _selectedGenres.add(genre);
+    }
+    refresh();
+  }
+
+  void toggleRegion(String region) {
+    if (_selectedRegions.contains(region)) {
+      _selectedRegions.remove(region);
+    } else {
+      _selectedRegions.add(region);
+    }
+    refresh();
+  }
+
+  void clearFilters() {
+    _selectedGenres = {};
+    _selectedRegions = {};
+    refresh();
+  }
 
   Future<void> refresh() async {
     _items.clear();
@@ -42,13 +70,20 @@ class FestivalPreviewProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      final Map<String, dynamic> params = {'page': _page, 'size': _size};
+      if (_selectedGenres.isNotEmpty) {
+        params['genres'] = _selectedGenres.toList();
+      }
+      if (_selectedRegions.isNotEmpty) {
+        params['regions'] = _selectedRegions.toList();
+      }
+
       final resp = await DioClient.dio.get(
         '/festivals',
-        queryParameters: {'page': _page, 'size': _size},
+        queryParameters: params,
       );
 
       final decoded = resp.data;
-
       final List<dynamic> list =
           decoded is List ? decoded : (decoded['content'] as List<dynamic>);
 

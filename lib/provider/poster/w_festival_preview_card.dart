@@ -28,16 +28,40 @@ class FestivalPreviewCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
-            width: 110,
-            margin: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: colors.backgroundMain,
-              borderRadius: BorderRadius.circular(16),
-              image: DecorationImage(
-                image:
-                    ResizeImage(NetworkImage(festival.posterUrl), width: 220),
-                fit: BoxFit.cover,
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Container(
+              width: 110,
+              height: 120,
+              margin: const EdgeInsets.all(10),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: colors.backgroundMain,
+                      image: DecorationImage(
+                        image: ResizeImage(
+                            NetworkImage(festival.posterUrl), width: 220),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  if (festival.isEnded) ...[
+                    Container(color: Colors.black.withOpacity(0.5)),
+                    const Center(
+                      child: Text(
+                        '종료',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
           ),

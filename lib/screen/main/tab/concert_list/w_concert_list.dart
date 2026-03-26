@@ -19,31 +19,31 @@ class _ConcertListWidgetState extends State<ConcertListWidget> {
     final previewPoster = context.watch<FestivalPreviewProvider>();
 
     if (previewPoster.isLoading && previewPoster.items.isEmpty) {
-      return const SliverToBoxAdapter(
-        child: Center(child: CircularProgressIndicator()),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (previewPoster.error != null && previewPoster.items.isEmpty) {
-      return SliverToBoxAdapter(
-        child: Center(child: Text(previewPoster.error!)),
+      return Center(child: Text(previewPoster.error!));
+    }
+
+    if (previewPoster.items.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.all(32),
+        child: Center(child: Text('해당 조건의 페스티벌이 없습니다.')),
       );
     }
 
-    return SliverList.builder(
-      itemCount: previewPoster.items.length,
-      itemBuilder: (context, index) {
-        final item = previewPoster.items[index];
+    return Column(
+      children: previewPoster.items.map((item) {
         return GestureDetector(
           onTap: () {
-            // Convert FestivalPreview → PosterModel for detail page
             final poster = PosterModel(
               id: item.id,
               title: item.title,
               description: '',
               location: item.location,
               startDate: item.startDate,
-              endDate: '',
+              endDate: item.endDate ?? '',
               posterUrl: item.posterUrl,
             );
             Navigator.push(
@@ -56,7 +56,7 @@ class _ConcertListWidgetState extends State<ConcertListWidget> {
           },
           child: FestivalPreviewCard(festival: item),
         );
-      },
+      }).toList(),
     );
   }
 }

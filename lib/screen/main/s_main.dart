@@ -1,28 +1,21 @@
-import 'package:after_layout/after_layout.dart';
-import 'package:fast_app_base/common/cli_common.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
-import 'package:fast_app_base/login/login.dart';
 import 'package:fast_app_base/screen/main/tab/tab_item.dart';
 import 'package:fast_app_base/screen/main/tab/tab_navigator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 
 import '../../common/common.dart';
 import '../../provider/post_change_notifier.dart';
-import '../../provider/poster/poster_provider.dart';
 import 'w_menu_drawer.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
-
 
   @override
   State<MainScreen> createState() => MainScreenState();
 }
 
 class MainScreenState extends State<MainScreen>
-    with SingleTickerProviderStateMixin{
+    with SingleTickerProviderStateMixin {
   TabItem _currentTab = TabItem.home;
   final Set<int> _visitedTabs = {};
   final tabs = [
@@ -32,7 +25,8 @@ class MainScreenState extends State<MainScreen>
     TabItem.concertList,
     TabItem.favorite,
   ];
-  final List<GlobalKey<NavigatorState>> navigatorKeys = List.generate(5, (_) => GlobalKey<NavigatorState>());
+  final List<GlobalKey<NavigatorState>> navigatorKeys =
+      List.generate(5, (_) => GlobalKey<NavigatorState>());
 
   int get _currentIndex => tabs.indexOf(_currentTab);
 
@@ -92,8 +86,6 @@ class MainScreenState extends State<MainScreen>
                     : const SizedBox.shrink(),
               ))
           .toList());
-
-
 
   Widget _buildBottomNavigationBar(BuildContext context) {
     final colors = context.appColors;
@@ -161,9 +153,7 @@ class MainScreenState extends State<MainScreen>
         icon: Icon(
           key: ValueKey(label),
           activate ? iconData : inActivateIconData,
-          color: activate
-              ? colors.activate
-              : colors.textSecondary,
+          color: activate ? colors.activate : colors.textSecondary,
         ),
         label: label);
   }
@@ -186,5 +176,4 @@ class MainScreenState extends State<MainScreen>
       }
     }
   }
-
 }

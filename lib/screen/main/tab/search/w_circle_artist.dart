@@ -1,6 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
 import '../../../../model/artist_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -186,7 +184,8 @@ class _GenreChip extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  const _GenreChip({required this.label, required this.selected, required this.onTap});
+  const _GenreChip(
+      {required this.label, required this.selected, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

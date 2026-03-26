@@ -1,8 +1,5 @@
 import 'package:fast_app_base/screen/main/tab/tab_item.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import '../../../provider/poster/poster_provider.dart';
 
 class TabNavigator extends StatelessWidget {
   const TabNavigator({
@@ -17,13 +14,12 @@ class TabNavigator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Navigator(
-        key: navigatorKey,
-        onGenerateRoute: (routeSettings) {
-          return
-            MaterialPageRoute(
-            builder: (context) => tabItem.firstPage,
-          );
-        },
+      key: navigatorKey,
+      onGenerateRoute: (routeSettings) {
+        return MaterialPageRoute(
+          builder: (context) => tabItem.firstPage,
+        );
+      },
     );
   }
 }

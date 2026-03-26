@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
-import '../app.dart';
 import '../auth/token_store.dart';
 import '../model/user_model.dart' as app;
 import '../provider/user_provider.dart';
@@ -57,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 28),
 
                 // ── 환영 텍스트 ──
-                  Text(
+                Text(
                   'welcome'.tr(),
                   style: TextStyle(
                     fontSize: 28,
@@ -67,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                  Text(
+                Text(
                   'login_subtitle'.tr(),
                   style: TextStyle(
                     fontSize: 15,
@@ -114,8 +113,7 @@ class _LoginPageState extends State<LoginPage> {
                             height: 22,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation(Colors.white),
+                              valueColor: AlwaysStoppedAnimation(Colors.white),
                             ),
                           )
                         : Text(
@@ -137,7 +135,7 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                      Text(
+                    Text(
                       'not_member_yet'.tr(),
                       style: TextStyle(
                         color: AppColors.textMuted,
@@ -189,11 +187,13 @@ class _LoginPageState extends State<LoginPage> {
             const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: AppColors.skyBlueLight.withValues(alpha: 0.5)),
+          borderSide:
+              BorderSide(color: AppColors.skyBlueLight.withValues(alpha: 0.5)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: AppColors.skyBlueLight.withValues(alpha: 0.4)),
+          borderSide:
+              BorderSide(color: AppColors.skyBlueLight.withValues(alpha: 0.4)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
@@ -230,14 +230,19 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _loginWithEmail() async {
+    print('--- 이메일 로그인 시도 ---');
     final email = emailController.text.trim();
     final password = passwordController.text;
 
     if (email.isEmpty || password.isEmpty) {
+      print('이메일/비밀번호 빈칸 에러');
       Fluttertoast.showToast(
         msg: 'enter_email_password'.tr(),
         backgroundColor: AppColors.skyBlue,
         textColor: Colors.white,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('enter_email_password'.tr())),
       );
       return;
     }
@@ -265,11 +270,12 @@ class _LoginPageState extends State<LoginPage> {
       if (!mounted) return;
       userProvider.setUser(user);
     } catch (e) {
-      Fluttertoast.showToast(
-        msg: 'login_failed_detail'.tr(args: [e.toString()]),
-        backgroundColor: AppColors.skyBlue,
-        textColor: Colors.white,
-      );
+      print('=== 로그인 실패 에러 ===\n$e\n======================');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('login_failed_detail'.tr(args: [e.toString()]))),
+        );
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -301,11 +307,12 @@ class _LoginPageState extends State<LoginPage> {
         textColor: Colors.white,
       );
     } catch (e) {
-      Fluttertoast.showToast(
-        msg: 'kakao_login_failed'.tr(args: [e.toString()]),
-        backgroundColor: AppColors.skyBlue,
-        textColor: Colors.white,
-      );
+      print('=== 카카오 로그인 실패 에러 ===\n$e\n======================');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('kakao_login_failed'.tr(args: [e.toString()]))),
+        );
+      }
     }
   }
 

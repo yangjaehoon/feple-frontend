@@ -1,6 +1,3 @@
-import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
-import '../auth/token_store.dart';
 import '../network/dio_client.dart';
 import 'follow_response.dart';
 import 'follow_status.dart';

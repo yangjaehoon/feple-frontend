@@ -6,14 +6,13 @@ const width5 = Width(5);
 const height10 = Width(10);
 const height5 = Width(5);
 
-
 class Height extends StatelessWidget {
   final double height;
 
   const Height(
     this.height, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +27,8 @@ class Width extends StatelessWidget {
 
   const Width(
     this.width, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

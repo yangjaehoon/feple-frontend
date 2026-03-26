@@ -1,5 +1,4 @@
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:fast_app_base/common/util/responsive_size.dart';
 import 'package:fast_app_base/model/post_model.dart';
@@ -74,8 +73,8 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
           vertical: AppDimens.paddingVertical),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: const BorderRadius.all(
-            Radius.circular(AppDimens.cardRadius)),
+        borderRadius:
+            const BorderRadius.all(Radius.circular(AppDimens.cardRadius)),
         boxShadow: [
           BoxShadow(
             color: colors.cardShadow.withOpacity(0.12),
@@ -94,8 +93,7 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) =>
-                      CommunityPost(boardname: widget.boardname),
+                  builder: (_) => CommunityPost(boardname: widget.boardname),
                 ),
               );
             },
@@ -178,8 +176,7 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.favorite_border_rounded,
-                      color: AppColors.kawaiiPink,
-                      size: AppDimens.iconSizeLg),
+                      color: AppColors.kawaiiPink, size: AppDimens.iconSizeLg),
                   const SizedBox(width: 4),
                   Text(
                     post.likeCount.toString(),
@@ -191,8 +188,7 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
                   ),
                   const SizedBox(width: 10),
                   Icon(Icons.chat_bubble_outline_rounded,
-                      color: colors.activate,
-                      size: AppDimens.iconSizeMd),
+                      color: colors.activate, size: AppDimens.iconSizeMd),
                   const SizedBox(width: 4),
                   Text(
                     post.commentCount.toString(),

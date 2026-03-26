@@ -4,9 +4,8 @@ class Arrow extends StatelessWidget {
   final double size;
   final AxisDirection direction;
 
-  const Arrow({Key? key, this.size = 15, AxisDirection? direction})
-      : direction = direction ?? AxisDirection.right,
-        super(key: key);
+  const Arrow({super.key, this.size = 15, AxisDirection? direction})
+      : direction = direction ?? AxisDirection.right;
 
   @override
   Widget build(BuildContext context) {

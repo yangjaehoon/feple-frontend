@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
 
@@ -58,8 +57,8 @@ class CommentSection extends StatelessWidget {
                     hintStyle: TextStyle(color: colors.textSecondary),
                     filled: true,
                     fillColor: Colors.transparent,
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 8),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                   style: TextStyle(color: colors.textTitle),
                   maxLines: null,
@@ -77,8 +76,7 @@ class CommentSection extends StatelessWidget {
                     )
                   : IconButton(
                       onPressed: onSubmit,
-                      icon: Icon(Icons.send_rounded,
-                          color: colors.activate),
+                      icon: Icon(Icons.send_rounded, color: colors.activate),
                     ),
               const SizedBox(width: 4),
             ],

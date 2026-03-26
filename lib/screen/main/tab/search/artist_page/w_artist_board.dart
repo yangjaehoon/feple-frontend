@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:fast_app_base/common/util/responsive_size.dart';
@@ -26,13 +25,10 @@ class ArtistBoard extends StatefulWidget {
 class _ArtistBoardState extends State<ArtistBoard> {
   final PostService _postService = PostService();
 
-  @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final rs = ResponsiveSize(context);
     return Container(
       width: double.infinity,
-      height: rs.h(AppDimens.boardCardHeight),
       margin: const EdgeInsets.symmetric(
           horizontal: AppDimens.paddingHorizontal,
           vertical: AppDimens.paddingVertical),
@@ -66,7 +62,7 @@ class _ArtistBoardState extends State<ArtistBoard> {
               );
             },
           ),
-          Expanded(child: _buildPostList(colors)),
+          _buildPostList(colors),
         ],
       ),
     );
@@ -129,8 +125,7 @@ class _ArtistBoardState extends State<ArtistBoard> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Icon(Icons.favorite_border_rounded,
-                      color: AppColors.kawaiiPink,
-                      size: AppDimens.iconSizeLg),
+                      color: AppColors.kawaiiPink, size: AppDimens.iconSizeLg),
                   const SizedBox(width: 4),
                   Text(
                     post.likeCount.toString(),
@@ -142,8 +137,7 @@ class _ArtistBoardState extends State<ArtistBoard> {
                   ),
                   const SizedBox(width: 10),
                   Icon(Icons.chat_bubble_outline_rounded,
-                      color: colors.activate,
-                      size: AppDimens.iconSizeMd),
+                      color: colors.activate, size: AppDimens.iconSizeMd),
                 ],
               ),
             );

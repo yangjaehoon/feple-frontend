@@ -7,9 +7,8 @@ class RxPreferenceItem<T, R extends Rx<T>> extends PreferenceItem<T> {
   final R _rxValue;
   bool _isLoaded = false;
 
-  RxPreferenceItem(String key, T defaultValue)
-      : _rxValue = createRxValue<T, R>(defaultValue),
-        super(key, defaultValue);
+  RxPreferenceItem(super.key, super.defaultValue)
+      : _rxValue = createRxValue<T, R>(defaultValue);
 
   void _load() {
     _isLoaded = true;
@@ -30,11 +29,11 @@ class RxPreferenceItem<T, R extends Rx<T>> extends PreferenceItem<T> {
 
   @override
   T get() {
-    if(!_isLoaded){
+    if (!_isLoaded) {
       _load();
     }
-    final value =  AppPreferences.getValue<T>(this);
-    if(_rxValue.value!=value){
+    final value = AppPreferences.getValue<T>(this);
+    if (_rxValue.value != value) {
       _rxValue.value = value;
     }
     return _rxValue.value;

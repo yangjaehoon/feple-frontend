@@ -1,6 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/screen/main/tab/my_page/w_edit_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -70,8 +68,10 @@ class _ProfileWidgetState extends State<ProfileWidget> {
               ),
               child: CircleAvatar(
                 radius: 48,
-                backgroundImage: (user.profileImageUrl != null && user.profileImageUrl!.isNotEmpty)
-                    ? CachedNetworkImageProvider(user.profileImageUrl!, maxWidth: 150) as ImageProvider
+                backgroundImage: (user.profileImageUrl != null &&
+                        user.profileImageUrl!.isNotEmpty)
+                    ? CachedNetworkImageProvider(user.profileImageUrl!,
+                        maxWidth: 150) as ImageProvider
                     : const AssetImage('assets/image/feple_logo.png'),
                 backgroundColor: colors.backgroundMain,
               ),
@@ -132,7 +132,8 @@ class _ProfileWidgetState extends State<ProfileWidget> {
     final colors = context.appColors;
     return Container(
       decoration: BoxDecoration(
-        color: isPrimary ? colors.actionBtnPrimary : colors.actionBtnSecondaryBg,
+        color:
+            isPrimary ? colors.actionBtnPrimary : colors.actionBtnSecondaryBg,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -141,7 +142,9 @@ class _ProfileWidgetState extends State<ProfileWidget> {
             offset: const Offset(0, 4),
           ),
         ],
-        border: isPrimary ? null : Border.all(color: colors.actionBtnSecondaryBorder),
+        border: isPrimary
+            ? null
+            : Border.all(color: colors.actionBtnSecondaryBorder),
       ),
       child: Material(
         color: Colors.transparent,

@@ -11,13 +11,10 @@ import 'package:fast_app_base/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:flutter/material.dart';
 
 class FestivalInformationFragment extends StatelessWidget {
-  
-  const FestivalInformationFragment({
-    Key? key, required this.poster
-  }) : super(key: key);
+  const FestivalInformationFragment({super.key, required this.poster});
 
   final PosterModel poster;
-  
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -35,7 +32,8 @@ class FestivalInformationFragment extends StatelessWidget {
               children: [
                 FestivalPoster(poster: poster),
                 FestivalArtists(festivalId: poster.id),
-                FestivalBoard(festivalId: poster.id, festivalName: poster.title),
+                FestivalBoard(
+                    festivalId: poster.id, festivalName: poster.title),
                 const FestivalTimetable(),
               ],
             ),

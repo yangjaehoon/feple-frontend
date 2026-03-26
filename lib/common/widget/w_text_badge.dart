@@ -20,7 +20,7 @@ class TextBadge extends StatelessWidget {
   static Color defaultBorderProvider() => Colors.transparent;
 
   const TextBadge({
-    Key? key,
+    super.key,
     required this.text,
     this.backgroundColor,
     this.textColor,
@@ -31,7 +31,7 @@ class TextBadge extends StatelessWidget {
     this.rightWidget,
     this.onTap,
     this.boder,
-  }) : super(key: key);
+  });
 
   TextBadge.theme(
     TextBadgeTheme theme, {
@@ -62,7 +62,8 @@ class TextBadge extends StatelessWidget {
 
   Container badge() {
     return Container(
-        padding: EdgeInsets.symmetric(vertical: verticalPadding, horizontal: horizontalPadding),
+        padding: EdgeInsets.symmetric(
+            vertical: verticalPadding, horizontal: horizontalPadding),
         decoration: BoxDecoration(
             color: backgroundColor,
             borderRadius: BorderRadius.circular(borderRadius),

@@ -21,9 +21,12 @@ class ImgUpload extends StatefulWidget {
   State<ImgUpload> createState() => _ImgUploadState();
 }
 
-const _dailyFestival = FestivalPreview(id: -2, title: '일상 사진', location: '', posterUrl: '', startDate: '');
-const _snsFestival   = FestivalPreview(id: -3, title: 'SNS 사진',  location: '', posterUrl: '', startDate: '');
-const _otherFestival = FestivalPreview(id: -1, title: '기타',      location: '', posterUrl: '', startDate: '');
+const _dailyFestival = FestivalPreview(
+    id: -2, title: '일상 사진', location: '', posterUrl: '', startDate: '');
+const _snsFestival = FestivalPreview(
+    id: -3, title: 'SNS 사진', location: '', posterUrl: '', startDate: '');
+const _otherFestival = FestivalPreview(
+    id: -1, title: '기타', location: '', posterUrl: '', startDate: '');
 
 class _ImgUploadState extends State<ImgUpload> {
   final _formKey = GlobalKey<FormState>();
@@ -42,7 +45,8 @@ class _ImgUploadState extends State<ImgUpload> {
   }
 
   Future<List<FestivalPreview>> _fetchFestivals() async {
-    final resp = await DioClient.dio.get('/artists/${widget.artistId}/schedule');
+    final resp =
+        await DioClient.dio.get('/artists/${widget.artistId}/schedule');
     final List<dynamic> list = resp.data as List<dynamic>;
     return list.map((e) {
       final m = e as Map<String, dynamic>;
@@ -66,7 +70,8 @@ class _ImgUploadState extends State<ImgUpload> {
   }
 
   void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _submit() async {
@@ -85,7 +90,8 @@ class _ImgUploadState extends State<ImgUpload> {
         artistId: widget.artistId,
         imageData: imageData!,
         title: titleTEC.text,
-        description: _selectedFestival!.id == -1 ? '' : _selectedFestival!.title,
+        description:
+            _selectedFestival!.id == -1 ? '' : _selectedFestival!.title,
       );
       if (!mounted) return;
       Navigator.pop(context, true);
@@ -177,7 +183,8 @@ class _ImgUploadState extends State<ImgUpload> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: colors.activate, width: 2),
+                          borderSide:
+                              BorderSide(color: colors.activate, width: 2),
                         ),
                         labelText: '작품명',
                         hintText: '작품명을 입력하세요.',
@@ -192,14 +199,15 @@ class _ImgUploadState extends State<ImgUpload> {
                       builder: (context, snapshot) {
                         final festivals = snapshot.data ?? [];
                         return DropdownButtonFormField<FestivalPreview>(
-                          value: _selectedFestival,
+                          initialValue: _selectedFestival,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: colors.activate, width: 2),
+                              borderSide:
+                                  BorderSide(color: colors.activate, width: 2),
                             ),
                             labelText: '페스티벌',
                             labelStyle: TextStyle(color: colors.textSecondary),
@@ -210,15 +218,21 @@ class _ImgUploadState extends State<ImgUpload> {
                           items: [
                             ...festivals.map((f) => DropdownMenuItem(
                                   value: f,
-                                  child: Text(f.title, overflow: TextOverflow.ellipsis),
+                                  child: Text(f.title,
+                                      overflow: TextOverflow.ellipsis),
                                 )),
-                            const DropdownMenuItem(value: _dailyFestival, child: Text('일상 사진')),
-                            const DropdownMenuItem(value: _snsFestival,   child: Text('SNS 사진')),
-                            const DropdownMenuItem(value: _otherFestival, child: Text('기타')),
+                            const DropdownMenuItem(
+                                value: _dailyFestival, child: Text('일상 사진')),
+                            const DropdownMenuItem(
+                                value: _snsFestival, child: Text('SNS 사진')),
+                            const DropdownMenuItem(
+                                value: _otherFestival, child: Text('기타')),
                           ],
-                          onChanged: (f) => setState(() => _selectedFestival = f),
-                          validator: (_) =>
-                              _selectedFestival == null ? '페스티벌을 선택해주세요.' : null,
+                          onChanged: (f) =>
+                              setState(() => _selectedFestival = f),
+                          validator: (_) => _selectedFestival == null
+                              ? '페스티벌을 선택해주세요.'
+                              : null,
                         );
                       },
                     ),

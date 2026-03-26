@@ -12,7 +12,7 @@ import '../model/user_model.dart' as app;
 import '../provider/user_provider.dart';
 
 class SignupPage extends StatefulWidget {
-  const SignupPage({Key? key}) : super(key: key);
+  const SignupPage({super.key});
 
   @override
   State<SignupPage> createState() => _SignupPageState();
@@ -122,7 +122,7 @@ class _SignupPageState extends State<SignupPage> {
                 const SizedBox(height: 24),
 
                 // ── 환영 텍스트 ──
-                  Text(
+                Text(
                   'signup'.tr(),
                   style: TextStyle(
                     fontSize: 26,
@@ -132,7 +132,7 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                  Text(
+                Text(
                   'signup_subtitle'.tr(),
                   style: TextStyle(
                     fontSize: 14,
@@ -188,8 +188,7 @@ class _SignupPageState extends State<SignupPage> {
                             height: 22,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation(Colors.white),
+                              valueColor: AlwaysStoppedAnimation(Colors.white),
                             ),
                           )
                         : Text(
@@ -207,7 +206,7 @@ class _SignupPageState extends State<SignupPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                      Text(
+                    Text(
                       'already_have_account'.tr(),
                       style: TextStyle(
                         color: AppColors.textMuted,

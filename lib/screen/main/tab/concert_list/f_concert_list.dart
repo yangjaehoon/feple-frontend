@@ -1,11 +1,8 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:fast_app_base/common/util/responsive_size.dart';
-import 'package:fast_app_base/provider/poster/poster_provider.dart';
 import 'package:fast_app_base/screen/main/tab/concert_list/w_concert_list.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../search/w_feple_app_bar.dart';
 
@@ -21,23 +18,23 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
   Widget build(BuildContext context) {
     final rs = ResponsiveSize(context);
     return Container(
-        color: context.appColors.backgroundMain,
-        child: Stack(
-          children: [
-            CustomScrollView(
-              slivers: [
-                SliverPadding(
-                  padding: EdgeInsets.only(
-                    top: rs.h(AppDimens.scrollPaddingTop),
-                    bottom: rs.h(AppDimens.scrollPaddingBottom),
-                  ),
-                  sliver: const ConcertListWidget(),
+      color: context.appColors.backgroundMain,
+      child: Stack(
+        children: [
+          CustomScrollView(
+            slivers: [
+              SliverPadding(
+                padding: EdgeInsets.only(
+                  top: rs.h(AppDimens.scrollPaddingTop),
+                  bottom: rs.h(AppDimens.scrollPaddingBottom),
                 ),
-              ],
-            ),
-            FepleAppBar('festival_schedule'.tr()),
-          ],
-        ),
+                sliver: const ConcertListWidget(),
+              ),
+            ],
+          ),
+          FepleAppBar('festival_schedule'.tr()),
+        ],
+      ),
     );
   }
 }

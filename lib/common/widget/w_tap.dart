@@ -5,8 +5,8 @@ class Tap extends StatelessWidget {
   final void Function()? onLongPress;
   final Widget child;
 
-  const Tap({Key? key, required this.onTap, required this.child, this.onLongPress})
-      : super(key: key);
+  const Tap(
+      {super.key, required this.onTap, required this.child, this.onLongPress});
 
   @override
   Widget build(BuildContext context) {

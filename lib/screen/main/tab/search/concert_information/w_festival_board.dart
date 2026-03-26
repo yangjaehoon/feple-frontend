@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:fast_app_base/common/util/responsive_size.dart';
@@ -33,13 +32,10 @@ class _FestivalBoardState extends State<FestivalBoard> {
     _postsFuture = _postService.fetchFestivalPosts(widget.festivalId);
   }
 
-  @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final rs = ResponsiveSize(context);
     return Container(
       width: double.infinity,
-      height: rs.h(AppDimens.boardCardHeight),
       margin: const EdgeInsets.symmetric(
           horizontal: AppDimens.paddingHorizontal,
           vertical: AppDimens.paddingVertical),
@@ -73,7 +69,7 @@ class _FestivalBoardState extends State<FestivalBoard> {
               );
             },
           ),
-          Expanded(child: _buildPostList(colors)),
+          _buildPostList(colors),
         ],
       ),
     );
@@ -136,8 +132,7 @@ class _FestivalBoardState extends State<FestivalBoard> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.favorite_border_rounded,
-                      color: colors.activate,
-                      size: AppDimens.iconSizeLg),
+                      color: colors.activate, size: AppDimens.iconSizeLg),
                   const SizedBox(width: 4),
                   Text(
                     post.likeCount.toString(),
@@ -149,8 +144,7 @@ class _FestivalBoardState extends State<FestivalBoard> {
                   ),
                   const SizedBox(width: 10),
                   Icon(Icons.chat_bubble_outline_rounded,
-                      color: colors.activate,
-                      size: AppDimens.iconSizeMd),
+                      color: colors.activate, size: AppDimens.iconSizeMd),
                 ],
               ),
             );

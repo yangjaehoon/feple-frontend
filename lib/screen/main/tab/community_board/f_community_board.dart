@@ -10,8 +10,8 @@ import 'package:flutter/material.dart';
 
 class CommunityBoardFragment extends StatelessWidget {
   const CommunityBoardFragment({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

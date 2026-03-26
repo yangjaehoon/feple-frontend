@@ -1,6 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../model/user_model.dart';
@@ -121,7 +119,8 @@ class _ChangeNicknameState extends State<ChangeNickname> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                           backgroundColor: AppColors.skyBlue,
-                          content: Text('nickname_change_failed'.tr(args: [e.toString()]))),
+                          content: Text('nickname_change_failed'
+                              .tr(args: [e.toString()]))),
                     );
                   }
                 },

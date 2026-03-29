@@ -25,12 +25,56 @@ class _SignupPageState extends State<SignupPage> {
   final nicknameController = TextEditingController();
   bool _isLoading = false;
 
+  // 닉네임 중복 확인 상태
+  bool _isCheckingNickname = false;
+  bool? _nicknameAvailable; // null=미확인, true=사용가능, false=불가
+  String _nicknameCheckMessage = '';
+  String _lastCheckedNickname = '';
+
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
     nicknameController.dispose();
     super.dispose();
+  }
+
+  Future<void> _checkNickname() async {
+    final nickname = nicknameController.text.trim();
+    if (nickname.isEmpty) {
+      setState(() {
+        _nicknameAvailable = false;
+        _nicknameCheckMessage = '닉네임을 입력해주세요.';
+      });
+      return;
+    }
+    if (nickname.length < 2 || nickname.length > 8) {
+      setState(() {
+        _nicknameAvailable = false;
+        _nicknameCheckMessage = '닉네임은 2자 이상 8자 이하로 입력해주세요.';
+      });
+      return;
+    }
+
+    setState(() => _isCheckingNickname = true);
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/users/check-nickname?nickname=${Uri.encodeComponent(nickname)}'),
+      );
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      setState(() {
+        _nicknameAvailable = body['available'] as bool;
+        _nicknameCheckMessage = body['message'] as String;
+        _lastCheckedNickname = nickname;
+      });
+    } catch (e) {
+      setState(() {
+        _nicknameAvailable = false;
+        _nicknameCheckMessage = '확인 중 오류가 발생했습니다.';
+      });
+    } finally {
+      if (mounted) setState(() => _isCheckingNickname = false);
+    }
   }
 
   Future<void> _register() async {
@@ -64,6 +108,24 @@ class _SignupPageState extends State<SignupPage> {
       return;
     }
 
+    // 중복 확인 미실시 또는 닉네임이 바뀐 경우
+    if (_nicknameAvailable == null || _lastCheckedNickname != nickname) {
+      Fluttertoast.showToast(
+        msg: '닉네임 중복 확인을 해주세요.',
+        backgroundColor: AppColors.skyBlue,
+        textColor: Colors.white,
+      );
+      return;
+    }
+    if (_nicknameAvailable == false) {
+      Fluttertoast.showToast(
+        msg: _nicknameCheckMessage,
+        backgroundColor: AppColors.skyBlue,
+        textColor: Colors.white,
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
     try {
       final response = await http.post(
@@ -72,7 +134,7 @@ class _SignupPageState extends State<SignupPage> {
         body: jsonEncode({
           'email': email,
           'password': password,
-          'nickname': nickname.isEmpty ? null : nickname,
+          'nickname': nickname,
         }),
       );
 
@@ -177,13 +239,8 @@ class _SignupPageState extends State<SignupPage> {
                 ),
                 const SizedBox(height: 14),
 
-                // ── 닉네임 입력 ──
-                _buildTextField(
-                  controller: nicknameController,
-                  hintText: '닉네임 (2~8자)',
-                  icon: Icons.badge_outlined,
-                  maxLength: 8,
-                ),
+                // ── 닉네임 입력 + 중복 확인 ──
+                _buildNicknameField(),
                 const SizedBox(height: 28),
 
                 // ── 가입 버튼 ──
@@ -249,6 +306,104 @@ class _SignupPageState extends State<SignupPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildNicknameField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: TextField(
+                controller: nicknameController,
+                maxLength: 8,
+                onChanged: (_) {
+                  // 닉네임이 바뀌면 확인 상태 초기화
+                  if (_nicknameAvailable != null) {
+                    setState(() {
+                      _nicknameAvailable = null;
+                      _nicknameCheckMessage = '';
+                    });
+                  }
+                },
+                style: const TextStyle(fontSize: 15, color: AppColors.textMain),
+                decoration: InputDecoration(
+                  counterText: '',
+                  prefixIcon: const Icon(Icons.badge_outlined,
+                      color: AppColors.skyBlue, size: 22),
+                  hintText: '닉네임 (2~8자)',
+                  hintStyle:
+                      const TextStyle(color: AppColors.textMuted, fontSize: 15),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 20, vertical: 16),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(
+                        color: AppColors.skyBlueLight.withValues(alpha: 0.5)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(
+                        color: _nicknameAvailable == false
+                            ? Colors.red
+                            : _nicknameAvailable == true
+                                ? Colors.green
+                                : AppColors.skyBlueLight
+                                    .withValues(alpha: 0.4)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide:
+                        const BorderSide(color: AppColors.skyBlue, width: 2),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              height: 52,
+              child: ElevatedButton(
+                onPressed: _isCheckingNickname ? null : _checkNickname,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.skyBlue,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                child: _isCheckingNickname
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white),
+                      )
+                    : const Text('중복 확인',
+                        style: TextStyle(
+                            fontSize: 13, fontWeight: FontWeight.w600)),
+              ),
+            ),
+          ],
+        ),
+        if (_nicknameCheckMessage.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 6, left: 4),
+            child: Text(
+              _nicknameCheckMessage,
+              style: TextStyle(
+                fontSize: 12,
+                color: _nicknameAvailable == true ? Colors.green : Colors.red,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+      ],
     );
   }
 

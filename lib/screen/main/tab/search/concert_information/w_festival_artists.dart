@@ -1,7 +1,10 @@
 import 'package:fast_app_base/common/common.dart';
+import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/network/dio_client.dart';
+import 'package:fast_app_base/provider/user_provider.dart';
 import 'package:fast_app_base/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class FestivalArtists extends StatefulWidget {
   final int festivalId;
@@ -13,19 +16,56 @@ class FestivalArtists extends StatefulWidget {
 }
 
 class _FestivalArtistsState extends State<FestivalArtists> {
-  late Future<List<_ArtistItem>> _future;
+  List<_ArtistItem> _artists = [];
+  Set<int> _followedIds = {};
+  bool _loading = true;
 
   @override
   void initState() {
     super.initState();
-    _future = _fetchArtists();
+    _fetch();
   }
 
-  Future<List<_ArtistItem>> _fetchArtists() async {
-    final resp =
-        await DioClient.dio.get('/festivals/${widget.festivalId}/artists');
-    final list = resp.data as List<dynamic>;
-    return list.map((e) => _ArtistItem.fromJson(e)).toList();
+  Future<void> _fetch() async {
+    try {
+      final artistFuture =
+          DioClient.dio.get('/festivals/${widget.festivalId}/artists');
+
+      final user = context.read<UserProvider>().user;
+      final followFuture = user != null
+          ? DioClient.dio.get('/users/${user.id}/following')
+          : null;
+
+      final artistRes = await artistFuture;
+      final artists = (artistRes.data as List)
+          .map((e) => _ArtistItem.fromJson(e))
+          .toList();
+
+      Set<int> followed = {};
+      if (followFuture != null) {
+        final followRes = await followFuture;
+        followed = (followRes.data as List)
+            .map((a) => (a['id'] as num).toInt())
+            .toSet();
+      }
+
+      // 팔로우한 아티스트를 앞으로 정렬
+      artists.sort((a, b) {
+        final aF = followed.contains(a.artistId) ? 0 : 1;
+        final bF = followed.contains(b.artistId) ? 0 : 1;
+        return aF.compareTo(bF);
+      });
+
+      if (mounted) {
+        setState(() {
+          _artists = artists;
+          _followedIds = followed;
+          _loading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   @override
@@ -63,37 +103,27 @@ class _FestivalArtistsState extends State<FestivalArtists> {
             ],
           ),
           const SizedBox(height: 14),
-          FutureBuilder<List<_ArtistItem>>(
-            future: _future,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return _buildPlaceholderRow(colors);
-              }
-              if (snapshot.hasError || !snapshot.hasData) {
-                return _buildPlaceholderRow(colors);
-              }
-              final artists = snapshot.data!;
-              if (artists.isEmpty) {
-                return _buildPlaceholderRow(colors);
-              }
-              return _buildArtistRow(artists, colors);
-            },
-          ),
+          if (_loading)
+            _buildPlaceholderRow(colors)
+          else if (_artists.isEmpty)
+            _buildPlaceholderRow(colors)
+          else
+            _buildArtistRow(colors),
         ],
       ),
     );
   }
 
-  Widget _buildArtistRow(
-      List<_ArtistItem> artists, AbstractThemeColors colors) {
+  Widget _buildArtistRow(AbstractThemeColors colors) {
     return SizedBox(
       height: 90,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: artists.length,
+        itemCount: _artists.length,
         separatorBuilder: (_, __) => const SizedBox(width: 16),
         itemBuilder: (context, index) {
-          final artist = artists[index];
+          final artist = _artists[index];
+          final isFollowed = _followedIds.contains(artist.artistId);
           return GestureDetector(
             onTap: () => Navigator.push(
               context,
@@ -112,6 +142,7 @@ class _FestivalArtistsState extends State<FestivalArtists> {
                   _CircleImage(
                     imageUrl: artist.profileImageUrl,
                     colors: colors,
+                    isFollowed: isFollowed,
                   ),
                   const SizedBox(height: 6),
                   Text(
@@ -119,7 +150,9 @@ class _FestivalArtistsState extends State<FestivalArtists> {
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: colors.textTitle,
+                      color: isFollowed
+                          ? AppColors.skyBlue
+                          : colors.textTitle,
                     ),
                     textAlign: TextAlign.center,
                     maxLines: 1,
@@ -134,7 +167,6 @@ class _FestivalArtistsState extends State<FestivalArtists> {
     );
   }
 
-  // 아티스트 정보 미등록 시 플레이스홀더 3개
   Widget _buildPlaceholderRow(AbstractThemeColors colors) {
     return SizedBox(
       height: 90,
@@ -183,14 +215,19 @@ class _FestivalArtistsState extends State<FestivalArtists> {
 class _CircleImage extends StatelessWidget {
   final String? imageUrl;
   final AbstractThemeColors colors;
+  final bool isFollowed;
 
-  const _CircleImage({required this.imageUrl, required this.colors});
+  const _CircleImage({
+    required this.imageUrl,
+    required this.colors,
+    required this.isFollowed,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 56,
-      height: 56,
+    final image = Container(
+      width: 52,
+      height: 52,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: colors.activate.withValues(alpha: 0.08),
@@ -210,14 +247,57 @@ class _CircleImage extends StatelessWidget {
                 errorBuilder: (_, __, ___) => Icon(
                   Icons.person_rounded,
                   color: colors.activate.withValues(alpha: 0.5),
-                  size: 28,
+                  size: 26,
                 ),
               )
             : Icon(
                 Icons.person_rounded,
                 color: colors.activate.withValues(alpha: 0.5),
-                size: 28,
+                size: 26,
               ),
+      ),
+    );
+
+    if (!isFollowed) return image;
+
+    // 팔로우한 아티스트: 하늘색 테두리 링
+    return Container(
+      width: 56,
+      height: 56,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          colors: [AppColors.skyBlue, AppColors.skyBlueLight],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      padding: const EdgeInsets.all(2.5),
+      child: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
+        ),
+        padding: const EdgeInsets.all(1.5),
+        child: ClipOval(
+          child: (imageUrl != null && imageUrl!.isNotEmpty)
+              ? Image.network(
+                  imageUrl!,
+                  fit: BoxFit.cover,
+                  width: 52,
+                  height: 52,
+                  errorBuilder: (_, __, ___) => Icon(
+                    Icons.person_rounded,
+                    color: colors.activate.withValues(alpha: 0.5),
+                    size: 26,
+                  ),
+                )
+              : Icon(
+                  Icons.person_rounded,
+                  color: colors.activate.withValues(alpha: 0.5),
+                  size: 26,
+                ),
+        ),
       ),
     );
   }

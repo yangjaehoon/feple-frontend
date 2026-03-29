@@ -236,8 +236,7 @@ class _ArtistItem {
     this.stageName,
   });
 
-  String get displayName =>
-      stageName?.isNotEmpty == true ? stageName! : artistName;
+  String get displayName => artistName;
 
   factory _ArtistItem.fromJson(Map<String, dynamic> json) {
     return _ArtistItem(

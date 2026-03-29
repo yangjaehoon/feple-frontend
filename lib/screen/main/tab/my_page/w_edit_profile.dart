@@ -21,12 +21,20 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
   XFile? _pickedImage;
   bool _isSaving = false;
 
+  // 닉네임 중복 확인 상태
+  bool _isCheckingNickname = false;
+  bool? _nicknameAvailable; // null=미확인 or 현재 닉네임, true=사용가능, false=불가
+  String _nicknameCheckMessage = '';
+  String _lastCheckedNickname = '';
+  String _originalNickname = '';
+
   @override
   void initState() {
     super.initState();
     final user = context.read<UserProvider>().user;
     if (user != null) {
       _nicknameController.text = user.nickname;
+      _originalNickname = user.nickname;
     }
   }
 
@@ -43,6 +51,52 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
       imageQuality: 90,
     );
     if (picked != null) setState(() => _pickedImage = picked);
+  }
+
+  Future<void> _checkNickname() async {
+    final userProvider = context.read<UserProvider>();
+    final user = userProvider.user;
+    final nickname = _nicknameController.text.trim();
+
+    if (nickname.isEmpty) {
+      setState(() {
+        _nicknameAvailable = false;
+        _nicknameCheckMessage = '닉네임을 입력해주세요.';
+      });
+      return;
+    }
+    if (nickname.length < 2 || nickname.length > 8) {
+      setState(() {
+        _nicknameAvailable = false;
+        _nicknameCheckMessage = '닉네임은 2자 이상 8자 이하로 입력해주세요.';
+      });
+      return;
+    }
+
+    setState(() => _isCheckingNickname = true);
+    try {
+      final excludeId = user?.id;
+      final resp = await DioClient.dio.get(
+        '/users/check-nickname',
+        queryParameters: {
+          'nickname': nickname,
+          if (excludeId != null) 'excludeUserId': excludeId,
+        },
+      );
+      final body = resp.data as Map<String, dynamic>;
+      setState(() {
+        _nicknameAvailable = body['available'] as bool;
+        _nicknameCheckMessage = body['message'] as String;
+        _lastCheckedNickname = nickname;
+      });
+    } catch (e) {
+      setState(() {
+        _nicknameAvailable = false;
+        _nicknameCheckMessage = '확인 중 오류가 발생했습니다.';
+      });
+    } finally {
+      if (mounted) setState(() => _isCheckingNickname = false);
+    }
   }
 
   Future<void> _save() async {
@@ -68,6 +122,28 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
         ),
       );
       return;
+    }
+
+    // 닉네임이 변경된 경우 중복 확인 필수
+    if (newNickname != _originalNickname) {
+      if (_nicknameAvailable == null || _lastCheckedNickname != newNickname) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: AppColors.skyBlue,
+            content: Text('닉네임 중복 확인을 해주세요.'),
+          ),
+        );
+        return;
+      }
+      if (_nicknameAvailable == false) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: AppColors.skyBlue,
+            content: Text(_nicknameCheckMessage),
+          ),
+        );
+        return;
+      }
     }
 
     setState(() => _isSaving = true);
@@ -235,31 +311,95 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
               ),
             ),
             const SizedBox(height: 8),
-            TextField(
-              controller: _nicknameController,
-              style: TextStyle(fontSize: 16, color: colors.textTitle),
-              decoration: InputDecoration(
-                hintText: 'nickname_hint'.tr(),
-                hintStyle: TextStyle(color: colors.textSecondary),
-                filled: true,
-                fillColor: colors.surface,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(
-                      color: AppColors.skyBlueLight.withOpacity(0.4)),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _nicknameController,
+                    maxLength: 8,
+                    onChanged: (_) {
+                      if (_nicknameAvailable != null) {
+                        setState(() {
+                          _nicknameAvailable = null;
+                          _nicknameCheckMessage = '';
+                        });
+                      }
+                    },
+                    style: TextStyle(fontSize: 16, color: colors.textTitle),
+                    decoration: InputDecoration(
+                      counterText: '',
+                      hintText: 'nickname_hint'.tr(),
+                      hintStyle: TextStyle(color: colors.textSecondary),
+                      filled: true,
+                      fillColor: colors.surface,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: BorderSide(
+                            color: AppColors.skyBlueLight.withOpacity(0.4)),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: BorderSide(
+                          color: _nicknameAvailable == false
+                              ? Colors.red
+                              : _nicknameAvailable == true
+                                  ? Colors.green
+                                  : AppColors.skyBlueLight.withOpacity(0.4),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide:
+                            const BorderSide(color: AppColors.skyBlue, width: 2),
+                      ),
+                    ),
+                  ),
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(
-                      color: AppColors.skyBlueLight.withOpacity(0.4)),
+                const SizedBox(width: 8),
+                SizedBox(
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: _isCheckingNickname ? null : _checkNickname,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.skyBlue,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: _isCheckingNickname
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Colors.white),
+                          )
+                        : const Text('중복 확인',
+                            style: TextStyle(
+                                fontSize: 13, fontWeight: FontWeight.w600)),
+                  ),
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide:
-                      const BorderSide(color: AppColors.skyBlue, width: 2),
+              ],
+            ),
+            if (_nicknameCheckMessage.isNotEmpty)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 6, left: 4),
+                  child: Text(
+                    _nicknameCheckMessage,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: _nicknameAvailable == true
+                          ? Colors.green
+                          : Colors.red,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
               ),
-            ),
             const SizedBox(height: 40),
 
             // ── 저장 버튼 ──

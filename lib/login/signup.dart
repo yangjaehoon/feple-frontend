@@ -25,9 +25,13 @@ class _SignupPageState extends State<SignupPage> {
   final nicknameController = TextEditingController();
   bool _isLoading = false;
 
+  // 인라인 에러 메시지
+  String? _emailError;
+  String? _passwordError;
+
   // 닉네임 중복 확인 상태
   bool _isCheckingNickname = false;
-  bool? _nicknameAvailable; // null=미확인, true=사용가능, false=불가
+  bool? _nicknameAvailable;
   String _nicknameCheckMessage = '';
   String _lastCheckedNickname = '';
 
@@ -59,7 +63,8 @@ class _SignupPageState extends State<SignupPage> {
     setState(() => _isCheckingNickname = true);
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/users/check-nickname?nickname=${Uri.encodeComponent(nickname)}'),
+        Uri.parse(
+            '$baseUrl/users/check-nickname?nickname=${Uri.encodeComponent(nickname)}'),
       );
       final body = jsonDecode(response.body) as Map<String, dynamic>;
       setState(() {
@@ -82,14 +87,26 @@ class _SignupPageState extends State<SignupPage> {
     final password = passwordController.text;
     final nickname = nicknameController.text.trim();
 
-    if (email.isEmpty || password.isEmpty) {
-      Fluttertoast.showToast(
-        msg: 'enter_email_password'.tr(),
-        backgroundColor: AppColors.skyBlue,
-        textColor: Colors.white,
-      );
-      return;
+    // 인라인 유효성 검사
+    bool hasError = false;
+    String? emailErr;
+    String? passwordErr;
+
+    if (email.isEmpty) {
+      emailErr = '이메일을 입력해주세요.';
+      hasError = true;
     }
+    if (password.isEmpty) {
+      passwordErr = '비밀번호를 입력해주세요.';
+      hasError = true;
+    }
+
+    setState(() {
+      _emailError = emailErr;
+      _passwordError = passwordErr;
+    });
+
+    if (hasError) return;
 
     if (nickname.isEmpty) {
       Fluttertoast.showToast(
@@ -108,7 +125,6 @@ class _SignupPageState extends State<SignupPage> {
       return;
     }
 
-    // 중복 확인 미실시 또는 닉네임이 바뀐 경우
     if (_nicknameAvailable == null || _lastCheckedNickname != nickname) {
       Fluttertoast.showToast(
         msg: '닉네임 중복 확인을 해주세요.',
@@ -227,6 +243,12 @@ class _SignupPageState extends State<SignupPage> {
                   hintText: 'email'.tr(),
                   icon: Icons.mail_outline_rounded,
                   keyboardType: TextInputType.emailAddress,
+                  errorText: _emailError,
+                  onChanged: (_) {
+                    if (_emailError != null) {
+                      setState(() => _emailError = null);
+                    }
+                  },
                 ),
                 const SizedBox(height: 14),
 
@@ -236,6 +258,12 @@ class _SignupPageState extends State<SignupPage> {
                   hintText: 'password'.tr(),
                   icon: Icons.lock_outline_rounded,
                   obscureText: true,
+                  errorText: _passwordError,
+                  onChanged: (_) {
+                    if (_passwordError != null) {
+                      setState(() => _passwordError = null);
+                    }
+                  },
                 ),
                 const SizedBox(height: 14),
 
@@ -321,7 +349,6 @@ class _SignupPageState extends State<SignupPage> {
                 controller: nicknameController,
                 maxLength: 8,
                 onChanged: (_) {
-                  // 닉네임이 바뀌면 확인 상태 초기화
                   if (_nicknameAvailable != null) {
                     setState(() {
                       _nicknameAvailable = null;
@@ -339,8 +366,8 @@ class _SignupPageState extends State<SignupPage> {
                       const TextStyle(color: AppColors.textMuted, fontSize: 15),
                   filled: true,
                   fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 16),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide(
@@ -353,8 +380,7 @@ class _SignupPageState extends State<SignupPage> {
                             ? Colors.red
                             : _nicknameAvailable == true
                                 ? Colors.green
-                                : AppColors.skyBlueLight
-                                    .withValues(alpha: 0.4)),
+                                : AppColors.skyBlueLight.withValues(alpha: 0.4)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -398,7 +424,8 @@ class _SignupPageState extends State<SignupPage> {
               _nicknameCheckMessage,
               style: TextStyle(
                 fontSize: 12,
-                color: _nicknameAvailable == true ? Colors.green : Colors.red,
+                color:
+                    _nicknameAvailable == true ? Colors.green : Colors.red,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -414,36 +441,60 @@ class _SignupPageState extends State<SignupPage> {
     bool obscureText = false,
     TextInputType keyboardType = TextInputType.text,
     int? maxLength,
+    String? errorText,
+    ValueChanged<String>? onChanged,
   }) {
-    return TextField(
-      controller: controller,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      maxLength: maxLength,
-      style: const TextStyle(fontSize: 15, color: AppColors.textMain),
-      decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: AppColors.skyBlue, size: 22),
-        hintText: hintText,
-        hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 15),
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide:
-              BorderSide(color: AppColors.skyBlueLight.withValues(alpha: 0.5)),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          controller: controller,
+          obscureText: obscureText,
+          keyboardType: keyboardType,
+          maxLength: maxLength,
+          onChanged: onChanged,
+          style: const TextStyle(fontSize: 15, color: AppColors.textMain),
+          decoration: InputDecoration(
+            prefixIcon: Icon(icon, color: AppColors.skyBlue, size: 22),
+            hintText: hintText,
+            hintStyle:
+                const TextStyle(color: AppColors.textMuted, fontSize: 15),
+            filled: true,
+            fillColor: Colors.white,
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(
+                  color: AppColors.skyBlueLight.withValues(alpha: 0.5)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(
+                color: errorText != null
+                    ? Colors.red
+                    : AppColors.skyBlueLight.withValues(alpha: 0.4),
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(color: AppColors.skyBlue, width: 2),
+            ),
+          ),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide:
-              BorderSide(color: AppColors.skyBlueLight.withValues(alpha: 0.4)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.skyBlue, width: 2),
-        ),
-      ),
+        if (errorText != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 6, left: 4),
+            child: Text(
+              errorText,
+              style: const TextStyle(
+                fontSize: 12,
+                color: Colors.red,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

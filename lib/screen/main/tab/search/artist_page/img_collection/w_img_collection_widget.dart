@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
+import 'package:fast_app_base/common/theme/color/abs_theme_colors.dart';
 import 'package:fast_app_base/model/FestivalPreview.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 import 'package:fast_app_base/provider/user_provider.dart';
@@ -122,13 +123,16 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
   }
 
   void _showEditBottomSheet(ArtistPhotoResponse photo) {
+    final colors = context.appColors;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useRootNavigator: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (_) => _EditPhotoSheet(
+        colors: colors,
         artistId: widget.artistId,
         photo: photo,
         onSave: (newTitle, newDesc) async {
@@ -398,11 +402,13 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
 class _EditPhotoSheet extends StatefulWidget {
   final int artistId;
   final ArtistPhotoResponse photo;
+  final AbstractThemeColors colors;
   final void Function(String title, String description) onSave;
 
   const _EditPhotoSheet({
     required this.artistId,
     required this.photo,
+    required this.colors,
     required this.onSave,
   });
 
@@ -478,7 +484,7 @@ class _EditPhotoSheetState extends State<_EditPhotoSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.appColors;
+    final colors = widget.colors;
     return Padding(
       padding: EdgeInsets.fromLTRB(
           20, 20, 20, 20 + MediaQuery.of(context).viewInsets.bottom),

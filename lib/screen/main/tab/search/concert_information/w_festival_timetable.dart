@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 class TimetableEntry {
   final int id;
   final String stageName;
+  final int stageOrder;
   final String artistName;
   final String festivalDate;
   final String startTime; // "HH:mm"
@@ -14,6 +15,7 @@ class TimetableEntry {
   const TimetableEntry({
     required this.id,
     required this.stageName,
+    required this.stageOrder,
     required this.artistName,
     required this.festivalDate,
     required this.startTime,
@@ -23,6 +25,7 @@ class TimetableEntry {
   factory TimetableEntry.fromJson(Map<String, dynamic> j) => TimetableEntry(
         id: (j['id'] as num).toInt(),
         stageName: j['stageName'] as String,
+        stageOrder: (j['stageOrder'] as num?)?.toInt() ?? 999,
         artistName: j['artistName'] as String,
         festivalDate: j['festivalDate'] as String,
         startTime: (j['startTime'] as String).substring(0, 5),
@@ -161,11 +164,13 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
       : _entries.where((e) => e.festivalDate == _selectedDate).toList();
 
   List<String> get _stages {
-    final seen = <String>{};
-    return _filtered
-        .map((e) => e.stageName)
-        .where(seen.add)
-        .toList();
+    final seen = <String, int>{};
+    for (final e in _filtered) {
+      seen.putIfAbsent(e.stageName, () => e.stageOrder);
+    }
+    final sorted = seen.entries.toList()
+      ..sort((a, b) => a.value.compareTo(b.value));
+    return sorted.map((e) => e.key).toList();
   }
 
   Color _colorFor(String stage) {

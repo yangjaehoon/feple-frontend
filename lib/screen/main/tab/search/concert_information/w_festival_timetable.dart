@@ -66,6 +66,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
   static const int _startHour = 12;
   static const int _endHour = 24;
   static const double _minPx = 1.5;
+  static const double _topPad = 20.0;
   static const double _stageW = 130.0;
   static const double _timeColW = 52.0;
   static const double _stageHeaderH = 38.0;
@@ -281,7 +282,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
 
   Widget _buildGrid(dynamic colors) {
     final stages = _stages;
-    final totalH = (_endHour - _startHour) * 60 * _minPx;
+    final totalH = (_endHour - _startHour) * 60 * _minPx + _topPad;
     final totalW = stages.isEmpty ? _stageW : stages.length * _stageW;
 
     return Column(
@@ -350,7 +351,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                       children: List.generate(_endHour - _startHour + 1, (i) {
                         final hour = _startHour + i;
                         return Positioned(
-                          top: i * 60.0 * _minPx - 8,
+                          top: _topPad + i * 60.0 * _minPx - 8,
                           left: 0,
                           right: 0,
                           child: Text(
@@ -396,7 +397,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                               final isHour = mins % 60 == 0;
                               final isHalf = mins % 30 == 0;
                               return Positioned(
-                                top: mins * _minPx,
+                                top: _topPad + mins * _minPx,
                                 left: 0, right: 0, height: 0.5,
                                 child: Container(
                                   color: isHour
@@ -412,12 +413,12 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                           ..._filtered.map((entry) {
                             final si = stages.indexOf(entry.stageName);
                             if (si < 0) return const SizedBox.shrink();
-                            final top = _toY(entry.startTime);
-                            final cardH = _toY(entry.endTime) - top;
+                            final rawTop = _toY(entry.startTime);
+                            final cardH = _toY(entry.endTime) - rawTop;
                             final color = _colorFor(entry.stageName);
                             return Positioned(
                               left: si * _stageW + 3,
-                              top: top + 2,
+                              top: _topPad + rawTop + 2,
                               width: _stageW - 6,
                               height: cardH - 4,
                               child: _PerformanceCard(

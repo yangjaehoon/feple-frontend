@@ -53,9 +53,18 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
     final newNickname = _nicknameController.text.trim();
     if (newNickname.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           backgroundColor: AppColors.skyBlue,
-          content: Text('enter_nickname'.tr()),
+          content: Text('닉네임을 입력해주세요.'),
+        ),
+      );
+      return;
+    }
+    if (newNickname.length < 2 || newNickname.length > 8) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: AppColors.skyBlue,
+          content: Text('닉네임은 2자 이상 8자 이하로 입력해주세요.'),
         ),
       );
       return;

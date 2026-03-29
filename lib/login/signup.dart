@@ -47,6 +47,23 @@ class _SignupPageState extends State<SignupPage> {
       return;
     }
 
+    if (nickname.isEmpty) {
+      Fluttertoast.showToast(
+        msg: '닉네임을 입력해주세요.',
+        backgroundColor: AppColors.skyBlue,
+        textColor: Colors.white,
+      );
+      return;
+    }
+    if (nickname.length < 2 || nickname.length > 8) {
+      Fluttertoast.showToast(
+        msg: '닉네임은 2자 이상 8자 이하로 입력해주세요.',
+        backgroundColor: AppColors.skyBlue,
+        textColor: Colors.white,
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
     try {
       final response = await http.post(
@@ -163,8 +180,9 @@ class _SignupPageState extends State<SignupPage> {
                 // ── 닉네임 입력 ──
                 _buildTextField(
                   controller: nicknameController,
-                  hintText: 'nickname_optional'.tr(),
+                  hintText: '닉네임 (2~8자)',
                   icon: Icons.badge_outlined,
+                  maxLength: 8,
                 ),
                 const SizedBox(height: 28),
 
@@ -240,11 +258,13 @@ class _SignupPageState extends State<SignupPage> {
     required IconData icon,
     bool obscureText = false,
     TextInputType keyboardType = TextInputType.text,
+    int? maxLength,
   }) {
     return TextField(
       controller: controller,
       obscureText: obscureText,
       keyboardType: keyboardType,
+      maxLength: maxLength,
       style: const TextStyle(fontSize: 15, color: AppColors.textMain),
       decoration: InputDecoration(
         prefixIcon: Icon(icon, color: AppColors.skyBlue, size: 22),

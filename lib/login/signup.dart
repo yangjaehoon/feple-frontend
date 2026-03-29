@@ -6,9 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import '../app.dart';
 import '../auth/token_store.dart';
-import '../screen/main/s_main.dart';
 import '../model/user_model.dart' as app;
 import '../provider/user_provider.dart';
 
@@ -174,10 +172,8 @@ class _SignupPageState extends State<SignupPage> {
         textColor: Colors.white,
       );
 
-      App.navigatorKey.currentState?.pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const MainScreen()),
-        (route) => false,
-      );
+      if (!mounted) return;
+      Navigator.of(context).popUntil((route) => route.isFirst);
     } catch (e) {
       Fluttertoast.showToast(
         msg: 'signup_failed_detail'.tr(args: [e.toString()]),

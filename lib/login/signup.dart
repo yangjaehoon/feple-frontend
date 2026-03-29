@@ -172,8 +172,12 @@ class _SignupPageState extends State<SignupPage> {
         textColor: Colors.white,
       );
 
-      if (!mounted) return;
-      Navigator.of(context).popUntil((route) => route.isFirst);
+      // Consumer 재빌드(App으로 전환) 완료 후 라우트 스택 정리
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        }
+      });
     } catch (e) {
       Fluttertoast.showToast(
         msg: 'signup_failed_detail'.tr(args: [e.toString()]),

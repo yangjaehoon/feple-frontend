@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import '../app.dart';
 import '../auth/token_store.dart';
+import '../screen/main/s_main.dart';
 import '../model/user_model.dart' as app;
 import '../provider/user_provider.dart';
 
@@ -78,10 +79,9 @@ class _SignupPageState extends State<SignupPage> {
         textColor: Colors.white,
       );
 
-      if (!mounted) return;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const App()),
+      App.navigatorKey.currentState?.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const MainScreen()),
+        (route) => false,
       );
     } catch (e) {
       Fluttertoast.showToast(

@@ -1,6 +1,8 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/network/dio_client.dart';
+import 'package:fast_app_base/provider/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 // ── 모델 ──────────────────────────────────────────────────────────────────────
 class TimetableEntry {
@@ -9,7 +11,7 @@ class TimetableEntry {
   final int stageOrder;
   final String artistName;
   final String festivalDate;
-  final String startTime; // "HH:mm"
+  final String startTime;
   final String endTime;
 
   const TimetableEntry({
@@ -67,10 +69,10 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
   static const int _endHour = 24;
   static const double _minPx = 1.5;
   static const double _topPad = 20.0;
-  static const double _stageW = 130.0;
   static const double _timeColW = 52.0;
   static const double _stageHeaderH = 38.0;
   static const double _viewH = 460.0;
+  static const double _minStageW = 80.0;
 
   final _vContent = ScrollController();
   final _vTime = ScrollController();
@@ -79,10 +81,10 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
   bool _lockV = false, _lockH = false;
 
   List<TimetableEntry> _entries = [];
+  Set<String> _followedNames = {};
   bool _loading = true;
   String? _error;
 
-  // 날짜 목록 (페스티벌 기간)
   List<String> _dates = [];
   String? _selectedDate;
 
@@ -103,10 +105,9 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
           ? DateTime.parse(widget.endDate)
           : start;
       _dates = [];
-      for (var d = start;
-          !d.isAfter(end);
-          d = d.add(const Duration(days: 1))) {
-        _dates.add('${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}');
+      for (var d = start; !d.isAfter(end); d = d.add(const Duration(days: 1))) {
+        _dates.add(
+            '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}');
       }
       _selectedDate = _dates.isNotEmpty ? _dates.first : null;
     } catch (_) {}
@@ -114,14 +115,32 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
 
   Future<void> _fetch() async {
     try {
-      final res = await DioClient.dio
-          .get('/festivals/${widget.festivalId}/timetable');
-      final list = (res.data as List)
+      final timetableFuture =
+          DioClient.dio.get('/festivals/${widget.festivalId}/timetable');
+
+      // 로그인한 경우 팔로우 아티스트 병렬 조회
+      final user = context.read<UserProvider>().user;
+      final followFuture = user != null
+          ? DioClient.dio.get('/users/${user.id}/following')
+          : null;
+
+      final timetableRes = await timetableFuture;
+      final list = (timetableRes.data as List)
           .map((e) => TimetableEntry.fromJson(e as Map<String, dynamic>))
           .toList();
+
+      Set<String> followed = {};
+      if (followFuture != null) {
+        final followRes = await followFuture;
+        followed = (followRes.data as List)
+            .map((a) => (a['name'] as String))
+            .toSet();
+      }
+
       if (mounted) {
         setState(() {
           _entries = list;
+          _followedNames = followed;
           _loading = false;
         });
       }
@@ -233,10 +252,14 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 14, vertical: 7),
                         decoration: BoxDecoration(
-                          color: selected ? colors.activate : colors.backgroundMain,
+                          color: selected
+                              ? colors.activate
+                              : colors.backgroundMain,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: selected ? colors.activate : colors.listDivider,
+                            color: selected
+                                ? colors.activate
+                                : colors.listDivider,
                           ),
                         ),
                         child: Text(
@@ -244,7 +267,8 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: selected ? Colors.white : colors.textTitle,
+                            color:
+                                selected ? Colors.white : colors.textTitle,
                           ),
                         ),
                       ),
@@ -273,17 +297,25 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                         style: TextStyle(color: colors.textSecondary))),
               )
             else
-              _buildGrid(colors),
+              LayoutBuilder(
+                builder: (_, constraints) =>
+                    _buildGrid(colors, constraints.maxWidth),
+              ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildGrid(dynamic colors) {
+  Widget _buildGrid(dynamic colors, double availableW) {
     final stages = _stages;
+    // 스테이지 수에 맞게 너비 동적 계산 (최소 80px 보장)
+    final stageW = stages.isEmpty
+        ? _minStageW
+        : ((availableW - _timeColW) / stages.length)
+            .clamp(_minStageW, double.infinity);
+    final totalW = stages.isEmpty ? stageW : stages.length * stageW;
     final totalH = (_endHour - _startHour) * 60 * _minPx + _topPad;
-    final totalW = stages.isEmpty ? _stageW : stages.length * _stageW;
 
     return Column(
       children: [
@@ -309,7 +341,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                 child: Row(
                   children: stages.map((stage) {
                     return Container(
-                      width: _stageW,
+                      width: stageW,
                       height: _stageHeaderH,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
@@ -322,7 +354,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                       ),
                       child: Text(stage,
                           style: TextStyle(
-                              fontSize: 13,
+                              fontSize: 12,
                               fontWeight: FontWeight.w700,
                               color: _colorFor(stage))),
                     );
@@ -382,14 +414,16 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                       child: Stack(
                         children: [
                           // 세로 구분선
-                          ...List.generate(stages.length, (i) => Positioned(
-                                left: (i + 1) * _stageW - 0.5,
-                                top: 0,
-                                bottom: 0,
-                                width: 0.5,
-                                child: Container(color: colors.listDivider),
-                              )),
-                          // 가로선 (1시간/30분/10분)
+                          ...List.generate(
+                              stages.length,
+                              (i) => Positioned(
+                                    left: (i + 1) * stageW - 0.5,
+                                    top: 0,
+                                    bottom: 0,
+                                    width: 0.5,
+                                    child: Container(color: colors.listDivider),
+                                  )),
+                          // 가로선
                           ...List.generate(
                             (_endHour - _startHour) * 6 + 1,
                             (i) {
@@ -398,13 +432,18 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                               final isHalf = mins % 30 == 0;
                               return Positioned(
                                 top: _topPad + mins * _minPx,
-                                left: 0, right: 0, height: 0.5,
+                                left: 0,
+                                right: 0,
+                                height: 0.5,
                                 child: Container(
                                   color: isHour
-                                      ? colors.listDivider.withValues(alpha: 0.9)
+                                      ? colors.listDivider
+                                          .withValues(alpha: 0.9)
                                       : isHalf
-                                          ? colors.listDivider.withValues(alpha: 0.5)
-                                          : colors.listDivider.withValues(alpha: 0.2),
+                                          ? colors.listDivider
+                                              .withValues(alpha: 0.5)
+                                          : colors.listDivider
+                                              .withValues(alpha: 0.2),
                                 ),
                               );
                             },
@@ -416,15 +455,18 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                             final rawTop = _toY(entry.startTime);
                             final cardH = _toY(entry.endTime) - rawTop;
                             final color = _colorFor(entry.stageName);
+                            final followed =
+                                _followedNames.contains(entry.artistName);
                             return Positioned(
-                              left: si * _stageW + 3,
+                              left: si * stageW + 3,
                               top: _topPad + rawTop + 2,
-                              width: _stageW - 6,
+                              width: stageW - 6,
                               height: cardH - 4,
                               child: _PerformanceCard(
                                 entry: entry,
                                 color: color,
                                 cardHeight: cardH - 4,
+                                isFollowed: followed,
                               ),
                             );
                           }),
@@ -446,22 +488,33 @@ class _PerformanceCard extends StatelessWidget {
   final TimetableEntry entry;
   final Color color;
   final double cardHeight;
+  final bool isFollowed;
 
-  const _PerformanceCard(
-      {required this.entry, required this.color, required this.cardHeight});
+  const _PerformanceCard({
+    required this.entry,
+    required this.color,
+    required this.cardHeight,
+    required this.isFollowed,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.88),
+        // 팔로우한 아티스트만 배경 채움, 나머지는 테두리만
+        color: isFollowed ? color.withValues(alpha: 0.88) : Colors.transparent,
         borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-              color: color.withValues(alpha: 0.3),
-              blurRadius: 4,
-              offset: const Offset(0, 2)),
-        ],
+        border: isFollowed
+            ? null
+            : Border.all(color: color.withValues(alpha: 0.6), width: 1.5),
+        boxShadow: isFollowed
+            ? [
+                BoxShadow(
+                    color: color.withValues(alpha: 0.3),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2)),
+              ]
+            : null,
       ),
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
       child: Column(
@@ -469,8 +522,8 @@ class _PerformanceCard extends StatelessWidget {
         children: [
           Text(
             entry.artistName,
-            style: const TextStyle(
-                color: Colors.white,
+            style: TextStyle(
+                color: isFollowed ? Colors.white : color,
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
                 height: 1.2),
@@ -480,8 +533,12 @@ class _PerformanceCard extends StatelessWidget {
           if (cardHeight > 28)
             Text(
               '${entry.startTime} – ${entry.endTime}',
-              style: const TextStyle(
-                  color: Colors.white70, fontSize: 9, height: 1.3),
+              style: TextStyle(
+                  color: isFollowed
+                      ? Colors.white70
+                      : color.withValues(alpha: 0.7),
+                  fontSize: 9,
+                  height: 1.3),
             ),
         ],
       ),

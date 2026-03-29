@@ -65,8 +65,28 @@ class FestivalTimetable extends StatefulWidget {
 }
 
 class _FestivalTimetableState extends State<FestivalTimetable> {
-  static const int _startHour = 12;
-  static const int _endHour = 24;
+  int get _startHour {
+    int minH = 12;
+    for (final e in _filtered) {
+      try {
+        final h = int.parse(e.startTime.split(':')[0]);
+        if (h < minH) minH = h;
+      } catch (_) {}
+    }
+    return minH;
+  }
+
+  int get _endHour {
+    int maxH = 24;
+    for (final e in _filtered) {
+      try {
+        final h = int.parse(e.endTime.split(':')[0]);
+        if (h >= maxH) maxH = h + 1;
+      } catch (_) {}
+    }
+    return maxH;
+  }
+
   static const double _minPx = 1.5;
   static const double _topPad = 20.0;
   static const double _timeColW = 52.0;

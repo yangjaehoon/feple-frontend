@@ -24,6 +24,7 @@ class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool _isLoading = false;
+  String? _loginError;
 
   @override
   void dispose() {
@@ -81,6 +82,7 @@ class _LoginPageState extends State<LoginPage> {
                   controller: emailController,
                   hintText: 'email'.tr(),
                   icon: Icons.mail_outline_rounded,
+                  onChanged: (_) { if (_loginError != null) setState(() => _loginError = null); },
                 ),
                 const SizedBox(height: 14),
 
@@ -90,6 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                   hintText: 'password'.tr(),
                   icon: Icons.lock_outline_rounded,
                   obscureText: true,
+                  onChanged: (_) { if (_loginError != null) setState(() => _loginError = null); },
                 ),
                 const SizedBox(height: 24),
 
@@ -125,7 +128,31 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                   ),
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 12),
+
+                // ── 로그인 에러 메시지 ──
+                if (_loginError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.error_outline_rounded,
+                            color: Color(0xFFE53E3E), size: 15),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            _loginError!,
+                            style: const TextStyle(
+                              color: Color(0xFFE53E3E),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                const SizedBox(height: 2),
 
                 // ── 카카오 로그인 ──
                 _buildKakaoLoginButton(context),
@@ -172,10 +199,12 @@ class _LoginPageState extends State<LoginPage> {
     required String hintText,
     required IconData icon,
     bool obscureText = false,
+    ValueChanged<String>? onChanged,
   }) {
     return TextField(
       controller: controller,
       obscureText: obscureText,
+      onChanged: onChanged,
       style: const TextStyle(fontSize: 15, color: AppColors.textMain),
       decoration: InputDecoration(
         prefixIcon: Icon(icon, color: AppColors.skyBlue, size: 22),
@@ -235,20 +264,12 @@ class _LoginPageState extends State<LoginPage> {
     final password = passwordController.text;
 
     if (email.isEmpty || password.isEmpty) {
-      print('이메일/비밀번호 빈칸 에러');
-      Fluttertoast.showToast(
-        msg: 'enter_email_password'.tr(),
-        backgroundColor: AppColors.skyBlue,
-        textColor: Colors.white,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('enter_email_password'.tr())),
-      );
+      setState(() => _loginError = '이메일과 비밀번호를 입력해주세요.');
       return;
     }
 
+    setState(() { _isLoading = true; _loginError = null; });
     final userProvider = context.read<UserProvider>();
-    setState(() => _isLoading = true);
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/auth/login'),
@@ -272,9 +293,8 @@ class _LoginPageState extends State<LoginPage> {
     } catch (e) {
       print('=== 로그인 실패 에러 ===\n$e\n======================');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('login_failed_detail'.tr(args: [e.toString()]))),
-        );
+        final msg = e.toString().replaceFirst('Exception: ', '');
+        setState(() => _loginError = msg.isNotEmpty ? msg : '이메일 또는 비밀번호가 올바르지 않습니다.');
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);

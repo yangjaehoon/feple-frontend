@@ -20,6 +20,7 @@ class _FepleAppBarState extends State<FepleAppBar> {
     final colors = context.appColors;
     final rs = ResponsiveSize(context);
     return Container(
+      width: double.infinity,
       height: rs.h(AppDimens.appBarHeight),
       color: colors.appBarColor,
       child: Row(

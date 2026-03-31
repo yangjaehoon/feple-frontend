@@ -11,6 +11,8 @@ class PosterModel with ChangeNotifier {
   final String startDate;
   final String endDate;
   final String posterUrl;
+  final double? latitude;
+  final double? longitude;
 
   PosterModel(
       {required this.id,
@@ -20,8 +22,9 @@ class PosterModel with ChangeNotifier {
       required this.startDate,
       required this.endDate,
       required this.posterUrl,
-      }
-      );
+      this.latitude,
+      this.longitude,
+      });
 
   factory PosterModel.fromJson(Map<String, dynamic> json) {
     return PosterModel(
@@ -32,6 +35,8 @@ class PosterModel with ChangeNotifier {
       startDate: json['startDate'],
       endDate: json['endDate'],
       posterUrl: json['posterUrl'],
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
     );
   }
 }

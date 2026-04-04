@@ -1,8 +1,14 @@
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/network/dio_client.dart';
+import 'package:flutter/foundation.dart' show Factory, kIsWeb;
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
 
 // ── 모델 ──────────────────────────────────────────────────────────────────────
 class BoothModel {
@@ -13,6 +19,7 @@ class BoothModel {
   final double latitude;
   final double longitude;
   final String? description;
+  final String? imageUrl;
 
   const BoothModel({
     required this.id,
@@ -22,6 +29,7 @@ class BoothModel {
     required this.latitude,
     required this.longitude,
     this.description,
+    this.imageUrl,
   });
 
   factory BoothModel.fromJson(Map<String, dynamic> j) => BoothModel(
@@ -32,6 +40,7 @@ class BoothModel {
         latitude: (j['latitude'] as num).toDouble(),
         longitude: (j['longitude'] as num).toDouble(),
         description: j['description'] as String?,
+        imageUrl: j['imageUrl'] as String?,
       );
 }
 
@@ -59,10 +68,16 @@ class _FestivalBoothMapState extends State<FestivalBoothMap> {
   Position? _userPosition;
   Set<Marker> _markers = {};
 
-  static const _boothColors = {
-    'FOOD': BitmapDescriptor.hueOrange,
-    'BEER': BitmapDescriptor.hueYellow,
+  static const _boothHues = {
+    'FOOD': 14.0,   // #FF7043 deep orange
+    'BEER': 38.0,   // #FFA000 amber
     'EVENT': BitmapDescriptor.hueViolet,
+  };
+
+  static const _boothColorValues = {
+    'FOOD': Color(0xFFFF7043),
+    'BEER': Color(0xFFFFA000),
+    'EVENT': Color(0xFF7B1FA2),
   };
 
   @override
@@ -78,14 +93,18 @@ class _FestivalBoothMapState extends State<FestivalBoothMap> {
       final list = (res.data as List)
           .map((e) => BoothModel.fromJson(e as Map<String, dynamic>))
           .toList();
+      debugPrint('[BoothMap] 부스 ${list.length}개 로드됨 (festivalId=${widget.festivalId})');
       if (mounted) {
         setState(() {
           _booths = list;
           _loading = false;
-          _buildMarkers();
+        });
+        _buildMarkers().catchError((e) {
+          debugPrint('[BoothMap] 마커 생성 오류: $e');
         });
       }
     } catch (e) {
+      debugPrint('[BoothMap] API 오류: $e');
       if (mounted) setState(() => _loading = false);
     }
   }
@@ -101,20 +120,100 @@ class _FestivalBoothMapState extends State<FestivalBoothMap> {
       }
       if (permission == LocationPermission.deniedForever) return;
       final pos = await Geolocator.getCurrentPosition(
-          locationSettings: const LocationSettings(
-              accuracy: LocationAccuracy.high));
+          locationSettings: const LocationSettings(accuracy: LocationAccuracy.high));
       if (mounted) setState(() => _userPosition = pos);
     } catch (_) {}
   }
 
-  void _buildMarkers() {
+  Future<BitmapDescriptor> _markerIcon(BoothModel booth) async {
+    final hue = _boothHues[booth.boothType] ?? BitmapDescriptor.hueRed;
+
+    // 웹은 canvas 지원 불안정 → 기본 마커 사용
+    if (kIsWeb) return BitmapDescriptor.defaultMarker;
+
+    // 이미지 없으면 색상 핀
+    if (booth.imageUrl == null) {
+      return BitmapDescriptor.defaultMarkerWithHue(hue);
+    }
+
+    try {
+      final res = await http.get(Uri.parse(booth.imageUrl!));
+      final bytes = res.bodyBytes;
+
+      const w = 80.0, imgH = 60.0, tailH = 12.0;
+      const totalH = imgH + tailH;
+      final color = _boothColorValues[booth.boothType] ?? const Color(0xFF555555);
+
+      final codec = await ui.instantiateImageCodec(
+        bytes,
+        targetWidth: w.toInt(),
+        targetHeight: imgH.toInt(),
+      );
+      final frame = await codec.getNextFrame();
+      final img = frame.image;
+
+      final recorder = ui.PictureRecorder();
+      final canvas = Canvas(recorder);
+
+      final bgPaint = Paint()..color = color;
+
+      // 배경 카드
+      final rrect = RRect.fromRectAndRadius(
+        Rect.fromLTWH(0, 0, w, imgH),
+        const Radius.circular(8),
+      );
+      canvas.drawRRect(rrect, bgPaint);
+
+      // 흰 테두리
+      canvas.drawRRect(
+        rrect,
+        Paint()
+          ..color = Colors.white.withValues(alpha: 0.75)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2,
+      );
+
+      // 이미지 (클립)
+      canvas.save();
+      canvas.clipRRect(RRect.fromRectAndRadius(
+        Rect.fromLTWH(2, 2, w - 4, imgH - 4),
+        const Radius.circular(6),
+      ));
+      canvas.drawImageRect(
+        img,
+        Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble()),
+        Rect.fromLTWH(2, 2, w - 4, imgH - 4),
+        Paint(),
+      );
+      canvas.restore();
+
+      // 꼬리 삼각형
+      canvas.drawPath(
+        Path()
+          ..moveTo(w / 2 - 8, imgH)
+          ..lineTo(w / 2 + 8, imgH)
+          ..lineTo(w / 2, totalH)
+          ..close(),
+        bgPaint,
+      );
+
+      final picture = recorder.endRecording();
+      final markerImg = await picture.toImage(w.toInt(), totalH.toInt());
+      final byteData = await markerImg.toByteData(format: ui.ImageByteFormat.png);
+      return BitmapDescriptor.fromBytes(byteData!.buffer.asUint8List());
+    } catch (_) {
+      return BitmapDescriptor.defaultMarkerWithHue(hue);
+    }
+  }
+
+  Future<void> _buildMarkers() async {
     final markers = <Marker>{};
     for (final booth in _booths) {
-      final hue = _boothColors[booth.boothType] ?? BitmapDescriptor.hueRed;
+      final icon = await _markerIcon(booth);
       markers.add(Marker(
         markerId: MarkerId('booth_${booth.id}'),
         position: LatLng(booth.latitude, booth.longitude),
-        icon: BitmapDescriptor.defaultMarkerWithHue(hue),
+        icon: icon,
         infoWindow: InfoWindow(
           title: booth.name,
           snippet: booth.boothTypeName +
@@ -122,7 +221,7 @@ class _FestivalBoothMapState extends State<FestivalBoothMap> {
         ),
       ));
     }
-    setState(() => _markers = markers);
+    if (mounted) setState(() => _markers = markers);
   }
 
   LatLng get _initialPosition {
@@ -212,6 +311,11 @@ class _FestivalBoothMapState extends State<FestivalBoothMap> {
                   myLocationButtonEnabled: _userPosition != null,
                   onMapCreated: (c) => _mapController = c,
                   zoomControlsEnabled: false,
+                  gestureRecognizers: {
+                    Factory<OneSequenceGestureRecognizer>(
+                      () => EagerGestureRecognizer(),
+                    ),
+                  },
                 ),
               ),
           ],

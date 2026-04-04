@@ -77,11 +77,14 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
   }
 
   int get _endHour {
-    int maxH = 24;
+    int maxH = _startHour + 1;
     for (final e in _filtered) {
       try {
-        final h = int.parse(e.endTime.split(':')[0]);
-        if (h >= maxH) maxH = h + 1;
+        final parts = e.endTime.split(':');
+        final h = int.parse(parts[0]);
+        final m = int.parse(parts[1]);
+        final endH = m > 0 ? h + 1 : h;
+        if (endH > maxH) maxH = endH;
       } catch (_) {}
     }
     return maxH;

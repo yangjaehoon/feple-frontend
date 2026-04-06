@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/config.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -142,17 +143,24 @@ class _SignupPageState extends State<SignupPage> {
 
     setState(() => _isLoading = true);
     try {
+      // 1. Firebase에서 이메일/비밀번호 계정 생성
+      final credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+
+      // 2. Firebase displayName을 닉네임으로 설정
+      await credential.user!.updateDisplayName(nickname);
+
+      // 3. Firebase ID 토큰 획득 → 백엔드에서 앱 JWT 발급
+      final idToken = await credential.user!.getIdToken(true);
       final response = await http.post(
-        Uri.parse('$baseUrl/auth/register'),
+        Uri.parse('$baseUrl/auth/firebase'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': email,
-          'password': password,
-          'nickname': nickname,
-        }),
+        body: jsonEncode({'idToken': idToken}),
       );
 
       if (response.statusCode != 200) {
+        // 백엔드 실패 시 Firebase 계정도 삭제 (롤백)
+        await credential.user!.delete();
         final body = jsonDecode(response.body);
         throw Exception(body['message'] ?? 'signup_failed'.tr());
       }
@@ -172,16 +180,33 @@ class _SignupPageState extends State<SignupPage> {
         textColor: Colors.white,
       );
 
-      // Consumer 재빌드(App으로 전환) 완료 후 라우트 스택 정리
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          Navigator.of(context).popUntil((route) => route.isFirst);
-        }
+        if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
       });
+    } on FirebaseAuthException catch (e) {
+      String msg;
+      switch (e.code) {
+        case 'email-already-in-use':
+          msg = '이미 사용 중인 이메일입니다.';
+          break;
+        case 'weak-password':
+          msg = '비밀번호는 6자 이상이어야 합니다.';
+          break;
+        case 'invalid-email':
+          msg = '올바른 이메일 형식이 아닙니다.';
+          break;
+        default:
+          msg = '회원가입에 실패했습니다. (${e.code})';
+      }
+      Fluttertoast.showToast(
+        msg: msg,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
     } catch (e) {
       Fluttertoast.showToast(
         msg: 'signup_failed_detail'.tr(args: [e.toString()]),
-        backgroundColor: AppColors.skyBlue,
+        backgroundColor: Colors.red,
         textColor: Colors.white,
       );
     } finally {

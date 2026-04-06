@@ -1,7 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
-import 'package:fast_app_base/common/theme/color/abs_theme_colors.dart';
 import 'package:fast_app_base/model/FestivalPreview.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 import 'package:fast_app_base/provider/user_provider.dart';

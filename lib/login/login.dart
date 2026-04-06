@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/config.dart';
 import 'package:fast_app_base/login/signup.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -158,6 +159,20 @@ class _LoginPageState extends State<LoginPage> {
                 _buildKakaoLoginButton(context),
                 const SizedBox(height: 28),
 
+                // ── 비밀번호 찾기 ──
+                GestureDetector(
+                  onTap: _showForgotPasswordDialog,
+                  child: Text(
+                    '비밀번호를 잊으셨나요?',
+                    style: TextStyle(
+                      color: AppColors.skyBlue,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
                 // ── 회원가입 링크 ──
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -259,7 +274,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _loginWithEmail() async {
-    print('--- 이메일 로그인 시도 ---');
     final email = emailController.text.trim();
     final password = passwordController.text;
 
@@ -271,10 +285,16 @@ class _LoginPageState extends State<LoginPage> {
     setState(() { _isLoading = true; _loginError = null; });
     final userProvider = context.read<UserProvider>();
     try {
+      // 1. Firebase 이메일/비밀번호 로그인
+      final credential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+      final idToken = await credential.user!.getIdToken();
+
+      // 2. 백엔드에서 앱 JWT 발급
       final response = await http.post(
-        Uri.parse('$baseUrl/auth/login'),
+        Uri.parse('$baseUrl/auth/firebase'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': email, 'password': password}),
+        body: jsonEncode({'idToken': idToken}),
       );
 
       if (response.statusCode != 200) {
@@ -290,14 +310,85 @@ class _LoginPageState extends State<LoginPage> {
       final user = app.User.fromJson(json['user'] as Map<String, dynamic>);
       if (!mounted) return;
       userProvider.setUser(user);
+    } on FirebaseAuthException catch (e) {
+      if (mounted) {
+        setState(() => _loginError = _firebaseErrorMessage(e.code));
+      }
     } catch (e) {
-      print('=== 로그인 실패 에러 ===\n$e\n======================');
       if (mounted) {
         final msg = e.toString().replaceFirst('Exception: ', '');
-        setState(() => _loginError = msg.isNotEmpty ? msg : '이메일 또는 비밀번호가 올바르지 않습니다.');
+        setState(() => _loginError = msg.isNotEmpty ? msg : '로그인에 실패했습니다.');
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  void _showForgotPasswordDialog() {
+    final emailCtrl = TextEditingController(text: emailController.text.trim());
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('비밀번호 재설정',
+            style: TextStyle(fontWeight: FontWeight.w700)),
+        content: TextField(
+          controller: emailCtrl,
+          keyboardType: TextInputType.emailAddress,
+          decoration: const InputDecoration(
+            hintText: '가입한 이메일 주소',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('취소'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.skyBlue),
+            onPressed: () async {
+              final email = emailCtrl.text.trim();
+              if (email.isEmpty) return;
+              Navigator.pop(ctx);
+              try {
+                await FirebaseAuth.instance
+                    .sendPasswordResetEmail(email: email);
+                if (mounted) {
+                  Fluttertoast.showToast(
+                    msg: '비밀번호 재설정 이메일을 발송했습니다.',
+                    backgroundColor: AppColors.skyBlue,
+                    textColor: Colors.white,
+                  );
+                }
+              } on FirebaseAuthException catch (e) {
+                if (mounted) {
+                  Fluttertoast.showToast(
+                    msg: _firebaseErrorMessage(e.code),
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                  );
+                }
+              }
+            },
+            child: const Text('발송', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _firebaseErrorMessage(String code) {
+    switch (code) {
+      case 'user-not-found':
+      case 'wrong-password':
+      case 'invalid-credential':
+        return '이메일 또는 비밀번호가 올바르지 않습니다.';
+      case 'too-many-requests':
+        return '로그인 시도가 너무 많습니다. 잠시 후 다시 시도해주세요.';
+      case 'user-disabled':
+        return '비활성화된 계정입니다.';
+      default:
+        return '로그인에 실패했습니다. ($code)';
     }
   }
 

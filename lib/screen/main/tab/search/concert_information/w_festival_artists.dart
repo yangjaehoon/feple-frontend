@@ -1,5 +1,4 @@
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 import 'package:fast_app_base/provider/user_provider.dart';
 import 'package:fast_app_base/screen/main/tab/search/artist_page/f_artist_page.dart';
@@ -37,9 +36,8 @@ class _FestivalArtistsState extends State<FestivalArtists> {
           : null;
 
       final artistRes = await artistFuture;
-      final artists = (artistRes.data as List)
-          .map((e) => _ArtistItem.fromJson(e))
-          .toList();
+      final artists =
+          (artistRes.data as List).map((e) => _ArtistItem.fromJson(e)).toList();
 
       Set<int> followed = {};
       if (followFuture != null) {
@@ -150,9 +148,7 @@ class _FestivalArtistsState extends State<FestivalArtists> {
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: isFollowed
-                          ? AppColors.skyBlue
-                          : colors.textTitle,
+                      color: isFollowed ? AppColors.skyBlue : colors.textTitle,
                     ),
                     textAlign: TextAlign.center,
                     maxLines: 1,

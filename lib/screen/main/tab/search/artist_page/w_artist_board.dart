@@ -24,6 +24,7 @@ class ArtistBoard extends StatefulWidget {
 class _ArtistBoardState extends State<ArtistBoard> {
   final PostService _postService = PostService();
 
+  @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return Container(

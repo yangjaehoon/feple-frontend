@@ -1,9 +1,7 @@
 import 'dart:developer';
 
-import 'package:easy_localization/easy_localization.dart';
-
+import 'package:firebase_core/firebase_core.dart';
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/provider/FestivalPreviewProvider.dart';
 import 'package:fast_app_base/provider/like_notifier.dart';
 import 'package:fast_app_base/provider/post_change_notifier.dart';
@@ -35,7 +33,7 @@ void main() async {
   final bindings = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: bindings);
 
-  //await Firebase.initializeApp();
+  await Firebase.initializeApp();
   //await _initializeNaverMap();
   await EasyLocalization.ensureInitialized();
   await AppPreferences.init();

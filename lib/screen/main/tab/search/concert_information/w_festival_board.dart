@@ -31,6 +31,7 @@ class _FestivalBoardState extends State<FestivalBoard> {
     _postsFuture = _postService.fetchFestivalPosts(widget.festivalId);
   }
 
+  @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return Container(

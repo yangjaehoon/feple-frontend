@@ -330,8 +330,7 @@ class _MenuWidget extends StatelessWidget {
   final Function() onTap;
   final Color? color;
 
-  const _MenuWidget(this.text,
-      {super.key, required this.onTap, this.icon, this.color});
+  const _MenuWidget(this.text, {required this.onTap, this.icon, this.color});
 
   @override
   Widget build(BuildContext context) {

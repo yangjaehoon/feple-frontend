@@ -37,12 +37,19 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
     final saved = prefs.getStringList(_prefsKey);
     if (!mounted) return;
     setState(() {
-      if (saved == null) {
+      if (saved == null || saved.isEmpty) {
+        // 기본값: 좋아요/팔로우한 게시판 전체 표시
         _orderedSelectedIds = widget.allBoards.map((b) => b.boardId).toList();
       } else {
         final validIds = widget.allBoards.map((b) => b.boardId).toSet();
-        _orderedSelectedIds =
-            saved.where((id) => validIds.contains(id)).toList();
+        // 저장된 순서 유지 (유효한 것만)
+        final savedValid = saved.where((id) => validIds.contains(id)).toList();
+        // 저장 이후 새로 좋아요/팔로우한 게시판은 자동으로 끝에 추가
+        final newIds = widget.allBoards
+            .map((b) => b.boardId)
+            .where((id) => !saved.contains(id))
+            .toList();
+        _orderedSelectedIds = [...savedValid, ...newIds];
       }
       _prefsLoaded = true;
     });
@@ -50,10 +57,17 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
 
   Future<void> _savePrefs(List<String> orderedSelected) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(_prefsKey, orderedSelected);
+    // 전부 선택된 상태라면 prefs 초기화 → 새로 좋아요한 게시판도 자동 추가됨
+    if (orderedSelected.length == widget.allBoards.length) {
+      await prefs.remove(_prefsKey);
+    } else {
+      await prefs.setStringList(_prefsKey, orderedSelected);
+    }
   }
 
   void _openSettings() {
+    // 현재 표시 중인 ID 셋 (체크된 것들)
+    final selectedSet = _orderedSelectedIds.toSet();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -63,6 +77,7 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
       builder: (_) => _BoardSettingsSheet(
         allBoards: widget.allBoards,
         initialOrderedIds: List.from(_orderedSelectedIds),
+        initialCheckedIds: selectedSet,
         onSave: (newOrderedIds) {
           setState(() => _orderedSelectedIds = newOrderedIds);
           _savePrefs(newOrderedIds);
@@ -266,11 +281,13 @@ class _BoardTile extends StatelessWidget {
 class _BoardSettingsSheet extends StatefulWidget {
   final List<FavoriteBoard> allBoards;
   final List<String> initialOrderedIds;
+  final Set<String> initialCheckedIds;
   final void Function(List<String>) onSave;
 
   const _BoardSettingsSheet({
     required this.allBoards,
     required this.initialOrderedIds,
+    required this.initialCheckedIds,
     required this.onSave,
   });
 
@@ -285,7 +302,7 @@ class _BoardSettingsSheetState extends State<_BoardSettingsSheet> {
   @override
   void initState() {
     super.initState();
-    _checked = Set.from(widget.initialOrderedIds);
+    _checked = Set.from(widget.initialCheckedIds);
 
     // 선택된 보드(저장된 순서) → 미선택 보드 순으로 정렬
     final selectedInOrder = widget.initialOrderedIds

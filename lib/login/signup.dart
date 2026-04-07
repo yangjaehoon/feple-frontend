@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/common/widget/w_app_text_field.dart';
 import 'package:fast_app_base/common/widget/w_nickname_field.dart';
@@ -115,7 +116,7 @@ class _SignupPageState extends State<SignupPage> {
       });
     } on FirebaseAuthException catch (e) {
       Fluttertoast.showToast(
-        msg: AuthService.instance.firebaseErrorMessage(e.code),
+        msg: '[${e.code}] ${e.message ?? ''}',
         backgroundColor: Colors.red,
         textColor: Colors.white,
       );
@@ -133,8 +134,9 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeColors = context.appColors;
     return Scaffold(
-      backgroundColor: AppColors.backgroundCreamy,
+      backgroundColor: themeColors.backgroundMain,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -147,13 +149,13 @@ class _SignupPageState extends State<SignupPage> {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: AppColors.skyBlue.withValues(alpha: 0.12),
+                    color: themeColors.activate.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.person_add_rounded,
                     size: 40,
-                    color: AppColors.skyBlue,
+                    color: themeColors.activate,
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -164,7 +166,7 @@ class _SignupPageState extends State<SignupPage> {
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.textMain,
+                    color: themeColors.textTitle,
                     letterSpacing: -0.5,
                   ),
                 ),
@@ -173,7 +175,7 @@ class _SignupPageState extends State<SignupPage> {
                   'signup_subtitle'.tr(),
                   style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.textMuted,
+                    color: themeColors.textSecondary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -223,7 +225,7 @@ class _SignupPageState extends State<SignupPage> {
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _register,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.skyBlue,
+                      backgroundColor: themeColors.activate,
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
@@ -257,7 +259,7 @@ class _SignupPageState extends State<SignupPage> {
                     Text(
                       'already_have_account'.tr(),
                       style: TextStyle(
-                        color: AppColors.textMuted,
+                        color: themeColors.textSecondary,
                         fontSize: 14,
                       ),
                     ),
@@ -266,7 +268,7 @@ class _SignupPageState extends State<SignupPage> {
                       child: Text(
                         'login'.tr(),
                         style: TextStyle(
-                          color: AppColors.skyBlue,
+                          color: themeColors.activate,
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
                         ),

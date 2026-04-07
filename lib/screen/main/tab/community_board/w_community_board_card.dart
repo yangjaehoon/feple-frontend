@@ -7,6 +7,7 @@ import 'package:fast_app_base/screen/main/tab/community_board/w_community_enralg
 import 'package:fast_app_base/screen/main/tab/community_board/w_community_post.dart';
 import 'package:fast_app_base/provider/post_change_notifier.dart';
 import 'package:fast_app_base/service/post_service.dart';
+import 'package:fast_app_base/common/widget/w_async_content_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -105,31 +106,10 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
   }
 
   Widget _buildPostList(AbstractThemeColors colors) {
-    return FutureBuilder<List<dynamic>>(
+    return AsyncContentBuilder<List<dynamic>>(
       future: _postsFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(color: colors.loadingIndicator),
-          );
-        }
-        if (snapshot.hasError) {
-          return Center(
-            child: Text(
-              'Failed to load data: ${snapshot.error}',
-              style: TextStyle(color: colors.textSecondary, fontSize: 13),
-            ),
-          );
-        }
-
-        final postDataList = snapshot.data!;
-        if (postDataList.isEmpty) {
-          return Center(
-            child: Text('No data available.',
-                style: TextStyle(color: colors.textSecondary)),
-          );
-        }
-
+      useListViewForEmptyState: false,
+      builder: (context, postDataList) {
         return ListView.separated(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,

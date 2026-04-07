@@ -1,5 +1,6 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
+import 'package:fast_app_base/common/constant/festival_constants.dart';
 import 'package:fast_app_base/common/util/responsive_size.dart';
 import 'package:fast_app_base/screen/main/tab/concert_list/w_concert_list.dart';
 import 'package:flutter/material.dart';
@@ -7,27 +8,6 @@ import 'package:provider/provider.dart';
 
 import '../../../../provider/FestivalPreviewProvider.dart';
 import '../search/w_feple_app_bar.dart';
-
-const _genres = [
-  ('HIP_HOP', 'Hip-hop'),
-  ('INDIE', 'Indie'),
-  ('BAND', 'Band'),
-  ('ETC', '기타'),
-];
-
-const _regions = [
-  ('GYEONGGI', '경기도'),
-  ('SEOUL', '서울'),
-  ('GANGWON', '강원도'),
-  ('CHUNGBUK', '충청북도'),
-  ('CHUNGNAM', '충청남도'),
-  ('GYEONGBUK', '경상북도'),
-  ('GYEONGNAM', '경상남도'),
-  ('JEONBUK', '전라북도'),
-  ('JEONNAM', '전라남도'),
-  ('JEJU', '제주도'),
-  ('ETC', '기타'),
-];
 
 class ConcertListFragment extends StatefulWidget {
   const ConcertListFragment({super.key});
@@ -181,14 +161,14 @@ class _FilterPanel extends StatelessWidget {
                 children: [
                   _FilterSection(
                     label: '장르',
-                    items: _genres,
+                    items: kGenreOptions,
                     selected: provider.selectedGenres,
                     onToggle: provider.toggleGenre,
                   ),
                   const SizedBox(height: 12),
                   _FilterSection(
                     label: '지역',
-                    items: _regions,
+                    items: kRegionOptions,
                     selected: provider.selectedRegions,
                     onToggle: provider.toggleRegion,
                   ),

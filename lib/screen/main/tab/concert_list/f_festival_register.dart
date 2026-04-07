@@ -1,30 +1,10 @@
 import 'package:fast_app_base/common/common.dart';
+import 'package:fast_app_base/common/constant/festival_constants.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../provider/FestivalPreviewProvider.dart';
-
-const _genreOptions = [
-  ('HIP_HOP', 'Hip-hop'),
-  ('INDIE', 'Indie'),
-  ('BAND', 'Band'),
-  ('ETC', '기타'),
-];
-
-const _regionOptions = [
-  ('SEOUL', '서울'),
-  ('GYEONGGI', '경기도'),
-  ('GANGWON', '강원도'),
-  ('CHUNGBUK', '충청북도'),
-  ('CHUNGNAM', '충청남도'),
-  ('GYEONGBUK', '경상북도'),
-  ('GYEONGNAM', '경상남도'),
-  ('JEONBUK', '전라북도'),
-  ('JEONNAM', '전라남도'),
-  ('JEJU', '제주도'),
-  ('ETC', '기타'),
-];
 
 class FestivalRegisterPage extends StatefulWidget {
   const FestivalRegisterPage({super.key});
@@ -195,7 +175,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
             Wrap(
               spacing: 8,
               runSpacing: 6,
-              children: _genreOptions.map((opt) {
+              children: kGenreOptions.map((opt) {
                 final (value, label) = opt;
                 final selected = _selectedGenres.contains(value);
                 return GestureDetector(
@@ -246,7 +226,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
                       style: TextStyle(color: colors.textSecondary)),
                   isExpanded: true,
                   dropdownColor: colors.surface,
-                  items: _regionOptions.map((opt) {
+                  items: kRegionOptions.map((opt) {
                     final (value, label) = opt;
                     return DropdownMenuItem(
                       value: value,

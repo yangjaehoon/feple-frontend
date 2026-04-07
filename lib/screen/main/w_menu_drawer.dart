@@ -141,7 +141,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
           _MenuWidget(
             'logout'.tr(),
             icon: Icons.logout_rounded,
-            color: Colors.red[400],
+            color: Theme.of(context).colorScheme.error,
             onTap: () async {
               closeDrawer(context);
               await context.read<UserProvider>().logout();
@@ -158,7 +158,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
           _MenuWidget(
             'delete_account'.tr(),
             icon: Icons.person_remove_rounded,
-            color: Colors.red[300],
+            color: Theme.of(context).colorScheme.error,
             onTap: () async {
               final confirmed = await showDialog<bool>(
                 context: context,
@@ -174,7 +174,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
                     ),
                     TextButton(
                       onPressed: () => Navigator.pop(ctx, true),
-                      style: TextButton.styleFrom(foregroundColor: Colors.red),
+                      style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
                       child: Text('delete_account'.tr()),
                     ),
                   ],
@@ -313,7 +313,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
   Widget flag(String path) {
     return SimpleShadow(
       opacity: 0.5,
-      color: Colors.grey,
+      color: Colors.black45,
       offset: const Offset(2, 2),
       sigma: 2,
       child: Image.asset(

@@ -128,5 +128,8 @@
   "password_uppercase": "uppercase letter",
   "password_lowercase": "lowercase letter",
   "password_digit": "number",
-  "password_special": "special character"
+  "password_special": "special character",
+  "verification_email_sent": "Verification email has been sent.\nPlease check your email and then log in.",
+  "email_not_verified": "Email not verified.\nA verification email has been resent. Please check your email.",
+  "verification_email_resent": "Verification email has been resent."
 }

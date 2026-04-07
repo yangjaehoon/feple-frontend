@@ -17,22 +17,33 @@ class AuthService {
   Future<app.User> loginWithEmail(String email, String password) async {
     final credential = await FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password);
-    final idToken = await credential.user!.getIdToken();
+    final user = credential.user!;
+
+    // 이메일 인증 확인
+    if (!user.emailVerified) {
+      await user.sendEmailVerification();
+      await FirebaseAuth.instance.signOut();
+      throw EmailNotVerifiedException();
+    }
+
+    final idToken = await user.getIdToken();
     return _exchangeFirebaseToken(idToken!);
   }
 
-  // ── 이메일 회원가입 ──
+  // ── 이메일 회원가입 (인증 이메일 발송만, 로그인하지 않음) ──
 
-  Future<app.User> registerWithEmail(
+  Future<void> registerWithEmail(
       String email, String password, String nickname) async {
     final credential = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
 
     try {
-      final idToken = await credential.user!.getIdToken();
-      return await _exchangeFirebaseToken(idToken!, nickname: nickname);
+      // 닉네임을 Firebase displayName에 저장 (이메일 인증 후 첫 로그인 시 백엔드에서 사용)
+      await credential.user!.updateDisplayName(nickname);
+      await credential.user!.sendEmailVerification();
+      await FirebaseAuth.instance.signOut();
     } catch (e) {
-      // 백엔드 등록 실패 시 Firebase 계정 롤백
+      // 실패 시 Firebase 계정 롤백
       try {
         await credential.user?.delete();
       } catch (_) {}
@@ -135,4 +146,10 @@ class AuthService {
 
     return app.User.fromJson(json['user'] as Map<String, dynamic>);
   }
+}
+
+/// 이메일 인증이 완료되지 않은 경우 발생하는 예외
+class EmailNotVerifiedException implements Exception {
+  @override
+  String toString() => 'EmailNotVerifiedException';
 }

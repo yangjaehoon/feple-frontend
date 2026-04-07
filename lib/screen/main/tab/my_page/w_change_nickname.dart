@@ -58,7 +58,7 @@ class _ChangeNicknameState extends State<ChangeNickname> {
             Icon(
               Icons.person_outline_rounded,
               size: 56,
-              color: AppColors.skyBlue,
+              color: colors.activate,
             ),
             const SizedBox(height: 16),
             Text(
@@ -86,24 +86,24 @@ class _ChangeNicknameState extends State<ChangeNickname> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide(
-                      color: AppColors.skyBlueLight.withOpacity(0.4)),
+                      color: colors.divider),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide(
-                      color: AppColors.skyBlueLight.withOpacity(0.4)),
+                      color: colors.divider),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide:
-                      const BorderSide(color: AppColors.skyBlue, width: 2),
+                      BorderSide(color: colors.focusedBorder, width: 2),
                 ),
               ),
             ),
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
-              height: 50,
+              height: 52,
               child: ElevatedButton(
                 onPressed: () async {
                   if (nicknameController.text.trim().isEmpty) return;
@@ -112,23 +112,23 @@ class _ChangeNicknameState extends State<ChangeNickname> {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                          backgroundColor: AppColors.skyBlue,
+                          backgroundColor: colors.snackbarBgColor,
                           content: Text('nickname_changed'.tr())),
                     );
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                          backgroundColor: AppColors.skyBlue,
+                          backgroundColor: colors.snackbarBgColor,
                           content: Text('nickname_change_failed'
                               .tr(args: [e.toString()]))),
                     );
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.skyBlue,
+                  backgroundColor: colors.activate,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   elevation: 0,
                 ),

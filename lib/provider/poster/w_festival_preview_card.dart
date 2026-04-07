@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
 
@@ -49,9 +50,9 @@ class FestivalPreviewCard extends StatelessWidget {
                   ),
                   if (festival.isEnded) ...[
                     Container(color: Colors.black.withOpacity(0.5)),
-                    const Center(
+                    Center(
                       child: Text(
-                        '종료',
+                        'status_ended'.tr(),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 13,
@@ -76,7 +77,7 @@ class FestivalPreviewCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          festival.title ?? '페스티벌 이름',
+                          festival.title ?? 'fallback_festival_name'.tr(),
                           style: TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: 16,
@@ -91,11 +92,11 @@ class FestivalPreviewCard extends StatelessWidget {
                         icon: Icon(Icons.more_vert_rounded,
                             color: colors.textSecondary, size: 20),
                         itemBuilder: (context) => [
-                          const PopupMenuItem(
-                            child: Text("리뷰"),
+                          PopupMenuItem(
+                            child: Text("msg_review".tr()),
                           ),
-                          const PopupMenuItem(
-                            child: Text("삭제"),
+                          PopupMenuItem(
+                            child: Text("msg_delete".tr()),
                           ),
                         ],
                       ),

@@ -103,7 +103,7 @@ class _FilterPanel extends StatelessWidget {
                       size: 18, color: colors.activate),
                   const SizedBox(width: 8),
                   Text(
-                    '필터',
+                    'btn_filter'.tr(),
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
@@ -133,7 +133,7 @@ class _FilterPanel extends StatelessWidget {
                     GestureDetector(
                       onTap: provider.clearFilters,
                       child: Text(
-                        '초기화',
+                        'btn_reset'.tr(),
                         style: TextStyle(
                           fontSize: 12,
                           color: colors.textSecondary,

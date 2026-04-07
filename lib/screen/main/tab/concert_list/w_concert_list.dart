@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/model/poster_model.dart';
 import 'package:fast_app_base/provider/poster/w_festival_preview_card.dart';
 import 'package:fast_app_base/screen/main/tab/search/concert_information/f_festival_information.dart';
@@ -27,9 +28,9 @@ class _ConcertListWidgetState extends State<ConcertListWidget> {
     }
 
     if (previewPoster.items.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(32),
-        child: Center(child: Text('해당 조건의 페스티벌이 없습니다.')),
+      return Padding(
+        padding: const EdgeInsets.all(32),
+        child: Center(child: Text('no_festival_condition'.tr())),
       );
     }
 

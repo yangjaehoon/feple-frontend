@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/festival_constants.dart';
 import 'package:fast_app_base/network/dio_client.dart';
@@ -56,13 +57,13 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
     if (!_formKey.currentState!.validate()) return;
     if (_startDate == null || _endDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('시작일과 종료일을 선택해주세요.')),
+        SnackBar(content: Text('festival_reg_start_end_date_req'.tr())),
       );
       return;
     }
     if (_selectedRegion == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('지역을 선택해주세요.')),
+        SnackBar(content: Text('festival_reg_region_req'.tr())),
       );
       return;
     }
@@ -84,13 +85,13 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
         context.read<FestivalPreviewProvider>().refresh();
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('페스티벌이 등록되었습니다.')),
+          SnackBar(content: Text('festival_reg_register_success'.tr())),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('등록 실패: $e')),
+          SnackBar(content: Text('festival_reg_register_failed'.tr(args: [e.toString()]))),
         );
       }
     } finally {
@@ -106,7 +107,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
       appBar: AppBar(
         backgroundColor: colors.appBarColor,
         title: Text(
-          '페스티벌 등록',
+          'festival_reg_register_title'.tr(),
           style: TextStyle(color: colors.textTitle, fontWeight: FontWeight.w700),
         ),
         iconTheme: IconThemeData(color: colors.textTitle),
@@ -119,28 +120,28 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
           children: [
             _buildTextField(
               controller: _titleController,
-              label: '페스티벌 이름',
+              label: 'label_festival_name'.tr(),
               validator: (v) =>
-                  v == null || v.trim().isEmpty ? '이름을 입력해주세요.' : null,
+                  v == null || v.trim().isEmpty ? 'label_input_name_req'.tr() : null,
               colors: colors,
             ),
             const SizedBox(height: 16),
             _buildTextField(
               controller: _descriptionController,
-              label: '설명',
+              label: 'label_desc'.tr(),
               maxLines: 3,
               colors: colors,
             ),
             const SizedBox(height: 16),
             _buildTextField(
               controller: _locationController,
-              label: '장소',
+              label: 'label_location'.tr(),
               colors: colors,
             ),
             const SizedBox(height: 16),
             _buildTextField(
               controller: _posterUrlController,
-              label: '포스터 URL (S3 key)',
+              label: 'label_poster_url'.tr(),
               colors: colors,
             ),
             const SizedBox(height: 16),
@@ -150,7 +151,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
               children: [
                 Expanded(
                   child: _buildDateTile(
-                    label: '시작일',
+                    label: 'label_start_date'.tr(),
                     date: _startDate,
                     onTap: () => _pickDate(isStart: true),
                     colors: colors,
@@ -159,7 +160,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _buildDateTile(
-                    label: '종료일',
+                    label: 'label_end_date'.tr(),
                     date: _endDate,
                     onTap: () => _pickDate(isStart: false),
                     colors: colors,
@@ -170,7 +171,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
             const SizedBox(height: 20),
 
             // 장르 선택
-            _buildSectionLabel('장르', colors),
+            _buildSectionLabel('label_genre'.tr(), colors),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -196,7 +197,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
                       ),
                     ),
                     child: Text(
-                      label,
+                      label.tr(),
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -210,7 +211,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
             const SizedBox(height: 20),
 
             // 지역 선택
-            _buildSectionLabel('지역', colors),
+            _buildSectionLabel('label_region'.tr(), colors),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -222,7 +223,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   value: _selectedRegion,
-                  hint: Text('지역 선택',
+                  hint: Text('label_region'.tr(),
                       style: TextStyle(color: colors.textSecondary)),
                   isExpanded: true,
                   dropdownColor: colors.surface,
@@ -230,7 +231,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
                     final (value, label) = opt;
                     return DropdownMenuItem(
                       value: value,
-                      child: Text(label,
+                      child: Text(label.tr(),
                           style: TextStyle(color: colors.textTitle)),
                     );
                   }).toList(),
@@ -259,9 +260,9 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
                         child: CircularProgressIndicator(
                             color: Colors.white, strokeWidth: 2),
                       )
-                    : const Text(
-                        '등록',
-                        style: TextStyle(
+                    : Text(
+                        'btn_register'.tr(),
+                        style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w700),
                       ),
               ),
@@ -336,7 +337,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
                   Text(
                     date != null
                         ? '${date.year}.${date.month.toString().padLeft(2, '0')}.${date.day.toString().padLeft(2, '0')}'
-                        : '선택',
+                        : 'label_not_selected'.tr(),
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,

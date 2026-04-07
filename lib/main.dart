@@ -17,6 +17,7 @@ import 'auth/token_store.dart';
 import 'common/data/preference/app_preferences.dart';
 import 'network/dio_client.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'common/theme/custom_theme_app.dart';
 
 /*
 // Future<void> _initializeNaverMap() async {
@@ -33,7 +34,10 @@ void main() async {
   final bindings = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: bindings);
 
-  await Firebase.initializeApp();
+  // google-services.json이 Android에서 자동 초기화하므로 중복 방지
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp();
+  }
   //await _initializeNaverMap();
   await EasyLocalization.ensureInitialized();
   await AppPreferences.init();
@@ -97,22 +101,28 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      key: ValueKey(context.locale),
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(primaryColor: AppColors.skyBlue),
-      home: Consumer<UserProvider>(
-        builder: (context, userProvider, _) {
-          if (userProvider.user == null) {
-            return LoginPage();
-          } else {
-            return const App();
-          }
-        },
+    return CustomThemeApp(
+      child: Builder(
+        builder: (context) {
+          return MaterialApp(
+            key: ValueKey(context.locale),
+            debugShowCheckedModeBanner: false,
+            theme: context.themeType.themeData,
+            home: Consumer<UserProvider>(
+              builder: (context, userProvider, _) {
+                if (userProvider.user == null) {
+                  return const LoginPage();
+                } else {
+                  return const App();
+                }
+              },
+            ),
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
+          );
+        }
       ),
-      localizationsDelegates: context.localizationDelegates,
-      supportedLocales: context.supportedLocales,
-      locale: context.locale,
     );
   }
 }

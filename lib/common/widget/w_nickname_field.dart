@@ -1,6 +1,7 @@
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 /// signup, edit_profile, change_nickname에서 공통으로 사용하는
 /// 닉네임 입력 + 중복확인 위젯.
@@ -52,14 +53,19 @@ class NicknameFieldState extends State<NicknameField> {
   String get lastCheckedNickname => _lastChecked;
   String get currentNickname => controller.text.trim();
 
+  /// 외부에서 에러 메시지를 설정할 때 사용
+  void showError(String msg) {
+    _setResult(false, msg);
+  }
+
   Future<void> checkNickname() async {
     final nickname = controller.text.trim();
     if (nickname.isEmpty) {
-      _setResult(false, '닉네임을 입력해주세요.');
+      _setResult(false, 'enter_nickname'.tr());
       return;
     }
     if (nickname.length < 2 || nickname.length > 8) {
-      _setResult(false, '닉네임은 2자 이상 8자 이하로 입력해주세요.');
+      _setResult(false, 'nickname_length_error'.tr());
       return;
     }
 
@@ -77,7 +83,7 @@ class NicknameFieldState extends State<NicknameField> {
       _setResult(body['available'] as bool, body['message'] as String);
       _lastChecked = nickname;
     } catch (e) {
-      _setResult(false, '확인 중 오류가 발생했습니다.');
+      _setResult(false, 'nickname_check_error'.tr());
     } finally {
       if (mounted) setState(() => _isChecking = false);
     }
@@ -120,7 +126,7 @@ class NicknameFieldState extends State<NicknameField> {
                   counterText: '',
                   prefixIcon: const Icon(Icons.badge_outlined,
                       color: AppColors.skyBlue, size: 22),
-                  hintText: '닉네임 (2~8자)',
+                  hintText: 'nickname_hint_format'.tr(),
                   hintStyle: const TextStyle(
                       color: AppColors.textMuted, fontSize: 15),
                   filled: true,
@@ -171,8 +177,8 @@ class NicknameFieldState extends State<NicknameField> {
                         child: CircularProgressIndicator(
                             strokeWidth: 2, color: Colors.white),
                       )
-                    : const Text('중복 확인',
-                        style: TextStyle(
+                    : Text('check_duplication'.tr(),
+                        style: const TextStyle(
                             fontSize: 13, fontWeight: FontWeight.w600)),
               ),
             ),

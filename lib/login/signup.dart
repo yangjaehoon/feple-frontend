@@ -10,6 +10,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import '../provider/user_provider.dart';
 
+
+
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
 
@@ -25,6 +27,7 @@ class _SignupPageState extends State<SignupPage> {
   // 인라인 에러 메시지
   String? _emailError;
   String? _passwordError;
+  String? _generalError;
 
   // 닉네임 필드 상태 접근용 키
   final _nicknameKey = GlobalKey<NicknameFieldState>();
@@ -42,58 +45,41 @@ class _SignupPageState extends State<SignupPage> {
     final nicknameState = _nicknameKey.currentState;
     final nickname = nicknameState?.currentNickname ?? '';
 
+    // 에러 초기화
+    setState(() {
+      _emailError = null;
+      _passwordError = null;
+      _generalError = null;
+    });
+
     // 인라인 유효성 검사
     bool hasError = false;
-    String? emailErr;
-    String? passwordErr;
 
     if (email.isEmpty) {
-      emailErr = 'enter_email'.tr();
+      _emailError = 'enter_email'.tr();
       hasError = true;
     }
     if (password.isEmpty) {
-      passwordErr = 'enter_password'.tr();
+      _passwordError = 'enter_password'.tr();
+      hasError = true;
+    }
+    if (nickname.isEmpty) {
+      nicknameState?.showError('enter_nickname'.tr());
+      hasError = true;
+    } else if (nickname.length < 2 || nickname.length > 8) {
+      nicknameState?.showError('nickname_length_error'.tr());
+      hasError = true;
+    } else if (nicknameState?.available == null ||
+        nicknameState?.lastCheckedNickname != nickname) {
+      nicknameState?.showError('nickname_check_req'.tr());
+      hasError = true;
+    } else if (nicknameState?.available == false) {
+      nicknameState?.showError('nickname_invalid'.tr());
       hasError = true;
     }
 
-    setState(() {
-      _emailError = emailErr;
-      _passwordError = passwordErr;
-    });
-
-    if (hasError) return;
-
-    if (nickname.isEmpty) {
-      Fluttertoast.showToast(
-        msg: 'enter_nickname'.tr(),
-        backgroundColor: AppColors.skyBlue,
-        textColor: Colors.white,
-      );
-      return;
-    }
-    if (nickname.length < 2 || nickname.length > 8) {
-      Fluttertoast.showToast(
-        msg: 'nickname_length_error'.tr(),
-        backgroundColor: AppColors.skyBlue,
-        textColor: Colors.white,
-      );
-      return;
-    }
-
-    if (nicknameState?.available == null || nicknameState?.lastCheckedNickname != nickname) {
-      Fluttertoast.showToast(
-        msg: 'nickname_check_req'.tr(),
-        backgroundColor: AppColors.skyBlue,
-        textColor: Colors.white,
-      );
-      return;
-    }
-    if (nicknameState?.available == false) {
-      Fluttertoast.showToast(
-        msg: 'nickname_invalid'.tr(),
-        backgroundColor: AppColors.skyBlue,
-        textColor: Colors.white,
-      );
+    if (hasError) {
+      setState(() {});
       return;
     }
 
@@ -115,18 +101,27 @@ class _SignupPageState extends State<SignupPage> {
         if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
       });
     } on FirebaseAuthException catch (e) {
-      Fluttertoast.showToast(
-        msg: '[${e.code}] ${e.message ?? ''}',
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-      );
+      if (!mounted) return;
+      final msg = AuthService.instance.firebaseErrorMessage(e.code);
+      setState(() {
+        switch (e.code) {
+          case 'email-already-in-use':
+          case 'invalid-email':
+            _emailError = msg;
+            break;
+          case 'weak-password':
+            _passwordError = msg;
+            break;
+          default:
+            _generalError = msg;
+        }
+      });
     } catch (e) {
+      if (!mounted) return;
       final errMsg = e.toString().replaceFirst('Exception: ', '');
-      Fluttertoast.showToast(
-        msg: 'signup_failed_detail'.tr(args: [errMsg.isEmpty ? 'unknown_error'.tr() : errMsg]),
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-      );
+      setState(() {
+        _generalError = errMsg.isEmpty ? 'unknown_error'.tr() : errMsg;
+      });
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -189,8 +184,11 @@ class _SignupPageState extends State<SignupPage> {
                   keyboardType: TextInputType.emailAddress,
                   errorText: _emailError,
                   onChanged: (_) {
-                    if (_emailError != null) {
-                      setState(() => _emailError = null);
+                    if (_emailError != null || _generalError != null) {
+                      setState(() {
+                        _emailError = null;
+                        _generalError = null;
+                      });
                     }
                   },
                 ),
@@ -204,8 +202,11 @@ class _SignupPageState extends State<SignupPage> {
                   obscureText: true,
                   errorText: _passwordError,
                   onChanged: (_) {
-                    if (_passwordError != null) {
-                      setState(() => _passwordError = null);
+                    if (_passwordError != null || _generalError != null) {
+                      setState(() {
+                        _passwordError = null;
+                        _generalError = null;
+                      });
                     }
                   },
                 ),
@@ -217,6 +218,21 @@ class _SignupPageState extends State<SignupPage> {
                   onResult: (_, __) {},
                 ),
                 const SizedBox(height: 28),
+
+                // ── 일반 에러 메시지 ──
+                if (_generalError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Text(
+                      _generalError!,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Colors.red,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
 
                 // ── 가입 버튼 ──
                 SizedBox(

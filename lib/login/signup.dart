@@ -147,21 +147,23 @@ class _SignupPageState extends State<SignupPage> {
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
 
-      // 2. Firebase displayName을 닉네임으로 설정
-      await credential.user!.updateDisplayName(nickname);
-
-      // 3. Firebase ID 토큰 획득 → 백엔드에서 앱 JWT 발급
-      final idToken = await credential.user!.getIdToken(true);
+      // 2. Firebase ID 토큰 획득 → 백엔드에서 앱 JWT 발급
+      //    닉네임은 토큰 갱신 없이 요청 바디로 직접 전달 (getIdToken(true) 호출 시 "unknown" 오류 방지)
+      final idToken = await credential.user!.getIdToken();
       final response = await http.post(
         Uri.parse('$baseUrl/auth/firebase'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'idToken': idToken}),
+        body: jsonEncode({'idToken': idToken, 'nickname': nickname}),
       );
 
       if (response.statusCode != 200) {
         // 백엔드 실패 시 Firebase 계정도 삭제 (롤백)
-        await credential.user!.delete();
-        final body = jsonDecode(response.body);
+        try {
+          await credential.user?.delete();
+        } catch (_) {
+          // 롤백 실패는 무시 (백엔드 오류 메시지를 우선 표시)
+        }
+        final body = jsonDecode(response.body) as Map<String, dynamic>;
         throw Exception(body['message'] ?? 'signup_failed'.tr());
       }
 
@@ -195,6 +197,9 @@ class _SignupPageState extends State<SignupPage> {
         case 'invalid-email':
           msg = '올바른 이메일 형식이 아닙니다.';
           break;
+        case 'unknown':
+          msg = '네트워크 오류가 발생했습니다. 인터넷 연결을 확인하고 다시 시도해주세요.';
+          break;
         default:
           msg = '회원가입에 실패했습니다. (${e.code})';
       }
@@ -204,8 +209,9 @@ class _SignupPageState extends State<SignupPage> {
         textColor: Colors.white,
       );
     } catch (e) {
+      final errMsg = e.toString().replaceFirst('Exception: ', '');
       Fluttertoast.showToast(
-        msg: 'signup_failed_detail'.tr(args: [e.toString()]),
+        msg: 'signup_failed_detail'.tr(args: [errMsg.isEmpty ? '알 수 없는 오류' : errMsg]),
         backgroundColor: Colors.red,
         textColor: Colors.white,
       );

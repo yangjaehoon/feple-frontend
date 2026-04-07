@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
@@ -89,7 +91,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: ResizeImage(
-                    NetworkImage(widget.poster.posterUrl),
+                    CachedNetworkImageProvider(widget.poster.posterUrl),
                     width: 100,
                   ),
                   fit: BoxFit.cover,
@@ -130,10 +132,11 @@ class _FestivalPosterState extends State<FestivalPoster> {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
-                      child: Image.network(
-                        widget.poster.posterUrl,
-                        cacheWidth: 300,
+                      child: CachedNetworkImage(
+                        imageUrl: widget.poster.posterUrl,
+                        memCacheWidth: 300,
                         fit: BoxFit.fill,
+                        errorWidget: (context, url, error) => const Icon(Icons.broken_image),
                       ),
                     ),
                   ),

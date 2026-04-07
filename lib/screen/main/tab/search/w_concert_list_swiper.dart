@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:card_swiper/card_swiper.dart';
 import 'package:fast_app_base/common/common.dart';
@@ -49,7 +50,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: ResizeImage(
-                  NetworkImage(
+                  CachedNetworkImageProvider(
                     items[_currentPage].posterUrl,
                   ),
                   width: 100,
@@ -116,10 +117,12 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
-                    child: Image.network(
-                      item.posterUrl,
-                      cacheWidth: 360,
+                    child: CachedNetworkImage(
+                      imageUrl: item.posterUrl,
+                      memCacheWidth: 360,
                       fit: BoxFit.fill,
+                      placeholder: (context, url) => Container(color: colors.drawerHeaderBg),
+                      errorWidget: (context, url, error) => const Icon(Icons.error),
                     ),
                   ),
                 ),

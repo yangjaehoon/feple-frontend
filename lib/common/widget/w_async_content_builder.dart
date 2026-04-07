@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
 
@@ -55,7 +56,7 @@ class AsyncContentBuilder<T> extends StatelessWidget {
           if (errorBuilder != null) return errorBuilder!(snapshot.error);
           return _buildStateWidget(
             context,
-            '데이터를 불러오는 중 오류가 발생했습니다.\n${snapshot.error}',
+            'err_fetch_data'.tr(args: [snapshot.error.toString()]),
           );
         }
 

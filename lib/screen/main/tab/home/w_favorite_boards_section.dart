@@ -33,6 +33,29 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
     _loadPrefs();
   }
 
+  @override
+  void didUpdateWidget(covariant FavoriteBoardsSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!_prefsLoaded) return;
+
+    final oldIds = oldWidget.allBoards.map((b) => b.boardId).toSet();
+    final newIds = widget.allBoards.map((b) => b.boardId).toSet();
+    if (oldIds == newIds) return; // 변화 없으면 무시
+
+    final validIds = newIds;
+    // 기존 선택 목록 중 유효한 것만 유지
+    final stillSelected =
+        _orderedSelectedIds.where(validIds.contains).toList();
+    // 새로 추가된 게시판은 끝에 자동 추가
+    final knownIds = _orderedSelectedIds.toSet();
+    final addedIds = widget.allBoards
+        .map((b) => b.boardId)
+        .where((id) => !knownIds.contains(id))
+        .toList();
+
+    setState(() => _orderedSelectedIds = [...stillSelected, ...addedIds]);
+  }
+
   Future<void> _loadPrefs() async {
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getStringList(_prefsKey);

@@ -23,6 +23,13 @@ class ArtistBoard extends StatefulWidget {
 
 class _ArtistBoardState extends State<ArtistBoard> {
   final PostService _postService = PostService();
+  late Future<List<Post>> _postsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _postsFuture = _postService.fetchArtistPosts(widget.artistId);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +77,7 @@ class _ArtistBoardState extends State<ArtistBoard> {
 
   Widget _buildPostList(AbstractThemeColors colors) {
     return FutureBuilder<List<Post>>(
-      future: _postService.fetchArtistPosts(widget.artistId),
+      future: _postsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(

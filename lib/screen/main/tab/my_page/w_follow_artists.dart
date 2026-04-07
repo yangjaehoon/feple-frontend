@@ -93,7 +93,7 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
                             color: colors.followRingColor,
                             boxShadow: [
                               BoxShadow(
-                                color: colors.cardShadow.withOpacity(0.2),
+                                color: colors.cardShadow.withValues(alpha: 0.2),
                                 blurRadius: 8,
                                 offset: const Offset(0, 2),
                               ),

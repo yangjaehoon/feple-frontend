@@ -1,7 +1,6 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 import 'package:flutter/material.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 /// signup, edit_profile, change_nickname에서 공통으로 사용하는
 /// 닉네임 입력 + 중복확인 위젯.

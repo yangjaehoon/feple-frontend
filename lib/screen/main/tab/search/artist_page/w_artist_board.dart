@@ -38,7 +38,7 @@ class _ArtistBoardState extends State<ArtistBoard> {
             const BorderRadius.all(Radius.circular(AppDimens.cardRadius)),
         boxShadow: [
           BoxShadow(
-            color: colors.cardShadow.withOpacity(0.12),
+            color: colors.cardShadow.withValues(alpha: 0.12),
             blurRadius: AppDimens.cardRadius,
             offset: const Offset(0, 4),
           ),

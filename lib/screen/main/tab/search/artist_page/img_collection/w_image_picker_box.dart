@@ -36,7 +36,7 @@ class ImagePickerBox extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: colors.cardShadow.withOpacity(0.08),
+                color: colors.cardShadow.withValues(alpha: 0.08),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),

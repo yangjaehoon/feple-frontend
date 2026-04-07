@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/widget/w_nickname_field.dart';
 import 'package:fast_app_base/model/user_model.dart';
@@ -190,7 +189,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                       color: colors.profileRingColor,
                       boxShadow: [
                         BoxShadow(
-                          color: colors.cardShadow.withOpacity(0.2),
+                          color: colors.cardShadow.withValues(alpha: 0.2),
                           blurRadius: 20,
                           offset: const Offset(0, 4),
                         ),

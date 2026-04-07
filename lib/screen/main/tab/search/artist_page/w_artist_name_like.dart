@@ -103,10 +103,10 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
         backgroundColor: AppColors.skyBlue,
         textColor: Colors.white,
       );
-    } finally {
-      if (!mounted) return;
-      setState(() => isLoading = false);
     }
+
+    if (!mounted) return;
+    setState(() => isLoading = false);
   }
 
   @override
@@ -122,8 +122,8 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
             colors: [
-              Colors.black.withOpacity(0.65),
-              Colors.black.withOpacity(0.0),
+              Colors.black.withValues(alpha: 0.65),
+              Colors.black.withValues(alpha: 0.0),
             ],
           ),
         ),
@@ -243,10 +243,10 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
               : const LinearGradient(
                   colors: [AppColors.skyBlue, AppColors.skyBlueLight],
                 ),
-          color: isFollowed ? Colors.white.withOpacity(0.2) : null,
+          color: isFollowed ? Colors.white.withValues(alpha: 0.2) : null,
           borderRadius: BorderRadius.circular(24),
           border: isFollowed
-              ? Border.all(color: Colors.white.withOpacity(0.4), width: 1)
+              ? Border.all(color: Colors.white.withValues(alpha: 0.4), width: 1)
               : null,
         ),
         child: isLoading
@@ -296,10 +296,10 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.15),
+          color: Colors.white.withValues(alpha: 0.15),
           shape: BoxShape.circle,
           border: Border.all(
-            color: Colors.white.withOpacity(0.25),
+            color: Colors.white.withValues(alpha: 0.25),
             width: 1,
           ),
         ),

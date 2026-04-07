@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 
 class MyLocation{
@@ -8,14 +9,14 @@ class MyLocation{
     try {
       LocationPermission permission = await Geolocator.requestPermission();
     Position position = await Geolocator.
-      getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      getCurrentPosition(locationSettings: const LocationSettings(accuracy: LocationAccuracy.high));
       latitude2 = position.latitude;
       longitude2 = position.longitude;
 
-      print(latitude2);
-      print(longitude2);
+      debugPrint(latitude2.toString());
+      debugPrint(longitude2.toString());
     } catch (e) {
-    print('There was a problem with the internet connection. ');
+      debugPrint('There was a problem with the internet connection. ');
     }
   }
 }

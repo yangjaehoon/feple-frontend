@@ -126,7 +126,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
                               borderRadius: BorderRadius.circular(20.0),
                               boxShadow: [
                                 BoxShadow(
-                                  color: colors.cardShadow.withOpacity(0.15),
+                                  color: colors.cardShadow.withValues(alpha: 0.15),
                                   blurRadius: 12,
                                   offset: const Offset(0, 4),
                                 ),
@@ -141,7 +141,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
                                 errorWidget: (context, error, stack) =>
                                     Container(
                                   decoration: BoxDecoration(
-                                    color: colors.activate.withOpacity(0.1),
+                                    color: colors.activate.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Icon(

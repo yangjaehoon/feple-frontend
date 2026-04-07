@@ -82,7 +82,7 @@ class _FilterPanel extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: colors.cardShadow.withOpacity(0.08),
+            color: colors.cardShadow.withValues(alpha: 0.08),
             blurRadius: 12,
             offset: const Offset(0, 3),
           ),

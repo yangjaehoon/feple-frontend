@@ -54,7 +54,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
               color: colors.profileRingColor,
               boxShadow: [
                 BoxShadow(
-                  color: colors.cardShadow.withOpacity(0.2),
+                  color: colors.cardShadow.withValues(alpha: 0.2),
                   blurRadius: 20,
                   offset: const Offset(0, 4),
                 ),
@@ -91,7 +91,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: colors.levelBadgeBg.withOpacity(0.1),
+              color: colors.levelBadgeBg.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
@@ -137,7 +137,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: colors.cardShadow.withOpacity(isPrimary ? 0.3 : 0.04),
+            color: colors.cardShadow.withValues(alpha: isPrimary ? 0.3 : 0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),

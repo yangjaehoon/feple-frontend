@@ -203,7 +203,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: colors.cardShadow.withOpacity(0.08),
+                  color: colors.cardShadow.withValues(alpha: 0.08),
                   blurRadius: 10,
                   offset: const Offset(0, 2),
                 ),
@@ -257,7 +257,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.45),
+                            color: Colors.black.withValues(alpha: 0.45),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Row(
@@ -360,7 +360,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 8, vertical: 3),
                               decoration: BoxDecoration(
-                                color: colors.activate.withOpacity(0.12),
+                                color: colors.activate.withValues(alpha: 0.12),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(

@@ -60,7 +60,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
               child: Container(
-                color: colors.swiperOverlay.withOpacity(0.5),
+                color: colors.swiperOverlay.withValues(alpha: 0.5),
               ),
             ),
           ),
@@ -78,7 +78,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
               margin: const EdgeInsets.only(bottom: 0),
               builder: DotSwiperPaginationBuilder(
                 activeColor: colors.activate,
-                color: colors.activate.withOpacity(0.3),
+                color: colors.activate.withValues(alpha: 0.3),
                 activeSize: 10,
                 size: 7,
               ),
@@ -108,7 +108,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: colors.cardShadow.withOpacity(0.2),
+                        color: colors.cardShadow.withValues(alpha: 0.2),
                         blurRadius: 20,
                         offset: const Offset(0, 8),
                       ),

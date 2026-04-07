@@ -8,7 +8,7 @@ class LightAppShadows extends AbsThemeShadows {
   BoxShadow get buttonShadow => BoxShadow(
         offset: const Offset(0, 4),
         blurRadius: 20,
-        color: AppColors.skyBlue.withOpacity(0.2),
+        color: AppColors.skyBlue.withValues(alpha: 0.2),
       );
 
   @override
@@ -22,7 +22,7 @@ class LightAppShadows extends AbsThemeShadows {
   BoxShadow get defaultShadow => BoxShadow(
         offset: const Offset(0, 4),
         blurRadius: 12,
-        color: AppColors.skyBlue.withOpacity(0.15),
+        color: AppColors.skyBlue.withValues(alpha: 0.15),
       );
 
   @override
@@ -36,6 +36,6 @@ class LightAppShadows extends AbsThemeShadows {
   BoxShadow get buttonShadowSmall => BoxShadow(
         offset: const Offset(0, 2),
         blurRadius: 10,
-        color: AppColors.skyBlue.withOpacity(0.12),
+        color: AppColors.skyBlue.withValues(alpha: 0.12),
       );
 }

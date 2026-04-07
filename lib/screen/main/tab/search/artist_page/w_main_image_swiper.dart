@@ -127,7 +127,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
                                     borderRadius: BorderRadius.circular(10),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.4),
+                                        color: Colors.black.withValues(alpha: 0.4),
                                         blurRadius: 10,
                                         spreadRadius: 2,
                                         offset: const Offset(0, 8),
@@ -175,7 +175,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
         ),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-          child: Container(color: Colors.black.withOpacity(0.5)),
+          child: Container(color: Colors.black.withValues(alpha: 0.5)),
         ),
       ),
     );

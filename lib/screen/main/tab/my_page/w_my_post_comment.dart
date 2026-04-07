@@ -107,7 +107,7 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
           border: Border.all(color: colors.listDivider),
           boxShadow: [
             BoxShadow(
-              color: colors.cardShadow.withOpacity(0.03),
+              color: colors.cardShadow.withValues(alpha: 0.03),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),

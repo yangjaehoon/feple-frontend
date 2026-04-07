@@ -2,7 +2,7 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:fast_app_base/login/login.dart';
 import 'package:fast_app_base/provider/user_provider.dart';
 import 'package:fast_app_base/screen/opensource/s_opensource.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -50,7 +50,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
                   color: colors.surface,
                   boxShadow: [
                     BoxShadow(
-                      color: colors.cardShadow.withOpacity(0.1),
+                      color: colors.cardShadow.withValues(alpha: 0.1),
                       blurRadius: 30,
                       offset: const Offset(5, 0),
                     ),
@@ -81,7 +81,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
           Container(
             padding: const EdgeInsets.fromLTRB(20, 16, 10, 16),
             decoration: BoxDecoration(
-              color: colors.drawerHeaderBg.withOpacity(0.1),
+              color: colors.drawerHeaderBg.withValues(alpha: 0.1),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -180,20 +180,20 @@ class _MenuDrawerState extends State<MenuDrawer> {
                   ],
                 ),
               );
-              if (confirmed != true || !mounted) return;
+              if (confirmed != true || !context.mounted) return;
               final userProvider = context.read<UserProvider>();
               closeDrawer(context);
               try {
                 await userProvider.deleteAccount();
               } catch (_) {
-                if (mounted) {
+                if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('delete_account_error'.tr())),
                   );
                 }
                 return;
               }
-              if (!mounted) return;
+              if (!context.mounted) return;
               Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (_) => const LoginPage()),
                 (_) => false,
@@ -278,7 +278,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
                       await context
                           .setLocale(Language.find(value.toLowerCase()).locale);
                     },
-                    value: describeEnum(currentLanguage).capitalizeFirst,
+                    value: currentLanguage.name.capitalizeFirst,
                     underline: const SizedBox.shrink(),
                     elevation: 1,
                     borderRadius: BorderRadius.circular(16),
@@ -294,12 +294,12 @@ class _MenuDrawerState extends State<MenuDrawer> {
   DropdownMenuItem<String> menu(Language language) {
     final colors = context.appColors;
     return DropdownMenuItem(
-      value: describeEnum(language).capitalizeFirst,
+      value: language.name.capitalizeFirst,
       child: Row(
         children: [
           flag(language.flagPath),
           const Width(8),
-          describeEnum(language)
+          language.name
               .capitalizeFirst!
               .text
               .color(colors.textTitle)

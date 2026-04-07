@@ -382,7 +382,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                       color: colors.followRingColor,
                       boxShadow: [
                         BoxShadow(
-                          color: colors.cardShadow.withOpacity(0.15),
+                          color: colors.cardShadow.withValues(alpha: 0.15),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -472,7 +472,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: colors.cardShadow.withOpacity(0.12),
+                    color: colors.cardShadow.withValues(alpha: 0.12),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -505,7 +505,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                             begin: Alignment.bottomCenter,
                             end: Alignment.topCenter,
                             colors: [
-                              Colors.black.withOpacity(0.7),
+                              Colors.black.withValues(alpha: 0.7),
                               Colors.transparent
                             ],
                           ),

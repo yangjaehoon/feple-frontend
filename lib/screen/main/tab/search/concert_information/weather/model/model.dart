@@ -7,27 +7,27 @@ class Model {
     if (condition < 300) {
       return SvgPicture.asset(
         'svg/weather_icon/Climacon-cloud_ligthning.svg',
-        color: Colors.black87,
+        colorFilter: const ColorFilter.mode(Colors.black87, BlendMode.srcIn),
       );
     } else if (condition < 600) {
       return SvgPicture.asset(
         'svg/weather_icon/climacon-cloud_snow_alt.svg',
-        color: Colors.black87,
+        colorFilter: const ColorFilter.mode(Colors.black87, BlendMode.srcIn),
       );
     } else if (condition == 800) {
       return SvgPicture.asset(
         'svg/weather_icon/climacon-sun.svg',
-        color: Colors.black87,
+        colorFilter: const ColorFilter.mode(Colors.black87, BlendMode.srcIn),
       );
     } else if (condition <= 804) {
       return SvgPicture.asset(
         'svg/weather_icon/climacon-cloud_sun.svg',
-        color: Colors.black87,
+        colorFilter: const ColorFilter.mode(Colors.black87, BlendMode.srcIn),
       );
     } else {
       return SvgPicture.asset(
         'svg/weather_icon/icon.svg',
-        color: Colors.black87,
+        colorFilter: const ColorFilter.mode(Colors.black87, BlendMode.srcIn),
       );
     }
   }

@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
 
@@ -21,7 +20,7 @@ class FestivalPreviewCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: colors.cardShadow.withOpacity(0.12),
+            color: colors.cardShadow.withValues(alpha: 0.12),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
@@ -49,7 +48,7 @@ class FestivalPreviewCard extends StatelessWidget {
                     ),
                   ),
                   if (festival.isEnded) ...[
-                    Container(color: Colors.black.withOpacity(0.5)),
+                    Container(color: Colors.black.withValues(alpha: 0.5)),
                     Center(
                       child: Text(
                         'status_ended'.tr(),

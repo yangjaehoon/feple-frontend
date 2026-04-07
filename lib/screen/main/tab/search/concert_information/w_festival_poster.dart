@@ -98,7 +98,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                 child: Container(
-                  color: colors.swiperOverlay.withOpacity(0.5),
+                  color: colors.swiperOverlay.withValues(alpha: 0.5),
                 ),
               ),
             ),
@@ -122,7 +122,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: colors.cardShadow.withOpacity(0.2),
+                          color: colors.cardShadow.withValues(alpha: 0.2),
                           blurRadius: 16,
                           offset: const Offset(0, 6),
                         ),
@@ -200,8 +200,8 @@ class _FestivalPosterState extends State<FestivalPoster> {
                               padding: const EdgeInsets.all(6),
                               decoration: BoxDecoration(
                                 color: _liked
-                                    ? Colors.pink.withOpacity(0.35)
-                                    : Colors.white.withOpacity(0.15),
+                                    ? Colors.pink.withValues(alpha: 0.35)
+                                    : Colors.white.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Icon(
@@ -217,7 +217,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
                           Container(
                             padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.15),
+                              color: Colors.white.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: const Icon(Icons.calendar_month_outlined,
@@ -236,7 +236,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
                             child: Container(
                               padding: const EdgeInsets.all(6),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.15),
+                                color: Colors.white.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: const Icon(Icons.wb_cloudy_rounded,
@@ -249,7 +249,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
                             child: Container(
                               padding: const EdgeInsets.all(6),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.15),
+                                color: Colors.white.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: const Icon(Icons.location_on_rounded,

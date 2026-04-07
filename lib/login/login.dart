@@ -1,6 +1,5 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
+
 import 'package:fast_app_base/common/widget/w_app_text_field.dart';
 import 'package:fast_app_base/login/signup.dart';
 import 'package:fast_app_base/service/auth_service.dart';
@@ -134,14 +133,14 @@ class _LoginPageState extends State<LoginPage> {
                     padding: const EdgeInsets.only(bottom: 4),
                     child: Row(
                       children: [
-                        const Icon(Icons.error_outline_rounded,
-                            color: Color(0xFFE53E3E), size: 15),
+                        Icon(Icons.error_outline_rounded,
+                            color: themeColors.activate, size: 15),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
                             _loginError!,
-                            style: const TextStyle(
-                              color: Color(0xFFE53E3E),
+                            style: TextStyle(
+                              color: themeColors.activate,
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
                             ),
@@ -288,7 +287,10 @@ class _LoginPageState extends State<LoginPage> {
             child: Text('cancel'.tr()),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.skyBlue),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.appColors.activate,
+              foregroundColor: Colors.white,
+            ),
             onPressed: () async {
               final email = emailCtrl.text.trim();
               if (email.isEmpty) return;
@@ -298,21 +300,21 @@ class _LoginPageState extends State<LoginPage> {
                 if (mounted) {
                   Fluttertoast.showToast(
                     msg: 'password_reset_sent'.tr(),
-                    backgroundColor: AppColors.skyBlue,
-                    textColor: Colors.white,
+                    backgroundColor: context.appColors.snackbarBgColor,
+                    textColor: context.appColors.textTitle,
                   );
                 }
               } on FirebaseAuthException catch (e) {
                 if (mounted) {
                   Fluttertoast.showToast(
                     msg: AuthService.instance.firebaseErrorMessage(e.code),
-                    backgroundColor: Colors.red,
+                    backgroundColor: context.appColors.activate,
                     textColor: Colors.white,
                   );
                 }
               }
             },
-            child: Text('send'.tr(), style: const TextStyle(color: Colors.white)),
+            child: Text('send'.tr()),
           ),
         ],
       ),
@@ -323,12 +325,13 @@ class _LoginPageState extends State<LoginPage> {
     final userProvider = context.read<UserProvider>();
     try {
       final user = await AuthService.instance.loginWithKakao();
+      if (!context.mounted) return;
       userProvider.setUser(user);
 
       Fluttertoast.showToast(
         msg: 'kakao_login_success'.tr(),
-        backgroundColor: AppColors.skyBlue,
-        textColor: Colors.white,
+        backgroundColor: context.appColors.snackbarBgColor,
+        textColor: context.appColors.textTitle,
       );
     } catch (e) {
       debugPrint('=== 카카오 로그인 실패 에러 ===\n$e\n======================');

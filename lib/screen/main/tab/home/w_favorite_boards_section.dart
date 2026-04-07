@@ -236,7 +236,7 @@ class _BoardTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
-              color: colors.cardShadow.withOpacity(0.12),
+              color: colors.cardShadow.withValues(alpha: 0.12),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
@@ -268,7 +268,7 @@ class _BoardTile extends StatelessWidget {
                       begin: Alignment.bottomCenter,
                       end: Alignment.topCenter,
                       colors: [
-                        Colors.black.withOpacity(0.72),
+                        Colors.black.withValues(alpha: 0.72),
                         Colors.transparent,
                       ],
                     ),

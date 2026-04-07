@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/festival_constants.dart';
 import 'package:fast_app_base/network/dio_client.dart';

@@ -1,6 +1,5 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
+
 import 'package:fast_app_base/common/widget/w_app_text_field.dart';
 import 'package:fast_app_base/common/widget/w_nickname_field.dart';
 import 'package:fast_app_base/service/auth_service.dart';
@@ -116,11 +115,11 @@ class _SignupPageState extends State<SignupPage> {
           actions: [
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.skyBlue,
+                backgroundColor: context.appColors.activate,
+                foregroundColor: Colors.white,
               ),
               onPressed: () => Navigator.pop(ctx),
-              child: Text('confirm'.tr(),
-                  style: const TextStyle(color: Colors.white)),
+              child: Text('confirm'.tr()),
             ),
           ],
         ),
@@ -251,9 +250,9 @@ class _SignupPageState extends State<SignupPage> {
                     padding: const EdgeInsets.only(bottom: 12),
                     child: Text(
                       _generalError!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
-                        color: Colors.red,
+                        color: themeColors.activate,
                         fontWeight: FontWeight.w500,
                       ),
                       textAlign: TextAlign.center,

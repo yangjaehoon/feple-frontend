@@ -2732,7 +2732,7 @@ class TransparentScaffoldState extends State<TransparentScaffold>
     }
     setState(() {
       _showBodyScrim = value;
-      _bodyScrimColor = Colors.black.withOpacity(opacity);
+      _bodyScrimColor = Colors.black.withValues(alpha: opacity);
     });
   }
 

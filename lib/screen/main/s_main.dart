@@ -98,7 +98,7 @@ class MainScreenState extends State<MainScreen>
         ),
         boxShadow: [
           BoxShadow(
-            color: colors.bottomNavShadow.withOpacity(0.05),
+            color: colors.bottomNavShadow.withValues(alpha: 0.05),
             spreadRadius: 0,
             blurRadius: 20,
             offset: const Offset(0, -5),

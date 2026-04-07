@@ -166,7 +166,7 @@ class _FestivalBoothMapState extends State<FestivalBoothMap> {
       final picture = recorder.endRecording();
       final markerImg = await picture.toImage(w.toInt(), totalH.toInt());
       final byteData = await markerImg.toByteData(format: ui.ImageByteFormat.png);
-      return BitmapDescriptor.fromBytes(byteData!.buffer.asUint8List());
+      return BitmapDescriptor.bytes(byteData!.buffer.asUint8List());
     } catch (_) {
       return BitmapDescriptor.defaultMarkerWithHue(hue);
     }

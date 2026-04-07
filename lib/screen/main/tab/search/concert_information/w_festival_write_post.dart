@@ -1,5 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
-import 'package:fast_app_base/common/constant/app_colors.dart';
+import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/service/post_service.dart';
 import 'package:flutter/material.dart';
 
@@ -73,9 +72,16 @@ class _FestivalWritePostState extends State<FestivalWritePost> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_rounded),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: Text('name_board_write'.tr(args: [widget.festivalName])),
+        backgroundColor: colors.appBarColor,
+        foregroundColor: Colors.white,
         actions: [
           TextButton(
             onPressed: _isSubmitting ? null : () => _submit(),
@@ -83,19 +89,16 @@ class _FestivalWritePostState extends State<FestivalWritePost> {
                 ? const SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: Colors.white),
                   )
-                : Text(
-                    'done'.tr(),
+                : Text('done'.tr(),
                     style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white
-                          : Colors.black,
-                    ),
-                  ),
+                        color: Colors.white, fontWeight: FontWeight.w700)),
           ),
         ],
       ),
+      backgroundColor: colors.backgroundMain,
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
@@ -103,18 +106,35 @@ class _FestivalWritePostState extends State<FestivalWritePost> {
             children: [
               TextField(
                 controller: _titleController,
+                style: TextStyle(color: colors.textTitle),
                 decoration: InputDecoration(
                   hintText: 'enter_title'.tr(),
-                  border: OutlineInputBorder(),
+                  hintStyle: TextStyle(color: colors.textSecondary),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: colors.activate, width: 2),
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: _contentController,
                 maxLines: null,
+                minLines: 8,
+                style: TextStyle(color: colors.textTitle),
                 decoration: InputDecoration(
                   hintText: 'enter_content'.tr(),
-                  border: OutlineInputBorder(),
+                  hintStyle: TextStyle(color: colors.textSecondary),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: colors.activate, width: 2),
+                  ),
                 ),
               ),
             ],
@@ -124,3 +144,4 @@ class _FestivalWritePostState extends State<FestivalWritePost> {
     );
   }
 }
+

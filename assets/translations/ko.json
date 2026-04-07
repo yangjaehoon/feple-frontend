@@ -128,5 +128,8 @@
   "password_uppercase": "대문자",
   "password_lowercase": "소문자",
   "password_digit": "숫자",
-  "password_special": "특수문자"
+  "password_special": "특수문자",
+  "verification_email_sent": "인증 이메일을 발송했습니다.\n이메일을 확인한 후 로그인해주세요.",
+  "email_not_verified": "이메일 인증이 완료되지 않았습니다.\n인증 이메일을 재발송했습니다. 이메일을 확인해주세요.",
+  "verification_email_resent": "인증 이메일을 재발송했습니다."
 }

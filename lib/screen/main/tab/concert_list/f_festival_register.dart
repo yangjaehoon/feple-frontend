@@ -105,11 +105,11 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
       backgroundColor: colors.backgroundMain,
       appBar: AppBar(
         backgroundColor: colors.appBarColor,
-        title: const Text(
+        title: Text(
           '페스티벌 등록',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+          style: TextStyle(color: colors.textTitle, fontWeight: FontWeight.w700),
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: colors.textTitle),
         elevation: 0,
       ),
       body: Form(

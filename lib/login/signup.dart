@@ -6,9 +6,6 @@ import 'package:fast_app_base/common/widget/w_nickname_field.dart';
 import 'package:fast_app_base/service/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
-import '../provider/user_provider.dart';
 
 
 
@@ -103,21 +100,32 @@ class _SignupPageState extends State<SignupPage> {
 
     setState(() => _isLoading = true);
     try {
-      final user = await AuthService.instance.registerWithEmail(
+      await AuthService.instance.registerWithEmail(
         email, password, nickname,
       );
       if (!mounted) return;
-      context.read<UserProvider>().setUser(user);
 
-      Fluttertoast.showToast(
-        msg: 'signup_success'.tr(),
-        backgroundColor: AppColors.skyBlue,
-        textColor: Colors.white,
+      // 인증 이메일 발송 완료 → 안내 다이얼로그 표시 후 로그인 페이지로 이동
+      await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => AlertDialog(
+          title: Text('signup'.tr(),
+              style: const TextStyle(fontWeight: FontWeight.w700)),
+          content: Text('verification_email_sent'.tr()),
+          actions: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.skyBlue,
+              ),
+              onPressed: () => Navigator.pop(ctx),
+              child: Text('confirm'.tr(),
+                  style: const TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
       );
-
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
-      });
+      if (mounted) Navigator.pop(context); // 로그인 페이지로 돌아가기
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       final msg = AuthService.instance.firebaseErrorMessage(e.code);
@@ -131,7 +139,7 @@ class _SignupPageState extends State<SignupPage> {
             _passwordError = msg;
             break;
           default:
-            _generalError = '[${e.code}] ${e.message ?? msg}';
+            _generalError = msg;
         }
       });
     } catch (e) {

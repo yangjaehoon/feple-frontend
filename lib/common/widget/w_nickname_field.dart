@@ -1,4 +1,4 @@
-import 'package:fast_app_base/common/constant/app_colors.dart';
+import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -80,7 +80,19 @@ class NicknameFieldState extends State<NicknameField> {
         },
       );
       final body = resp.data as Map<String, dynamic>;
-      _setResult(body['available'] as bool, body['message'] as String);
+      final available = body['available'] as bool;
+      String backendMsg = body['message'] as String;
+      String localizedMsg = backendMsg;
+
+      if (available) {
+        localizedMsg = 'nickname_available'.tr();
+      } else if (backendMsg.contains("이미 사용 중인")) {
+        localizedMsg = 'nickname_already_in_use'.tr();
+      } else if (backendMsg.contains("한글, 영문, 숫자")) {
+        localizedMsg = 'nickname_invalid_chars'.tr();
+      }
+
+      _setResult(available, localizedMsg);
       _lastChecked = nickname;
     } catch (e) {
       _setResult(false, 'nickname_check_error'.tr());
@@ -109,6 +121,7 @@ class NicknameFieldState extends State<NicknameField> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -120,24 +133,23 @@ class NicknameFieldState extends State<NicknameField> {
                 controller: controller,
                 maxLength: 8,
                 onChanged: _onTextChanged,
-                style: const TextStyle(
-                    fontSize: 15, color: AppColors.textMain),
+                style: TextStyle(
+                    fontSize: 15, color: colors.text),
                 decoration: InputDecoration(
                   counterText: '',
-                  prefixIcon: const Icon(Icons.badge_outlined,
-                      color: AppColors.skyBlue, size: 22),
+                  prefixIcon: Icon(Icons.badge_outlined,
+                      color: colors.activate, size: 22),
                   hintText: 'nickname_hint_format'.tr(),
-                  hintStyle: const TextStyle(
-                      color: AppColors.textMuted, fontSize: 15),
+                  hintStyle: TextStyle(
+                      color: colors.hintText, fontSize: 15),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: colors.surface,
                   contentPadding: const EdgeInsets.symmetric(
                       horizontal: 20, vertical: 16),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide(
-                        color:
-                            AppColors.skyBlueLight.withValues(alpha: 0.5)),
+                        color: colors.divider),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -146,13 +158,12 @@ class NicknameFieldState extends State<NicknameField> {
                             ? Colors.red
                             : _available == true
                                 ? Colors.green
-                                : AppColors.skyBlueLight
-                                    .withValues(alpha: 0.4)),
+                                : colors.divider),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(
-                        color: AppColors.skyBlue, width: 2),
+                    borderSide: BorderSide(
+                        color: colors.focusedBorder, width: 2),
                   ),
                 ),
               ),
@@ -163,7 +174,7 @@ class NicknameFieldState extends State<NicknameField> {
               child: ElevatedButton(
                 onPressed: _isChecking ? null : checkNickname,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.skyBlue,
+                  backgroundColor: colors.activate,
                   foregroundColor: Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(

@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
 import 'package:fast_app_base/common/widget/w_app_text_field.dart';
 import 'package:fast_app_base/login/signup.dart';
@@ -31,8 +32,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeColors = context.appColors;
     return Scaffold(
-      backgroundColor: AppColors.backgroundCreamy,
+      backgroundColor: themeColors.backgroundMain,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -58,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.textMain,
+                    color: themeColors.textTitle,
                     letterSpacing: -0.5,
                   ),
                 ),
@@ -67,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
                   'login_subtitle'.tr(),
                   style: TextStyle(
                     fontSize: 15,
-                    color: AppColors.textMuted,
+                    color: themeColors.textSecondary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -99,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _loginWithEmail,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.skyBlue,
+                      backgroundColor: themeColors.activate,
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
@@ -160,7 +162,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: Text(
                     'forgot_password'.tr(),
                     style: TextStyle(
-                      color: AppColors.skyBlue,
+                      color: themeColors.activate,
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                     ),
@@ -175,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
                     Text(
                       'not_member_yet'.tr(),
                       style: TextStyle(
-                        color: AppColors.textMuted,
+                        color: themeColors.textSecondary,
                         fontSize: 14,
                       ),
                     ),
@@ -188,7 +190,7 @@ class _LoginPageState extends State<LoginPage> {
                       child: Text(
                         'signup'.tr(),
                         style: TextStyle(
-                          color: AppColors.skyBlue,
+                          color: themeColors.activate,
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
                         ),
@@ -247,6 +249,10 @@ class _LoginPageState extends State<LoginPage> {
       final user = await AuthService.instance.loginWithEmail(email, password);
       if (!mounted) return;
       userProvider.setUser(user);
+    } on EmailNotVerifiedException {
+      if (mounted) {
+        setState(() => _loginError = 'email_not_verified'.tr());
+      }
     } on FirebaseAuthException catch (e) {
       if (mounted) {
         setState(() => _loginError = AuthService.instance.firebaseErrorMessage(e.code));

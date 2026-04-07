@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/widget/w_nickname_field.dart';
 import 'package:fast_app_base/model/user_model.dart';
@@ -51,18 +52,18 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
     final newNickname = nicknameState?.currentNickname ?? '';
     if (newNickname.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           backgroundColor: AppColors.skyBlue,
-          content: Text('닉네임을 입력해주세요.'),
+          content: Text('enter_nickname'.tr()),
         ),
       );
       return;
     }
     if (newNickname.length < 2 || newNickname.length > 8) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           backgroundColor: AppColors.skyBlue,
-          content: Text('닉네임은 2자 이상 8자 이하로 입력해주세요.'),
+          content: Text('nickname_length_error'.tr()),
         ),
       );
       return;
@@ -72,23 +73,24 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
     if (newNickname != _originalNickname) {
       if (nicknameState?.available == null || nicknameState?.lastCheckedNickname != newNickname) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             backgroundColor: AppColors.skyBlue,
-            content: Text('닉네임 중복 확인을 해주세요.'),
+            content: Text('nickname_check_req'.tr()),
           ),
         );
         return;
       }
       if (nicknameState?.available == false) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             backgroundColor: AppColors.skyBlue,
-            content: Text('사용할 수 없는 닉네임입니다.'),
+            content: Text('nickname_invalid'.tr()),
           ),
         );
         return;
       }
     }
+
 
     setState(() => _isSaving = true);
     try {

@@ -1,4 +1,4 @@
-import 'package:fast_app_base/common/constant/app_colors.dart';
+import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
 
 /// 앱 전체에서 사용하는 공통 텍스트 필드 스타일.
@@ -27,6 +27,7 @@ class AppTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -36,34 +37,34 @@ class AppTextField extends StatelessWidget {
           keyboardType: keyboardType,
           maxLength: maxLength,
           onChanged: onChanged,
-          style: const TextStyle(fontSize: 15, color: AppColors.textMain),
+          style: TextStyle(fontSize: 15, color: colors.text),
           decoration: InputDecoration(
             counterText: maxLength != null ? '' : null,
-            prefixIcon: Icon(icon, color: AppColors.skyBlue, size: 22),
+            prefixIcon: Icon(icon, color: colors.activate, size: 22),
             hintText: hintText,
             hintStyle:
-                const TextStyle(color: AppColors.textMuted, fontSize: 15),
+                TextStyle(color: colors.hintText, fontSize: 15),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: colors.surface,
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
               borderSide: BorderSide(
-                  color: AppColors.skyBlueLight.withValues(alpha: 0.5)),
+                  color: colors.divider),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
               borderSide: BorderSide(
                 color: errorText != null
                     ? Colors.red
-                    : AppColors.skyBlueLight.withValues(alpha: 0.4),
+                    : colors.divider,
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
               borderSide:
-                  const BorderSide(color: AppColors.skyBlue, width: 2),
+                  BorderSide(color: colors.focusedBorder, width: 2),
             ),
           ),
         ),

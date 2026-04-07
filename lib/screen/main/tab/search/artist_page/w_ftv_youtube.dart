@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'dto_ftv_youtube.dart';
 
@@ -11,12 +12,20 @@ class FtvYoutube extends StatefulWidget {
 }
 
 class _FtvYoutubeState extends State<FtvYoutube> {
+  late Future<List<Map<String, String>>> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = fetchMostViewedNewsThumbnail(widget.artistName);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 400,
       child: FutureBuilder<List<Map<String, String>>>(
-        future: fetchMostViewedNewsThumbnail(widget.artistName),
+        future: _future,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return CircularProgressIndicator();
@@ -32,7 +41,10 @@ class _FtvYoutubeState extends State<FtvYoutube> {
                 final videoTitle = data[index]['videoTitle'];
                 return Row(
                   children: [
-                    SizedBox(height: 90, child: Image.network(thumbnailUrl!)),
+                    SizedBox(height: 90, child: CachedNetworkImage(
+                      imageUrl: thumbnailUrl!,
+                      errorWidget: (context, url, error) => const Icon(Icons.broken_image),
+                    )),
                     SizedBox(
                       width: 5,
                     ),

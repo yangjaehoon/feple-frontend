@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/model/festival_artist_item.dart';
 import 'package:fast_app_base/network/dio_client.dart';
@@ -238,10 +239,10 @@ class _CircleImage extends StatelessWidget {
       ),
       child: ClipOval(
         child: (imageUrl != null && imageUrl!.isNotEmpty)
-            ? Image.network(
-                imageUrl!,
+            ? CachedNetworkImage(
+                imageUrl: imageUrl!,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Icon(
+                errorWidget: (context, url, error) => Icon(
                   Icons.person_rounded,
                   color: colors.activate.withValues(alpha: 0.5),
                   size: 26,
@@ -278,12 +279,12 @@ class _CircleImage extends StatelessWidget {
         padding: const EdgeInsets.all(1.5),
         child: ClipOval(
           child: (imageUrl != null && imageUrl!.isNotEmpty)
-              ? Image.network(
-                  imageUrl!,
+              ? CachedNetworkImage(
+                  imageUrl: imageUrl!,
                   fit: BoxFit.cover,
                   width: 52,
                   height: 52,
-                  errorBuilder: (_, __, ___) => Icon(
+                  errorWidget: (context, url, error) => Icon(
                     Icons.person_rounded,
                     color: colors.activate.withValues(alpha: 0.5),
                     size: 26,

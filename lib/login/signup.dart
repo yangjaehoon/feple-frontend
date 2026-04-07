@@ -39,6 +39,18 @@ class _SignupPageState extends State<SignupPage> {
     super.dispose();
   }
 
+  String? _validatePassword(String password) {
+    final missing = <String>[];
+    if (password.length < 8) missing.add('password_min_length'.tr());
+    if (password.length > 4096) missing.add('password_max_length'.tr());
+    if (!password.contains(RegExp(r'[A-Z]'))) missing.add('password_uppercase'.tr());
+    if (!password.contains(RegExp(r'[a-z]'))) missing.add('password_lowercase'.tr());
+    if (!password.contains(RegExp(r'[0-9]'))) missing.add('password_digit'.tr());
+    if (!password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) missing.add('password_special'.tr());
+    if (missing.isEmpty) return null;
+    return missing.join(', ');
+  }
+
   Future<void> _register() async {
     final email = emailController.text.trim();
     final password = passwordController.text;
@@ -62,6 +74,12 @@ class _SignupPageState extends State<SignupPage> {
     if (password.isEmpty) {
       _passwordError = 'enter_password'.tr();
       hasError = true;
+    } else {
+      final pwError = _validatePassword(password);
+      if (pwError != null) {
+        _passwordError = pwError;
+        hasError = true;
+      }
     }
     if (nickname.isEmpty) {
       nicknameState?.showError('enter_nickname'.tr());
@@ -113,7 +131,7 @@ class _SignupPageState extends State<SignupPage> {
             _passwordError = msg;
             break;
           default:
-            _generalError = msg;
+            _generalError = '[${e.code}] ${e.message ?? msg}';
         }
       });
     } catch (e) {

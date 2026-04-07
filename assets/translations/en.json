@@ -116,5 +116,17 @@
   "registered_email": "Registered email address",
   "password_reset_sent": "Password reset email has been sent.",
   "send": "Send",
-  "unknown_error": "Unknown error"
+  "unknown_error": "Unknown error",
+  "nickname_hint_format": "Nickname (2~8 chars)",
+  "check_duplication": "Check",
+  "nickname_check_error": "An error occurred while checking.",
+  "nickname_available": "Nickname is available.",
+  "nickname_already_in_use": "Nickname is already in use.",
+  "nickname_invalid_chars": "Nickname can only contain letters, numbers, and underscores.",
+  "password_min_length": "at least 8 characters",
+  "password_max_length": "at most 4096 characters",
+  "password_uppercase": "uppercase letter",
+  "password_lowercase": "lowercase letter",
+  "password_digit": "number",
+  "password_special": "special character"
 }

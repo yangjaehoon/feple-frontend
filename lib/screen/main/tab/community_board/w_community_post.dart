@@ -5,6 +5,7 @@ import 'package:fast_app_base/screen/main/tab/community_board/w_community_enralg
 import 'package:fast_app_base/screen/main/tab/community_board/w_post_list_tile.dart';
 import 'package:fast_app_base/service/post_service.dart';
 import 'package:fast_app_base/model/post_model.dart';
+import 'package:fast_app_base/common/widget/w_async_content_builder.dart';
 
 class CommunityPost extends StatefulWidget {
   final String boardname;
@@ -74,39 +75,9 @@ class _CommunityPostState extends State<CommunityPost> {
       body: RefreshIndicator(
         color: colors.activate,
         onRefresh: _refresh,
-        child: FutureBuilder<List<Post>>(
+        child: AsyncContentBuilder<List<Post>>(
           future: _postsFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child:
-                    CircularProgressIndicator(color: colors.loadingIndicator),
-              );
-            }
-            if (snapshot.hasError) {
-              return ListView(
-                children: [
-                  SizedBox(height: 200),
-                  Center(
-                    child: Text('Failed to load: ${snapshot.error}',
-                        style: TextStyle(color: colors.textSecondary)),
-                  ),
-                ],
-              );
-            }
-            if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return ListView(
-                children: [
-                  SizedBox(height: 200),
-                  Center(
-                    child: Text('No data available.',
-                        style: TextStyle(color: colors.textSecondary)),
-                  ),
-                ],
-              );
-            }
-
-            final posts = snapshot.data!;
+          builder: (context, posts) {
             return ListView.separated(
               padding: const EdgeInsets.only(bottom: 80),
               itemCount: posts.length,

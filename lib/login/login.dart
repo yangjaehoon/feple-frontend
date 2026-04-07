@@ -1,17 +1,12 @@
-import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
-import 'package:fast_app_base/config.dart';
+import 'package:fast_app_base/common/widget/w_app_text_field.dart';
 import 'package:fast_app_base/login/signup.dart';
+import 'package:fast_app_base/service/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:http/http.dart' as http;
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
-import '../auth/token_store.dart';
-import '../model/user_model.dart' as app;
 import '../provider/user_provider.dart';
 
 class LoginPage extends StatefulWidget {
@@ -79,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 40),
 
                 // ── 이메일 입력 ──
-                _buildTextField(
+                AppTextField(
                   controller: emailController,
                   hintText: 'email'.tr(),
                   icon: Icons.mail_outline_rounded,
@@ -88,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 14),
 
                 // ── 비밀번호 입력 ──
-                _buildTextField(
+                AppTextField(
                   controller: passwordController,
                   hintText: 'password'.tr(),
                   icon: Icons.lock_outline_rounded,
@@ -163,7 +158,7 @@ class _LoginPageState extends State<LoginPage> {
                 GestureDetector(
                   onTap: _showForgotPasswordDialog,
                   child: Text(
-                    '비밀번호를 잊으셨나요?',
+                    'forgot_password'.tr(),
                     style: TextStyle(
                       color: AppColors.skyBlue,
                       fontSize: 13,
@@ -209,43 +204,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hintText,
-    required IconData icon,
-    bool obscureText = false,
-    ValueChanged<String>? onChanged,
-  }) {
-    return TextField(
-      controller: controller,
-      obscureText: obscureText,
-      onChanged: onChanged,
-      style: const TextStyle(fontSize: 15, color: AppColors.textMain),
-      decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: AppColors.skyBlue, size: 22),
-        hintText: hintText,
-        hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 15),
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide:
-              BorderSide(color: AppColors.skyBlueLight.withValues(alpha: 0.5)),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide:
-              BorderSide(color: AppColors.skyBlueLight.withValues(alpha: 0.4)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.skyBlue, width: 2),
-        ),
-      ),
-    );
-  }
+  // _buildTextField 제거됨 → AppTextField 공통 위젯 사용
 
   Widget _buildKakaoLoginButton(BuildContext context) {
     return SizedBox(
@@ -278,46 +237,24 @@ class _LoginPageState extends State<LoginPage> {
     final password = passwordController.text;
 
     if (email.isEmpty || password.isEmpty) {
-      setState(() => _loginError = '이메일과 비밀번호를 입력해주세요.');
+      setState(() => _loginError = 'enter_email_password'.tr());
       return;
     }
 
     setState(() { _isLoading = true; _loginError = null; });
     final userProvider = context.read<UserProvider>();
     try {
-      // 1. Firebase 이메일/비밀번호 로그인
-      final credential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
-      final idToken = await credential.user!.getIdToken();
-
-      // 2. 백엔드에서 앱 JWT 발급
-      final response = await http.post(
-        Uri.parse('$baseUrl/auth/firebase'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'idToken': idToken}),
-      );
-
-      if (response.statusCode != 200) {
-        final body = jsonDecode(response.body);
-        throw Exception(body['message'] ?? 'login_failed'.tr());
-      }
-
-      final json = jsonDecode(response.body) as Map<String, dynamic>;
-      await TokenStore.saveAccessToken(json['accessToken'] as String);
-      final refreshToken = json['refreshToken'] as String?;
-      if (refreshToken != null) await TokenStore.saveRefreshToken(refreshToken);
-
-      final user = app.User.fromJson(json['user'] as Map<String, dynamic>);
+      final user = await AuthService.instance.loginWithEmail(email, password);
       if (!mounted) return;
       userProvider.setUser(user);
     } on FirebaseAuthException catch (e) {
       if (mounted) {
-        setState(() => _loginError = _firebaseErrorMessage(e.code));
+        setState(() => _loginError = AuthService.instance.firebaseErrorMessage(e.code));
       }
     } catch (e) {
       if (mounted) {
         final msg = e.toString().replaceFirst('Exception: ', '');
-        setState(() => _loginError = msg.isNotEmpty ? msg : '로그인에 실패했습니다.');
+        setState(() => _loginError = msg.isNotEmpty ? msg : 'login_failed'.tr());
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -329,20 +266,20 @@ class _LoginPageState extends State<LoginPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('비밀번호 재설정',
-            style: TextStyle(fontWeight: FontWeight.w700)),
+        title: Text('reset_password'.tr(),
+            style: const TextStyle(fontWeight: FontWeight.w700)),
         content: TextField(
           controller: emailCtrl,
           keyboardType: TextInputType.emailAddress,
-          decoration: const InputDecoration(
-            hintText: '가입한 이메일 주소',
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            hintText: 'registered_email'.tr(),
+            border: const OutlineInputBorder(),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('취소'),
+            child: Text('cancel'.tr()),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.skyBlue),
@@ -351,11 +288,10 @@ class _LoginPageState extends State<LoginPage> {
               if (email.isEmpty) return;
               Navigator.pop(ctx);
               try {
-                await FirebaseAuth.instance
-                    .sendPasswordResetEmail(email: email);
+                await AuthService.instance.sendPasswordReset(email);
                 if (mounted) {
                   Fluttertoast.showToast(
-                    msg: '비밀번호 재설정 이메일을 발송했습니다.',
+                    msg: 'password_reset_sent'.tr(),
                     backgroundColor: AppColors.skyBlue,
                     textColor: Colors.white,
                   );
@@ -363,54 +299,25 @@ class _LoginPageState extends State<LoginPage> {
               } on FirebaseAuthException catch (e) {
                 if (mounted) {
                   Fluttertoast.showToast(
-                    msg: _firebaseErrorMessage(e.code),
+                    msg: AuthService.instance.firebaseErrorMessage(e.code),
                     backgroundColor: Colors.red,
                     textColor: Colors.white,
                   );
                 }
               }
             },
-            child: const Text('발송', style: TextStyle(color: Colors.white)),
+            child: Text('send'.tr(), style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
     );
   }
 
-  String _firebaseErrorMessage(String code) {
-    switch (code) {
-      case 'user-not-found':
-      case 'wrong-password':
-      case 'invalid-credential':
-        return '이메일 또는 비밀번호가 올바르지 않습니다.';
-      case 'too-many-requests':
-        return '로그인 시도가 너무 많습니다. 잠시 후 다시 시도해주세요.';
-      case 'user-disabled':
-        return '비활성화된 계정입니다.';
-      default:
-        return '로그인에 실패했습니다. ($code)';
-    }
-  }
-
   Future<void> signInWithKakao(BuildContext context) async {
     final userProvider = context.read<UserProvider>();
-
     try {
-      OAuthToken token;
-
-      if (await isKakaoTalkInstalled()) {
-        try {
-          token = await UserApi.instance.loginWithKakaoTalk();
-        } catch (error) {
-          token = await UserApi.instance.loginWithKakaoAccount();
-        }
-      } else {
-        token = await UserApi.instance.loginWithKakaoAccount();
-      }
-
-      final me = await sendAccessTokenToServer(token.accessToken);
-
-      userProvider.setUser(me);
+      final user = await AuthService.instance.loginWithKakao();
+      userProvider.setUser(user);
 
       Fluttertoast.showToast(
         msg: 'kakao_login_success'.tr(),
@@ -418,40 +325,12 @@ class _LoginPageState extends State<LoginPage> {
         textColor: Colors.white,
       );
     } catch (e) {
-      print('=== 카카오 로그인 실패 에러 ===\n$e\n======================');
+      debugPrint('=== 카카오 로그인 실패 에러 ===\n$e\n======================');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('kakao_login_failed'.tr(args: [e.toString()]))),
         );
       }
     }
-  }
-
-  Future<app.User> sendAccessTokenToServer(String accessToken) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/auth/kakao'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $accessToken',
-      },
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception(
-          'Spring 서버 로그인 실패: ${response.statusCode} ${response.body}');
-    }
-
-    final json = jsonDecode(response.body) as Map<String, dynamic>;
-
-    final ourJwt = json['accessToken'] as String;
-    await TokenStore.saveAccessToken(ourJwt);
-
-    final refreshToken = json['refreshToken'] as String?;
-    if (refreshToken != null) {
-      await TokenStore.saveRefreshToken(refreshToken);
-    }
-
-    final userJson = json['user'] as Map<String, dynamic>;
-    return app.User.fromJson(userJson);
   }
 }

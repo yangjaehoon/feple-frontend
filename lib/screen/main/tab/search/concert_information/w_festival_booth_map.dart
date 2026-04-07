@@ -1,7 +1,7 @@
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:fast_app_base/common/common.dart';
+import 'package:fast_app_base/model/booth_model.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 import 'package:flutter/foundation.dart' show Factory, kIsWeb;
 import 'package:flutter/gestures.dart';
@@ -9,40 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
-
-// ── 모델 ──────────────────────────────────────────────────────────────────────
-class BoothModel {
-  final int id;
-  final String name;
-  final String boothType;
-  final String boothTypeName;
-  final double latitude;
-  final double longitude;
-  final String? description;
-  final String? imageUrl;
-
-  const BoothModel({
-    required this.id,
-    required this.name,
-    required this.boothType,
-    required this.boothTypeName,
-    required this.latitude,
-    required this.longitude,
-    this.description,
-    this.imageUrl,
-  });
-
-  factory BoothModel.fromJson(Map<String, dynamic> j) => BoothModel(
-        id: (j['id'] as num).toInt(),
-        name: j['name'] as String,
-        boothType: j['boothType'] as String,
-        boothTypeName: j['boothTypeName'] as String,
-        latitude: (j['latitude'] as num).toDouble(),
-        longitude: (j['longitude'] as num).toDouble(),
-        description: j['description'] as String?,
-        imageUrl: j['imageUrl'] as String?,
-      );
-}
 
 // ── 위젯 ──────────────────────────────────────────────────────────────────────
 class FestivalBoothMap extends StatefulWidget {

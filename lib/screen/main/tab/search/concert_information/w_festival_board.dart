@@ -4,6 +4,7 @@ import 'package:fast_app_base/model/post_model.dart';
 import 'package:fast_app_base/screen/main/tab/community_board/w_board_card_header.dart';
 import 'package:fast_app_base/screen/main/tab/search/concert_information/w_festival_post_list.dart';
 import 'package:fast_app_base/service/post_service.dart';
+import 'package:fast_app_base/common/widget/w_async_content_builder.dart';
 import 'package:flutter/material.dart';
 
 /// 페스티벌 상세 페이지에 삽입되는 게시판 미리보기 카드
@@ -76,31 +77,10 @@ class _FestivalBoardState extends State<FestivalBoard> {
   }
 
   Widget _buildPostList(AbstractThemeColors colors) {
-    return FutureBuilder<List<Post>>(
+    return AsyncContentBuilder<List<Post>>(
       future: _postsFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(color: colors.loadingIndicator),
-          );
-        }
-        if (snapshot.hasError) {
-          return Center(
-            child: Text(
-              'Failed to load data: ${snapshot.error}',
-              style: TextStyle(color: colors.textSecondary, fontSize: 13),
-            ),
-          );
-        }
-
-        final postDataList = snapshot.data ?? [];
-        if (postDataList.isEmpty) {
-          return Center(
-            child: Text('no_posts_yet'.tr(),
-                style: TextStyle(color: colors.textSecondary)),
-          );
-        }
-
+      useListViewForEmptyState: false,
+      builder: (context, postDataList) {
         return ListView.separated(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,

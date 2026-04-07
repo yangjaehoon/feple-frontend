@@ -2,9 +2,11 @@ import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:fast_app_base/common/util/responsive_size.dart';
 import 'package:fast_app_base/model/favorite_board.dart';
+import 'package:fast_app_base/model/followed_artist.dart';
 import 'package:fast_app_base/model/poster_model.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 import 'package:fast_app_base/screen/main/tab/home/w_favorite_boards_section.dart';
+import 'package:fast_app_base/screen/main/tab/home/w_reorder_sheet.dart';
 import 'package:fast_app_base/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:fast_app_base/screen/main/tab/search/concert_information/f_festival_information.dart';
 import 'package:fast_app_base/screen/main/tab/search/w_feple_app_bar.dart';
@@ -24,7 +26,7 @@ class HomeFragment extends StatefulWidget {
 }
 
 class _HomeFragmentState extends State<HomeFragment> {
-  List<_FollowedArtist>? _artists;
+  List<FollowedArtist>? _artists;
   List<PosterModel>? _festivals;
 
   List<int> _artistOrder = [];
@@ -141,9 +143,9 @@ class _HomeFragmentState extends State<HomeFragment> {
     _fetchAndSetFestivals();
   }
 
-  Future<List<_FollowedArtist>> _fetchArtists(int userId) async {
+  Future<List<FollowedArtist>> _fetchArtists(int userId) async {
     final resp = await DioClient.dio.get('/users/$userId/following');
-    return (resp.data as List).map((e) => _FollowedArtist.fromJson(e)).toList();
+    return (resp.data as List).map((e) => FollowedArtist.fromJson(e)).toList();
   }
 
   Future<List<PosterModel>> _fetchFestivals(int userId) async {
@@ -152,7 +154,7 @@ class _HomeFragmentState extends State<HomeFragment> {
   }
 
   List<FavoriteBoard> _buildBoards(
-      List<_FollowedArtist> artists, List<PosterModel> festivals) {
+      List<FollowedArtist> artists, List<PosterModel> festivals) {
     return [
       ...artists.map((a) => FavoriteBoard(
             boardId: 'artist_${a.id}',
@@ -188,7 +190,7 @@ class _HomeFragmentState extends State<HomeFragment> {
     if (artists == null || artists.isEmpty) return;
     final items = _applyOrder(artists, _artistOrder, (a) => a.id)
         .map((a) =>
-            _ReorderItem(id: a.id, name: a.name, imageUrl: a.profileImageUrl))
+            ReorderItem(id: a.id, name: a.name, imageUrl: a.profileImageUrl))
         .toList();
     showModalBottomSheet(
       context: context,
@@ -196,7 +198,7 @@ class _HomeFragmentState extends State<HomeFragment> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => _ReorderSheet(
+      builder: (_) => ReorderSheet(
         title: 'followed_artists'.tr(),
         items: items,
         onSave: (newOrder) {
@@ -212,7 +214,7 @@ class _HomeFragmentState extends State<HomeFragment> {
     if (festivals == null || festivals.isEmpty) return;
     final items = _applyOrder(festivals, _festivalOrder, (f) => f.id)
         .map(
-            (f) => _ReorderItem(id: f.id, name: f.title, imageUrl: f.posterUrl))
+            (f) => ReorderItem(id: f.id, name: f.title, imageUrl: f.posterUrl))
         .toList();
     showModalBottomSheet(
       context: context,
@@ -220,7 +222,7 @@ class _HomeFragmentState extends State<HomeFragment> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => _ReorderSheet(
+      builder: (_) => ReorderSheet(
         title: 'liked_festivals'.tr(),
         items: items,
         onSave: (newOrder) {
@@ -527,195 +529,6 @@ class _HomeFragmentState extends State<HomeFragment> {
           );
         },
       ),
-    );
-  }
-}
-
-// ── 데이터 모델 ──
-
-class _FollowedArtist {
-  final int id;
-  final String name;
-  final String? profileImageUrl;
-
-  const _FollowedArtist(
-      {required this.id, required this.name, this.profileImageUrl});
-
-  factory _FollowedArtist.fromJson(Map<String, dynamic> json) {
-    return _FollowedArtist(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      profileImageUrl: json['profileImageUrl'] as String?,
-    );
-  }
-}
-
-class _ReorderItem {
-  final int id;
-  final String name;
-  final String? imageUrl;
-
-  const _ReorderItem({required this.id, required this.name, this.imageUrl});
-}
-
-// ── 순서 변경 바텀시트 ──
-
-class _ReorderSheet extends StatefulWidget {
-  final String title;
-  final List<_ReorderItem> items;
-  final void Function(List<int>) onSave;
-
-  const _ReorderSheet({
-    required this.title,
-    required this.items,
-    required this.onSave,
-  });
-
-  @override
-  State<_ReorderSheet> createState() => _ReorderSheetState();
-}
-
-class _ReorderSheetState extends State<_ReorderSheet> {
-  late List<_ReorderItem> _items;
-
-  @override
-  void initState() {
-    super.initState();
-    _items = List.from(widget.items);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-    final maxHeight = MediaQuery.of(context).size.height * 0.75;
-
-    return ConstrainedBox(
-      constraints: BoxConstraints(maxHeight: maxHeight),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 12),
-          Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Text(
-              widget.title,
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w800,
-                color: colors.textTitle,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Divider(color: colors.listDivider, height: 1),
-          Flexible(
-            child: ReorderableListView.builder(
-              shrinkWrap: true,
-              itemCount: _items.length,
-              onReorder: (oldIndex, newIndex) {
-                setState(() {
-                  if (newIndex > oldIndex) newIndex--;
-                  final item = _items.removeAt(oldIndex);
-                  _items.insert(newIndex, item);
-                });
-              },
-              itemBuilder: (context, index) {
-                final item = _items[index];
-                return Container(
-                  key: ValueKey(item.id),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(color: colors.listDivider, width: 0.5),
-                    ),
-                  ),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                    leading: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ReorderableDragStartListener(
-                          index: index,
-                          child: Icon(Icons.drag_handle_rounded,
-                              color: colors.textSecondary, size: 22),
-                        ),
-                        const SizedBox(width: 12),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child:
-                              item.imageUrl != null && item.imageUrl!.isNotEmpty
-                                  ? CachedNetworkImage(
-                                      imageUrl: item.imageUrl!,
-                                      width: 40,
-                                      height: 40,
-                                      fit: BoxFit.cover,
-                                      memCacheWidth: 80,
-                                      errorWidget: (_, __, ___) =>
-                                          _placeholder(colors),
-                                    )
-                                  : _placeholder(colors),
-                        ),
-                      ],
-                    ),
-                    title: Text(
-                      item.name,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: colors.textTitle,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          Divider(color: colors.listDivider, height: 1),
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-                20, 12, 20, 12 + MediaQuery.of(context).padding.bottom),
-            child: SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                onPressed: () {
-                  widget.onSave(_items.map((e) => e.id).toList());
-                  Navigator.of(context).pop();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.activate,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                ),
-                child: const Text(
-                  '확인',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _placeholder(AbstractThemeColors colors) {
-    return Container(
-      width: 40,
-      height: 40,
-      color: colors.surface,
-      child: Icon(Icons.person_rounded, color: colors.textSecondary, size: 20),
     );
   }
 }

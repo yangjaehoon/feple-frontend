@@ -1,14 +1,12 @@
-import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/common/constant/app_colors.dart';
-import 'package:fast_app_base/config.dart';
+import 'package:fast_app_base/common/widget/w_app_text_field.dart';
+import 'package:fast_app_base/common/widget/w_nickname_field.dart';
+import 'package:fast_app_base/service/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import '../auth/token_store.dart';
-import '../model/user_model.dart' as app;
 import '../provider/user_provider.dart';
 
 class SignupPage extends StatefulWidget {
@@ -21,70 +19,27 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final nicknameController = TextEditingController();
   bool _isLoading = false;
 
   // 인라인 에러 메시지
   String? _emailError;
   String? _passwordError;
 
-  // 닉네임 중복 확인 상태
-  bool _isCheckingNickname = false;
-  bool? _nicknameAvailable;
-  String _nicknameCheckMessage = '';
-  String _lastCheckedNickname = '';
+  // 닉네임 필드 상태 접근용 키
+  final _nicknameKey = GlobalKey<NicknameFieldState>();
 
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
-    nicknameController.dispose();
     super.dispose();
-  }
-
-  Future<void> _checkNickname() async {
-    final nickname = nicknameController.text.trim();
-    if (nickname.isEmpty) {
-      setState(() {
-        _nicknameAvailable = false;
-        _nicknameCheckMessage = '닉네임을 입력해주세요.';
-      });
-      return;
-    }
-    if (nickname.length < 2 || nickname.length > 8) {
-      setState(() {
-        _nicknameAvailable = false;
-        _nicknameCheckMessage = '닉네임은 2자 이상 8자 이하로 입력해주세요.';
-      });
-      return;
-    }
-
-    setState(() => _isCheckingNickname = true);
-    try {
-      final response = await http.get(
-        Uri.parse(
-            '$baseUrl/users/check-nickname?nickname=${Uri.encodeComponent(nickname)}'),
-      );
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
-      setState(() {
-        _nicknameAvailable = body['available'] as bool;
-        _nicknameCheckMessage = body['message'] as String;
-        _lastCheckedNickname = nickname;
-      });
-    } catch (e) {
-      setState(() {
-        _nicknameAvailable = false;
-        _nicknameCheckMessage = '확인 중 오류가 발생했습니다.';
-      });
-    } finally {
-      if (mounted) setState(() => _isCheckingNickname = false);
-    }
   }
 
   Future<void> _register() async {
     final email = emailController.text.trim();
     final password = passwordController.text;
-    final nickname = nicknameController.text.trim();
+    final nicknameState = _nicknameKey.currentState;
+    final nickname = nicknameState?.currentNickname ?? '';
 
     // 인라인 유효성 검사
     bool hasError = false;
@@ -92,11 +47,11 @@ class _SignupPageState extends State<SignupPage> {
     String? passwordErr;
 
     if (email.isEmpty) {
-      emailErr = '이메일을 입력해주세요.';
+      emailErr = 'enter_email'.tr();
       hasError = true;
     }
     if (password.isEmpty) {
-      passwordErr = '비밀번호를 입력해주세요.';
+      passwordErr = 'enter_password'.tr();
       hasError = true;
     }
 
@@ -109,7 +64,7 @@ class _SignupPageState extends State<SignupPage> {
 
     if (nickname.isEmpty) {
       Fluttertoast.showToast(
-        msg: '닉네임을 입력해주세요.',
+        msg: 'enter_nickname'.tr(),
         backgroundColor: AppColors.skyBlue,
         textColor: Colors.white,
       );
@@ -117,24 +72,24 @@ class _SignupPageState extends State<SignupPage> {
     }
     if (nickname.length < 2 || nickname.length > 8) {
       Fluttertoast.showToast(
-        msg: '닉네임은 2자 이상 8자 이하로 입력해주세요.',
+        msg: 'nickname_length_error'.tr(),
         backgroundColor: AppColors.skyBlue,
         textColor: Colors.white,
       );
       return;
     }
 
-    if (_nicknameAvailable == null || _lastCheckedNickname != nickname) {
+    if (nicknameState?.available == null || nicknameState?.lastCheckedNickname != nickname) {
       Fluttertoast.showToast(
-        msg: '닉네임 중복 확인을 해주세요.',
+        msg: 'nickname_check_req'.tr(),
         backgroundColor: AppColors.skyBlue,
         textColor: Colors.white,
       );
       return;
     }
-    if (_nicknameAvailable == false) {
+    if (nicknameState?.available == false) {
       Fluttertoast.showToast(
-        msg: _nicknameCheckMessage,
+        msg: 'nickname_invalid'.tr(),
         backgroundColor: AppColors.skyBlue,
         textColor: Colors.white,
       );
@@ -143,36 +98,9 @@ class _SignupPageState extends State<SignupPage> {
 
     setState(() => _isLoading = true);
     try {
-      // 1. Firebase에서 이메일/비밀번호 계정 생성
-      final credential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
-
-      // 2. Firebase ID 토큰 획득 → 백엔드에서 앱 JWT 발급
-      //    닉네임은 토큰 갱신 없이 요청 바디로 직접 전달 (getIdToken(true) 호출 시 "unknown" 오류 방지)
-      final idToken = await credential.user!.getIdToken();
-      final response = await http.post(
-        Uri.parse('$baseUrl/auth/firebase'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'idToken': idToken, 'nickname': nickname}),
+      final user = await AuthService.instance.registerWithEmail(
+        email, password, nickname,
       );
-
-      if (response.statusCode != 200) {
-        // 백엔드 실패 시 Firebase 계정도 삭제 (롤백)
-        try {
-          await credential.user?.delete();
-        } catch (_) {
-          // 롤백 실패는 무시 (백엔드 오류 메시지를 우선 표시)
-        }
-        final body = jsonDecode(response.body) as Map<String, dynamic>;
-        throw Exception(body['message'] ?? 'signup_failed'.tr());
-      }
-
-      final json = jsonDecode(response.body) as Map<String, dynamic>;
-      await TokenStore.saveAccessToken(json['accessToken'] as String);
-      final refreshToken = json['refreshToken'] as String?;
-      if (refreshToken != null) await TokenStore.saveRefreshToken(refreshToken);
-
-      final user = app.User.fromJson(json['user'] as Map<String, dynamic>);
       if (!mounted) return;
       context.read<UserProvider>().setUser(user);
 
@@ -186,32 +114,15 @@ class _SignupPageState extends State<SignupPage> {
         if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
       });
     } on FirebaseAuthException catch (e) {
-      String msg;
-      switch (e.code) {
-        case 'email-already-in-use':
-          msg = '이미 사용 중인 이메일입니다.';
-          break;
-        case 'weak-password':
-          msg = '비밀번호는 6자 이상이어야 합니다.';
-          break;
-        case 'invalid-email':
-          msg = '올바른 이메일 형식이 아닙니다.';
-          break;
-        case 'unknown':
-          msg = '네트워크 오류가 발생했습니다. 인터넷 연결을 확인하고 다시 시도해주세요.';
-          break;
-        default:
-          msg = '회원가입에 실패했습니다. (${e.code})';
-      }
       Fluttertoast.showToast(
-        msg: msg,
+        msg: AuthService.instance.firebaseErrorMessage(e.code),
         backgroundColor: Colors.red,
         textColor: Colors.white,
       );
     } catch (e) {
       final errMsg = e.toString().replaceFirst('Exception: ', '');
       Fluttertoast.showToast(
-        msg: 'signup_failed_detail'.tr(args: [errMsg.isEmpty ? '알 수 없는 오류' : errMsg]),
+        msg: 'signup_failed_detail'.tr(args: [errMsg.isEmpty ? 'unknown_error'.tr() : errMsg]),
         backgroundColor: Colors.red,
         textColor: Colors.white,
       );
@@ -269,7 +180,7 @@ class _SignupPageState extends State<SignupPage> {
                 const SizedBox(height: 36),
 
                 // ── 이메일 입력 ──
-                _buildTextField(
+                AppTextField(
                   controller: emailController,
                   hintText: 'email'.tr(),
                   icon: Icons.mail_outline_rounded,
@@ -284,7 +195,7 @@ class _SignupPageState extends State<SignupPage> {
                 const SizedBox(height: 14),
 
                 // ── 비밀번호 입력 ──
-                _buildTextField(
+                AppTextField(
                   controller: passwordController,
                   hintText: 'password'.tr(),
                   icon: Icons.lock_outline_rounded,
@@ -299,7 +210,10 @@ class _SignupPageState extends State<SignupPage> {
                 const SizedBox(height: 14),
 
                 // ── 닉네임 입력 + 중복 확인 ──
-                _buildNicknameField(),
+                NicknameField(
+                  key: _nicknameKey,
+                  onResult: (_, __) {},
+                ),
                 const SizedBox(height: 28),
 
                 // ── 가입 버튼 ──
@@ -365,167 +279,6 @@ class _SignupPageState extends State<SignupPage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildNicknameField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: TextField(
-                controller: nicknameController,
-                maxLength: 8,
-                onChanged: (_) {
-                  if (_nicknameAvailable != null) {
-                    setState(() {
-                      _nicknameAvailable = null;
-                      _nicknameCheckMessage = '';
-                    });
-                  }
-                },
-                style: const TextStyle(fontSize: 15, color: AppColors.textMain),
-                decoration: InputDecoration(
-                  counterText: '',
-                  prefixIcon: const Icon(Icons.badge_outlined,
-                      color: AppColors.skyBlue, size: 22),
-                  hintText: '닉네임 (2~8자)',
-                  hintStyle:
-                      const TextStyle(color: AppColors.textMuted, fontSize: 15),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide(
-                        color: AppColors.skyBlueLight.withValues(alpha: 0.5)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide(
-                        color: _nicknameAvailable == false
-                            ? Colors.red
-                            : _nicknameAvailable == true
-                                ? Colors.green
-                                : AppColors.skyBlueLight.withValues(alpha: 0.4)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide:
-                        const BorderSide(color: AppColors.skyBlue, width: 2),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            SizedBox(
-              height: 52,
-              child: ElevatedButton(
-                onPressed: _isCheckingNickname ? null : _checkNickname,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.skyBlue,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                child: _isCheckingNickname
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
-                      )
-                    : const Text('중복 확인',
-                        style: TextStyle(
-                            fontSize: 13, fontWeight: FontWeight.w600)),
-              ),
-            ),
-          ],
-        ),
-        if (_nicknameCheckMessage.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(top: 6, left: 4),
-            child: Text(
-              _nicknameCheckMessage,
-              style: TextStyle(
-                fontSize: 12,
-                color:
-                    _nicknameAvailable == true ? Colors.green : Colors.red,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hintText,
-    required IconData icon,
-    bool obscureText = false,
-    TextInputType keyboardType = TextInputType.text,
-    int? maxLength,
-    String? errorText,
-    ValueChanged<String>? onChanged,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TextField(
-          controller: controller,
-          obscureText: obscureText,
-          keyboardType: keyboardType,
-          maxLength: maxLength,
-          onChanged: onChanged,
-          style: const TextStyle(fontSize: 15, color: AppColors.textMain),
-          decoration: InputDecoration(
-            prefixIcon: Icon(icon, color: AppColors.skyBlue, size: 22),
-            hintText: hintText,
-            hintStyle:
-                const TextStyle(color: AppColors.textMuted, fontSize: 15),
-            filled: true,
-            fillColor: Colors.white,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(
-                  color: AppColors.skyBlueLight.withValues(alpha: 0.5)),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(
-                color: errorText != null
-                    ? Colors.red
-                    : AppColors.skyBlueLight.withValues(alpha: 0.4),
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: AppColors.skyBlue, width: 2),
-            ),
-          ),
-        ),
-        if (errorText != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 6, left: 4),
-            child: Text(
-              errorText,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.red,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-      ],
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:fast_app_base/common/common.dart';
+import 'package:fast_app_base/model/festival_artist_item.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 import 'package:fast_app_base/provider/user_provider.dart';
 import 'package:fast_app_base/screen/main/tab/search/artist_page/f_artist_page.dart';
@@ -15,7 +16,7 @@ class FestivalArtists extends StatefulWidget {
 }
 
 class _FestivalArtistsState extends State<FestivalArtists> {
-  List<_ArtistItem> _artists = [];
+  List<FestivalArtistItem> _artists = [];
   Set<int> _followedIds = {};
   bool _loading = true;
 
@@ -37,7 +38,7 @@ class _FestivalArtistsState extends State<FestivalArtists> {
 
       final artistRes = await artistFuture;
       final artists =
-          (artistRes.data as List).map((e) => _ArtistItem.fromJson(e)).toList();
+          (artistRes.data as List).map((e) => FestivalArtistItem.fromJson(e)).toList();
 
       Set<int> followed = {};
       if (followFuture != null) {
@@ -295,31 +296,6 @@ class _CircleImage extends StatelessWidget {
                 ),
         ),
       ),
-    );
-  }
-}
-
-class _ArtistItem {
-  final int artistId;
-  final String artistName;
-  final String? profileImageUrl;
-  final String? stageName;
-
-  _ArtistItem({
-    required this.artistId,
-    required this.artistName,
-    this.profileImageUrl,
-    this.stageName,
-  });
-
-  String get displayName => artistName;
-
-  factory _ArtistItem.fromJson(Map<String, dynamic> json) {
-    return _ArtistItem(
-      artistId: json['artistId'] as int,
-      artistName: json['artistName'] as String,
-      profileImageUrl: json['profileImageUrl'] as String?,
-      stageName: json['stageName'] as String?,
     );
   }
 }

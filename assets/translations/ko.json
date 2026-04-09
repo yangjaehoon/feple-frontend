@@ -166,6 +166,10 @@
   "no_festival_condition": "해당 조건의 페스티벌이 없습니다.",
   "genre_etc": "기타",
   "region_seoul": "서울",
+  "region_busan": "부산",
+  "region_daegu": "대구",
+  "region_daejeon": "대전",
+  "region_gwangju": "광주",
   "region_gyeonggi": "경기도",
   "region_gangwon": "강원도",
   "region_chungbuk": "충청북도",
@@ -175,5 +179,6 @@
   "region_jeonbuk": "전라북도",
   "region_jeonnam": "전라남도",
   "region_jeju": "제주도",
-  "region_etc": "기타"
+  "region_etc": "기타",
+  "festival_info": "페스티벌 소개"
 }

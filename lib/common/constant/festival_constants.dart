@@ -9,6 +9,10 @@ const kGenreOptions = [
 /// 페스티벌 지역 목록 (서버 enum 값, 표시 이름)
 const kRegionOptions = [
   ('SEOUL', 'region_seoul'),
+  ('BUSAN', 'region_busan'),
+  ('DAEGU', 'region_daegu'),
+  ('DAEJEON', 'region_daejeon'),
+  ('GWANGJU', 'region_gwangju'),
   ('GYEONGGI', 'region_gyeonggi'),
   ('GANGWON', 'region_gangwon'),
   ('CHUNGBUK', 'region_chungbuk'),

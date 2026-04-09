@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
@@ -23,11 +24,28 @@ class FestivalPoster extends StatefulWidget {
 
 class _FestivalPosterState extends State<FestivalPoster> {
   bool _liked = false;
+  bool _descExpanded = true;
+
+  String get _descPrefKey => 'festival_desc_expanded_${widget.poster.id}';
 
   @override
   void initState() {
     super.initState();
     _loadLikeState();
+    _loadDescState();
+  }
+
+  Future<void> _loadDescState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getBool(_descPrefKey);
+    if (saved != null && mounted) {
+      setState(() => _descExpanded = saved);
+    }
+  }
+
+  Future<void> _saveDescState(bool expanded) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_descPrefKey, expanded);
   }
 
   Future<void> _loadLikeState() async {
@@ -46,7 +64,6 @@ class _FestivalPosterState extends State<FestivalPoster> {
     final name = Uri.encodeComponent(widget.poster.location);
 
     if (lat != null && lng != null) {
-      // 카카오맵 앱으로 열기 (앱이 없으면 웹으로 폴백)
       final appUri = Uri.parse('kakaomap://look?p=$lat,$lng');
       final webUri = Uri.parse('https://map.kakao.com/link/map/$name,$lat,$lng');
       if (await canLaunchUrl(appUri)) {
@@ -55,7 +72,6 @@ class _FestivalPosterState extends State<FestivalPoster> {
         await launchUrl(webUri, mode: LaunchMode.externalApplication);
       }
     } else {
-      // 좌표가 없으면 장소명으로 검색
       final webUri = Uri.parse('https://map.kakao.com/link/search/$name');
       await launchUrl(webUri, mode: LaunchMode.externalApplication);
     }
@@ -78,196 +94,264 @@ class _FestivalPosterState extends State<FestivalPoster> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     const double appBarHeight = AppDimens.appBarHeight;
-    const double posterContentHeight = 180.0;
+    final hasDescription = widget.poster.description.isNotEmpty;
 
-    return SizedBox(
-      // 앱바 높이만큼 위쪽 여백도 포함하여 블러 배경이 전체를 덮도록 함
-      height: appBarHeight + posterContentHeight,
-      child: Stack(
-        children: [
-          // 블러 + 하늘색 오버레이 - 전체 영역(앱바 포함)을 덮음
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: ResizeImage(
-                    CachedNetworkImageProvider(widget.poster.posterUrl),
-                    width: 100,
-                  ),
-                  fit: BoxFit.cover,
+    return Stack(
+      children: [
+        // 블러 배경 - 전체 영역을 덮음
+        Positioned.fill(
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: ResizeImage(
+                  CachedNetworkImageProvider(widget.poster.posterUrl),
+                  width: 100,
                 ),
+                fit: BoxFit.cover,
               ),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                child: Container(
-                  color: colors.swiperOverlay.withValues(alpha: 0.5),
-                ),
+            ),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+              child: Container(
+                color: colors.swiperOverlay.withValues(alpha: 0.55),
               ),
             ),
           ),
-          // 포스터 콘텐츠 - 하단 180px 영역에만 배치
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            height: posterContentHeight,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+        ),
+        // 콘텐츠
+        SafeArea(
+          top: false,
+          bottom: false,
+          child: Padding(
+            padding: EdgeInsets.only(top: appBarHeight),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Flexible(
-                  flex: 2,
-                  child: Container(
-                    alignment: Alignment.centerLeft,
-                    margin: const EdgeInsets.all(16),
-                    height: 140,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: colors.cardShadow.withValues(alpha: 0.2),
-                          blurRadius: 16,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: CachedNetworkImage(
-                        imageUrl: widget.poster.posterUrl,
-                        memCacheWidth: 300,
-                        fit: BoxFit.fill,
-                        errorWidget: (context, url, error) => const Icon(Icons.broken_image),
-                      ),
-                    ),
-                  ),
-                ),
-                Flexible(
-                  flex: 3,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                // 포스터 + 타이틀 정보 영역
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        widget.poster.title,
-                        softWrap: true,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
+                      // 포스터 이미지
+                      Container(
+                        width: 120,
+                        height: 160,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: colors.cardShadow.withValues(alpha: 0.3),
+                              blurRadius: 20,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: CachedNetworkImage(
+                            imageUrl: widget.poster.posterUrl,
+                            memCacheWidth: 300,
+                            fit: BoxFit.fill,
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.broken_image),
+                          ),
                         ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.calendar_today_rounded,
-                                  color: colors.accentColor, size: 16),
-                              const SizedBox(width: 6),
-                              Text(
-                                widget.poster.startDate,
-                                style: const TextStyle(
-                                    fontSize: 15, color: Colors.white70),
+                      const SizedBox(width: 16),
+                      // 타이틀 + 날짜 + 장소 + 버튼
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 4),
+                            Text(
+                              widget.poster.title,
+                              softWrap: true,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          GestureDetector(
-                            onTap: _openKakaoMap,
-                            child: Row(
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
                               children: [
-                                Icon(Icons.location_on_rounded,
-                                    color: colors.accentColor, size: 16),
+                                Icon(Icons.calendar_today_rounded,
+                                    color: colors.accentColor, size: 15),
                                 const SizedBox(width: 6),
                                 Expanded(
                                   child: Text(
-                                    widget.poster.location,
-                                    softWrap: true,
+                                    widget.poster.endDate.isNotEmpty
+                                        ? '${widget.poster.startDate} ~ ${widget.poster.endDate}'
+                                        : widget.poster.startDate,
                                     style: const TextStyle(
-                                        fontSize: 15,
-                                        color: Colors.white70,
-                                        decoration: TextDecoration.underline,
-                                        decorationColor: Colors.white54),
+                                        fontSize: 14, color: Colors.white70),
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          GestureDetector(
-                            onTap: _toggleLike,
-                            child: Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: _liked
-                                    ? Colors.pink.withValues(alpha: 0.35)
-                                    : Colors.white.withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Icon(
-                                _liked
-                                    ? Icons.favorite_rounded
-                                    : Icons.favorite_border_rounded,
-                                color: _liked ? Colors.pink[200] : Colors.white,
-                                size: 20,
+                            const SizedBox(height: 6),
+                            GestureDetector(
+                              onTap: _openKakaoMap,
+                              child: Row(
+                                children: [
+                                  Icon(Icons.location_on_rounded,
+                                      color: colors.accentColor, size: 15),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: Text(
+                                      widget.poster.location,
+                                      softWrap: true,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.white70,
+                                        decoration: TextDecoration.underline,
+                                        decorationColor: Colors.white54,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Icon(Icons.calendar_month_outlined,
-                                color: Colors.white, size: 20),
-                          ),
-                          const SizedBox(width: 8),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const Loading(),
+                            const SizedBox(height: 14),
+                            // 액션 버튼들
+                            Row(
+                              children: [
+                                _ActionButton(
+                                  onTap: _toggleLike,
+                                  icon: _liked
+                                      ? Icons.favorite_rounded
+                                      : Icons.favorite_border_rounded,
+                                  color: _liked ? Colors.pink[200]! : Colors.white,
+                                  bgColor: _liked
+                                      ? Colors.pink.withValues(alpha: 0.35)
+                                      : Colors.white.withValues(alpha: 0.15),
                                 ),
-                              );
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Icon(Icons.wb_cloudy_rounded,
-                                  color: Colors.white, size: 20),
+                                const SizedBox(width: 8),
+                                _ActionButton(
+                                  icon: Icons.calendar_month_outlined,
+                                ),
+                                const SizedBox(width: 8),
+                                _ActionButton(
+                                  onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => const Loading()),
+                                  ),
+                                  icon: Icons.wb_cloudy_rounded,
+                                ),
+                                const SizedBox(width: 8),
+                                _ActionButton(
+                                  onTap: _openKakaoMap,
+                                  icon: Icons.location_on_rounded,
+                                ),
+                              ],
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          GestureDetector(
-                            onTap: _openKakaoMap,
-                            child: Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Icon(Icons.location_on_rounded,
-                                  color: Colors.white, size: 20),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
+                // 설명 영역 (접기/펼치기)
+                if (hasDescription) ...[
+                  // 구분선
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Divider(
+                      height: 1,
+                      color: Colors.white.withValues(alpha: 0.15),
+                    ),
+                  ),
+                  // 설명 헤더 + 접기 버튼
+                  GestureDetector(
+                    onTap: () {
+                      setState(() => _descExpanded = !_descExpanded);
+                      _saveDescState(_descExpanded);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 10, 16, 4),
+                      child: Row(
+                        children: [
+                          Icon(Icons.info_outline_rounded,
+                              color: Colors.white.withValues(alpha: 0.7),
+                              size: 16),
+                          const SizedBox(width: 6),
+                          Text(
+                            'festival_info'.tr(),
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white.withValues(alpha: 0.7),
+                            ),
+                          ),
+                          const Spacer(),
+                          Icon(
+                            _descExpanded
+                                ? Icons.keyboard_arrow_up_rounded
+                                : Icons.keyboard_arrow_down_rounded,
+                            color: Colors.white.withValues(alpha: 0.5),
+                            size: 22,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // 설명 텍스트
+                  AnimatedCrossFade(
+                    firstChild: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 4, 20, 14),
+                      child: Text(
+                        widget.poster.description,
+                        style: TextStyle(
+                          fontSize: 13.5,
+                          height: 1.6,
+                          color: Colors.white.withValues(alpha: 0.85),
+                        ),
+                      ),
+                    ),
+                    secondChild: const SizedBox(height: 10),
+                    crossFadeState: _descExpanded
+                        ? CrossFadeState.showFirst
+                        : CrossFadeState.showSecond,
+                    duration: const Duration(milliseconds: 200),
+                  ),
+                ],
+                if (!hasDescription) const SizedBox(height: 8),
               ],
             ),
           ),
-        ],
+        ),
+      ],
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  final VoidCallback? onTap;
+  final IconData icon;
+  final Color? color;
+  final Color? bgColor;
+
+  const _ActionButton({
+    this.onTap,
+    required this.icon,
+    this.color,
+    this.bgColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: bgColor ?? Colors.white.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(icon, color: color ?? Colors.white, size: 20),
       ),
     );
   }

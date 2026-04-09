@@ -73,7 +73,7 @@ class _FestivalArtistsState extends State<FestivalArtists> {
     final colors = context.appColors;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(20),
@@ -113,7 +113,6 @@ class _FestivalArtistsState extends State<FestivalArtists> {
       ),
     );
   }
-
   Widget _buildArtistRow(AbstractThemeColors colors) {
     return SizedBox(
       height: 90,

@@ -1,17 +1,20 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../auth/token_store.dart';
 import '../model/user_model.dart';
 import '../network/dio_client.dart';
 import 'package:dio/dio.dart';
 
 class UserProvider with ChangeNotifier {
+  static const _storage = FlutterSecureStorage();
+  static const _kUserJson = 'userJson';
+
   User? _user;
   User? get user => _user;
 
   UserProvider() {
-    _loadFromPrefs();
+    _loadFromSecureStorage();
   }
 
   Future<void> fetchUser(int userId) async {
@@ -26,17 +29,14 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  Future<void> _loadFromPrefs() async {
-    // JWT 토큰이 없으면 로그인 페이지로 돌아가야 하므로 user를 복원하지 않음
+  Future<void> _loadFromSecureStorage() async {
     final token = await TokenStore.readAccessToken();
     if (token == null) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('userJson');
+      await _storage.delete(key: _kUserJson);
       return;
     }
 
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString('userJson');
+    final jsonString = await _storage.read(key: _kUserJson);
     if (jsonString != null) {
       final data = jsonDecode(jsonString);
       _user = User.fromJson(data);
@@ -46,8 +46,7 @@ class UserProvider with ChangeNotifier {
 
   Future<void> logout() async {
     await TokenStore.clear();
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('userJson');
+    await _storage.delete(key: _kUserJson);
     _user = null;
     notifyListeners();
   }
@@ -59,15 +58,17 @@ class UserProvider with ChangeNotifier {
     await logout();
   }
 
-  Future<void> setUser(User me) async{
+  Future<void> setUser(User me) async {
     _user = me;
     notifyListeners();
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('userJson', jsonEncode({
-      'id': me.id,
-      'nickname': me.nickname,
-      'profileImageUrl': me.profileImageUrl,
-    }));
+    await _storage.write(
+      key: _kUserJson,
+      value: jsonEncode({
+        'id': me.id,
+        'nickname': me.nickname,
+        'profileImageUrl': me.profileImageUrl,
+      }),
+    );
   }
 
   Future<void> fetchUserFromToken(String token) async {

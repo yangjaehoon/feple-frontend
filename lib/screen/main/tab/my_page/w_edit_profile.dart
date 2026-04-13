@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/widget/w_nickname_field.dart';
@@ -50,42 +51,22 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
     final nicknameState = _nicknameKey.currentState;
     final newNickname = nicknameState?.currentNickname ?? '';
     if (newNickname.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: AppColors.skyBlue,
-          content: Text('enter_nickname'.tr()),
-        ),
-      );
+      nicknameState?.showError('enter_nickname'.tr());
       return;
     }
     if (newNickname.length < 2 || newNickname.length > 8) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: AppColors.skyBlue,
-          content: Text('nickname_length_error'.tr()),
-        ),
-      );
+      nicknameState?.showError('nickname_length_error'.tr());
       return;
     }
 
     // 닉네임이 변경된 경우 중복 확인 필수
     if (newNickname != _originalNickname) {
       if (nicknameState?.available == null || nicknameState?.lastCheckedNickname != newNickname) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: AppColors.skyBlue,
-            content: Text('nickname_check_req'.tr()),
-          ),
-        );
+        nicknameState?.showError('nickname_check_req'.tr());
         return;
       }
       if (nicknameState?.available == false) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: AppColors.skyBlue,
-            content: Text('nickname_invalid'.tr()),
-          ),
-        );
+        nicknameState?.showError('nickname_invalid'.tr());
         return;
       }
     }
@@ -210,7 +191,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                             : (user != null &&
                                     user.profileImageUrl != null &&
                                     user.profileImageUrl!.isNotEmpty)
-                                ? NetworkImage(user.profileImageUrl!)
+                                ? CachedNetworkImageProvider(user.profileImageUrl!)
                                     as ImageProvider
                                 : const AssetImage(
                                     'assets/image/feple_logo.png'),

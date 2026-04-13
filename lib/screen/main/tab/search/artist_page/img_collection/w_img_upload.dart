@@ -30,6 +30,7 @@ class _ImgUploadState extends State<ImgUpload> {
   FestivalPreview? _selectedFestival;
   late final Future<List<FestivalPreview>> _festivalsFuture;
   bool isUploading = false;
+  String? _imageError;
 
   @override
   void initState() {
@@ -45,24 +46,17 @@ class _ImgUploadState extends State<ImgUpload> {
     final image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       imageData = await image.readAsBytes();
-      setState(() {});
+      setState(() => _imageError = null);
     }
-  }
-
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _submit() async {
     if (imageData == null) {
-      _showSnackBar('사진을 선택해주세요.');
+      setState(() => _imageError = '사진을 선택해주세요.');
       return;
     }
-    if (!(_formKey.currentState?.validate() ?? false)) {
-      _showSnackBar('입력하지 않은 항목이 있습니다.');
-      return;
-    }
+    setState(() => _imageError = null);
+    if (!(_formKey.currentState?.validate() ?? false)) return;
 
     setState(() => isUploading = true);
     try {
@@ -139,6 +133,21 @@ class _ImgUploadState extends State<ImgUpload> {
                 onTap: _pickImage,
                 label: '아티스트 사진 추가',
               ),
+              if (_imageError != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6, left: 4),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      _imageError!,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.red,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
               Form(
                 key: _formKey,
                 child: Column(

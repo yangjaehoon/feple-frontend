@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/constant/app_dimensions.dart';
 import 'package:fast_app_base/model/artist_schedule_model.dart';
@@ -205,7 +206,7 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
                               backgroundColor: colors.backgroundMain,
                               backgroundImage: (co.profileImageUrl != null &&
                                       co.profileImageUrl!.isNotEmpty)
-                                  ? NetworkImage(co.profileImageUrl!)
+                                  ? CachedNetworkImageProvider(co.profileImageUrl!)
                                   : null,
                               child: (co.profileImageUrl == null ||
                                       co.profileImageUrl!.isEmpty)

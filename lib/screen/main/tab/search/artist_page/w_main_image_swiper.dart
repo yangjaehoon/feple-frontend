@@ -68,6 +68,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   void _startTimer() {
     if (_photoUrls.isEmpty) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       _timer = Timer.periodic(const Duration(seconds: 2), (_) {
         if (!mounted || !_pageController.hasClients || _photoUrls.isEmpty) return;
         final nextPage = (_currentPage + 1) % _photoUrls.length;

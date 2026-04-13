@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
 
@@ -42,7 +43,7 @@ class FestivalPreviewCard extends StatelessWidget {
                       color: colors.backgroundMain,
                       image: DecorationImage(
                         image: ResizeImage(
-                            NetworkImage(festival.posterUrl), width: 220),
+                            CachedNetworkImageProvider(festival.posterUrl), width: 220),
                         fit: BoxFit.cover,
                       ),
                     ),

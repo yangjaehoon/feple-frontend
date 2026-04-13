@@ -7,6 +7,7 @@ class CommentSection extends StatelessWidget {
   final TextEditingController controller;
   final bool isSubmitting;
   final VoidCallback onSubmit;
+  final String? errorText;
 
   const CommentSection({
     super.key,
@@ -14,6 +15,7 @@ class CommentSection extends StatelessWidget {
     required this.controller,
     required this.isSubmitting,
     required this.onSubmit,
+    this.errorText,
   });
 
   @override
@@ -82,6 +84,18 @@ class CommentSection extends StatelessWidget {
             ],
           ),
         ),
+        if (errorText != null && errorText!.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 6, left: 4),
+            child: Text(
+              errorText!,
+              style: const TextStyle(
+                fontSize: 12,
+                color: Colors.red,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
       ],
     );
   }

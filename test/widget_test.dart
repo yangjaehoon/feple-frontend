@@ -13,7 +13,7 @@ import 'package:fast_app_base/common/data/preference/app_preferences.dart';
 import 'package:fast_app_base/common/language/language.dart';
 import 'package:fast_app_base/common/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:fast_app_base/provider/FestivalPreviewProvider.dart';
+import 'package:fast_app_base/provider/festival_preview_provider.dart';
 import 'package:fast_app_base/provider/like_notifier.dart';
 import 'package:fast_app_base/provider/post_change_notifier.dart';
 import 'package:fast_app_base/provider/user_provider.dart';

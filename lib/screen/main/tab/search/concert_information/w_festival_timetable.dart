@@ -35,28 +35,6 @@ class FestivalTimetable extends StatefulWidget {
 }
 
 class _FestivalTimetableState extends State<FestivalTimetable> {
-  int get _startHour {
-    int minH = 12;
-    for (final e in _filtered) {
-      final h = int.tryParse(e.startTime.split(':')[0]);
-      if (h != null && h < minH) minH = h;
-    }
-    return minH;
-  }
-
-  int get _endHour {
-    int maxH = _startHour + 1;
-    for (final e in _filtered) {
-      final parts = e.endTime.split(':');
-      final h = int.tryParse(parts[0]);
-      final m = int.tryParse(parts.length > 1 ? parts[1] : '0');
-      if (h == null || m == null) continue;
-      final endH = m > 0 ? h + 1 : h;
-      if (endH > maxH) maxH = endH;
-    }
-    return maxH;
-  }
-
   static const double _minPx = 1.5;
   static const double _topPad = 20.0;
   static const double _timeColW = 52.0;
@@ -77,6 +55,44 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
 
   List<String> _dates = [];
   String? _selectedDate;
+
+  // 캐싱된 계산 결과 (build 호출마다 반복 계산 방지)
+  List<TimetableEntry> _cachedFiltered = [];
+  List<String> _cachedStages = [];
+  int _cachedStartHour = 12;
+  int _cachedEndHour = 13;
+
+  void _rebuildCache() {
+    _cachedFiltered = _selectedDate == null
+        ? []
+        : _entries.where((e) => e.festivalDate == _selectedDate).toList();
+
+    final seen = <String, int>{};
+    for (final e in _cachedFiltered) {
+      seen.putIfAbsent(e.stageName, () => e.stageOrder);
+    }
+    final sorted = seen.entries.toList()
+      ..sort((a, b) => a.value.compareTo(b.value));
+    _cachedStages = sorted.map((e) => e.key).toList();
+
+    int minH = 12;
+    for (final e in _cachedFiltered) {
+      final h = int.tryParse(e.startTime.split(':')[0]);
+      if (h != null && h < minH) minH = h;
+    }
+    _cachedStartHour = minH;
+
+    int maxH = minH + 1;
+    for (final e in _cachedFiltered) {
+      final parts = e.endTime.split(':');
+      final h = int.tryParse(parts[0]);
+      final m = int.tryParse(parts.length > 1 ? parts[1] : '0');
+      if (h == null || m == null) continue;
+      final endH = m > 0 ? h + 1 : h;
+      if (endH > maxH) maxH = endH;
+    }
+    _cachedEndHour = maxH;
+  }
 
   @override
   void initState() {
@@ -134,6 +150,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
           _entries = list;
           _followedNames = followed;
           _loading = false;
+          _rebuildCache();
         });
       }
     } catch (e) {
@@ -170,25 +187,11 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
     final parts = time.split(':');
     final h = int.parse(parts[0]);
     final m = int.parse(parts[1]);
-    return ((h - _startHour) * 60 + m) * _minPx;
-  }
-
-  List<TimetableEntry> get _filtered => _selectedDate == null
-      ? []
-      : _entries.where((e) => e.festivalDate == _selectedDate).toList();
-
-  List<String> get _stages {
-    final seen = <String, int>{};
-    for (final e in _filtered) {
-      seen.putIfAbsent(e.stageName, () => e.stageOrder);
-    }
-    final sorted = seen.entries.toList()
-      ..sort((a, b) => a.value.compareTo(b.value));
-    return sorted.map((e) => e.key).toList();
+    return ((h - _cachedStartHour) * 60 + m) * _minPx;
   }
 
   Color _colorFor(String stage) {
-    final idx = _stages.indexOf(stage) % _stageColors.length;
+    final idx = _cachedStages.indexOf(stage) % _stageColors.length;
     return _stageColors[idx < 0 ? 0 : idx];
   }
 
@@ -239,7 +242,10 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                   children: _dates.map((date) {
                     final selected = date == _selectedDate;
                     return GestureDetector(
-                      onTap: () => setState(() => _selectedDate = date),
+                      onTap: () => setState(() {
+                        _selectedDate = date;
+                        _rebuildCache();
+                      }),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 150),
                         margin: const EdgeInsets.only(right: 8, bottom: 10),
@@ -283,7 +289,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                     child: Text('불러오기 실패',
                         style: TextStyle(color: colors.textSecondary))),
               )
-            else if (_filtered.isEmpty)
+            else if (_cachedFiltered.isEmpty)
               Padding(
                 padding: const EdgeInsets.all(24),
                 child: Center(
@@ -302,14 +308,14 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
   }
 
   Widget _buildGrid(dynamic colors, double availableW) {
-    final stages = _stages;
+    final stages = _cachedStages;
     // 스테이지 수에 맞게 너비 동적 계산 (최소 80px 보장)
     final stageW = stages.isEmpty
         ? _minStageW
         : ((availableW - _timeColW) / stages.length)
             .clamp(_minStageW, double.infinity);
     final totalW = stages.isEmpty ? stageW : stages.length * stageW;
-    final totalH = (_endHour - _startHour) * 60 * _minPx + _topPad;
+    final totalH = (_cachedEndHour - _cachedStartHour) * 60 * _minPx + _topPad;
 
     return Column(
       children: [
@@ -374,8 +380,8 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                   child: SizedBox(
                     height: totalH,
                     child: Stack(
-                      children: List.generate(_endHour - _startHour + 1, (i) {
-                        final hour = _startHour + i;
+                      children: List.generate(_cachedEndHour - _cachedStartHour + 1, (i) {
+                        final hour = _cachedStartHour + i;
                         return Positioned(
                           top: _topPad + i * 60.0 * _minPx - 8,
                           left: 0,
@@ -409,7 +415,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                         children: [
                           // 세로 구분선
                           ...List.generate(
-                              stages.length,
+                              _cachedStages.length,
                               (i) => Positioned(
                                     left: (i + 1) * stageW - 0.5,
                                     top: 0,
@@ -419,7 +425,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                                   )),
                           // 가로선
                           ...List.generate(
-                            (_endHour - _startHour) * 6 + 1,
+                            (_cachedEndHour - _cachedStartHour) * 6 + 1,
                             (i) {
                               final mins = i * 10;
                               final isHour = mins % 60 == 0;
@@ -443,7 +449,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                             },
                           ),
                           // 공연 카드
-                          ..._filtered.map((entry) {
+                          ..._cachedFiltered.map((entry) {
                             final si = stages.indexOf(entry.stageName);
                             if (si < 0) return const SizedBox.shrink();
                             final rawTop = _toY(entry.startTime);

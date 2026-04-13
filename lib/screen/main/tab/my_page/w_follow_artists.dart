@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 import 'package:flutter/material.dart';
@@ -109,7 +110,7 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
                               backgroundImage:
                                   (artist.profileImageUrl != null &&
                                           artist.profileImageUrl!.isNotEmpty)
-                                      ? NetworkImage(artist.profileImageUrl!)
+                                      ? CachedNetworkImageProvider(artist.profileImageUrl!)
                                       : null,
                               child: (artist.profileImageUrl == null ||
                                       artist.profileImageUrl!.isEmpty)

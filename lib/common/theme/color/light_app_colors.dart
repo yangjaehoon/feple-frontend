@@ -1,4 +1,4 @@
-import 'package:fast_app_base/common/theme/color/abs_theme_colors.dart';
+import 'package:feple/common/theme/color/abs_theme_colors.dart';
 import 'package:flutter/material.dart';
 
 class LightAppColors extends AbstractThemeColors {

@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/model/favorite_board.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/model/favorite_board.dart';
 import 'package:flutter/material.dart';
 
 // ── 설정 바텀시트 ──

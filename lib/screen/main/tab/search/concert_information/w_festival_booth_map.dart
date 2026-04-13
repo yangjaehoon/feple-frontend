@@ -1,8 +1,8 @@
 import 'dart:ui' as ui;
 
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/model/booth_model.dart';
-import 'package:fast_app_base/network/dio_client.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/model/booth_model.dart';
+import 'package:feple/network/dio_client.dart';
 import 'package:flutter/foundation.dart' show Factory, kIsWeb;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';

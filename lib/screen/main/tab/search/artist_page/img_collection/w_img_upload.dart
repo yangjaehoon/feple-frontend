@@ -1,12 +1,12 @@
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/photo_category.dart';
-import 'package:fast_app_base/model/festival_preview.dart';
-import 'package:fast_app_base/service/artist_schedule_service.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/photo_category.dart';
+import 'package:feple/model/festival_preview.dart';
+import 'package:feple/service/artist_schedule_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:fast_app_base/service/artist_photo_service.dart';
+import 'package:feple/service/artist_photo_service.dart';
 
 import 'w_image_picker_box.dart';
 

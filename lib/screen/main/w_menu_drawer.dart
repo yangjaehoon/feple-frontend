@@ -1,7 +1,7 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
-import 'package:fast_app_base/login/login.dart';
-import 'package:fast_app_base/provider/user_provider.dart';
-import 'package:fast_app_base/screen/opensource/s_opensource.dart';
+import 'package:feple/login/login.dart';
+import 'package:feple/provider/user_provider.dart';
+import 'package:feple/screen/opensource/s_opensource.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

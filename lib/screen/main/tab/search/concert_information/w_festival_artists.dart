@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/model/festival_artist_item.dart';
-import 'package:fast_app_base/network/dio_client.dart';
-import 'package:fast_app_base/provider/user_provider.dart';
-import 'package:fast_app_base/screen/main/tab/search/artist_page/f_artist_page.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/model/festival_artist_item.dart';
+import 'package:feple/network/dio_client.dart';
+import 'package:feple/provider/user_provider.dart';
+import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

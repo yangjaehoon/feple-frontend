@@ -1,9 +1,9 @@
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_dimensions.dart';
-import 'package:fast_app_base/model/post_model.dart';
-import 'package:fast_app_base/screen/main/tab/community_board/w_board_card_header.dart';
-import 'package:fast_app_base/screen/main/tab/search/artist_page/w_artist_post_list.dart';
-import 'package:fast_app_base/service/post_service.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/model/post_model.dart';
+import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_artist_post_list.dart';
+import 'package:feple/service/post_service.dart';
 import 'package:flutter/material.dart';
 
 /// 아티스트 페이지에 삽입되는 게시판 미리보기 카드

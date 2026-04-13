@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:fast_app_base/model/poster_model.dart';
-import 'package:fast_app_base/screen/main/tab/concert_list/w_festival_preview_card.dart';
-import 'package:fast_app_base/screen/main/tab/search/concert_information/f_festival_information.dart';
+import 'package:feple/model/poster_model.dart';
+import 'package:feple/screen/main/tab/concert_list/w_festival_preview_card.dart';
+import 'package:feple/screen/main/tab/search/concert_information/f_festival_information.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

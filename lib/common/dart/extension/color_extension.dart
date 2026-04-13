@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
-import 'package:fast_app_base/app.dart';
-import 'package:fast_app_base/common/dart/extension/context_extension.dart';
+import 'package:feple/app.dart';
+import 'package:feple/common/dart/extension/context_extension.dart';
 import 'package:flutter/material.dart';
 
 extension ColorExtension on Color {

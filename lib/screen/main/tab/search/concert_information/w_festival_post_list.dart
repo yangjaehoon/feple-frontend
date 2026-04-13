@@ -1,10 +1,10 @@
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/model/post_model.dart';
-import 'package:fast_app_base/screen/main/tab/community_board/w_community_enralgepost.dart';
-import 'package:fast_app_base/screen/main/tab/community_board/w_post_list_tile.dart';
-import 'package:fast_app_base/screen/main/tab/search/concert_information/w_festival_write_post.dart';
-import 'package:fast_app_base/service/post_service.dart';
-import 'package:fast_app_base/common/widget/w_async_content_builder.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/model/post_model.dart';
+import 'package:feple/screen/main/tab/community_board/w_community_enralgepost.dart';
+import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
+import 'package:feple/screen/main/tab/search/concert_information/w_festival_write_post.dart';
+import 'package:feple/service/post_service.dart';
+import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:flutter/material.dart';
 
 /// 페스티벌별 전체 게시글 목록 화면

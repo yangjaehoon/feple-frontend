@@ -1,8 +1,8 @@
-import 'package:fast_app_base/common/common.dart';
+import 'package:feple/common/common.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fast_app_base/provider/post_change_notifier.dart';
-import 'package:fast_app_base/service/post_service.dart';
+import 'package:feple/provider/post_change_notifier.dart';
+import 'package:feple/service/post_service.dart';
 
 import '../../../../provider/user_provider.dart';
 

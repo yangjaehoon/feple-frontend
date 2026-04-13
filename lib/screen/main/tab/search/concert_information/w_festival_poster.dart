@@ -4,12 +4,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_dimensions.dart';
-import 'package:fast_app_base/network/dio_client.dart';
-import 'package:fast_app_base/provider/like_notifier.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/network/dio_client.dart';
+import 'package:feple/provider/like_notifier.dart';
 import 'package:provider/provider.dart';
-import 'package:fast_app_base/screen/main/tab/search/concert_information/weather/screens/loading.dart';
+import 'package:feple/screen/main/tab/search/concert_information/weather/screens/loading.dart';
 import 'package:flutter/material.dart';
 import '../../../../../model/poster_model.dart';
 

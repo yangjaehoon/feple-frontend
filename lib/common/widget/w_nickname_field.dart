@@ -1,5 +1,5 @@
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/network/dio_client.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/network/dio_client.dart';
 import 'package:flutter/material.dart';
 
 /// signup, edit_profile, change_nickname에서 공통으로 사용하는

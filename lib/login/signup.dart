@@ -1,8 +1,8 @@
-import 'package:fast_app_base/common/common.dart';
+import 'package:feple/common/common.dart';
 
-import 'package:fast_app_base/common/widget/w_app_text_field.dart';
-import 'package:fast_app_base/common/widget/w_nickname_field.dart';
-import 'package:fast_app_base/service/auth_service.dart';
+import 'package:feple/common/widget/w_app_text_field.dart';
+import 'package:feple/common/widget/w_nickname_field.dart';
+import 'package:feple/service/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 

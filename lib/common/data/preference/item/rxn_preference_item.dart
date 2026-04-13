@@ -1,4 +1,4 @@
-import 'package:fast_app_base/common/data/preference/item/nullable_preference_item.dart';
+import 'package:feple/common/data/preference/item/nullable_preference_item.dart';
 
 import '../app_preferences.dart';
 

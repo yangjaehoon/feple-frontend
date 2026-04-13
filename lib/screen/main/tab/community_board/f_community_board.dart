@@ -1,10 +1,10 @@
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_dimensions.dart';
-import 'package:fast_app_base/common/util/responsive_size.dart';
-import 'package:fast_app_base/screen/main/tab/search/w_feple_app_bar.dart';
-import 'package:fast_app_base/screen/main/tab/community_board/w_community_hot_board.dart';
-import 'package:fast_app_base/screen/main/tab/community_board/w_community_free_board.dart';
-import 'package:fast_app_base/screen/main/tab/community_board/w_community_getuser_board.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/responsive_size.dart';
+import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
+import 'package:feple/screen/main/tab/community_board/w_community_hot_board.dart';
+import 'package:feple/screen/main/tab/community_board/w_community_free_board.dart';
+import 'package:feple/screen/main/tab/community_board/w_community_getuser_board.dart';
 import 'package:flutter/material.dart';
 
 class CommunityBoardFragment extends StatelessWidget {

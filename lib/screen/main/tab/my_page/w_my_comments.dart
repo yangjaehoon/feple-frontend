@@ -1,6 +1,6 @@
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/network/dio_client.dart';
-import 'package:fast_app_base/screen/main/tab/community_board/w_community_enralgepost.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/network/dio_client.dart';
+import 'package:feple/screen/main/tab/community_board/w_community_enralgepost.dart';
 import 'package:flutter/material.dart';
 
 class MyCommentsScreen extends StatefulWidget {

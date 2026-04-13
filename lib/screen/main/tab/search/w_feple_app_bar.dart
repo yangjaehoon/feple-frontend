@@ -1,6 +1,6 @@
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/app_dimensions.dart';
-import 'package:fast_app_base/common/util/responsive_size.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:flutter/material.dart';
 
 class FepleAppBar extends StatefulWidget {

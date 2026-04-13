@@ -1,7 +1,7 @@
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/model/timetable_entry.dart';
-import 'package:fast_app_base/network/dio_client.dart';
-import 'package:fast_app_base/provider/user_provider.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/model/timetable_entry.dart';
+import 'package:feple/network/dio_client.dart';
+import 'package:feple/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

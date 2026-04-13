@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/model/post_model.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/model/post_model.dart';
 import 'package:flutter/material.dart';
 
 /// 게시글 목록에서 한 줄 타일

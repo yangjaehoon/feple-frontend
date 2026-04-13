@@ -1,4 +1,4 @@
-import 'package:fast_app_base/model/festival_preview.dart';
+import 'package:feple/model/festival_preview.dart';
 
 const photoCategoryDaily = FestivalPreview(
     id: -2, title: '일상 사진', location: '', posterUrl: '', startDate: '');

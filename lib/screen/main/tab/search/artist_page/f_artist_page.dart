@@ -1,7 +1,7 @@
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/screen/main/tab/search/artist_page/w_artist_schedule.dart';
-import 'package:fast_app_base/screen/main/tab/search/artist_page/w_main_image_swiper.dart';
-import 'package:fast_app_base/screen/main/tab/search/artist_page/w_artist_board.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_artist_schedule.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_main_image_swiper.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_artist_board.dart';
 
 import 'package:flutter/material.dart';
 

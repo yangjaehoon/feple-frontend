@@ -1,4 +1,4 @@
-import 'package:fast_app_base/common/common.dart';
+import 'package:feple/common/common.dart';
 import 'package:flutter/material.dart';
 
 /// 댓글 목록 + 입력 필드 위젯

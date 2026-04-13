@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:fast_app_base/network/dio_client.dart';
+import 'package:feple/network/dio_client.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';

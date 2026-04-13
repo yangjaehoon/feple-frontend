@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/network/dio_client.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/network/dio_client.dart';
 import 'package:flutter/material.dart';
 
 class FollowArtistsWidget extends StatefulWidget {

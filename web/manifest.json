@@ -1,11 +1,11 @@
 {
-    "name": "fast_app_base",
-    "short_name": "fast_app_base",
+    "name": "FEPLE",
+    "short_name": "FEPLE",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#FFFFFF",
+    "theme_color": "#5CC0EB",
+    "description": "페스티벌을 좋아하는 사람들의 커뮤니티, FEPLE",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

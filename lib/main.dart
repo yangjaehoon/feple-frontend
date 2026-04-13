@@ -1,14 +1,14 @@
 import 'dart:developer';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/provider/festival_preview_provider.dart';
-import 'package:fast_app_base/provider/like_notifier.dart';
-import 'package:fast_app_base/provider/post_change_notifier.dart';
-import 'package:fast_app_base/provider/user_provider.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/provider/festival_preview_provider.dart';
+import 'package:feple/provider/like_notifier.dart';
+import 'package:feple/provider/post_change_notifier.dart';
+import 'package:feple/provider/user_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:fast_app_base/login/login.dart';
-import 'package:fast_app_base/controller/auth_provider.dart';
+import 'package:feple/login/login.dart';
+import 'package:feple/controller/auth_provider.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
 import 'app.dart';

@@ -1,8 +1,8 @@
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/screen/main/tab/home/f_home.dart';
-import 'package:fast_app_base/screen/main/tab/community_board/f_community_board.dart';
-import 'package:fast_app_base/screen/main/tab/concert_list/f_concert_list.dart';
-import 'package:fast_app_base/screen/main/tab/search/f_search.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/screen/main/tab/home/f_home.dart';
+import 'package:feple/screen/main/tab/community_board/f_community_board.dart';
+import 'package:feple/screen/main/tab/concert_list/f_concert_list.dart';
+import 'package:feple/screen/main/tab/search/f_search.dart';
 import 'package:flutter/material.dart';
 import 'my_page/f_mypage.dart';
 

@@ -1,5 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:fast_app_base/screen/main/tab/community_board/w_community_board_card.dart';
+import 'package:feple/screen/main/tab/community_board/w_community_board_card.dart';
 import 'package:flutter/material.dart';
 
 class FreeBoard extends StatelessWidget {

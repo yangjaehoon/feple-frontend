@@ -1,5 +1,5 @@
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/service/post_service.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/service/post_service.dart';
 import 'package:flutter/material.dart';
 
 /// 아티스트 게시판 글쓰기 화면

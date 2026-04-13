@@ -1,11 +1,11 @@
-import 'package:fast_app_base/common/common.dart';
+import 'package:feple/common/common.dart';
 import 'package:flutter/material.dart';
-import 'package:fast_app_base/screen/main/tab/community_board/w_community_write_board.dart';
-import 'package:fast_app_base/screen/main/tab/community_board/w_community_enralgepost.dart';
-import 'package:fast_app_base/screen/main/tab/community_board/w_post_list_tile.dart';
-import 'package:fast_app_base/service/post_service.dart';
-import 'package:fast_app_base/model/post_model.dart';
-import 'package:fast_app_base/common/widget/w_async_content_builder.dart';
+import 'package:feple/screen/main/tab/community_board/w_community_write_board.dart';
+import 'package:feple/screen/main/tab/community_board/w_community_enralgepost.dart';
+import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
+import 'package:feple/service/post_service.dart';
+import 'package:feple/model/post_model.dart';
+import 'package:feple/common/widget/w_async_content_builder.dart';
 
 class CommunityPost extends StatefulWidget {
   final String boardname;

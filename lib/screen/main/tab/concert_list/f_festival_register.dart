@@ -1,6 +1,6 @@
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/festival_constants.dart';
-import 'package:fast_app_base/network/dio_client.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/festival_constants.dart';
+import 'package:feple/network/dio_client.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

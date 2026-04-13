@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:http/http.dart' as http;
-import 'package:fast_app_base/network/dio_client.dart';
+import 'package:feple/network/dio_client.dart';
 
-import 'package:fast_app_base/model/presign_response.dart';
+import 'package:feple/model/presign_response.dart';
 
 /// 아티스트 사진 업로드 서비스
 class ArtistPhotoService {

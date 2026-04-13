@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/network/dio_client.dart';
-import 'package:fast_app_base/provider/user_provider.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/network/dio_client.dart';
+import 'package:feple/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fast_app_base/model/artist_photo_response.dart';
+import 'package:feple/model/artist_photo_response.dart';
 import 'w_edit_photo_sheet.dart';
 
 

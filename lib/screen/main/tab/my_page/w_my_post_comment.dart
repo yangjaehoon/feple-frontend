@@ -1,7 +1,7 @@
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/network/dio_client.dart';
-import 'package:fast_app_base/screen/main/tab/my_page/w_my_comments.dart';
-import 'package:fast_app_base/screen/main/tab/my_page/w_my_posts.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/network/dio_client.dart';
+import 'package:feple/screen/main/tab/my_page/w_my_comments.dart';
+import 'package:feple/screen/main/tab/my_page/w_my_posts.dart';
 import 'package:flutter/material.dart';
 
 class MyPostCommentWidget extends StatefulWidget {

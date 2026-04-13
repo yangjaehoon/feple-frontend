@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fast_app_base/network/dio_client.dart';
+import 'package:feple/network/dio_client.dart';
 
 import '../model/festival_preview.dart';
 

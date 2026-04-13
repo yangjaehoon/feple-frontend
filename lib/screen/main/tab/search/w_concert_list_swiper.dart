@@ -2,8 +2,8 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:card_swiper/card_swiper.dart';
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/screen/main/tab/search/concert_information/f_festival_information.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/screen/main/tab/search/concert_information/f_festival_information.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

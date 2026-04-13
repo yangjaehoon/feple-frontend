@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fast_app_base/common/common.dart';
+import 'package:feple/common/common.dart';
 import 'package:flutter/material.dart';
 
-import 'package:fast_app_base/model/festival_preview.dart';
+import 'package:feple/model/festival_preview.dart';
 
 class FestivalPreviewCard extends StatelessWidget {
   final FestivalPreview festival;

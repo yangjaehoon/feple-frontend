@@ -1,4 +1,4 @@
-import 'package:fast_app_base/common/common.dart';
+import 'package:feple/common/common.dart';
 import 'package:flutter/material.dart';
 
 /// 퓨처 빌더의 보일러플레이트 코드를 줄여주는 공통 위젯

@@ -7,17 +7,17 @@
 
 import 'dart:io';
 
-import 'package:fast_app_base/app.dart';
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/data/preference/app_preferences.dart';
-import 'package:fast_app_base/common/language/language.dart';
-import 'package:fast_app_base/common/theme/custom_theme.dart';
+import 'package:feple/app.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/common/data/preference/app_preferences.dart';
+import 'package:feple/common/language/language.dart';
+import 'package:feple/common/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:fast_app_base/provider/festival_preview_provider.dart';
-import 'package:fast_app_base/provider/like_notifier.dart';
-import 'package:fast_app_base/provider/post_change_notifier.dart';
-import 'package:fast_app_base/provider/user_provider.dart';
-import 'package:fast_app_base/controller/auth_provider.dart';
+import 'package:feple/provider/festival_preview_provider.dart';
+import 'package:feple/provider/like_notifier.dart';
+import 'package:feple/provider/post_change_notifier.dart';
+import 'package:feple/provider/user_provider.dart';
+import 'package:feple/controller/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar/isar.dart';

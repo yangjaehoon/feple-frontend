@@ -1,6 +1,6 @@
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/util/local_json.dart';
-import 'package:fast_app_base/model/vo_package.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/common/util/local_json.dart';
+import 'package:feple/model/vo_package.dart';
 import 'package:flutter/material.dart';
 
 import 'w_opensource_item.dart';

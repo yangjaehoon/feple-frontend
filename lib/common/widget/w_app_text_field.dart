@@ -1,4 +1,4 @@
-import 'package:fast_app_base/common/common.dart';
+import 'package:feple/common/common.dart';
 import 'package:flutter/material.dart';
 
 /// 앱 전체에서 사용하는 공통 텍스트 필드 스타일.

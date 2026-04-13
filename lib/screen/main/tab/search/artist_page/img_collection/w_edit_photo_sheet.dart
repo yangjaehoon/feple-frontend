@@ -1,9 +1,9 @@
-import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/common/constant/photo_category.dart';
-import 'package:fast_app_base/model/festival_preview.dart';
-import 'package:fast_app_base/service/artist_schedule_service.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/photo_category.dart';
+import 'package:feple/model/festival_preview.dart';
+import 'package:feple/service/artist_schedule_service.dart';
 import 'package:flutter/material.dart';
-import 'package:fast_app_base/model/artist_photo_response.dart';
+import 'package:feple/model/artist_photo_response.dart';
 
 // ── 사진 수정 바텀시트 ──
 

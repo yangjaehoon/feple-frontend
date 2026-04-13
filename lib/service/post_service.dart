@@ -1,5 +1,5 @@
-import 'package:fast_app_base/model/post_model.dart';
-import 'package:fast_app_base/network/dio_client.dart';
+import 'package:feple/model/post_model.dart';
+import 'package:feple/network/dio_client.dart';
 
 class PostService {
   static const _endpoints = {

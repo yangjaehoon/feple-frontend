@@ -16,6 +16,7 @@ class WritePost extends StatefulWidget {
 }
 
 class _WritePostState extends State<WritePost> {
+  final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
   final _postService = PostService();
@@ -39,17 +40,10 @@ class _WritePostState extends State<WritePost> {
   }
 
   Future<void> _submit() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+
     final title = _titleController.text.trim();
     final content = _contentController.text.trim();
-
-    if (title.isEmpty || content.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            backgroundColor: AppColors.skyBlue,
-            content: Text('enter_title_content'.tr())),
-      );
-      return;
-    }
 
     final user = context.read<UserProvider>().user;
     if (user == null) {
@@ -119,42 +113,49 @@ class _WritePostState extends State<WritePost> {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              TextField(
-                controller: _titleController,
-                style: TextStyle(color: colors.textTitle),
-                decoration: InputDecoration(
-                  hintText: 'enter_title'.tr(),
-                  hintStyle: TextStyle(color: colors.textSecondary),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: _titleController,
+                  style: TextStyle(color: colors.textTitle),
+                  decoration: InputDecoration(
+                    hintText: 'enter_title'.tr(),
+                    hintStyle: TextStyle(color: colors.textSecondary),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: colors.activate, width: 2),
+                    ),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: colors.activate, width: 2),
-                  ),
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'enter_title'.tr() : null,
                 ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _contentController,
-                maxLines: null,
-                minLines: 8,
-                style: TextStyle(color: colors.textTitle),
-                decoration: InputDecoration(
-                  hintText: 'enter_content'.tr(),
-                  hintStyle: TextStyle(color: colors.textSecondary),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _contentController,
+                  maxLines: null,
+                  minLines: 8,
+                  style: TextStyle(color: colors.textTitle),
+                  decoration: InputDecoration(
+                    hintText: 'enter_content'.tr(),
+                    hintStyle: TextStyle(color: colors.textSecondary),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: colors.activate, width: 2),
+                    ),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: colors.activate, width: 2),
-                  ),
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'enter_content'.tr() : null,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

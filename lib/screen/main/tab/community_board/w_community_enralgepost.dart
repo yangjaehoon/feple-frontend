@@ -32,6 +32,7 @@ class EnralgePost extends StatefulWidget {
 class _EnralgePostState extends State<EnralgePost> {
   final _commentController = TextEditingController();
   bool _isSubmitting = false;
+  String? _commentError;
   List<Map<String, dynamic>> _comments = [];
   bool _liked = false;
   late int _heartCount;
@@ -80,21 +81,14 @@ class _EnralgePostState extends State<EnralgePost> {
   Future<void> _commentSubmit() async {
     final comment = _commentController.text.trim();
     if (comment.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            backgroundColor: AppColors.skyBlue,
-            content: Text('enter_comment_please'.tr())),
-      );
+      setState(() => _commentError = 'enter_comment_please'.tr());
       return;
     }
+    setState(() => _commentError = null);
 
     final user = context.read<UserProvider>().user;
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            backgroundColor: AppColors.skyBlue,
-            content: Text('no_login_info'.tr())),
-      );
+      setState(() => _commentError = 'no_login_info'.tr());
       return;
     }
 
@@ -210,6 +204,7 @@ class _EnralgePostState extends State<EnralgePost> {
                 controller: _commentController,
                 isSubmitting: _isSubmitting,
                 onSubmit: _commentSubmit,
+                errorText: _commentError,
               ),
               const SizedBox(height: 40),
             ],

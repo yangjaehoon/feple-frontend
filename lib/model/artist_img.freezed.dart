@@ -172,7 +172,7 @@ class _$_ArtistImg implements _ArtistImg {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_ArtistImg &&

@@ -7,7 +7,7 @@ import 'package:fast_app_base/screen/main/tab/search/concert_information/f_festi
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../provider/FestivalPreviewProvider.dart';
+import '../../../../provider/festival_preview_provider.dart';
 import '../../../../model/poster_model.dart';
 
 class ConcertListSwiperWidget extends StatefulWidget {
@@ -91,10 +91,10 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
                   final poster = PosterModel(
                     id: item.id,
                     title: item.title,
-                    description: '',
+                    description: item.description,
                     location: item.location,
                     startDate: item.startDate,
-                    endDate: '',
+                    endDate: item.endDate ?? '',
                     posterUrl: item.posterUrl,
                   );
                   Navigator.push(

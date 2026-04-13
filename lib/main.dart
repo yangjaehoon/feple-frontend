@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/provider/FestivalPreviewProvider.dart';
+import 'package:fast_app_base/provider/festival_preview_provider.dart';
 import 'package:fast_app_base/provider/like_notifier.dart';
 import 'package:fast_app_base/provider/post_change_notifier.dart';
 import 'package:fast_app_base/provider/user_provider.dart';
@@ -19,18 +19,7 @@ import 'network/dio_client.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'common/theme/custom_theme_app.dart';
 
-/*
-// Future<void> _initializeNaverMap() async {
-//   final naverMapApiKey = await getApiKey("naver_map_client_id");
-//    await NaverMapSdk.instance.initialize(
-//      clientId: naverMapApiKey,
-//      onAuthFailed: (e) => log("네이버맵 인증오류 : $e", name: "onAuthFailed"),
-//    );
-// }
-*/
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
   final bindings = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: bindings);
 
@@ -38,7 +27,6 @@ void main() async {
   if (Firebase.apps.isEmpty) {
     await Firebase.initializeApp();
   }
-  //await _initializeNaverMap();
   await EasyLocalization.ensureInitialized();
   await AppPreferences.init();
 
@@ -126,5 +114,3 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-
-//test

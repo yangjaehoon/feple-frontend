@@ -4,7 +4,7 @@ import 'package:fast_app_base/network/dio_client.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../provider/FestivalPreviewProvider.dart';
+import '../../../../provider/festival_preview_provider.dart';
 
 class FestivalRegisterPage extends StatefulWidget {
   const FestivalRegisterPage({super.key});

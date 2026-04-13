@@ -38,10 +38,8 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
   int get _startHour {
     int minH = 12;
     for (final e in _filtered) {
-      try {
-        final h = int.parse(e.startTime.split(':')[0]);
-        if (h < minH) minH = h;
-      } catch (_) {}
+      final h = int.tryParse(e.startTime.split(':')[0]);
+      if (h != null && h < minH) minH = h;
     }
     return minH;
   }
@@ -49,13 +47,12 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
   int get _endHour {
     int maxH = _startHour + 1;
     for (final e in _filtered) {
-      try {
-        final parts = e.endTime.split(':');
-        final h = int.parse(parts[0]);
-        final m = int.parse(parts[1]);
-        final endH = m > 0 ? h + 1 : h;
-        if (endH > maxH) maxH = endH;
-      } catch (_) {}
+      final parts = e.endTime.split(':');
+      final h = int.tryParse(parts[0]);
+      final m = int.tryParse(parts.length > 1 ? parts[1] : '0');
+      if (h == null || m == null) continue;
+      final endH = m > 0 ? h + 1 : h;
+      if (endH > maxH) maxH = endH;
     }
     return maxH;
   }
@@ -103,7 +100,9 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
             '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}');
       }
       _selectedDate = _dates.isNotEmpty ? _dates.first : null;
-    } catch (_) {}
+    } catch (_) {
+      // 날짜 파싱 실패 시 날짜 탭 미표시
+    }
   }
 
   Future<void> _fetch() async {
@@ -158,6 +157,8 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
 
   @override
   void dispose() {
+    _vContent.removeListener(_onV);
+    _hContent.removeListener(_onH);
     _vContent.dispose();
     _vTime.dispose();
     _hContent.dispose();

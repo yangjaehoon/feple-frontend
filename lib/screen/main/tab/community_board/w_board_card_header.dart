@@ -21,7 +21,7 @@ class BoardCardHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(
-          horizontal: AppDimens.paddingHorizontal, vertical: 12),
+          horizontal: AppDimens.paddingHorizontal, vertical: 0),
       width: double.infinity,
       decoration: BoxDecoration(
         color: headerColor,

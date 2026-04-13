@@ -1,7 +1,7 @@
 import 'package:fast_app_base/common/common.dart';
 import 'package:flutter/material.dart';
 
-import '../../model/FestivalPreview.dart';
+import 'package:fast_app_base/model/festival_preview.dart';
 
 class FestivalPreviewCard extends StatelessWidget {
   final FestivalPreview festival;
@@ -76,7 +76,7 @@ class FestivalPreviewCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          festival.title ?? 'fallback_festival_name'.tr(),
+                          festival.title,
                           style: TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: 16,
@@ -109,7 +109,7 @@ class FestivalPreviewCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          festival.location ?? '',
+                          festival.location,
                           style: TextStyle(
                             fontSize: 12,
                             color: colors.textSecondary,
@@ -128,7 +128,7 @@ class FestivalPreviewCard extends StatelessWidget {
                           color: colors.activate, size: 14),
                       const SizedBox(width: 4),
                       Text(
-                        festival.startDate ?? '',
+                        festival.startDate,
                         style: TextStyle(
                           fontSize: 12,
                           color: colors.textSecondary,

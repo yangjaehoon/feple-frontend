@@ -7,14 +7,6 @@ class AuthProvider extends ChangeNotifier {
   app.User? user;
   bool isLoading = false;
 
-  // Future<void> loadFromStorage() async {
-  //   final jwt = await TokenStore.readAccessToken();
-  //   if (jwt == null) return;
-  //
-  //   user = await UserApi().me();
-  //   notifyListeners();
-  // }
-
   Future<void> loginWithKakaoAccessToken(String kakaoAccessToken) async {
     isLoading = true;
     notifyListeners();

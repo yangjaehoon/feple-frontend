@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'dto_ftv_youtube_shorts.dart';
+import 'package:fast_app_base/model/ftv_youtube_shorts.dart';
 
 class FtvYoutubeShorts extends StatefulWidget {
   const FtvYoutubeShorts({super.key, required this.artistName});
@@ -39,7 +39,6 @@ class _FtvYoutubeShortsState extends State<FtvYoutubeShorts> {
               itemCount: data.length,
               itemBuilder: (context, index) {
                 final thumbnailUrl = data[index]['thumbnailUrl'];
-                //final videoTitle = data[index]['videoTitle'];
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: SizedBox(

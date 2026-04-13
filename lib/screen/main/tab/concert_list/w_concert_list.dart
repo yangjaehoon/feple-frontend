@@ -1,11 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fast_app_base/model/poster_model.dart';
-import 'package:fast_app_base/provider/poster/w_festival_preview_card.dart';
+import 'package:fast_app_base/screen/main/tab/concert_list/w_festival_preview_card.dart';
 import 'package:fast_app_base/screen/main/tab/search/concert_information/f_festival_information.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../provider/FestivalPreviewProvider.dart';
+import '../../../../provider/festival_preview_provider.dart';
 
 class ConcertListWidget extends StatefulWidget {
   const ConcertListWidget({super.key});
@@ -41,7 +41,7 @@ class _ConcertListWidgetState extends State<ConcertListWidget> {
             final poster = PosterModel(
               id: item.id,
               title: item.title,
-              description: '',
+              description: item.description,
               location: item.location,
               startDate: item.startDate,
               endDate: item.endDate ?? '',

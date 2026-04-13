@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fast_app_base/network/dio_client.dart';
 
-import '../model/FestivalPreview.dart';
+import '../model/festival_preview.dart';
 
 class FestivalPreviewProvider extends ChangeNotifier {
 

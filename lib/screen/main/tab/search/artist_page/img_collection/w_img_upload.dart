@@ -1,8 +1,9 @@
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/model/FestivalPreview.dart';
-import 'package:fast_app_base/network/dio_client.dart';
+import 'package:fast_app_base/common/constant/photo_category.dart';
+import 'package:fast_app_base/model/festival_preview.dart';
+import 'package:fast_app_base/service/artist_schedule_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:fast_app_base/service/artist_photo_service.dart';
@@ -20,13 +21,6 @@ class ImgUpload extends StatefulWidget {
   State<ImgUpload> createState() => _ImgUploadState();
 }
 
-const _dailyFestival = FestivalPreview(
-    id: -2, title: '일상 사진', location: '', posterUrl: '', startDate: '');
-const _snsFestival = FestivalPreview(
-    id: -3, title: 'SNS 사진', location: '', posterUrl: '', startDate: '');
-const _otherFestival = FestivalPreview(
-    id: -1, title: '기타', location: '', posterUrl: '', startDate: '');
-
 class _ImgUploadState extends State<ImgUpload> {
   final _formKey = GlobalKey<FormState>();
   final _photoService = ArtistPhotoService();
@@ -43,21 +37,8 @@ class _ImgUploadState extends State<ImgUpload> {
     _festivalsFuture = _fetchFestivals();
   }
 
-  Future<List<FestivalPreview>> _fetchFestivals() async {
-    final resp =
-        await DioClient.dio.get('/artists/${widget.artistId}/schedule');
-    final List<dynamic> list = resp.data as List<dynamic>;
-    return list.map((e) {
-      final m = e as Map<String, dynamic>;
-      return FestivalPreview(
-        id: (m['festivalId'] as num).toInt(),
-        title: (m['title'] ?? '') as String,
-        location: (m['location'] ?? '') as String,
-        posterUrl: (m['posterUrl'] ?? '') as String,
-        startDate: m['startDate']?.toString() ?? '',
-      );
-    }).toList();
-  }
+  Future<List<FestivalPreview>> _fetchFestivals() =>
+      ArtistScheduleService.fetchFestivals(widget.artistId);
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
@@ -221,11 +202,11 @@ class _ImgUploadState extends State<ImgUpload> {
                                       overflow: TextOverflow.ellipsis),
                                 )),
                             const DropdownMenuItem(
-                                value: _dailyFestival, child: Text('일상 사진')),
+                                value: photoCategoryDaily, child: Text('일상 사진')),
                             const DropdownMenuItem(
-                                value: _snsFestival, child: Text('SNS 사진')),
+                                value: photoCategorySns, child: Text('SNS 사진')),
                             const DropdownMenuItem(
-                                value: _otherFestival, child: Text('기타')),
+                                value: photoCategoryOther, child: Text('기타')),
                           ],
                           onChanged: (f) =>
                               setState(() => _selectedFestival = f),

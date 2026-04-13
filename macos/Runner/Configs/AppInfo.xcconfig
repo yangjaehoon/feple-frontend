@@ -8,7 +8,7 @@
 PRODUCT_NAME = FEPLE
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.fastAppBase
+PRODUCT_BUNDLE_IDENTIFIER = com.dobino.feple
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2023 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2024 dobino. All rights reserved.

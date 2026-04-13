@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/network/dio_client.dart';
-import 'package:fast_app_base/screen/main/tab/search/artist_page/img_collection/dto_artist_photo_response.dart';
+import 'package:fast_app_base/model/artist_photo_response.dart';
 import 'package:fast_app_base/screen/main/tab/search/artist_page/w_artist_name_like.dart';
 import 'package:flutter/material.dart';
 
@@ -36,11 +36,13 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   void initState() {
     super.initState();
     _loadPhotos();
-    _pageController.addListener(() {
-      final p = _pageController.page;
-      if (p == null) return;
-      _scroll.value = p;
-    });
+    _pageController.addListener(_onPageScroll);
+  }
+
+  void _onPageScroll() {
+    final p = _pageController.page;
+    if (p == null) return;
+    _scroll.value = p;
   }
 
   Future<void> _loadPhotos() async {
@@ -85,6 +87,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   @override
   void dispose() {
     _timer?.cancel();
+    _pageController.removeListener(_onPageScroll);
     _scroll.dispose();
     _pageController.dispose();
     super.dispose();

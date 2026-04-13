@@ -16,8 +16,8 @@ class Loading extends StatefulWidget {
 }
 
 class _LoadingState extends State<Loading> {
-  double? latitude3;
-  double? longitude3;
+  double? latitude;
+  double? longitude;
 
   @override
   void initState() {
@@ -28,14 +28,14 @@ class _LoadingState extends State<Loading> {
   void getLocation() async {
     MyLocation myLocation = MyLocation();
     await myLocation.getMyCurrentLocation();
-    latitude3 = myLocation.latitude2;
-    longitude3 = myLocation.longitude2;
+    latitude = myLocation.latitude;
+    longitude = myLocation.longitude;
 
     Network network = Network(
         'https://api.openweathermap.org/data/2.5/weather'
-            '?lat=$latitude3&lon=$longitude3&appid=$apiKey&units=metric',
+            '?lat=$latitude&lon=$longitude&appid=$apiKey&units=metric',
         'http://api.openweathermap.org/data/2.5/air_pollution'
-            '?lat=$latitude3&lon=$longitude3&appid=$apiKey');
+            '?lat=$latitude&lon=$longitude&appid=$apiKey');
     var weatherData = await network.getJsonData();
     var airData = await network.getAirData();
 

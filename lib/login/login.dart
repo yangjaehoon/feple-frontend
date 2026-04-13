@@ -247,7 +247,7 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final user = await AuthService.instance.loginWithEmail(email, password);
       if (!mounted) return;
-      userProvider.setUser(user);
+      await userProvider.setUser(user);
     } on EmailNotVerifiedException {
       if (mounted) {
         setState(() => _loginError = 'email_not_verified'.tr());
@@ -325,20 +325,13 @@ class _LoginPageState extends State<LoginPage> {
     final userProvider = context.read<UserProvider>();
     try {
       final user = await AuthService.instance.loginWithKakao();
-      if (!context.mounted) return;
-      userProvider.setUser(user);
-
-      Fluttertoast.showToast(
-        msg: 'kakao_login_success'.tr(),
-        backgroundColor: context.appColors.snackbarBgColor,
-        textColor: context.appColors.textTitle,
-      );
+      if (!mounted) return;
+      await userProvider.setUser(user);
     } catch (e) {
       debugPrint('=== 카카오 로그인 실패 에러 ===\n$e\n======================');
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('kakao_login_failed'.tr(args: [e.toString()]))),
-        );
+        final msg = e.toString().replaceFirst('Exception: ', '');
+        setState(() => _loginError = 'kakao_login_failed'.tr(args: [msg]));
       }
     }
   }

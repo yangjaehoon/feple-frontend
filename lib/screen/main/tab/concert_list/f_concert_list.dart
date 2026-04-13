@@ -6,7 +6,7 @@ import 'package:fast_app_base/screen/main/tab/concert_list/w_concert_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../provider/FestivalPreviewProvider.dart';
+import '../../../../provider/festival_preview_provider.dart';
 import '../search/w_feple_app_bar.dart';
 
 class ConcertListFragment extends StatefulWidget {
@@ -234,7 +234,7 @@ class _FilterSection extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  displayName,
+                  displayName.tr(),
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,

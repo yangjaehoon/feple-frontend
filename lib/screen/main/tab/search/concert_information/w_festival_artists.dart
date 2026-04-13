@@ -38,8 +38,9 @@ class _FestivalArtistsState extends State<FestivalArtists> {
           : null;
 
       final artistRes = await artistFuture;
-      final artists =
-          (artistRes.data as List).map((e) => FestivalArtistItem.fromJson(e)).toList();
+      final artists = (artistRes.data as List)
+          .map((e) => FestivalArtistItem.fromJson(e))
+          .toList();
 
       Set<int> followed = {};
       if (followFuture != null) {
@@ -113,9 +114,10 @@ class _FestivalArtistsState extends State<FestivalArtists> {
       ),
     );
   }
+
   Widget _buildArtistRow(AbstractThemeColors colors) {
     return SizedBox(
-      height: 90,
+      height: 78,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: _artists.length,
@@ -166,7 +168,7 @@ class _FestivalArtistsState extends State<FestivalArtists> {
 
   Widget _buildPlaceholderRow(AbstractThemeColors colors) {
     return SizedBox(
-      height: 90,
+      height: 78,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: 3,

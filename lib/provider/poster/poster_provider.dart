@@ -19,12 +19,8 @@ class PosterProvider extends ChangeNotifier {
 
         _posters = data.map((json) => PosterModel.fromJson(json)).toList();
         notifyListeners();
-        print('포스터 ${_posters.length}개 불러오기 완료');
-      } else {
-        print('API 호출 실패: ${response.statusCode}');
       }
-    } catch (e) {
-      print('포스터를 가져오는 중 오류 발생: $e');
+    } catch (_) {
     }
   }
 }

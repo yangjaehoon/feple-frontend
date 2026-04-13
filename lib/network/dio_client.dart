@@ -42,9 +42,11 @@ class DioClient {
                 await TokenStore.saveRefreshToken(newRefreshToken);
               }
 
-              // 원래 요청 재시도
-              error.requestOptions.headers['Authorization'] = 'Bearer $newAccessToken';
-              final retryResp = await dio.fetch(error.requestOptions);
+              // 원래 요청 재시도 (인터셉터를 타지 않는 별도 Dio로 실행)
+              final retryDio = Dio(BaseOptions(baseUrl: AppConfig.baseUrl));
+              final opts = error.requestOptions;
+              opts.headers['Authorization'] = 'Bearer $newAccessToken';
+              final retryResp = await retryDio.fetch(opts);
               return handler.resolve(retryResp);
             } catch (_) {
               await TokenStore.clear();

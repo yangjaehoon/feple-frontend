@@ -1,15 +1,9 @@
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/model/FestivalPreview.dart';
-import 'package:fast_app_base/network/dio_client.dart';
+import 'package:fast_app_base/common/constant/photo_category.dart';
+import 'package:fast_app_base/model/festival_preview.dart';
+import 'package:fast_app_base/service/artist_schedule_service.dart';
 import 'package:flutter/material.dart';
-import 'package:fast_app_base/screen/main/tab/search/artist_page/img_collection/dto_artist_photo_response.dart';
-
-const _dailyOption = FestivalPreview(
-    id: -2, title: '일상 사진', location: '', posterUrl: '', startDate: '');
-const _snsOption = FestivalPreview(
-    id: -3, title: 'SNS 사진', location: '', posterUrl: '', startDate: '');
-const _otherOption = FestivalPreview(
-    id: -1, title: '기타', location: '', posterUrl: '', startDate: '');
+import 'package:fast_app_base/model/artist_photo_response.dart';
 
 // ── 사진 수정 바텀시트 ──
 
@@ -52,29 +46,18 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
 
   Future<void> _loadFestivals() async {
     try {
-      final resp =
-          await DioClient.dio.get('/artists/${widget.artistId}/schedule');
-      final list = resp.data as List<dynamic>;
-      final festivals = list.map((e) {
-        final m = e as Map<String, dynamic>;
-        return FestivalPreview(
-          id: (m['festivalId'] as num).toInt(),
-          title: (m['title'] ?? '') as String,
-          location: (m['location'] ?? '') as String,
-          posterUrl: (m['posterUrl'] ?? '') as String,
-          startDate: m['startDate']?.toString() ?? '',
-        );
-      }).toList();
+      final festivals =
+          await ArtistScheduleService.fetchFestivals(widget.artistId);
 
       // 현재 description 기준으로 초기 선택값 결정
       final desc = widget.photo.description;
       FestivalPreview? preSelected;
       if (desc == '일상 사진') {
-        preSelected = _dailyOption;
+        preSelected = photoCategoryDaily;
       } else if (desc == 'SNS 사진') {
-        preSelected = _snsOption;
+        preSelected = photoCategorySns;
       } else if (desc.isEmpty) {
-        preSelected = _otherOption;
+        preSelected = photoCategoryOther;
       } else {
         for (final f in festivals) {
           if (f.title == desc) {
@@ -82,7 +65,7 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
             break;
           }
         }
-        preSelected ??= _otherOption;
+        preSelected ??= photoCategoryOther;
       }
 
       if (mounted) {
@@ -149,9 +132,9 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
                     value: f,
                     child: Text(f.title, overflow: TextOverflow.ellipsis),
                   )),
-              const DropdownMenuItem(value: _dailyOption, child: Text('일상 사진')),
-              const DropdownMenuItem(value: _snsOption, child: Text('SNS 사진')),
-              const DropdownMenuItem(value: _otherOption, child: Text('기타')),
+              const DropdownMenuItem(value: photoCategoryDaily, child: Text('일상 사진')),
+              const DropdownMenuItem(value: photoCategorySns, child: Text('SNS 사진')),
+              const DropdownMenuItem(value: photoCategoryOther, child: Text('기타')),
             ],
             onChanged: (f) => setState(() => _selectedFestival = f),
           ),

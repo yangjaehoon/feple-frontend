@@ -26,6 +26,7 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
   bool _prefsLoaded = false;
 
   String get _prefsKey => 'fav_boards_${widget.userId}';
+  String get _orderKey => 'fav_boards_order_${widget.userId}';
 
   @override
   void initState() {
@@ -59,21 +60,30 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
   Future<void> _loadPrefs() async {
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getStringList(_prefsKey);
+    final savedOrder = prefs.getStringList(_orderKey);
     if (!mounted) return;
     setState(() {
-      if (saved == null || saved.isEmpty) {
-        // 기본값: 좋아요/팔로우한 게시판 전체 표시
-        _orderedSelectedIds = widget.allBoards.map((b) => b.boardId).toList();
-      } else {
-        final validIds = widget.allBoards.map((b) => b.boardId).toSet();
-        // 저장된 순서 유지 (유효한 것만)
+      final validIds = widget.allBoards.map((b) => b.boardId).toSet();
+
+      if (saved != null && saved.isNotEmpty) {
+        // 선택 목록이 저장되어 있는 경우 (일부만 선택)
         final savedValid = saved.where((id) => validIds.contains(id)).toList();
-        // 저장 이후 새로 좋아요/팔로우한 게시판은 자동으로 끝에 추가
         final newIds = widget.allBoards
             .map((b) => b.boardId)
             .where((id) => !saved.contains(id))
             .toList();
         _orderedSelectedIds = [...savedValid, ...newIds];
+      } else if (savedOrder != null && savedOrder.isNotEmpty) {
+        // 전체 선택 상태이지만 순서가 저장되어 있는 경우
+        final orderedValid = savedOrder.where((id) => validIds.contains(id)).toList();
+        final newIds = widget.allBoards
+            .map((b) => b.boardId)
+            .where((id) => !savedOrder.contains(id))
+            .toList();
+        _orderedSelectedIds = [...orderedValid, ...newIds];
+      } else {
+        // 기본값: 좋아요/팔로우한 게시판 전체 표시
+        _orderedSelectedIds = widget.allBoards.map((b) => b.boardId).toList();
       }
       _prefsLoaded = true;
     });
@@ -81,7 +91,9 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
 
   Future<void> _savePrefs(List<String> orderedSelected) async {
     final prefs = await SharedPreferences.getInstance();
-    // 전부 선택된 상태라면 prefs 초기화 → 새로 좋아요한 게시판도 자동 추가됨
+    // 순서는 항상 저장
+    await prefs.setStringList(_orderKey, orderedSelected);
+    // 전부 선택된 상태라면 선택 목록은 삭제 (새로 좋아요한 게시판 자동 추가 유지)
     if (orderedSelected.length == widget.allBoards.length) {
       await prefs.remove(_prefsKey);
     } else {

@@ -1,6 +1,7 @@
 class FestivalPreview {
   final int id;
   final String title;
+  final String description;
   final String location;
   final String posterUrl;
   final String startDate;
@@ -11,6 +12,7 @@ class FestivalPreview {
   const FestivalPreview({
     required this.id,
     required this.title,
+    this.description = '',
     required this.location,
     required this.posterUrl,
     required this.startDate,
@@ -33,6 +35,7 @@ class FestivalPreview {
     return FestivalPreview(
       id: (json['id'] as num).toInt(),
       title: (json['title'] ?? '') as String,
+      description: (json['description'] ?? '') as String,
       location: (json['location'] ?? '') as String,
       posterUrl: (json['posterUrl'] ?? '') as String,
       startDate: (json['startDate'] ?? '') as String,

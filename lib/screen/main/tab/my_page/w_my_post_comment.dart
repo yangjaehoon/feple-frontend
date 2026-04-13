@@ -31,7 +31,6 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.appColors;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: FutureBuilder<_UserStats>(
@@ -120,6 +119,7 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
             const SizedBox(height: 6),
             Text(
               label,
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w600,

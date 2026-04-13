@@ -13,7 +13,7 @@
 ## 기술 스택
 
 - **Flutter** 3.x (Android / iOS / Web / macOS)
-- **상태관리**: Provider, GetX
+- **상태관리**: Provider
 - **네트워크**: Dio, Retrofit
 - **인증**: Firebase Auth, Kakao SDK
 - **지도**: Google Maps

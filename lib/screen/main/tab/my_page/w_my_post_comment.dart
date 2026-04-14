@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/network/dio_client.dart';
+import 'package:feple/screen/main/tab/my_page/s_certification_list.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_comments.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_posts.dart';
 import 'package:flutter/material.dart';
@@ -22,10 +23,19 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
   }
 
   Future<_UserStats> _fetchStats() async {
-    final resp = await DioClient.dio.get('/users/${widget.userId}/stats');
+    final results = await Future.wait([
+      DioClient.dio.get('/users/${widget.userId}/stats'),
+      DioClient.dio.get('/certifications/my/approved-festivals').then(
+        (r) => (r.data as List).length,
+        onError: (_) => 0,
+      ),
+    ]);
+    final stats = results[0];
+    final certCount = results[1] as int;
     return _UserStats(
-      postCount: resp.data['postCount'] as int,
-      commentCount: resp.data['commentCount'] as int,
+      postCount: stats.data['postCount'] as int,
+      commentCount: stats.data['commentCount'] as int,
+      certificationCount: certCount,
     );
   }
 
@@ -38,6 +48,7 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
         builder: (context, snapshot) {
           final postCount = snapshot.data?.postCount.toString() ?? '-';
           final commentCount = snapshot.data?.commentCount.toString() ?? '-';
+          final certCount = snapshot.data?.certificationCount.toString() ?? '-';
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -45,8 +56,13 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
                 context,
                 icon: Icons.verified_rounded,
                 label: 'certification_badge'.tr(),
-                value: '0',
+                value: certCount,
                 color: AppColors.sunnyYellow,
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const CertificationListScreen(),
+                    )),
               ),
               _buildStatCard(
                 context,
@@ -145,5 +161,10 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
 class _UserStats {
   final int postCount;
   final int commentCount;
-  const _UserStats({required this.postCount, required this.commentCount});
+  final int certificationCount;
+  const _UserStats({
+    required this.postCount,
+    required this.commentCount,
+    required this.certificationCount,
+  });
 }

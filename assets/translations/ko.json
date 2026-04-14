@@ -194,5 +194,5 @@
   "cert_status_rejected": "거절됨",
   "cert_my_list": "내 인증 목록",
   "cert_no_history": "인증 내역이 없습니다.",
-  "cert_rejection_reason": "거절 사유: {0}"
+  "cert_rejection_reason": "거절 사유: {}"
 }

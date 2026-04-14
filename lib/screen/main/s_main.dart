@@ -100,13 +100,11 @@ class MainScreenState extends State<MainScreen>
             topLeft: Radius.circular(bottomNavigationBarBorderRadius),
             topRight: Radius.circular(bottomNavigationBarBorderRadius),
           ),
-          child: AnimatedContainer(
+          child: AnimatedAlign(
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeInOut,
-            height: _showBottomNav
-                ? kBottomNavigationBarHeight +
-                    MediaQuery.of(context).padding.bottom
-                : 0,
+            alignment: Alignment.topCenter,
+            heightFactor: _showBottomNav ? 1.0 : 0.0,
             child: _buildBottomNavigationBar(context),
           ),
         ),

@@ -28,6 +28,8 @@ class MainScreenState extends State<MainScreen>
   final List<GlobalKey<NavigatorState>> navigatorKeys =
       List.generate(5, (_) => GlobalKey<NavigatorState>());
 
+  bool _showBottomNav = true;
+
   int get _currentIndex => tabs.indexOf(_currentTab);
 
   GlobalKey<NavigatorState> get _currentTabNavigationKey =>
@@ -43,8 +45,29 @@ class MainScreenState extends State<MainScreen>
     _visitedTabs.add(tabs.indexOf(TabItem.home));
   }
 
+  bool _handleScrollNotification(ScrollNotification notification) {
+    if (notification is ScrollUpdateNotification) {
+      final delta = notification.scrollDelta ?? 0;
+      if (delta > 3 && _showBottomNav) {
+        setState(() => _showBottomNav = false);
+      } else if (delta < -3 && !_showBottomNav) {
+        setState(() => _showBottomNav = true);
+      }
+    }
+    if (notification is ScrollEndNotification) {
+      if (notification.metrics.pixels <= 0) {
+        setState(() => _showBottomNav = true);
+      }
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final bottomPadding = _showBottomNav
+        ? (extendBody ? 60 - bottomNavigationBarBorderRadius : 0.0)
+        : MediaQuery.of(context).padding.bottom;
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
@@ -59,16 +82,34 @@ class MainScreenState extends State<MainScreen>
       child: Scaffold(
         extendBody: extendBody,
         drawer: const MenuDrawer(),
-        body: Container(
+        body: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
           color: context.appColors.backgroundMain,
-          padding: EdgeInsets.only(
-              bottom: extendBody ? 60 - bottomNavigationBarBorderRadius : 0),
+          padding: EdgeInsets.only(bottom: bottomPadding),
           child: SafeArea(
             bottom: !extendBody,
-            child: pages,
+            child: NotificationListener<ScrollNotification>(
+              onNotification: _handleScrollNotification,
+              child: pages,
+            ),
           ),
         ),
-        bottomNavigationBar: _buildBottomNavigationBar(context),
+        bottomNavigationBar: ClipRRect(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(bottomNavigationBarBorderRadius),
+            topRight: Radius.circular(bottomNavigationBarBorderRadius),
+          ),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeInOut,
+            height: _showBottomNav
+                ? kBottomNavigationBarHeight +
+                    MediaQuery.of(context).padding.bottom
+                : 0,
+            child: _buildBottomNavigationBar(context),
+          ),
+        ),
       ),
     );
   }
@@ -92,10 +133,6 @@ class MainScreenState extends State<MainScreen>
     return Container(
       decoration: BoxDecoration(
         color: colors.bottomNavBg,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(bottomNavigationBarBorderRadius),
-          topRight: Radius.circular(bottomNavigationBarBorderRadius),
-        ),
         boxShadow: [
           BoxShadow(
             color: colors.bottomNavShadow.withValues(alpha: 0.05),
@@ -105,25 +142,19 @@ class MainScreenState extends State<MainScreen>
           ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(bottomNavigationBarBorderRadius),
-          topRight: Radius.circular(bottomNavigationBarBorderRadius),
-        ),
-        child: BottomNavigationBar(
-          items: navigationBarItems(context),
-          currentIndex: _currentIndex,
-          selectedItemColor: colors.activate,
-          unselectedItemColor: colors.textSecondary,
-          backgroundColor: colors.bottomNavBg,
-          onTap: _handleOnTapNavigationBarItem,
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          type: BottomNavigationBarType.fixed,
-          selectedFontSize: 11,
-          unselectedFontSize: 10,
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
-        ),
+      child: BottomNavigationBar(
+        items: navigationBarItems(context),
+        currentIndex: _currentIndex,
+        selectedItemColor: colors.activate,
+        unselectedItemColor: colors.textSecondary,
+        backgroundColor: colors.bottomNavBg,
+        onTap: _handleOnTapNavigationBarItem,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        type: BottomNavigationBarType.fixed,
+        selectedFontSize: 11,
+        unselectedFontSize: 10,
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
       ),
     );
   }
@@ -143,6 +174,7 @@ class MainScreenState extends State<MainScreen>
     setState(() {
       _visitedTabs.add(index);
       _currentTab = tabs[index];
+      _showBottomNav = true; // 탭 전환 시 항상 하단바 표시
     });
   }
 

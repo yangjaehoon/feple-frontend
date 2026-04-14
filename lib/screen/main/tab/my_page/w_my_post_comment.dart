@@ -23,18 +23,15 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
   }
 
   Future<_UserStats> _fetchStats() async {
-    final results = await Future.wait([
-      DioClient.dio.get('/users/${widget.userId}/stats'),
-      DioClient.dio.get('/certifications/my/approved-festivals').then(
-        (r) => (r.data as List).length,
-        onError: (_) => 0,
-      ),
-    ]);
-    final stats = results[0];
-    final certCount = results[1] as int;
+    final statsResp = await DioClient.dio.get('/users/${widget.userId}/stats');
+    int certCount = 0;
+    try {
+      final certResp = await DioClient.dio.get('/certifications/my/approved-festivals');
+      certCount = (certResp.data as List).length;
+    } catch (_) {}
     return _UserStats(
-      postCount: stats.data['postCount'] as int,
-      commentCount: stats.data['commentCount'] as int,
+      postCount: statsResp.data['postCount'] as int,
+      commentCount: statsResp.data['commentCount'] as int,
       certificationCount: certCount,
     );
   }

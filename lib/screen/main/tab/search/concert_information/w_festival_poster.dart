@@ -290,10 +290,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
                                   icon: _certSubmitting
                                       ? Icons.hourglass_top_rounded
                                       : Icons.verified_rounded,
-                                  color: _certSubmitting
-                                      ? Colors.white54
-                                      : Colors.amber[200],
-                                  bgColor: Colors.amber.withValues(alpha: 0.25),
+                                  color: _certSubmitting ? Colors.white54 : Colors.white,
                                 ),
                               ],
                             ),

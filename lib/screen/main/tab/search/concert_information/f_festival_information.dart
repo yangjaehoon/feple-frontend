@@ -7,6 +7,7 @@ import 'package:feple/screen/main/tab/search/concert_information/w_festival_time
 import 'package:feple/screen/main/tab/search/concert_information/w_festival_artists.dart';
 import 'package:feple/screen/main/tab/search/concert_information/w_festival_board.dart';
 import 'package:feple/screen/main/tab/search/concert_information/w_festival_booth_map.dart';
+import 'package:feple/screen/main/tab/search/concert_information/w_festival_certification_button.dart';
 import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -42,6 +43,10 @@ class FestivalInformationFragment extends StatelessWidget {
                   festivalId: poster.id,
                   festivalLat: poster.latitude,
                   festivalLng: poster.longitude,
+                ),
+                FestivalCertificationButton(
+                  festivalId: poster.id,
+                  festivalName: poster.title,
                 ),
               ],
             ),

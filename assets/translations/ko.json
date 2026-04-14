@@ -180,5 +180,19 @@
   "region_jeonnam": "전라남도",
   "region_jeju": "제주도",
   "region_etc": "기타",
-  "festival_info": "페스티벌 소개"
+  "festival_info": "페스티벌 소개",
+  "cert_submit": "인증 신청",
+  "cert_submit_title": "페스티벌 인증 신청",
+  "cert_select_photo": "인증 사진 선택",
+  "cert_photo_guide": "페스티벌 현장에서 찍은 사진을 올려주세요.\n(입장 팔찌, 티켓, 현장 사진 등)",
+  "cert_submitting": "인증 신청 중...",
+  "cert_submit_success": "인증 신청이 완료되었습니다!\n관리자 승인 후 뱃지가 표시됩니다.",
+  "cert_submit_failed": "인증 신청 실패: {0}",
+  "cert_already_submitted": "이미 해당 페스티벌에 인증 신청을 했습니다.",
+  "cert_status_pending": "심사중",
+  "cert_status_approved": "승인됨",
+  "cert_status_rejected": "거절됨",
+  "cert_my_list": "내 인증 목록",
+  "cert_no_history": "인증 내역이 없습니다.",
+  "cert_rejection_reason": "거절 사유: {0}"
 }

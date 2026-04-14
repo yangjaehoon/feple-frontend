@@ -66,16 +66,22 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
           ),
         ),
         iconTheme: IconThemeData(color: colors.textTitle),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _openSubmitSheet,
-        backgroundColor: colors.certRingColor,
-        foregroundColor: Colors.white,
-        icon: const Icon(Icons.add_photo_alternate_rounded),
-        label: Text(
-          'cert_submit'.tr(),
-          style: const TextStyle(fontWeight: FontWeight.w700),
-        ),
+        actions: [
+          TextButton.icon(
+            onPressed: _openSubmitSheet,
+            icon: Icon(Icons.add_photo_alternate_rounded,
+                color: colors.certRingColor, size: 20),
+            label: Text(
+              'cert_submit'.tr(),
+              style: TextStyle(
+                color: colors.certRingColor,
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+              ),
+            ),
+          ),
+          const SizedBox(width: 4),
+        ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -99,7 +105,7 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
                   ),
                 )
               : ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                   itemCount: _certifications.length,
                   separatorBuilder: (_, __) =>
                       const SizedBox(height: 10),

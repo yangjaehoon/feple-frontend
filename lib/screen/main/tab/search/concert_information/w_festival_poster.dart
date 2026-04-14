@@ -1,13 +1,17 @@
 import 'dart:ui';
+import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/provider/like_notifier.dart';
+import 'package:feple/service/certification_service.dart';
 import 'package:provider/provider.dart';
 import 'package:feple/screen/main/tab/search/concert_information/weather/screens/loading.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +29,8 @@ class FestivalPoster extends StatefulWidget {
 class _FestivalPosterState extends State<FestivalPoster> {
   bool _liked = false;
   bool _descExpanded = true;
+  bool _certSubmitting = false;
+  final _certService = CertificationService();
 
   String get _descPrefKey => 'festival_desc_expanded_${widget.poster.id}';
 
@@ -74,6 +80,38 @@ class _FestivalPosterState extends State<FestivalPoster> {
     } else {
       final webUri = Uri.parse('https://map.kakao.com/link/search/$name');
       await launchUrl(webUri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  Future<void> _submitCertification() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1920,
+      maxHeight: 1920,
+    );
+    if (picked == null) return;
+
+    setState(() => _certSubmitting = true);
+    try {
+      final Uint8List imageData = await picked.readAsBytes();
+      await _certService.submit(
+        festivalId: widget.poster.id,
+        imageData: imageData,
+      );
+      if (!mounted) return;
+      Fluttertoast.showToast(msg: 'cert_submit_success'.tr());
+    } catch (e) {
+      if (!mounted) return;
+      final msg = e.toString();
+      if (msg.contains('이미') || msg.contains('already')) {
+        Fluttertoast.showToast(msg: 'cert_already_submitted'.tr());
+      } else {
+        Fluttertoast.showToast(
+            msg: 'cert_submit_failed'.tr(args: [msg]));
+      }
+    } finally {
+      if (mounted) setState(() => _certSubmitting = false);
     }
   }
 
@@ -245,6 +283,17 @@ class _FestivalPosterState extends State<FestivalPoster> {
                                 _ActionButton(
                                   onTap: _openKakaoMap,
                                   icon: Icons.location_on_rounded,
+                                ),
+                                const SizedBox(width: 8),
+                                _ActionButton(
+                                  onTap: _certSubmitting ? null : _submitCertification,
+                                  icon: _certSubmitting
+                                      ? Icons.hourglass_top_rounded
+                                      : Icons.verified_rounded,
+                                  color: _certSubmitting
+                                      ? Colors.white54
+                                      : Colors.amber[200],
+                                  bgColor: Colors.amber.withValues(alpha: 0.25),
                                 ),
                               ],
                             ),

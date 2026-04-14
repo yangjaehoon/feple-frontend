@@ -27,6 +27,7 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
 
   String get _prefsKey => 'fav_boards_${widget.userId}';
   String get _orderKey => 'fav_boards_order_${widget.userId}';
+  String get _knownKey => 'fav_boards_known_${widget.userId}';
 
   @override
   void initState() {
@@ -61,26 +62,27 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getStringList(_prefsKey);
     final savedOrder = prefs.getStringList(_orderKey);
+    final knownIds = prefs.getStringList(_knownKey)?.toSet();
     if (!mounted) return;
     setState(() {
       final validIds = widget.allBoards.map((b) => b.boardId).toSet();
 
+      // 저장 후 새로 좋아요/팔로우한 보드만 자동 추가
+      final trulyNewIds = knownIds != null
+          ? widget.allBoards
+              .map((b) => b.boardId)
+              .where((id) => !knownIds.contains(id))
+              .toList()
+          : <String>[];
+
       if (saved != null && saved.isNotEmpty) {
         // 선택 목록이 저장되어 있는 경우 (일부만 선택)
-        final savedValid = saved.where((id) => validIds.contains(id)).toList();
-        final newIds = widget.allBoards
-            .map((b) => b.boardId)
-            .where((id) => !saved.contains(id))
-            .toList();
-        _orderedSelectedIds = [...savedValid, ...newIds];
+        final savedValid = saved.where(validIds.contains).toList();
+        _orderedSelectedIds = [...savedValid, ...trulyNewIds];
       } else if (savedOrder != null && savedOrder.isNotEmpty) {
         // 전체 선택 상태이지만 순서가 저장되어 있는 경우
-        final orderedValid = savedOrder.where((id) => validIds.contains(id)).toList();
-        final newIds = widget.allBoards
-            .map((b) => b.boardId)
-            .where((id) => !savedOrder.contains(id))
-            .toList();
-        _orderedSelectedIds = [...orderedValid, ...newIds];
+        final orderedValid = savedOrder.where(validIds.contains).toList();
+        _orderedSelectedIds = [...orderedValid, ...trulyNewIds];
       } else {
         // 기본값: 좋아요/팔로우한 게시판 전체 표시
         _orderedSelectedIds = widget.allBoards.map((b) => b.boardId).toList();
@@ -93,6 +95,9 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
     final prefs = await SharedPreferences.getInstance();
     // 순서는 항상 저장
     await prefs.setStringList(_orderKey, orderedSelected);
+    // 저장 시점에 알고 있던 모든 보드 ID 기록 (새 보드 자동 추가 판별용)
+    final allKnown = widget.allBoards.map((b) => b.boardId).toList();
+    await prefs.setStringList(_knownKey, allKnown);
     // 전부 선택된 상태라면 선택 목록은 삭제 (새로 좋아요한 게시판 자동 추가 유지)
     if (orderedSelected.length == widget.allBoards.length) {
       await prefs.remove(_prefsKey);

@@ -30,6 +30,17 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
     }
   }
 
+  void _openDetail() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _CertificationDetailSheet(
+        certifications: _certifications ?? [],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -38,7 +49,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+          padding: const EdgeInsets.fromLTRB(20, 16, 8, 8),
           child: Row(
             children: [
               Container(
@@ -58,6 +69,15 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
                   color: colors.textTitle,
                 ),
               ),
+              const Spacer(),
+              IconButton(
+                icon: Icon(Icons.settings_rounded,
+                    color: colors.textSecondary, size: 20),
+                onPressed: _loading ? null : _openDetail,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+              ),
+              const SizedBox(width: 12),
             ],
           ),
         ),
@@ -134,8 +154,9 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
               child: CircleAvatar(
                 radius: 50,
                 backgroundColor: ringColor.withValues(alpha: 0.15),
-                backgroundImage:
-                    photoUrl != null ? CachedNetworkImageProvider(photoUrl) : null,
+                backgroundImage: photoUrl != null
+                    ? CachedNetworkImageProvider(photoUrl)
+                    : null,
                 child: photoUrl == null
                     ? Icon(Icons.photo, size: 30,
                         color: colors.textTitle.withValues(alpha: 0.3))
@@ -160,16 +181,24 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
                   ),
-                  Text(
-                    isApproved
-                        ? 'cert_status_approved'.tr()
-                        : isPending
-                            ? 'cert_status_pending'.tr()
-                            : 'cert_status_rejected'.tr(),
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w500,
-                      color: ringColor,
+                  const SizedBox(height: 2),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: ringColor.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      isApproved
+                          ? 'cert_status_approved'.tr()
+                          : isPending
+                              ? 'cert_status_pending'.tr()
+                              : 'cert_status_rejected'.tr(),
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: ringColor,
+                      ),
                     ),
                   ),
                 ],
@@ -205,8 +234,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
                   shape: BoxShape.circle, color: colors.surface),
               child: CircleAvatar(
                 radius: 50,
-                backgroundColor:
-                    colors.certRingColor.withValues(alpha: 0.15),
+                backgroundColor: colors.certRingColor.withValues(alpha: 0.15),
                 child: Icon(
                   Icons.add_photo_alternate_outlined,
                   size: 30,
@@ -226,6 +254,132 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CertificationDetailSheet extends StatelessWidget {
+  final List<Map<String, dynamic>> certifications;
+
+  const _CertificationDetailSheet({required this.certifications});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.backgroundMain,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 12),
+          Container(
+            width: 36,
+            height: 4,
+            decoration: BoxDecoration(
+              color: colors.textSecondary.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+            child: Row(
+              children: [
+                Text(
+                  'cert_my_list'.tr(),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: colors.textTitle,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (certifications.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 32),
+              child: Text(
+                'cert_no_history'.tr(),
+                style: TextStyle(color: colors.textSecondary),
+              ),
+            )
+          else
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              itemCount: certifications.length,
+              separatorBuilder: (_, __) => Divider(
+                height: 1,
+                color: colors.textSecondary.withValues(alpha: 0.12),
+              ),
+              itemBuilder: (context, index) {
+                final cert = certifications[index];
+                final status = cert['status'] as String? ?? 'PENDING';
+                final festivalTitle = cert['festivalTitle'] as String? ?? '';
+                final isApproved = status == 'APPROVED';
+                final isPending = status == 'PENDING';
+
+                Color statusColor;
+                if (isApproved) {
+                  statusColor = colors.certRingColor;
+                } else if (isPending) {
+                  statusColor = Colors.orange;
+                } else {
+                  statusColor = Colors.grey;
+                }
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Row(
+                    children: [
+                      Icon(Icons.verified_rounded,
+                          color: statusColor, size: 20),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          festivalTitle,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: colors.textTitle,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: statusColor.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          isApproved
+                              ? 'cert_status_approved'.tr()
+                              : isPending
+                                  ? 'cert_status_pending'.tr()
+                                  : 'cert_status_rejected'.tr(),
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: statusColor,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
         ],
       ),
     );

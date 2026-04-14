@@ -194,5 +194,5 @@
   "cert_status_rejected": "Rejected",
   "cert_my_list": "My Certifications",
   "cert_no_history": "No certification history.",
-  "cert_rejection_reason": "Reason: {0}"
+  "cert_rejection_reason": "Reason: {}"
 }

@@ -180,5 +180,19 @@
   "region_jeonnam": "Jeonnam",
   "region_jeju": "Jeju",
   "region_etc": "Etc",
-  "festival_info": "About"
+  "festival_info": "About",
+  "cert_submit": "Submit Certification",
+  "cert_submit_title": "Festival Certification",
+  "cert_select_photo": "Select Photo",
+  "cert_photo_guide": "Upload a photo from the festival.\n(wristband, ticket, venue photo, etc.)",
+  "cert_submitting": "Submitting...",
+  "cert_submit_success": "Certification submitted!\nBadge will appear after admin approval.",
+  "cert_submit_failed": "Certification failed: {0}",
+  "cert_already_submitted": "You already submitted certification for this festival.",
+  "cert_status_pending": "Pending",
+  "cert_status_approved": "Approved",
+  "cert_status_rejected": "Rejected",
+  "cert_my_list": "My Certifications",
+  "cert_no_history": "No certification history.",
+  "cert_rejection_reason": "Reason: {0}"
 }

@@ -1,5 +1,7 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/service/certification_service.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class FtvCertificationWidget extends StatefulWidget {
   const FtvCertificationWidget({super.key});
@@ -9,11 +11,29 @@ class FtvCertificationWidget extends StatefulWidget {
 }
 
 class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
-  static const int _placeholderCount = 3;
+  final _certService = CertificationService();
+  List<Map<String, dynamic>>? _certifications;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final list = await _certService.getMyCertifications();
+      if (mounted) setState(() { _certifications = list; _loading = false; });
+    } catch (_) {
+      if (mounted) setState(() { _certifications = []; _loading = false; });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -43,62 +63,171 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
         ),
         SizedBox(
           height: 160,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            itemCount: _placeholderCount,
-            itemBuilder: (BuildContext context, int index) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: colors.certRingColor.withValues(alpha: 0.3),
-                        boxShadow: [
-                          BoxShadow(
-                            color: colors.cardShadow.withValues(alpha: 0.08),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Container(
-                        padding: const EdgeInsets.all(2),
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle, color: colors.surface),
-                        child: CircleAvatar(
-                          radius: 50,
-                          backgroundColor:
-                              colors.certRingColor.withValues(alpha: 0.15),
-                          child: Icon(
-                            Icons.add_photo_alternate_outlined,
-                            size: 30,
-                            color: colors.textTitle.withValues(alpha: 0.3),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 6.0),
-                      child: Text(
-                        'no_certification'.tr(),
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: colors.textTitle.withValues(alpha: 0.35),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+          child: _loading
+              ? const Center(child: CircularProgressIndicator())
+              : _certifications == null || _certifications!.isEmpty
+                  ? _buildEmptyList(colors)
+                  : _buildCertList(colors),
         ),
       ],
+    );
+  }
+
+  Widget _buildEmptyList(AbstractThemeColors colors) {
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      itemCount: 3,
+      itemBuilder: (_, __) => _buildPlaceholderItem(colors),
+    );
+  }
+
+  Widget _buildCertList(AbstractThemeColors colors) {
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      itemCount: _certifications!.length,
+      itemBuilder: (context, index) {
+        final cert = _certifications![index];
+        return _buildCertItem(cert, colors);
+      },
+    );
+  }
+
+  Widget _buildCertItem(Map<String, dynamic> cert, AbstractThemeColors colors) {
+    final status = cert['status'] as String? ?? 'PENDING';
+    final festivalTitle = cert['festivalTitle'] as String? ?? '';
+    final photoUrl = cert['photoUrl'] as String?;
+    final isApproved = status == 'APPROVED';
+    final isPending = status == 'PENDING';
+
+    Color ringColor;
+    if (isApproved) {
+      ringColor = colors.certRingColor;
+    } else if (isPending) {
+      ringColor = Colors.orange;
+    } else {
+      ringColor = Colors.grey;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: ringColor.withValues(alpha: isApproved ? 0.6 : 0.3),
+              boxShadow: [
+                BoxShadow(
+                  color: colors.cardShadow.withValues(alpha: 0.08),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle, color: colors.surface),
+              child: CircleAvatar(
+                radius: 50,
+                backgroundColor: ringColor.withValues(alpha: 0.15),
+                backgroundImage:
+                    photoUrl != null ? CachedNetworkImageProvider(photoUrl) : null,
+                child: photoUrl == null
+                    ? Icon(Icons.photo, size: 30,
+                        color: colors.textTitle.withValues(alpha: 0.3))
+                    : null,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 6.0),
+            child: SizedBox(
+              width: 110,
+              child: Column(
+                children: [
+                  Text(
+                    festivalTitle,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: colors.textTitle,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    isApproved
+                        ? 'cert_status_approved'.tr()
+                        : isPending
+                            ? 'cert_status_pending'.tr()
+                            : 'cert_status_rejected'.tr(),
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500,
+                      color: ringColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlaceholderItem(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: colors.certRingColor.withValues(alpha: 0.3),
+              boxShadow: [
+                BoxShadow(
+                  color: colors.cardShadow.withValues(alpha: 0.08),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle, color: colors.surface),
+              child: CircleAvatar(
+                radius: 50,
+                backgroundColor:
+                    colors.certRingColor.withValues(alpha: 0.15),
+                child: Icon(
+                  Icons.add_photo_alternate_outlined,
+                  size: 30,
+                  color: colors.textTitle.withValues(alpha: 0.3),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 6.0),
+            child: Text(
+              'no_certification'.tr(),
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: colors.textTitle.withValues(alpha: 0.35),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

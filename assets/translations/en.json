@@ -196,5 +196,9 @@
   "cert_no_history": "No certification history.",
   "cert_rejection_reason": "Reason: {}",
   "notifications": "Notifications",
-  "no_notifications": "No new notifications."
+  "no_notifications": "No new notifications.",
+  "notif_cert_approved": "Certification Approved",
+  "notif_cert_rejected": "Certification Rejected",
+  "notif_new_comment": "New Comment",
+  "notif_festival_reminder": "Festival Reminder"
 }

@@ -114,7 +114,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
   Widget _buildCertItem(Map<String, dynamic> cert, AbstractThemeColors colors) {
     final status = cert['status'] as String? ?? 'PENDING';
     final festivalTitle = cert['festivalTitle'] as String? ?? '';
-    final photoUrl = cert['photoUrl'] as String?;
+    final imageUrl = cert['festivalPosterUrl'] as String? ?? cert['photoUrl'] as String?;
     final isApproved = status == 'APPROVED';
     final isPending = status == 'PENDING';
 
@@ -154,10 +154,10 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
                 child: CircleAvatar(
                   radius: 44,
                   backgroundColor: ringColor.withValues(alpha: 0.15),
-                  backgroundImage: photoUrl != null
-                      ? CachedNetworkImageProvider(photoUrl)
+                  backgroundImage: imageUrl != null
+                      ? CachedNetworkImageProvider(imageUrl)
                       : null,
-                  child: photoUrl == null
+                  child: imageUrl == null
                       ? Icon(Icons.photo, size: 26,
                           color: colors.textTitle.withValues(alpha: 0.3))
                       : null,

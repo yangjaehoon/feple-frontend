@@ -139,11 +139,11 @@ class _NotificationCard extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: colors.certRingColor.withValues(alpha: 0.12),
+                color: _iconColor(item['type'], colors).withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.festival_rounded,
-                  color: colors.certRingColor, size: 20),
+              child: Icon(_iconData(item['type']),
+                  color: _iconColor(item['type'], colors), size: 20),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -198,5 +198,25 @@ class _NotificationCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  IconData _iconData(dynamic type) {
+    switch (type as String?) {
+      case 'CERT_APPROVED': return Icons.verified_rounded;
+      case 'CERT_REJECTED': return Icons.cancel_outlined;
+      case 'NEW_COMMENT':   return Icons.chat_bubble_rounded;
+      case 'FESTIVAL_REMINDER': return Icons.event_rounded;
+      default:              return Icons.festival_rounded;
+    }
+  }
+
+  Color _iconColor(dynamic type, AbstractThemeColors colors) {
+    switch (type as String?) {
+      case 'CERT_APPROVED':    return colors.certRingColor;
+      case 'CERT_REJECTED':    return Colors.grey;
+      case 'NEW_COMMENT':      return Colors.blueAccent;
+      case 'FESTIVAL_REMINDER': return Colors.deepOrangeAccent;
+      default:                 return colors.certRingColor;
+    }
   }
 }

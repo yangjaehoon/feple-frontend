@@ -196,5 +196,9 @@
   "cert_no_history": "인증 내역이 없습니다.",
   "cert_rejection_reason": "거절 사유: {}",
   "notifications": "알림",
-  "no_notifications": "새로운 알림이 없습니다."
+  "no_notifications": "새로운 알림이 없습니다.",
+  "notif_cert_approved": "인증 승인",
+  "notif_cert_rejected": "인증 거절",
+  "notif_new_comment": "새 댓글",
+  "notif_festival_reminder": "페스티벌 리마인더"
 }

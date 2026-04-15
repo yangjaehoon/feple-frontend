@@ -128,7 +128,7 @@ class _CertCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final status = cert['status'] as String? ?? 'PENDING';
     final festivalTitle = cert['festivalTitle'] as String? ?? '';
-    final photoUrl = cert['photoUrl'] as String?;
+    final posterUrl = cert['festivalPosterUrl'] as String? ?? cert['photoUrl'] as String?;
     final rejectionMessage = cert['rejectionMessage'] as String?;
     final createdAt = cert['createdAt'] as String?;
 
@@ -169,9 +169,9 @@ class _CertCard extends StatelessWidget {
             child: SizedBox(
               width: 90,
               height: 90,
-              child: photoUrl != null
+              child: posterUrl != null
                   ? CachedNetworkImage(
-                      imageUrl: photoUrl,
+                      imageUrl: posterUrl,
                       fit: BoxFit.cover,
                       errorWidget: (_, __, ___) =>
                           _buildPhotoPlaceholder(),

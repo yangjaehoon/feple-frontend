@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:feple/service/fcm_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../auth/token_store.dart';
@@ -61,6 +62,8 @@ class UserProvider with ChangeNotifier {
   Future<void> setUser(User me) async {
     _user = me;
     notifyListeners();
+    // 로그인 완료 후 FCM 초기화 및 토큰 서버 등록
+    FcmService.instance.init().catchError((_) {});
     await _storage.write(
       key: _kUserJson,
       value: jsonEncode({

@@ -1,6 +1,8 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/responsive_size.dart';
+import 'package:feple/screen/notification/s_notification.dart';
+import 'package:feple/service/notification_service.dart';
 import 'package:flutter/material.dart';
 
 class FepleAppBar extends StatefulWidget {
@@ -13,7 +15,30 @@ class FepleAppBar extends StatefulWidget {
 }
 
 class _FepleAppBarState extends State<FepleAppBar> {
-  bool _showRedDot = false;
+  final _notifService = NotificationService();
+  int _unreadCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUnreadCount();
+  }
+
+  Future<void> _loadUnreadCount() async {
+    try {
+      final count = await _notifService.getUnreadCount();
+      if (mounted) setState(() => _unreadCount = count);
+    } catch (_) {}
+  }
+
+  Future<void> _openNotifications() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const NotificationScreen()),
+    );
+    // 돌아왔을 때 뱃지 갱신
+    _loadUnreadCount();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,23 +73,30 @@ class _FepleAppBarState extends State<FepleAppBar> {
             children: [
               IconButton(
                 icon: const Icon(Icons.notifications_rounded, color: Colors.white),
-                onPressed: () {
-                  setState(() {
-                    _showRedDot = !_showRedDot;
-                  });
-                },
+                onPressed: _openNotifications,
               ),
-              if (_showRedDot)
+              if (_unreadCount > 0)
                 Positioned(
-                  top: 10,
-                  right: 10,
+                  top: 8,
+                  right: 8,
                   child: Container(
-                    width: 8,
-                    height: 8,
+                    padding: const EdgeInsets.all(2),
+                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
                       color: Colors.redAccent,
+                      shape: _unreadCount > 9 ? BoxShape.rectangle : BoxShape.circle,
+                      borderRadius:
+                          _unreadCount > 9 ? BorderRadius.circular(8) : null,
                       border: Border.all(color: Colors.white, width: 1.5),
+                    ),
+                    child: Text(
+                      _unreadCount > 99 ? '99+' : '$_unreadCount',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ),

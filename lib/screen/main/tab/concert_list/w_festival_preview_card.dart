@@ -32,22 +32,23 @@ class FestivalPreviewCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: Container(
-              width: 110,
               height: 120,
               margin: const EdgeInsets.all(10),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: colors.backgroundMain,
-                      image: DecorationImage(
-                        image: ResizeImage(
-                            CachedNetworkImageProvider(festival.posterUrl), width: 220),
-                        fit: BoxFit.cover,
+              child: AspectRatio(
+                aspectRatio: 2 / 3,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: colors.backgroundMain,
+                        image: DecorationImage(
+                          image: ResizeImage(
+                              CachedNetworkImageProvider(festival.posterUrl), width: 160),
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
-                  ),
                   if (festival.isEnded) ...[
                     Container(color: Colors.black.withValues(alpha: 0.5)),
                     Center(
@@ -63,6 +64,7 @@ class FestivalPreviewCard extends StatelessWidget {
                     ),
                   ],
                 ],
+                ),
               ),
             ),
           ),

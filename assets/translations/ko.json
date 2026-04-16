@@ -200,5 +200,10 @@
   "notif_cert_approved": "인증 승인",
   "notif_cert_rejected": "인증 거절",
   "notif_new_comment": "새 댓글",
-  "notif_festival_reminder": "페스티벌 리마인더"
+  "notif_festival_reminder": "페스티벌 리마인더",
+  "search_hint": "아티스트, 페스티벌, 게시글 검색",
+  "search_no_result": "검색 결과가 없습니다.",
+  "search_artists": "아티스트",
+  "search_festivals": "페스티벌",
+  "search_posts": "게시글"
 }

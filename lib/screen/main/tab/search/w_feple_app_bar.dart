@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/screen/notification/s_notification.dart';
+import 'package:feple/screen/search/s_unified_search.dart';
 import 'package:feple/service/notification_service.dart';
 import 'package:flutter/material.dart';
 
@@ -67,7 +68,10 @@ class _FepleAppBarState extends State<FepleAppBar> {
           const Spacer(),
           IconButton(
             icon: const Icon(Icons.search_rounded, color: Colors.white),
-            onPressed: () {},
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const UnifiedSearchScreen()),
+            ),
           ),
           Stack(
             children: [

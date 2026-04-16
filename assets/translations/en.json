@@ -200,5 +200,10 @@
   "notif_cert_approved": "Certification Approved",
   "notif_cert_rejected": "Certification Rejected",
   "notif_new_comment": "New Comment",
-  "notif_festival_reminder": "Festival Reminder"
+  "notif_festival_reminder": "Festival Reminder",
+  "search_hint": "Search artists, festivals, posts",
+  "search_no_result": "No results found.",
+  "search_artists": "Artists",
+  "search_festivals": "Festivals",
+  "search_posts": "Posts"
 }

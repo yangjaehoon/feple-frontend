@@ -226,7 +226,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
                       height: 30,
                       width: 100,
                       padding: const EdgeInsets.only(left: 15),
-                      child: '© 2023. Bansook Nam. all rights reserved.'
+                      child: ''
                           .selectableText
                           .size(10)
                           .color(colors.textSecondary)

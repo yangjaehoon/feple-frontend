@@ -1,4 +1,7 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/model/poster_model.dart';
+import 'package:feple/network/dio_client.dart';
+import 'package:feple/screen/main/tab/search/concert_information/f_festival_information.dart';
 import 'package:feple/service/notification_service.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +17,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
   List<Map<String, dynamic>> _items = [];
   bool _loading = true;
 
+  static const _festivalTypes = {'NEW_FESTIVAL', 'FESTIVAL_REMINDER'};
+
   @override
   void initState() {
     super.initState();
@@ -24,11 +29,53 @@ class _NotificationScreenState extends State<NotificationScreen> {
     try {
       final list = await _service.getMyNotifications();
       if (mounted) setState(() { _items = list; _loading = false; });
-      // 화면 열면 전체 읽음 처리
-      _service.markAllRead().catchError((_) {});
     } catch (_) {
       if (mounted) setState(() { _loading = false; });
     }
+  }
+
+  Future<void> _onTap(int index) async {
+    final item = _items[index];
+    final id = item['id'];
+    final type = item['type'] as String?;
+    final referenceId = item['referenceId'];
+
+    // 읽지 않은 경우 로컬 상태 즉시 업데이트
+    if (!(item['read'] as bool? ?? false)) {
+      setState(() => _items[index] = {...item, 'read': true});
+      if (id != null) _service.markRead(id).catchError((_) {});
+    }
+
+    // 페스티벌 타입이면 상세 페이지로 이동
+    if (_festivalTypes.contains(type) && referenceId != null) {
+      await _navigateToFestival(referenceId);
+    }
+  }
+
+  Future<void> _navigateToFestival(dynamic festivalId) async {
+    try {
+      final res = await DioClient.dio.get('/festivals/$festivalId');
+      final d = res.data as Map<String, dynamic>;
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => FestivalInformationFragment(
+            poster: PosterModel(
+              id: d['id'] as int,
+              title: d['title'] as String? ?? '',
+              description: d['description'] as String? ?? '',
+              location: d['location'] as String? ?? '',
+              startDate: d['startDate'] as String? ?? '',
+              endDate: d['endDate'] as String? ?? '',
+              posterUrl: d['posterUrl'] as String? ?? '',
+              latitude: (d['latitude'] as num?)?.toDouble(),
+              longitude: (d['longitude'] as num?)?.toDouble(),
+            ),
+          ),
+        ),
+      );
+    } catch (_) {}
   }
 
   @override
@@ -78,16 +125,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   itemBuilder: (_, i) => _NotificationCard(
                     item: _items[i],
                     colors: colors,
-                    onTap: () => _onTap(_items[i]),
+                    onTap: () => _onTap(i),
                   ),
                 ),
     );
-  }
-
-  void _onTap(Map<String, dynamic> item) {
-    final id = item['id'];
-    if (id != null) _service.markRead(id).catchError((_) {});
-    // 필요 시 referenceId로 페스티벌 상세 이동 로직 추가
   }
 }
 
@@ -111,16 +152,17 @@ class _NotificationCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: isRead
-              ? colors.surface
+              ? Colors.white
               : colors.certRingColor.withValues(alpha: 0.06),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: isRead
-                ? Colors.transparent
+                ? Colors.grey.withValues(alpha: 0.15)
                 : colors.certRingColor.withValues(alpha: 0.3),
             width: 1,
           ),
@@ -154,8 +196,7 @@ class _NotificationCard extends StatelessWidget {
                     title,
                     style: TextStyle(
                       fontSize: 14,
-                      fontWeight:
-                          isRead ? FontWeight.w500 : FontWeight.w700,
+                      fontWeight: isRead ? FontWeight.w500 : FontWeight.w700,
                       color: colors.textTitle,
                     ),
                   ),
@@ -202,21 +243,21 @@ class _NotificationCard extends StatelessWidget {
 
   IconData _iconData(dynamic type) {
     switch (type as String?) {
-      case 'CERT_APPROVED': return Icons.verified_rounded;
-      case 'CERT_REJECTED': return Icons.cancel_outlined;
-      case 'NEW_COMMENT':   return Icons.chat_bubble_rounded;
+      case 'CERT_APPROVED':     return Icons.verified_rounded;
+      case 'CERT_REJECTED':     return Icons.cancel_outlined;
+      case 'NEW_COMMENT':       return Icons.chat_bubble_rounded;
       case 'FESTIVAL_REMINDER': return Icons.event_rounded;
-      default:              return Icons.festival_rounded;
+      default:                  return Icons.festival_rounded;
     }
   }
 
   Color _iconColor(dynamic type, AbstractThemeColors colors) {
     switch (type as String?) {
-      case 'CERT_APPROVED':    return colors.certRingColor;
-      case 'CERT_REJECTED':    return Colors.grey;
-      case 'NEW_COMMENT':      return Colors.blueAccent;
+      case 'CERT_APPROVED':     return colors.certRingColor;
+      case 'CERT_REJECTED':     return Colors.grey;
+      case 'NEW_COMMENT':       return Colors.blueAccent;
       case 'FESTIVAL_REMINDER': return Colors.deepOrangeAccent;
-      default:                 return colors.certRingColor;
+      default:                  return colors.certRingColor;
     }
   }
 }

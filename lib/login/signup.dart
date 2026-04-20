@@ -276,6 +276,13 @@ class _SignupPageState extends State<SignupPage> {
                 ),
                 const SizedBox(height: 14),
 
+                // ── 닉네임 입력 + 중복 확인 ──
+                NicknameField(
+                  key: _nicknameKey,
+                  onResult: (_, __) {},
+                ),
+                const SizedBox(height: 14),
+
                 // ── 비밀번호 입력 ──
                 AppTextField(
                   controller: passwordController,
@@ -297,13 +304,6 @@ class _SignupPageState extends State<SignupPage> {
                   const SizedBox(height: 10),
                   _PasswordChecklist(password: _password),
                 ],
-                const SizedBox(height: 14),
-
-                // ── 닉네임 입력 + 중복 확인 ──
-                NicknameField(
-                  key: _nicknameKey,
-                  onResult: (_, __) {},
-                ),
                 const SizedBox(height: 28),
 
                 // ── 일반 에러 메시지 ──

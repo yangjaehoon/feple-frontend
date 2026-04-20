@@ -14,6 +14,14 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => MainScreenState();
 }
 
+class _NavBarObserver extends NavigatorObserver {
+  final VoidCallback onPop;
+  _NavBarObserver(this.onPop);
+
+  @override
+  void didPop(Route route, Route? previousRoute) => onPop();
+}
+
 class MainScreenState extends State<MainScreen>
     with SingleTickerProviderStateMixin {
   TabItem _currentTab = TabItem.home;
@@ -27,6 +35,7 @@ class MainScreenState extends State<MainScreen>
   ];
   final List<GlobalKey<NavigatorState>> navigatorKeys =
       List.generate(5, (_) => GlobalKey<NavigatorState>());
+  late final List<_NavBarObserver> _tabObservers;
 
   bool _showBottomNav = true;
 
@@ -43,6 +52,12 @@ class MainScreenState extends State<MainScreen>
   void initState() {
     super.initState();
     _visitedTabs.add(tabs.indexOf(TabItem.home));
+    _tabObservers = List.generate(
+      tabs.length,
+      (_) => _NavBarObserver(() {
+        if (mounted) setState(() => _showBottomNav = true);
+      }),
+    );
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
@@ -65,7 +80,7 @@ class MainScreenState extends State<MainScreen>
   @override
   Widget build(BuildContext context) {
     final bottomPadding = _showBottomNav
-        ? (extendBody ? 60 - bottomNavigationBarBorderRadius : 0.0)
+        ? 0.0
         : MediaQuery.of(context).padding.bottom;
 
     return PopScope(
@@ -121,6 +136,7 @@ class MainScreenState extends State<MainScreen>
                     ? TabNavigator(
                         navigatorKey: navigatorKeys[index],
                         tabItem: tab,
+                        observers: [_tabObservers[index]],
                       )
                     : const SizedBox.shrink(),
               ))

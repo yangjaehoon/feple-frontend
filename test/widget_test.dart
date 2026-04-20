@@ -20,7 +20,6 @@ import 'package:feple/provider/user_provider.dart';
 import 'package:feple/controller/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:isar/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -28,7 +27,6 @@ void main() {
     TestWidgetsFlutterBinding.ensureInitialized();
     SharedPreferences.setMockInitialValues({});
     HttpOverrides.global = null;
-    await Isar.initializeIsarCore(download: true);
     await EasyLocalization.ensureInitialized();
     await AppPreferences.init();
   });

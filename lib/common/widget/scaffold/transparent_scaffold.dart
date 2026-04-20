@@ -2727,7 +2727,7 @@ class TransparentScaffoldState extends State<TransparentScaffold>
   ///
   /// The `value` parameter must not be null.
   void showBodyScrim(bool value, double opacity) {
-    if (_showBodyScrim == value && _bodyScrimColor.opacity == opacity) {
+    if (_showBodyScrim == value && _bodyScrimColor.a == opacity) {
       return;
     }
     setState(() {

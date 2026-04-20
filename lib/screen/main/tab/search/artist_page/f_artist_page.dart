@@ -27,16 +27,13 @@ class ArtistPage extends StatelessWidget {
       ),
       backgroundColor: colors.backgroundMain,
       body: SafeArea(
-        child: NotificationListener<ScrollNotification>(
-          onNotification: (_) => true,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                MainImageSwiper(artistName: artistName, artistId: artistId, followerCount: followerCounter),
-                ArtistBoard(artistId: artistId, artistName: artistName),
-                ArtistSchedule(artistId: artistId, artistName: artistName),
-              ],
-            ),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              MainImageSwiper(artistName: artistName, artistId: artistId, followerCount: followerCounter),
+              ArtistBoard(artistId: artistId, artistName: artistName),
+              ArtistSchedule(artistId: artistId, artistName: artistName),
+            ],
           ),
         ),
       ),

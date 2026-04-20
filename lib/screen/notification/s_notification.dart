@@ -40,10 +40,17 @@ class _NotificationScreenState extends State<NotificationScreen> {
     final type = item['type'] as String?;
     final referenceId = item['referenceId'];
 
-    // 읽지 않은 경우 로컬 상태 즉시 업데이트
-    if (!(item['read'] as bool? ?? false)) {
-      setState(() => _items[index] = {...item, 'read': true});
-      if (id != null) _service.markRead(id).catchError((_) {});
+    // 읽지 않은 경우 로컬 상태 즉시 업데이트 후 서버에 저장
+    final isRead = (item['read'] as bool?) ?? (item['isRead'] as bool?) ?? false;
+    if (!isRead) {
+      setState(() => _items[index] = {...item, 'read': true, 'isRead': true});
+      if (id != null) {
+        try {
+          await _service.markRead(id as int);
+        } catch (e) {
+          debugPrint('markRead error: $e');
+        }
+      }
     }
 
     // 페스티벌 타입이면 상세 페이지로 이동

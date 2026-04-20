@@ -32,7 +32,7 @@ class LocalJson {
 
 T _tryConverting<T>(dynamic json) {
   switch (T) {
-    case Package:
+    case const (Package):
       return Package.fromJson(json) as T;
     default:
       throw Exception("Please check _tryConverting method");

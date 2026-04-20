@@ -1,5 +1,4 @@
 import 'package:feple/common/theme/custom_theme.dart';
-import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'item/preference_item.dart';
@@ -48,28 +47,28 @@ class AppPreferences {
           return _prefs.setString(key, (value as DateTime).toIso8601String());
         default:
           if (value is Enum) {
-            return _prefs.setString(key, describeEnum(value));
+            return _prefs.setString(key, value.name);
           } else {
             throw Exception('$T 타입에 대한 저장 transform 함수를 추가 해주세요.');
           }
       }
     } else {
       switch (T) {
-        case int:
+        case const (int):
           return _prefs.setInt(key, value as int);
-        case String:
+        case const (String):
           return _prefs.setString(key, value as String);
-        case double:
+        case const (double):
           return _prefs.setDouble(key, value as double);
-        case bool:
+        case const (bool):
           return _prefs.setBool(key, value as bool);
         case const (List<String>):
           return _prefs.setStringList(key, value as List<String>);
-        case DateTime:
+        case const (DateTime):
           return _prefs.setString(key, (value as DateTime).toIso8601String());
         default:
           if (value is Enum) {
-            return _prefs.setString(key, describeEnum(value));
+            return _prefs.setString(key, value.name);
           } else {
             throw Exception('$T 타입에 대한 저장 transform 함수를 추가 해주세요.');
           }
@@ -85,13 +84,13 @@ class AppPreferences {
   static T getValue<T>(PreferenceItem<T> item) {
     final String key = getPrefKey(item);
     switch (T) {
-      case int:
+      case const (int):
         return _prefs.getInt(key) as T? ?? item.defaultValue;
-      case String:
+      case const (String):
         return _prefs.getString(key) as T? ?? item.defaultValue;
-      case double:
+      case const (double):
         return _prefs.getDouble(key) as T? ?? item.defaultValue;
-      case bool:
+      case const (bool):
         return _prefs.getBool(key) as T? ?? item.defaultValue;
       case const (List<String>):
         return _prefs.getStringList(key) as T? ?? item.defaultValue;
@@ -117,9 +116,9 @@ class AppPreferences {
       }
     } else {
       switch (t) {
-        case CustomTheme:
+        case const (CustomTheme):
           return CustomTheme.values.asNameMap()[value] as T?;
-        case DateTime:
+        case const (DateTime):
           return DateTime.parse(value) as T?;
         default:
           throw Exception('$t 타입에 대한 transform 함수를 추가 해주세요.');

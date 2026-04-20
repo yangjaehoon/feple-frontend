@@ -46,13 +46,13 @@ class RxPreferenceItem<T, R extends Rx<T>> extends PreferenceItem<T> {
 
   static R createRxValue<T, R extends Rx<T>>(T defaultValue) {
     switch (T) {
-      case int:
+      case const (int):
         return RxInt(defaultValue as int) as R;
-      case double:
+      case const (double):
         return RxDouble(defaultValue as double) as R;
-      case bool:
+      case const (bool):
         return RxBool(defaultValue as bool) as R;
-      case String:
+      case const (String):
         return RxString(defaultValue as String) as R;
       default:
         return Rx<T>(defaultValue) as R;

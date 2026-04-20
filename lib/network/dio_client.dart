@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import '../auth/token_store.dart';
-import '../config.dart' as AppConfig;
+import '../config.dart' as app_config;
 
 class DioClient {
   DioClient._();
@@ -10,7 +10,7 @@ class DioClient {
 
   static final Dio dio = Dio(
     BaseOptions(
-      baseUrl: AppConfig.baseUrl,
+      baseUrl: app_config.baseUrl,
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 20),
       contentType: 'application/json',
@@ -29,7 +29,7 @@ class DioClient {
           final refreshToken = await TokenStore.readRefreshToken();
           if (refreshToken != null && refreshToken.isNotEmpty) {
             try {
-              final refreshDio = Dio(BaseOptions(baseUrl: AppConfig.baseUrl));
+              final refreshDio = Dio(BaseOptions(baseUrl: app_config.baseUrl));
               final resp = await refreshDio.post(
                 '/auth/refresh',
                 data: {'refreshToken': refreshToken},
@@ -43,7 +43,7 @@ class DioClient {
               }
 
               // 원래 요청 재시도 (인터셉터를 타지 않는 별도 Dio로 실행)
-              final retryDio = Dio(BaseOptions(baseUrl: AppConfig.baseUrl));
+              final retryDio = Dio(BaseOptions(baseUrl: app_config.baseUrl));
               final opts = error.requestOptions;
               opts.headers['Authorization'] = 'Bearer $newAccessToken';
               final retryResp = await retryDio.fetch(opts);

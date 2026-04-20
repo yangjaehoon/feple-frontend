@@ -1,10 +1,66 @@
 import 'package:feple/common/common.dart';
-
 import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/common/widget/w_nickname_field.dart';
 import 'package:feple/service/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+class _PasswordChecklist extends StatelessWidget {
+  final String password;
+  const _PasswordChecklist({required this.password});
+
+  static const _rules = [
+    (label: 'pw_rule_min', regex: null, minLen: 8),
+    (label: 'pw_rule_upper', regex: r'[A-Z]', minLen: 0),
+    (label: 'pw_rule_lower', regex: r'[a-z]', minLen: 0),
+    (label: 'pw_rule_digit', regex: r'[0-9]', minLen: 0),
+    (label: 'pw_rule_special', regex: r'[!@#$%^&*(),.?":{}|<>]', minLen: 0),
+  ];
+
+  bool _check(({String label, String? regex, int minLen}) rule) {
+    if (rule.minLen > 0) return password.length >= rule.minLen;
+    return RegExp(rule.regex!).hasMatch(password);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colors.textSecondary.withValues(alpha: 0.15)),
+      ),
+      child: Column(
+        children: _rules.map((rule) {
+          final ok = _check(rule);
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 3),
+            child: Row(
+              children: [
+                Icon(
+                  ok ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
+                  size: 16,
+                  color: ok ? Colors.green : colors.textSecondary.withValues(alpha: 0.5),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  rule.label.tr(),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: ok ? Colors.green : colors.textSecondary,
+                    fontWeight: ok ? FontWeight.w600 : FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
 
 
 
@@ -19,6 +75,7 @@ class _SignupPageState extends State<SignupPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool _isLoading = false;
+  String _password = '';
 
   // 인라인 에러 메시지
   String? _emailError;
@@ -226,15 +283,20 @@ class _SignupPageState extends State<SignupPage> {
                   icon: Icons.lock_outline_rounded,
                   obscureText: true,
                   errorText: _passwordError,
-                  onChanged: (_) {
-                    if (_passwordError != null || _generalError != null) {
-                      setState(() {
+                  onChanged: (v) {
+                    setState(() {
+                      _password = v;
+                      if (_passwordError != null || _generalError != null) {
                         _passwordError = null;
                         _generalError = null;
-                      });
-                    }
+                      }
+                    });
                   },
                 ),
+                if (_password.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  _PasswordChecklist(password: _password),
+                ],
                 const SizedBox(height: 14),
 
                 // ── 닉네임 입력 + 중복 확인 ──

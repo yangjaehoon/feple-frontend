@@ -27,9 +27,9 @@ class CommunityBoardFragment extends StatelessWidget {
               ),
               child: const Column(
                 children: [
-                  HotBoard(boardname: "HotBoard"),
-                  FreeBoard(boardname: "FreeBoard"),
-                  GetUserBoard(boardname: "GetuserBoard"),
+                  HotBoard(),
+                  FreeBoard(),
+                  GetUserBoard(),
                 ],
               ),
             ),

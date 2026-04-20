@@ -161,7 +161,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
           top: false,
           bottom: false,
           child: Padding(
-            padding: EdgeInsets.only(top: appBarHeight),
+            padding: EdgeInsets.only(top: appBarHeight, bottom: 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

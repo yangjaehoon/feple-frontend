@@ -21,12 +21,10 @@ class _CommunityPostState extends State<CommunityPost> {
   late Future<List<Post>> _postsFuture;
 
   String get _serviceBoardType {
-    switch (widget.boardname) {
-      case 'GetuserBoard':
-        return 'MateBoard';
-      default:
-        return widget.boardname;
-    }
+    if (widget.boardname == 'companion_board'.tr()) return 'MateBoard';
+    if (widget.boardname == 'hot_board'.tr()) return 'HotBoard';
+    if (widget.boardname == 'free_board'.tr()) return 'FreeBoard';
+    return widget.boardname;
   }
 
   @override
@@ -53,7 +51,7 @@ class _CommunityPostState extends State<CommunityPost> {
       ),
       backgroundColor: colors.backgroundMain,
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 60),
+        padding: const EdgeInsets.only(bottom: 80),
         child: FloatingActionButton.extended(
           backgroundColor: colors.activate,
           onPressed: () {

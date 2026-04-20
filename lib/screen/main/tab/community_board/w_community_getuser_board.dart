@@ -3,9 +3,7 @@ import 'package:feple/screen/main/tab/community_board/w_community_board_card.dar
 import 'package:flutter/material.dart';
 
 class GetUserBoard extends StatelessWidget {
-  final String boardname;
-
-  const GetUserBoard({super.key, required this.boardname});
+  const GetUserBoard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +12,7 @@ class GetUserBoard extends StatelessWidget {
       icon: Icons.people_rounded,
       headerColorFn: (colors) => colors.getUserBoardHeader,
       serviceBoardType: 'MateBoard',
-      boardname: 'GetuserBoard',
+      boardname: 'companion_board'.tr(),
     );
   }
 }

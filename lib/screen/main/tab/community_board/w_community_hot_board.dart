@@ -3,9 +3,7 @@ import 'package:feple/screen/main/tab/community_board/w_community_board_card.dar
 import 'package:flutter/material.dart';
 
 class HotBoard extends StatelessWidget {
-  final String boardname;
-
-  const HotBoard({super.key, required this.boardname});
+  const HotBoard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +12,7 @@ class HotBoard extends StatelessWidget {
       icon: Icons.local_fire_department_rounded,
       headerColorFn: (colors) => colors.hotBoardHeader,
       serviceBoardType: 'HotBoard',
-      boardname: 'HotBoard',
+      boardname: 'hot_board'.tr(),
     );
   }
 }

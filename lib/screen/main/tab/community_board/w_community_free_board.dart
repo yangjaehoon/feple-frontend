@@ -3,9 +3,7 @@ import 'package:feple/screen/main/tab/community_board/w_community_board_card.dar
 import 'package:flutter/material.dart';
 
 class FreeBoard extends StatelessWidget {
-  final String boardname;
-
-  const FreeBoard({super.key, required this.boardname});
+  const FreeBoard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +12,7 @@ class FreeBoard extends StatelessWidget {
       icon: Icons.edit_note_rounded,
       headerColorFn: (colors) => colors.freeBoardHeader,
       serviceBoardType: 'FreeBoard',
-      boardname: 'FreeBoard',
+      boardname: 'free_board'.tr(),
     );
   }
 }

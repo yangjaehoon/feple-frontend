@@ -6,15 +6,18 @@ class TabNavigator extends StatelessWidget {
     super.key,
     required this.tabItem,
     required this.navigatorKey,
+    this.observers = const [],
   });
 
   final GlobalKey<NavigatorState> navigatorKey;
   final TabItem tabItem;
+  final List<NavigatorObserver> observers;
 
   @override
   Widget build(BuildContext context) {
     return Navigator(
       key: navigatorKey,
+      observers: observers,
       onGenerateRoute: (routeSettings) {
         return MaterialPageRoute(
           builder: (context) => tabItem.firstPage,

@@ -29,11 +29,11 @@ class FestivalPreviewCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Container(
-              height: 120,
-              margin: const EdgeInsets.all(10),
+          Container(
+            height: 120,
+            margin: const EdgeInsets.all(10),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
               child: AspectRatio(
                 aspectRatio: 2 / 3,
                 child: Stack(
@@ -49,21 +49,21 @@ class FestivalPreviewCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                  if (festival.isEnded) ...[
-                    Container(color: Colors.black.withValues(alpha: 0.5)),
-                    Center(
-                      child: Text(
-                        'status_ended'.tr(),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1,
+                    if (festival.isEnded) ...[
+                      Container(color: Colors.black.withValues(alpha: 0.5)),
+                      Center(
+                        child: Text(
+                          'status_ended'.tr(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1,
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ],
-                ],
                 ),
               ),
             ),

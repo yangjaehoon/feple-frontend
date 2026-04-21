@@ -149,8 +149,10 @@ class _FestivalPosterState extends State<FestivalPoster> {
             ),
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-              child: Container(
-                color: colors.swiperOverlay.withValues(alpha: 0.55),
+              child: SizedBox.expand(
+                child: ColoredBox(
+                  color: colors.swiperOverlay.withValues(alpha: 0.55),
+                ),
               ),
             ),
           ),

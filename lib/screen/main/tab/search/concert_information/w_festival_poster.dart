@@ -141,7 +141,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
           top: 0,
           left: 0,
           right: 0,
-          bottom: -40,
+          bottom: -80,
           child: Container(
             decoration: BoxDecoration(
               image: DecorationImage(

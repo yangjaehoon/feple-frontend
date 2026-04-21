@@ -71,7 +71,9 @@ class MainScreenState extends State<MainScreen>
     }
     if (notification is ScrollEndNotification) {
       if (notification.metrics.pixels <= 0) {
-        setState(() => _showBottomNav = true);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) setState(() => _showBottomNav = true);
+        });
       }
     }
     return false;

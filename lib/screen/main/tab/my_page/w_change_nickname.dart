@@ -108,7 +108,8 @@ class _ChangeNicknameState extends State<ChangeNickname> {
                 onPressed: () async {
                   if (nicknameController.text.trim().isEmpty) return;
                   try {
-                    await _updateNickname(userProvider, user!.id);
+                    if (user == null) return;
+                    await _updateNickname(userProvider, user.id);
                     if (!context.mounted) return;
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(

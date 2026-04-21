@@ -133,15 +133,20 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
           : null;
 
       final timetableRes = await timetableFuture;
-      final list = (timetableRes.data as List)
-          .map((e) => TimetableEntry.fromJson(e as Map<String, dynamic>))
+      final rawTimetable = timetableRes.data;
+      final list = (rawTimetable is List ? rawTimetable : <dynamic>[])
+          .whereType<Map<String, dynamic>>()
+          .map((e) => TimetableEntry.fromJson(e))
           .toList();
 
       Set<String> followed = {};
       if (followFuture != null) {
         final followRes = await followFuture;
-        followed = (followRes.data as List)
-            .map((a) => (a['name'] as String))
+        final rawFollow = followRes.data;
+        followed = (rawFollow is List ? rawFollow : <dynamic>[])
+            .whereType<Map<String, dynamic>>()
+            .map((a) => a['name'] as String? ?? '')
+            .where((name) => name.isNotEmpty)
             .toSet();
       }
 
@@ -185,8 +190,8 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
 
   double _toY(String time) {
     final parts = time.split(':');
-    final h = int.parse(parts[0]);
-    final m = int.parse(parts[1]);
+    final h = int.tryParse(parts.isNotEmpty ? parts[0] : '0') ?? 0;
+    final m = int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0;
     return ((h - _cachedStartHour) * 60 + m) * _minPx;
   }
 

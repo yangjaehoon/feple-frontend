@@ -51,8 +51,8 @@ class _EnralgePostState extends State<EnralgePost> {
         DioClient.dio.get('/posts/${widget.id}'),
         DioClient.dio.get('/posts/${widget.id}/liked'),
       ]);
-      final freshLikeCount = results[0].data['likeCount'] as int;
-      final isLiked = results[1].data as bool;
+      final freshLikeCount = (results[0].data['likeCount'] as num?)?.toInt() ?? _heartCount;
+      final isLiked = results[1].data as bool? ?? _liked;
       if (mounted) {
         setState(() {
           _heartCount = freshLikeCount;

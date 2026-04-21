@@ -73,13 +73,9 @@ class MeetingDataSource extends CalendarDataSource {
   }
 
   Meeting _getMeetingData(int index) {
-    final dynamic meeting = appointments![index];
-    late final Meeting meetingData;
-    if (meeting is Meeting) {
-      meetingData = meeting;
-    }
-
-    return meetingData;
+    final dynamic meeting = appointments?[index];
+    if (meeting is Meeting) return meeting;
+    throw StateError('Invalid appointment data at index $index');
   }
 }
 

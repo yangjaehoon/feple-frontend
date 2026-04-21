@@ -77,11 +77,12 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
       User updated = user;
 
       // 1. 프로필 이미지 변경
-      if (_pickedImage != null) {
+      final pickedImage = _pickedImage;
+      if (pickedImage != null) {
         final formData = FormData.fromMap({
           'file': await MultipartFile.fromFile(
-            _pickedImage!.path,
-            filename: _pickedImage!.name,
+            pickedImage.path,
+            filename: pickedImage.name,
           ),
         });
         final resp = await DioClient.dio.post(

@@ -111,7 +111,9 @@ class AuthService {
         '/auth/firebase',
         data: body,
       );
-      return _saveTokensAndParseUser(response.data as Map<String, dynamic>);
+      final data = response.data;
+      if (data is! Map<String, dynamic>) throw Exception('auth_err_auth_failed'.tr());
+      return _saveTokensAndParseUser(data);
     } on DioException catch (e) {
       final respBody = e.response?.data;
       if (respBody is Map<String, dynamic>) {
@@ -131,7 +133,9 @@ class AuthService {
           headers: {'Authorization': 'Bearer $accessToken'},
         ),
       );
-      return _saveTokensAndParseUser(response.data as Map<String, dynamic>);
+      final data = response.data;
+      if (data is! Map<String, dynamic>) throw Exception('auth_err_auth_failed'.tr());
+      return _saveTokensAndParseUser(data);
     } on DioException catch (e) {
       throw Exception(
           'Spring 서버 로그인 실패: ${e.response?.statusCode} ${e.response?.data}');
@@ -145,7 +149,9 @@ class AuthService {
     final refreshToken = json['refreshToken'] as String?;
     if (refreshToken != null) await TokenStore.saveRefreshToken(refreshToken);
 
-    return app.User.fromJson(json['user'] as Map<String, dynamic>);
+    final userJson = json['user'];
+    if (userJson is! Map<String, dynamic>) throw Exception('auth_err_auth_failed'.tr());
+    return app.User.fromJson(userJson);
   }
 }
 

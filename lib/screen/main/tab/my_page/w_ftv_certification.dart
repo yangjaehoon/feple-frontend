@@ -101,12 +101,13 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
   }
 
   Widget _buildCertList(AbstractThemeColors colors) {
+    final certs = _certifications!;
     return ListView.builder(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 12),
-      itemCount: _certifications!.length,
+      itemCount: certs.length,
       itemBuilder: (context, index) {
-        return _buildCertItem(_certifications![index], colors);
+        return _buildCertItem(certs[index], colors);
       },
     );
   }

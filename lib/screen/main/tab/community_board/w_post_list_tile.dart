@@ -20,21 +20,46 @@ class PostListTile extends StatelessWidget {
   }
 
   Widget _buildAvatar(AbstractThemeColors colors) {
-    if (_hasCustomImage) {
-      return CircleAvatar(
-        backgroundImage: CachedNetworkImageProvider(post.profileImageUrl!),
-        backgroundColor: colors.activate,
-      );
-    }
-    return CircleAvatar(
-      backgroundColor: colors.activate,
-      child: Text(
-        post.nickname.isNotEmpty ? post.nickname[0] : '?',
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w700,
+    final avatar = _hasCustomImage
+        ? CircleAvatar(
+            backgroundImage: CachedNetworkImageProvider(post.profileImageUrl!),
+            backgroundColor: colors.activate,
+          )
+        : CircleAvatar(
+            backgroundColor: colors.activate,
+            child: Text(
+              post.nickname.isNotEmpty ? post.nickname[0] : '?',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          );
+
+    if (!post.certified) return avatar;
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        avatar,
+        Positioned(
+          right: -2,
+          bottom: -2,
+          child: Container(
+            width: 16,
+            height: 16,
+            decoration: const BoxDecoration(
+              color: Colors.teal,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.verified_rounded,
+              size: 11,
+              color: Colors.white,
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 

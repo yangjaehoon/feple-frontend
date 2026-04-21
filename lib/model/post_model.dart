@@ -9,6 +9,7 @@ class Post {
   final String? profileImageUrl;
   final int? artistId;
   final String boardDisplayName;
+  final bool certified;
 
   Post({
     required this.id,
@@ -21,6 +22,7 @@ class Post {
     this.profileImageUrl,
     this.artistId,
     this.boardDisplayName = '게시판',
+    this.certified = false,
   });
 
   // JSON에서 객체로 변환
@@ -36,6 +38,7 @@ class Post {
       profileImageUrl: json['profileImageUrl'] as String?,
       artistId: json['artistId'] as int?,
       boardDisplayName: json['boardDisplayName'] as String? ?? '게시판',
+      certified: json['certified'] as bool? ?? false,
     );
   }
 }

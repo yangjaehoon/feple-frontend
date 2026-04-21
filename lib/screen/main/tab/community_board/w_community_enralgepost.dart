@@ -14,6 +14,7 @@ class EnralgePost extends StatefulWidget {
   final String title;
   final String content;
   final int heart;
+  final bool certified;
 
   const EnralgePost({
     super.key,
@@ -23,6 +24,7 @@ class EnralgePost extends StatefulWidget {
     required this.title,
     required this.content,
     required this.heart,
+    this.certified = false,
   });
 
   @override
@@ -179,9 +181,20 @@ class _EnralgePostState extends State<EnralgePost> {
               ),
               const SizedBox(height: 4),
               // 작성자
-              Text(
-                widget.nickname,
-                style: TextStyle(fontSize: 13, color: colors.textSecondary),
+              Row(
+                children: [
+                  Text(
+                    widget.nickname,
+                    style: TextStyle(fontSize: 13, color: colors.textSecondary),
+                  ),
+                  if (widget.certified) ...[
+                    const SizedBox(width: 4),
+                    const Tooltip(
+                      message: '페스티벌 인증 완료',
+                      child: Icon(Icons.verified_rounded, size: 14, color: Colors.teal),
+                    ),
+                  ],
+                ],
               ),
               Divider(thickness: 1, height: 24, color: colors.listDivider),
               // 본문

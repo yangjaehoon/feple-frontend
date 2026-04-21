@@ -125,13 +125,24 @@ class _CommentTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  comment['nickname'] as String? ?? 'User ${comment['userId']}',
-                  style: TextStyle(
-                    color: colors.textSecondary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      comment['nickname'] as String? ?? 'User ${comment['userId']}',
+                      style: TextStyle(
+                        color: colors.textSecondary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    if (comment['certified'] == true) ...[
+                      const SizedBox(width: 4),
+                      const Tooltip(
+                        message: '페스티벌 인증 완료',
+                        child: Icon(Icons.verified_rounded, size: 12, color: Colors.teal),
+                      ),
+                    ],
+                  ],
                 ),
                 const SizedBox(height: 2),
                 Text(

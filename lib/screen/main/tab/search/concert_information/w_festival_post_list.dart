@@ -94,6 +94,7 @@ class _FestivalPostListScreenState extends State<FestivalPostListScreen> {
                         title: post.title,
                         content: post.content,
                         heart: post.likeCount,
+                        certified: post.certified,
                       ),
                     ),
                   ).then((_) => _refresh());

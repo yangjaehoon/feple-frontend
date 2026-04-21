@@ -1,5 +1,5 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/model/poster_model.dart';
+import 'package:feple/model/festival_model.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/service/notification_service.dart';
@@ -68,7 +68,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         context,
         MaterialPageRoute(
           builder: (_) => FestivalInformationFragment(
-            poster: PosterModel(
+            poster: FestivalModel(
               id: d['id'] as int,
               title: d['title'] as String? ?? '',
               description: d['description'] as String? ?? '',

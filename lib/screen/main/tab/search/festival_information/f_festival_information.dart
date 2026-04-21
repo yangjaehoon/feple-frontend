@@ -1,7 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/responsive_size.dart';
-import 'package:feple/model/poster_model.dart';
+import 'package:feple/model/festival_model.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_poster.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_timetable.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_artists.dart';
@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 class FestivalInformationFragment extends StatelessWidget {
   const FestivalInformationFragment({super.key, required this.poster});
 
-  final PosterModel poster;
+  final FestivalModel poster;
 
   @override
   Widget build(BuildContext context) {

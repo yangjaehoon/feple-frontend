@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../provider/festival_preview_provider.dart';
-import '../../../../model/poster_model.dart';
+import '../../../../model/festival_model.dart';
 
 class ConcertListSwiperWidget extends StatefulWidget {
   const ConcertListSwiperWidget({super.key});
@@ -88,7 +88,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
               final item = items[index];
               return GestureDetector(
                 onTap: () {
-                  final poster = PosterModel(
+                  final poster = FestivalModel(
                     id: item.id,
                     title: item.title,
                     description: item.description,

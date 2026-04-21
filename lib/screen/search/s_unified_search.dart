@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
-import 'package:feple/model/poster_model.dart';
+import 'package:feple/model/festival_model.dart';
 import 'package:feple/network/dio_client.dart';
-import 'package:feple/screen/main/tab/community_board/w_community_enralgepost.dart';
+import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:flutter/material.dart';
@@ -238,7 +238,7 @@ class _FestivalTile extends StatelessWidget {
           style: TextStyle(color: colors.textSecondary, fontSize: 12)),
       onTap: () => Navigator.push(context, MaterialPageRoute(
         builder: (_) => FestivalInformationFragment(
-          poster: PosterModel(
+          poster: FestivalModel(
             id: data['id'] as int,
             title: title,
             description: data['description'] as String? ?? '',

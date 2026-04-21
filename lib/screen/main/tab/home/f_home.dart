@@ -3,7 +3,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/model/favorite_board.dart';
 import 'package:feple/model/followed_artist.dart';
-import 'package:feple/model/poster_model.dart';
+import 'package:feple/model/festival_model.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/screen/main/tab/home/w_favorite_boards_section.dart';
 import 'package:feple/screen/main/tab/home/w_reorder_sheet.dart';
@@ -27,7 +27,7 @@ class HomeFragment extends StatefulWidget {
 
 class _HomeFragmentState extends State<HomeFragment> {
   List<FollowedArtist>? _artists;
-  List<PosterModel>? _festivals;
+  List<FestivalModel>? _festivals;
 
   List<int> _artistOrder = [];
   List<int> _festivalOrder = [];
@@ -148,13 +148,13 @@ class _HomeFragmentState extends State<HomeFragment> {
     return (resp.data as List).map((e) => FollowedArtist.fromJson(e)).toList();
   }
 
-  Future<List<PosterModel>> _fetchFestivals(int userId) async {
+  Future<List<FestivalModel>> _fetchFestivals(int userId) async {
     final resp = await DioClient.dio.get('/users/$userId/liked-festivals');
-    return (resp.data as List).map((e) => PosterModel.fromJson(e)).toList();
+    return (resp.data as List).map((e) => FestivalModel.fromJson(e)).toList();
   }
 
   List<FavoriteBoard> _buildBoards(
-      List<FollowedArtist> artists, List<PosterModel> festivals) {
+      List<FollowedArtist> artists, List<FestivalModel> festivals) {
     return [
       ...artists.map((a) => FavoriteBoard(
             boardId: 'artist_${a.id}',

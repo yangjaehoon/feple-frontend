@@ -1,7 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_write_board.dart';
-import 'package:feple/screen/main/tab/community_board/w_community_enralgepost.dart';
+import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/model/post_model.dart';

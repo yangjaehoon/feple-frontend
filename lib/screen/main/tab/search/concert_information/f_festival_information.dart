@@ -30,6 +30,7 @@ class FestivalInformationFragment extends StatelessWidget {
             child: Column(
               children: [
                 FestivalPoster(poster: poster),
+                const SizedBox(height: 16),
                 FestivalArtists(festivalId: poster.id),
                 FestivalBoard(
                     festivalId: poster.id, festivalName: poster.title),

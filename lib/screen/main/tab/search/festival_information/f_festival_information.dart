@@ -2,11 +2,11 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/model/poster_model.dart';
-import 'package:feple/screen/main/tab/search/concert_information/w_festival_poster.dart';
-import 'package:feple/screen/main/tab/search/concert_information/w_festival_timetable.dart';
-import 'package:feple/screen/main/tab/search/concert_information/w_festival_artists.dart';
-import 'package:feple/screen/main/tab/search/concert_information/w_festival_board.dart';
-import 'package:feple/screen/main/tab/search/concert_information/w_festival_booth_map.dart';
+import 'package:feple/screen/main/tab/search/festival_information/w_festival_poster.dart';
+import 'package:feple/screen/main/tab/search/festival_information/w_festival_timetable.dart';
+import 'package:feple/screen/main/tab/search/festival_information/w_festival_artists.dart';
+import 'package:feple/screen/main/tab/search/festival_information/w_festival_board.dart';
+import 'package:feple/screen/main/tab/search/festival_information/w_festival_booth_map.dart';
 import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:flutter/material.dart';
 

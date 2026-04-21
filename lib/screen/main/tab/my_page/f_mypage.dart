@@ -2,7 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/screen/main/tab/my_page/w_follow_artists.dart';
-import 'package:feple/screen/main/tab/my_page/w_ftv_certification.dart';
+import 'package:feple/screen/main/tab/my_page/w_festival_certification.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_post_comment.dart';
 import 'package:feple/screen/main/tab/my_page/w_profile.dart';
 import 'package:flutter/material.dart';

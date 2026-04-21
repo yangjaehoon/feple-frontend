@@ -2,7 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/constant/festival_constants.dart';
 import 'package:feple/common/util/responsive_size.dart';
-import 'package:feple/screen/main/tab/concert_list/w_concert_list.dart';
+import 'package:feple/screen/main/tab/festival_list/w_festival_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

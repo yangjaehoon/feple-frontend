@@ -1,7 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/model/poster_model.dart';
 import 'package:feple/network/dio_client.dart';
-import 'package:feple/screen/main/tab/search/concert_information/f_festival_information.dart';
+import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/service/notification_service.dart';
 import 'package:flutter/material.dart';
 

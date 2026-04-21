@@ -2,7 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/screen/main/tab/search/w_circle_artist.dart';
-import 'package:feple/screen/main/tab/search/w_concert_list_swiper.dart';
+import 'package:feple/screen/main/tab/search/w_festival_list_swiper.dart';
 import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:flutter/material.dart';
 

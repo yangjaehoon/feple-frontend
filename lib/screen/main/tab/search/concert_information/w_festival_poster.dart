@@ -134,8 +134,9 @@ class _FestivalPosterState extends State<FestivalPoster> {
     final hasDescription = widget.poster.description.isNotEmpty;
 
     return Stack(
+      clipBehavior: Clip.none,
       children: [
-        // 레이어 1: 배경 이미지
+        // 레이어 1: 배경 이미지 (Stack 크기에 딱 맞게)
         Positioned.fill(
           child: ClipRect(
             child: CachedNetworkImage(
@@ -145,15 +146,19 @@ class _FestivalPosterState extends State<FestivalPoster> {
             ),
           ),
         ),
-        // 레이어 2: 블러 필터
+        // 레이어 2: 블러 필터 (Stack 크기에 딱 맞게)
         Positioned.fill(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
             child: const SizedBox.expand(),
           ),
         ),
-        // 레이어 3: 하늘색 오버레이
-        Positioned.fill(
+        // 레이어 3: 하늘색 오버레이 (블러 하단 경계를 덮기 위해 10px 더 연장)
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: -10,
           child: ColoredBox(
             color: colors.swiperOverlay.withValues(alpha: 0.55),
           ),
@@ -163,7 +168,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
           top: false,
           bottom: false,
           child: Padding(
-            padding: EdgeInsets.only(top: appBarHeight, bottom: 10),
+            padding: EdgeInsets.only(top: appBarHeight),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

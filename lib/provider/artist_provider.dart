@@ -8,8 +8,10 @@ Future<List<Artist>> fetchArtists() async {
     throw Exception('Failed to load artists: ${res.statusCode}');
   }
 
-  final data = res.data as List;
-  return data
-      .map((e) => Artist.fromJson(e as Map<String, dynamic>))
+  final raw = res.data;
+  if (raw is! List) return [];
+  return raw
+      .whereType<Map<String, dynamic>>()
+      .map((e) => Artist.fromJson(e))
       .toList();
 }

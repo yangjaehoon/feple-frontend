@@ -13,7 +13,6 @@ import 'package:feple/network/dio_client.dart';
 import 'package:feple/provider/like_notifier.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:provider/provider.dart';
-import 'package:feple/screen/main/tab/search/concert_information/weather/screens/loading.dart';
 import 'package:flutter/material.dart';
 import '../../../../../model/poster_model.dart';
 
@@ -269,15 +268,6 @@ class _FestivalPosterState extends State<FestivalPoster> {
                                 const SizedBox(width: 8),
                                 _ActionButton(
                                   icon: Icons.calendar_month_outlined,
-                                ),
-                                const SizedBox(width: 8),
-                                _ActionButton(
-                                  onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => const Loading()),
-                                  ),
-                                  icon: Icons.wb_cloudy_rounded,
                                 ),
                                 const SizedBox(width: 8),
                                 _ActionButton(

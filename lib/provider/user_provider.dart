@@ -22,8 +22,9 @@ class UserProvider with ChangeNotifier {
     final resp = await DioClient.dio.get('/users/$userId');
 
     if (resp.statusCode == 200) {
-      final data = resp.data is String ? jsonDecode(resp.data) : resp.data;
-      _user = User.fromJson(data as Map<String, dynamic>);
+      final raw = resp.data is String ? jsonDecode(resp.data) : resp.data;
+      if (raw is! Map<String, dynamic>) throw Exception('사용자 정보 형식 오류');
+      _user = User.fromJson(raw);
       notifyListeners();
     } else {
       throw Exception('사용자 정보 불러오기 실패: ${resp.statusCode}');

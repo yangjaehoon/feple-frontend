@@ -1,7 +1,7 @@
 //import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class PosterModel with ChangeNotifier {
+class FestivalModel with ChangeNotifier {
   //final FutureBuilder<QuerySnapshot<Object?>> collectionPoster;
 
   final int id;
@@ -14,7 +14,7 @@ class PosterModel with ChangeNotifier {
   final double? latitude;
   final double? longitude;
 
-  PosterModel(
+  FestivalModel(
       {required this.id,
       required this.title,
       required this.description,
@@ -26,8 +26,8 @@ class PosterModel with ChangeNotifier {
       this.longitude,
       });
 
-  factory PosterModel.fromJson(Map<String, dynamic> json) {
-    return PosterModel(
+  factory FestivalModel.fromJson(Map<String, dynamic> json) {
+    return FestivalModel(
       id: json['id'],
       title: json['title'],
       description: json['description'],

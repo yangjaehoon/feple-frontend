@@ -1,5 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:feple/model/poster_model.dart';
+import 'package:feple/model/festival_model.dart';
 import 'package:feple/screen/main/tab/festival_list/w_festival_preview_card.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +38,7 @@ class _ConcertListWidgetState extends State<ConcertListWidget> {
       children: previewPoster.items.map((item) {
         return GestureDetector(
           onTap: () {
-            final poster = PosterModel(
+            final poster = FestivalModel(
               id: item.id,
               title: item.title,
               description: item.description,

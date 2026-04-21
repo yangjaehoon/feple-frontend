@@ -14,12 +14,12 @@ import 'package:feple/provider/like_notifier.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-import '../../../../../model/poster_model.dart';
+import '../../../../../model/festival_model.dart';
 
 class FestivalPoster extends StatefulWidget {
   const FestivalPoster({super.key, required this.poster});
 
-  final PosterModel poster;
+  final FestivalModel poster;
 
   @override
   State<FestivalPoster> createState() => _FestivalPosterState();

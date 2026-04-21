@@ -1,7 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/network/dio_client.dart';
-import 'package:feple/screen/main/tab/community_board/w_community_enralgepost.dart';
+import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
 import 'package:flutter/material.dart';
 
 class MyPostsScreen extends StatefulWidget {

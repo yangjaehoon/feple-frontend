@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import '../../model/poster_model.dart';
+import '../../model/festival_model.dart';
 import '../../network/dio_client.dart';
 
-class PosterProvider extends ChangeNotifier {
-  List<PosterModel> _posters = [];
-  List<PosterModel> get posters => _posters;
+class FestivalProvider extends ChangeNotifier {
+  List<FestivalModel> _posters = [];
+  List<FestivalModel> get posters => _posters;
 
-  PosterProvider() {
+  FestivalProvider() {
     fetchPosters();
   }
 
@@ -17,7 +17,7 @@ class PosterProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         final List data = response.data;
 
-        _posters = data.map((json) => PosterModel.fromJson(json)).toList();
+        _posters = data.map((json) => FestivalModel.fromJson(json)).toList();
         notifyListeners();
       }
     } catch (_) {

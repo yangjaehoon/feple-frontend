@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import '../../../../../api/artist_follow_api.dart';
 import '../../../../../api/follow_response.dart';
 import '../../../../../provider/like_notifier.dart';
-import 'img_collection/f_img_collection.dart';
+import 'image_collection/f_image_collection.dart';
 
 class ArtistNameLike extends StatefulWidget {
   const ArtistNameLike({

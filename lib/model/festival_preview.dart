@@ -8,6 +8,8 @@ class FestivalPreview {
   final String? endDate;
   final List<String> genres;
   final String? region;
+  final double? latitude;
+  final double? longitude;
 
   const FestivalPreview({
     required this.id,
@@ -19,6 +21,8 @@ class FestivalPreview {
     this.endDate,
     this.genres = const [],
     this.region,
+    this.latitude,
+    this.longitude,
   });
 
   bool get isEnded {
@@ -42,6 +46,8 @@ class FestivalPreview {
       endDate: json['endDate'] as String?,
       genres: (json['genres'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
       region: json['region'] as String?,
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
     );
   }
 }

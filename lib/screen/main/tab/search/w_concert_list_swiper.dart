@@ -96,6 +96,8 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
                     startDate: item.startDate,
                     endDate: item.endDate ?? '',
                     posterUrl: item.posterUrl,
+                    latitude: item.latitude,
+                    longitude: item.longitude,
                   );
                   Navigator.push(
                     context,

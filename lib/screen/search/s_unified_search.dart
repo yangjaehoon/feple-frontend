@@ -4,7 +4,7 @@ import 'package:feple/model/poster_model.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enralgepost.dart';
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
-import 'package:feple/screen/main/tab/search/concert_information/f_festival_information.dart';
+import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:flutter/material.dart';
 
 class UnifiedSearchScreen extends StatefulWidget {
@@ -35,12 +35,14 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
     try {
       final res = await DioClient.dio.get('/search', queryParameters: {'keyword': keyword.trim()});
       final data = res.data as Map<String, dynamic>;
-      if (mounted) setState(() {
+      if (mounted) {
+        setState(() {
         _artists  = (data['artists']  as List? ?? []);
         _festivals = (data['festivals'] as List? ?? []);
         _posts    = (data['posts']    as List? ?? []);
         _loading  = false;
       });
+      }
     } catch (_) {
       if (mounted) setState(() => _loading = false);
     }

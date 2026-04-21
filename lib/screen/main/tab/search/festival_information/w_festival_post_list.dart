@@ -2,7 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enralgepost.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
-import 'package:feple/screen/main/tab/search/concert_information/w_festival_write_post.dart';
+import 'package:feple/screen/main/tab/search/festival_information/w_festival_write_post.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:flutter/material.dart';

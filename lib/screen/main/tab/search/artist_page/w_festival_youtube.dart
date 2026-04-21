@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:feple/model/ftv_youtube.dart';
+import 'package:feple/model/festival_youtube.dart';
 
 class FtvYoutube extends StatefulWidget {
   const FtvYoutube({super.key, required this.artistName});

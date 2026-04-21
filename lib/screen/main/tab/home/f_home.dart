@@ -32,7 +32,7 @@ class _HomeFragmentState extends State<HomeFragment> {
   List<int> _artistOrder = [];
   List<int> _festivalOrder = [];
 
-  late Future<List<FavoriteBoard>> _boardsFuture;
+  List<FavoriteBoard>? _boards;
   int? _userId;
   late LikeNotifier _likeNotifier;
   bool _likeListenerAdded = false;
@@ -53,7 +53,7 @@ class _HomeFragmentState extends State<HomeFragment> {
     final user = context.read<UserProvider>().user;
     if (user != null && _userId != user.id) {
       _userId = user.id;
-      _boardsFuture = Future.value([]);
+      _boards = null;
       _loadData();
     }
   }
@@ -128,7 +128,7 @@ class _HomeFragmentState extends State<HomeFragment> {
   void _maybeUpdateBoards() {
     if (_artists != null && _festivals != null) {
       setState(() {
-        _boardsFuture = Future.value(_buildBoards(_artists!, _festivals!));
+        _boards = _buildBoards(_artists!, _festivals!);
       });
     }
   }
@@ -276,16 +276,13 @@ class _HomeFragmentState extends State<HomeFragment> {
                 ),
                 _buildFestivalsSection(colors),
                 const SizedBox(height: 8),
-                FutureBuilder<List<FavoriteBoard>>(
-                  future: _boardsFuture,
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) return const SizedBox(height: 150);
-                    return FavoriteBoardsSection(
-                      allBoards: snapshot.data!,
-                      userId: _userId!,
-                    );
-                  },
-                ),
+                if (_boards == null)
+                  const SizedBox(height: 150)
+                else
+                  FavoriteBoardsSection(
+                    allBoards: _boards!,
+                    userId: _userId!,
+                  ),
               ],
             ),
           ),

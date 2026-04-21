@@ -158,7 +158,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
           top: 0,
           left: 0,
           right: 0,
-          bottom: -10,
+          bottom: -9,
           child: ColoredBox(
             color: colors.swiperOverlay.withValues(alpha: 0.55),
           ),

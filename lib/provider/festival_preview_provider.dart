@@ -70,7 +70,7 @@ class FestivalPreviewProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final Map<String, dynamic> params = {'page': _page, 'size': _size, 'includeEnded': true};
+      final Map<String, dynamic> params = {'page': _page, 'size': _size, 'includeEnded': false};
       if (_selectedGenres.isNotEmpty) {
         params['genres'] = _selectedGenres.toList();
       }

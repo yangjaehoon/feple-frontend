@@ -134,9 +134,14 @@ class _FestivalPosterState extends State<FestivalPoster> {
     final hasDescription = widget.poster.description.isNotEmpty;
 
     return Stack(
+      clipBehavior: Clip.none,
       children: [
-        // 블러 배경 - 전체 영역을 덮음
-        Positioned.fill(
+        // 블러 배경 - 콘텐츠 + 하단 40px 추가로 덮음
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: -40,
           child: Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -160,7 +165,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
           top: false,
           bottom: false,
           child: Padding(
-            padding: EdgeInsets.only(top: appBarHeight, bottom: 40),
+            padding: EdgeInsets.only(top: appBarHeight, bottom: 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

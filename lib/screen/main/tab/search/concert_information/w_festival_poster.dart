@@ -135,26 +135,25 @@ class _FestivalPosterState extends State<FestivalPoster> {
 
     return Stack(
       children: [
-        // 블러 배경 - 전체 영역을 덮음
+        // 레이어 1: 배경 이미지
         Positioned.fill(
-          child: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: ResizeImage(
-                  CachedNetworkImageProvider(widget.poster.posterUrl),
-                  width: 100,
-                ),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-              child: SizedBox.expand(
-                child: ColoredBox(
-                  color: colors.swiperOverlay.withValues(alpha: 0.55),
-                ),
-              ),
-            ),
+          child: CachedNetworkImage(
+            imageUrl: widget.poster.posterUrl,
+            memCacheWidth: 100,
+            fit: BoxFit.cover,
+          ),
+        ),
+        // 레이어 2: 블러 필터
+        Positioned.fill(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+            child: const SizedBox.expand(),
+          ),
+        ),
+        // 레이어 3: 하늘색 오버레이
+        Positioned.fill(
+          child: ColoredBox(
+            color: colors.swiperOverlay.withValues(alpha: 0.55),
           ),
         ),
         // 콘텐츠

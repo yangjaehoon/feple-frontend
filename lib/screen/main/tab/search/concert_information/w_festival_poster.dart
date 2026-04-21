@@ -137,10 +137,12 @@ class _FestivalPosterState extends State<FestivalPoster> {
       children: [
         // 레이어 1: 배경 이미지
         Positioned.fill(
-          child: CachedNetworkImage(
-            imageUrl: widget.poster.posterUrl,
-            memCacheWidth: 100,
-            fit: BoxFit.cover,
+          child: ClipRect(
+            child: CachedNetworkImage(
+              imageUrl: widget.poster.posterUrl,
+              memCacheWidth: 100,
+              fit: BoxFit.cover,
+            ),
           ),
         ),
         // 레이어 2: 블러 필터

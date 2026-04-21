@@ -143,7 +143,14 @@ class _FestivalPosterState extends State<FestivalPoster> {
             fit: BoxFit.cover,
           ),
         ),
-        // 레이어 2: 하늘색 오버레이
+        // 레이어 2: 블러 필터
+        Positioned.fill(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+            child: const SizedBox.expand(),
+          ),
+        ),
+        // 레이어 3: 하늘색 오버레이
         Positioned.fill(
           child: ColoredBox(
             color: colors.swiperOverlay.withValues(alpha: 0.55),

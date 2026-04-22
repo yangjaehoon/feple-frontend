@@ -199,7 +199,7 @@ class _EnralgePostState extends State<EnralgePost> {
                     const SizedBox(width: 4),
                     const Tooltip(
                       message: '아티스트 인증',
-                      child: Icon(Icons.mic_rounded, size: 14, color: Colors.orange),
+                      child: Icon(Icons.verified_rounded, size: 14, color: Colors.blue),
                     ),
                   ] else if (widget.certified) ...[
                     const SizedBox(width: 4),

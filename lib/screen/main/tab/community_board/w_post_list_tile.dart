@@ -47,8 +47,8 @@ class PostListTile extends StatelessWidget {
       badgeIcon = Icons.shield_rounded;
       badgeTooltip = '관리자';
     } else if (post.isArtist) {
-      badgeColor = Colors.orange;
-      badgeIcon = Icons.mic_rounded;
+      badgeColor = Colors.blue;
+      badgeIcon = Icons.verified_rounded;
       badgeTooltip = '아티스트 인증';
     } else {
       badgeColor = Colors.teal;

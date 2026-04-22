@@ -15,6 +15,7 @@ class EnralgePost extends StatefulWidget {
   final String content;
   final int heart;
   final bool certified;
+  final String? userRole;
 
   const EnralgePost({
     super.key,
@@ -25,6 +26,7 @@ class EnralgePost extends StatefulWidget {
     required this.content,
     required this.heart,
     this.certified = false,
+    this.userRole,
   });
 
   @override
@@ -187,7 +189,19 @@ class _EnralgePostState extends State<EnralgePost> {
                     widget.nickname,
                     style: TextStyle(fontSize: 13, color: colors.textSecondary),
                   ),
-                  if (widget.certified) ...[
+                  if (widget.userRole == 'ADMIN') ...[
+                    const SizedBox(width: 4),
+                    const Tooltip(
+                      message: '관리자',
+                      child: Icon(Icons.shield_rounded, size: 14, color: Colors.deepPurple),
+                    ),
+                  ] else if (widget.userRole == 'ARTIST') ...[
+                    const SizedBox(width: 4),
+                    const Tooltip(
+                      message: '아티스트 인증',
+                      child: Icon(Icons.mic_rounded, size: 14, color: Colors.orange),
+                    ),
+                  ] else if (widget.certified) ...[
                     const SizedBox(width: 4),
                     const Tooltip(
                       message: '페스티벌 인증 완료',

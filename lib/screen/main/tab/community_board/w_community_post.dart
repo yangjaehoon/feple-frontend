@@ -95,6 +95,7 @@ class _CommunityPostState extends State<CommunityPost> {
                           content: post.content,
                           heart: post.likeCount,
                           certified: post.certified,
+                          userRole: post.userRole,
                         ),
                       ),
                     ).then((_) => _refresh());

@@ -10,6 +10,7 @@ class Post {
   final int? artistId;
   final String boardDisplayName;
   final bool certified;
+  final String? userRole; // 'USER' | 'ARTIST' | 'ADMIN'
 
   Post({
     required this.id,
@@ -23,7 +24,11 @@ class Post {
     this.artistId,
     this.boardDisplayName = '게시판',
     this.certified = false,
+    this.userRole,
   });
+
+  bool get isAdmin => userRole == 'ADMIN';
+  bool get isArtist => userRole == 'ARTIST';
 
   // JSON에서 객체로 변환
   factory Post.fromJson(Map<String, dynamic> json) {
@@ -39,6 +44,7 @@ class Post {
       artistId: json['artistId'] as int?,
       boardDisplayName: json['boardDisplayName'] as String? ?? '게시판',
       certified: json['certified'] as bool? ?? false,
+      userRole: json['userRole'] as String?,
     );
   }
 }

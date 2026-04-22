@@ -36,7 +36,25 @@ class PostListTile extends StatelessWidget {
             ),
           );
 
-    if (!post.certified) return avatar;
+    final hasBadge = post.certified || post.isAdmin || post.isArtist;
+    if (!hasBadge) return avatar;
+
+    Color badgeColor;
+    IconData badgeIcon;
+    String badgeTooltip;
+    if (post.isAdmin) {
+      badgeColor = Colors.deepPurple;
+      badgeIcon = Icons.shield_rounded;
+      badgeTooltip = '관리자';
+    } else if (post.isArtist) {
+      badgeColor = Colors.orange;
+      badgeIcon = Icons.mic_rounded;
+      badgeTooltip = '아티스트 인증';
+    } else {
+      badgeColor = Colors.teal;
+      badgeIcon = Icons.verified_rounded;
+      badgeTooltip = '페스티벌 인증 완료';
+    }
 
     return Stack(
       clipBehavior: Clip.none,
@@ -45,17 +63,16 @@ class PostListTile extends StatelessWidget {
         Positioned(
           right: -2,
           bottom: -2,
-          child: Container(
-            width: 16,
-            height: 16,
-            decoration: const BoxDecoration(
-              color: Colors.teal,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.verified_rounded,
-              size: 11,
-              color: Colors.white,
+          child: Tooltip(
+            message: badgeTooltip,
+            child: Container(
+              width: 16,
+              height: 16,
+              decoration: BoxDecoration(
+                color: badgeColor,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(badgeIcon, size: 11, color: Colors.white),
             ),
           ),
         ),

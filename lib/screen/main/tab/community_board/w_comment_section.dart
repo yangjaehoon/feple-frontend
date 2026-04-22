@@ -135,7 +135,19 @@ class _CommentTile extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    if (comment['certified'] == true) ...[
+                    if (comment['userRole'] == 'ADMIN') ...[
+                      const SizedBox(width: 4),
+                      const Tooltip(
+                        message: '관리자',
+                        child: Icon(Icons.shield_rounded, size: 12, color: Colors.deepPurple),
+                      ),
+                    ] else if (comment['userRole'] == 'ARTIST') ...[
+                      const SizedBox(width: 4),
+                      const Tooltip(
+                        message: '아티스트 인증',
+                        child: Icon(Icons.mic_rounded, size: 12, color: Colors.orange),
+                      ),
+                    ] else if (comment['certified'] == true) ...[
                       const SizedBox(width: 4),
                       const Tooltip(
                         message: '페스티벌 인증 완료',

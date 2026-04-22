@@ -145,7 +145,7 @@ class _CommentTile extends StatelessWidget {
                       const SizedBox(width: 4),
                       const Tooltip(
                         message: '아티스트 인증',
-                        child: Icon(Icons.mic_rounded, size: 12, color: Colors.orange),
+                        child: Icon(Icons.verified_rounded, size: 12, color: Colors.blue),
                       ),
                     ] else if (comment['certified'] == true) ...[
                       const SizedBox(width: 4),

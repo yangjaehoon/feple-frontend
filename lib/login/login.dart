@@ -212,7 +212,7 @@ class _LoginPageState extends State<LoginPage> {
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-        onPressed: () => signInWithKakao(context),
+        onPressed: _isLoading ? null : () => signInWithKakao(context),
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFFFEE500),
           foregroundColor: const Color(0xFF3C1E1E),
@@ -221,14 +221,23 @@ class _LoginPageState extends State<LoginPage> {
             borderRadius: BorderRadius.circular(14),
           ),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset('assets/image/login/kakao_login_medium_narrow.png',
-                height: 24),
-            const SizedBox(width: 8),
-          ],
-        ),
+        child: _isLoading
+            ? const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation(Color(0xFF3C1E1E)),
+                ),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset('assets/image/login/kakao_login_medium_narrow.png',
+                      height: 24),
+                  const SizedBox(width: 8),
+                ],
+              ),
       ),
     );
   }
@@ -322,6 +331,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> signInWithKakao(BuildContext context) async {
+    if (_isLoading) return;
+    setState(() { _isLoading = true; _loginError = null; });
     final userProvider = context.read<UserProvider>();
     try {
       final user = await AuthService.instance.loginWithKakao();
@@ -329,10 +340,16 @@ class _LoginPageState extends State<LoginPage> {
       await userProvider.setUser(user);
     } catch (e) {
       debugPrint('=== 카카오 로그인 실패 에러 ===\n$e\n======================');
-      if (context.mounted) {
-        final msg = e.toString().replaceFirst('Exception: ', '');
-        setState(() => _loginError = 'kakao_login_failed'.tr(args: [msg]));
+      if (mounted) {
+        // 사용자가 직접 취소한 경우 에러 메시지 표시 안 함
+        final isUserCanceled = e.toString().contains('CANCELED');
+        if (!isUserCanceled) {
+          final msg = e.toString().replaceFirst('Exception: ', '');
+          setState(() => _loginError = msg.isNotEmpty ? msg : 'login_failed'.tr());
+        }
       }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 }

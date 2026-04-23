@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
 import '../auth/token_store.dart';
@@ -59,7 +60,9 @@ class AuthService {
     if (await isKakaoTalkInstalled()) {
       try {
         token = await UserApi.instance.loginWithKakaoTalk();
-      } catch (_) {
+      } on PlatformException catch (e) {
+        // 사용자가 직접 취소한 경우 웹 로그인으로 넘어가지 않음
+        if (e.code == 'CANCELED') rethrow;
         token = await UserApi.instance.loginWithKakaoAccount();
       }
     } else {
@@ -138,7 +141,7 @@ class AuthService {
       return _saveTokensAndParseUser(data);
     } on DioException catch (e) {
       throw Exception(
-          'Spring 서버 로그인 실패: ${e.response?.statusCode} ${e.response?.data}');
+          'Spring 서버 로그인 실패: [${e.type.name}] ${e.response?.statusCode} ${e.response?.data} / ${e.message}');
     }
   }
 

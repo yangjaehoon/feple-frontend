@@ -1,0 +1,50 @@
+class Post {
+  final int id;
+  final String title;
+  final String content;
+  final String? boardType;
+  final int likeCount;
+  final int commentCount;
+  final String nickname;
+  final String? profileImageUrl;
+  final int? artistId;
+  final String boardDisplayName;
+  final bool certified;
+  final String? userRole; // 'USER' | 'ARTIST' | 'ADMIN'
+
+  Post({
+    required this.id,
+    required this.title,
+    required this.content,
+    this.boardType,
+    required this.likeCount,
+    this.commentCount = 0,
+    required this.nickname,
+    this.profileImageUrl,
+    this.artistId,
+    this.boardDisplayName = '게시판',
+    this.certified = false,
+    this.userRole,
+  });
+
+  bool get isAdmin => userRole == 'ADMIN';
+  bool get isArtist => userRole == 'ARTIST';
+
+  // JSON에서 객체로 변환
+  factory Post.fromJson(Map<String, dynamic> json) {
+    return Post(
+      id: json['id'] as int,
+      title: json['title'] as String,
+      content: json['content'] as String,
+      boardType: json['boardType'] as String?,
+      likeCount: json['likeCount'] as int,
+      commentCount: json['commentCount'] as int? ?? 0,
+      nickname: json['nickname'] as String,
+      profileImageUrl: json['profileImageUrl'] as String?,
+      artistId: json['artistId'] as int?,
+      boardDisplayName: json['boardDisplayName'] as String? ?? '게시판',
+      certified: json['certified'] as bool? ?? false,
+      userRole: json['userRole'] as String?,
+    );
+  }
+}

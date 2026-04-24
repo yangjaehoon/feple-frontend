@@ -1,18 +1,16 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:feple/login/login.dart';
 import 'package:feple/provider/user_provider.dart';
+import 'package:feple/screen/main/w_menu_language_selector.dart';
 import 'package:feple/screen/opensource/s_opensource.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:get/get_utils/src/extensions/string_extensions.dart';
-import 'package:simple_shadow/simple_shadow.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../screen/dialog/d_message.dart';
 import '../../common/common.dart';
-import '../../common/language/language.dart';
 import '../../common/theme/theme_util.dart';
 import '../../common/widget/w_mode_switch.dart';
 
@@ -216,7 +214,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
             ).pOnly(left: 20),
           ),
           const Height(10),
-          getLanguageOption(context),
+          const MenuLanguageSelector(),
           const Height(10),
           Row(
             children: [
@@ -250,81 +248,6 @@ class _MenuDrawerState extends State<MenuDrawer> {
     }
   }
 
-  Widget getLanguageOption(BuildContext context) {
-    final colors = context.appColors;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Tap(
-          child: Container(
-              padding: const EdgeInsets.only(left: 5, right: 5),
-              margin: const EdgeInsets.only(left: 15, right: 20),
-              decoration: BoxDecoration(
-                  border: Border.all(color: colors.listDivider),
-                  borderRadius: BorderRadius.circular(16),
-                  color: colors.surface,
-                  boxShadow: [context.appShadows.buttonShadowSmall]),
-              child: Row(
-                children: [
-                  const Width(10),
-                  DropdownButton<String>(
-                    items: [
-                      menu(currentLanguage),
-                      menu(Language.values
-                          .where((element) => element != currentLanguage)
-                          .first),
-                    ],
-                    onChanged: (value) async {
-                      if (value == null) {
-                        return;
-                      }
-                      await context
-                          .setLocale(Language.find(value.toLowerCase()).locale);
-                    },
-                    value: currentLanguage.name.capitalizeFirst,
-                    underline: const SizedBox.shrink(),
-                    elevation: 1,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ],
-              )),
-          onTap: () async {},
-        ),
-      ],
-    );
-  }
-
-  DropdownMenuItem<String> menu(Language language) {
-    final colors = context.appColors;
-    return DropdownMenuItem(
-      value: language.name.capitalizeFirst,
-      child: Row(
-        children: [
-          flag(language.flagPath),
-          const Width(8),
-          language.name
-              .capitalizeFirst!
-              .text
-              .color(colors.textTitle)
-              .size(12)
-              .makeWithDefaultFont(),
-        ],
-      ),
-    );
-  }
-
-  Widget flag(String path) {
-    return SimpleShadow(
-      opacity: 0.5,
-      color: Colors.black45,
-      offset: const Offset(2, 2),
-      sigma: 2,
-      child: Image.asset(
-        path,
-        width: 20,
-      ),
-    );
-  }
 }
 
 class _MenuWidget extends StatelessWidget {

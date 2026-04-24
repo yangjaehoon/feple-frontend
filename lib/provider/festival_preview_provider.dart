@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/network/dio_client.dart';
 
@@ -70,7 +71,7 @@ class FestivalPreviewProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final Map<String, dynamic> params = {'page': _page, 'size': _size, 'includeEnded': false};
+      final Map<String, dynamic> params = {'page': _page, 'size': _size, 'includeEnded': true};
       if (_selectedGenres.isNotEmpty) {
         params['genres'] = _selectedGenres.toList();
       }
@@ -96,7 +97,7 @@ class FestivalPreviewProvider extends ChangeNotifier {
       if (newItems.length < _size) _hasMore = false;
       _page += 1;
     } catch (e) {
-      _error = '페스티벌 목록을 불러오지 못했어요: $e';
+      _error = 'err_fetch_data'.tr(args: [e.toString()]);
     } finally {
       _isLoading = false;
       _isLoadingMore = false;

@@ -328,7 +328,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ],
       ),
-    );
+    ).then((_) => emailCtrl.dispose());
   }
 
   Future<void> signInWithKakao(BuildContext context) async {

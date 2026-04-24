@@ -47,7 +47,7 @@ class FestivalInformationFragment extends StatelessWidget {
               ],
             ),
           ),
-          FepleAppBar('festival_detail'.tr()),
+          FepleAppBar('festival_detail'.tr(), showBackButton: true),
         ],
       ),
     );

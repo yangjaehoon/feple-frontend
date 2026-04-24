@@ -65,30 +65,51 @@ class _HomeFragmentState extends State<HomeFragment> {
   }
 
   Future<void> _loadData() async {
-    await Future.wait([
+    // 순서 로드를 배치로 처리 (setState 2번 → 1번)
+    final orders = await Future.wait([
       _loadArtistOrder(),
       _loadFestivalOrder(),
     ]);
-    await Future.wait([
-      _fetchAndSetArtists(),
-      _fetchAndSetFestivals(),
-    ]);
+    if (!mounted) return;
+    setState(() {
+      if (orders[0] != null) _artistOrder = orders[0]!;
+      if (orders[1] != null) _festivalOrder = orders[1]!;
+    });
+
+    // 데이터 로드를 배치로 처리 (setState 3번 → 1번)
+    try {
+      final data = await Future.wait([
+        _fetchArtists(_userId!),
+        _fetchFestivals(_userId!),
+      ]);
+      if (!mounted) return;
+      final artists = data[0] as List<FollowedArtist>;
+      final festivals = data[1] as List<FestivalModel>;
+      setState(() {
+        _artists = artists;
+        _festivals = festivals;
+        _boards = _buildBoards(artists, festivals);
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _artists = _artists ?? [];
+        _festivals = _festivals ?? [];
+        _boards ??= [];
+      });
+    }
   }
 
-  Future<void> _loadArtistOrder() async {
+  Future<List<int>?> _loadArtistOrder() async {
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getStringList(_artistOrderKey);
-    if (saved != null && mounted) {
-      setState(() => _artistOrder = saved.map(int.parse).toList());
-    }
+    return saved?.map(int.parse).toList();
   }
 
-  Future<void> _loadFestivalOrder() async {
+  Future<List<int>?> _loadFestivalOrder() async {
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getStringList(_festivalOrderKey);
-    if (saved != null && mounted) {
-      setState(() => _festivalOrder = saved.map(int.parse).toList());
-    }
+    return saved?.map(int.parse).toList();
   }
 
   Future<void> _saveArtistOrder(List<int> order) async {
@@ -101,46 +122,6 @@ class _HomeFragmentState extends State<HomeFragment> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(
         _festivalOrderKey, order.map((e) => e.toString()).toList());
-  }
-
-  Future<void> _fetchAndSetArtists() async {
-    try {
-      final data = await _fetchArtists(_userId!);
-      if (!mounted) return;
-      setState(() => _artists = data);
-      _maybeUpdateBoards();
-    } catch (_) {
-      if (mounted) setState(() => _artists = []);
-    }
-  }
-
-  Future<void> _fetchAndSetFestivals() async {
-    try {
-      final data = await _fetchFestivals(_userId!);
-      if (!mounted) return;
-      setState(() => _festivals = data);
-      _maybeUpdateBoards();
-    } catch (_) {
-      if (mounted) setState(() => _festivals = []);
-    }
-  }
-
-  void _maybeUpdateBoards() {
-    if (_artists != null && _festivals != null) {
-      setState(() {
-        _boards = _buildBoards(_artists!, _festivals!);
-      });
-    }
-  }
-
-  void _refresh() {
-    if (_userId == null || !mounted) return;
-    setState(() {
-      _artists = null;
-      _festivals = null;
-    });
-    _fetchAndSetArtists();
-    _fetchAndSetFestivals();
   }
 
   Future<List<FollowedArtist>> _fetchArtists(int userId) async {
@@ -173,7 +154,6 @@ class _HomeFragmentState extends State<HomeFragment> {
     ];
   }
 
-  // 저장된 순서 적용: order에 있는 id 순 → 나머지 뒤에 추가
   List<T> _applyOrder<T>(
       List<T> items, List<int> order, int Function(T) getId) {
     if (order.isEmpty) return items;
@@ -183,6 +163,16 @@ class _HomeFragmentState extends State<HomeFragment> {
     final rest =
         items.where((item) => !orderedIds.contains(getId(item))).toList();
     return [...ordered, ...rest];
+  }
+
+  void _refresh() {
+    if (_userId == null || !mounted) return;
+    setState(() {
+      _artists = null;
+      _festivals = null;
+      _boards = null;
+    });
+    _loadData();
   }
 
   void _openArtistOrderSettings() {
@@ -246,6 +236,13 @@ class _HomeFragmentState extends State<HomeFragment> {
       );
     }
 
+    final artists = _artists == null
+        ? null
+        : _applyOrder(_artists!, _artistOrder, (a) => a.id);
+    final festivals = _festivals == null
+        ? null
+        : _applyOrder(_festivals!, _festivalOrder, (f) => f.id);
+
     return Container(
       color: colors.backgroundMain,
       child: Stack(
@@ -258,23 +255,42 @@ class _HomeFragmentState extends State<HomeFragment> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildSectionHeader(
-                  'followed_artists'.tr(),
-                  colors,
+                _SectionHeader(
+                  title: 'followed_artists'.tr(),
                   onSettings: _artists != null && _artists!.isNotEmpty
                       ? _openArtistOrderSettings
                       : null,
                 ),
-                _buildArtistsSection(colors),
+                _ArtistsSection(
+                  artists: artists,
+                  onTap: (artist) => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ArtistPage(
+                        artistId: artist.id,
+                        artistName: artist.name,
+                        followerCounter: 0,
+                      ),
+                    ),
+                  ).then((_) => _refresh()),
+                ),
                 const SizedBox(height: 8),
-                _buildSectionHeader(
-                  'liked_festivals'.tr(),
-                  colors,
+                _SectionHeader(
+                  title: 'liked_festivals'.tr(),
                   onSettings: _festivals != null && _festivals!.isNotEmpty
                       ? _openFestivalOrderSettings
                       : null,
                 ),
-                _buildFestivalsSection(colors),
+                _FestivalsSection(
+                  festivals: festivals,
+                  onTap: (festival) => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          FestivalInformationFragment(poster: festival),
+                    ),
+                  ).then((_) => _refresh()),
+                ),
                 const SizedBox(height: 8),
                 if (_boards == null)
                   const SizedBox(height: 150)
@@ -291,9 +307,19 @@ class _HomeFragmentState extends State<HomeFragment> {
       ),
     );
   }
+}
 
-  Widget _buildSectionHeader(String title, AbstractThemeColors colors,
-      {VoidCallback? onSettings}) {
+// ── 섹션 헤더 ──────────────────────────────────────────────────────────────
+
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({required this.title, this.onSettings});
+
+  final String title;
+  final VoidCallback? onSettings;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Padding(
       padding: EdgeInsets.fromLTRB(20, 16, onSettings != null ? 8 : 20, 8),
       child: Row(
@@ -330,201 +356,241 @@ class _HomeFragmentState extends State<HomeFragment> {
       ),
     );
   }
+}
 
-  // ── 팔로우 아티스트 ──
+// ── 팔로우 아티스트 섹션 ──────────────────────────────────────────────────
 
-  Widget _buildArtistsSection(AbstractThemeColors colors) {
-    if (_artists == null) {
+class _ArtistsSection extends StatelessWidget {
+  const _ArtistsSection({required this.artists, required this.onTap});
+
+  final List<FollowedArtist>? artists;
+  final void Function(FollowedArtist) onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+
+    if (artists == null) {
       return SizedBox(
         height: 110,
         child: Center(
             child: CircularProgressIndicator(color: colors.loadingIndicator)),
       );
     }
-    if (_artists!.isEmpty) {
+    if (artists!.isEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         child: Text('no_followed_artists'.tr(),
             style: TextStyle(color: colors.textSecondary)),
       );
     }
-    final artists = _applyOrder(_artists!, _artistOrder, (a) => a.id);
     return SizedBox(
       height: 110,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: artists.length,
-        itemBuilder: (context, index) {
-          final artist = artists[index];
-          return GestureDetector(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => ArtistPage(
-                  artistId: artist.id,
-                  artistName: artist.name,
-                  followerCounter: 0,
-                ),
-              ),
-            ).then((_) => _refresh()),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(3),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: colors.followRingColor,
-                      boxShadow: [
-                        BoxShadow(
-                          color: colors.cardShadow.withValues(alpha: 0.15),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Container(
-                      padding: const EdgeInsets.all(2),
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle, color: colors.surface),
-                      child: CircleAvatar(
-                        radius: 32,
-                        backgroundColor: colors.backgroundMain,
-                        backgroundImage: (artist.profileImageUrl != null &&
-                                artist.profileImageUrl!.isNotEmpty)
-                            ? CachedNetworkImageProvider(
-                                artist.profileImageUrl!,
-                                maxWidth: 150)
-                            : null,
-                        child: (artist.profileImageUrl == null ||
-                                artist.profileImageUrl!.isEmpty)
-                            ? Icon(Icons.person_rounded,
-                                size: 28, color: colors.textSecondary)
-                            : null,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  SizedBox(
-                    width: 64,
-                    child: Text(
-                      artist.name,
-                      style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: colors.textTitle),
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
+        itemCount: artists!.length,
+        itemBuilder: (_, index) => _ArtistItem(
+          key: ValueKey(artists![index].id),
+          artist: artists![index],
+          onTap: onTap,
+        ),
       ),
     );
   }
+}
 
-  // ── 좋아요한 페스티벌 ──
+class _ArtistItem extends StatelessWidget {
+  const _ArtistItem({
+    super.key,
+    required this.artist,
+    required this.onTap,
+  });
 
-  Widget _buildFestivalsSection(AbstractThemeColors colors) {
-    if (_festivals == null) {
+  final FollowedArtist artist;
+  final void Function(FollowedArtist) onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    return GestureDetector(
+      onTap: () => onTap(artist),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: colors.followRingColor,
+                boxShadow: [
+                  BoxShadow(
+                    color: colors.cardShadow.withValues(alpha: 0.15),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle, color: colors.surface),
+                child: CircleAvatar(
+                  radius: 32,
+                  backgroundColor: colors.backgroundMain,
+                  backgroundImage: (artist.profileImageUrl != null &&
+                          artist.profileImageUrl!.isNotEmpty)
+                      ? CachedNetworkImageProvider(
+                          artist.profileImageUrl!,
+                          maxWidth: 150)
+                      : null,
+                  child: (artist.profileImageUrl == null ||
+                          artist.profileImageUrl!.isEmpty)
+                      ? Icon(Icons.person_rounded,
+                          size: 28, color: colors.textSecondary)
+                      : null,
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
+            SizedBox(
+              width: 64,
+              child: Text(
+                artist.name,
+                style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: colors.textTitle),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── 좋아요한 페스티벌 섹션 ────────────────────────────────────────────────
+
+class _FestivalsSection extends StatelessWidget {
+  const _FestivalsSection({required this.festivals, required this.onTap});
+
+  final List<FestivalModel>? festivals;
+  final void Function(FestivalModel) onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+
+    if (festivals == null) {
       return SizedBox(
         height: 160,
         child: Center(
             child: CircularProgressIndicator(color: colors.loadingIndicator)),
       );
     }
-    if (_festivals!.isEmpty) {
+    if (festivals!.isEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         child: Text('no_liked_festivals'.tr(),
             style: TextStyle(color: colors.textSecondary)),
       );
     }
-    final festivals = _applyOrder(_festivals!, _festivalOrder, (f) => f.id);
     return SizedBox(
       height: 190,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: festivals.length,
-        itemBuilder: (context, index) {
-          final festival = festivals[index];
-          return GestureDetector(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => FestivalInformationFragment(poster: festival),
-              ),
-            ).then((_) => _refresh()),
-            child: Container(
-              width: 130,
-              margin: const EdgeInsets.only(right: 12),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: colors.cardShadow.withValues(alpha: 0.12),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    CachedNetworkImage(
-                      imageUrl: festival.posterUrl,
-                      memCacheWidth: 260,
-                      fit: BoxFit.cover,
-                      errorWidget: (_, __, ___) => Container(
-                        color: colors.surface,
-                        child: Icon(Icons.image_not_supported_rounded,
-                            color: colors.textSecondary),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 6),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                            colors: [
-                              Colors.black.withValues(alpha: 0.7),
-                              Colors.transparent
-                            ],
-                          ),
-                        ),
-                        child: Text(
-                          festival.title,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ],
+        itemCount: festivals!.length,
+        itemBuilder: (_, index) => _FestivalItem(
+          key: ValueKey(festivals![index].id),
+          festival: festivals![index],
+          onTap: onTap,
+        ),
+      ),
+    );
+  }
+}
+
+class _FestivalItem extends StatelessWidget {
+  const _FestivalItem({
+    super.key,
+    required this.festival,
+    required this.onTap,
+  });
+
+  final FestivalModel festival;
+  final void Function(FestivalModel) onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    return GestureDetector(
+      onTap: () => onTap(festival),
+      child: Container(
+        width: 130,
+        margin: const EdgeInsets.only(right: 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: colors.cardShadow.withValues(alpha: 0.12),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              CachedNetworkImage(
+                imageUrl: festival.posterUrl,
+                memCacheWidth: 260,
+                fit: BoxFit.cover,
+                errorWidget: (_, __, ___) => Container(
+                  color: colors.surface,
+                  child: Icon(Icons.image_not_supported_rounded,
+                      color: colors.textSecondary),
                 ),
               ),
-            ),
-          );
-        },
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [
+                        Colors.black.withValues(alpha: 0.7),
+                        Colors.transparent
+                      ],
+                    ),
+                  ),
+                  child: Text(
+                    festival.title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

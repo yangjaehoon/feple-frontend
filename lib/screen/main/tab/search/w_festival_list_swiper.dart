@@ -75,13 +75,13 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
             autoplay: true,
             duration: 300,
             itemCount: items.length,
-            pagination: SwiperPagination(
-              margin: const EdgeInsets.only(bottom: 0),
-              builder: DotSwiperPaginationBuilder(
-                activeColor: colors.activate,
-                color: colors.activate.withValues(alpha: 0.3),
-                activeSize: 10,
-                size: 7,
+            pagination: const SwiperPagination(
+              margin: EdgeInsets.only(bottom: 0),
+              builder: FractionPaginationBuilder(
+                color: Colors.white54,
+                activeColor: Colors.white,
+                fontSize: 13,
+                activeFontSize: 15,
               ),
             ),
             itemBuilder: (BuildContext context, int index) {

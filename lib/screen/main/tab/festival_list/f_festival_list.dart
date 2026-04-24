@@ -23,9 +23,10 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
   Widget build(BuildContext context) {
     final rs = ResponsiveSize(context);
     final colors = context.appColors;
-    final provider = context.watch<FestivalPreviewProvider>();
-    final activeFilterCount =
-        provider.selectedGenres.length + provider.selectedRegions.length;
+    // 필터 개수만 구독 — 페스티벌 목록 로딩과 무관하게 재빌드하지 않음
+    final activeFilterCount = context.select<FestivalPreviewProvider, int>(
+      (p) => p.selectedGenres.length + p.selectedRegions.length,
+    );
 
     return Container(
       color: colors.backgroundMain,

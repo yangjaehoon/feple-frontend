@@ -127,7 +127,10 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final user = context.watch<UserProvider>().user;
+    // profileImageUrl·userId만 구독 — 다른 UserProvider 상태 변경 시 재빌드 안 함
+    final (profileImageUrl, userId) = context.select<UserProvider, (String?, int?)>(
+      (p) => (p.user?.profileImageUrl, p.user?.id),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -189,10 +192,9 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                         backgroundImage: _pickedImage != null
                             ? FileImage(File(_pickedImage!.path))
                                 as ImageProvider
-                            : (user != null &&
-                                    user.profileImageUrl != null &&
-                                    user.profileImageUrl!.isNotEmpty)
-                                ? CachedNetworkImageProvider(user.profileImageUrl!)
+                            : (profileImageUrl != null &&
+                                    profileImageUrl.isNotEmpty)
+                                ? CachedNetworkImageProvider(profileImageUrl)
                                     as ImageProvider
                                 : const AssetImage(
                                     'assets/image/feple_logo.png'),
@@ -244,7 +246,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                 Expanded(
                   child: NicknameField(
                     key: _nicknameKey,
-                    excludeUserId: user?.id,
+                    excludeUserId: userId,
                     initialValue: _originalNickname,
                     onResult: (_, __) {},
                   ),

@@ -189,6 +189,7 @@
   "cert_submit_success": "인증 신청이 완료되었습니다!\n관리자 승인 후 뱃지가 표시됩니다.",
   "cert_submit_failed": "인증 신청 실패: {}",
   "cert_already_submitted": "이미 해당 페스티벌에 인증 신청을 했습니다.",
+  "cert_already_approved": "이미 인증이 완료된 페스티벌입니다.",
   "cert_title": "페스티벌 참여 인증",
   "cert_description": "{}에 참여했다면 현장 사진으로 인증해주세요.\n입장 팔찌, 티켓, 무대 사진 등이 가능합니다.",
   "cert_photo_hint": "사진을 첨부해주세요",

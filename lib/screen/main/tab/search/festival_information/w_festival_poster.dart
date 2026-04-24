@@ -29,6 +29,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
   bool _liked = false;
   bool _descExpanded = true;
   bool _certSubmitting = false;
+  bool _isCertified = false;
   final _certService = CertificationService();
 
   String get _descPrefKey => 'festival_desc_expanded_${widget.poster.id}';
@@ -38,6 +39,14 @@ class _FestivalPosterState extends State<FestivalPoster> {
     super.initState();
     _loadLikeState();
     _loadDescState();
+    _loadCertState();
+  }
+
+  Future<void> _loadCertState() async {
+    try {
+      final approvedIds = await _certService.getApprovedFestivalIds();
+      if (mounted) setState(() => _isCertified = approvedIds.contains(widget.poster.id));
+    } catch (_) {}
   }
 
   Future<void> _loadDescState() async {
@@ -80,6 +89,10 @@ class _FestivalPosterState extends State<FestivalPoster> {
       final webUri = Uri.parse('https://map.kakao.com/link/search/$name');
       await launchUrl(webUri, mode: LaunchMode.externalApplication);
     }
+  }
+
+  void _showAlreadyCertifiedMessage() {
+    Fluttertoast.showToast(msg: 'cert_already_approved'.tr());
   }
 
   Future<void> _submitCertification() async {
@@ -265,11 +278,22 @@ class _FestivalPosterState extends State<FestivalPoster> {
                                 ),
                                 const SizedBox(width: 8),
                                 _ActionButton(
-                                  onTap: _certSubmitting ? null : _submitCertification,
+                                  onTap: _certSubmitting
+                                      ? null
+                                      : _isCertified
+                                          ? _showAlreadyCertifiedMessage
+                                          : _submitCertification,
                                   icon: _certSubmitting
                                       ? Icons.hourglass_top_rounded
                                       : Icons.verified_rounded,
-                                  color: _certSubmitting ? Colors.white54 : Colors.white,
+                                  color: _isCertified
+                                      ? Colors.lightBlueAccent
+                                      : _certSubmitting
+                                          ? Colors.white54
+                                          : Colors.white,
+                                  bgColor: _isCertified
+                                      ? Colors.blue.withValues(alpha: 0.35)
+                                      : null,
                                 ),
                               ],
                             ),

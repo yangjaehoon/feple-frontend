@@ -1,8 +1,8 @@
 import 'package:feple/common/common.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:feple/provider/post_change_notifier.dart';
+import 'package:feple/common/app_events.dart';
 import 'package:feple/injection.dart';
+import 'package:provider/provider.dart';
 import 'package:feple/service/post_service.dart';
 
 import '../../../../provider/user_provider.dart';
@@ -65,7 +65,7 @@ class _WritePostState extends State<WritePost> {
         content: content,
       );
       if (!mounted) return;
-      context.read<PostChangeNotifier>().notifyPostChanged();
+      AppEvents.postChanged.value++;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           backgroundColor: AppColors.skyBlue,
           content: Text('post_success'.tr())));

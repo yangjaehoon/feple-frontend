@@ -1,8 +1,8 @@
 import 'package:feple/common/common.dart';
-
 import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/login/signup.dart';
 import 'package:feple/service/auth_service.dart';
+import 'package:feple/service/fcm_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -258,6 +258,7 @@ class _LoginPageState extends State<LoginPage> {
       final user = await AuthService.instance.loginWithEmail(email, password);
       if (!mounted) return;
       await userProvider.setUser(user);
+      FcmService.instance.init().catchError((e) => debugPrint('[FCM] init failed: $e'));
     } on EmailNotVerifiedException {
       if (mounted) {
         setState(() => _loginError = 'email_not_verified'.tr());
@@ -339,6 +340,7 @@ class _LoginPageState extends State<LoginPage> {
       final user = await AuthService.instance.loginWithKakao();
       if (!mounted) return;
       await userProvider.setUser(user);
+      FcmService.instance.init().catchError((e) => debugPrint('[FCM] init failed: $e'));
     } on PlatformException catch (e) {
       debugPrint('=== 카카오 로그인 실패 에러 ===\n$e\n======================');
       if (e.code != 'CANCELED' && mounted) {

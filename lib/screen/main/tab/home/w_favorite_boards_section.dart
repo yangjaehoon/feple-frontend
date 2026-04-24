@@ -1,9 +1,9 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/model/favorite_board.dart';
+import 'package:feple/screen/main/tab/home/favorite_boards_prefs_manager.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_post_list.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_post_list.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/screen/main/tab/home/w_board_settings_sheet.dart';
 
@@ -24,14 +24,12 @@ class FavoriteBoardsSection extends StatefulWidget {
 class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
   List<String> _orderedSelectedIds = [];
   bool _prefsLoaded = false;
-
-  String get _prefsKey => 'fav_boards_${widget.userId}';
-  String get _orderKey => 'fav_boards_order_${widget.userId}';
-  String get _knownKey => 'fav_boards_known_${widget.userId}';
+  late final FavoriteBoardsPrefsManager _prefs;
 
   @override
   void initState() {
     super.initState();
+    _prefs = FavoriteBoardsPrefsManager(widget.userId);
     _loadPrefs();
   }
 
@@ -59,51 +57,18 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
   }
 
   Future<void> _loadPrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    final saved = prefs.getStringList(_prefsKey);
-    final savedOrder = prefs.getStringList(_orderKey);
-    final knownIds = prefs.getStringList(_knownKey)?.toSet();
+    final allIds = widget.allBoards.map((b) => b.boardId).toList();
+    final ordered = await _prefs.load(allIds);
     if (!mounted) return;
     setState(() {
-      final validIds = widget.allBoards.map((b) => b.boardId).toSet();
-
-      // 저장 후 새로 좋아요/팔로우한 보드만 자동 추가
-      final trulyNewIds = knownIds != null
-          ? widget.allBoards
-              .map((b) => b.boardId)
-              .where((id) => !knownIds.contains(id))
-              .toList()
-          : <String>[];
-
-      if (saved != null && saved.isNotEmpty) {
-        // 선택 목록이 저장되어 있는 경우 (일부만 선택)
-        final savedValid = saved.where(validIds.contains).toList();
-        _orderedSelectedIds = [...savedValid, ...trulyNewIds];
-      } else if (savedOrder != null && savedOrder.isNotEmpty) {
-        // 전체 선택 상태이지만 순서가 저장되어 있는 경우
-        final orderedValid = savedOrder.where(validIds.contains).toList();
-        _orderedSelectedIds = [...orderedValid, ...trulyNewIds];
-      } else {
-        // 기본값: 좋아요/팔로우한 게시판 전체 표시
-        _orderedSelectedIds = widget.allBoards.map((b) => b.boardId).toList();
-      }
+      _orderedSelectedIds = ordered;
       _prefsLoaded = true;
     });
   }
 
   Future<void> _savePrefs(List<String> orderedSelected) async {
-    final prefs = await SharedPreferences.getInstance();
-    // 순서는 항상 저장
-    await prefs.setStringList(_orderKey, orderedSelected);
-    // 저장 시점에 알고 있던 모든 보드 ID 기록 (새 보드 자동 추가 판별용)
-    final allKnown = widget.allBoards.map((b) => b.boardId).toList();
-    await prefs.setStringList(_knownKey, allKnown);
-    // 전부 선택된 상태라면 선택 목록은 삭제 (새로 좋아요한 게시판 자동 추가 유지)
-    if (orderedSelected.length == widget.allBoards.length) {
-      await prefs.remove(_prefsKey);
-    } else {
-      await prefs.setStringList(_prefsKey, orderedSelected);
-    }
+    final allIds = widget.allBoards.map((b) => b.boardId).toList();
+    await _prefs.save(orderedSelected, allIds);
   }
 
   void _openSettings() {

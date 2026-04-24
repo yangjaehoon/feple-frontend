@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
+import 'package:feple/screen/notification/w_notification_card.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/notification_service.dart';
 import 'package:flutter/material.dart';
@@ -130,9 +131,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                   itemCount: _items.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 8),
-                  itemBuilder: (_, i) => _NotificationCard(
+                  itemBuilder: (_, i) => NotificationCard(
                     item: _items[i],
-                    colors: colors,
                     onTap: () => _onTap(i),
                   ),
                 ),
@@ -140,132 +140,3 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 }
 
-class _NotificationCard extends StatelessWidget {
-  final Map<String, dynamic> item;
-  final AbstractThemeColors colors;
-  final VoidCallback onTap;
-
-  const _NotificationCard({
-    required this.item,
-    required this.colors,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isRead = item['read'] as bool? ?? false;
-    final title = item['title'] as String? ?? '';
-    final body = item['body'] as String? ?? '';
-    final createdAt = item['createdAt'] as String?;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: isRead
-              ? Colors.white
-              : colors.certRingColor.withValues(alpha: 0.06),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: isRead
-                ? Colors.grey.withValues(alpha: 0.15)
-                : colors.certRingColor.withValues(alpha: 0.3),
-            width: 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: colors.cardShadow.withValues(alpha: 0.06),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: _iconColor(item['type'], colors).withValues(alpha: 0.12),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(_iconData(item['type']),
-                  color: _iconColor(item['type'], colors), size: 20),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: isRead ? FontWeight.w500 : FontWeight.w700,
-                      color: colors.textTitle,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    body,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: colors.textSecondary,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  if (createdAt != null) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      createdAt.length >= 10
-                          ? createdAt.substring(0, 10)
-                          : createdAt,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: colors.textSecondary.withValues(alpha: 0.6),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            if (!isRead)
-              Container(
-                width: 8,
-                height: 8,
-                margin: const EdgeInsets.only(top: 4, left: 8),
-                decoration: BoxDecoration(
-                  color: colors.certRingColor,
-                  shape: BoxShape.circle,
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  IconData _iconData(dynamic type) {
-    switch (type as String?) {
-      case 'CERT_APPROVED':     return Icons.verified_rounded;
-      case 'CERT_REJECTED':     return Icons.cancel_outlined;
-      case 'NEW_COMMENT':       return Icons.chat_bubble_rounded;
-      case 'FESTIVAL_REMINDER': return Icons.event_rounded;
-      default:                  return Icons.festival_rounded;
-    }
-  }
-
-  Color _iconColor(dynamic type, AbstractThemeColors colors) {
-    switch (type as String?) {
-      case 'CERT_APPROVED':     return colors.certRingColor;
-      case 'CERT_REJECTED':     return Colors.grey;
-      case 'NEW_COMMENT':       return Colors.blueAccent;
-      case 'FESTIVAL_REMINDER': return Colors.deepOrangeAccent;
-      default:                  return colors.certRingColor;
-    }
-  }
-}

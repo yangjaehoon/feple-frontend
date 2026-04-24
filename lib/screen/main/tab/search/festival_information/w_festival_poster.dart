@@ -440,7 +440,8 @@ class _CertificationBottomSheetState extends State<_CertificationBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final mediaQuery = MediaQuery.of(context);
+    final bottomInset = mediaQuery.viewInsets.bottom + mediaQuery.padding.bottom;
 
     return Container(
       padding: EdgeInsets.fromLTRB(24, 20, 24, 24 + bottomInset),

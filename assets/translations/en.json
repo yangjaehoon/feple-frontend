@@ -189,6 +189,7 @@
   "cert_submit_success": "Certification submitted!\nBadge will appear after admin approval.",
   "cert_submit_failed": "Certification failed: {}",
   "cert_already_submitted": "You already submitted certification for this festival.",
+  "cert_already_approved": "Your certification for this festival has already been approved.",
   "cert_title": "Festival Attendance Certification",
   "cert_description": "Attended {}? Prove it with a photo from the venue.\nWristbands, tickets, or stage photos are all accepted.",
   "cert_photo_hint": "Tap to attach a photo",

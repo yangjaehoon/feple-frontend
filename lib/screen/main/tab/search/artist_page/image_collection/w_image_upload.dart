@@ -6,6 +6,7 @@ import 'package:feple/model/festival_preview.dart';
 import 'package:feple/service/artist_schedule_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/service/artist_photo_service.dart';
 
 import 'w_image_picker_box.dart';
@@ -23,7 +24,7 @@ class ImgUpload extends StatefulWidget {
 
 class _ImgUploadState extends State<ImgUpload> {
   final _formKey = GlobalKey<FormState>();
-  final _photoService = ArtistPhotoService();
+  final _photoService = sl<ArtistPhotoService>();
 
   Uint8List? imageData;
   TextEditingController titleTEC = TextEditingController();

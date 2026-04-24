@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/screen/main/tab/my_page/s_certification_list.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -12,7 +13,7 @@ class FtvCertificationWidget extends StatefulWidget {
 }
 
 class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
-  final _certService = CertificationService();
+  final _certService = sl<CertificationService>();
   List<Map<String, dynamic>>? _certifications;
   bool _loading = true;
 

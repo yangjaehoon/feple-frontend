@@ -3,6 +3,7 @@ import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_write_post.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class FestivalPostListScreen extends StatefulWidget {
 }
 
 class _FestivalPostListScreenState extends State<FestivalPostListScreen> {
-  final PostService _postService = PostService();
+  final PostService _postService = sl<PostService>();
   late Future<List<Post>> _postsFuture;
 
   @override

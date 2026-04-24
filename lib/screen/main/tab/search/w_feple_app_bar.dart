@@ -3,6 +3,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/screen/notification/s_notification.dart';
 import 'package:feple/screen/search/s_unified_search.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/service/notification_service.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +18,7 @@ class FepleAppBar extends StatefulWidget {
 }
 
 class _FepleAppBarState extends State<FepleAppBar> {
-  final _notifService = NotificationService();
+  final _notifService = sl<NotificationService>();
   int _unreadCount = 0;
 
   @override

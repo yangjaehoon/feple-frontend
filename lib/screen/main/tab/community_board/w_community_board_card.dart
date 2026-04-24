@@ -5,12 +5,11 @@ import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_post.dart';
-import 'package:feple/provider/post_change_notifier.dart';
+import 'package:feple/common/app_events.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 /// 게시판 미리보기 카드 — 3개 게시판(인기/자유/동행)이 공유하는 공용 위젯
 class CommunityBoardCard extends StatefulWidget {
@@ -36,17 +35,12 @@ class CommunityBoardCard extends StatefulWidget {
 class _CommunityBoardCardState extends State<CommunityBoardCard> {
   final PostService _postService = sl<PostService>();
   late Future<List<dynamic>> _postsFuture;
-  PostChangeNotifier? _postChangeNotifier;
 
   @override
   void initState() {
     super.initState();
     _postsFuture = _postService.fetchPosts(widget.serviceBoardType);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _postChangeNotifier = context.read<PostChangeNotifier>();
-      _postChangeNotifier!.addListener(_refreshPosts);
-    });
+    AppEvents.postChanged.addListener(_refreshPosts);
   }
 
   void _refreshPosts() {
@@ -59,7 +53,7 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
 
   @override
   void dispose() {
-    _postChangeNotifier?.removeListener(_refreshPosts);
+    AppEvents.postChanged.removeListener(_refreshPosts);
     super.dispose();
   }
 

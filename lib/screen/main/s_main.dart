@@ -1,10 +1,8 @@
 import 'package:feple/screen/main/tab/tab_item.dart';
 import 'package:feple/screen/main/tab/tab_navigator.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
+import '../../common/app_events.dart';
 import '../../common/common.dart';
-import '../../provider/post_change_notifier.dart';
 import 'w_menu_drawer.dart';
 
 class MainScreen extends StatefulWidget {
@@ -227,7 +225,7 @@ class MainScreenState extends State<MainScreen>
       popAllHistory(navigatorKeys[index]);
     }
     if (tabs[index] == TabItem.communityBoard) {
-      context.read<PostChangeNotifier>().notifyPostChanged();
+      AppEvents.postChanged.value++;
     }
     _changeTab(index);
   }

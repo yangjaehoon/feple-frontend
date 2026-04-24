@@ -4,12 +4,10 @@ import 'package:feple/screen/main/tab/search/artist_page/w_festival_calendar.dar
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-import 'package:provider/provider.dart';
-
 import 'package:feple/injection.dart';
+import '../../../../../common/app_events.dart';
 import '../../../../../service/artist_follow_service.dart';
 import '../../../../../model/follow_response.dart';
-import '../../../../../provider/like_notifier.dart';
 import 'image_collection/f_image_collection.dart';
 
 class ArtistNameLike extends StatefulWidget {
@@ -86,7 +84,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
         isFollowed = res.followed;
         followCount = res.followerCount;
       });
-      context.read<LikeNotifier>().notifyLikeChanged();
+      AppEvents.likeChanged.value++;
 
       Fluttertoast.showToast(
         msg: isFollowed ? 'follow_done'.tr() : 'follow_cancel'.tr(),

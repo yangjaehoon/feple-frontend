@@ -1,5 +1,9 @@
+import 'package:feple/injection.dart';
+import 'package:feple/provider/festival_preview_provider.dart';
 import 'package:feple/screen/main/tab/tab_item.dart';
+import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class TabNavigator extends StatelessWidget {
   const TabNavigator({
@@ -15,7 +19,7 @@ class TabNavigator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Navigator(
+    final navigator = Navigator(
       key: navigatorKey,
       observers: observers,
       onGenerateRoute: (routeSettings) {
@@ -24,5 +28,15 @@ class TabNavigator extends StatelessWidget {
         );
       },
     );
+
+    // FestivalPreviewProvider는 축제 탭에서만 필요 → 탭 범위로 스코핑
+    if (tabItem == TabItem.concertList) {
+      return ChangeNotifierProvider(
+        create: (_) => FestivalPreviewProvider(sl<FestivalService>()),
+        child: navigator,
+      );
+    }
+
+    return navigator;
   }
 }

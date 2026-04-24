@@ -3,11 +3,7 @@ import 'dart:developer';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/injection.dart';
-import 'package:feple/provider/festival_preview_provider.dart';
-import 'package:feple/provider/like_notifier.dart';
-import 'package:feple/provider/post_change_notifier.dart';
 import 'package:feple/provider/user_provider.dart';
-import 'package:feple/service/festival_service.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/login/login.dart';
@@ -50,10 +46,6 @@ void main() async {
           ChangeNotifierProvider(create: (context) => AuthProvider()),
           ChangeNotifierProvider<UserProvider>(
               create: (_) => UserProvider(sl<UserService>())),
-          ChangeNotifierProvider(
-              create: (_) => FestivalPreviewProvider(sl<FestivalService>())),
-          ChangeNotifierProvider(create: (_) => LikeNotifier()),
-          ChangeNotifierProvider(create: (_) => PostChangeNotifier()),
         ],
         child: const MyApp(),
       ),

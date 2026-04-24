@@ -15,7 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-import '../../../../provider/like_notifier.dart';
+import '../../../../common/app_events.dart';
 import '../../../../provider/user_provider.dart';
 
 class HomeFragment extends StatefulWidget {
@@ -34,21 +34,18 @@ class _HomeFragmentState extends State<HomeFragment> {
 
   List<FavoriteBoard>? _boards;
   int? _userId;
-  late LikeNotifier _likeNotifier;
-  bool _likeListenerAdded = false;
-
   String get _artistOrderKey => 'artist_order_$_userId';
   String get _festivalOrderKey => 'festival_order_$_userId';
 
   @override
+  void initState() {
+    super.initState();
+    AppEvents.likeChanged.addListener(_refresh);
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    if (!_likeListenerAdded) {
-      _likeNotifier = context.read<LikeNotifier>();
-      _likeNotifier.addListener(_refresh);
-      _likeListenerAdded = true;
-    }
 
     final user = context.read<UserProvider>().user;
     if (user != null && _userId != user.id) {
@@ -60,7 +57,7 @@ class _HomeFragmentState extends State<HomeFragment> {
 
   @override
   void dispose() {
-    _likeNotifier.removeListener(_refresh);
+    AppEvents.likeChanged.removeListener(_refresh);
     super.dispose();
   }
 

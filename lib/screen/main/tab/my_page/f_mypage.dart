@@ -21,11 +21,12 @@ class _MypageFragmentState extends State<MypageFragment> {
 
   @override
   Widget build(BuildContext context) {
-    final me = context.watch<UserProvider>().user;
+    // userId만 구독 — 프로필 사진·닉네임 변경 시 이 위젯은 재빌드하지 않음
+    final userId = context.select<UserProvider, int?>((p) => p.user?.id);
     final rs = ResponsiveSize(context);
 
-    if (me == null) {
-      return Center(child: CircularProgressIndicator());
+    if (userId == null) {
+      return const Center(child: CircularProgressIndicator());
     }
     return Container(
       color: context.appColors.backgroundMain,
@@ -38,14 +39,14 @@ class _MypageFragmentState extends State<MypageFragment> {
             ),
             child: Column(
               children: [
-                ProfileWidget(userId: me.id,),
-                MyPostCommentWidget(userId: me.id),
-                FtvCertificationWidget(),
-                FollowArtistsWidget(userId: me.id),
+                ProfileWidget(userId: userId),
+                MyPostCommentWidget(userId: userId),
+                const FtvCertificationWidget(),
+                FollowArtistsWidget(userId: userId),
               ],
             ),
           ),
-          FepleAppBar("Feple"),
+          const FepleAppBar("Feple"),
         ],
       ),
     );

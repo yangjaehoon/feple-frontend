@@ -37,7 +37,7 @@ class MainScreenState extends State<MainScreen>
       List.generate(5, (_) => GlobalKey<NavigatorState>());
   late final List<_NavBarObserver> _tabObservers;
 
-  bool _showBottomNav = true;
+  final _showBottomNav = ValueNotifier<bool>(true);
 
   int get _currentIndex => tabs.indexOf(_currentTab);
 
@@ -55,7 +55,7 @@ class MainScreenState extends State<MainScreen>
     _tabObservers = List.generate(
       tabs.length,
       (_) => _NavBarObserver(() {
-        if (mounted) setState(() => _showBottomNav = true);
+        if (mounted) _showBottomNav.value = true;
       }),
     );
   }
@@ -63,16 +63,16 @@ class MainScreenState extends State<MainScreen>
   bool _handleScrollNotification(ScrollNotification notification) {
     if (notification is ScrollUpdateNotification) {
       final delta = notification.scrollDelta ?? 0;
-      if (delta > 3 && _showBottomNav) {
-        setState(() => _showBottomNav = false);
-      } else if (delta < -3 && !_showBottomNav) {
-        setState(() => _showBottomNav = true);
+      if (delta > 3 && _showBottomNav.value) {
+        _showBottomNav.value = false;
+      } else if (delta < -3 && !_showBottomNav.value) {
+        _showBottomNav.value = true;
       }
     }
     if (notification is ScrollEndNotification) {
       if (notification.metrics.pixels <= 0) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) setState(() => _showBottomNav = true);
+          if (mounted) _showBottomNav.value = true;
         });
       }
     }
@@ -80,11 +80,13 @@ class MainScreenState extends State<MainScreen>
   }
 
   @override
-  Widget build(BuildContext context) {
-    final bottomPadding = _showBottomNav
-        ? 0.0
-        : MediaQuery.of(context).padding.bottom;
+  void dispose() {
+    _showBottomNav.dispose();
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
@@ -99,11 +101,21 @@ class MainScreenState extends State<MainScreen>
       child: Scaffold(
         extendBody: extendBody,
         drawer: const MenuDrawer(),
-        body: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeInOut,
-          color: context.appColors.backgroundMain,
-          padding: EdgeInsets.only(bottom: bottomPadding),
+        // ValueListenableBuilder: 스크롤 이벤트 시 body 패딩만 재빌드
+        body: ValueListenableBuilder<bool>(
+          valueListenable: _showBottomNav,
+          builder: (context, show, child) {
+            final bottomPadding =
+                show ? 0.0 : MediaQuery.of(context).padding.bottom;
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeInOut,
+              color: context.appColors.backgroundMain,
+              padding: EdgeInsets.only(bottom: bottomPadding),
+              child: child!,
+            );
+          },
+          // child는 ValueNotifier 변경과 무관하게 한 번만 빌드
           child: SafeArea(
             bottom: !extendBody,
             child: NotificationListener<ScrollNotification>(
@@ -112,17 +124,21 @@ class MainScreenState extends State<MainScreen>
             ),
           ),
         ),
-        bottomNavigationBar: ClipRRect(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(bottomNavigationBarBorderRadius),
-            topRight: Radius.circular(bottomNavigationBarBorderRadius),
-          ),
-          child: AnimatedAlign(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeInOut,
-            alignment: Alignment.topCenter,
-            heightFactor: _showBottomNav ? 1.0 : 0.0,
-            child: _buildBottomNavigationBar(context),
+        // ValueListenableBuilder: 스크롤 이벤트 시 하단바만 재빌드
+        bottomNavigationBar: ValueListenableBuilder<bool>(
+          valueListenable: _showBottomNav,
+          builder: (context, show, _) => ClipRRect(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(bottomNavigationBarBorderRadius),
+              topRight: Radius.circular(bottomNavigationBarBorderRadius),
+            ),
+            child: AnimatedAlign(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeInOut,
+              alignment: Alignment.topCenter,
+              heightFactor: show ? 1.0 : 0.0,
+              child: _buildBottomNavigationBar(context),
+            ),
           ),
         ),
       ),
@@ -187,10 +203,10 @@ class MainScreenState extends State<MainScreen>
   }
 
   void _changeTab(int index) {
+    _showBottomNav.value = true; // 탭 전환 시 항상 하단바 표시
     setState(() {
       _visitedTabs.add(index);
       _currentTab = tabs[index];
-      _showBottomNav = true; // 탭 전환 시 항상 하단바 표시
     });
   }
 

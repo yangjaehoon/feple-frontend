@@ -1,17 +1,15 @@
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:feple/common/app_events.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/injection.dart';
-import 'package:feple/network/dio_client.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:flutter/material.dart';
 import '../../../../../model/festival_model.dart';
+import 'festival_poster_notifier.dart';
 import 'w_certification_bottom_sheet.dart';
 
 class FestivalPoster extends StatefulWidget {
@@ -24,57 +22,22 @@ class FestivalPoster extends StatefulWidget {
 }
 
 class _FestivalPosterState extends State<FestivalPoster> {
-  bool _liked = false;
-  bool _descExpanded = true;
-
-  bool _isCertified = false;
-  bool _isPending = false;
-  final _certService = sl<CertificationService>();
-
-  String get _descPrefKey => 'festival_desc_expanded_${widget.poster.id}';
+  late final FestivalPosterNotifier _notifier;
 
   @override
   void initState() {
     super.initState();
-    _loadLikeState();
-    _loadDescState();
-    _loadCertState();
+    _notifier = FestivalPosterNotifier(
+      festivalId: widget.poster.id,
+      certService: sl<CertificationService>(),
+    );
+    _notifier.init();
   }
 
-  Future<void> _loadCertState() async {
-    try {
-      final certs = await _certService.getMyCertifications();
-      final mine = certs.where((c) => c['festivalId'] == widget.poster.id).toList();
-      if (mounted) {
-        setState(() {
-          _isCertified = mine.any((c) => c['status'] == 'APPROVED');
-          _isPending = !_isCertified && mine.any((c) => c['status'] == 'PENDING');
-        });
-      }
-    } catch (_) {}
-  }
-
-  Future<void> _loadDescState() async {
-    final prefs = await SharedPreferences.getInstance();
-    final saved = prefs.getBool(_descPrefKey);
-    if (saved != null && mounted) {
-      setState(() => _descExpanded = saved);
-    }
-  }
-
-  Future<void> _saveDescState(bool expanded) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_descPrefKey, expanded);
-  }
-
-  Future<void> _loadLikeState() async {
-    try {
-      final resp =
-          await DioClient.dio.get('/festivals/${widget.poster.id}/liked');
-      if (mounted) setState(() => _liked = resp.data as bool);
-    } catch (e) {
-      debugPrint('loadLikeState error: $e');
-    }
+  @override
+  void dispose() {
+    _notifier.dispose();
+    super.dispose();
   }
 
   Future<void> _openKakaoMap() async {
@@ -84,7 +47,8 @@ class _FestivalPosterState extends State<FestivalPoster> {
 
     if (lat != null && lng != null) {
       final appUri = Uri.parse('kakaomap://look?p=$lat,$lng');
-      final webUri = Uri.parse('https://map.kakao.com/link/map/$name,$lat,$lng');
+      final webUri =
+          Uri.parse('https://map.kakao.com/link/map/$name,$lat,$lng');
       if (await canLaunchUrl(appUri)) {
         await launchUrl(appUri);
       } else {
@@ -96,14 +60,6 @@ class _FestivalPosterState extends State<FestivalPoster> {
     }
   }
 
-  void _showAlreadyCertifiedMessage(BuildContext ctx) {
-    Fluttertoast.showToast(msg: ctx.tr('cert_already_approved'));
-  }
-
-  void _showPendingMessage(BuildContext ctx) {
-    Fluttertoast.showToast(msg: ctx.tr('cert_pending_notice'));
-  }
-
   Future<void> _submitCertification() async {
     await showModalBottomSheet(
       context: context,
@@ -112,278 +68,272 @@ class _FestivalPosterState extends State<FestivalPoster> {
       builder: (ctx) => CertificationBottomSheet(
         festivalName: widget.poster.title,
         festivalId: widget.poster.id,
-        certService: _certService,
+        certService: sl<CertificationService>(),
       ),
     );
   }
 
-  Future<void> _toggleLike() async {
-    try {
-      final resp =
-          await DioClient.dio.post('/festivals/${widget.poster.id}/like');
-      if (mounted) {
-        setState(() => _liked = resp.data as bool);
-        AppEvents.likeChanged.value++;
-      }
-    } catch (e) {
-      debugPrint('toggleLike error: $e');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final colors = context.appColors;
-    const double appBarHeight = AppDimens.appBarHeight;
-    final hasDescription = widget.poster.description.isNotEmpty;
+    return ListenableBuilder(
+      listenable: _notifier,
+      builder: (context, _) {
+        final colors = context.appColors;
+        const double appBarHeight = AppDimens.appBarHeight;
+        final hasDescription = widget.poster.description.isNotEmpty;
 
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        // 레이어 1: 배경 이미지 (Stack 크기에 딱 맞게)
-        Positioned.fill(
-          child: ClipRect(
-            child: CachedNetworkImage(
-              imageUrl: widget.poster.posterUrl,
-              memCacheWidth: 100,
-              fit: BoxFit.cover,
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned.fill(
+              child: ClipRect(
+                child: CachedNetworkImage(
+                  imageUrl: widget.poster.posterUrl,
+                  memCacheWidth: 100,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
-          ),
-        ),
-        // 레이어 2: 블러 필터 (Stack 크기에 딱 맞게)
-        Positioned.fill(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-            child: const SizedBox.expand(),
-          ),
-        ),
-        // 레이어 3: 하늘색 오버레이 (블러 하단 경계를 덮기 위해 10px 더 연장)
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: -5,
-          child: ColoredBox(
-            color: colors.swiperOverlay.withValues(alpha: 0.55),
-          ),
-        ),
-        // 콘텐츠
-        SafeArea(
-          top: false,
-          bottom: false,
-          child: Padding(
-            padding: EdgeInsets.only(top: appBarHeight),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // 포스터 + 타이틀 정보 영역
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // 포스터 이미지
-                      Container(
-                        width: 120,
-                        height: 160,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: colors.cardShadow.withValues(alpha: 0.3),
-                              blurRadius: 20,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: CachedNetworkImage(
-                            imageUrl: widget.poster.posterUrl,
-                            memCacheWidth: 300,
-                            fit: BoxFit.fill,
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.broken_image),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      // 타이틀 + 날짜 + 장소 + 버튼
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 4),
-                            Text(
-                              widget.poster.title,
-                              softWrap: true,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Row(
-                              children: [
-                                Icon(Icons.calendar_today_rounded,
-                                    color: colors.accentColor, size: 15),
-                                const SizedBox(width: 6),
-                                Expanded(
-                                  child: Text(
-                                    widget.poster.endDate.isNotEmpty
-                                        ? '${widget.poster.startDate} ~ ${widget.poster.endDate}'
-                                        : widget.poster.startDate,
-                                    style: const TextStyle(
-                                        fontSize: 14, color: Colors.white70),
-                                  ),
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                child: const SizedBox.expand(),
+              ),
+            ),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: -5,
+              child: ColoredBox(
+                color: colors.swiperOverlay.withValues(alpha: 0.55),
+              ),
+            ),
+            SafeArea(
+              top: false,
+              bottom: false,
+              child: Padding(
+                padding: EdgeInsets.only(top: appBarHeight),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 120,
+                            height: 160,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color:
+                                      colors.cardShadow.withValues(alpha: 0.3),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 8),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 6),
-                            GestureDetector(
-                              onTap: _openKakaoMap,
-                              child: Row(
-                                children: [
-                                  Icon(Icons.location_on_rounded,
-                                      color: colors.accentColor, size: 15),
-                                  const SizedBox(width: 6),
-                                  Expanded(
-                                    child: Text(
-                                      widget.poster.location,
-                                      softWrap: true,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.white70,
-                                        decoration: TextDecoration.underline,
-                                        decorationColor: Colors.white54,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: CachedNetworkImage(
+                                imageUrl: widget.poster.posterUrl,
+                                memCacheWidth: 300,
+                                fit: BoxFit.fill,
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.broken_image),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 4),
+                                Text(
+                                  widget.poster.title,
+                                  softWrap: true,
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                Row(
+                                  children: [
+                                    Icon(Icons.calendar_today_rounded,
+                                        color: colors.accentColor, size: 15),
+                                    const SizedBox(width: 6),
+                                    Expanded(
+                                      child: Text(
+                                        widget.poster.endDate.isNotEmpty
+                                            ? '${widget.poster.startDate} ~ ${widget.poster.endDate}'
+                                            : widget.poster.startDate,
+                                        style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.white70),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 14),
-                            // 액션 버튼들
-                            Row(
-                              children: [
-                                _ActionButton(
-                                  onTap: _toggleLike,
-                                  icon: _liked
-                                      ? Icons.favorite_rounded
-                                      : Icons.favorite_border_rounded,
-                                  color: _liked ? Colors.pink[200]! : Colors.white,
-                                  bgColor: _liked
-                                      ? Colors.pink.withValues(alpha: 0.35)
-                                      : Colors.white.withValues(alpha: 0.15),
+                                  ],
                                 ),
-                                const SizedBox(width: 8),
-                                _ActionButton(
-                                  icon: Icons.calendar_month_outlined,
-                                ),
-                                const SizedBox(width: 8),
-                                _ActionButton(
+                                const SizedBox(height: 6),
+                                GestureDetector(
                                   onTap: _openKakaoMap,
-                                  icon: Icons.location_on_rounded,
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.location_on_rounded,
+                                          color: colors.accentColor, size: 15),
+                                      const SizedBox(width: 6),
+                                      Expanded(
+                                        child: Text(
+                                          widget.poster.location,
+                                          softWrap: true,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.white70,
+                                            decoration:
+                                                TextDecoration.underline,
+                                            decorationColor: Colors.white54,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                const SizedBox(width: 8),
-                                _ActionButton(
-                                  onTap: _isCertified
-                                      ? () => _showAlreadyCertifiedMessage(context)
-                                      : _isPending
-                                          ? () => _showPendingMessage(context)
-                                          : _submitCertification,
-                                  icon: _isPending
-                                      ? Icons.hourglass_top_rounded
-                                      : Icons.verified_rounded,
-                                  color: _isCertified
-                                      ? Colors.lightBlueAccent
-                                      : _isPending
-                                          ? Colors.amber
+                                const SizedBox(height: 14),
+                                Row(
+                                  children: [
+                                    _ActionButton(
+                                      onTap: _notifier.toggleLike,
+                                      icon: _notifier.liked
+                                          ? Icons.favorite_rounded
+                                          : Icons.favorite_border_rounded,
+                                      color: _notifier.liked
+                                          ? Colors.pink[200]!
                                           : Colors.white,
-                                  bgColor: _isCertified
-                                      ? Colors.blue.withValues(alpha: 0.35)
-                                      : _isPending
-                                          ? Colors.amber.withValues(alpha: 0.25)
-                                          : null,
+                                      bgColor: _notifier.liked
+                                          ? Colors.pink.withValues(alpha: 0.35)
+                                          : Colors.white
+                                              .withValues(alpha: 0.15),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    _ActionButton(
+                                      icon: Icons.calendar_month_outlined,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    _ActionButton(
+                                      onTap: _openKakaoMap,
+                                      icon: Icons.location_on_rounded,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    _ActionButton(
+                                      onTap: _notifier.isCertified
+                                          ? () => Fluttertoast.showToast(
+                                              msg: context
+                                                  .tr('cert_already_approved'))
+                                          : _notifier.isPending
+                                              ? () => Fluttertoast.showToast(
+                                                  msg: context
+                                                      .tr('cert_pending_notice'))
+                                              : _submitCertification,
+                                      icon: _notifier.isPending
+                                          ? Icons.hourglass_top_rounded
+                                          : Icons.verified_rounded,
+                                      color: _notifier.isCertified
+                                          ? Colors.lightBlueAccent
+                                          : _notifier.isPending
+                                              ? Colors.amber
+                                              : Colors.white,
+                                      bgColor: _notifier.isCertified
+                                          ? Colors.blue.withValues(alpha: 0.35)
+                                          : _notifier.isPending
+                                              ? Colors.amber
+                                                  .withValues(alpha: 0.25)
+                                              : null,
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // 설명 영역 (접기/펼치기)
-                if (hasDescription) ...[
-                  // 구분선
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Divider(
-                      height: 1,
-                      color: Colors.white.withValues(alpha: 0.15),
-                    ),
-                  ),
-                  // 설명 헤더 + 접기 버튼
-                  GestureDetector(
-                    onTap: () {
-                      setState(() => _descExpanded = !_descExpanded);
-                      _saveDescState(_descExpanded);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 10, 16, 4),
-                      child: Row(
-                        children: [
-                          Icon(Icons.info_outline_rounded,
-                              color: Colors.white.withValues(alpha: 0.7),
-                              size: 16),
-                          const SizedBox(width: 6),
-                          Text(
-                            'festival_info'.tr(),
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white.withValues(alpha: 0.7),
-                            ),
-                          ),
-                          const Spacer(),
-                          Icon(
-                            _descExpanded
-                                ? Icons.keyboard_arrow_up_rounded
-                                : Icons.keyboard_arrow_down_rounded,
-                            color: Colors.white.withValues(alpha: 0.5),
-                            size: 22,
                           ),
                         ],
                       ),
                     ),
-                  ),
-                  // 설명 텍스트
-                  AnimatedCrossFade(
-                    firstChild: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 4, 20, 14),
-                      child: Text(
-                        widget.poster.description,
-                        style: TextStyle(
-                          fontSize: 13.5,
-                          height: 1.6,
-                          color: Colors.white.withValues(alpha: 0.85),
+                    if (hasDescription) ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Divider(
+                          height: 1,
+                          color: Colors.white.withValues(alpha: 0.15),
                         ),
                       ),
-                    ),
-                    secondChild: const SizedBox(height: 10),
-                    crossFadeState: _descExpanded
-                        ? CrossFadeState.showFirst
-                        : CrossFadeState.showSecond,
-                    duration: const Duration(milliseconds: 200),
-                  ),
-                ],
-                if (!hasDescription) const SizedBox(height: 8),
-              ],
+                      GestureDetector(
+                        onTap: _notifier.toggleDesc,
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.fromLTRB(20, 10, 16, 4),
+                          child: Row(
+                            children: [
+                              Icon(Icons.info_outline_rounded,
+                                  color:
+                                      Colors.white.withValues(alpha: 0.7),
+                                  size: 16),
+                              const SizedBox(width: 6),
+                              Text(
+                                'festival_info'.tr(),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color:
+                                      Colors.white.withValues(alpha: 0.7),
+                                ),
+                              ),
+                              const Spacer(),
+                              Icon(
+                                _notifier.descExpanded
+                                    ? Icons.keyboard_arrow_up_rounded
+                                    : Icons.keyboard_arrow_down_rounded,
+                                color:
+                                    Colors.white.withValues(alpha: 0.5),
+                                size: 22,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      AnimatedCrossFade(
+                        firstChild: Padding(
+                          padding:
+                              const EdgeInsets.fromLTRB(20, 4, 20, 14),
+                          child: Text(
+                            widget.poster.description,
+                            style: TextStyle(
+                              fontSize: 13.5,
+                              height: 1.6,
+                              color:
+                                  Colors.white.withValues(alpha: 0.85),
+                            ),
+                          ),
+                        ),
+                        secondChild: const SizedBox(height: 10),
+                        crossFadeState: _notifier.descExpanded
+                            ? CrossFadeState.showFirst
+                            : CrossFadeState.showSecond,
+                        duration: const Duration(milliseconds: 200),
+                      ),
+                    ],
+                    if (!hasDescription) const SizedBox(height: 8),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
 }

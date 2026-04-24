@@ -52,7 +52,7 @@ class _ImgUploadState extends State<ImgUpload> {
 
   Future<void> _submit() async {
     if (imageData == null) {
-      setState(() => _imageError = '사진을 선택해주세요.');
+      setState(() => _imageError = 'photo_select_required'.tr());
       return;
     }
     setState(() => _imageError = null);
@@ -76,7 +76,7 @@ class _ImgUploadState extends State<ImgUpload> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('업로드 실패 ($status): $body'),
+          content: Text('photo_upload_failed_detail'.tr(args: [status.toString(), body])),
           duration: const Duration(seconds: 8),
         ),
       );
@@ -84,7 +84,7 @@ class _ImgUploadState extends State<ImgUpload> {
       debugPrint('upload error: $e');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('업로드 중 오류가 발생했습니다.')),
+        SnackBar(content: Text('photo_upload_failed'.tr())),
       );
     } finally {
       if (mounted) setState(() => isUploading = false);
@@ -106,7 +106,7 @@ class _ImgUploadState extends State<ImgUpload> {
           icon: const Icon(Icons.arrow_back_ios_rounded),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('사진 올리기'),
+        title: Text('photo_upload_title'.tr()),
         backgroundColor: colors.appBarColor,
         foregroundColor: Colors.white,
         actions: [
@@ -131,7 +131,7 @@ class _ImgUploadState extends State<ImgUpload> {
               ImagePickerBox(
                 imageData: imageData,
                 onTap: _pickImage,
-                label: '아티스트 사진 추가',
+                label: 'artist_photo_add_label'.tr(),
               ),
               if (_imageError != null)
                 Padding(
@@ -175,12 +175,12 @@ class _ImgUploadState extends State<ImgUpload> {
                           borderSide:
                               BorderSide(color: colors.activate, width: 2),
                         ),
-                        labelText: '작품명',
-                        hintText: '작품명을 입력하세요.',
+                        labelText: 'photo_artwork_label'.tr(),
+                        hintText: 'photo_artwork_hint'.tr(),
                         labelStyle: TextStyle(color: colors.textSecondary),
                       ),
                       validator: (v) =>
-                          (v == null || v.isEmpty) ? '필수 입력 항목입니다.' : null,
+                          (v == null || v.isEmpty) ? 'required_field'.tr() : null,
                     ),
                     const SizedBox(height: 12),
                     FutureBuilder<List<FestivalPreview>>(
@@ -198,12 +198,12 @@ class _ImgUploadState extends State<ImgUpload> {
                               borderSide:
                                   BorderSide(color: colors.activate, width: 2),
                             ),
-                            labelText: '페스티벌',
+                            labelText: 'festival_label'.tr(),
                             labelStyle: TextStyle(color: colors.textSecondary),
                           ),
                           hint: snapshot.connectionState != ConnectionState.done
-                              ? const Text('불러오는 중...')
-                              : const Text('페스티벌을 선택하세요'),
+                              ? Text('loading'.tr())
+                              : Text('select_festival_hint'.tr()),
                           items: [
                             ...festivals.map((f) => DropdownMenuItem(
                                   value: f,
@@ -220,7 +220,7 @@ class _ImgUploadState extends State<ImgUpload> {
                           onChanged: (f) =>
                               setState(() => _selectedFestival = f),
                           validator: (_) => _selectedFestival == null
-                              ? '페스티벌을 선택해주세요.'
+                              ? 'select_festival_required'.tr()
                               : null,
                         );
                       },

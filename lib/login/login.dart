@@ -5,6 +5,7 @@ import 'package:feple/login/signup.dart';
 import 'package:feple/service/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import '../provider/user_provider.dart';
@@ -338,16 +339,14 @@ class _LoginPageState extends State<LoginPage> {
       final user = await AuthService.instance.loginWithKakao();
       if (!mounted) return;
       await userProvider.setUser(user);
+    } on PlatformException catch (e) {
+      debugPrint('=== 카카오 로그인 실패 에러 ===\n$e\n======================');
+      if (e.code != 'CANCELED' && mounted) {
+        setState(() => _loginError = e.message ?? 'login_failed'.tr());
+      }
     } catch (e) {
       debugPrint('=== 카카오 로그인 실패 에러 ===\n$e\n======================');
-      if (mounted) {
-        // 사용자가 직접 취소한 경우 에러 메시지 표시 안 함
-        final isUserCanceled = e.toString().contains('CANCELED');
-        if (!isUserCanceled) {
-          final msg = e.toString().replaceFirst('Exception: ', '');
-          setState(() => _loginError = msg.isNotEmpty ? msg : 'login_failed'.tr());
-        }
-      }
+      if (mounted) setState(() => _loginError = 'login_failed'.tr());
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

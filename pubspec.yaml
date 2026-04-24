@@ -51,6 +51,7 @@ dependencies:
 
 
   #architecture
+  get_it: ^7.7.0
   event_bus: ^2.0.1
 
   #ui - resource
@@ -165,7 +166,6 @@ flutter:
     - assets/image/login/
     - assets/translations/
     - assets/
-    - lib/auth/secrets.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

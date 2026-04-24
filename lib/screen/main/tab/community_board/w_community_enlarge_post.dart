@@ -40,6 +40,7 @@ class _EnralgePostState extends State<EnralgePost> {
   List<Map<String, dynamic>> _comments = [];
   bool _liked = false;
   late int _heartCount;
+  bool _isToggling = false;
 
   @override
   void initState() {
@@ -90,8 +91,7 @@ class _EnralgePostState extends State<EnralgePost> {
     }
     setState(() => _commentError = null);
 
-    final user = context.read<UserProvider>().user;
-    if (user == null) {
+    if (context.read<UserProvider>().user == null) {
       setState(() => _commentError = 'no_login_info'.tr());
       return;
     }
@@ -102,7 +102,6 @@ class _EnralgePostState extends State<EnralgePost> {
       await DioClient.dio.post('/comments', data: {
         'content': comment,
         'postId': widget.id,
-        'userId': user.id,
       });
       _commentController.clear();
       await _fetchComments();
@@ -125,14 +124,12 @@ class _EnralgePostState extends State<EnralgePost> {
   }
 
   Future<void> _toggleLike() async {
-    final user = context.read<UserProvider>().user;
-    if (user == null) return;
+    if (_isToggling) return;
+    if (context.read<UserProvider>().user == null) return;
 
+    setState(() => _isToggling = true);
     try {
-      final resp = await DioClient.dio.post(
-        '/posts/${widget.id}/like',
-        queryParameters: {'userId': user.id},
-      );
+      final resp = await DioClient.dio.post('/posts/${widget.id}/like');
       final bool liked = resp.data as bool;
       setState(() {
         _liked = liked;
@@ -145,6 +142,8 @@ class _EnralgePostState extends State<EnralgePost> {
             backgroundColor: AppColors.skyBlue,
             content: Text('like_failed'.tr(args: [e.toString()]))),
       );
+    } finally {
+      if (mounted) setState(() => _isToggling = false);
     }
   }
 

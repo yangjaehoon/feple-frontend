@@ -61,8 +61,8 @@ class TextFieldWithDeleteState extends State<TextFieldWithDelete> {
   String? errorMessage;
   var showDeleteButton = false;
   var isFocused = false;
-  FocusNode? focusNode = FocusNode();
-  bool _ownsNode = true;
+  late FocusNode focusNode;
+  bool _ownsNode = false;
 
   @override
   void initState() {
@@ -73,8 +73,11 @@ class TextFieldWithDeleteState extends State<TextFieldWithDelete> {
 
   void initVariables() {
     if (widget.focusNode != null) {
-      focusNode = widget.focusNode;
+      focusNode = widget.focusNode!;
       _ownsNode = false;
+    } else {
+      focusNode = FocusNode();
+      _ownsNode = true;
     }
   }
 
@@ -88,7 +91,7 @@ class TextFieldWithDeleteState extends State<TextFieldWithDelete> {
   void _onFocusChanged() {
     if (!mounted) return;
     setState(() {
-      isFocused = focusNode!.hasFocus;
+      isFocused = focusNode.hasFocus;
     });
   }
 
@@ -97,15 +100,15 @@ class TextFieldWithDeleteState extends State<TextFieldWithDelete> {
       showDeleteButton = true;
     }
     widget.controller.addListener(_onTextChanged);
-    focusNode!.addListener(_onFocusChanged);
+    focusNode.addListener(_onFocusChanged);
   }
 
   @override
   void dispose() {
     widget.controller.removeListener(_onTextChanged);
-    focusNode!.removeListener(_onFocusChanged);
+    focusNode.removeListener(_onFocusChanged);
     if (_ownsNode) {
-      focusNode!.dispose();
+      focusNode.dispose();
     }
     super.dispose();
   }

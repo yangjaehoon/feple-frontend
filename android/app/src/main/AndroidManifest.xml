@@ -36,7 +36,7 @@
                 <!-- 카카오 로그인 Redirect URI -->
                 <data
                     android:host="oauth"
-                    android:scheme="kakao02840275230ad6eef624936d5d618fad" />
+                    android:scheme="kakao${kakaoNativeAppKey}" />
             </intent-filter>
         </activity>
 

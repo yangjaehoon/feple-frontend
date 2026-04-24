@@ -106,3 +106,5 @@ lib/config/app_config.dart
 # Local tooling / platform binaries
 isar.dll
 .claude/
+
+assets/secrets.json

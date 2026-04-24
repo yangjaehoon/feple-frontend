@@ -28,7 +28,7 @@ class AppPreferences {
 
     if (isNullable && value == null) {
       //null을 세팅한다는 것은 값을 지운다는 의미로 해석. 필요에 따라 변경해서 쓰시면 되요.
-      return _prefs.remove(item.key);
+      return _prefs.remove(key);
     }
 
     if (isNullable) {

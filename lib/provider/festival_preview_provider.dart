@@ -5,11 +5,11 @@ import 'package:feple/service/festival_service.dart';
 import '../model/festival_preview.dart';
 
 class FestivalPreviewProvider extends ChangeNotifier {
-  FestivalPreviewProvider() {
+  FestivalPreviewProvider(this._service) {
     refresh();
   }
 
-  final _service = FestivalService();
+  final FestivalService _service;
 
   final List<FestivalPreview> _items = [];
   List<FestivalPreview> get items => List.unmodifiable(_items);

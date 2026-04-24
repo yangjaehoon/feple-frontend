@@ -1,14 +1,15 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:feple/network/dio_client.dart';
+import 'package:feple/service/festival_service.dart';
 
 import '../model/festival_preview.dart';
 
 class FestivalPreviewProvider extends ChangeNotifier {
-
   FestivalPreviewProvider() {
     refresh();
   }
+
+  final _service = FestivalService();
 
   final List<FestivalPreview> _items = [];
   List<FestivalPreview> get items => List.unmodifiable(_items);
@@ -71,29 +72,15 @@ class FestivalPreviewProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final Map<String, dynamic> params = {'page': _page, 'size': _size, 'includeEnded': true};
-      if (_selectedGenres.isNotEmpty) {
-        params['genres'] = _selectedGenres.toList();
-      }
-      if (_selectedRegions.isNotEmpty) {
-        params['regions'] = _selectedRegions.toList();
-      }
-
-      final resp = await DioClient.dio.get(
-        '/festivals',
-        queryParameters: params,
+      final newItems = await _service.fetchPreviews(
+        page: _page,
+        size: _size,
+        includeEnded: true,
+        genres: _selectedGenres.toList(),
+        regions: _selectedRegions.toList(),
       );
 
-      final decoded = resp.data;
-      final List<dynamic> list =
-          decoded is List ? decoded : (decoded['content'] as List<dynamic>);
-
-      final newItems = list
-          .map((e) => FestivalPreview.fromJson(e as Map<String, dynamic>))
-          .toList();
-
       _items.addAll(newItems);
-
       if (newItems.length < _size) _hasMore = false;
       _page += 1;
     } catch (e) {

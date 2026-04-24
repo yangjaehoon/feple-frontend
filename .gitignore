@@ -96,7 +96,13 @@ macos/**/xcuserdata/
 
 # Firebase / API keys (로컬에서 직접 설정)
 android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+ios/firebase_app_id_file.json
 lib/firebase_options.dart
 lib/auth/
 lib/config.dart
 lib/config/app_config.dart
+
+# Local tooling / platform binaries
+isar.dll
+.claude/

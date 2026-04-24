@@ -90,18 +90,6 @@ class FestivalPreviewCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      PopupMenuButton(
-                        icon: Icon(Icons.more_vert_rounded,
-                            color: colors.textSecondary, size: 20),
-                        itemBuilder: (context) => [
-                          PopupMenuItem(
-                            child: Text("msg_review".tr()),
-                          ),
-                          PopupMenuItem(
-                            child: Text("msg_delete".tr()),
-                          ),
-                        ],
-                      ),
                     ],
                   ),
                   const SizedBox(height: 6),

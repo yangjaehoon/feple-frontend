@@ -98,12 +98,12 @@ class _FestivalPosterState extends State<FestivalPoster> {
     }
   }
 
-  void _showAlreadyCertifiedMessage() {
-    Fluttertoast.showToast(msg: 'cert_already_approved'.tr());
+  void _showAlreadyCertifiedMessage(BuildContext ctx) {
+    Fluttertoast.showToast(msg: ctx.tr('cert_already_approved'));
   }
 
-  void _showPendingMessage() {
-    Fluttertoast.showToast(msg: 'cert_pending_notice'.tr());
+  void _showPendingMessage(BuildContext ctx) {
+    Fluttertoast.showToast(msg: ctx.tr('cert_pending_notice'));
   }
 
   Future<void> _submitCertification() async {
@@ -292,9 +292,9 @@ class _FestivalPosterState extends State<FestivalPoster> {
                                   onTap: _certSubmitting
                                       ? null
                                       : _isCertified
-                                          ? _showAlreadyCertifiedMessage
+                                          ? () => _showAlreadyCertifiedMessage(context)
                                           : _isPending
-                                              ? _showPendingMessage
+                                              ? () => _showPendingMessage(context)
                                               : _submitCertification,
                                   icon: _certSubmitting
                                       ? Icons.hourglass_top_rounded

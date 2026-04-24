@@ -29,7 +29,7 @@ class FestivalPoster extends StatefulWidget {
 class _FestivalPosterState extends State<FestivalPoster> {
   bool _liked = false;
   bool _descExpanded = true;
-  bool _certSubmitting = false;
+
   bool _isCertified = false;
   bool _isPending = false;
   final _certService = sl<CertificationService>();
@@ -290,25 +290,19 @@ class _FestivalPosterState extends State<FestivalPoster> {
                                 ),
                                 const SizedBox(width: 8),
                                 _ActionButton(
-                                  onTap: _certSubmitting
-                                      ? null
-                                      : _isCertified
-                                          ? () => _showAlreadyCertifiedMessage(context)
-                                          : _isPending
-                                              ? () => _showPendingMessage(context)
-                                              : _submitCertification,
-                                  icon: _certSubmitting
-                                      ? Icons.hourglass_top_rounded
+                                  onTap: _isCertified
+                                      ? () => _showAlreadyCertifiedMessage(context)
                                       : _isPending
-                                          ? Icons.hourglass_top_rounded
-                                          : Icons.verified_rounded,
+                                          ? () => _showPendingMessage(context)
+                                          : _submitCertification,
+                                  icon: _isPending
+                                      ? Icons.hourglass_top_rounded
+                                      : Icons.verified_rounded,
                                   color: _isCertified
                                       ? Colors.lightBlueAccent
                                       : _isPending
                                           ? Colors.amber
-                                          : _certSubmitting
-                                              ? Colors.white54
-                                              : Colors.white,
+                                          : Colors.white,
                                   bgColor: _isCertified
                                       ? Colors.blue.withValues(alpha: 0.35)
                                       : _isPending

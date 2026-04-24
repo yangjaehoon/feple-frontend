@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_write_board.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/common/widget/w_async_content_builder.dart';
@@ -17,7 +18,7 @@ class CommunityPost extends StatefulWidget {
 }
 
 class _CommunityPostState extends State<CommunityPost> {
-  final PostService _postService = PostService();
+  final PostService _postService = sl<PostService>();
   late Future<List<Post>> _postsFuture;
 
   String get _serviceBoardType {

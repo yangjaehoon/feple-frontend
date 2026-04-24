@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:feple/provider/post_change_notifier.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
 
 import '../../../../provider/user_provider.dart';
@@ -19,7 +20,7 @@ class _WritePostState extends State<WritePost> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
-  final _postService = PostService();
+  final _postService = sl<PostService>();
   bool _isSubmitting = false;
 
   /// boardname → PostService boardType 변환

@@ -6,6 +6,7 @@ import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_post.dart';
 import 'package:feple/provider/post_change_notifier.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +34,7 @@ class CommunityBoardCard extends StatefulWidget {
 }
 
 class _CommunityBoardCardState extends State<CommunityBoardCard> {
-  final PostService _postService = PostService();
+  final PostService _postService = sl<PostService>();
   late Future<List<dynamic>> _postsFuture;
   PostChangeNotifier? _postChangeNotifier;
 

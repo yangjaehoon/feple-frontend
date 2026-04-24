@@ -11,6 +11,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/provider/like_notifier.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +32,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
   bool _certSubmitting = false;
   bool _isCertified = false;
   bool _isPending = false;
-  final _certService = CertificationService();
+  final _certService = sl<CertificationService>();
 
   String get _descPrefKey => 'festival_desc_expanded_${widget.poster.id}';
 

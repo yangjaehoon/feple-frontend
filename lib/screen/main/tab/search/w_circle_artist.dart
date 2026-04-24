@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:flutter/material.dart';
 import '../../../../model/artist_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:feple/injection.dart';
 import '../../../../service/artist_service.dart';
 import 'artist_page/f_artist_page.dart';
 
@@ -19,7 +20,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
   @override
   void initState() {
     super.initState();
-    _artistsFuture = ArtistService().fetchArtists();
+    _artistsFuture = sl<ArtistService>().fetchArtists();
   }
 
   @override

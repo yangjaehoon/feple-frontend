@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:feple/injection.dart';
 import '../auth/auth_api.dart';
 import '../auth/token_store.dart';
 import '../model/user_model.dart' as app;
@@ -11,7 +12,7 @@ class AuthProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     try {
-      final u = await AuthApi().loginWithKakaoAccessToken(kakaoAccessToken);
+      final u = await sl<AuthApi>().loginWithKakaoAccessToken(kakaoAccessToken);
       user = u;
     } finally {
       isLoading = false;

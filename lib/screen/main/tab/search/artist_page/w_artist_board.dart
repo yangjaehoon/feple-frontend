@@ -3,6 +3,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_post_list.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +23,7 @@ class ArtistBoard extends StatefulWidget {
 }
 
 class _ArtistBoardState extends State<ArtistBoard> {
-  final PostService _postService = PostService();
+  final PostService _postService = sl<PostService>();
   late Future<List<Post>> _postsFuture;
 
   @override

@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:flutter/material.dart';
 
@@ -21,7 +22,7 @@ class _ArtistWritePostState extends State<ArtistWritePost> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
-  final _postService = PostService();
+  final _postService = sl<PostService>();
   bool _isSubmitting = false;
 
   Future<void> _submit() async {

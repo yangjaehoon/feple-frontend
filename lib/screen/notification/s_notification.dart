@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/service/notification_service.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +14,7 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-  final _service = NotificationService();
+  final _service = sl<NotificationService>();
   List<Map<String, dynamic>> _items = [];
   bool _loading = true;
 

@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/network/dio_client.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -18,7 +19,7 @@ class CertificationListScreen extends StatefulWidget {
 }
 
 class _CertificationListScreenState extends State<CertificationListScreen> {
-  final _certService = CertificationService();
+  final _certService = sl<CertificationService>();
   List<Map<String, dynamic>> _certifications = [];
   bool _loading = true;
 

@@ -1,10 +1,9 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/responsive_size.dart';
-import 'package:feple/model/favorite_board.dart';
 import 'package:feple/model/followed_artist.dart';
 import 'package:feple/model/festival_model.dart';
-import 'package:feple/network/dio_client.dart';
+import 'package:feple/screen/main/tab/home/home_state_notifier.dart';
 import 'package:feple/screen/main/tab/home/w_favorite_boards_section.dart';
 import 'package:feple/screen/main/tab/home/w_reorder_sheet.dart';
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
@@ -12,7 +11,6 @@ import 'package:feple/screen/main/tab/search/festival_information/f_festival_inf
 import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../../common/app_events.dart';
@@ -26,156 +24,37 @@ class HomeFragment extends StatefulWidget {
 }
 
 class _HomeFragmentState extends State<HomeFragment> {
-  List<FollowedArtist>? _artists;
-  List<FestivalModel>? _festivals;
-
-  List<int> _artistOrder = [];
-  List<int> _festivalOrder = [];
-
-  List<FavoriteBoard>? _boards;
-  int? _userId;
-  String get _artistOrderKey => 'artist_order_$_userId';
-  String get _festivalOrderKey => 'festival_order_$_userId';
+  final _notifier = HomeStateNotifier();
 
   @override
   void initState() {
     super.initState();
-    AppEvents.likeChanged.addListener(_refresh);
+    AppEvents.likeChanged.addListener(_onLikeChanged);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
     final user = context.read<UserProvider>().user;
-    if (user != null && _userId != user.id) {
-      _userId = user.id;
-      _boards = null;
-      _loadData();
+    if (user != null && _notifier.userId != user.id) {
+      _notifier.init(user.id);
     }
   }
 
   @override
   void dispose() {
-    AppEvents.likeChanged.removeListener(_refresh);
+    AppEvents.likeChanged.removeListener(_onLikeChanged);
+    _notifier.dispose();
     super.dispose();
   }
 
-  Future<void> _loadData() async {
-    // 순서 로드를 배치로 처리 (setState 2번 → 1번)
-    final orders = await Future.wait([
-      _loadArtistOrder(),
-      _loadFestivalOrder(),
-    ]);
-    if (!mounted) return;
-    setState(() {
-      if (orders[0] != null) _artistOrder = orders[0]!;
-      if (orders[1] != null) _festivalOrder = orders[1]!;
-    });
-
-    // 데이터 로드를 배치로 처리 (setState 3번 → 1번)
-    try {
-      final data = await Future.wait([
-        _fetchArtists(_userId!),
-        _fetchFestivals(_userId!),
-      ]);
-      if (!mounted) return;
-      final artists = data[0] as List<FollowedArtist>;
-      final festivals = data[1] as List<FestivalModel>;
-      setState(() {
-        _artists = artists;
-        _festivals = festivals;
-        _boards = _buildBoards(artists, festivals);
-      });
-    } catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _artists = _artists ?? [];
-        _festivals = _festivals ?? [];
-        _boards ??= [];
-      });
-    }
-  }
-
-  Future<List<int>?> _loadArtistOrder() async {
-    final prefs = await SharedPreferences.getInstance();
-    final saved = prefs.getStringList(_artistOrderKey);
-    return saved?.map(int.parse).toList();
-  }
-
-  Future<List<int>?> _loadFestivalOrder() async {
-    final prefs = await SharedPreferences.getInstance();
-    final saved = prefs.getStringList(_festivalOrderKey);
-    return saved?.map(int.parse).toList();
-  }
-
-  Future<void> _saveArtistOrder(List<int> order) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(
-        _artistOrderKey, order.map((e) => e.toString()).toList());
-  }
-
-  Future<void> _saveFestivalOrder(List<int> order) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(
-        _festivalOrderKey, order.map((e) => e.toString()).toList());
-  }
-
-  Future<List<FollowedArtist>> _fetchArtists(int userId) async {
-    final resp = await DioClient.dio.get('/users/$userId/following');
-    return (resp.data as List).map((e) => FollowedArtist.fromJson(e)).toList();
-  }
-
-  Future<List<FestivalModel>> _fetchFestivals(int userId) async {
-    final resp = await DioClient.dio.get('/users/$userId/liked-festivals');
-    return (resp.data as List).map((e) => FestivalModel.fromJson(e)).toList();
-  }
-
-  List<FavoriteBoard> _buildBoards(
-      List<FollowedArtist> artists, List<FestivalModel> festivals) {
-    return [
-      ...artists.map((a) => FavoriteBoard(
-            boardId: 'artist_${a.id}',
-            type: 'artist',
-            entityId: a.id,
-            entityName: a.name,
-            imageUrl: a.profileImageUrl,
-          )),
-      ...festivals.map((f) => FavoriteBoard(
-            boardId: 'festival_${f.id}',
-            type: 'festival',
-            entityId: f.id,
-            entityName: f.title,
-            imageUrl: f.posterUrl,
-          )),
-    ];
-  }
-
-  List<T> _applyOrder<T>(
-      List<T> items, List<int> order, int Function(T) getId) {
-    if (order.isEmpty) return items;
-    final map = {for (final item in items) getId(item): item};
-    final ordered = order.where(map.containsKey).map((id) => map[id]!).toList();
-    final orderedIds = order.toSet();
-    final rest =
-        items.where((item) => !orderedIds.contains(getId(item))).toList();
-    return [...ordered, ...rest];
-  }
-
-  void _refresh() {
-    if (_userId == null || !mounted) return;
-    setState(() {
-      _artists = null;
-      _festivals = null;
-      _boards = null;
-    });
-    _loadData();
-  }
+  void _onLikeChanged() => _notifier.refresh();
 
   void _openArtistOrderSettings() {
-    final artists = _artists;
+    final artists = _notifier.artists;
     if (artists == null || artists.isEmpty) return;
-    final items = _applyOrder(artists, _artistOrder, (a) => a.id)
+    final items = _notifier
+        .applyOrder(artists, _notifier.artistOrder, (a) => a.id)
         .map((a) =>
             ReorderItem(id: a.id, name: a.name, imageUrl: a.profileImageUrl))
         .toList();
@@ -188,18 +67,16 @@ class _HomeFragmentState extends State<HomeFragment> {
       builder: (_) => ReorderSheet(
         title: 'followed_artists'.tr(),
         items: items,
-        onSave: (newOrder) {
-          setState(() => _artistOrder = newOrder);
-          _saveArtistOrder(newOrder);
-        },
+        onSave: _notifier.saveArtistOrder,
       ),
     );
   }
 
   void _openFestivalOrderSettings() {
-    final festivals = _festivals;
+    final festivals = _notifier.festivals;
     if (festivals == null || festivals.isEmpty) return;
-    final items = _applyOrder(festivals, _festivalOrder, (f) => f.id)
+    final items = _notifier
+        .applyOrder(festivals, _notifier.festivalOrder, (f) => f.id)
         .map(
             (f) => ReorderItem(id: f.id, name: f.title, imageUrl: f.posterUrl))
         .toList();
@@ -212,10 +89,7 @@ class _HomeFragmentState extends State<HomeFragment> {
       builder: (_) => ReorderSheet(
         title: 'liked_festivals'.tr(),
         items: items,
-        onSave: (newOrder) {
-          setState(() => _festivalOrder = newOrder);
-          _saveFestivalOrder(newOrder);
-        },
+        onSave: _notifier.saveFestivalOrder,
       ),
     );
   }
@@ -225,83 +99,93 @@ class _HomeFragmentState extends State<HomeFragment> {
     final rs = ResponsiveSize(context);
     final colors = context.appColors;
 
-    if (_userId == null) {
-      return Container(
-        color: colors.backgroundMain,
-        child: Center(
-            child: CircularProgressIndicator(color: colors.loadingIndicator)),
-      );
-    }
+    return ListenableBuilder(
+      listenable: _notifier,
+      builder: (context, _) {
+        if (_notifier.userId == null) {
+          return Container(
+            color: colors.backgroundMain,
+            child: Center(
+                child:
+                    CircularProgressIndicator(color: colors.loadingIndicator)),
+          );
+        }
 
-    final artists = _artists == null
-        ? null
-        : _applyOrder(_artists!, _artistOrder, (a) => a.id);
-    final festivals = _festivals == null
-        ? null
-        : _applyOrder(_festivals!, _festivalOrder, (f) => f.id);
+        final artists = _notifier.artists == null
+            ? null
+            : _notifier.applyOrder(
+                _notifier.artists!, _notifier.artistOrder, (a) => a.id);
+        final festivals = _notifier.festivals == null
+            ? null
+            : _notifier.applyOrder(
+                _notifier.festivals!, _notifier.festivalOrder, (f) => f.id);
 
-    return Container(
-      color: colors.backgroundMain,
-      child: Stack(
-        children: [
-          SingleChildScrollView(
-            padding: EdgeInsets.only(
-              top: rs.h(AppDimens.scrollPaddingTop),
-              bottom: rs.h(AppDimens.scrollPaddingBottom),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _SectionHeader(
-                  title: 'followed_artists'.tr(),
-                  onSettings: _artists != null && _artists!.isNotEmpty
-                      ? _openArtistOrderSettings
-                      : null,
+        return Container(
+          color: colors.backgroundMain,
+          child: Stack(
+            children: [
+              SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  top: rs.h(AppDimens.scrollPaddingTop),
+                  bottom: rs.h(AppDimens.scrollPaddingBottom),
                 ),
-                _ArtistsSection(
-                  artists: artists,
-                  onTap: (artist) => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ArtistPage(
-                        artistId: artist.id,
-                        artistName: artist.name,
-                        followerCounter: 0,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _SectionHeader(
+                      title: 'followed_artists'.tr(),
+                      onSettings:
+                          _notifier.artists != null && _notifier.artists!.isNotEmpty
+                              ? _openArtistOrderSettings
+                              : null,
+                    ),
+                    _ArtistsSection(
+                      artists: artists,
+                      onTap: (artist) => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ArtistPage(
+                            artistId: artist.id,
+                            artistName: artist.name,
+                            followerCounter: 0,
+                          ),
+                        ),
+                      ).then((_) => _notifier.refresh()),
+                    ),
+                    const SizedBox(height: 8),
+                    _SectionHeader(
+                      title: 'liked_festivals'.tr(),
+                      onSettings: _notifier.festivals != null &&
+                              _notifier.festivals!.isNotEmpty
+                          ? _openFestivalOrderSettings
+                          : null,
+                    ),
+                    _FestivalsSection(
+                      festivals: festivals,
+                      onTap: (festival) => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              FestivalInformationFragment(poster: festival),
+                        ),
+                      ).then((_) => _notifier.refresh()),
+                    ),
+                    const SizedBox(height: 8),
+                    if (_notifier.boards == null)
+                      const SizedBox(height: 150)
+                    else
+                      FavoriteBoardsSection(
+                        allBoards: _notifier.boards!,
+                        userId: _notifier.userId!,
                       ),
-                    ),
-                  ).then((_) => _refresh()),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                _SectionHeader(
-                  title: 'liked_festivals'.tr(),
-                  onSettings: _festivals != null && _festivals!.isNotEmpty
-                      ? _openFestivalOrderSettings
-                      : null,
-                ),
-                _FestivalsSection(
-                  festivals: festivals,
-                  onTap: (festival) => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          FestivalInformationFragment(poster: festival),
-                    ),
-                  ).then((_) => _refresh()),
-                ),
-                const SizedBox(height: 8),
-                if (_boards == null)
-                  const SizedBox(height: 150)
-                else
-                  FavoriteBoardsSection(
-                    allBoards: _boards!,
-                    userId: _userId!,
-                  ),
-              ],
-            ),
+              ),
+              const FepleAppBar("Feple"),
+            ],
           ),
-          const FepleAppBar("Feple"),
-        ],
-      ),
+        );
+      },
     );
   }
 }

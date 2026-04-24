@@ -35,13 +35,6 @@ class FestivalTimetable extends StatefulWidget {
 }
 
 class _FestivalTimetableState extends State<FestivalTimetable> {
-  static const double _minPx = 1.5;
-  static const double _topPad = 20.0;
-  static const double _timeColW = 52.0;
-  static const double _stageHeaderH = 38.0;
-  static const double _viewH = 460.0;
-  static const double _minStageW = 80.0;
-
   final _vContent = ScrollController();
   final _vTime = ScrollController();
   final _hContent = ScrollController();
@@ -188,18 +181,6 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
     super.dispose();
   }
 
-  double _toY(String time) {
-    final parts = time.split(':');
-    final h = int.tryParse(parts.isNotEmpty ? parts[0] : '0') ?? 0;
-    final m = int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0;
-    return ((h - _cachedStartHour) * 60 + m) * _minPx;
-  }
-
-  Color _colorFor(String stage) {
-    final idx = _cachedStages.indexOf(stage) % _stageColors.length;
-    return _stageColors[idx < 0 ? 0 : idx];
-  }
-
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -303,24 +284,81 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
               )
             else
               LayoutBuilder(
-                builder: (_, constraints) =>
-                    _buildGrid(colors, constraints.maxWidth),
+                builder: (_, constraints) => _TimetableGrid(
+                  stages: _cachedStages,
+                  filtered: _cachedFiltered,
+                  startHour: _cachedStartHour,
+                  endHour: _cachedEndHour,
+                  followedNames: _followedNames,
+                  availableW: constraints.maxWidth,
+                  hHeader: _hHeader,
+                  hContent: _hContent,
+                  vContent: _vContent,
+                  vTime: _vTime,
+                ),
               ),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildGrid(dynamic colors, double availableW) {
-    final stages = _cachedStages;
-    // 스테이지 수에 맞게 너비 동적 계산 (최소 80px 보장)
+// ── 타임테이블 그리드 ──────────────────────────────────────────────────────────
+
+class _TimetableGrid extends StatelessWidget {
+  static const double _minPx = 1.5;
+  static const double _topPad = 20.0;
+  static const double _timeColW = 52.0;
+  static const double _stageHeaderH = 38.0;
+  static const double _viewH = 460.0;
+  static const double _minStageW = 80.0;
+
+  final List<String> stages;
+  final List<TimetableEntry> filtered;
+  final int startHour;
+  final int endHour;
+  final Set<String> followedNames;
+  final double availableW;
+  final ScrollController hHeader;
+  final ScrollController hContent;
+  final ScrollController vContent;
+  final ScrollController vTime;
+
+  const _TimetableGrid({
+    required this.stages,
+    required this.filtered,
+    required this.startHour,
+    required this.endHour,
+    required this.followedNames,
+    required this.availableW,
+    required this.hHeader,
+    required this.hContent,
+    required this.vContent,
+    required this.vTime,
+  });
+
+  double _toY(String time) {
+    final parts = time.split(':');
+    final h = int.tryParse(parts.isNotEmpty ? parts[0] : '0') ?? 0;
+    final m = int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0;
+    return ((h - startHour) * 60 + m) * _minPx;
+  }
+
+  Color _colorFor(String stage) {
+    final idx = stages.indexOf(stage) % _stageColors.length;
+    return _stageColors[idx < 0 ? 0 : idx];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
     final stageW = stages.isEmpty
         ? _minStageW
         : ((availableW - _timeColW) / stages.length)
             .clamp(_minStageW, double.infinity);
     final totalW = stages.isEmpty ? stageW : stages.length * stageW;
-    final totalH = (_cachedEndHour - _cachedStartHour) * 60 * _minPx + _topPad;
+    final totalH = (endHour - startHour) * 60 * _minPx + _topPad;
 
     return Column(
       children: [
@@ -340,7 +378,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
             ),
             Expanded(
               child: SingleChildScrollView(
-                controller: _hHeader,
+                controller: hHeader,
                 scrollDirection: Axis.horizontal,
                 physics: const NeverScrollableScrollPhysics(),
                 child: Row(
@@ -380,13 +418,13 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
               SizedBox(
                 width: _timeColW,
                 child: SingleChildScrollView(
-                  controller: _vTime,
+                  controller: vTime,
                   physics: const NeverScrollableScrollPhysics(),
                   child: SizedBox(
                     height: totalH,
                     child: Stack(
-                      children: List.generate(_cachedEndHour - _cachedStartHour + 1, (i) {
-                        final hour = _cachedStartHour + i;
+                      children: List.generate(endHour - startHour + 1, (i) {
+                        final hour = startHour + i;
                         return Positioned(
                           top: _topPad + i * 60.0 * _minPx - 8,
                           left: 0,
@@ -409,10 +447,10 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
               // 그리드
               Expanded(
                 child: SingleChildScrollView(
-                  controller: _hContent,
+                  controller: hContent,
                   scrollDirection: Axis.horizontal,
                   child: SingleChildScrollView(
-                    controller: _vContent,
+                    controller: vContent,
                     child: SizedBox(
                       width: totalW,
                       height: totalH,
@@ -420,7 +458,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                         children: [
                           // 세로 구분선
                           ...List.generate(
-                              _cachedStages.length,
+                              stages.length,
                               (i) => Positioned(
                                     left: (i + 1) * stageW - 0.5,
                                     top: 0,
@@ -430,7 +468,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                                   )),
                           // 가로선
                           ...List.generate(
-                            (_cachedEndHour - _cachedStartHour) * 6 + 1,
+                            (endHour - startHour) * 6 + 1,
                             (i) {
                               final mins = i * 10;
                               final isHour = mins % 60 == 0;
@@ -454,14 +492,14 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                             },
                           ),
                           // 공연 카드
-                          ..._cachedFiltered.map((entry) {
+                          ...filtered.map((entry) {
                             final si = stages.indexOf(entry.stageName);
                             if (si < 0) return const SizedBox.shrink();
                             final rawTop = _toY(entry.startTime);
                             final cardH = _toY(entry.endTime) - rawTop;
                             final color = _colorFor(entry.stageName);
                             final followed =
-                                _followedNames.contains(entry.artistName);
+                                followedNames.contains(entry.artistName);
                             return Positioned(
                               left: si * stageW + 3,
                               top: _topPad + rawTop + 2,
@@ -488,6 +526,8 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
     );
   }
 }
+
+// ── 공연 카드 ──────────────────────────────────────────────────────────────────
 
 class _PerformanceCard extends StatelessWidget {
   final TimetableEntry entry;

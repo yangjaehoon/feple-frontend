@@ -2,10 +2,13 @@ import 'dart:developer';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/provider/festival_preview_provider.dart';
 import 'package:feple/provider/like_notifier.dart';
 import 'package:feple/provider/post_change_notifier.dart';
 import 'package:feple/provider/user_provider.dart';
+import 'package:feple/service/festival_service.dart';
+import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/login/login.dart';
 import 'package:feple/controller/auth_provider.dart';
@@ -21,6 +24,7 @@ import 'common/theme/custom_theme_app.dart';
 
 void main() async {
   final bindings = WidgetsFlutterBinding.ensureInitialized();
+  setupDependencies();
   FlutterNativeSplash.preserve(widgetsBinding: bindings);
 
   // google-services.json이 Android에서 자동 초기화하므로 중복 방지
@@ -45,8 +49,9 @@ void main() async {
         providers: [
           ChangeNotifierProvider(create: (context) => AuthProvider()),
           ChangeNotifierProvider<UserProvider>(
-              create: (context) => UserProvider()),
-          ChangeNotifierProvider(create: (_) => FestivalPreviewProvider()),
+              create: (_) => UserProvider(sl<UserService>())),
+          ChangeNotifierProvider(
+              create: (_) => FestivalPreviewProvider(sl<FestivalService>())),
           ChangeNotifierProvider(create: (_) => LikeNotifier()),
           ChangeNotifierProvider(create: (_) => PostChangeNotifier()),
         ],

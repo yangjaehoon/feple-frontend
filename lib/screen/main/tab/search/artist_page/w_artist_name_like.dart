@@ -6,8 +6,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:provider/provider.dart';
 
-import '../../../../../api/artist_follow_api.dart';
-import '../../../../../api/follow_response.dart';
+import '../../../../../service/artist_follow_service.dart';
+import '../../../../../model/follow_response.dart';
 import '../../../../../provider/like_notifier.dart';
 import 'image_collection/f_image_collection.dart';
 
@@ -29,7 +29,7 @@ class ArtistNameLike extends StatefulWidget {
 
 class _ArtistNameLikeState extends State<ArtistNameLike>
     with SingleTickerProviderStateMixin {
-  final _followApi = ArtistFollowApi();
+  final _followApi = ArtistFollowService();
 
   bool isFollowed = false;
   int followCount = 0;

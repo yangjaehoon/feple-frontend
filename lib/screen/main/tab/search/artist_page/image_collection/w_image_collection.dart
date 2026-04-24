@@ -86,16 +86,16 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('사진 삭제'),
-        content: const Text('이 사진을 삭제하시겠습니까?'),
+        title: Text('photo_delete_title'.tr()),
+        content: Text('photo_delete_confirm'.tr()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('취소'),
+            child: Text('cancel'.tr()),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('삭제', style: TextStyle(color: Colors.red)),
+            child: Text('msg_delete'.tr(), style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -109,7 +109,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
       debugPrint('delete error: $e');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('삭제 중 오류가 발생했습니다.')),
+        SnackBar(content: Text('photo_delete_failed'.tr())),
       );
     }
   }
@@ -138,7 +138,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
             debugPrint('update error: $e');
             if (!mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('수정 중 오류가 발생했습니다.')),
+              SnackBar(content: Text('photo_update_failed'.tr())),
             );
           }
         },
@@ -174,7 +174,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
                     size: 48, color: colors.textSecondary),
                 const SizedBox(height: 12),
                 Text(
-                  '아직 등록된 사진이 없습니다.',
+                  'photo_no_photos'.tr(),
                   style: TextStyle(
                     color: colors.textSecondary,
                     fontSize: 15,
@@ -335,7 +335,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
                                             size: 16,
                                             color: colors.textSecondary),
                                         const SizedBox(width: 8),
-                                        const Text('수정'),
+                                        Text('photo_edit_action'.tr()),
                                       ]),
                                     ),
                                     PopupMenuItem(
@@ -344,9 +344,9 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
                                         const Icon(Icons.delete_rounded,
                                             size: 16, color: Colors.red),
                                         const SizedBox(width: 8),
-                                        const Text('삭제',
+                                        Text('msg_delete'.tr(),
                                             style:
-                                                TextStyle(color: Colors.red)),
+                                                const TextStyle(color: Colors.red)),
                                       ]),
                                     ),
                                   ],

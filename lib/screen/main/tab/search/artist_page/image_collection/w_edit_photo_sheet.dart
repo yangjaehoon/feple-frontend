@@ -91,7 +91,7 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '사진 수정',
+            'photo_edit_title'.tr(),
             style: TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w800,
@@ -102,7 +102,7 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
           TextField(
             controller: _titleCtrl,
             decoration: InputDecoration(
-              labelText: '제목',
+              labelText: 'photo_title_label'.tr(),
               border:
                   OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               focusedBorder: OutlineInputBorder(
@@ -115,7 +115,7 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
           DropdownButtonFormField<FestivalPreview>(
             initialValue: _selectedFestival,
             decoration: InputDecoration(
-              labelText: '페스티벌',
+              labelText: 'festival_label'.tr(),
               labelStyle: TextStyle(color: colors.textSecondary),
               border:
                   OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -125,8 +125,8 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
               ),
             ),
             hint: _loadingFestivals
-                ? const Text('불러오는 중...')
-                : const Text('페스티벌을 선택하세요'),
+                ? Text('loading'.tr())
+                : Text('select_festival_hint'.tr()),
             items: [
               ..._festivals.map((f) => DropdownMenuItem(
                     value: f,
@@ -159,8 +159,8 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
                     borderRadius: BorderRadius.circular(12)),
                 elevation: 0,
               ),
-              child: const Text('저장',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+              child: Text('save'.tr(),
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
             ),
           ),
         ],

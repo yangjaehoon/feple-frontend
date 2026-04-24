@@ -11,12 +11,12 @@ class UserProvider with ChangeNotifier {
   static const _storage = FlutterSecureStorage();
   static const _kUserJson = 'userJson';
 
-  final _userService = UserService();
+  final UserService _userService;
 
   User? _user;
   User? get user => _user;
 
-  UserProvider() {
+  UserProvider(this._userService) {
     _loadFromSecureStorage();
   }
 

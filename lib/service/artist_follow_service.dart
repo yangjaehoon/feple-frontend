@@ -1,8 +1,8 @@
-import '../network/dio_client.dart';
-import 'follow_response.dart';
-import 'follow_status.dart';
+import 'package:feple/model/follow_response.dart';
+import 'package:feple/model/follow_status.dart';
+import 'package:feple/network/dio_client.dart';
 
-class ArtistFollowApi {
+class ArtistFollowService {
   Future<FollowResponse> follow(int artistId) async {
     final res = await DioClient.dio.post('/artists/$artistId/follow');
     return FollowResponse.fromJson(res.data as Map<String, dynamic>);

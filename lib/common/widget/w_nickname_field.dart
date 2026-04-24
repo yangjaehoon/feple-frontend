@@ -89,6 +89,8 @@ class NicknameFieldState extends State<NicknameField> {
         localizedMsg = 'nickname_already_in_use'.tr();
       } else if (backendMsg.contains("한글, 영문, 숫자")) {
         localizedMsg = 'nickname_invalid_chars'.tr();
+      } else {
+        localizedMsg = 'nickname_invalid'.tr();
       }
 
       _setResult(available, localizedMsg);

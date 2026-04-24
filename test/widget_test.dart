@@ -13,10 +13,13 @@ import 'package:feple/common/data/preference/app_preferences.dart';
 import 'package:feple/common/language/language.dart';
 import 'package:feple/common/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/provider/festival_preview_provider.dart';
 import 'package:feple/provider/like_notifier.dart';
 import 'package:feple/provider/post_change_notifier.dart';
 import 'package:feple/provider/user_provider.dart';
+import 'package:feple/service/festival_service.dart';
+import 'package:feple/service/user_service.dart';
 import 'package:feple/controller/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -29,6 +32,7 @@ void main() {
     HttpOverrides.global = null;
     await EasyLocalization.ensureInitialized();
     await AppPreferences.init();
+    setupDependencies();
   });
 
   testWidgets('앱 실행 및 기본 세팅 확인', (WidgetTester tester) async {
@@ -59,8 +63,8 @@ Future<void> pumpApp(WidgetTester tester) async {
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => AuthProvider()),
-          ChangeNotifierProvider(create: (_) => UserProvider()),
-          ChangeNotifierProvider(create: (_) => FestivalPreviewProvider()),
+          ChangeNotifierProvider(create: (_) => UserProvider(sl<UserService>())),
+          ChangeNotifierProvider(create: (_) => FestivalPreviewProvider(sl<FestivalService>())),
           ChangeNotifierProvider(create: (_) => LikeNotifier()),
           ChangeNotifierProvider(create: (_) => PostChangeNotifier()),
         ],

@@ -1,15 +1,17 @@
 import 'dart:convert';
 import 'package:feple/service/fcm_service.dart';
+import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../auth/token_store.dart';
 import '../model/user_model.dart';
-import '../network/dio_client.dart';
 import 'package:dio/dio.dart';
 
 class UserProvider with ChangeNotifier {
   static const _storage = FlutterSecureStorage();
   static const _kUserJson = 'userJson';
+
+  final _userService = UserService();
 
   User? _user;
   User? get user => _user;
@@ -19,16 +21,8 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> fetchUser(int userId) async {
-    final resp = await DioClient.dio.get('/users/$userId');
-
-    if (resp.statusCode == 200) {
-      final raw = resp.data is String ? jsonDecode(resp.data) : resp.data;
-      if (raw is! Map<String, dynamic>) throw Exception('사용자 정보 형식 오류');
-      _user = User.fromJson(raw);
-      notifyListeners();
-    } else {
-      throw Exception('사용자 정보 불러오기 실패: ${resp.statusCode}');
-    }
+    _user = await _userService.fetchUser(userId);
+    notifyListeners();
   }
 
   Future<void> _loadFromSecureStorage() async {
@@ -56,7 +50,7 @@ class UserProvider with ChangeNotifier {
   Future<void> deleteAccount() async {
     final id = _user?.id;
     if (id == null) return;
-    await DioClient.dio.delete('/users/$id');
+    await _userService.deleteUser(id);
     await logout();
   }
 
@@ -64,7 +58,9 @@ class UserProvider with ChangeNotifier {
     _user = me;
     notifyListeners();
     // 로그인 완료 후 FCM 초기화 및 토큰 서버 등록
-    FcmService.instance.init().catchError((_) {});
+    FcmService.instance.init().catchError((e) {
+      debugPrint('[FCM] init failed: $e');
+    });
     await _storage.write(
       key: _kUserJson,
       value: jsonEncode({
@@ -77,15 +73,7 @@ class UserProvider with ChangeNotifier {
 
   Future<void> fetchUserFromToken(String token) async {
     try {
-      final dio = DioClient.dio;
-      final res = await dio.get(
-        '/users/me',
-        options: Options(
-          headers: {'Authorization': 'Bearer $token'},
-        ),
-      );
-
-      _user = User.fromJson(res.data);
+      _user = await _userService.fetchUserFromToken(token);
       notifyListeners();
     } on DioException catch (e) {
       final status = e.response?.statusCode;

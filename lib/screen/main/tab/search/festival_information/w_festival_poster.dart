@@ -30,6 +30,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
   bool _descExpanded = true;
   bool _certSubmitting = false;
   bool _isCertified = false;
+  bool _isPending = false;
   final _certService = CertificationService();
 
   String get _descPrefKey => 'festival_desc_expanded_${widget.poster.id}';
@@ -44,8 +45,14 @@ class _FestivalPosterState extends State<FestivalPoster> {
 
   Future<void> _loadCertState() async {
     try {
-      final approvedIds = await _certService.getApprovedFestivalIds();
-      if (mounted) setState(() => _isCertified = approvedIds.contains(widget.poster.id));
+      final certs = await _certService.getMyCertifications();
+      final mine = certs.where((c) => c['festivalId'] == widget.poster.id).toList();
+      if (mounted) {
+        setState(() {
+          _isCertified = mine.any((c) => c['status'] == 'APPROVED');
+          _isPending = !_isCertified && mine.any((c) => c['status'] == 'PENDING');
+        });
+      }
     } catch (_) {}
   }
 
@@ -93,6 +100,10 @@ class _FestivalPosterState extends State<FestivalPoster> {
 
   void _showAlreadyCertifiedMessage() {
     Fluttertoast.showToast(msg: 'cert_already_approved'.tr());
+  }
+
+  void _showPendingMessage() {
+    Fluttertoast.showToast(msg: 'cert_pending_notice'.tr());
   }
 
   Future<void> _submitCertification() async {
@@ -282,18 +293,26 @@ class _FestivalPosterState extends State<FestivalPoster> {
                                       ? null
                                       : _isCertified
                                           ? _showAlreadyCertifiedMessage
-                                          : _submitCertification,
+                                          : _isPending
+                                              ? _showPendingMessage
+                                              : _submitCertification,
                                   icon: _certSubmitting
                                       ? Icons.hourglass_top_rounded
-                                      : Icons.verified_rounded,
+                                      : _isPending
+                                          ? Icons.hourglass_top_rounded
+                                          : Icons.verified_rounded,
                                   color: _isCertified
                                       ? Colors.lightBlueAccent
-                                      : _certSubmitting
-                                          ? Colors.white54
-                                          : Colors.white,
+                                      : _isPending
+                                          ? Colors.amber
+                                          : _certSubmitting
+                                              ? Colors.white54
+                                              : Colors.white,
                                   bgColor: _isCertified
                                       ? Colors.blue.withValues(alpha: 0.35)
-                                      : null,
+                                      : _isPending
+                                          ? Colors.amber.withValues(alpha: 0.25)
+                                          : null,
                                 ),
                               ],
                             ),

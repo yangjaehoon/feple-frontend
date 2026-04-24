@@ -141,7 +141,7 @@ class AuthService {
       return _saveTokensAndParseUser(data);
     } on DioException catch (e) {
       throw Exception(
-          'Spring 서버 로그인 실패: [${e.type.name}] ${e.response?.statusCode} ${e.response?.data} / ${e.message}');
+          'Spring 서버 로그인 실패: [${e.type.name}] ${e.response?.statusCode ?? 'no response'}');
     }
   }
 

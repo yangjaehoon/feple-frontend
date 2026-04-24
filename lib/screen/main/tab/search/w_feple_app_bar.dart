@@ -7,9 +7,10 @@ import 'package:feple/service/notification_service.dart';
 import 'package:flutter/material.dart';
 
 class FepleAppBar extends StatefulWidget {
-  const FepleAppBar(this.appbarTitle, {super.key});
+  const FepleAppBar(this.appbarTitle, {super.key, this.showBackButton = false});
 
   final String appbarTitle;
+  final bool showBackButton;
 
   @override
   State<FepleAppBar> createState() => _FepleAppBarState();
@@ -52,7 +53,7 @@ class _FepleAppBarState extends State<FepleAppBar> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Navigator.of(context).canPop()
+          widget.showBackButton
               ? IconButton(
                   icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
                   onPressed: () => Navigator.of(context).pop(),

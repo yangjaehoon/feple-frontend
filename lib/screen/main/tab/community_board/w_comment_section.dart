@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// 댓글 목록 + 입력 필드 위젯
 class CommentSection extends StatelessWidget {
@@ -77,7 +78,10 @@ class CommentSection extends StatelessWidget {
                       ),
                     )
                   : IconButton(
-                      onPressed: onSubmit,
+                      onPressed: () {
+                        HapticFeedback.lightImpact();
+                        onSubmit();
+                      },
                       icon: Icon(Icons.send_rounded, color: colors.activate),
                     ),
               const SizedBox(width: 4),

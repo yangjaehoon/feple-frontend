@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:flutter/material.dart';
 
@@ -97,19 +98,15 @@ class AsyncContentBuilder<T> extends StatelessWidget {
   }
 
   Widget _buildStateWidget(BuildContext context, String message) {
-    final colors = context.appColors;
-    final content = Center(
-      child: Text(
-        message,
-        style: TextStyle(color: colors.textSecondary),
-        textAlign: TextAlign.center,
-      ),
+    final content = EmptyState(
+      icon: Icons.article_outlined,
+      title: message,
     );
 
     if (useListViewForEmptyState) {
       return ListView(
         children: [
-          const SizedBox(height: 200),
+          const SizedBox(height: 120),
           content,
         ],
       );

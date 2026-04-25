@@ -1,4 +1,6 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_empty_state.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
@@ -89,10 +91,10 @@ class _ArtistPostListScreenState extends State<ArtistPostListScreen> {
             if (snapshot.hasError) {
               return ListView(
                 children: [
-                  SizedBox(height: 200),
-                  Center(
-                    child: Text('Failed to load: ${snapshot.error}',
-                        style: TextStyle(color: colors.textSecondary)),
+                  const SizedBox(height: 80),
+                  ErrorState(
+                    message: 'err_fetch_data'.tr(args: ['']),
+                    onRetry: _refresh,
                   ),
                 ],
               );
@@ -100,10 +102,11 @@ class _ArtistPostListScreenState extends State<ArtistPostListScreen> {
             if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return ListView(
                 children: [
-                  SizedBox(height: 200),
-                  Center(
-                    child: Text('no_posts_yet'.tr(),
-                        style: TextStyle(color: colors.textSecondary)),
+                  const SizedBox(height: 80),
+                  EmptyState(
+                    icon: Icons.article_outlined,
+                    title: 'no_posts_yet'.tr(),
+                    subtitle: 'first_post_hint'.tr(),
                   ),
                 ],
               );

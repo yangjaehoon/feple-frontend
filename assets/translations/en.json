@@ -199,6 +199,8 @@
   "cert_status_rejected": "Rejected",
   "cert_my_list": "My Certifications",
   "cert_no_history": "No certification history.",
+  "cert_no_history_hint": "Attended a festival?\nApply for certification!",
+  "first_post_hint": "Be the first to write a post!",
   "cert_rejection_reason": "Reason: {}",
   "notifications": "Notifications",
   "no_notifications": "No new notifications.",

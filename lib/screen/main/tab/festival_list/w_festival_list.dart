@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/festival_model.dart';
@@ -33,9 +34,9 @@ class _ConcertListWidgetState extends State<ConcertListWidget> {
     }
 
     if (previewPoster.items.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.all(32),
-        child: Center(child: Text('no_festival_condition'.tr())),
+      return EmptyState(
+        icon: Icons.event_busy_rounded,
+        title: 'no_festival_condition'.tr(),
       );
     }
 

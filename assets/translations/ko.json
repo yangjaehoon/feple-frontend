@@ -199,6 +199,8 @@
   "cert_status_rejected": "거절됨",
   "cert_my_list": "내 인증 목록",
   "cert_no_history": "인증 내역이 없습니다.",
+  "cert_no_history_hint": "페스티벌을 다녀왔다면\n인증을 신청해보세요!",
+  "first_post_hint": "첫 번째 글을 작성해보세요!",
   "cert_rejection_reason": "거절 사유: {}",
   "notifications": "알림",
   "no_notifications": "새로운 알림이 없습니다.",

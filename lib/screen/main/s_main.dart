@@ -1,6 +1,7 @@
 import 'package:feple/screen/main/tab/tab_item.dart';
 import 'package:feple/screen/main/tab/tab_navigator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../common/app_events.dart';
 import '../../common/common.dart';
 import 'w_menu_drawer.dart';
@@ -221,6 +222,7 @@ class MainScreenState extends State<MainScreen>
   }
 
   void _handleOnTapNavigationBarItem(int index) {
+    HapticFeedback.selectionClick();
     if (tabs[index] == _currentTab) {
       popAllHistory(navigatorKeys[index]);
     }

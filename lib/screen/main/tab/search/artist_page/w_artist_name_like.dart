@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/constant/app_colors.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_festival_calendar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:feple/injection.dart';
 import '../../../../../common/app_events.dart';
 import '../../../../../service/artist_follow_service.dart';
@@ -68,6 +69,8 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
   Future<void> toggleFollow() async {
     if (isLoading) return;
     setState(() => isLoading = true);
+
+    HapticFeedback.mediumImpact();
 
     // Play heart bounce animation
     _heartController.forward().then((_) => _heartController.reverse());

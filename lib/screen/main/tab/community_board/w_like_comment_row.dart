@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// 좋아요 + 댓글 수 표시 행
 class LikeCommentRow extends StatelessWidget {
@@ -22,7 +23,10 @@ class LikeCommentRow extends StatelessWidget {
     return Row(
       children: [
         GestureDetector(
-          onTap: onLikeTap,
+          onTap: () {
+            HapticFeedback.lightImpact();
+            onLikeTap();
+          },
           child: Row(
             children: [
               Icon(

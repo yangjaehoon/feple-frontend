@@ -7,6 +7,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../../../model/festival_model.dart';
 import 'festival_poster_notifier.dart';
 import 'w_certification_bottom_sheet.dart';
@@ -207,7 +208,10 @@ class _FestivalPosterState extends State<FestivalPoster> {
                                 Row(
                                   children: [
                                     _ActionButton(
-                                      onTap: _notifier.toggleLike,
+                                      onTap: () {
+                                        HapticFeedback.lightImpact();
+                                        _notifier.toggleLike();
+                                      },
                                       icon: _notifier.liked
                                           ? Icons.favorite_rounded
                                           : Icons.favorite_border_rounded,

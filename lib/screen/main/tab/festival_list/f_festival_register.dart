@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/festival_constants.dart';
 import 'package:feple/network/dio_client.dart';
+import 'package:feple/screen/main/tab/festival_list/w_festival_form_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -117,31 +118,27 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            _buildTextField(
+            FestivalTextField(
               controller: _titleController,
               label: 'label_festival_name'.tr(),
               validator: (v) =>
                   v == null || v.trim().isEmpty ? 'label_input_name_req'.tr() : null,
-              colors: colors,
             ),
             const SizedBox(height: 16),
-            _buildTextField(
+            FestivalTextField(
               controller: _descriptionController,
               label: 'label_desc'.tr(),
               maxLines: 3,
-              colors: colors,
             ),
             const SizedBox(height: 16),
-            _buildTextField(
+            FestivalTextField(
               controller: _locationController,
               label: 'label_location'.tr(),
-              colors: colors,
             ),
             const SizedBox(height: 16),
-            _buildTextField(
+            FestivalTextField(
               controller: _posterUrlController,
               label: 'label_poster_url'.tr(),
-              colors: colors,
             ),
             const SizedBox(height: 16),
 
@@ -149,20 +146,18 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
             Row(
               children: [
                 Expanded(
-                  child: _buildDateTile(
+                  child: FestivalDateTile(
                     label: 'label_start_date'.tr(),
                     date: _startDate,
                     onTap: () => _pickDate(isStart: true),
-                    colors: colors,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: _buildDateTile(
+                  child: FestivalDateTile(
                     label: 'label_end_date'.tr(),
                     date: _endDate,
                     onTap: () => _pickDate(isStart: false),
-                    colors: colors,
                   ),
                 ),
               ],
@@ -170,7 +165,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
             const SizedBox(height: 20),
 
             // 장르 선택
-            _buildSectionLabel('label_genre'.tr(), colors),
+            FestivalSectionLabel('label_genre'.tr()),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -210,7 +205,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
             const SizedBox(height: 20),
 
             // 지역 선택
-            _buildSectionLabel('label_region'.tr(), colors),
+            FestivalSectionLabel('label_region'.tr()),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -268,99 +263,6 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required AbstractThemeColors colors,
-    int maxLines = 1,
-    String? Function(String?)? validator,
-  }) {
-    return TextFormField(
-      controller: controller,
-      maxLines: maxLines,
-      validator: validator,
-      style: TextStyle(color: colors.textTitle),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(color: colors.textSecondary),
-        filled: true,
-        fillColor: colors.surface,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: colors.listDivider),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: colors.listDivider),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: colors.activate, width: 1.5),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDateTile({
-    required String label,
-    required DateTime? date,
-    required VoidCallback onTap,
-    required AbstractThemeColors colors,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: colors.listDivider),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.calendar_today_rounded,
-                size: 16, color: colors.activate),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(label,
-                      style: TextStyle(
-                          fontSize: 11, color: colors.textSecondary)),
-                  const SizedBox(height: 2),
-                  Text(
-                    date != null
-                        ? '${date.year}.${date.month.toString().padLeft(2, '0')}.${date.day.toString().padLeft(2, '0')}'
-                        : 'label_not_selected'.tr(),
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: date != null
-                          ? colors.textTitle
-                          : colors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSectionLabel(String label, AbstractThemeColors colors) {
-    return Text(
-      label,
-      style: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w700,
-        color: colors.textTitle,
       ),
     );
   }

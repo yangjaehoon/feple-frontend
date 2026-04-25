@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/responsive_size.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
@@ -100,10 +101,43 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
     );
   }
 
+  Widget _buildSkeletonList() {
+    return Column(
+      children: List.generate(3, (_) {
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimens.paddingHorizontal, vertical: 10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SkeletonBox(height: 13),
+                        const SizedBox(height: 5),
+                        const SkeletonBox(width: 72, height: 10),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const SkeletonBox(width: 56, height: 13),
+                ],
+              ),
+            ),
+            const Divider(height: 1, thickness: 1, indent: 16, endIndent: 16),
+          ],
+        );
+      }),
+    );
+  }
+
   Widget _buildPostList(AbstractThemeColors colors) {
     return AsyncContentBuilder<List<dynamic>>(
       future: _postsFuture,
       useListViewForEmptyState: false,
+      loadingBuilder: (_) => _buildSkeletonList(),
       builder: (context, postDataList) {
         return ListView.separated(
           physics: const NeverScrollableScrollPhysics(),

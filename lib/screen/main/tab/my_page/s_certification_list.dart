@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +34,56 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
     } catch (_) {
       if (mounted) setState(() { _certifications = []; _loading = false; });
     }
+  }
+
+  Widget _buildSkeleton(AbstractThemeColors colors) {
+    return ListView.separated(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+      itemCount: 3,
+      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      itemBuilder: (_, __) => Container(
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: colors.cardShadow.withValues(alpha: 0.08),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            SkeletonBox(
+              width: 90,
+              height: 90,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                bottomLeft: Radius.circular(16),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    SkeletonBox(height: 15),
+                    SizedBox(height: 8),
+                    SkeletonBox(width: 80, height: 22,
+                        borderRadius: BorderRadius.all(Radius.circular(20))),
+                    SizedBox(height: 6),
+                    SkeletonBox(width: 60, height: 11),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _openSubmitSheet() async {
@@ -81,7 +132,7 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
         ],
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? _buildSkeleton(colors)
           : _certifications.isEmpty
               ? Center(
                   child: Column(

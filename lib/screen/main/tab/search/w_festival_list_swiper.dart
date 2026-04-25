@@ -129,25 +129,28 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
                             FestivalInformationFragment(poster: poster)),
                   );
                 },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: colors.cardShadow.withValues(alpha: 0.2),
-                        blurRadius: 20,
-                        offset: const Offset(0, 8),
+                child: Hero(
+                  tag: 'festival_poster_${item.id}',
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: colors.cardShadow.withValues(alpha: 0.2),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: CachedNetworkImage(
+                        imageUrl: item.posterUrl,
+                        memCacheWidth: 360,
+                        fit: BoxFit.fill,
+                        placeholder: (context, url) => Container(color: colors.drawerHeaderBg),
+                        errorWidget: (context, url, error) => const Icon(Icons.error),
                       ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: CachedNetworkImage(
-                      imageUrl: item.posterUrl,
-                      memCacheWidth: 360,
-                      fit: BoxFit.fill,
-                      placeholder: (context, url) => Container(color: colors.drawerHeaderBg),
-                      errorWidget: (context, url, error) => const Icon(Icons.error),
                     ),
                   ),
                 ),

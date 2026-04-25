@@ -13,11 +13,13 @@ class MainImageSwiper extends StatefulWidget {
     required this.artistName,
     required this.artistId,
     required this.followerCount,
+    this.profileImageUrl,
   });
 
   final int followerCount;
   final String artistName;
   final int artistId;
+  final String? profileImageUrl;
 
   @override
   State<MainImageSwiper> createState() => _MainImageSwiperState();
@@ -165,6 +167,17 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
 
   Widget _buildBackground() {
     if (!_loaded || _photoUrls.isEmpty) {
+      if (widget.profileImageUrl != null) {
+        return Hero(
+          tag: 'artist_image_${widget.artistId}',
+          child: CachedNetworkImage(
+            imageUrl: widget.profileImageUrl!,
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: double.infinity,
+          ),
+        );
+      }
       return Container(color: Colors.black54);
     }
     return AnimatedSwitcher(

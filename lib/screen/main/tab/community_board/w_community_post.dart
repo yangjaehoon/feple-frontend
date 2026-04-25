@@ -1,5 +1,8 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/widget/w_animated_list_item.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_write_board.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
@@ -42,6 +45,34 @@ class _CommunityPostState extends State<CommunityPost> {
     await _postsFuture;
   }
 
+  Widget _buildSkeletonList() {
+    return ListView.separated(
+      padding: const EdgeInsets.only(bottom: 80),
+      itemCount: 8,
+      itemBuilder: (_, __) => Padding(
+        padding: const EdgeInsets.symmetric(
+            horizontal: AppDimens.paddingHorizontal, vertical: 10),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  SkeletonBox(height: 15),
+                  SizedBox(height: 6),
+                  SkeletonBox(width: 100, height: 11),
+                ],
+              ),
+            ),
+            const SizedBox(width: 16),
+            const SkeletonBox(width: 60, height: 13),
+          ],
+        ),
+      ),
+      separatorBuilder: (_, __) => const Divider(height: 1, thickness: 1, indent: 16, endIndent: 16),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -66,7 +97,7 @@ class _CommunityPostState extends State<CommunityPost> {
           },
           label: Text(
             'write_post'.tr(),
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
           ),
           icon: const Icon(Icons.edit_rounded, color: Colors.white),
         ),
@@ -77,31 +108,37 @@ class _CommunityPostState extends State<CommunityPost> {
         onRefresh: _refresh,
         child: AsyncContentBuilder<List<Post>>(
           future: _postsFuture,
+          onRetry: _refresh,
+          loadingBuilder: (_) => _buildSkeletonList(),
           builder: (context, posts) {
             return ListView.separated(
+              physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.only(bottom: 80),
               itemCount: posts.length,
               itemBuilder: (context, index) {
                 final post = posts[index];
-                return PostListTile(
-                  post: post,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      SlideRoute(
-                        builder: (_) => EnralgePost(
-                          boardname: widget.boardname,
-                          id: post.id,
-                          nickname: post.nickname,
-                          title: post.title,
-                          content: post.content,
-                          heart: post.likeCount,
-                          certified: post.certified,
-                          userRole: post.userRole,
+                return AnimatedListItem(
+                  index: index,
+                  child: PostListTile(
+                    post: post,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        SlideRoute(
+                          builder: (_) => EnralgePost(
+                            boardname: widget.boardname,
+                            id: post.id,
+                            nickname: post.nickname,
+                            title: post.title,
+                            content: post.content,
+                            heart: post.likeCount,
+                            certified: post.certified,
+                            userRole: post.userRole,
+                          ),
                         ),
-                      ),
-                    ).then((_) => _refresh());
-                  },
+                      ).then((_) => _refresh());
+                    },
+                  ),
                 );
               },
               separatorBuilder: (_, __) => Divider(

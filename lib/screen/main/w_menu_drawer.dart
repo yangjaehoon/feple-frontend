@@ -186,9 +186,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
                 await userProvider.deleteAccount();
               } catch (_) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('delete_account_error'.tr())),
-                  );
+                  context.showErrorSnackbar('delete_account_error'.tr());
                 }
                 return;
               }

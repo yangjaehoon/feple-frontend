@@ -46,20 +46,14 @@ class _EnralgePostState extends State<EnralgePost> {
     );
     _notifier.onCommentPosted = (key) {
       _commentController.clear();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            backgroundColor: AppColors.skyBlue,
-            content: Text(key.tr())));
-      }
+      if (mounted) context.showSuccessSnackbar(key.tr());
     };
     _notifier.onError = (msg) {
       if (!mounted) return;
       final parts = msg.split(':');
       final key = parts[0];
       final arg = parts.length > 1 ? parts.sublist(1).join(':') : '';
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          backgroundColor: AppColors.skyBlue,
-          content: Text(key.tr(args: [arg]))));
+      context.showErrorSnackbar(key.tr(args: [arg]));
     };
     _notifier.init();
   }

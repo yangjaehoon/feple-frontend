@@ -310,15 +310,11 @@ class _LoginPageState extends State<LoginPage> {
               try {
                 await AuthService.instance.sendPasswordReset(email);
                 if (mounted) {
-                  messenger.showSnackBar(SnackBar(
-                    content: Text('password_reset_sent'.tr()),
-                  ));
+                  context.showSuccessSnackbar('password_reset_sent'.tr());
                 }
               } on FirebaseAuthException catch (e) {
                 if (mounted) {
-                  messenger.showSnackBar(SnackBar(
-                    content: Text(AuthService.instance.firebaseErrorMessage(e.code)),
-                  ));
+                  context.showErrorSnackbar(AuthService.instance.firebaseErrorMessage(e.code));
                 }
               }
             },

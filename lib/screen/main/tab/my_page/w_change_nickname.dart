@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../model/user_model.dart';
@@ -14,6 +15,7 @@ class ChangeNickname extends StatefulWidget {
 
 class _ChangeNicknameState extends State<ChangeNickname> {
   final nicknameController = TextEditingController();
+  bool _isSaving = false;
 
   @override
   void dispose() {
@@ -101,48 +103,26 @@ class _ChangeNicknameState extends State<ChangeNickname> {
               ),
             ),
             const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                onPressed: () async {
-                  if (nicknameController.text.trim().isEmpty) return;
-                  try {
-                    if (user == null) return;
-                    await _updateNickname(userProvider, user.id);
-                    if (!context.mounted) return;
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          backgroundColor: colors.snackbarBgColor,
-                          content: Text('nickname_changed'.tr())),
-                    );
-                  } catch (e) {
-                    if (!context.mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          backgroundColor: colors.snackbarBgColor,
-                          content: Text('nickname_change_failed'
-                              .tr(args: [e.toString()]))),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.activate,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 0,
-                ),
-                child: Text(
-                  'confirm'.tr(),
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
+            LoadingButton(
+              label: 'confirm'.tr(),
+              isLoading: _isSaving,
+              backgroundColor: colors.activate,
+              onPressed: () async {
+                if (nicknameController.text.trim().isEmpty) return;
+                setState(() => _isSaving = true);
+                try {
+                  if (user == null) return;
+                  await _updateNickname(userProvider, user.id);
+                  if (!context.mounted) return;
+                  context.showSuccessSnackbar('nickname_changed'.tr());
+                  Navigator.pop(context);
+                } catch (e) {
+                  if (!context.mounted) return;
+                  context.showErrorSnackbar('nickname_change_failed'.tr(args: [e.toString()]));
+                } finally {
+                  if (mounted) setState(() => _isSaving = false);
+                }
+              },
             ),
           ],
         ),

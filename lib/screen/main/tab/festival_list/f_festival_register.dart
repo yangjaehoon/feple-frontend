@@ -56,15 +56,11 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (_startDate == null || _endDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('festival_reg_start_end_date_req'.tr())),
-      );
+      context.showInfoSnackbar('festival_reg_start_end_date_req'.tr());
       return;
     }
     if (_selectedRegion == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('festival_reg_region_req'.tr())),
-      );
+      context.showInfoSnackbar('festival_reg_region_req'.tr());
       return;
     }
 
@@ -83,16 +79,12 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
 
       if (mounted) {
         context.read<FestivalPreviewProvider>().refresh();
+        context.showSuccessSnackbar('festival_reg_register_success'.tr());
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('festival_reg_register_success'.tr())),
-        );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('festival_reg_register_failed'.tr(args: [e.toString()]))),
-        );
+        context.showErrorSnackbar('festival_reg_register_failed'.tr(args: [e.toString()]));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);

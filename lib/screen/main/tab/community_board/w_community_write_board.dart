@@ -48,11 +48,7 @@ class _WritePostState extends State<WritePost> {
 
     final user = context.read<UserProvider>().user;
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            backgroundColor: AppColors.skyBlue,
-            content: Text('no_login_info'.tr())),
-      );
+      context.showInfoSnackbar('no_login_info'.tr());
       return;
     }
 
@@ -66,17 +62,11 @@ class _WritePostState extends State<WritePost> {
       );
       if (!mounted) return;
       AppEvents.postChanged.value++;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          backgroundColor: AppColors.skyBlue,
-          content: Text('post_success'.tr())));
+      context.showSuccessSnackbar('post_success'.tr());
       Navigator.of(context).pop();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            backgroundColor: AppColors.skyBlue,
-            content: Text('post_failed'.tr(args: [e.toString()]))),
-      );
+      context.showErrorSnackbar('post_failed'.tr(args: [e.toString()]));
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }

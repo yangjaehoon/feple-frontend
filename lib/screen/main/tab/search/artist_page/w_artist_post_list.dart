@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/model/post_model.dart';
@@ -119,7 +120,9 @@ class _ArtistPostListScreenState extends State<ArtistPostListScreen> {
               itemCount: posts.length,
               itemBuilder: (context, index) {
                 final post = posts[index];
-                return PostListTile(
+                return AnimatedListItem(
+                  index: index,
+                  child: PostListTile(
                   post: post,
                   onTap: () {
                     Navigator.push(
@@ -136,6 +139,7 @@ class _ArtistPostListScreenState extends State<ArtistPostListScreen> {
                       ),
                     ).then((_) => _refresh());
                   },
+                ),
                 );
               },
               separatorBuilder: (_, __) => Divider(

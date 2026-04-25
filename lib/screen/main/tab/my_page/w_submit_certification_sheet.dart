@@ -41,9 +41,7 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
 
   Future<void> _submit() async {
     if (_selectedFestival == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('페스티벌을 선택해주세요.')),
-      );
+      context.showInfoSnackbar('페스티벌을 선택해주세요.');
       return;
     }
 
@@ -63,19 +61,16 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
         imageData: imageData,
       );
       if (!mounted) return;
-      final messenger = ScaffoldMessenger.of(context);
+      context.showSuccessSnackbar('cert_submit_success'.tr());
       Navigator.pop(context, true);
-      messenger.showSnackBar(SnackBar(content: Text('cert_submit_success'.tr())));
     } catch (e) {
       if (!mounted) return;
       final msg = e.toString();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          msg.contains('이미') || msg.contains('already')
-              ? 'cert_already_submitted'.tr()
-              : 'cert_submit_failed'.tr(args: [msg]),
-        ),
-      ));
+      context.showErrorSnackbar(
+        msg.contains('이미') || msg.contains('already')
+            ? 'cert_already_submitted'.tr()
+            : 'cert_submit_failed'.tr(args: [msg]),
+      );
     } finally {
       if (mounted) setState(() => _submitting = false);
     }

@@ -240,15 +240,9 @@ class _FestivalPosterState extends State<FestivalPoster> {
                                     const SizedBox(width: 8),
                                     _ActionButton(
                                       onTap: _notifier.isCertified
-                                          ? () => ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(
-                                                content: Text(context.tr('cert_already_approved')),
-                                              ))
+                                          ? () => context.showInfoSnackbar(context.tr('cert_already_approved'))
                                           : _notifier.isPending
-                                              ? () => ScaffoldMessenger.of(context)
-                                                  .showSnackBar(SnackBar(
-                                                    content: Text(context.tr('cert_pending_notice')),
-                                                  ))
+                                              ? () => context.showInfoSnackbar(context.tr('cert_pending_notice'))
                                               : _submitCertification,
                                       icon: _notifier.isPending
                                           ? Icons.hourglass_top_rounded

@@ -40,17 +40,11 @@ class _ArtistWritePostState extends State<ArtistWritePost> {
         content: content,
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          backgroundColor: AppColors.skyBlue,
-          content: Text('post_success'.tr())));
+      context.showSuccessSnackbar('post_success'.tr());
       Navigator.of(context).pop();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            backgroundColor: AppColors.skyBlue,
-            content: Text('post_failed'.tr(args: [e.toString()]))),
-      );
+      context.showErrorSnackbar('post_failed'.tr(args: [e.toString()]));
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }

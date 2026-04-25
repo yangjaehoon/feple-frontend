@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/constant/app_colors.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_festival_calendar.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:feple/injection.dart';
@@ -190,7 +191,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
+                      SlideRoute(
                         builder: (context) => const FtvCalender(),
                       ),
                     );
@@ -203,7 +204,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
+                      SlideRoute(
                         builder: (context) => ImgCollection(
                           artistName: widget.artistName,
                           artistId: widget.artistId,

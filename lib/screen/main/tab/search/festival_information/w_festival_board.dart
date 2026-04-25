@@ -6,6 +6,7 @@ import 'package:feple/screen/main/tab/search/festival_information/w_festival_pos
 import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/common/widget/w_async_content_builder.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
 /// 페스티벌 상세 페이지에 삽입되는 게시판 미리보기 카드
@@ -62,7 +63,7 @@ class _FestivalBoardState extends State<FestivalBoard> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
+                SlideRoute(
                   builder: (_) => FestivalPostListScreen(
                     festivalId: widget.festivalId,
                     festivalName: widget.festivalName,

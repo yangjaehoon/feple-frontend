@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
 class MyPostsScreen extends StatefulWidget {
@@ -61,7 +62,7 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
+                    SlideRoute(
                       builder: (_) => EnralgePost(
                         boardname: post.boardDisplayName,
                         id: post.id,

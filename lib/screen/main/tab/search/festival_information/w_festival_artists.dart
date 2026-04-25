@@ -6,6 +6,7 @@ import 'package:feple/screen/main/tab/search/artist_page/w_artist_circle_image.d
 import 'package:feple/screen/main/tab/search/festival_information/festival_artists_notifier.dart';
 import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/festival_service.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -102,7 +103,7 @@ class _FestivalArtistsState extends State<FestivalArtists> {
           return GestureDetector(
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(
+              SlideRoute(
                 builder: (_) => ArtistPage(
                   artistId: artist.artistId,
                   artistName: artist.artistName,

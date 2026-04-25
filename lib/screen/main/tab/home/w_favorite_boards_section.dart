@@ -3,6 +3,7 @@ import 'package:feple/model/favorite_board.dart';
 import 'package:feple/screen/main/tab/home/favorite_boards_prefs_manager.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_post_list.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_post_list.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/screen/main/tab/home/w_board_settings_sheet.dart';
@@ -186,7 +187,7 @@ class _BoardTile extends StatelessWidget {
     if (board.type == 'artist') {
       Navigator.push(
         context,
-        MaterialPageRoute(
+        SlideRoute(
           builder: (_) => ArtistPostListScreen(
             artistId: board.entityId,
             artistName: board.entityName,
@@ -196,7 +197,7 @@ class _BoardTile extends StatelessWidget {
     } else {
       Navigator.push(
         context,
-        MaterialPageRoute(
+        SlideRoute(
           builder: (_) => FestivalPostListScreen(
             festivalId: board.entityId,
             festivalName: board.entityName,

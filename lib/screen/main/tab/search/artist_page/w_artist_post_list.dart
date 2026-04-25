@@ -7,6 +7,7 @@ import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_write_post.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
 /// 아티스트별 전체 게시글 목록 화면
@@ -60,7 +61,7 @@ class _ArtistPostListScreenState extends State<ArtistPostListScreen> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
+              SlideRoute(
                 builder: (_) => ArtistWritePost(
                   artistId: widget.artistId,
                   artistName: widget.artistName,
@@ -123,7 +124,7 @@ class _ArtistPostListScreenState extends State<ArtistPostListScreen> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
+                      SlideRoute(
                         builder: (_) => EnralgePost(
                           boardname: _boardname,
                           id: post.id,

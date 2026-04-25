@@ -5,6 +5,7 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/screen/main/tab/festival_list/w_festival_preview_card.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -57,7 +58,7 @@ class _ConcertListWidgetState extends State<ConcertListWidget> {
             );
             Navigator.push(
               context,
-              MaterialPageRoute(
+              SlideRoute(
                 builder: (context) =>
                     FestivalInformationFragment(poster: poster),
               ),

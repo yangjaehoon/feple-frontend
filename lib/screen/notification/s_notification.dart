@@ -5,6 +5,7 @@ import 'package:feple/screen/notification/w_notification_card.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:feple/service/notification_service.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
 class NotificationScreen extends StatefulWidget {
@@ -58,7 +59,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       if (!mounted) return;
       Navigator.push(
         context,
-        MaterialPageRoute(
+        SlideRoute(
           builder: (_) => FestivalInformationFragment(poster: festival),
         ),
       );

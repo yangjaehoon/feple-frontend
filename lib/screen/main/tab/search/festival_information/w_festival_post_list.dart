@@ -6,6 +6,7 @@ import 'package:feple/screen/main/tab/search/festival_information/w_festival_wri
 import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/common/widget/w_async_content_builder.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
 /// 페스티벌별 전체 게시글 목록 화면
@@ -58,7 +59,7 @@ class _FestivalPostListScreenState extends State<FestivalPostListScreen> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
+              SlideRoute(
                 builder: (_) => FestivalWritePost(
                   festivalId: widget.festivalId,
                   festivalName: widget.festivalName,
@@ -87,7 +88,7 @@ class _FestivalPostListScreenState extends State<FestivalPostListScreen> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
+                    SlideRoute(
                       builder: (_) => EnralgePost(
                         boardname: _boardname,
                         id: post.id,

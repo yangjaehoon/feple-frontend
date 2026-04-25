@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/screen/main/tab/my_page/s_certification_list.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -35,7 +36,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
   void _openDetail() async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const CertificationListScreen()),
+      SlideRoute(builder: (_) => const CertificationListScreen()),
     );
     _load(); // 돌아왔을 때 목록 새로고침
   }

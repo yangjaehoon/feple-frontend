@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import '../../../../model/artist_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -160,7 +161,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
+                        SlideRoute(
                           builder: (context) => ArtistPage(
                             artistName: artist.name,
                             artistId: artist.id,

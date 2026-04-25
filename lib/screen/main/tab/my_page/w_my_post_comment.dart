@@ -3,6 +3,7 @@ import 'package:feple/network/dio_client.dart';
 import 'package:feple/screen/main/tab/my_page/s_certification_list.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_comments.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_posts.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
 class MyPostCommentWidget extends StatefulWidget {
@@ -57,7 +58,7 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
                 color: AppColors.sunnyYellow,
                 onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(
+                    SlideRoute(
                       builder: (_) => const CertificationListScreen(),
                     )),
               ),
@@ -69,7 +70,7 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
                 color: AppColors.skyBlue,
                 onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(
+                    SlideRoute(
                       builder: (_) => MyPostsScreen(userId: widget.userId),
                     )),
               ),
@@ -81,7 +82,7 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
                 color: AppColors.kawaiiPink,
                 onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(
+                    SlideRoute(
                       builder: (_) => MyCommentsScreen(userId: widget.userId),
                     )),
               ),

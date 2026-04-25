@@ -5,6 +5,7 @@ import 'package:feple/network/dio_client.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
 class UnifiedSearchScreen extends StatefulWidget {
@@ -195,7 +196,7 @@ class _ArtistTile extends StatelessWidget {
       subtitle: Text(genre, style: TextStyle(color: colors.textSecondary, fontSize: 12)),
       trailing: Text('팔로워 $followerCount',
           style: TextStyle(fontSize: 11, color: colors.textSecondary)),
-      onTap: () => Navigator.push(context, MaterialPageRoute(
+      onTap: () => Navigator.push(context, SlideRoute(
         builder: (_) => ArtistPage(
           artistName: name,
           artistId: data['id'] as int,
@@ -236,7 +237,7 @@ class _FestivalTile extends StatelessWidget {
           maxLines: 1, overflow: TextOverflow.ellipsis),
       subtitle: Text('$location · $startDate',
           style: TextStyle(color: colors.textSecondary, fontSize: 12)),
-      onTap: () => Navigator.push(context, MaterialPageRoute(
+      onTap: () => Navigator.push(context, SlideRoute(
         builder: (_) => FestivalInformationFragment(
           poster: FestivalModel(
             id: data['id'] as int,
@@ -308,7 +309,7 @@ class _PostTile extends StatelessWidget {
           ]),
         ],
       ),
-      onTap: () => Navigator.push(context, MaterialPageRoute(
+      onTap: () => Navigator.push(context, SlideRoute(
         builder: (_) => EnralgePost(
           boardname: boardName,
           id: id,

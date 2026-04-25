@@ -1,6 +1,6 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/model/notification_model.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
-import 'package:feple/screen/notification/notification_type.dart';
 import 'package:feple/screen/notification/w_notification_card.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/festival_service.dart';
@@ -15,9 +15,9 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-  final _service = sl<NotificationService>();
+  final _notificationService = sl<NotificationService>();
   final _festivalService = sl<FestivalService>();
-  List<Map<String, dynamic>> _items = [];
+  List<NotificationModel> _items = [];
   bool _loading = true;
 
   @override
@@ -28,7 +28,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   Future<void> _load() async {
     try {
-      final list = await _service.getMyNotifications();
+      final list = await _notificationService.getMyNotifications();
       if (mounted) setState(() { _items = list; _loading = false; });
     } catch (_) {
       if (mounted) setState(() { _loading = false; });
@@ -37,33 +37,24 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   Future<void> _onTap(int index) async {
     final item = _items[index];
-    final id = item['id'];
-    final type = item['type'] as String?;
-    final referenceId = item['referenceId'];
 
-    // 읽지 않은 경우 로컬 상태 즉시 업데이트 후 서버에 저장
-    final isRead = (item['read'] as bool?) ?? (item['isRead'] as bool?) ?? false;
-    if (!isRead) {
-      setState(() => _items[index] = {...item, 'read': true, 'isRead': true});
-      if (id != null) {
-        try {
-          await _service.markRead(id as int);
-        } catch (e) {
-          debugPrint('markRead error: $e');
-        }
+    if (!item.read) {
+      setState(() => _items[index] = item.copyWithRead());
+      try {
+        await _notificationService.markRead(item.id);
+      } catch (e) {
+        debugPrint('markRead error: $e');
       }
     }
 
-    // 페스티벌 타입이면 상세 페이지로 이동
-    final notifType = NotificationType.fromValue(type);
-    if (notifType != null && notifType.isFestivalType && referenceId != null) {
-      await _navigateToFestival(referenceId);
+    if (item.type != null && item.type!.isFestivalType && item.referenceId != null) {
+      await _navigateToFestival(item.referenceId!);
     }
   }
 
-  Future<void> _navigateToFestival(dynamic festivalId) async {
+  Future<void> _navigateToFestival(int festivalId) async {
     try {
-      final festival = await _festivalService.fetchById(festivalId as int);
+      final festival = await _festivalService.fetchById(festivalId);
       if (!mounted) return;
       Navigator.push(
         context,
@@ -126,4 +117,3 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 }
-

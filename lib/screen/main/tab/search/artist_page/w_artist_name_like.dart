@@ -26,7 +26,7 @@ class ArtistNameLike extends StatefulWidget {
 
 class _ArtistNameLikeState extends State<ArtistNameLike>
     with SingleTickerProviderStateMixin {
-  final _followApi = sl<ArtistFollowService>();
+  final _followService = sl<ArtistFollowService>();
 
   bool isFollowed = false;
   int followCount = 0;
@@ -54,7 +54,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
 
   Future<void> _initFollowState() async {
     try {
-      final status = await _followApi.getFollowStatus(widget.artistId);
+      final status = await _followService.getFollowStatus(widget.artistId);
       if (!mounted) return;
       setState(() {
         isFollowed = status.followed;
@@ -74,8 +74,8 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
 
     try {
       final FollowResponse res = isFollowed
-          ? await _followApi.unfollow(widget.artistId)
-          : await _followApi.follow(widget.artistId);
+          ? await _followService.unfollow(widget.artistId)
+          : await _followService.follow(widget.artistId);
 
       if (!mounted) return;
       setState(() {

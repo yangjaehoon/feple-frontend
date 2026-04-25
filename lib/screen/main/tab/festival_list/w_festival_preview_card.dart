@@ -32,38 +32,41 @@ class FestivalPreviewCard extends StatelessWidget {
           Container(
             height: 120,
             margin: const EdgeInsets.all(10),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: AspectRatio(
-                aspectRatio: 2 / 3,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: colors.backgroundMain,
-                        image: DecorationImage(
-                          image: ResizeImage(
-                              CachedNetworkImageProvider(festival.posterUrl), width: 160),
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
-                    if (festival.isEnded) ...[
-                      Container(color: Colors.black.withValues(alpha: 0.5)),
-                      Center(
-                        child: Text(
-                          'status_ended'.tr(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1,
+            child: Hero(
+              tag: 'festival_poster_${festival.id}',
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: AspectRatio(
+                  aspectRatio: 2 / 3,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: colors.backgroundMain,
+                          image: DecorationImage(
+                            image: ResizeImage(
+                                CachedNetworkImageProvider(festival.posterUrl), width: 160),
+                            fit: BoxFit.fill,
                           ),
                         ),
                       ),
+                      if (festival.isEnded) ...[
+                        Container(color: Colors.black.withValues(alpha: 0.5)),
+                        Center(
+                          child: Text(
+                            'status_ended'.tr(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
             ),

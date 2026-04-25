@@ -122,28 +122,31 @@ class _FestivalPosterState extends State<FestivalPoster> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            width: 120,
-                            height: 160,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color:
-                                      colors.cardShadow.withValues(alpha: 0.3),
-                                  blurRadius: 20,
-                                  offset: const Offset(0, 8),
+                          Hero(
+                            tag: 'festival_poster_${widget.poster.id}',
+                            child: Container(
+                              width: 120,
+                              height: 160,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color:
+                                        colors.cardShadow.withValues(alpha: 0.3),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: CachedNetworkImage(
+                                  imageUrl: widget.poster.posterUrl,
+                                  memCacheWidth: 300,
+                                  fit: BoxFit.fill,
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(Icons.broken_image),
                                 ),
-                              ],
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(16),
-                              child: CachedNetworkImage(
-                                imageUrl: widget.poster.posterUrl,
-                                memCacheWidth: 300,
-                                fit: BoxFit.fill,
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.broken_image),
                               ),
                             ),
                           ),

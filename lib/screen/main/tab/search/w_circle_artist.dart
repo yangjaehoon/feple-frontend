@@ -164,9 +164,11 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => ArtistPage(
-                              artistName: artist.name,
-                              artistId: artist.id,
-                              followerCounter: artist.followerCount),
+                            artistName: artist.name,
+                            artistId: artist.id,
+                            followerCounter: artist.followerCount,
+                            profileImageUrl: artist.profileImageUrl,
+                          ),
                         ),
                       );
                     },
@@ -184,22 +186,25 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
                                 ),
                               ],
                             ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20.0),
-                              child: CachedNetworkImage(
-                                imageUrl: artist.profileImageUrl,
-                                memCacheWidth: 200,
-                                fit: BoxFit.cover,
-                                errorWidget: (context, error, stack) =>
-                                    Container(
-                                  decoration: BoxDecoration(
-                                    color: colors.activate.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Icon(
-                                    Icons.person_rounded,
-                                    color: colors.activate,
-                                    size: 40,
+                            child: Hero(
+                              tag: 'artist_image_${artist.id}',
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20.0),
+                                child: CachedNetworkImage(
+                                  imageUrl: artist.profileImageUrl,
+                                  memCacheWidth: 200,
+                                  fit: BoxFit.cover,
+                                  errorWidget: (context, error, stack) =>
+                                      Container(
+                                    decoration: BoxDecoration(
+                                      color: colors.activate.withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Icon(
+                                      Icons.person_rounded,
+                                      color: colors.activate,
+                                      size: 40,
+                                    ),
                                   ),
                                 ),
                               ),

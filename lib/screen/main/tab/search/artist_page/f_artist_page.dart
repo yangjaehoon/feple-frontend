@@ -6,11 +6,18 @@ import 'package:feple/screen/main/tab/search/artist_page/w_artist_board.dart';
 import 'package:flutter/material.dart';
 
 class ArtistPage extends StatelessWidget {
-  const ArtistPage({super.key, required this.artistName, required this.artistId, required this.followerCounter});
+  const ArtistPage({
+    super.key,
+    required this.artistName,
+    required this.artistId,
+    required this.followerCounter,
+    this.profileImageUrl,
+  });
 
   final String artistName;
   final int artistId;
   final int followerCounter;
+  final String? profileImageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +37,12 @@ class ArtistPage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              MainImageSwiper(artistName: artistName, artistId: artistId, followerCount: followerCounter),
+              MainImageSwiper(
+                artistName: artistName,
+                artistId: artistId,
+                followerCount: followerCounter,
+                profileImageUrl: profileImageUrl,
+              ),
               ArtistBoard(artistId: artistId, artistName: artistName),
               ArtistSchedule(artistId: artistId, artistName: artistName),
             ],

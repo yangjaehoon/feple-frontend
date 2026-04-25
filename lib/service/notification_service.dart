@@ -1,9 +1,12 @@
+import 'package:feple/model/notification_model.dart';
 import 'package:feple/network/dio_client.dart';
 
 class NotificationService {
-  Future<List<Map<String, dynamic>>> getMyNotifications() async {
+  Future<List<NotificationModel>> getMyNotifications() async {
     final res = await DioClient.dio.get('/notifications/my');
-    return (res.data as List).cast<Map<String, dynamic>>();
+    return (res.data as List)
+        .map((e) => NotificationModel.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<int> getUnreadCount() async {

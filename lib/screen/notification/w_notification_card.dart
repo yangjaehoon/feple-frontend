@@ -1,9 +1,10 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/model/notification_model.dart';
 import 'package:feple/screen/notification/notification_type.dart';
 import 'package:flutter/material.dart';
 
 class NotificationCard extends StatelessWidget {
-  final Map<String, dynamic> item;
+  final NotificationModel item;
   final VoidCallback onTap;
 
   const NotificationCard({
@@ -15,10 +16,6 @@ class NotificationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final isRead = item['read'] as bool? ?? false;
-    final title = item['title'] as String? ?? '';
-    final body = item['body'] as String? ?? '';
-    final createdAt = item['createdAt'] as String?;
 
     return GestureDetector(
       onTap: onTap,
@@ -26,12 +23,12 @@ class NotificationCard extends StatelessWidget {
         duration: const Duration(milliseconds: 250),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: isRead
+          color: item.read
               ? Colors.white
               : colors.certRingColor.withValues(alpha: 0.06),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isRead
+            color: item.read
                 ? Colors.grey.withValues(alpha: 0.15)
                 : colors.certRingColor.withValues(alpha: 0.3),
             width: 1,
@@ -51,11 +48,11 @@ class NotificationCard extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: _iconColor(item['type'], colors).withValues(alpha: 0.12),
+                color: _iconColor(item.type, colors).withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
-              child: Icon(_iconData(item['type']),
-                  color: _iconColor(item['type'], colors), size: 20),
+              child: Icon(_iconData(item.type),
+                  color: _iconColor(item.type, colors), size: 20),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -63,16 +60,16 @@ class NotificationCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title,
+                    item.title,
                     style: TextStyle(
                       fontSize: 14,
-                      fontWeight: isRead ? FontWeight.w500 : FontWeight.w700,
+                      fontWeight: item.read ? FontWeight.w500 : FontWeight.w700,
                       color: colors.textTitle,
                     ),
                   ),
                   const SizedBox(height: 3),
                   Text(
-                    body,
+                    item.body,
                     style: TextStyle(
                       fontSize: 13,
                       color: colors.textSecondary,
@@ -80,12 +77,12 @@ class NotificationCard extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  if (createdAt != null) ...[
+                  if (item.createdAt != null) ...[
                     const SizedBox(height: 4),
                     Text(
-                      createdAt.length >= 10
-                          ? createdAt.substring(0, 10)
-                          : createdAt,
+                      item.createdAt!.length >= 10
+                          ? item.createdAt!.substring(0, 10)
+                          : item.createdAt!,
                       style: TextStyle(
                         fontSize: 11,
                         color: colors.textSecondary.withValues(alpha: 0.6),
@@ -95,7 +92,7 @@ class NotificationCard extends StatelessWidget {
                 ],
               ),
             ),
-            if (!isRead)
+            if (!item.read)
               Container(
                 width: 8,
                 height: 8,
@@ -111,8 +108,8 @@ class NotificationCard extends StatelessWidget {
     );
   }
 
-  IconData _iconData(dynamic type) {
-    switch (NotificationType.fromValue(type as String?)) {
+  IconData _iconData(NotificationType? type) {
+    switch (type) {
       case NotificationType.certApproved:     return Icons.verified_rounded;
       case NotificationType.certRejected:     return Icons.cancel_outlined;
       case NotificationType.newComment:       return Icons.chat_bubble_rounded;
@@ -121,8 +118,8 @@ class NotificationCard extends StatelessWidget {
     }
   }
 
-  Color _iconColor(dynamic type, AbstractThemeColors colors) {
-    switch (NotificationType.fromValue(type as String?)) {
+  Color _iconColor(NotificationType? type, AbstractThemeColors colors) {
+    switch (type) {
       case NotificationType.certApproved:     return colors.certRingColor;
       case NotificationType.certRejected:     return Colors.grey;
       case NotificationType.newComment:       return Colors.blueAccent;

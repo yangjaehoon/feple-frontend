@@ -1,5 +1,8 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_empty_state.dart';
+import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_post_list.dart';
@@ -77,29 +80,76 @@ class _ArtistBoardState extends State<ArtistBoard> {
     );
   }
 
+  Widget _buildSkeletonList() {
+    return Column(
+      children: List.generate(3, (_) {
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimens.paddingHorizontal, vertical: 10),
+              child: Row(
+                children: const [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SkeletonBox(height: 13),
+                        SizedBox(height: 5),
+                        SkeletonBox(width: 72, height: 10),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  SkeletonBox(width: 40, height: 13),
+                ],
+              ),
+            ),
+            const Divider(height: 1, thickness: 1, indent: 16, endIndent: 16),
+          ],
+        );
+      }),
+    );
+  }
+
   Widget _buildPostList(AbstractThemeColors colors) {
     return FutureBuilder<List<Post>>(
       future: _postsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(color: colors.loadingIndicator),
-          );
+          return _buildSkeletonList();
         }
         if (snapshot.hasError) {
-          return Center(
-            child: Text(
-              'Failed to load data: ${snapshot.error}',
-              style: TextStyle(color: colors.textSecondary, fontSize: 13),
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: ErrorState(
+              message: 'err_fetch_data'.tr(args: ['']),
+              onRetry: () => setState(() {
+                _postsFuture = _postService.fetchArtistPosts(widget.artistId);
+              }),
             ),
           );
         }
 
         final postDataList = snapshot.data ?? [];
         if (postDataList.isEmpty) {
-          return Center(
-            child: Text('no_posts_yet'.tr(),
-                style: TextStyle(color: colors.textSecondary)),
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.article_outlined,
+                      size: 32,
+                      color: colors.textSecondary.withValues(alpha: 0.3)),
+                  const SizedBox(height: 8),
+                  Text(
+                    'no_posts_yet'.tr(),
+                    style: TextStyle(fontSize: 13, color: colors.textSecondary),
+                  ),
+                ],
+              ),
+            ),
           );
         }
 

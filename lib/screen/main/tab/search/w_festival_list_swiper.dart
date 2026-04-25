@@ -149,7 +149,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
                         imageUrl: item.posterUrl,
                         memCacheWidth: 360,
                         fit: BoxFit.fill,
-                        placeholder: (context, url) => Container(color: colors.drawerHeaderBg),
+                        placeholder: (context, url) => const SkeletonBox(height: double.infinity),
                         errorWidget: (context, url, error) => const Icon(Icons.error),
                       ),
                     ),

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -144,6 +145,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
                                   imageUrl: widget.poster.posterUrl,
                                   memCacheWidth: 300,
                                   fit: BoxFit.fill,
+                                  placeholder: (context, url) => const SkeletonBox(height: double.infinity),
                                   errorWidget: (context, url, error) =>
                                       const Icon(Icons.broken_image),
                                 ),

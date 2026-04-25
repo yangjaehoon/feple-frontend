@@ -237,6 +237,7 @@ class _CertCard extends StatelessWidget {
                   ? CachedNetworkImage(
                       imageUrl: posterUrl,
                       fit: BoxFit.cover,
+                      placeholder: (_, __) => const SkeletonBox(height: double.infinity),
                       errorWidget: (_, __, ___) => _buildPhotoPlaceholder(),
                     )
                   : _buildPhotoPlaceholder(),

@@ -193,6 +193,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
                                   imageUrl: artist.profileImageUrl,
                                   memCacheWidth: 200,
                                   fit: BoxFit.cover,
+                                  placeholder: (context, url) => const SkeletonBox(height: double.infinity),
                                   errorWidget: (context, error, stack) =>
                                       Container(
                                     decoration: BoxDecoration(

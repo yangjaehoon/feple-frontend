@@ -1,8 +1,11 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_circle_image.dart';
 import 'package:feple/screen/main/tab/search/festival_information/festival_artists_notifier.dart';
+import 'package:feple/service/artist_follow_service.dart';
+import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,6 +28,8 @@ class _FestivalArtistsState extends State<FestivalArtists> {
     _notifier = FestivalArtistsNotifier(
       festivalId: widget.festivalId,
       userId: userId,
+      festivalService: sl<FestivalService>(),
+      followService: sl<ArtistFollowService>(),
     );
     _notifier.fetch();
   }

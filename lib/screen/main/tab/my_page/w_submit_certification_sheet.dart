@@ -5,7 +5,6 @@ import 'package:feple/model/festival_model.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 
 class SubmitCertificationSheet extends StatefulWidget {
@@ -42,7 +41,9 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
 
   Future<void> _submit() async {
     if (_selectedFestival == null) {
-      Fluttertoast.showToast(msg: '페스티벌을 선택해주세요.');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('페스티벌을 선택해주세요.')),
+      );
       return;
     }
 
@@ -62,16 +63,19 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
         imageData: imageData,
       );
       if (!mounted) return;
-      Fluttertoast.showToast(msg: 'cert_submit_success'.tr());
+      final messenger = ScaffoldMessenger.of(context);
       Navigator.pop(context, true);
+      messenger.showSnackBar(SnackBar(content: Text('cert_submit_success'.tr())));
     } catch (e) {
       if (!mounted) return;
       final msg = e.toString();
-      if (msg.contains('이미') || msg.contains('already')) {
-        Fluttertoast.showToast(msg: 'cert_already_submitted'.tr());
-      } else {
-        Fluttertoast.showToast(msg: 'cert_submit_failed'.tr(args: [msg]));
-      }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          msg.contains('이미') || msg.contains('already')
+              ? 'cert_already_submitted'.tr()
+              : 'cert_submit_failed'.tr(args: [msg]),
+        ),
+      ));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }

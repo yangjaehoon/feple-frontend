@@ -1,9 +1,9 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/model/festival_model.dart';
-import 'package:feple/network/dio_client.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
+import 'package:feple/screen/notification/notification_type.dart';
 import 'package:feple/screen/notification/w_notification_card.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/service/festival_service.dart';
 import 'package:feple/service/notification_service.dart';
 import 'package:flutter/material.dart';
 
@@ -16,10 +16,9 @@ class NotificationScreen extends StatefulWidget {
 
 class _NotificationScreenState extends State<NotificationScreen> {
   final _service = sl<NotificationService>();
+  final _festivalService = sl<FestivalService>();
   List<Map<String, dynamic>> _items = [];
   bool _loading = true;
-
-  static const _festivalTypes = {'NEW_FESTIVAL', 'FESTIVAL_REMINDER'};
 
   @override
   void initState() {
@@ -56,32 +55,20 @@ class _NotificationScreenState extends State<NotificationScreen> {
     }
 
     // 페스티벌 타입이면 상세 페이지로 이동
-    if (_festivalTypes.contains(type) && referenceId != null) {
+    final notifType = NotificationType.fromValue(type);
+    if (notifType != null && notifType.isFestivalType && referenceId != null) {
       await _navigateToFestival(referenceId);
     }
   }
 
   Future<void> _navigateToFestival(dynamic festivalId) async {
     try {
-      final res = await DioClient.dio.get('/festivals/$festivalId');
-      final d = res.data as Map<String, dynamic>;
+      final festival = await _festivalService.fetchById(festivalId as int);
       if (!mounted) return;
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => FestivalInformationFragment(
-            poster: FestivalModel(
-              id: d['id'] as int,
-              title: d['title'] as String? ?? '',
-              description: d['description'] as String? ?? '',
-              location: d['location'] as String? ?? '',
-              startDate: d['startDate'] as String? ?? '',
-              endDate: d['endDate'] as String? ?? '',
-              posterUrl: d['posterUrl'] as String? ?? '',
-              latitude: (d['latitude'] as num?)?.toDouble(),
-              longitude: (d['longitude'] as num?)?.toDouble(),
-            ),
-          ),
+          builder: (_) => FestivalInformationFragment(poster: festival),
         ),
       );
     } catch (_) {}

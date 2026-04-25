@@ -2,8 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/constant/app_colors.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_festival_calendar.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-
 import 'package:feple/injection.dart';
 import '../../../../../common/app_events.dart';
 import '../../../../../service/artist_follow_service.dart';
@@ -85,22 +83,13 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
         followCount = res.followerCount;
       });
       AppEvents.likeChanged.value++;
-
-      Fluttertoast.showToast(
-        msg: isFollowed ? 'follow_done'.tr() : 'follow_cancel'.tr(),
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor:
-            isFollowed ? AppColors.skyBlue : AppColors.skyBlue,
-        textColor: Colors.white,
-        fontSize: 14,
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(isFollowed ? 'follow_done'.tr() : 'follow_cancel'.tr()),
+      ));
     } catch (e) {
       if (!mounted) return;
-      Fluttertoast.showToast(
-        msg: 'follow_failed'.tr(),
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: AppColors.skyBlue,
-        textColor: Colors.white,
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('follow_failed'.tr())),
       );
     }
 

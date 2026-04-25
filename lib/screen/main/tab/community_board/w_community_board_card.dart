@@ -139,6 +139,24 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
       useListViewForEmptyState: false,
       loadingBuilder: (_) => _buildSkeletonList(),
       onRetry: _refreshPosts,
+      emptyBuilder: (_) => Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.article_outlined,
+                size: 32,
+                color: colors.textSecondary.withValues(alpha: 0.3)),
+            const SizedBox(height: 8),
+            Text(
+              'no_posts_yet'.tr(),
+              style: TextStyle(
+                fontSize: 13,
+                color: colors.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
       builder: (context, postDataList) {
         return ListView.separated(
           physics: const NeverScrollableScrollPhysics(),

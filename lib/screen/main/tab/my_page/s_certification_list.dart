@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
@@ -160,22 +161,10 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
                   )
                 : _certifications.isEmpty
                     ? _buildScrollable(
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.verified_outlined,
-                                size: 56,
-                                color: colors.textSecondary
-                                    .withValues(alpha: 0.4)),
-                            const SizedBox(height: 12),
-                            Text(
-                              'cert_no_history'.tr(),
-                              style: TextStyle(
-                                color: colors.textSecondary,
-                                fontSize: 15,
-                              ),
-                            ),
-                          ],
+                        EmptyState(
+                          icon: Icons.verified_outlined,
+                          title: 'cert_no_history'.tr(),
+                          subtitle: 'cert_no_history_hint'.tr(),
                         ),
                       )
                     : ListView.separated(

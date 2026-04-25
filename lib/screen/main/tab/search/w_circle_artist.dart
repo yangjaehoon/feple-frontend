@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:flutter/material.dart';
 import '../../../../model/artist_model.dart';
@@ -89,14 +90,11 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
           );
         }
         if (snapshot.hasError) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Text(
-                '아티스트 로딩 실패: ${snapshot.error}',
-                style: TextStyle(color: colors.textSecondary),
-              ),
-            ),
+          return ErrorState(
+            message: 'err_fetch_data'.tr(args: [snapshot.error.toString()]),
+            onRetry: () => setState(() {
+              _artistsFuture = sl<ArtistService>().fetchArtists();
+            }),
           );
         }
 

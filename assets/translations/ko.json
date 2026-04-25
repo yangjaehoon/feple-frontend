@@ -235,5 +235,6 @@
   "photo_no_photos": "아직 등록된 사진이 없습니다.",
   "photo_edit_action": "수정",
   "photo_edit_title": "사진 수정",
-  "photo_title_label": "제목"
+  "photo_title_label": "제목",
+  "retry": "다시 시도"
 }

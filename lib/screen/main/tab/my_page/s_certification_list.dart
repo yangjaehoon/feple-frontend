@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
@@ -19,6 +20,7 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
   final _certService = sl<CertificationService>();
   List<Map<String, dynamic>> _certifications = [];
   bool _loading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -27,12 +29,12 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
   }
 
   Future<void> _load() async {
-    setState(() => _loading = true);
+    setState(() { _loading = true; _hasError = false; });
     try {
       final list = await _certService.getMyCertifications();
       if (mounted) setState(() { _certifications = list; _loading = false; });
     } catch (_) {
-      if (mounted) setState(() { _certifications = []; _loading = false; });
+      if (mounted) setState(() { _certifications = []; _loading = false; _hasError = true; });
     }
   }
 
@@ -133,7 +135,12 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
       ),
       body: _loading
           ? _buildSkeleton(colors)
-          : _certifications.isEmpty
+          : _hasError
+              ? ErrorState(
+                  message: 'err_fetch_data'.tr(args: ['']),
+                  onRetry: _load,
+                )
+              : _certifications.isEmpty
               ? Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,

@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/screen/main/tab/festival_list/w_festival_preview_card.dart';
@@ -25,7 +26,10 @@ class _ConcertListWidgetState extends State<ConcertListWidget> {
     }
 
     if (previewPoster.error != null && previewPoster.items.isEmpty) {
-      return Center(child: Text(previewPoster.error!));
+      return ErrorState(
+        message: previewPoster.error!,
+        onRetry: context.read<FestivalPreviewProvider>().refresh,
+      );
     }
 
     if (previewPoster.items.isEmpty) {

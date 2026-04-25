@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:flutter/material.dart';
 
 /// 퓨처 빌더의 보일러플레이트 코드를 줄여주는 공통 위젯
@@ -17,6 +18,9 @@ class AsyncContentBuilder<T> extends StatelessWidget {
   
   /// 로딩 중일 때 보여줄 커스텀 위젯 (선택)
   final WidgetBuilder? loadingBuilder;
+
+  /// 에러 시 재시도 콜백 (선택) — 넘기면 재시도 버튼이 표시됨
+  final VoidCallback? onRetry;
   
   /// 데이터가 비어있는지 판단하는 커스텀 로직 (리스트나 맵 이외의 타입일 경우 주로 사용)
   final bool Function(T data)? isEmpty;
@@ -33,6 +37,7 @@ class AsyncContentBuilder<T> extends StatelessWidget {
     this.errorBuilder,
     this.emptyBuilder,
     this.loadingBuilder,
+    this.onRetry,
     this.isEmpty,
     this.useListViewForEmptyState = true,
   });
@@ -53,10 +58,14 @@ class AsyncContentBuilder<T> extends StatelessWidget {
 
         if (snapshot.hasError) {
           if (errorBuilder != null) return errorBuilder!(snapshot.error);
-          return _buildStateWidget(
-            context,
-            'err_fetch_data'.tr(args: [snapshot.error.toString()]),
+          final errorWidget = ErrorState(
+            message: 'err_fetch_data'.tr(args: [snapshot.error.toString()]),
+            onRetry: onRetry,
           );
+          if (useListViewForEmptyState) {
+            return ListView(children: [const SizedBox(height: 60), errorWidget]);
+          }
+          return errorWidget;
         }
 
         if (!snapshot.hasData) {

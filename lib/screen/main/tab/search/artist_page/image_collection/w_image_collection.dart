@@ -27,8 +27,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
     _notifier = ArtistPhotoNotifier(artistId: widget.artistId);
     _notifier.onError = (key) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(key.tr())));
+      context.showErrorSnackbar(key.tr());
     };
     _notifier.loadPhotos();
   }

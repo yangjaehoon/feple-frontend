@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/service/certification_service.dart';
@@ -160,34 +161,14 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
           const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: SizedBox(
-              width: double.infinity,
+            child: LoadingButton(
+              label: 'cert_select_photo'.tr(),
+              icon: Icons.add_photo_alternate_rounded,
+              isLoading: _submitting,
+              onPressed: _submit,
+              backgroundColor: colors.certRingColor,
               height: 50,
-              child: ElevatedButton.icon(
-                onPressed: _submitting ? null : _submit,
-                icon: _submitting
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
-                      )
-                    : const Icon(Icons.add_photo_alternate_rounded),
-                label: Text(
-                  _submitting
-                      ? 'cert_submitting'.tr()
-                      : 'cert_select_photo'.tr(),
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w700, fontSize: 15),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.certRingColor,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  elevation: 0,
-                ),
-              ),
+              borderRadius: 12,
             ),
           ),
         ],

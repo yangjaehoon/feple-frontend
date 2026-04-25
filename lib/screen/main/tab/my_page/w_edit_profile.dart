@@ -104,21 +104,11 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
       await userProvider.setUser(updated);
 
       if (!mounted) return;
+      context.showSuccessSnackbar('profile_updated'.tr());
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: AppColors.skyBlue,
-          content: Text('profile_updated'.tr()),
-        ),
-      );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: AppColors.skyBlue,
-          content: Text('save_failed'.tr(args: [e.toString()])),
-        ),
-      );
+      context.showErrorSnackbar('save_failed'.tr(args: [e.toString()]));
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }

@@ -1,4 +1,8 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_animated_list_item.dart';
+import 'package:feple/common/widget/w_empty_state.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/notification_model.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/screen/notification/w_notification_card.dart';
@@ -20,6 +24,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   final _festivalService = sl<FestivalService>();
   List<NotificationModel> _items = [];
   bool _loading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -28,11 +33,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   Future<void> _load() async {
+    setState(() { _loading = true; _hasError = false; });
     try {
       final list = await _notificationService.getMyNotifications();
       if (mounted) setState(() { _items = list; _loading = false; });
     } catch (_) {
-      if (mounted) setState(() { _loading = false; });
+      if (mounted) setState(() { _loading = false; _hasError = true; });
     }
   }
 
@@ -66,6 +72,45 @@ class _NotificationScreenState extends State<NotificationScreen> {
     } catch (_) {}
   }
 
+  Widget _buildSkeleton(AbstractThemeColors colors) {
+    return ListView.separated(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+      itemCount: 5,
+      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      itemBuilder: (_, __) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: colors.listDivider),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SkeletonBox(
+              width: 40,
+              height: 40,
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  SkeletonBox(height: 14),
+                  SizedBox(height: 6),
+                  SkeletonBox(width: 200, height: 12),
+                  SizedBox(height: 4),
+                  SkeletonBox(width: 80, height: 10),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -85,36 +130,75 @@ class _NotificationScreenState extends State<NotificationScreen> {
         ),
         iconTheme: IconThemeData(color: colors.textTitle),
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _items.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.notifications_none_rounded,
-                          size: 56,
-                          color: colors.textSecondary.withValues(alpha: 0.4)),
-                      const SizedBox(height: 12),
-                      Text(
-                        'no_notifications'.tr(),
-                        style: TextStyle(
-                          color: colors.textSecondary,
-                          fontSize: 15,
+      body: RefreshIndicator(
+        onRefresh: _load,
+        color: colors.activate,
+        child: _loading
+            ? _buildSkeleton(colors)
+            : _hasError
+                ? _buildScrollable(
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.wifi_off_rounded,
+                            size: 52,
+                            color: colors.textSecondary.withValues(alpha: 0.4)),
+                        const SizedBox(height: 16),
+                        Text(
+                          'err_fetch_data'.tr(args: ['']),
+                          style: TextStyle(color: colors.textSecondary),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 20),
+                        FilledButton.icon(
+                          onPressed: _load,
+                          icon: const Icon(Icons.refresh_rounded, size: 18),
+                          label: Text('retry'.tr()),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: colors.activate,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : _items.isEmpty
+                    ? _buildScrollable(
+                        EmptyState(
+                          icon: Icons.notifications_none_rounded,
+                          title: 'no_notifications'.tr(),
+                        ),
+                      )
+                    : ListView.separated(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                        itemCount: _items.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 8),
+                        itemBuilder: (_, i) => AnimatedListItem(
+                          index: i,
+                          child: TapScale(
+                            onTap: () => _onTap(i),
+                            child: NotificationCard(
+                              item: _items[i],
+                              onTap: () => _onTap(i),
+                            ),
+                          ),
                         ),
                       ),
-                    ],
-                  ),
-                )
-              : ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-                  itemCount: _items.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 8),
-                  itemBuilder: (_, i) => NotificationCard(
-                    item: _items[i],
-                    onTap: () => _onTap(i),
-                  ),
-                ),
+      ),
+    );
+  }
+
+  Widget _buildScrollable(Widget child) {
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: SizedBox(
+          height: constraints.maxHeight,
+          child: Center(child: child),
+        ),
+      ),
     );
   }
 }

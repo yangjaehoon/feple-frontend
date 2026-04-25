@@ -32,26 +32,31 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
       color: colors.backgroundMain,
       child: Stack(
         children: [
-          CustomScrollView(
-            slivers: [
-              SliverPadding(
-                padding: EdgeInsets.only(
-                  top: rs.h(AppDimens.scrollPaddingTop),
-                  bottom: rs.h(AppDimens.scrollPaddingBottom),
+          RefreshIndicator(
+            onRefresh: () async =>
+                context.read<FestivalPreviewProvider>().refresh(),
+            color: colors.activate,
+            child: CustomScrollView(
+              slivers: [
+                SliverPadding(
+                  padding: EdgeInsets.only(
+                    top: rs.h(AppDimens.scrollPaddingTop),
+                    bottom: rs.h(AppDimens.scrollPaddingBottom),
+                  ),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      _FilterPanel(
+                        expanded: _filterExpanded,
+                        onToggle: () =>
+                            setState(() => _filterExpanded = !_filterExpanded),
+                        activeFilterCount: activeFilterCount,
+                      ),
+                      const ConcertListWidget(),
+                    ]),
+                  ),
                 ),
-                sliver: SliverList(
-                  delegate: SliverChildListDelegate([
-                    _FilterPanel(
-                      expanded: _filterExpanded,
-                      onToggle: () =>
-                          setState(() => _filterExpanded = !_filterExpanded),
-                      activeFilterCount: activeFilterCount,
-                    ),
-                    const ConcertListWidget(),
-                  ]),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
           FepleAppBar('festival_schedule'.tr()),
         ],

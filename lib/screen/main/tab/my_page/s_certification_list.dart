@@ -38,6 +38,19 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
     }
   }
 
+  /// 에러·빈 상태를 RefreshIndicator가 감지할 수 있도록 스크롤 가능하게 감쌉니다.
+  Widget _buildScrollable(Widget child) {
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: SizedBox(
+          height: constraints.maxHeight,
+          child: Center(child: child),
+        ),
+      ),
+    );
+  }
+
   Widget _buildSkeleton(AbstractThemeColors colors) {
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
@@ -133,41 +146,50 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
           const SizedBox(width: 4),
         ],
       ),
-      body: _loading
-          ? _buildSkeleton(colors)
-          : _hasError
-              ? ErrorState(
-                  message: 'err_fetch_data'.tr(args: ['']),
-                  onRetry: _load,
-                )
-              : _certifications.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.verified_outlined,
-                          size: 56,
-                          color: colors.textSecondary.withValues(alpha: 0.4)),
-                      const SizedBox(height: 12),
-                      Text(
-                        'cert_no_history'.tr(),
-                        style: TextStyle(
-                          color: colors.textSecondary,
-                          fontSize: 15,
+      body: RefreshIndicator(
+        onRefresh: _load,
+        color: colors.activate,
+        child: _loading
+            ? _buildSkeleton(colors)
+            : _hasError
+                ? _buildScrollable(
+                    ErrorState(
+                      message: 'err_fetch_data'.tr(args: ['']),
+                      onRetry: _load,
+                    ),
+                  )
+                : _certifications.isEmpty
+                    ? _buildScrollable(
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.verified_outlined,
+                                size: 56,
+                                color: colors.textSecondary
+                                    .withValues(alpha: 0.4)),
+                            const SizedBox(height: 12),
+                            Text(
+                              'cert_no_history'.tr(),
+                              style: TextStyle(
+                                color: colors.textSecondary,
+                                fontSize: 15,
+                              ),
+                            ),
+                          ],
                         ),
+                      )
+                    : ListView.separated(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                        itemCount: _certifications.length,
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: 10),
+                        itemBuilder: (context, index) {
+                          final cert = _certifications[index];
+                          return _CertCard(cert: cert, colors: colors);
+                        },
                       ),
-                    ],
-                  ),
-                )
-              : ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-                  itemCount: _certifications.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 10),
-                  itemBuilder: (context, index) {
-                    final cert = _certifications[index];
-                    return _CertCard(cert: cert, colors: colors);
-                  },
-                ),
+      ),
     );
   }
 }

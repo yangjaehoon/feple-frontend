@@ -29,8 +29,8 @@ class TabNavigator extends StatelessWidget {
       },
     );
 
-    // FestivalPreviewProvider는 축제 탭에서만 필요 → 탭 범위로 스코핑
-    if (tabItem == TabItem.concertList) {
+    // FestivalPreviewProvider는 검색탭·축제탭 둘 다 사용
+    if (tabItem == TabItem.concertList || tabItem == TabItem.search) {
       return ChangeNotifierProvider(
         create: (_) => FestivalPreviewProvider(sl<FestivalService>()),
         child: navigator,

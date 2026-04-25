@@ -138,6 +138,7 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
       future: _postsFuture,
       useListViewForEmptyState: false,
       loadingBuilder: (_) => _buildSkeletonList(),
+      onRetry: _refreshPosts,
       builder: (context, postDataList) {
         return ListView.separated(
           physics: const NeverScrollableScrollPhysics(),

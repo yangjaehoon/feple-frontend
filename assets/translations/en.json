@@ -235,5 +235,6 @@
   "photo_no_photos": "No photos registered yet.",
   "photo_edit_action": "Edit",
   "photo_edit_title": "Edit Photo",
-  "photo_title_label": "Title"
+  "photo_title_label": "Title",
+  "retry": "Retry"
 }

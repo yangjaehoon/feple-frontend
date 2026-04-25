@@ -4,6 +4,7 @@ import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/w_menu_language_selector.dart';
 import 'package:feple/screen/opensource/s_opensource.dart';
 
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -145,7 +146,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
               await context.read<UserProvider>().logout();
               if (context.mounted) {
                 Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => const LoginPage()),
+                  SlideRoute(builder: (_) => const LoginPage()),
                   (_) => false,
                 );
               }
@@ -193,7 +194,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
               }
               if (!context.mounted) return;
               Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => const LoginPage()),
+                SlideRoute(builder: (_) => const LoginPage()),
                 (_) => false,
               );
             },

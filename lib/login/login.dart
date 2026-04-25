@@ -4,6 +4,7 @@ import 'package:feple/login/signup.dart';
 import 'package:feple/service/auth_service.dart';
 import 'package:feple/service/fcm_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -183,7 +184,7 @@ class _LoginPageState extends State<LoginPage> {
                     GestureDetector(
                       onTap: () => Navigator.push(
                         context,
-                        MaterialPageRoute(
+                        SlideRoute(
                             builder: (context) => const SignupPage()),
                       ),
                       child: Text(

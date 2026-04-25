@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
 class MyCommentsScreen extends StatefulWidget {
@@ -60,7 +61,7 @@ class _MyCommentsScreenState extends State<MyCommentsScreen> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
+                    SlideRoute(
                       builder: (_) => EnralgePost(
                         boardname: c.boardDisplayName,
                         id: c.postId,

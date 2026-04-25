@@ -5,6 +5,7 @@ import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_post_list.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
 /// 아티스트 페이지에 삽입되는 게시판 미리보기 카드
@@ -61,7 +62,7 @@ class _ArtistBoardState extends State<ArtistBoard> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
+                SlideRoute(
                   builder: (_) => ArtistPostListScreen(
                     artistId: widget.artistId,
                     artistName: widget.artistName,

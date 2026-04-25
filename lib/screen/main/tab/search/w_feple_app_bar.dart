@@ -5,6 +5,7 @@ import 'package:feple/screen/notification/s_notification.dart';
 import 'package:feple/screen/search/s_unified_search.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/notification_service.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
 class FepleAppBar extends StatefulWidget {
@@ -37,7 +38,7 @@ class _FepleAppBarState extends State<FepleAppBar> {
   Future<void> _openNotifications() async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const NotificationScreen()),
+      SlideRoute(builder: (_) => const NotificationScreen()),
     );
     // 돌아왔을 때 뱃지 갱신
     _loadUnreadCount();
@@ -77,7 +78,7 @@ class _FepleAppBarState extends State<FepleAppBar> {
             icon: const Icon(Icons.search_rounded, color: Colors.white),
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const UnifiedSearchScreen()),
+              SlideRoute(builder: (_) => const UnifiedSearchScreen()),
             ),
           ),
           Stack(

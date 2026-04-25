@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/screen/main/tab/search/artist_page/image_collection/w_image_upload.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/screen/main/tab/search/artist_page/image_collection/w_image_collection.dart';
 
@@ -39,7 +40,7 @@ class _ImgCollectionState extends State<ImgCollection> {
           onPressed: () async {
             final result = await Navigator.push(
               context,
-              MaterialPageRoute(
+              SlideRoute(
                 builder: (context) => ImgUpload(
                   artistName: widget.artistName,
                   artistId: widget.artistId,

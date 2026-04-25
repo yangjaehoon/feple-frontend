@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_write_board.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
@@ -58,7 +59,7 @@ class _CommunityPostState extends State<CommunityPost> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
+              SlideRoute(
                 builder: (_) => WritePost(boardname: widget.boardname),
               ),
             ).then((_) => _refresh());
@@ -87,7 +88,7 @@ class _CommunityPostState extends State<CommunityPost> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
+                      SlideRoute(
                         builder: (_) => EnralgePost(
                           boardname: widget.boardname,
                           id: post.id,

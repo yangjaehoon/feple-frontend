@@ -9,6 +9,7 @@ import 'package:feple/screen/main/tab/home/w_reorder_sheet.dart';
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -143,7 +144,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                       artists: artists,
                       onTap: (artist) => Navigator.push(
                         context,
-                        MaterialPageRoute(
+                        SlideRoute(
                           builder: (_) => ArtistPage(
                             artistId: artist.id,
                             artistName: artist.name,
@@ -164,7 +165,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                       festivals: festivals,
                       onTap: (festival) => Navigator.push(
                         context,
-                        MaterialPageRoute(
+                        SlideRoute(
                           builder: (_) =>
                               FestivalInformationFragment(poster: festival),
                         ),

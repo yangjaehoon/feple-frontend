@@ -10,6 +10,7 @@ import 'package:feple/common/app_events.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/common/widget/w_async_content_builder.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
 /// 게시판 미리보기 카드 — 3개 게시판(인기/자유/동행)이 공유하는 공용 위젯
@@ -89,7 +90,7 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
+                SlideRoute(
                   builder: (_) => CommunityPost(boardname: widget.boardname),
                 ),
               );
@@ -173,7 +174,7 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
+                  SlideRoute(
                     builder: (_) => EnralgePost(
                       boardname: widget.boardname,
                       id: post.id,

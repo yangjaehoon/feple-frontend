@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:card_swiper/card_swiper.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -33,9 +34,31 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
     final colors = context.appColors;
 
     if (previewProvider.items.isEmpty) {
-      return Center(
-        child: CircularProgressIndicator(
-          color: colors.loadingIndicator,
+      return SizedBox(
+        height: 300,
+        child: Stack(
+          children: [
+            SkeletonBox(height: 300, borderRadius: BorderRadius.zero),
+            Center(
+              child: SkeletonBox(
+                width: 180,
+                height: 254.5,
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+            Positioned(
+              bottom: 12,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: SkeletonBox(
+                  width: 48,
+                  height: 14,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+          ],
         ),
       );
     }

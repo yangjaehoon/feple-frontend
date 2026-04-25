@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:flutter/material.dart';
 import '../../../../model/artist_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -30,10 +31,60 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
       future: _artistsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: CircularProgressIndicator(color: colors.loadingIndicator),
+          return Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: SkeletonBox(width: 72, height: 20),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  height: 36,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    children: List.generate(
+                      4,
+                      (_) => const Padding(
+                        padding: EdgeInsets.only(right: 8),
+                        child: SkeletonBox(
+                          width: 60,
+                          height: 36,
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                GridView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: 6,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: 0.75,
+                  ),
+                  itemBuilder: (_, __) => Column(
+                    children: const [
+                      Expanded(
+                        child: SkeletonBox(
+                          height: double.infinity,
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      SkeletonBox(width: 60, height: 13),
+                    ],
+                  ),
+                ),
+              ],
             ),
           );
         }

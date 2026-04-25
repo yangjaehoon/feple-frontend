@@ -1,4 +1,7 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_empty_state.dart';
+import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/provider/user_provider.dart';
@@ -264,23 +267,23 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
               ),
 
             if (_loading)
-              const Padding(
-                padding: EdgeInsets.all(32),
-                child: Center(child: CircularProgressIndicator()),
-              )
+              _TimetableSkeleton(colors: colors)
             else if (_error != null)
               Padding(
-                padding: const EdgeInsets.all(24),
-                child: Center(
-                    child: Text('불러오기 실패',
-                        style: TextStyle(color: colors.textSecondary))),
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: ErrorState(
+                  message: 'err_fetch_data'.tr(args: ['']),
+                  onRetry: () => setState(() {
+                    _error = null;
+                    _loading = true;
+                    _fetch();
+                  }),
+                ),
               )
             else if (_cachedFiltered.isEmpty)
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: Center(
-                    child: Text('등록된 타임테이블이 없습니다.',
-                        style: TextStyle(color: colors.textSecondary))),
+              EmptyState(
+                icon: Icons.schedule_rounded,
+                title: '등록된 타임테이블이 없습니다.',
               )
             else
               LayoutBuilder(
@@ -587,6 +590,75 @@ class _PerformanceCard extends StatelessWidget {
             ),
         ],
       ),
+    );
+  }
+}
+
+// ── 타임테이블 스켈레톤 ────────────────────────────────────────────────────────
+
+class _TimetableSkeleton extends StatelessWidget {
+  final AbstractThemeColors colors;
+  const _TimetableSkeleton({required this.colors});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 날짜 탭 스켈레톤
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          child: Row(
+            children: List.generate(3, (i) => Padding(
+              padding: const EdgeInsets.only(right: 8, bottom: 10),
+              child: SkeletonBox(
+                width: 80,
+                height: 32,
+                borderRadius: const BorderRadius.all(Radius.circular(20)),
+              ),
+            )),
+          ),
+        ),
+        // 스테이지 헤더 스켈레톤
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          child: Row(
+            children: List.generate(3, (i) => Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: SkeletonBox(
+                  height: 32,
+                  borderRadius: const BorderRadius.all(Radius.circular(6)),
+                ),
+              ),
+            )),
+          ),
+        ),
+        // 타임 슬롯 스켈레톤
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+          child: Column(
+            children: List.generate(5, (row) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                children: [
+                  const SkeletonBox(width: 40, height: 12),
+                  const SizedBox(width: 8),
+                  ...List.generate(3, (col) => Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 3),
+                      child: SkeletonBox(
+                        height: row % 2 == 0 ? 48 : 36,
+                        borderRadius: const BorderRadius.all(Radius.circular(8)),
+                      ),
+                    ),
+                  )),
+                ],
+              ),
+            )),
+          ),
+        ),
+      ],
     );
   }
 }

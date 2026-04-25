@@ -6,6 +6,7 @@ import 'package:feple/screen/main/tab/search/festival_information/w_festival_pos
 import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/common/widget/w_async_content_builder.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
@@ -78,10 +79,43 @@ class _FestivalBoardState extends State<FestivalBoard> {
     );
   }
 
+  Widget _buildSkeletonList() {
+    return Column(
+      children: List.generate(3, (i) {
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimens.paddingHorizontal, vertical: 10),
+              child: Row(
+                children: const [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SkeletonBox(height: 13),
+                        SizedBox(height: 5),
+                        SkeletonBox(width: 72, height: 10),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  SkeletonBox(width: 40, height: 13),
+                ],
+              ),
+            ),
+            Divider(height: 1, thickness: 1, indent: 16, endIndent: 16),
+          ],
+        );
+      }),
+    );
+  }
+
   Widget _buildPostList(AbstractThemeColors colors) {
     return AsyncContentBuilder<List<Post>>(
       future: _postsFuture,
       useListViewForEmptyState: false,
+      loadingBuilder: (_) => _buildSkeletonList(),
       builder: (context, postDataList) {
         return ListView.separated(
           physics: const NeverScrollableScrollPhysics(),

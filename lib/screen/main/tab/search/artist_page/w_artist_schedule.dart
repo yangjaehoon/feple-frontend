@@ -1,6 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_empty_state.dart';
+import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/artist_schedule_model.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
@@ -71,26 +74,61 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
     );
   }
 
+  Widget _buildScheduleSkeleton() {
+    return Column(
+      children: List.generate(3, (i) {
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimens.paddingHorizontal, vertical: 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SkeletonBox(
+                    width: 42,
+                    height: 42,
+                    borderRadius: BorderRadius.all(Radius.circular(21)),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        SkeletonBox(height: 14),
+                        SizedBox(height: 6),
+                        SkeletonBox(width: 100, height: 11),
+                        SizedBox(height: 4),
+                        SkeletonBox(width: 130, height: 11),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (i < 2)
+              const Divider(height: 1, thickness: 1, indent: 16, endIndent: 16),
+          ],
+        );
+      }),
+    );
+  }
+
   Widget _buildScheduleList(AbstractThemeColors colors) {
     return FutureBuilder<List<ArtistScheduleModel>>(
       future: _scheduleFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 32),
-            child: Center(
-              child: CircularProgressIndicator(color: colors.loadingIndicator),
-            ),
-          );
+          return _buildScheduleSkeleton();
         }
         if (snapshot.hasError) {
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24),
-            child: Center(
-              child: Text(
-                '일정을 불러오지 못했습니다.',
-                style: TextStyle(color: colors.textSecondary, fontSize: 13),
-              ),
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: ErrorState(
+              message: 'err_fetch_data'.tr(args: ['']),
+              onRetry: () => setState(() {
+                _scheduleFuture = _fetchSchedule();
+              }),
             ),
           );
         }
@@ -98,12 +136,10 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
         final items = snapshot.data ?? [];
         if (items.isEmpty) {
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24),
-            child: Center(
-              child: Text(
-                '등록된 일정이 없습니다.',
-                style: TextStyle(color: colors.textSecondary, fontSize: 13),
-              ),
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: EmptyState(
+              icon: Icons.calendar_today_outlined,
+              title: '등록된 일정이 없습니다.',
             ),
           );
         }

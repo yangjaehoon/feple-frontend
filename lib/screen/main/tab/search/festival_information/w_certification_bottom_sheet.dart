@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:feple/service/certification_service.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../../common/common.dart';
@@ -48,16 +47,19 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
         imageData: imageData,
       );
       if (!mounted) return;
+      final messenger = ScaffoldMessenger.of(context);
       Navigator.pop(context);
-      Fluttertoast.showToast(msg: 'cert_submit_success'.tr());
+      messenger.showSnackBar(SnackBar(content: Text('cert_submit_success'.tr())));
     } catch (e) {
       if (!mounted) return;
       final msg = e.toString();
-      Fluttertoast.showToast(
-        msg: msg.contains('이미') || msg.contains('already')
-            ? 'cert_already_submitted'.tr()
-            : 'cert_submit_failed'.tr(args: [msg]),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          msg.contains('이미') || msg.contains('already')
+              ? 'cert_already_submitted'.tr()
+              : 'cert_submit_failed'.tr(args: [msg]),
+        ),
+      ));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }

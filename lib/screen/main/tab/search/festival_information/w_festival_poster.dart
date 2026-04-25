@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/injection.dart';
@@ -232,13 +231,15 @@ class _FestivalPosterState extends State<FestivalPoster> {
                                     const SizedBox(width: 8),
                                     _ActionButton(
                                       onTap: _notifier.isCertified
-                                          ? () => Fluttertoast.showToast(
-                                              msg: context
-                                                  .tr('cert_already_approved'))
+                                          ? () => ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                content: Text(context.tr('cert_already_approved')),
+                                              ))
                                           : _notifier.isPending
-                                              ? () => Fluttertoast.showToast(
-                                                  msg: context
-                                                      .tr('cert_pending_notice'))
+                                              ? () => ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                    content: Text(context.tr('cert_pending_notice')),
+                                                  ))
                                               : _submitCertification,
                                       icon: _notifier.isPending
                                           ? Icons.hourglass_top_rounded

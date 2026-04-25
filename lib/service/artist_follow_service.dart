@@ -17,4 +17,11 @@ class ArtistFollowService {
     final res = await DioClient.dio.get('/artists/$artistId/follow');
     return FollowStatus.fromJson(res.data as Map<String, dynamic>);
   }
+
+  Future<Set<int>> getFollowingIds(int userId) async {
+    final res = await DioClient.dio.get('/users/$userId/following');
+    return (res.data as List)
+        .map((a) => (a['id'] as num).toInt())
+        .toSet();
+  }
 }

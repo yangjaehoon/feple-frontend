@@ -6,7 +6,6 @@ import 'package:feple/service/fcm_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import '../provider/user_provider.dart';
 
@@ -305,23 +304,20 @@ class _LoginPageState extends State<LoginPage> {
             onPressed: () async {
               final email = emailCtrl.text.trim();
               if (email.isEmpty) return;
+              final messenger = ScaffoldMessenger.of(context);
               Navigator.pop(ctx);
               try {
                 await AuthService.instance.sendPasswordReset(email);
                 if (mounted) {
-                  Fluttertoast.showToast(
-                    msg: 'password_reset_sent'.tr(),
-                    backgroundColor: context.appColors.snackbarBgColor,
-                    textColor: context.appColors.textTitle,
-                  );
+                  messenger.showSnackBar(SnackBar(
+                    content: Text('password_reset_sent'.tr()),
+                  ));
                 }
               } on FirebaseAuthException catch (e) {
                 if (mounted) {
-                  Fluttertoast.showToast(
-                    msg: AuthService.instance.firebaseErrorMessage(e.code),
-                    backgroundColor: context.appColors.activate,
-                    textColor: Colors.white,
-                  );
+                  messenger.showSnackBar(SnackBar(
+                    content: Text(AuthService.instance.firebaseErrorMessage(e.code)),
+                  ));
                 }
               }
             },

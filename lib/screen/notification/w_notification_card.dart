@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/screen/notification/notification_type.dart';
 import 'package:flutter/material.dart';
 
 class NotificationCard extends StatelessWidget {
@@ -111,22 +112,22 @@ class NotificationCard extends StatelessWidget {
   }
 
   IconData _iconData(dynamic type) {
-    switch (type as String?) {
-      case 'CERT_APPROVED':     return Icons.verified_rounded;
-      case 'CERT_REJECTED':     return Icons.cancel_outlined;
-      case 'NEW_COMMENT':       return Icons.chat_bubble_rounded;
-      case 'FESTIVAL_REMINDER': return Icons.event_rounded;
-      default:                  return Icons.festival_rounded;
+    switch (NotificationType.fromValue(type as String?)) {
+      case NotificationType.certApproved:     return Icons.verified_rounded;
+      case NotificationType.certRejected:     return Icons.cancel_outlined;
+      case NotificationType.newComment:       return Icons.chat_bubble_rounded;
+      case NotificationType.festivalReminder: return Icons.event_rounded;
+      default:                                return Icons.festival_rounded;
     }
   }
 
   Color _iconColor(dynamic type, AbstractThemeColors colors) {
-    switch (type as String?) {
-      case 'CERT_APPROVED':     return colors.certRingColor;
-      case 'CERT_REJECTED':     return Colors.grey;
-      case 'NEW_COMMENT':       return Colors.blueAccent;
-      case 'FESTIVAL_REMINDER': return Colors.deepOrangeAccent;
-      default:                  return colors.certRingColor;
+    switch (NotificationType.fromValue(type as String?)) {
+      case NotificationType.certApproved:     return colors.certRingColor;
+      case NotificationType.certRejected:     return Colors.grey;
+      case NotificationType.newComment:       return Colors.blueAccent;
+      case NotificationType.festivalReminder: return Colors.deepOrangeAccent;
+      default:                                return colors.certRingColor;
     }
   }
 }

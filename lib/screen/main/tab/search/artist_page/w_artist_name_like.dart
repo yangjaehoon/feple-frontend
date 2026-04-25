@@ -87,14 +87,10 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
         followCount = res.followerCount;
       });
       AppEvents.likeChanged.value++;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(isFollowed ? 'follow_done'.tr() : 'follow_cancel'.tr()),
-      ));
+      context.showSuccessSnackbar(isFollowed ? 'follow_done'.tr() : 'follow_cancel'.tr());
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('follow_failed'.tr())),
-      );
+      context.showErrorSnackbar('follow_failed'.tr());
     }
 
     if (!mounted) return;

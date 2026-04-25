@@ -1,7 +1,9 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/screen/main/tab/festival_list/w_festival_preview_card.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
@@ -41,32 +43,37 @@ class _ConcertListWidgetState extends State<ConcertListWidget> {
       );
     }
 
+    final items = previewPoster.items;
     return Column(
-      children: previewPoster.items.map((item) {
-        return GestureDetector(
-          onTap: () {
-            final poster = FestivalModel(
-              id: item.id,
-              title: item.title,
-              description: item.description,
-              location: item.location,
-              startDate: item.startDate,
-              endDate: item.endDate ?? '',
-              posterUrl: item.posterUrl,
-              latitude: item.latitude,
-              longitude: item.longitude,
-            );
-            Navigator.push(
-              context,
-              SlideRoute(
-                builder: (context) =>
-                    FestivalInformationFragment(poster: poster),
-              ),
-            );
-          },
-          child: FestivalPreviewCard(festival: item),
+      children: List.generate(items.length, (index) {
+        final item = items[index];
+        return AnimatedListItem(
+          index: index,
+          child: TapScale(
+            onTap: () {
+              final poster = FestivalModel(
+                id: item.id,
+                title: item.title,
+                description: item.description,
+                location: item.location,
+                startDate: item.startDate,
+                endDate: item.endDate ?? '',
+                posterUrl: item.posterUrl,
+                latitude: item.latitude,
+                longitude: item.longitude,
+              );
+              Navigator.push(
+                context,
+                SlideRoute(
+                  builder: (context) =>
+                      FestivalInformationFragment(poster: poster),
+                ),
+              );
+            },
+            child: FestivalPreviewCard(festival: item),
+          ),
         );
-      }).toList(),
+      }),
     );
   }
 }

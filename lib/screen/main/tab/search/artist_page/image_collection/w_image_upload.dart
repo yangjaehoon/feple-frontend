@@ -75,18 +75,11 @@ class _ImgUploadState extends State<ImgUpload> {
       final body = e.response?.data?.toString() ?? '';
       debugPrint('status=$status  data=$body');
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('photo_upload_failed_detail'.tr(args: [status.toString(), body])),
-          duration: const Duration(seconds: 8),
-        ),
-      );
+      context.showErrorSnackbar('photo_upload_failed_detail'.tr(args: [status.toString(), body]));
     } catch (e) {
       debugPrint('upload error: $e');
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('photo_upload_failed'.tr())),
-      );
+      context.showErrorSnackbar('photo_upload_failed'.tr());
     } finally {
       if (mounted) setState(() => isUploading = false);
     }

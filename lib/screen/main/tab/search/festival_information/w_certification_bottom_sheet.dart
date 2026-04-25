@@ -47,19 +47,16 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
         imageData: imageData,
       );
       if (!mounted) return;
-      final messenger = ScaffoldMessenger.of(context);
+      context.showSuccessSnackbar('cert_submit_success'.tr());
       Navigator.pop(context);
-      messenger.showSnackBar(SnackBar(content: Text('cert_submit_success'.tr())));
     } catch (e) {
       if (!mounted) return;
       final msg = e.toString();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          msg.contains('이미') || msg.contains('already')
-              ? 'cert_already_submitted'.tr()
-              : 'cert_submit_failed'.tr(args: [msg]),
-        ),
-      ));
+      context.showErrorSnackbar(
+        msg.contains('이미') || msg.contains('already')
+            ? 'cert_already_submitted'.tr()
+            : 'cert_submit_failed'.tr(args: [msg]),
+      );
     } finally {
       if (mounted) setState(() => _submitting = false);
     }

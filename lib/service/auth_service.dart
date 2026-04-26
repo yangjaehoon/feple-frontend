@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
@@ -48,7 +49,9 @@ class AuthService {
       // 실패 시 Firebase 계정 롤백
       try {
         await credential.user?.delete();
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[Auth] 계정 롤백 실패: $e');
+      }
       rethrow;
     }
   }

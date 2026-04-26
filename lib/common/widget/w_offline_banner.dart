@@ -15,7 +15,7 @@ class OfflineBanner extends StatefulWidget {
 class _OfflineBannerState extends State<OfflineBanner>
     with SingleTickerProviderStateMixin {
   bool _isOffline = false;
-  late final Stream<List<ConnectivityResult>> _stream;
+  StreamSubscription<List<ConnectivityResult>>? _subscription;
   late final AnimationController _animCtrl;
   late final Animation<Offset> _slideAnim;
 
@@ -31,8 +31,8 @@ class _OfflineBannerState extends State<OfflineBanner>
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _animCtrl, curve: Curves.easeOutCubic));
 
-    _stream = Connectivity().onConnectivityChanged;
-    _stream.listen(_onConnectivityChanged);
+    _subscription =
+        Connectivity().onConnectivityChanged.listen(_onConnectivityChanged);
   }
 
   void _onConnectivityChanged(List<ConnectivityResult> results) {
@@ -51,6 +51,7 @@ class _OfflineBannerState extends State<OfflineBanner>
 
   @override
   void dispose() {
+    _subscription?.cancel();
     _animCtrl.dispose();
     super.dispose();
   }

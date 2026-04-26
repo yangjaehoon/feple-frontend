@@ -32,7 +32,9 @@ class _FepleAppBarState extends State<FepleAppBar> {
     try {
       final count = await _notifService.getUnreadCount();
       if (mounted) setState(() => _unreadCount = count);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[AppBar] 알림 카운트 로드 실패: $e');
+    }
   }
 
   Future<void> _openNotifications() async {

@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:flutter/material.dart';
 
@@ -37,6 +38,8 @@ class AppNetworkImage extends StatelessWidget {
         fit: fit,
         width: width,
         height: height,
+        memCacheWidth: width != null ? (width! * 2).round() : 400,
+        memCacheHeight: height != null ? (height! * 2).round() : null,
         placeholder: (context, url) => const SkeletonBox(
           height: double.infinity,
         ),
@@ -51,14 +54,15 @@ class AppNetworkImage extends StatelessWidget {
   }
 
   Widget _buildError(BuildContext context) {
+    final colors = context.appColors;
     return Container(
       width: width,
       height: height,
-      color: Colors.grey.withValues(alpha: 0.12),
+      color: colors.surface,
       child: Icon(
         errorIcon,
         size: errorIconSize,
-        color: Colors.grey.withValues(alpha: 0.45),
+        color: colors.textSecondary.withValues(alpha: 0.4),
       ),
     );
   }

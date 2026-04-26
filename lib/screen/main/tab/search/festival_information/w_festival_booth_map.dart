@@ -75,7 +75,9 @@ class _FestivalBoothMapState extends State<FestivalBoothMap> {
           locationSettings:
               const LocationSettings(accuracy: LocationAccuracy.high));
       if (mounted) setState(() => _userPosition = pos);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[BoothMap] 위치 정보 로드 실패: $e');
+    }
   }
 
   Future<void> _buildMarkers() async {

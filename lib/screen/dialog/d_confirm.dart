@@ -40,7 +40,7 @@ class _MessageDialogState extends DialogState<ConfirmDialog> {
         body: Container(
             constraints: BoxConstraints(maxHeight: context.deviceHeight),
             decoration: BoxDecoration(
-                color: context.appColors.drawerBg, borderRadius: BorderRadius.circular(15)),
+                color: context.appColors.drawerBg, borderRadius: BorderRadius.circular(28)),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

@@ -91,7 +91,7 @@ class _FepleAppBarState extends State<FepleAppBar> {
                     padding: const EdgeInsets.all(2),
                     constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
                     decoration: BoxDecoration(
-                      color: Colors.redAccent,
+                      color: AppColors.errorRed,
                       shape: _unreadCount > 9 ? BoxShape.rectangle : BoxShape.circle,
                       borderRadius:
                           _unreadCount > 9 ? BorderRadius.circular(8) : null,

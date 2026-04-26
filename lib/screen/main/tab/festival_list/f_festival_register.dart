@@ -234,9 +234,6 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colors.activate,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
                   elevation: 0,
                 ),
                 child: _isLoading

@@ -148,21 +148,21 @@ class NicknameFieldState extends State<NicknameField> {
                   contentPadding: const EdgeInsets.symmetric(
                       horizontal: 20, vertical: 16),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
                         color: colors.divider),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
                         color: _available == false
-                            ? Colors.red
+                            ? AppColors.errorRed
                             : _available == true
-                                ? Colors.green
+                                ? AppColors.successGreen
                                 : colors.divider),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
                         color: colors.focusedBorder, width: 2),
                   ),
@@ -178,9 +178,6 @@ class NicknameFieldState extends State<NicknameField> {
                   backgroundColor: colors.activate,
                   foregroundColor: Colors.white,
                   elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
                 ),
                 child: _isChecking
                     ? const SizedBox(
@@ -203,7 +200,7 @@ class NicknameFieldState extends State<NicknameField> {
               _message,
               style: TextStyle(
                 fontSize: 12,
-                color: _available == true ? Colors.green : Colors.red,
+                color: _available == true ? AppColors.successGreen : AppColors.errorRed,
                 fontWeight: FontWeight.w500,
               ),
             ),

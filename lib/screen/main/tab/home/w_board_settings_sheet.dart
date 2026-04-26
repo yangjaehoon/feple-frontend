@@ -151,9 +151,6 @@ class _BoardSettingsSheetState extends State<BoardSettingsSheet> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colors.activate,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
                   elevation: 0,
                 ),
                 child: Text(

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/network/dio_client.dart';
@@ -105,7 +106,7 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
               height: 4,
               decoration: BoxDecoration(
                 color: colors.textSecondary.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: BorderRadius.circular(AppDimens.barRadius),
               ),
             ),
           ),

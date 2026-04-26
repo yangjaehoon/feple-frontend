@@ -274,7 +274,7 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
       case 'TV_SHOW':
         return _EventTypeConfig(
           icon: Icons.tv_rounded,
-          color: const Color(0xFFE0C3FC),
+          color: AppColors.kawaiiPurple,
         );
       case 'FESTIVAL':
       default:

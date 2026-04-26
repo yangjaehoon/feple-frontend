@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -100,7 +101,7 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                           style: FilledButton.styleFrom(
                             backgroundColor: colors.activate,
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(24)),
+                                borderRadius: BorderRadius.circular(AppDimens.shapeButton)),
                           ),
                         ),
                       ],

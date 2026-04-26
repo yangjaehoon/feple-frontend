@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:flutter/material.dart';
@@ -94,23 +95,23 @@ class _ChangeNicknameState extends State<ChangeNickname> {
                 filled: true,
                 fillColor: colors.surface,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(AppDimens.shapeInput),
                   borderSide: BorderSide(color: colors.divider),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(AppDimens.shapeInput),
                   borderSide: BorderSide(color: colors.divider),
                 ),
                 errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(AppDimens.shapeInput),
                   borderSide: const BorderSide(color: AppColors.errorRed, width: 1.5),
                 ),
                 focusedErrorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(AppDimens.shapeInput),
                   borderSide: const BorderSide(color: AppColors.errorRed, width: 2),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(AppDimens.shapeInput),
                   borderSide: BorderSide(color: colors.focusedBorder, width: 2),
                 ),
               ),

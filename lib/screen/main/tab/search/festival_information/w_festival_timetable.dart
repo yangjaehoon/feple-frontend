@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -551,7 +552,7 @@ class _PerformanceCard extends StatelessWidget {
       decoration: BoxDecoration(
         // 팔로우한 아티스트만 배경 채움, 나머지는 테두리만
         color: isFollowed ? color.withValues(alpha: 0.88) : Colors.transparent,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
         border: isFollowed
             ? null
             : Border.all(color: color.withValues(alpha: 0.6), width: 1.5),

@@ -1,3 +1,4 @@
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
@@ -46,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 // ── 로고 영역 ──
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(AppDimens.cardRadius),
                   child: Image.asset(
                     'assets/image/login/feple_logo.png',
                     width: 120,
@@ -222,7 +223,7 @@ class _LoginPageState extends State<LoginPage> {
           foregroundColor: AppColors.kakaoText,
           elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppDimens.shapeButton),
           ),
         ),
         child: _isLoading
@@ -231,7 +232,7 @@ class _LoginPageState extends State<LoginPage> {
                 height: 22,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation(Color(0xFF3C1E1E)),
+                  valueColor: AlwaysStoppedAnimation(AppColors.kakaoText),
                 ),
               )
             : Row(

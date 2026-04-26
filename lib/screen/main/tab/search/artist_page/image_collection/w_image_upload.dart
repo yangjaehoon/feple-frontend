@@ -136,7 +136,7 @@ class _ImgUploadState extends State<ImgUpload> {
                       _imageError!,
                       style: const TextStyle(
                         fontSize: 12,
-                        color: Colors.red,
+                        color: AppColors.errorRed,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

@@ -76,4 +76,5 @@ class AppColors {
 
   // === Notification Colors ===
   static const Color notificationReminder = Color(0xFFFF7043); // festival reminder
+  static const Color infoBlue = Color(0xFF4A90E2);             // info snackbar
 }

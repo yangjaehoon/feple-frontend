@@ -40,19 +40,19 @@ void _show(
 
   switch (type) {
     case _SnackType.success:
-      bg = const Color(0xFF00C896);
+      bg = AppColors.successGreen;
       icon = Icons.check_circle_rounded;
       break;
     case _SnackType.error:
-      bg = const Color(0xFFFF4D4F);
+      bg = AppColors.errorRed;
       icon = Icons.error_rounded;
       break;
     case _SnackType.info:
-      bg = const Color(0xFF4A90E2);
+      bg = AppColors.infoBlue;
       icon = Icons.info_rounded;
       break;
     case _SnackType.neutral:
-      bg = const Color(0xFF2D2D3A);
+      bg = AppColors.offlineBannerBg;
       icon = Icons.notifications_rounded;
       break;
   }

@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/screen/main/tab/my_page/s_certification_list.dart';
 import 'package:feple/injection.dart';
@@ -61,7 +62,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
                 height: 20,
                 decoration: BoxDecoration(
                   color: colors.sectionBarColor,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(AppDimens.barRadius),
                 ),
               ),
               const SizedBox(width: 8),

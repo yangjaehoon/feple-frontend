@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/model/favorite_board.dart';
 import 'package:flutter/material.dart';
 
@@ -67,7 +68,7 @@ class _BoardSettingsSheetState extends State<BoardSettingsSheet> {
             height: 4,
             decoration: BoxDecoration(
               color: colors.textSecondary.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(AppDimens.barRadius),
             ),
           ),
           const SizedBox(height: 16),
@@ -205,7 +206,7 @@ class _BoardSettingsItem extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             ClipRRect(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
               child: board.imageUrl != null && board.imageUrl!.isNotEmpty
                   ? CachedNetworkImage(
                       imageUrl: board.imageUrl!,

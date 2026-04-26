@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/model/artist_photo_response.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_name_like.dart';
@@ -125,13 +126,13 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
                             return Transform.scale(
                               scale: scale,
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
                                 child: Container(
                                   height: 200,
                                   width: 200,
                                   decoration: BoxDecoration(
                                     color: Colors.grey[800],
-                                    borderRadius: BorderRadius.circular(10),
+                                    borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
                                     boxShadow: [
                                       BoxShadow(
                                         color: Colors.black.withValues(alpha: 0.4),

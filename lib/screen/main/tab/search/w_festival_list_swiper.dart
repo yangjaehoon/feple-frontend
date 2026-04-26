@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:card_swiper/card_swiper.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/common/util/app_route.dart';
@@ -55,7 +56,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
                 child: SkeletonBox(
                   width: 48,
                   height: 14,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
                 ),
               ),
             ),

@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 /// 에러 발생 시 아이콘 + 메시지 + 재시도 버튼을 보여주는 공용 위젯.
@@ -49,7 +50,7 @@ class ErrorState extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(AppDimens.shapeButton),
                   ),
                 ),
               ),

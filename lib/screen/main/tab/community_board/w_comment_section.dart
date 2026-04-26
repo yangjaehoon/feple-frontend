@@ -116,7 +116,7 @@ class CommentInputBar extends StatelessWidget {
                 errorText!,
                 style: const TextStyle(
                   fontSize: 12,
-                  color: Colors.red,
+                  color: AppColors.errorRed,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -165,19 +165,19 @@ class _CommentTile extends StatelessWidget {
                       const SizedBox(width: 4),
                       Tooltip(
                         message: 'badge_admin'.tr(),
-                        child: const Icon(Icons.shield_rounded, size: 12, color: Colors.deepPurple),
+                        child: const Icon(Icons.shield_rounded, size: 12, color: AppColors.badgeAdmin),
                       ),
                     ] else if (comment['userRole'] == 'ARTIST') ...[
                       const SizedBox(width: 4),
                       Tooltip(
                         message: 'badge_artist_certified'.tr(),
-                        child: const Icon(Icons.verified_rounded, size: 12, color: Colors.blue),
+                        child: const Icon(Icons.verified_rounded, size: 12, color: AppColors.badgeArtist),
                       ),
                     ] else if (comment['certified'] == true) ...[
                       const SizedBox(width: 4),
                       Tooltip(
                         message: 'badge_festival_certified'.tr(),
-                        child: const Icon(Icons.verified_rounded, size: 12, color: Colors.teal),
+                        child: const Icon(Icons.verified_rounded, size: 12, color: AppColors.badgeCertified),
                       ),
                     ],
                   ],

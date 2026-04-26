@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
-import 'package:feple/common/constant/app_colors.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -122,15 +121,8 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
       appBar: AppBar(
         backgroundColor: colors.backgroundMain,
         elevation: 0,
-        title: Text(
-          'festival_certification'.tr(),
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: colors.textTitle,
-          ),
-        ),
-        iconTheme: IconThemeData(color: colors.textTitle),
+        foregroundColor: colors.textTitle,
+        title: Text('festival_certification'.tr()),
         actions: [
           TextButton.icon(
             onPressed: _openSubmitSheet,

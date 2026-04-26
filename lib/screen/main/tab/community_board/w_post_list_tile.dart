@@ -43,15 +43,15 @@ class PostListTile extends StatelessWidget {
     IconData badgeIcon;
     String badgeTooltip;
     if (post.isAdmin) {
-      badgeColor = Colors.deepPurple;
+      badgeColor = AppColors.badgeAdmin;
       badgeIcon = Icons.shield_rounded;
       badgeTooltip = 'badge_admin'.tr();
     } else if (post.isArtist) {
-      badgeColor = Colors.blue;
+      badgeColor = AppColors.badgeArtist;
       badgeIcon = Icons.verified_rounded;
       badgeTooltip = 'badge_artist_certified'.tr();
     } else {
-      badgeColor = Colors.teal;
+      badgeColor = AppColors.badgeCertified;
       badgeIcon = Icons.verified_rounded;
       badgeTooltip = 'badge_festival_certified'.tr();
     }

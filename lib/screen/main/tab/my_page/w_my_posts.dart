@@ -153,7 +153,7 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(Icons.favorite_border_rounded,
-                                      color: Colors.pink, size: 16),
+                                      color: AppColors.kawaiiPink, size: 16),
                                   const SizedBox(width: 4),
                                   Text(post.likeCount.toString(),
                                       style: TextStyle(

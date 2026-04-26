@@ -68,4 +68,12 @@ class AppColors {
   static const Color boothFood = Color(0xFFFF7043);
   static const Color boothAlcohol = Color(0xFFFFA000);
   static const Color boothEvent = Color(0xFF7B1FA2);
+
+  // === Badge Colors (user role / certification) ===
+  static const Color badgeAdmin = Color(0xFF673AB7);      // deepPurple
+  static const Color badgeArtist = Color(0xFF2196F3);     // blue
+  static const Color badgeCertified = Color(0xFF009688);  // teal
+
+  // === Notification Colors ===
+  static const Color notificationReminder = Color(0xFFFF7043); // festival reminder
 }

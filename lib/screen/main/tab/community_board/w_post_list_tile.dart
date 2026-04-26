@@ -113,6 +113,18 @@ class PostListTile extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
+          const Icon(Icons.star_border_rounded,
+              color: AppColors.sunnyYellow, size: 18),
+          const SizedBox(width: 4),
+          Text(
+            post.scrapCount.toString(),
+            style: TextStyle(
+              fontSize: 14,
+              color: colors.textTitle,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(width: 10),
           Icon(Icons.comment_rounded, color: colors.textSecondary, size: 16),
           const SizedBox(width: 4),
           Text(

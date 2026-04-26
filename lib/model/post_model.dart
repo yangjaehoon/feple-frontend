@@ -4,6 +4,7 @@ class Post {
   final String content;
   final String? boardType;
   final int likeCount;
+  final int scrapCount;
   final int commentCount;
   final String nickname;
   final String? profileImageUrl;
@@ -18,6 +19,7 @@ class Post {
     required this.content,
     this.boardType,
     required this.likeCount,
+    this.scrapCount = 0,
     this.commentCount = 0,
     required this.nickname,
     this.profileImageUrl,
@@ -38,6 +40,7 @@ class Post {
       content: json['content'] as String,
       boardType: json['boardType'] as String?,
       likeCount: json['likeCount'] as int,
+      scrapCount: json['scrapCount'] as int? ?? 0,
       commentCount: json['commentCount'] as int? ?? 0,
       nickname: json['nickname'] as String,
       profileImageUrl: json['profileImageUrl'] as String?,

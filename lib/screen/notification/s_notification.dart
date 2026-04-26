@@ -43,6 +43,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   Future<void> _onTap(int index) async {
+    if (index < 0 || index >= _items.length) return;
     final item = _items[index];
 
     if (!item.read) {
@@ -59,11 +60,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
     }
   }
 
-  void _dismissNotification(int index) {
+  Future<void> _dismissNotification(int index) async {
+    if (index < 0 || index >= _items.length) return;
     final removed = _items[index];
     setState(() => _items.removeAt(index));
     try {
-      _notificationService.markRead(removed.id);
+      await _notificationService.markRead(removed.id);
     } catch (e) {
       debugPrint('[Notification] markRead 실패: $e');
     }

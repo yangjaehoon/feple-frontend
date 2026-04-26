@@ -33,13 +33,11 @@ class _OfflineBannerState extends State<OfflineBanner>
 
     _stream = Connectivity().onConnectivityChanged;
     _stream.listen(_onConnectivityChanged);
-
-    // 초기 상태 확인
-    Connectivity().checkConnectivity().then(_onConnectivityChanged);
   }
 
   void _onConnectivityChanged(List<ConnectivityResult> results) {
-    final offline = results.every((r) => r == ConnectivityResult.none);
+    final offline =
+        results.isNotEmpty && results.every((r) => r == ConnectivityResult.none);
     if (offline == _isOffline) return;
     if (mounted) {
       setState(() => _isOffline = offline);

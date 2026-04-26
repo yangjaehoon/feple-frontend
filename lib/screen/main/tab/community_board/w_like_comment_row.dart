@@ -63,7 +63,7 @@ class LikeCommentRow extends StatelessWidget {
             children: [
               Icon(
                 scraped ? Icons.star_rounded : Icons.star_border_rounded,
-                color: scraped ? AppColors.sunnyYellow : colors.textSecondary,
+                color: AppColors.sunnyYellow,
                 size: 24,
               ),
               const SizedBox(width: 4),

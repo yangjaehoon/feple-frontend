@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
-import 'package:feple/network/dio_client.dart';
+import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
 
 class FollowArtistsWidget extends StatefulWidget {
@@ -26,8 +26,8 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
   Future<void> _load() async {
     setState(() { _loading = true; _hasError = false; });
     try {
-      final resp = await DioClient.dio.get('/users/${widget.userId}/following');
-      final list = (resp.data as List).map((e) => _FollowedArtist.fromJson(e)).toList();
+      final data = await UserService().fetchFollowing(widget.userId);
+      final list = data.map((e) => _FollowedArtist.fromJson(e)).toList();
       if (mounted) setState(() { _artists = list; _loading = false; });
     } catch (_) {
       if (mounted) setState(() { _loading = false; _hasError = true; });

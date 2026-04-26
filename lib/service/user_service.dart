@@ -26,4 +26,24 @@ class UserService {
   Future<void> deleteUser(int userId) async {
     await DioClient.dio.delete('/users/$userId');
   }
+
+  Future<List<dynamic>> fetchFollowing(int userId) async {
+    final resp = await DioClient.dio.get('/users/$userId/following');
+    return resp.data as List;
+  }
+
+  Future<List<dynamic>> fetchPosts(int userId) async {
+    final resp = await DioClient.dio.get('/users/$userId/posts');
+    return resp.data as List;
+  }
+
+  Future<List<dynamic>> fetchComments(int userId) async {
+    final resp = await DioClient.dio.get('/users/$userId/comments');
+    return resp.data as List;
+  }
+
+  Future<Map<String, dynamic>> fetchStats(int userId) async {
+    final resp = await DioClient.dio.get('/users/$userId/stats');
+    return resp.data as Map<String, dynamic>;
+  }
 }

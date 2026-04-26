@@ -3,7 +3,7 @@ import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/post_model.dart';
-import 'package:feple/network/dio_client.dart';
+import 'package:feple/service/user_service.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
@@ -30,8 +30,8 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
   Future<void> _load() async {
     setState(() { _loading = true; _hasError = false; });
     try {
-      final resp = await DioClient.dio.get('/users/${widget.userId}/posts');
-      final posts = (resp.data as List).map((e) => Post.fromJson(e)).toList();
+      final data = await UserService().fetchPosts(widget.userId);
+      final posts = data.map((e) => Post.fromJson(e)).toList();
       if (mounted) setState(() { _posts = posts; _loading = false; });
     } catch (_) {
       if (mounted) setState(() { _loading = false; _hasError = true; });

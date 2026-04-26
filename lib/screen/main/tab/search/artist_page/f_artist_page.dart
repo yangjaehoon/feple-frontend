@@ -5,7 +5,7 @@ import 'package:feple/screen/main/tab/search/artist_page/w_artist_board.dart';
 
 import 'package:flutter/material.dart';
 
-class ArtistPage extends StatelessWidget {
+class ArtistPage extends StatefulWidget {
   const ArtistPage({
     super.key,
     required this.artistName,
@@ -20,6 +20,18 @@ class ArtistPage extends StatelessWidget {
   final String? profileImageUrl;
 
   @override
+  State<ArtistPage> createState() => _ArtistPageState();
+}
+
+class _ArtistPageState extends State<ArtistPage> {
+  int _refreshKey = 0;
+
+  Future<void> _onRefresh() async {
+    setState(() => _refreshKey++);
+    await Future.delayed(const Duration(milliseconds: 400));
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return Scaffold(
@@ -28,24 +40,38 @@ class ArtistPage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_ios_rounded),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(artistName),
+        title: Text(widget.artistName),
         backgroundColor: colors.appBarColor,
         foregroundColor: Colors.white,
       ),
       backgroundColor: colors.backgroundMain,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              MainImageSwiper(
-                artistName: artistName,
-                artistId: artistId,
-                followerCount: followerCounter,
-                profileImageUrl: profileImageUrl,
-              ),
-              ArtistBoard(artistId: artistId, artistName: artistName),
-              ArtistSchedule(artistId: artistId, artistName: artistName),
-            ],
+        child: RefreshIndicator(
+          color: colors.activate,
+          onRefresh: _onRefresh,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              children: [
+                MainImageSwiper(
+                  key: ValueKey('swiper_$_refreshKey'),
+                  artistName: widget.artistName,
+                  artistId: widget.artistId,
+                  followerCount: widget.followerCounter,
+                  profileImageUrl: widget.profileImageUrl,
+                ),
+                ArtistBoard(
+                  key: ValueKey('board_$_refreshKey'),
+                  artistId: widget.artistId,
+                  artistName: widget.artistName,
+                ),
+                ArtistSchedule(
+                  key: ValueKey('schedule_$_refreshKey'),
+                  artistId: widget.artistId,
+                  artistName: widget.artistName,
+                ),
+              ],
+            ),
           ),
         ),
       ),

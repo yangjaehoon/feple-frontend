@@ -48,7 +48,6 @@ ThemeData lightTheme = ThemeData(
     titleTextStyle: TextStyle(
       fontSize: 20,
       fontWeight: FontWeight.w700,
-      color: AppColors.textMain,
       letterSpacing: -0.3,
     ),
   ),
@@ -168,7 +167,6 @@ ThemeData darkTheme = ThemeData(
     titleTextStyle: TextStyle(
       fontSize: 20,
       fontWeight: FontWeight.w700,
-      color: Color(0xFFE8EDF2),
       letterSpacing: -0.3,
     ),
   ),

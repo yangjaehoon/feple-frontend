@@ -1,6 +1,5 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/screen/notification/s_notification.dart';
 import 'package:feple/screen/search/s_unified_search.dart';
 import 'package:feple/injection.dart';
@@ -49,10 +48,10 @@ class _FepleAppBarState extends State<FepleAppBar> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final rs = ResponsiveSize(context);
+    final titleStyle = Theme.of(context).appBarTheme.titleTextStyle;
     return Container(
       width: double.infinity,
-      height: rs.h(AppDimens.appBarHeight),
+      height: AppDimens.appBarHeight,
       color: colors.appBarColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -68,12 +67,7 @@ class _FepleAppBarState extends State<FepleAppBar> {
                 ),
           Text(
             widget.appbarTitle,
-            style: TextStyle(
-              fontSize: rs.sp(AppDimens.fontSizeTitle),
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-              letterSpacing: -0.3,
-            ),
+            style: titleStyle?.copyWith(color: Colors.white),
           ),
           const Spacer(),
           IconButton(

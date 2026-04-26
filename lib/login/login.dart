@@ -305,7 +305,6 @@ class _LoginPageState extends State<LoginPage> {
             onPressed: () async {
               final email = emailCtrl.text.trim();
               if (email.isEmpty) return;
-              final messenger = ScaffoldMessenger.of(context);
               Navigator.pop(ctx);
               try {
                 await AuthService.instance.sendPasswordReset(email);

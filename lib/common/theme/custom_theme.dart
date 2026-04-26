@@ -45,9 +45,10 @@ ThemeData lightTheme = ThemeData(
     scrolledUnderElevation: 0,
     foregroundColor: AppColors.textMain,
     titleTextStyle: TextStyle(
-      fontSize: 18,
+      fontSize: 20,
       fontWeight: FontWeight.w700,
       color: AppColors.textMain,
+      letterSpacing: -0.3,
     ),
   ),
   navigationBarTheme: NavigationBarThemeData(
@@ -159,9 +160,10 @@ ThemeData darkTheme = ThemeData(
     scrolledUnderElevation: 0,
     foregroundColor: Color(0xFFE8EDF2),
     titleTextStyle: TextStyle(
-      fontSize: 18,
+      fontSize: 20,
       fontWeight: FontWeight.w700,
       color: Color(0xFFE8EDF2),
+      letterSpacing: -0.3,
     ),
   ),
   navigationBarTheme: NavigationBarThemeData(

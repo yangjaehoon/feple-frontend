@@ -164,7 +164,6 @@ class MainScreenState extends State<MainScreen>
     final colors = context.appColors;
     return Container(
       decoration: BoxDecoration(
-        color: colors.bottomNavBg,
         boxShadow: [
           BoxShadow(
             color: colors.bottomNavShadow.withValues(alpha: 0.05),
@@ -174,32 +173,20 @@ class MainScreenState extends State<MainScreen>
           ),
         ],
       ),
-      child: BottomNavigationBar(
-        items: navigationBarItems(context),
-        currentIndex: _currentIndex,
-        selectedItemColor: colors.activate,
-        unselectedItemColor: colors.textSecondary,
+      child: NavigationBar(
+        selectedIndex: _currentIndex,
+        onDestinationSelected: _handleOnTapNavigationBarItem,
+        destinations: navigationDestinations(),
         backgroundColor: colors.bottomNavBg,
-        onTap: _handleOnTapNavigationBarItem,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
-        selectedFontSize: 11,
-        unselectedFontSize: 10,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
+        elevation: 0,
+        height: 64,
+        animationDuration: const Duration(milliseconds: 250),
       ),
     );
   }
 
-  List<BottomNavigationBarItem> navigationBarItems(BuildContext context) {
-    return tabs
-        .mapIndexed(
-          (tab, index) => tab.toNavigationBarItem(
-            context,
-            isActivated: _currentIndex == index,
-          ),
-        )
-        .toList();
+  List<NavigationDestination> navigationDestinations() {
+    return tabs.map((tab) => tab.toNavigationDestination()).toList();
   }
 
   void _changeTab(int index) {
@@ -208,18 +195,6 @@ class MainScreenState extends State<MainScreen>
       _visitedTabs.add(index);
       _currentTab = tabs[index];
     });
-  }
-
-  BottomNavigationBarItem bottomItem(bool activate, IconData iconData,
-      IconData inActivateIconData, String label) {
-    final colors = context.appColors;
-    return BottomNavigationBarItem(
-        icon: Icon(
-          key: ValueKey(label),
-          activate ? iconData : inActivateIconData,
-          color: activate ? colors.activate : colors.textSecondary,
-        ),
-        label: label);
   }
 
   void _handleOnTapNavigationBarItem(int index) {

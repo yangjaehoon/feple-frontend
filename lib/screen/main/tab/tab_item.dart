@@ -29,15 +29,11 @@ enum TabItem {
 
   String get tabName => tabNameKey.tr();
 
-  BottomNavigationBarItem toNavigationBarItem(BuildContext context,
-      {required bool isActivated}) {
-    final colors = context.appColors;
-    return BottomNavigationBarItem(
-        icon: Icon(
-          key: ValueKey(tabName),
-          isActivated ? activeIcon : inActiveIcon,
-          color: isActivated ? colors.activate : colors.textSecondary,
-        ),
-        label: tabName);
+  NavigationDestination toNavigationDestination() {
+    return NavigationDestination(
+      icon: Icon(inActiveIcon),
+      selectedIcon: Icon(activeIcon),
+      label: tabName,
+    );
   }
 }

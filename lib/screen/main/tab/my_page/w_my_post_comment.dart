@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/network/dio_client.dart';
+import 'package:feple/service/certification_service.dart';
+import 'package:feple/service/user_service.dart';
 import 'package:feple/screen/main/tab/my_page/s_certification_list.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_comments.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_posts.dart';
@@ -24,15 +25,15 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
   }
 
   Future<_UserStats> _fetchStats() async {
-    final statsResp = await DioClient.dio.get('/users/${widget.userId}/stats');
+    final stats = await UserService().fetchStats(widget.userId);
     int certCount = 0;
     try {
-      final certResp = await DioClient.dio.get('/certifications/my/approved-festivals');
-      certCount = (certResp.data as List).length;
+      final certIds = await CertificationService().getApprovedFestivalIds();
+      certCount = certIds.length;
     } catch (_) {}
     return _UserStats(
-      postCount: statsResp.data['postCount'] as int,
-      commentCount: statsResp.data['commentCount'] as int,
+      postCount: stats['postCount'] as int,
+      commentCount: stats['commentCount'] as int,
       certificationCount: certCount,
     );
   }

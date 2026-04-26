@@ -43,4 +43,26 @@ class AppColors {
   static const Color faleBlue = Color.fromARGB(255, 160, 206, 222);
   static const Color brightBlue = Color.fromARGB(255, 123, 182, 212);
   static const Color salmon = Color(0xffff6666);
+
+  // === Semantic UI Colors ===
+
+  /// Form validation error / destructive action
+  static const Color errorRed = Color(0xFFFF4D4F);
+
+  /// Success state (loading button, password validation)
+  static const Color successGreen = Color(0xFF00C896);
+
+  /// Kakao login button background
+  static const Color kakaoYellow = Color(0xFFFEE500);
+
+  /// Kakao login button text/icon
+  static const Color kakaoText = Color(0xFF3C1E1E);
+
+  /// Offline banner background
+  static const Color offlineBannerBg = Color(0xFF2D2D3A);
+
+  // === Booth Type Colors ===
+  static const Color boothFood = Color(0xFFFF7043);
+  static const Color boothAlcohol = Color(0xFFFFA000);
+  static const Color boothEvent = Color(0xFF7B1FA2);
 }

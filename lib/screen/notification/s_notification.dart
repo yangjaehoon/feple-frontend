@@ -199,7 +199,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               alignment: Alignment.centerRight,
                               padding: const EdgeInsets.only(right: 20),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFFF4D4F),
+                                color: AppColors.errorRed,
                                 borderRadius: BorderRadius.circular(14),
                               ),
                               child: const Icon(

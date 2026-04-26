@@ -246,5 +246,32 @@
   "no_timetable": "No timetable available.",
   "no_schedule": "No schedules available.",
   "artist_schedule_title": "{0}'s Schedule",
-  "follower_count": "{0} Followers"
+  "follower_count": "{0} Followers",
+
+  "booth_map_title": "Booth Map",
+  "booth_food": "Food",
+  "booth_alcohol": "Drinks",
+  "booth_event": "Event",
+
+  "filter_all": "All",
+  "filter_genre": "Genre",
+  "filter_region": "Region",
+
+  "action_chat": "Chat",
+  "action_schedule": "Schedule",
+  "action_gallery": "Gallery",
+
+  "select_festival_required_msg": "Please select a festival.",
+
+  "confirm": "Confirm",
+
+  "badge_admin": "Admin",
+  "badge_artist_certified": "Artist Verified",
+  "badge_festival_certified": "Festival Certified",
+
+  "photo_category_daily": "Daily",
+  "photo_category_sns": "SNS",
+  "photo_category_other": "Other",
+
+  "photo_collection_title": "Photo Collection"
 }

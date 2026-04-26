@@ -103,23 +103,23 @@ class _EnralgePostState extends State<EnralgePost> {
                     ),
                     if (widget.userRole == 'ADMIN') ...[
                       const SizedBox(width: 4),
-                      const Tooltip(
-                        message: '관리자',
-                        child: Icon(Icons.shield_rounded,
+                      Tooltip(
+                        message: 'badge_admin'.tr(),
+                        child: const Icon(Icons.shield_rounded,
                             size: 14, color: Colors.deepPurple),
                       ),
                     ] else if (widget.userRole == 'ARTIST') ...[
                       const SizedBox(width: 4),
-                      const Tooltip(
-                        message: '아티스트 인증',
-                        child: Icon(Icons.verified_rounded,
+                      Tooltip(
+                        message: 'badge_artist_certified'.tr(),
+                        child: const Icon(Icons.verified_rounded,
                             size: 14, color: Colors.blue),
                       ),
                     ] else if (widget.certified) ...[
                       const SizedBox(width: 4),
-                      const Tooltip(
-                        message: '페스티벌 인증 완료',
-                        child: Icon(Icons.verified_rounded,
+                      Tooltip(
+                        message: 'badge_festival_certified'.tr(),
+                        child: const Icon(Icons.verified_rounded,
                             size: 14, color: Colors.teal),
                       ),
                     ],

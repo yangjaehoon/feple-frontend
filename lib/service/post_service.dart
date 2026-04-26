@@ -1,11 +1,12 @@
+import 'package:feple/common/constant/board_types.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/network/dio_client.dart';
 
 class PostService {
   static const _endpoints = {
-    'HotBoard': '/posts/hot',
-    'FreeBoard': '/posts/free',
-    'MateBoard': '/posts/mate',
+    BoardTypes.hot: '/posts/hot',
+    BoardTypes.free: '/posts/free',
+    BoardTypes.mate: '/posts/mate',
   };
 
   String _endpointFor(String boardType) {

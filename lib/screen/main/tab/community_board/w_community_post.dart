@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/constant/board_types.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -26,9 +27,9 @@ class _CommunityPostState extends State<CommunityPost> {
   late Future<List<Post>> _postsFuture;
 
   String get _serviceBoardType {
-    if (widget.boardname == 'companion_board'.tr()) return 'MateBoard';
-    if (widget.boardname == 'hot_board'.tr()) return 'HotBoard';
-    if (widget.boardname == 'free_board'.tr()) return 'FreeBoard';
+    if (widget.boardname == 'companion_board'.tr()) return BoardTypes.mate;
+    if (widget.boardname == 'hot_board'.tr()) return BoardTypes.hot;
+    if (widget.boardname == 'free_board'.tr()) return BoardTypes.free;
     return widget.boardname;
   }
 

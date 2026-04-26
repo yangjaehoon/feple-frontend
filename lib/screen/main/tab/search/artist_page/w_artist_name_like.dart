@@ -190,13 +190,13 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
                 // Action icons
                 _buildActionIcon(
                   icon: Icons.textsms_rounded,
-                  label: '채팅',
+                  label: 'action_chat'.tr(),
                   onTap: () {},
                 ),
                 const SizedBox(width: 4),
                 _buildActionIcon(
                   icon: Icons.calendar_month_rounded,
-                  label: '일정',
+                  label: 'action_schedule'.tr(),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -209,7 +209,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
                 const SizedBox(width: 4),
                 _buildActionIcon(
                   icon: Icons.photo_library_rounded,
-                  label: '갤러리',
+                  label: 'action_gallery'.tr(),
                   onTap: () {
                     Navigator.push(
                       context,

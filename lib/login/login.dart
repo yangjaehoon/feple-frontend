@@ -218,8 +218,8 @@ class _LoginPageState extends State<LoginPage> {
       child: ElevatedButton(
         onPressed: _isLoading ? null : () => signInWithKakao(context),
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFFEE500),
-          foregroundColor: const Color(0xFF3C1E1E),
+          backgroundColor: AppColors.kakaoYellow,
+          foregroundColor: AppColors.kakaoText,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),

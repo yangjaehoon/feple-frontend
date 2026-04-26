@@ -70,7 +70,7 @@ class _OfflineBannerState extends State<OfflineBanner>
             child: Material(
               color: Colors.transparent,
               child: Container(
-                color: const Color(0xFF2D2D3A),
+                color: AppColors.offlineBannerBg,
                 padding: EdgeInsets.only(
                   top: MediaQuery.of(context).padding.top + 8,
                   bottom: 10,

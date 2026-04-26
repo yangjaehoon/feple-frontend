@@ -246,5 +246,32 @@
   "no_timetable": "등록된 타임테이블이 없습니다.",
   "no_schedule": "등록된 일정이 없습니다.",
   "artist_schedule_title": "{0} 일정",
-  "follower_count": "팔로워 {0}"
+  "follower_count": "팔로워 {0}",
+
+  "booth_map_title": "부스 지도",
+  "booth_food": "음식",
+  "booth_alcohol": "주류",
+  "booth_event": "이벤트",
+
+  "filter_all": "전체",
+  "filter_genre": "장르",
+  "filter_region": "지역",
+
+  "action_chat": "채팅",
+  "action_schedule": "일정",
+  "action_gallery": "갤러리",
+
+  "select_festival_required_msg": "페스티벌을 선택해주세요.",
+
+  "confirm": "확인",
+
+  "badge_admin": "관리자",
+  "badge_artist_certified": "아티스트 인증",
+  "badge_festival_certified": "페스티벌 인증 완료",
+
+  "photo_category_daily": "일상 사진",
+  "photo_category_sns": "SNS 사진",
+  "photo_category_other": "기타",
+
+  "photo_collection_title": "사진 모아보기"
 }

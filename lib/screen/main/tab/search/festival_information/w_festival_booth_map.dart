@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_colors.dart';
 import 'package:feple/model/booth_model.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:flutter/foundation.dart' show Factory;
@@ -144,17 +145,17 @@ class _FestivalBoothMapState extends State<FestivalBoothMap> {
                 children: [
                   Icon(Icons.store_rounded, size: 15, color: colors.activate),
                   const SizedBox(width: 8),
-                  Text('부스 지도',
+                  Text('booth_map_title'.tr(),
                       style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: colors.textTitle)),
                   const SizedBox(width: 10),
-                  _LegendDot(color: const Color(0xFFFF7043), label: '음식'),
+                  _LegendDot(color: AppColors.boothFood, label: 'booth_food'.tr()),
                   const SizedBox(width: 8),
-                  _LegendDot(color: const Color(0xFFFFA000), label: '주류'),
+                  _LegendDot(color: AppColors.boothAlcohol, label: 'booth_alcohol'.tr()),
                   const SizedBox(width: 8),
-                  _LegendDot(color: const Color(0xFF7B1FA2), label: '이벤트'),
+                  _LegendDot(color: AppColors.boothEvent, label: 'booth_event'.tr()),
                 ],
               ),
             ),

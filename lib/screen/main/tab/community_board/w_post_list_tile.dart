@@ -45,15 +45,15 @@ class PostListTile extends StatelessWidget {
     if (post.isAdmin) {
       badgeColor = Colors.deepPurple;
       badgeIcon = Icons.shield_rounded;
-      badgeTooltip = '관리자';
+      badgeTooltip = 'badge_admin'.tr();
     } else if (post.isArtist) {
       badgeColor = Colors.blue;
       badgeIcon = Icons.verified_rounded;
-      badgeTooltip = '아티스트 인증';
+      badgeTooltip = 'badge_artist_certified'.tr();
     } else {
       badgeColor = Colors.teal;
       badgeIcon = Icons.verified_rounded;
-      badgeTooltip = '페스티벌 인증 완료';
+      badgeTooltip = 'badge_festival_certified'.tr();
     }
 
     return Stack(

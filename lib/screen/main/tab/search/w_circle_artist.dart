@@ -132,7 +132,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   children: [
                     _GenreChip(
-                      label: '전체',
+                      label: 'filter_all'.tr(),
                       selected: _selectedGenre == null,
                       onTap: () => setState(() => _selectedGenre = null),
                     ),

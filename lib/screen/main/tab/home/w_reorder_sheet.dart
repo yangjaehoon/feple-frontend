@@ -153,9 +153,9 @@ class _ReorderSheetState extends State<ReorderSheet> {
                   ),
                   elevation: 0,
                 ),
-                child: const Text(
-                  '확인',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                child: Text(
+                  'confirm'.tr(),
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
                 ),
               ),
             ),

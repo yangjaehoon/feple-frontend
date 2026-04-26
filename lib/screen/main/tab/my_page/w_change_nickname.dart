@@ -103,11 +103,11 @@ class _ChangeNicknameState extends State<ChangeNickname> {
                 ),
                 errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: Color(0xFFFF4D4F), width: 1.5),
+                  borderSide: const BorderSide(color: AppColors.errorRed, width: 1.5),
                 ),
                 focusedErrorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: Color(0xFFFF4D4F), width: 2),
+                  borderSide: const BorderSide(color: AppColors.errorRed, width: 2),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),

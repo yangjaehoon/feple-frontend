@@ -111,11 +111,11 @@ class _ArtistWritePostState extends State<ArtistWritePost> {
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFFF4D4F), width: 1.5),
+                      borderSide: const BorderSide(color: AppColors.errorRed, width: 1.5),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFFF4D4F), width: 2),
+                      borderSide: const BorderSide(color: AppColors.errorRed, width: 2),
                     ),
                   ),
                   validator: (v) =>
@@ -139,11 +139,11 @@ class _ArtistWritePostState extends State<ArtistWritePost> {
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFFF4D4F), width: 1.5),
+                      borderSide: const BorderSide(color: AppColors.errorRed, width: 1.5),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFFF4D4F), width: 2),
+                      borderSide: const BorderSide(color: AppColors.errorRed, width: 2),
                     ),
                   ),
                   validator: (v) =>

@@ -57,7 +57,7 @@ class AppTextField extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
               borderSide: BorderSide(
                 color: errorText != null
-                    ? Colors.red
+                    ? AppColors.errorRed
                     : colors.divider,
               ),
             ),
@@ -75,7 +75,7 @@ class AppTextField extends StatelessWidget {
               errorText!,
               style: const TextStyle(
                 fontSize: 12,
-                color: Colors.red,
+                color: AppColors.errorRed,
                 fontWeight: FontWeight.w500,
               ),
             ),

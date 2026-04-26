@@ -64,7 +64,7 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
         children: [
           BoardCardHeader(
             icon: Icons.calendar_month_rounded,
-            title: '${widget.artistName} 일정',
+            title: 'artist_schedule_title'.tr(args: [widget.artistName]),
             headerColor: colors.activate,
             onTap: () {},
           ),
@@ -139,7 +139,7 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: EmptyState(
               icon: Icons.calendar_today_outlined,
-              title: '등록된 일정이 없습니다.',
+              title: 'no_schedule'.tr(),
             ),
           );
         }

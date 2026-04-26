@@ -38,14 +38,14 @@ class PasswordChecklist extends StatelessWidget {
                 Icon(
                   ok ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
                   size: 16,
-                  color: ok ? Colors.green : colors.textSecondary.withValues(alpha: 0.5),
+                  color: ok ? const Color(0xFF00C896) : colors.textSecondary.withValues(alpha: 0.5),
                 ),
                 const SizedBox(width: 8),
                 Text(
                   rule.label.tr(),
                   style: TextStyle(
                     fontSize: 12,
-                    color: ok ? Colors.green : colors.textSecondary,
+                    color: ok ? const Color(0xFF00C896) : colors.textSecondary,
                     fontWeight: ok ? FontWeight.w600 : FontWeight.w400,
                   ),
                 ),

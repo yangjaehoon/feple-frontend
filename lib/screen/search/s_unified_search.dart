@@ -90,7 +90,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
         ],
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator(color: colors.loadingIndicator))
           : !_searched
               ? _buildEmptyHint(colors)
               : _buildResults(colors),
@@ -194,7 +194,7 @@ class _ArtistTile extends StatelessWidget {
       ),
       title: Text(name, style: TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle)),
       subtitle: Text(genre, style: TextStyle(color: colors.textSecondary, fontSize: 12)),
-      trailing: Text('팔로워 $followerCount',
+      trailing: Text('follower_count'.tr(args: ['$followerCount']),
           style: TextStyle(fontSize: 11, color: colors.textSecondary)),
       onTap: () => Navigator.push(context, SlideRoute(
         builder: (_) => ArtistPage(
@@ -271,7 +271,7 @@ class _PostTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final title = data['title'] as String? ?? '';
     final content = data['content'] as String? ?? '';
-    final boardName = data['boardDisplayName'] as String? ?? '게시글';
+    final boardName = data['boardDisplayName'] as String? ?? 'search_posts'.tr();
     final likeCount = data['likeCount'] as int? ?? 0;
     final commentCount = data['commentCount'] as int? ?? 0;
     final nickname = data['nickname'] as String? ?? '';
@@ -283,10 +283,10 @@ class _PostTile extends StatelessWidget {
         width: 44,
         height: 44,
         decoration: BoxDecoration(
-          color: Colors.blueAccent.withValues(alpha: 0.1),
+          color: colors.activate.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: const Icon(Icons.article_rounded, color: Colors.blueAccent, size: 22),
+        child: Icon(Icons.article_rounded, color: colors.activate, size: 22),
       ),
       title: Text(title, style: TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle),
           maxLines: 1, overflow: TextOverflow.ellipsis),

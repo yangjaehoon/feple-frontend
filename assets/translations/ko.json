@@ -239,5 +239,10 @@
   "photo_edit_title": "사진 수정",
   "photo_title_label": "제목",
   "retry": "다시 시도",
-  "offline_banner": "인터넷 연결을 확인해주세요"
+  "offline_banner": "인터넷 연결을 확인해주세요",
+  "timetable": "타임테이블",
+  "no_timetable": "등록된 타임테이블이 없습니다.",
+  "no_schedule": "등록된 일정이 없습니다.",
+  "artist_schedule_title": "{0} 일정",
+  "follower_count": "팔로워 {0}"
 }

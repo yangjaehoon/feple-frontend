@@ -85,7 +85,6 @@ class _WritePostState extends State<WritePost> {
         title: Text('write_post'.tr()),
         backgroundColor: colors.appBarColor,
         foregroundColor: Colors.white,
-        scrolledUnderElevation: 0,
         actions: [
           TextButton(
             onPressed: _isSubmitting ? null : () => _submit(),

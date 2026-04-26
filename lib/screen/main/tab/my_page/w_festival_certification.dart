@@ -18,6 +18,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
   final _certService = sl<CertificationService>();
   List<Map<String, dynamic>>? _certifications;
   bool _loading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -26,11 +27,13 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
   }
 
   Future<void> _load() async {
+    setState(() { _loading = true; _hasError = false; });
     try {
       final list = await _certService.getMyCertifications();
       if (mounted) setState(() { _certifications = list; _loading = false; });
-    } catch (_) {
-      if (mounted) setState(() { _certifications = []; _loading = false; });
+    } catch (e) {
+      debugPrint('[Certification] 인증 목록 로드 실패: $e');
+      if (mounted) setState(() { _hasError = true; _loading = false; });
     }
   }
 
@@ -86,11 +89,39 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
           height: 150,
           child: _loading
               ? _buildSkeletonList()
-              : _certifications == null || _certifications!.isEmpty
-                  ? _buildEmptyList(colors)
-                  : _buildCertList(colors),
+              : _hasError
+                  ? _buildErrorState(colors)
+                  : _certifications == null || _certifications!.isEmpty
+                      ? _buildEmptyList(colors)
+                      : _buildCertList(colors),
         ),
       ],
+    );
+  }
+
+  Widget _buildErrorState(AbstractThemeColors colors) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.cloud_off_rounded, size: 32,
+              color: colors.textSecondary.withValues(alpha: 0.4)),
+          const SizedBox(height: 6),
+          Text('load_error'.tr(),
+              style: TextStyle(fontSize: 12, color: colors.textSecondary)),
+          const SizedBox(height: 6),
+          TextButton.icon(
+            onPressed: _load,
+            icon: const Icon(Icons.refresh_rounded, size: 16),
+            label: Text('retry'.tr(), style: const TextStyle(fontSize: 13)),
+            style: TextButton.styleFrom(
+              minimumSize: Size.zero,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

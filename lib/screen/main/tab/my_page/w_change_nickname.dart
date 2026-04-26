@@ -53,7 +53,6 @@ class _ChangeNicknameState extends State<ChangeNickname> {
         title: Text('change_nickname'.tr()),
         backgroundColor: colors.appBarColor,
         foregroundColor: Colors.white,
-        scrolledUnderElevation: 0,
       ),
       backgroundColor: colors.backgroundMain,
       body: KeyboardDismiss(

@@ -70,7 +70,6 @@ class _FestivalWritePostState extends State<FestivalWritePost> {
         title: Text('name_board_write'.tr(args: [widget.festivalName])),
         backgroundColor: colors.appBarColor,
         foregroundColor: Colors.white,
-        scrolledUnderElevation: 0,
         actions: [
           TextButton(
             onPressed: _isSubmitting ? null : () => _submit(),

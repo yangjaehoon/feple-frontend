@@ -70,7 +70,6 @@ class _ArtistWritePostState extends State<ArtistWritePost> {
         title: Text('name_board_write'.tr(args: [widget.artistName])),
         backgroundColor: colors.appBarColor,
         foregroundColor: Colors.white,
-        scrolledUnderElevation: 0,
         actions: [
           TextButton(
             onPressed: _isSubmitting ? null : () => _submit(),

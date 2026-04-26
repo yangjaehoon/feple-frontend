@@ -213,7 +213,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                 children: [
                   Icon(Icons.schedule_rounded, size: 15, color: colors.activate),
                   const SizedBox(width: 8),
-                  Text('타임테이블',
+                  Text('timetable'.tr(),
                       style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
@@ -283,7 +283,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
             else if (_cachedFiltered.isEmpty)
               EmptyState(
                 icon: Icons.schedule_rounded,
-                title: '등록된 타임테이블이 없습니다.',
+                title: 'no_timetable'.tr(),
               )
             else
               LayoutBuilder(

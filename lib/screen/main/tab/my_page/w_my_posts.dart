@@ -74,7 +74,6 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
         title: Text('my_posts'.tr()),
         backgroundColor: colors.appBarColor,
         foregroundColor: Colors.white,
-        scrolledUnderElevation: 0,
       ),
       backgroundColor: colors.backgroundMain,
       body: RefreshIndicator(

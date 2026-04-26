@@ -238,5 +238,11 @@
   "photo_edit_action": "Edit",
   "photo_edit_title": "Edit Photo",
   "photo_title_label": "Title",
-  "retry": "Retry"
+  "retry": "Retry",
+  "offline_banner": "Check your internet connection",
+  "timetable": "Timetable",
+  "no_timetable": "No timetable available.",
+  "no_schedule": "No schedules available.",
+  "artist_schedule_title": "{0}'s Schedule",
+  "follower_count": "{0} Followers"
 }

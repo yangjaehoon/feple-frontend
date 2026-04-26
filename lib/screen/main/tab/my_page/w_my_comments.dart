@@ -77,7 +77,6 @@ class _MyCommentsScreenState extends State<MyCommentsScreen> {
         title: Text('my_comments'.tr()),
         backgroundColor: colors.appBarColor,
         foregroundColor: Colors.white,
-        scrolledUnderElevation: 0,
       ),
       backgroundColor: colors.backgroundMain,
       body: RefreshIndicator(

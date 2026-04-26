@@ -24,12 +24,12 @@ class NotificationCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: item.read
-              ? Colors.white
+              ? colors.surface
               : colors.certRingColor.withValues(alpha: 0.06),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: item.read
-                ? Colors.grey.withValues(alpha: 0.15)
+                ? colors.listDivider
                 : colors.certRingColor.withValues(alpha: 0.3),
             width: 1,
           ),
@@ -121,9 +121,9 @@ class NotificationCard extends StatelessWidget {
   Color _iconColor(NotificationType? type, AbstractThemeColors colors) {
     switch (type) {
       case NotificationType.certApproved:     return colors.certRingColor;
-      case NotificationType.certRejected:     return Colors.grey;
-      case NotificationType.newComment:       return Colors.blueAccent;
-      case NotificationType.festivalReminder: return Colors.deepOrangeAccent;
+      case NotificationType.certRejected:     return colors.textSecondary;
+      case NotificationType.newComment:       return colors.activate;
+      case NotificationType.festivalReminder: return const Color(0xFFFF7043);
       default:                                return colors.certRingColor;
     }
   }

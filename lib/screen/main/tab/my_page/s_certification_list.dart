@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_colors.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -206,7 +207,7 @@ class _CertCard extends StatelessWidget {
       statusColor = colors.certRingColor;
       statusLabel = 'cert_status_approved'.tr();
     } else if (isPending) {
-      statusColor = Colors.orange;
+      statusColor = AppColors.statusPending;
       statusLabel = 'cert_status_pending'.tr();
     } else {
       statusColor = colors.textSecondary;

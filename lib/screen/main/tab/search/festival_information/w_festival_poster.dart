@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_colors.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
@@ -248,14 +249,14 @@ class _FestivalPosterState extends State<FestivalPoster> {
                                           ? Icons.hourglass_top_rounded
                                           : Icons.verified_rounded,
                                       color: _notifier.isCertified
-                                          ? Colors.lightBlueAccent
+                                          ? AppColors.skyBlueLight
                                           : _notifier.isPending
-                                              ? Colors.amber
+                                              ? AppColors.statusPending
                                               : Colors.white,
                                       bgColor: _notifier.isCertified
-                                          ? Colors.blue.withValues(alpha: 0.35)
+                                          ? AppColors.skyBlue.withValues(alpha: 0.35)
                                           : _notifier.isPending
-                                              ? Colors.amber
+                                              ? AppColors.statusPending
                                                   .withValues(alpha: 0.25)
                                               : null,
                                     ),

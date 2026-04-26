@@ -52,6 +52,9 @@ class AppColors {
   /// Success state (loading button, password validation)
   static const Color successGreen = Color(0xFF00C896);
 
+  /// Pending / warning state (인증 대기 등)
+  static const Color statusPending = Color(0xFFFF9800);
+
   /// Kakao login button background
   static const Color kakaoYellow = Color(0xFFFEE500);
 

@@ -166,14 +166,14 @@ class _FilterPanel extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _FilterSection(
-                    label: '장르',
+                    label: 'filter_genre'.tr(),
                     items: kGenreOptions,
                     selected: provider.selectedGenres,
                     onToggle: provider.toggleGenre,
                   ),
                   const SizedBox(height: 12),
                   _FilterSection(
-                    label: '지역',
+                    label: 'filter_region'.tr(),
                     items: kRegionOptions,
                     selected: provider.selectedRegions,
                     onToggle: provider.toggleRegion,

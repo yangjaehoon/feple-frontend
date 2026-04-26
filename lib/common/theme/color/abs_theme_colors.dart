@@ -60,7 +60,7 @@ abstract class AbstractThemeColors {
   Color get appBarColor => AppColors.skyBlue;
 
   /// Bottom nav background
-  Color get bottomNavBg => Colors.white;
+  Color get bottomNavBg => AppColors.surfaceWhite;
 
   /// Bottom nav shadow color
   Color get bottomNavShadow => Colors.black;
@@ -86,7 +86,7 @@ abstract class AbstractThemeColors {
   Color get listDivider => const Color(0xFFF0F0F0);
 
   /// Stat card background
-  Color get statCardBg => Colors.white;
+  Color get statCardBg => AppColors.surfaceWhite;
 
   /// Profile ring color (solid)
   Color get profileRingColor => AppColors.skyBlue;
@@ -111,7 +111,7 @@ abstract class AbstractThemeColors {
   Color get actionBtnPrimary => AppColors.skyBlue;
 
   /// Action button secondary background / border
-  Color get actionBtnSecondaryBg => Colors.white;
+  Color get actionBtnSecondaryBg => AppColors.surfaceWhite;
   Color get actionBtnSecondaryBorder => const Color(0xFFE2E8F0);
 
   /// Drawer header color

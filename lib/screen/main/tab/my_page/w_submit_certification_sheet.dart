@@ -43,7 +43,7 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
 
   Future<void> _submit() async {
     if (_selectedFestival == null) {
-      context.showInfoSnackbar('페스티벌을 선택해주세요.');
+      context.showInfoSnackbar('select_festival_required_msg'.tr());
       return;
     }
 

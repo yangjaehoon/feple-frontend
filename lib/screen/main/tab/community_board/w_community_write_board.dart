@@ -1,3 +1,4 @@
+import 'package:feple/common/constant/board_types.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/common.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +29,7 @@ class _WritePostState extends State<WritePost> {
   String get _serviceBoardType {
     switch (widget.boardname) {
       case 'GetuserBoard':
-        return 'MateBoard';
+        return BoardTypes.mate;
       default:
         return widget.boardname;
     }
@@ -126,11 +127,11 @@ class _WritePostState extends State<WritePost> {
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFFF4D4F), width: 1.5),
+                      borderSide: const BorderSide(color: AppColors.errorRed, width: 1.5),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFFF4D4F), width: 2),
+                      borderSide: const BorderSide(color: AppColors.errorRed, width: 2),
                     ),
                   ),
                   validator: (v) =>
@@ -154,11 +155,11 @@ class _WritePostState extends State<WritePost> {
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFFF4D4F), width: 1.5),
+                      borderSide: const BorderSide(color: AppColors.errorRed, width: 1.5),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFFF4D4F), width: 2),
+                      borderSide: const BorderSide(color: AppColors.errorRed, width: 2),
                     ),
                   ),
                   validator: (v) =>

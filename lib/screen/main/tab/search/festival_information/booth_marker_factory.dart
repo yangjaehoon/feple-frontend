@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 
+import 'package:feple/common/constant/app_colors.dart';
 import 'package:feple/model/booth_model.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
@@ -16,9 +17,9 @@ class BoothMarkerFactory {
   };
 
   static const _boothColorValues = {
-    'FOOD': Color(0xFFFF7043),
-    'BEER': Color(0xFFFFA000),
-    'EVENT': Color(0xFF7B1FA2),
+    'FOOD': AppColors.boothFood,
+    'BEER': AppColors.boothAlcohol,
+    'EVENT': AppColors.boothEvent,
   };
 
   static Future<BitmapDescriptor> create(BoothModel booth) async {

@@ -204,12 +204,12 @@ class _ImgUploadState extends State<ImgUpload> {
                                   child: Text(f.title,
                                       overflow: TextOverflow.ellipsis),
                                 )),
-                            const DropdownMenuItem(
-                                value: photoCategoryDaily, child: Text('일상 사진')),
-                            const DropdownMenuItem(
-                                value: photoCategorySns, child: Text('SNS 사진')),
-                            const DropdownMenuItem(
-                                value: photoCategoryOther, child: Text('기타')),
+                            DropdownMenuItem(
+                                value: photoCategoryDaily, child: Text('photo_category_daily'.tr())),
+                            DropdownMenuItem(
+                                value: photoCategorySns, child: Text('photo_category_sns'.tr())),
+                            DropdownMenuItem(
+                                value: photoCategoryOther, child: Text('photo_category_other'.tr())),
                           ],
                           onChanged: (f) =>
                               setState(() => _selectedFestival = f),

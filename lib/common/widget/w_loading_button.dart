@@ -1,3 +1,4 @@
+import 'package:feple/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -66,7 +67,7 @@ class _LoadingButtonState extends State<LoadingButton>
   @override
   Widget build(BuildContext context) {
     final bg = widget.backgroundColor ?? Theme.of(context).colorScheme.primary;
-    final successColor = const Color(0xFF00C896);
+    const successColor = AppColors.successGreen;
 
     return SizedBox(
       width: double.infinity,

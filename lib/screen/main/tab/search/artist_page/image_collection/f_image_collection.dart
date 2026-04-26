@@ -28,7 +28,7 @@ class _ImgCollectionState extends State<ImgCollection> {
           icon: const Icon(Icons.arrow_back_ios_rounded),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('사진 모아보기'),
+        title: Text('photo_collection_title'.tr()),
         backgroundColor: colors.appBarColor,
         foregroundColor: Colors.white,
       ),

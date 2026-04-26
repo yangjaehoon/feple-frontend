@@ -1,15 +1,20 @@
+import 'package:feple/injection.dart';
 import 'package:feple/network/dio_client.dart';
+import 'package:feple/service/scrap_service.dart';
 import 'package:flutter/foundation.dart';
 
 class PostDetailNotifier extends ChangeNotifier {
   final int postId;
+  final _scrapService = sl<ScrapService>();
 
   List<Map<String, dynamic>> comments = [];
   bool liked = false;
+  bool scraped = false;
   late int heartCount;
   bool isSubmitting = false;
   String? commentError;
   bool isToggling = false;
+  bool isScrapping = false;
 
   void Function(String)? onCommentPosted;
   void Function(String)? onError;
@@ -27,9 +32,11 @@ class PostDetailNotifier extends ChangeNotifier {
       final results = await Future.wait([
         DioClient.dio.get('/posts/$postId'),
         DioClient.dio.get('/posts/$postId/liked'),
+        DioClient.dio.get('/posts/$postId/scraped'),
       ]);
       heartCount = (results[0].data['likeCount'] as num?)?.toInt() ?? heartCount;
       liked = results[1].data as bool? ?? liked;
+      scraped = results[2].data as bool? ?? scraped;
       notifyListeners();
     } catch (e) {
       debugPrint('loadPostState error: $e');
@@ -91,6 +98,21 @@ class PostDetailNotifier extends ChangeNotifier {
       onError?.call('like_failed:${e.toString()}');
     } finally {
       isToggling = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> toggleScrap(int? userId) async {
+    if (isScrapping || userId == null) return;
+    isScrapping = true;
+    notifyListeners();
+    try {
+      scraped = await _scrapService.toggleScrap(postId);
+      onCommentPosted?.call(scraped ? 'scrap_done' : 'scrap_cancel');
+    } catch (e) {
+      onError?.call('scrap_failed:${e.toString()}');
+    } finally {
+      isScrapping = false;
       notifyListeners();
     }
   }

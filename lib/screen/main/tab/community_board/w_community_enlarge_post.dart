@@ -137,7 +137,9 @@ class _EnralgePostState extends State<EnralgePost> {
                   liked: _notifier.liked,
                   heartCount: _notifier.heartCount,
                   commentCount: _notifier.comments.length,
+                  scraped: _notifier.scraped,
                   onLikeTap: () => _notifier.toggleLike(userId),
+                  onScrapTap: () => _notifier.toggleScrap(userId),
                 ),
                 const SizedBox(height: 24),
                 CommentSection(

@@ -1,5 +1,4 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/constant/app_colors.dart';
 import 'package:feple/model/booth_model.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:flutter/foundation.dart' show Factory;

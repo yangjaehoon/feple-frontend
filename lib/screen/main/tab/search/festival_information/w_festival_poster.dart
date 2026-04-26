@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:feple/common/common.dart';
-import 'package:feple/common/constant/app_colors.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
@@ -222,10 +221,10 @@ class _FestivalPosterState extends State<FestivalPoster> {
                                           ? Icons.favorite_rounded
                                           : Icons.favorite_border_rounded,
                                       color: _notifier.liked
-                                          ? Colors.pink[200]!
+                                          ? AppColors.kawaiiPink
                                           : Colors.white,
                                       bgColor: _notifier.liked
-                                          ? Colors.pink.withValues(alpha: 0.35)
+                                          ? AppColors.kawaiiPink.withValues(alpha: 0.35)
                                           : Colors.white
                                               .withValues(alpha: 0.15),
                                     ),

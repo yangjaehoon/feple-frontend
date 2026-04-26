@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -95,7 +96,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: colors.surface,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
           border: Border.all(color: colors.listDivider),
         ),
         child: Row(
@@ -134,15 +135,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
       appBar: AppBar(
         backgroundColor: colors.backgroundMain,
         elevation: 0,
-        title: Text(
-          'notifications'.tr(),
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: colors.textTitle,
-          ),
-        ),
-        iconTheme: IconThemeData(color: colors.textTitle),
+        foregroundColor: colors.textTitle,
+        title: Text('notifications'.tr()),
       ),
       body: RefreshIndicator(
         onRefresh: _load,
@@ -200,7 +194,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               padding: const EdgeInsets.only(right: 20),
                               decoration: BoxDecoration(
                                 color: AppColors.errorRed,
-                                borderRadius: BorderRadius.circular(14),
+                                borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
                               ),
                               child: const Icon(
                                 Icons.delete_rounded,

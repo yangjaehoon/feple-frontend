@@ -117,21 +117,21 @@ class _EnralgePostState extends State<EnralgePost> {
                       Tooltip(
                         message: 'badge_admin'.tr(),
                         child: const Icon(Icons.shield_rounded,
-                            size: 14, color: Colors.deepPurple),
+                            size: 14, color: AppColors.badgeAdmin),
                       ),
                     ] else if (widget.userRole == 'ARTIST') ...[
                       const SizedBox(width: 4),
                       Tooltip(
                         message: 'badge_artist_certified'.tr(),
                         child: const Icon(Icons.verified_rounded,
-                            size: 14, color: Colors.blue),
+                            size: 14, color: AppColors.badgeArtist),
                       ),
                     ] else if (widget.certified) ...[
                       const SizedBox(width: 4),
                       Tooltip(
                         message: 'badge_festival_certified'.tr(),
                         child: const Icon(Icons.verified_rounded,
-                            size: 14, color: Colors.teal),
+                            size: 14, color: AppColors.badgeCertified),
                       ),
                     ],
                   ],

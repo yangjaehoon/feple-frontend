@@ -98,12 +98,9 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
       backgroundColor: colors.backgroundMain,
       appBar: AppBar(
         backgroundColor: colors.appBarColor,
-        title: Text(
-          'festival_reg_register_title'.tr(),
-          style: TextStyle(color: colors.textTitle, fontWeight: FontWeight.w700),
-        ),
-        iconTheme: IconThemeData(color: colors.textTitle),
+        foregroundColor: Colors.white,
         elevation: 0,
+        title: Text('festival_reg_register_title'.tr()),
       ),
       body: Form(
         key: _formKey,

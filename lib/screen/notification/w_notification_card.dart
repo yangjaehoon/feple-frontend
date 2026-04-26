@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/model/notification_model.dart';
 import 'package:feple/screen/notification/notification_type.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ class NotificationCard extends StatelessWidget {
           color: item.read
               ? colors.surface
               : colors.certRingColor.withValues(alpha: 0.06),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
           border: Border.all(
             color: item.read
                 ? colors.listDivider
@@ -123,7 +124,7 @@ class NotificationCard extends StatelessWidget {
       case NotificationType.certApproved:     return colors.certRingColor;
       case NotificationType.certRejected:     return colors.textSecondary;
       case NotificationType.newComment:       return colors.activate;
-      case NotificationType.festivalReminder: return const Color(0xFFFF7043);
+      case NotificationType.festivalReminder: return AppColors.notificationReminder;
       default:                                return colors.certRingColor;
     }
   }

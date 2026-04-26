@@ -1,5 +1,4 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/constant/app_colors.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/screen/main/tab/my_page/s_certification_list.dart';
 import 'package:feple/injection.dart';

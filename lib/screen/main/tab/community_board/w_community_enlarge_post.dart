@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../provider/user_provider.dart';
 import 'post_detail_notifier.dart';
-import 'w_comment_section.dart';
+import 'w_comment_section.dart' show CommentSection, CommentInputBar;
 import 'w_like_comment_row.dart';
 
 class EnralgePost extends StatefulWidget {
@@ -76,12 +76,23 @@ class _EnralgePostState extends State<EnralgePost> {
         backgroundColor: colors.appBarColor,
         foregroundColor: Colors.white,
       ),
+      resizeToAvoidBottomInset: true,
+      bottomNavigationBar: ListenableBuilder(
+        listenable: _notifier,
+        builder: (context, _) => CommentInputBar(
+          controller: _commentController,
+          isSubmitting: _notifier.isSubmitting,
+          onSubmit: () => _notifier.submitComment(
+              _commentController.text.trim(), userId),
+          errorText: _notifier.commentError?.tr(),
+        ),
+      ),
       body: ListenableBuilder(
         listenable: _notifier,
         builder: (context, _) => Container(
           color: colors.backgroundMain,
-          padding: const EdgeInsets.all(16.0),
           child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -143,15 +154,8 @@ class _EnralgePostState extends State<EnralgePost> {
                   onScrapTap: () => _notifier.toggleScrap(userId),
                 ),
                 const SizedBox(height: 24),
-                CommentSection(
-                  comments: _notifier.comments,
-                  controller: _commentController,
-                  isSubmitting: _notifier.isSubmitting,
-                  onSubmit: () => _notifier.submitComment(
-                      _commentController.text.trim(), userId),
-                  errorText: _notifier.commentError?.tr(),
-                ),
-                const SizedBox(height: 40),
+                CommentSection(comments: _notifier.comments),
+                const SizedBox(height: 16),
               ],
             ),
           ),

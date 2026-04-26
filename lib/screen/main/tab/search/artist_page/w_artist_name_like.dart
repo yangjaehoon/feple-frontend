@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_festival_calendar.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
@@ -245,7 +246,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
                   colors: [AppColors.skyBlue, AppColors.skyBlueLight],
                 ),
           color: isFollowed ? Colors.white.withValues(alpha: 0.2) : null,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadius),
           border: isFollowed
               ? Border.all(color: Colors.white.withValues(alpha: 0.4), width: 1)
               : null,

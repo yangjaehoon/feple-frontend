@@ -24,6 +24,9 @@ class AppDimens {
   static const double cardRadius = 20.0;
   static const double cardRadiusSmall = 16.0;
   static const double cardRadiusTiny = 12.0;
+  static const double radiusSmall = 8.0;    // 작은 이미지 썸네일, 컴팩트 컨테이너
+  static const double radiusXs = 4.0;       // 매우 작은 요소 (코드 블록 등)
+  static const double barRadius = 2.0;      // 섹션 바 액센트, 드래그 핸들
   static const double boardCardHeight = 280.0;
   static const double boardHeaderHeight = 35.0;
 

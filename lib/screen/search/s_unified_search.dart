@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
@@ -183,7 +184,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
           Container(width: 3, height: 18,
               decoration: BoxDecoration(
                   color: colors.sectionBarColor,
-                  borderRadius: BorderRadius.circular(2))),
+                  borderRadius: BorderRadius.circular(AppDimens.barRadius))),
           const SizedBox(width: 8),
           Text(title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: colors.textTitle)),
           const SizedBox(width: 6),
@@ -248,7 +249,7 @@ class _FestivalTile extends StatelessWidget {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       leading: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
         child: SizedBox(
           width: 44,
           height: 56,
@@ -309,7 +310,7 @@ class _PostTile extends StatelessWidget {
         height: 44,
         decoration: BoxDecoration(
           color: colors.activate.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
         ),
         child: Icon(Icons.article_rounded, color: colors.activate, size: 22),
       ),

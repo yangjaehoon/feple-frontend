@@ -165,7 +165,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           style: FilledButton.styleFrom(
                             backgroundColor: colors.activate,
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(24)),
+                                borderRadius: BorderRadius.circular(AppDimens.shapeButton)),
                           ),
                         ),
                       ],

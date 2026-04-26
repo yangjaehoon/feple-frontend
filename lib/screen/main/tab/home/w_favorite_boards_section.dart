@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/model/favorite_board.dart';
 import 'package:feple/screen/main/tab/home/favorite_boards_prefs_manager.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_post_list.dart';
@@ -125,7 +126,7 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
                 height: 20,
                 decoration: BoxDecoration(
                   color: colors.sectionBarColor,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(AppDimens.barRadius),
                 ),
               ),
               const SizedBox(width: 8),
@@ -216,7 +217,7 @@ class _BoardTile extends StatelessWidget {
         height: 110,
         margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
           boxShadow: [
             BoxShadow(
               color: colors.cardShadow.withValues(alpha: 0.12),
@@ -226,7 +227,7 @@ class _BoardTile extends StatelessWidget {
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
           child: Stack(
             fit: StackFit.expand,
             children: [

@@ -216,7 +216,7 @@ class _SectionHeader extends StatelessWidget {
             height: 20,
             decoration: BoxDecoration(
               color: colors.sectionBarColor,
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(AppDimens.barRadius),
             ),
           ),
           const SizedBox(width: 8),

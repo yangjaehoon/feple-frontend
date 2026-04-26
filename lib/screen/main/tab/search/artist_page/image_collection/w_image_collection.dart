@@ -54,7 +54,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text('msg_delete'.tr(),
-                style: const TextStyle(color: Colors.red)),
+                style: const TextStyle(color: AppColors.errorRed)),
           ),
         ],
       ),
@@ -276,11 +276,11 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
                                           value: 'delete',
                                           child: Row(children: [
                                             const Icon(Icons.delete_rounded,
-                                                size: 16, color: Colors.red),
+                                                size: 16, color: AppColors.errorRed),
                                             const SizedBox(width: 8),
                                             Text('msg_delete'.tr(),
                                                 style: const TextStyle(
-                                                    color: Colors.red)),
+                                                    color: AppColors.errorRed)),
                                           ]),
                                         ),
                                       ],

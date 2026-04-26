@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +50,7 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
                 height: 20,
                 decoration: BoxDecoration(
                   color: colors.sectionBarColor,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(AppDimens.barRadius),
                 ),
               ),
               const SizedBox(width: 8),

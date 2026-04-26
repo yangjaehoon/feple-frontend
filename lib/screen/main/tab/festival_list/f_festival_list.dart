@@ -123,7 +123,7 @@ class _FilterPanel extends StatelessWidget {
                           horizontal: 7, vertical: 2),
                       decoration: BoxDecoration(
                         color: colors.activate,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
                       ),
                       child: Text(
                         '$activeFilterCount',

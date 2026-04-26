@@ -14,7 +14,7 @@ class ColorBottomSheet extends ModalBottomSheet<SimpleResult> {
     super.context,
     super.key,
     super.backgroundColor = Colors.purple,
-    super.handleColor = Colors.red,
+    super.handleColor = AppColors.errorRed,
     super.barrierColor = const Color(0x80000000),
   }) : textColor = textColor ?? Colors.white;
 

@@ -1,5 +1,5 @@
+import 'package:feple/common/constant/app_colors.dart';
 import 'package:flutter/material.dart';
-import '../../common.dart';
 
 extension SnackbarContextExtension on BuildContext {
   /// 기본 (중립) 스낵바

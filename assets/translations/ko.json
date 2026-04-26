@@ -238,5 +238,6 @@
   "photo_edit_action": "수정",
   "photo_edit_title": "사진 수정",
   "photo_title_label": "제목",
-  "retry": "다시 시도",\n  "offline_banner": "인터넷 연결을 확인해주세요"
+  "retry": "다시 시도",
+  "offline_banner": "인터넷 연결을 확인해주세요"
 }

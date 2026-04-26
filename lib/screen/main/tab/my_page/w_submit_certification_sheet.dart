@@ -23,6 +23,7 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
   FestivalModel? _selectedFestival;
   bool _loadingFestivals = true;
   bool _submitting = false;
+  bool _submitSuccess = false;
 
   @override
   void initState() {
@@ -62,7 +63,9 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
         imageData: imageData,
       );
       if (!mounted) return;
-      context.showSuccessSnackbar('cert_submit_success'.tr());
+      setState(() { _submitting = false; _submitSuccess = true; });
+      await Future.delayed(const Duration(milliseconds: 700));
+      if (!mounted) return;
       Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
@@ -72,7 +75,6 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
             ? 'cert_already_submitted'.tr()
             : 'cert_submit_failed'.tr(args: [msg]),
       );
-    } finally {
       if (mounted) setState(() => _submitting = false);
     }
   }
@@ -165,6 +167,7 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
               label: 'cert_select_photo'.tr(),
               icon: Icons.add_photo_alternate_rounded,
               isLoading: _submitting,
+              isSuccess: _submitSuccess,
               onPressed: _submit,
               backgroundColor: colors.certRingColor,
               height: 50,

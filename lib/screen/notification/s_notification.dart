@@ -59,6 +59,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
     }
   }
 
+  void _dismissNotification(int index) {
+    final removed = _items[index];
+    setState(() => _items.removeAt(index));
+    try {
+      _notificationService.markRead(removed.id);
+    } catch (_) {}
+  }
+
   Future<void> _navigateToFestival(int festivalId) async {
     try {
       final festival = await _festivalService.fetchById(festivalId);
@@ -177,11 +185,29 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         separatorBuilder: (_, __) => const SizedBox(height: 8),
                         itemBuilder: (_, i) => AnimatedListItem(
                           index: i,
-                          child: TapScale(
-                            onTap: () => _onTap(i),
-                            child: NotificationCard(
-                              item: _items[i],
+                          child: Dismissible(
+                            key: ValueKey(_items[i].id),
+                            direction: DismissDirection.endToStart,
+                            onDismissed: (_) => _dismissNotification(i),
+                            background: Container(
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.only(right: 20),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFF4D4F),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: const Icon(
+                                Icons.delete_rounded,
+                                color: Colors.white,
+                                size: 22,
+                              ),
+                            ),
+                            child: TapScale(
                               onTap: () => _onTap(i),
+                              child: NotificationCard(
+                                item: _items[i],
+                                onTap: () => _onTap(i),
+                              ),
                             ),
                           ),
                         ),

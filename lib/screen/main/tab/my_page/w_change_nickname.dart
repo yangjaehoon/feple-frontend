@@ -16,6 +16,8 @@ class ChangeNickname extends StatefulWidget {
 class _ChangeNicknameState extends State<ChangeNickname> {
   final nicknameController = TextEditingController();
   bool _isSaving = false;
+  bool _isSuccess = false;
+  String? _errorText;
 
   @override
   void dispose() {
@@ -75,6 +77,9 @@ class _ChangeNicknameState extends State<ChangeNickname> {
             TextField(
               controller: nicknameController,
               textAlign: TextAlign.center,
+              onChanged: (_) {
+                if (_errorText != null) setState(() => _errorText = null);
+              },
               style: TextStyle(
                 fontSize: 18,
                 color: colors.textTitle,
@@ -83,22 +88,28 @@ class _ChangeNicknameState extends State<ChangeNickname> {
               decoration: InputDecoration(
                 hintText: 'nickname_hint'.tr(),
                 hintStyle: TextStyle(color: colors.textSecondary),
+                errorText: _errorText,
                 filled: true,
                 fillColor: colors.surface,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(
-                      color: colors.divider),
+                  borderSide: BorderSide(color: colors.divider),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(
-                      color: colors.divider),
+                  borderSide: BorderSide(color: colors.divider),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: Color(0xFFFF4D4F), width: 1.5),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: Color(0xFFFF4D4F), width: 2),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide:
-                      BorderSide(color: colors.focusedBorder, width: 2),
+                  borderSide: BorderSide(color: colors.focusedBorder, width: 2),
                 ),
               ),
             ),
@@ -106,6 +117,7 @@ class _ChangeNicknameState extends State<ChangeNickname> {
             LoadingButton(
               label: 'confirm'.tr(),
               isLoading: _isSaving,
+              isSuccess: _isSuccess,
               backgroundColor: colors.activate,
               onPressed: () async {
                 if (nicknameController.text.trim().isEmpty) return;
@@ -113,14 +125,18 @@ class _ChangeNicknameState extends State<ChangeNickname> {
                 try {
                   if (user == null) return;
                   await _updateNickname(userProvider, user.id);
+                  if (!mounted) return;
+                  setState(() { _isSaving = false; _isSuccess = true; });
+                  await Future.delayed(const Duration(milliseconds: 700));
                   if (!context.mounted) return;
-                  context.showSuccessSnackbar('nickname_changed'.tr());
                   Navigator.pop(context);
                 } catch (e) {
-                  if (!context.mounted) return;
-                  context.showErrorSnackbar('nickname_change_failed'.tr(args: [e.toString()]));
-                } finally {
-                  if (mounted) setState(() => _isSaving = false);
+                  if (mounted) {
+                    setState(() {
+                      _isSaving = false;
+                      _errorText = 'nickname_change_failed'.tr(args: [e.toString()]);
+                    });
+                  }
                 }
               },
             ),

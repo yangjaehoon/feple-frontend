@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/screen/main/tab/my_page/s_certification_list.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
@@ -84,12 +85,37 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
         SizedBox(
           height: 150,
           child: _loading
-              ? const Center(child: CircularProgressIndicator())
+              ? _buildSkeletonList()
               : _certifications == null || _certifications!.isEmpty
                   ? _buildEmptyList(colors)
                   : _buildCertList(colors),
         ),
       ],
+    );
+  }
+
+  Widget _buildSkeletonList() {
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      itemCount: 3,
+      itemBuilder: (_, __) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SkeletonBox(
+              width: 98,
+              height: 98,
+              borderRadius: BorderRadius.all(Radius.circular(49)),
+            ),
+            const SizedBox(height: 6),
+            const SkeletonBox(width: 72, height: 11),
+            const SizedBox(height: 4),
+            const SkeletonBox(width: 48, height: 10, borderRadius: BorderRadius.all(Radius.circular(20))),
+          ],
+        ),
+      ),
     );
   }
 

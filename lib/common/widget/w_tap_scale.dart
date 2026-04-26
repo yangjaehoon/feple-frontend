@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// 누를 때 살짝 축소되는 스케일 애니메이션 래퍼.
 /// GestureDetector를 대체하거나 감쌀 수 있습니다.
@@ -40,7 +41,10 @@ class _TapScaleState extends State<TapScale>
     super.dispose();
   }
 
-  void _onTapDown(TapDownDetails _) => _controller.forward();
+  void _onTapDown(TapDownDetails _) {
+    HapticFeedback.lightImpact();
+    _controller.forward();
+  }
   void _onTapUp(TapUpDetails _) => _controller.reverse();
   void _onTapCancel() => _controller.reverse();
 

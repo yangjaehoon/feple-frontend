@@ -28,7 +28,6 @@ class _ArtistPageState extends State<ArtistPage> {
 
   Future<void> _onRefresh() async {
     setState(() => _refreshKey++);
-    await Future.delayed(const Duration(milliseconds: 400));
   }
 
   @override

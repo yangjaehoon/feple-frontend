@@ -24,7 +24,12 @@ class TimetableEntry {
         stageOrder: (j['stageOrder'] as num?)?.toInt() ?? 999,
         artistName: j['artistName'] as String,
         festivalDate: j['festivalDate'] as String,
-        startTime: (j['startTime'] as String).substring(0, 5),
-        endTime: (j['endTime'] as String).substring(0, 5),
+        startTime: _toHHmm(j['startTime']),
+        endTime: _toHHmm(j['endTime']),
       );
+
+  static String _toHHmm(dynamic val) {
+    final s = val?.toString() ?? '';
+    return s.length >= 5 ? s.substring(0, 5) : s;
+  }
 }

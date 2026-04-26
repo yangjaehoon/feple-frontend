@@ -14,12 +14,14 @@ class PostService {
     return ep;
   }
 
-  /// 게시글 목록 조회
-  Future<List<Post>> fetchPosts(String boardType) async {
-    final resp = await DioClient.dio.get(_endpointFor(boardType));
-    final List<dynamic> jsonList = resp.data as List<dynamic>;
-    return jsonList.map((json) => Post.fromJson(json)).toList();
+  Future<List<Post>> _fetchPostList(String endpoint) async {
+    final resp = await DioClient.dio.get(endpoint);
+    return (resp.data as List<dynamic>).map((json) => Post.fromJson(json)).toList();
   }
+
+  /// 게시글 목록 조회
+  Future<List<Post>> fetchPosts(String boardType) =>
+      _fetchPostList(_endpointFor(boardType));
 
   /// 게시글 작성 (userId는 서버에서 JWT로 추출)
   Future<void> createPost({
@@ -37,11 +39,8 @@ class PostService {
   }
 
   /// 아티스트 게시판 목록 조회
-  Future<List<Post>> fetchArtistPosts(int artistId) async {
-    final resp = await DioClient.dio.get('/posts/artist/$artistId');
-    final List<dynamic> jsonList = resp.data as List<dynamic>;
-    return jsonList.map((json) => Post.fromJson(json)).toList();
-  }
+  Future<List<Post>> fetchArtistPosts(int artistId) =>
+      _fetchPostList('/posts/artist/$artistId');
 
   /// 아티스트 게시판 글 작성
   Future<void> createArtistPost({
@@ -59,11 +58,8 @@ class PostService {
   }
 
   /// 페스티벌 게시판 목록 조회
-  Future<List<Post>> fetchFestivalPosts(int festivalId) async {
-    final resp = await DioClient.dio.get('/posts/festival/$festivalId');
-    final List<dynamic> jsonList = resp.data as List<dynamic>;
-    return jsonList.map((json) => Post.fromJson(json)).toList();
-  }
+  Future<List<Post>> fetchFestivalPosts(int festivalId) =>
+      _fetchPostList('/posts/festival/$festivalId');
 
   /// 페스티벌 게시판 글 작성
   Future<void> createFestivalPost({

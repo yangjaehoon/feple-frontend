@@ -1,3 +1,4 @@
+import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/login/signup.dart';
@@ -35,9 +36,10 @@ class _LoginPageState extends State<LoginPage> {
     final themeColors = context.appColors;
     return Scaffold(
       backgroundColor: themeColors.backgroundMain,
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
+      body: KeyboardDismiss(
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 28),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -202,6 +204,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
         ),
+      ),
       ),
     );
   }

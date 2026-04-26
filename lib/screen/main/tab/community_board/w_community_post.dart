@@ -81,6 +81,7 @@ class _CommunityPostState extends State<CommunityPost> {
         title: Text(widget.boardname),
         backgroundColor: colors.appBarColor,
         foregroundColor: Colors.white,
+        scrolledUnderElevation: 0,
       ),
       backgroundColor: colors.backgroundMain,
       floatingActionButton: Padding(

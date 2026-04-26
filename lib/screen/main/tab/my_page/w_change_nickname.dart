@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -52,11 +53,13 @@ class _ChangeNicknameState extends State<ChangeNickname> {
         title: Text('change_nickname'.tr()),
         backgroundColor: colors.appBarColor,
         foregroundColor: Colors.white,
+        scrolledUnderElevation: 0,
       ),
       backgroundColor: colors.backgroundMain,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 28),
-        child: Column(
+      body: KeyboardDismiss(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 28),
+          child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
@@ -142,6 +145,7 @@ class _ChangeNicknameState extends State<ChangeNickname> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

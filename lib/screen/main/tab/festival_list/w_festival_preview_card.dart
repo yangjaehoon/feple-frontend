@@ -1,5 +1,5 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_app_network_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:feple/model/festival_preview.dart';
@@ -41,15 +41,9 @@ class FestivalPreviewCard extends StatelessWidget {
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: colors.backgroundMain,
-                          image: DecorationImage(
-                            image: ResizeImage(
-                                CachedNetworkImageProvider(festival.posterUrl), width: 160),
-                            fit: BoxFit.fill,
-                          ),
-                        ),
+                      AppNetworkImage(
+                        imageUrl: festival.posterUrl,
+                        fit: BoxFit.fill,
                       ),
                       if (festival.isEnded) ...[
                         Container(color: Colors.black.withValues(alpha: 0.5)),

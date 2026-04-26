@@ -1,3 +1,4 @@
+import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/common/widget/w_nickname_field.dart';
@@ -157,11 +158,12 @@ class _SignupPageState extends State<SignupPage> {
     final themeColors = context.appColors;
     return Scaffold(
       backgroundColor: themeColors.backgroundMain,
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 28),
-            child: Column(
+      body: KeyboardDismiss(
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 28),
+              child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // ── 아이콘 ──
@@ -326,6 +328,7 @@ class _SignupPageState extends State<SignupPage> {
             ),
           ),
         ),
+      ),
       ),
     );
   }

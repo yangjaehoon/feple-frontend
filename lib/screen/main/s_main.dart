@@ -1,3 +1,4 @@
+import 'package:feple/common/widget/w_offline_banner.dart';
 import 'package:feple/screen/main/tab/tab_item.dart';
 import 'package:feple/screen/main/tab/tab_navigator.dart';
 import 'package:flutter/material.dart';
@@ -86,7 +87,7 @@ class MainScreenState extends State<MainScreen>
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
+    return OfflineBanner(child: PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
@@ -141,7 +142,7 @@ class MainScreenState extends State<MainScreen>
           ),
         ),
       ),
-    );
+    ));
   }
 
   Widget get pages => IndexedStack(

@@ -125,7 +125,11 @@ class _HomeFragmentState extends State<HomeFragment> {
           color: colors.backgroundMain,
           child: Stack(
             children: [
-              SingleChildScrollView(
+              RefreshIndicator(
+                color: colors.activate,
+                onRefresh: () async => _notifier.refresh(),
+                child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 padding: EdgeInsets.only(
                   top: rs.h(AppDimens.scrollPaddingTop),
                   bottom: rs.h(AppDimens.scrollPaddingBottom),
@@ -181,6 +185,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                       ),
                   ],
                 ),
+              ),
               ),
               const FepleAppBar("Feple"),
             ],

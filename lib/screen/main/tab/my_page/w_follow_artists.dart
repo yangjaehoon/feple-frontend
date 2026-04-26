@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:flutter/material.dart';
 
@@ -12,17 +13,25 @@ class FollowArtistsWidget extends StatefulWidget {
 }
 
 class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
-  late Future<List<_FollowedArtist>> _future;
+  List<_FollowedArtist> _artists = [];
+  bool _loading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
     super.initState();
-    _future = _fetchFollowing();
+    _load();
   }
 
-  Future<List<_FollowedArtist>> _fetchFollowing() async {
-    final resp = await DioClient.dio.get('/users/${widget.userId}/following');
-    return (resp.data as List).map((e) => _FollowedArtist.fromJson(e)).toList();
+  Future<void> _load() async {
+    setState(() { _loading = true; _hasError = false; });
+    try {
+      final resp = await DioClient.dio.get('/users/${widget.userId}/following');
+      final list = (resp.data as List).map((e) => _FollowedArtist.fromJson(e)).toList();
+      if (mounted) setState(() { _artists = list; _loading = false; });
+    } catch (_) {
+      if (mounted) setState(() { _loading = false; _hasError = true; });
+    }
   }
 
   @override
@@ -55,90 +64,130 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
             ],
           ),
         ),
-        FutureBuilder<List<_FollowedArtist>>(
-          future: _future,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return SizedBox(
-                height: 160,
-                child: Center(
-                    child: CircularProgressIndicator(
-                        color: colors.loadingIndicator)),
-              );
-            }
-            if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                child: Text('no_followed_artists'.tr(),
-                    style: TextStyle(color: colors.textSecondary)),
-              );
-            }
-            final artists = snapshot.data!;
-            return SizedBox(
-              height: 160,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                itemCount: artists.length,
-                itemBuilder: (context, index) {
-                  final artist = artists[index];
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(3),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: colors.followRingColor,
-                            boxShadow: [
-                              BoxShadow(
-                                color: colors.cardShadow.withValues(alpha: 0.2),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
+        SizedBox(
+          height: 160,
+          child: _loading
+              ? _buildSkeleton()
+              : _hasError
+                  ? Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.wifi_off_rounded,
+                              size: 28,
+                              color: colors.textSecondary.withValues(alpha: 0.4)),
+                          const SizedBox(height: 8),
+                          TextButton.icon(
+                            onPressed: _load,
+                            icon: const Icon(Icons.refresh_rounded, size: 16),
+                            label: Text('retry'.tr(),
+                                style: const TextStyle(fontSize: 13)),
+                          ),
+                        ],
+                      ),
+                    )
+                  : _artists.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.person_search_rounded,
+                                  size: 32,
+                                  color: colors.textSecondary.withValues(alpha: 0.4)),
+                              const SizedBox(height: 8),
+                              Text('no_followed_artists'.tr(),
+                                  style: TextStyle(
+                                      color: colors.textSecondary,
+                                      fontSize: 13)),
                             ],
                           ),
-                          child: Container(
-                            padding: const EdgeInsets.all(2),
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle, color: colors.surface),
-                            child: CircleAvatar(
-                              radius: 50,
-                              backgroundColor: colors.backgroundMain,
-                              backgroundImage:
-                                  (artist.profileImageUrl != null &&
-                                          artist.profileImageUrl!.isNotEmpty)
-                                      ? CachedNetworkImageProvider(artist.profileImageUrl!)
-                                      : null,
-                              child: (artist.profileImageUrl == null ||
-                                      artist.profileImageUrl!.isEmpty)
-                                  ? Icon(Icons.person_rounded,
-                                      size: 40, color: colors.textSecondary)
-                                  : null,
-                            ),
-                          ),
+                        )
+                      : ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          itemCount: _artists.length,
+                          itemBuilder: (context, index) {
+                            final artist = _artists[index];
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(3),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: colors.followRingColor,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: colors.cardShadow
+                                              .withValues(alpha: 0.2),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(2),
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: colors.surface),
+                                      child: CircleAvatar(
+                                        radius: 50,
+                                        backgroundColor: colors.backgroundMain,
+                                        backgroundImage: (artist.profileImageUrl !=
+                                                    null &&
+                                                artist.profileImageUrl!.isNotEmpty)
+                                            ? CachedNetworkImageProvider(
+                                                artist.profileImageUrl!)
+                                            : null,
+                                        child: (artist.profileImageUrl == null ||
+                                                artist.profileImageUrl!.isEmpty)
+                                            ? Icon(Icons.person_rounded,
+                                                size: 40,
+                                                color: colors.textSecondary)
+                                            : null,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 6.0),
+                                    child: Text(
+                                      artist.name,
+                                      style: TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600,
+                                          color: colors.textTitle),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 6.0),
-                          child: Text(
-                            artist.name,
-                            style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: colors.textTitle),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            );
-          },
         ),
       ],
+    );
+  }
+
+  Widget _buildSkeleton() {
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      itemCount: 4,
+      itemBuilder: (_, __) => Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: const [
+            SkeletonBox(
+              width: 106,
+              height: 106,
+              borderRadius: BorderRadius.all(Radius.circular(53)),
+            ),
+            SizedBox(height: 8),
+            SkeletonBox(width: 60, height: 11),
+          ],
+        ),
+      ),
     );
   }
 }

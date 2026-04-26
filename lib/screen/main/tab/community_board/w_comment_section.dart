@@ -54,12 +54,14 @@ class CommentSection extends StatelessWidget {
               Expanded(
                 child: TextField(
                   controller: controller,
+                  maxLength: 300,
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: 'enter_comment'.tr(),
                     hintStyle: TextStyle(color: colors.textSecondary),
                     filled: true,
                     fillColor: Colors.transparent,
+                    counterText: '',
                     contentPadding:
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),

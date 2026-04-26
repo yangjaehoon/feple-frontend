@@ -18,6 +18,13 @@ class MypageFragment extends StatefulWidget {
 }
 
 class _MypageFragmentState extends State<MypageFragment> {
+  int _refreshKey = 0;
+
+  Future<void> _onRefresh() async {
+    setState(() => _refreshKey++);
+    // 자식 위젯이 재생성되어 데이터를 재로드할 시간을 줌
+    await Future.delayed(const Duration(milliseconds: 400));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,18 +39,23 @@ class _MypageFragmentState extends State<MypageFragment> {
       color: context.appColors.backgroundMain,
       child: Stack(
         children: [
-          SingleChildScrollView(
-            padding: EdgeInsets.only(
-              top: rs.h(AppDimens.scrollPaddingTop),
-              bottom: rs.h(AppDimens.scrollPaddingBottom),
-            ),
-            child: Column(
-              children: [
-                ProfileWidget(userId: userId),
-                MyPostCommentWidget(userId: userId),
-                const FtvCertificationWidget(),
-                FollowArtistsWidget(userId: userId),
-              ],
+          RefreshIndicator(
+            color: context.appColors.activate,
+            onRefresh: _onRefresh,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.only(
+                top: rs.h(AppDimens.scrollPaddingTop),
+                bottom: rs.h(AppDimens.scrollPaddingBottom),
+              ),
+              child: Column(
+                children: [
+                  ProfileWidget(key: ValueKey('profile_$_refreshKey'), userId: userId),
+                  MyPostCommentWidget(userId: userId),
+                  FtvCertificationWidget(key: ValueKey('cert_$_refreshKey')),
+                  FollowArtistsWidget(key: ValueKey('follow_$_refreshKey'), userId: userId),
+                ],
+              ),
             ),
           ),
           const FepleAppBar("Feple"),

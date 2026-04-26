@@ -112,6 +112,7 @@ dependencies:
   #firebase_app_check: ^0.4.0+1
   geolocator: ^14.0.2
   google_maps_flutter: ^2.9.0
+  connectivity_plus: ^7.1.1
 
 dependency_overrides:
   geolocator_android: ^5.0.2

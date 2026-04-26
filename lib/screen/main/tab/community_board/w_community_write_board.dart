@@ -1,3 +1,4 @@
+import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/common.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/common/app_events.dart';
@@ -84,6 +85,7 @@ class _WritePostState extends State<WritePost> {
         title: Text('write_post'.tr()),
         backgroundColor: colors.appBarColor,
         foregroundColor: Colors.white,
+        scrolledUnderElevation: 0,
         actions: [
           TextButton(
             onPressed: _isSubmitting ? null : () => _submit(),
@@ -101,25 +103,35 @@ class _WritePostState extends State<WritePost> {
         ],
       ),
       backgroundColor: colors.backgroundMain,
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: SingleChildScrollView(
-          child: Form(
+      body: KeyboardDismiss(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            child: Form(
             key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               children: [
                 TextFormField(
                   controller: _titleController,
+                  maxLength: 50,
                   style: TextStyle(color: colors.textTitle),
                   decoration: InputDecoration(
                     hintText: 'enter_title'.tr(),
                     hintStyle: TextStyle(color: colors.textSecondary),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    counterStyle: TextStyle(color: colors.textSecondary, fontSize: 11),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(color: colors.activate, width: 2),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color(0xFFFF4D4F), width: 1.5),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color(0xFFFF4D4F), width: 2),
                     ),
                   ),
                   validator: (v) =>
@@ -130,16 +142,24 @@ class _WritePostState extends State<WritePost> {
                   controller: _contentController,
                   maxLines: null,
                   minLines: 8,
+                  maxLength: 500,
                   style: TextStyle(color: colors.textTitle),
                   decoration: InputDecoration(
                     hintText: 'enter_content'.tr(),
                     hintStyle: TextStyle(color: colors.textSecondary),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    counterStyle: TextStyle(color: colors.textSecondary, fontSize: 11),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(color: colors.activate, width: 2),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color(0xFFFF4D4F), width: 1.5),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color(0xFFFF4D4F), width: 2),
                     ),
                   ),
                   validator: (v) =>
@@ -149,6 +169,7 @@ class _WritePostState extends State<WritePost> {
             ),
           ),
         ),
+      ),
       ),
     );
   }

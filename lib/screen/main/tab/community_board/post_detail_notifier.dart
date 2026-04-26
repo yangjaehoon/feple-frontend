@@ -11,6 +11,7 @@ class PostDetailNotifier extends ChangeNotifier {
   bool liked = false;
   bool scraped = false;
   late int heartCount;
+  int scrapCount = 0;
   bool isSubmitting = false;
   String? commentError;
   bool isToggling = false;
@@ -35,6 +36,7 @@ class PostDetailNotifier extends ChangeNotifier {
         DioClient.dio.get('/posts/$postId/scraped'),
       ]);
       heartCount = (results[0].data['likeCount'] as num?)?.toInt() ?? heartCount;
+      scrapCount = (results[0].data['scrapCount'] as num?)?.toInt() ?? scrapCount;
       liked = results[1].data as bool? ?? liked;
       scraped = results[2].data as bool? ?? scraped;
       notifyListeners();
@@ -108,6 +110,7 @@ class PostDetailNotifier extends ChangeNotifier {
     notifyListeners();
     try {
       scraped = await _scrapService.toggleScrap(postId);
+      scrapCount = scraped ? scrapCount + 1 : scrapCount - 1;
       onCommentPosted?.call(scraped ? 'scrap_done' : 'scrap_cancel');
     } catch (e) {
       onError?.call('scrap_failed:${e.toString()}');

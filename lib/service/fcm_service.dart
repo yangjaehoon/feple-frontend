@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:feple/network/dio_client.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -17,6 +18,8 @@ class FcmService {
 
   final _messaging = FirebaseMessaging.instance;
   final _localNotifications = FlutterLocalNotificationsPlugin();
+  StreamSubscription? _messageSubscription;
+  StreamSubscription? _tokenSubscription;
 
   static const _androidChannel = AndroidNotificationChannel(
     'feple_high_importance',
@@ -50,14 +53,20 @@ class FcmService {
     );
     await _localNotifications.initialize(initSettings);
 
+    // 중복 등록 방지
+    _messageSubscription?.cancel();
+    _tokenSubscription?.cancel();
+
     // 포그라운드 메시지 처리
-    FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
+    _messageSubscription =
+        FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
 
     // 토큰 등록
     await _registerToken();
 
     // 토큰 갱신 시 재등록
-    _messaging.onTokenRefresh.listen(_sendTokenToServer);
+    _tokenSubscription =
+        _messaging.onTokenRefresh.listen(_sendTokenToServer);
   }
 
   Future<void> _registerToken() async {

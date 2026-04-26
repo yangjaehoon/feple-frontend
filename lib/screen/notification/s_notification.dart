@@ -64,7 +64,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
     setState(() => _items.removeAt(index));
     try {
       _notificationService.markRead(removed.id);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[Notification] markRead 실패: $e');
+    }
   }
 
   Future<void> _navigateToFestival(int festivalId) async {
@@ -77,7 +79,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
           builder: (_) => FestivalInformationFragment(poster: festival),
         ),
       );
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[Notification] 페스티벌 이동 실패: $e');
+    }
   }
 
   Widget _buildSkeleton(AbstractThemeColors colors) {

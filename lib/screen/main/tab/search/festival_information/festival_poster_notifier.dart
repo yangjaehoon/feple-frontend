@@ -52,7 +52,9 @@ class FestivalPosterNotifier extends ChangeNotifier {
       isCertified = mine.any((c) => c['status'] == 'APPROVED');
       isPending = !isCertified && mine.any((c) => c['status'] == 'PENDING');
       notifyListeners();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[FestivalPoster] 인증 상태 로드 실패: $e');
+    }
   }
 
   Future<void> toggleLike() async {

@@ -62,7 +62,8 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
         });
         _startTimer();
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[ImageSwiper] 사진 로드 실패: $e');
       if (mounted) setState(() => _loaded = true);
     }
   }
@@ -143,6 +144,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
                                   child: CachedNetworkImage(
                                     imageUrl: _photoUrls[index],
                                     fit: BoxFit.cover,
+                                    memCacheWidth: 300,
                                   ),
                                 ),
                               ),
@@ -175,6 +177,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
             fit: BoxFit.cover,
             width: double.infinity,
             height: double.infinity,
+            memCacheWidth: 600,
           ),
         );
       }

@@ -27,6 +27,7 @@ class FestivalBoothMap extends StatefulWidget {
 class _FestivalBoothMapState extends State<FestivalBoothMap> {
   List<BoothModel> _booths = [];
   bool _loading = true;
+  bool _hasError = false;
   GoogleMapController? _mapController;
   Position? _userPosition;
   Set<Marker> _markers = {};
@@ -39,6 +40,7 @@ class _FestivalBoothMapState extends State<FestivalBoothMap> {
   }
 
   Future<void> _fetchBooths() async {
+    if (mounted) setState(() { _loading = true; _hasError = false; });
     try {
       final res =
           await DioClient.dio.get('/festivals/${widget.festivalId}/booths');
@@ -57,7 +59,7 @@ class _FestivalBoothMapState extends State<FestivalBoothMap> {
       }
     } catch (e) {
       debugPrint('[BoothMap] API 오류: $e');
-      if (mounted) setState(() => _loading = false);
+      if (mounted) setState(() { _loading = false; _hasError = true; });
     }
   }
 
@@ -160,6 +162,28 @@ class _FestivalBoothMapState extends State<FestivalBoothMap> {
               const SizedBox(
                 height: 300,
                 child: Center(child: CircularProgressIndicator()),
+              )
+            else if (_hasError)
+              SizedBox(
+                height: 200,
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.cloud_off_rounded, size: 40,
+                          color: colors.textSecondary.withValues(alpha: 0.4)),
+                      const SizedBox(height: 8),
+                      Text('load_error'.tr(),
+                          style: TextStyle(color: colors.textSecondary)),
+                      const SizedBox(height: 12),
+                      TextButton.icon(
+                        onPressed: _fetchBooths,
+                        icon: const Icon(Icons.refresh_rounded),
+                        label: Text('retry'.tr()),
+                      ),
+                    ],
+                  ),
+                ),
               )
             else if (_booths.isEmpty)
               Padding(

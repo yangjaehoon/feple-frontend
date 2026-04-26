@@ -19,6 +19,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
   final _controller = TextEditingController();
   bool _loading = false;
   bool _searched = false;
+  bool _hasError = false;
 
   List<dynamic> _artists = [];
   List<dynamic> _festivals = [];
@@ -32,7 +33,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
 
   Future<void> _search(String keyword) async {
     if (keyword.trim().isEmpty) return;
-    setState(() { _loading = true; _searched = true; });
+    setState(() { _loading = true; _searched = true; _hasError = false; });
     try {
       final res = await DioClient.dio.get('/search', queryParameters: {'keyword': keyword.trim()});
       final data = res.data as Map<String, dynamic>;
@@ -44,8 +45,9 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
         _loading  = false;
       });
       }
-    } catch (_) {
-      if (mounted) setState(() => _loading = false);
+    } catch (e) {
+      debugPrint('[Search] 검색 실패: $e');
+      if (mounted) setState(() { _loading = false; _hasError = true; });
     }
   }
 
@@ -93,7 +95,30 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
           ? Center(child: CircularProgressIndicator(color: colors.loadingIndicator))
           : !_searched
               ? _buildEmptyHint(colors)
-              : _buildResults(colors),
+              : _hasError
+                  ? _buildError(colors)
+                  : _buildResults(colors),
+    );
+  }
+
+  Widget _buildError(AbstractThemeColors colors) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.cloud_off_rounded, size: 56,
+              color: colors.textSecondary.withValues(alpha: 0.3)),
+          const SizedBox(height: 12),
+          Text('search_error'.tr(),
+              style: TextStyle(color: colors.textSecondary, fontSize: 15)),
+          const SizedBox(height: 16),
+          TextButton.icon(
+            onPressed: () => _search(_controller.text),
+            icon: const Icon(Icons.refresh_rounded),
+            label: Text('retry'.tr()),
+          ),
+        ],
+      ),
     );
   }
 

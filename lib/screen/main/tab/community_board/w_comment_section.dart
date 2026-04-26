@@ -70,22 +70,28 @@ class CommentSection extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 4),
-              isSubmitting
-                  ? SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: colors.activate,
+              SizedBox(
+                width: 48,
+                height: 48,
+                child: isSubmitting
+                    ? Center(
+                        child: SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: colors.activate,
+                          ),
+                        ),
+                      )
+                    : IconButton(
+                        onPressed: () {
+                          HapticFeedback.lightImpact();
+                          onSubmit();
+                        },
+                        icon: Icon(Icons.send_rounded, color: colors.activate),
                       ),
-                    )
-                  : IconButton(
-                      onPressed: () {
-                        HapticFeedback.lightImpact();
-                        onSubmit();
-                      },
-                      icon: Icon(Icons.send_rounded, color: colors.activate),
-                    ),
+              ),
               const SizedBox(width: 4),
             ],
           ),

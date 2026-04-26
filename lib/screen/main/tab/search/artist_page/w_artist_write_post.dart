@@ -71,18 +71,23 @@ class _ArtistWritePostState extends State<ArtistWritePost> {
         backgroundColor: colors.appBarColor,
         foregroundColor: Colors.white,
         actions: [
-          TextButton(
-            onPressed: _isSubmitting ? null : () => _submit(),
-            child: _isSubmitting
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2, color: Colors.white),
-                  )
-                : Text('done'.tr(),
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w700)),
+          SizedBox(
+            width: 64,
+            child: TextButton(
+              onPressed: _isSubmitting ? null : () => _submit(),
+              child: _isSubmitting
+                  ? const Center(
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white),
+                      ),
+                    )
+                  : Text('done'.tr(),
+                      style: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.w700)),
+            ),
           ),
         ],
       ),

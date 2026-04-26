@@ -13,6 +13,13 @@ class AppDimens {
   static const double scrollPaddingBottomLarge = 100.0;
   static const double fabBottomPadding = 80.0;
 
+  // ── Shape (MD3 기준) ──
+  // Extra Small(4) · Small(8) · Medium(12) · Large(16) · Extra Large(28)
+  static const double shapeInput = 12.0;    // 입력 필드 — Medium
+  static const double shapeButton = 16.0;   // 버튼 — Large
+  static const double shapeDialog = 28.0;   // 다이얼로그 — Extra Large
+  static const double shapeSheet = 28.0;    // 바텀시트 상단 — Extra Large
+
   // ── Card / Container ──
   static const double cardRadius = 20.0;
   static const double cardRadiusSmall = 16.0;

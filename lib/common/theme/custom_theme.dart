@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/theme/color/dark_app_colors.dart';
 import 'package:feple/common/theme/color/light_app_colors.dart';
 import 'package:feple/common/theme/shadows/dark_app_shadows.dart';
@@ -90,12 +91,12 @@ ThemeData lightTheme = ThemeData(
       borderSide: const BorderSide(color: AppColors.skyBlue, width: 2),
     ),
     errorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(color: Colors.red, width: 1.5),
+      borderRadius: BorderRadius.circular(AppDimens.shapeInput),
+      borderSide: const BorderSide(color: AppColors.errorRed, width: 1.5),
     ),
     focusedErrorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(color: Colors.red, width: 2),
+      borderRadius: BorderRadius.circular(AppDimens.shapeInput),
+      borderSide: const BorderSide(color: AppColors.errorRed, width: 2),
     ),
     filled: true,
     fillColor: AppColors.surfaceWhite,
@@ -107,7 +108,7 @@ ThemeData lightTheme = ThemeData(
       backgroundColor: AppColors.skyBlue,
       foregroundColor: Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppDimens.shapeButton),
       ),
       elevation: 0,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -119,7 +120,7 @@ ThemeData lightTheme = ThemeData(
       backgroundColor: AppColors.skyBlue,
       foregroundColor: Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppDimens.shapeButton),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       textStyle: const TextStyle(fontWeight: FontWeight.w700),
@@ -129,7 +130,12 @@ ThemeData lightTheme = ThemeData(
     color: AppColors.surfaceWhite,
     elevation: 0,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(AppDimens.cardRadius),
+    ),
+  ),
+  dialogTheme: DialogThemeData(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(AppDimens.shapeDialog),
     ),
   ),
   dividerTheme: const DividerThemeData(
@@ -205,12 +211,12 @@ ThemeData darkTheme = ThemeData(
       borderSide: const BorderSide(color: AppColors.skyBlueLight, width: 2),
     ),
     errorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
+      borderRadius: BorderRadius.circular(AppDimens.shapeInput),
+      borderSide: const BorderSide(color: AppColors.errorRed, width: 1.5),
     ),
     focusedErrorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(color: Colors.redAccent, width: 2),
+      borderRadius: BorderRadius.circular(AppDimens.shapeInput),
+      borderSide: const BorderSide(color: AppColors.errorRed, width: 2),
     ),
     filled: true,
     fillColor: _darkSurface,
@@ -222,7 +228,7 @@ ThemeData darkTheme = ThemeData(
       backgroundColor: AppColors.skyBlue,
       foregroundColor: Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppDimens.shapeButton),
       ),
       elevation: 0,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -234,7 +240,7 @@ ThemeData darkTheme = ThemeData(
       backgroundColor: AppColors.skyBlue,
       foregroundColor: Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppDimens.shapeButton),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       textStyle: const TextStyle(fontWeight: FontWeight.w700),
@@ -244,7 +250,12 @@ ThemeData darkTheme = ThemeData(
     color: _darkSurface,
     elevation: 0,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(AppDimens.cardRadius),
+    ),
+  ),
+  dialogTheme: DialogThemeData(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(AppDimens.shapeDialog),
     ),
   ),
   dividerTheme: const DividerThemeData(

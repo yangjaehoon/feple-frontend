@@ -38,7 +38,7 @@ class _MessageDialogState extends DialogState<MessageDialog> {
         body: Container(
             constraints: BoxConstraints(maxHeight: context.deviceHeight),
             decoration: BoxDecoration(
-                color: context.appColors.drawerBg, borderRadius: BorderRadius.circular(15)),
+                color: context.appColors.drawerBg, borderRadius: BorderRadius.circular(28)),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

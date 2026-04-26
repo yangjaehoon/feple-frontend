@@ -209,7 +209,7 @@ class _CertCard extends StatelessWidget {
       statusColor = Colors.orange;
       statusLabel = 'cert_status_pending'.tr();
     } else {
-      statusColor = Colors.grey;
+      statusColor = colors.textSecondary;
       statusLabel = 'cert_status_rejected'.tr();
     }
 
@@ -291,7 +291,7 @@ class _CertCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       'cert_rejection_reason'.tr(args: [rejectionMessage]),
-                      style: TextStyle(fontSize: 11, color: Colors.grey[500]),
+                      style: TextStyle(fontSize: 11, color: colors.textSecondary),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),

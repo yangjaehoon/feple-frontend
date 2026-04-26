@@ -72,7 +72,7 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
       padding: EdgeInsets.fromLTRB(24, 20, 24, 24 + bottomInset),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -137,7 +137,7 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
               ),
               child: _pickedFile != null
                   ? ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(16),
                       child: FutureBuilder<Uint8List>(
                         future: _pickedFile!.readAsBytes(),
                         builder: (ctx, snap) {
@@ -177,9 +177,6 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
                 backgroundColor: colors.activate,
                 foregroundColor: Colors.white,
                 disabledBackgroundColor: colors.activate.withValues(alpha: 0.3),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
                 elevation: 0,
               ),
               child: _submitting

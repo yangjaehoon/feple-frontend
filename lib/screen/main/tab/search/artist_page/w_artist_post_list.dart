@@ -56,7 +56,7 @@ class _ArtistPostListScreenState extends State<ArtistPostListScreen> {
       ),
       backgroundColor: colors.backgroundMain,
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 60),
+        padding: const EdgeInsets.only(bottom: 80),
         child: FloatingActionButton.extended(
           backgroundColor: colors.activate,
           onPressed: () {

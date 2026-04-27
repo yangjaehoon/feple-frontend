@@ -1,0 +1,73 @@
+// This is a basic Flutter widget test.
+//
+// To perform an interaction with a widget in your test, use the WidgetTester
+// utility in the flutter_test package. For example, you can send tap and scroll
+// gestures. You can also use WidgetTester to find child widgets in the widget
+// tree, read text, and verify that the values of widget properties are correct.
+
+import 'dart:io';
+
+import 'package:feple/app.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/common/data/preference/app_preferences.dart';
+import 'package:feple/common/language/language.dart';
+import 'package:feple/common/theme/custom_theme.dart';
+import 'package:flutter/material.dart';
+import 'package:feple/injection.dart';
+import 'package:feple/provider/festival_preview_provider.dart';
+import 'package:feple/provider/like_notifier.dart';
+import 'package:feple/provider/post_change_notifier.dart';
+import 'package:feple/provider/user_provider.dart';
+import 'package:feple/service/festival_service.dart';
+import 'package:feple/service/user_service.dart';
+import 'package:feple/controller/auth_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+void main() {
+  setUpAll(() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    SharedPreferences.setMockInitialValues({});
+    HttpOverrides.global = null;
+    await EasyLocalization.ensureInitialized();
+    await AppPreferences.init();
+    setupDependencies();
+  });
+
+  testWidgets('앱 실행 및 기본 세팅 확인', (WidgetTester tester) async {
+    await pumpApp(tester);
+    await tester.pump();
+
+    // 1. Localizations test
+    expect(currentLanguage, Language.korean); //startLocale: const Locale('ko') 이 설정되어 있으므로 한국어로 시작
+
+    // 2. Custom Theme test
+    expect(App.navigatorKey.currentContext!.themeType, CustomTheme.light);
+    App.navigatorKey.currentContext!.changeTheme(CustomTheme.dark);
+    await tester.pump();
+    expect(App.navigatorKey.currentContext!.themeType, CustomTheme.dark);
+  });
+}
+
+Future<void> pumpApp(WidgetTester tester) async {
+  await tester.pumpWidget(EasyLocalization(
+      supportedLocales: const [
+        Locale('ko'),
+        Locale('en'),
+      ],
+      startLocale: const Locale('ko'),
+      fallbackLocale: const Locale('ko'),
+      path: 'assets/translations',
+      useOnlyLangCode: true,
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => AuthProvider()),
+          ChangeNotifierProvider(create: (_) => UserProvider(sl<UserService>())),
+          ChangeNotifierProvider(create: (_) => FestivalPreviewProvider(sl<FestivalService>())),
+          ChangeNotifierProvider(create: (_) => LikeNotifier()),
+          ChangeNotifierProvider(create: (_) => PostChangeNotifier()),
+        ],
+        child: const App(),
+      )));
+}

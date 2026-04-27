@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_write_post_fab.dart';
 import 'package:feple/common/constant/board_types.dart';
 import 'package:feple/common/util/app_route.dart';
@@ -79,11 +80,7 @@ class _CommunityPostState extends State<CommunityPost> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.boardname),
-        backgroundColor: colors.appBarColor,
-        foregroundColor: Colors.white,
-      ),
+      appBar: SecondaryAppBar(title: widget.boardname),
       backgroundColor: colors.backgroundMain,
       floatingActionButton: WritePostFab(
         onPressed: () => Navigator.push(

@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/constant/festival_constants.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/screen/main/tab/festival_list/w_festival_form_fields.dart';
@@ -96,12 +97,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
     final colors = context.appColors;
     return Scaffold(
       backgroundColor: colors.backgroundMain,
-      appBar: AppBar(
-        backgroundColor: colors.appBarColor,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        title: Text('festival_reg_register_title'.tr()),
-      ),
+      appBar: SecondaryAppBar(title: 'festival_reg_register_title'.tr(), elevation: 0),
       body: Form(
         key: _formKey,
         child: ListView(

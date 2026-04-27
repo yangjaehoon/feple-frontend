@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_nickname_field.dart';
 import 'package:feple/model/user_model.dart';
 import 'package:feple/network/dio_client.dart';
@@ -123,10 +124,8 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('edit_profile'.tr()),
-        backgroundColor: colors.appBarColor,
-        foregroundColor: Colors.white,
+      appBar: SecondaryAppBar(
+        title: 'edit_profile'.tr(),
         actions: [
           TextButton(
             onPressed: _isSaving ? null : _save,
@@ -139,7 +138,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                   )
                 : Text(
                     'save'.tr(),
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: Colors.white, fontWeight: FontWeight.w700),
                   ),
           ),

@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_write_post_fab.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
@@ -47,11 +48,7 @@ class _FestivalPostListScreenState extends State<FestivalPostListScreen> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_boardname),
-        backgroundColor: colors.appBarColor,
-        foregroundColor: Colors.white,
-      ),
+      appBar: SecondaryAppBar(title: _boardname),
       backgroundColor: colors.backgroundMain,
       floatingActionButton: WritePostFab(
         onPressed: () => Navigator.push(

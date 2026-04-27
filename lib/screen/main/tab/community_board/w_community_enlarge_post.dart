@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/report_service.dart';
 import 'package:flutter/material.dart';
@@ -184,10 +185,8 @@ class _EnralgePostState extends State<EnralgePost> {
     final userId = context.read<UserProvider>().user?.id;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.boardname),
-        backgroundColor: colors.appBarColor,
-        foregroundColor: Colors.white,
+      appBar: SecondaryAppBar(
+        title: widget.boardname,
         actions: [
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert),

@@ -279,5 +279,17 @@
   "photo_category_sns": "SNS",
   "photo_category_other": "Other",
 
-  "photo_collection_title": "Photo Collection"
+  "photo_collection_title": "Photo Collection",
+
+  "report_post": "Report Post",
+  "report_reason_spam": "Spam/Ads",
+  "report_reason_abuse": "Hate Speech",
+  "report_reason_obscene": "Obscene Content",
+  "report_reason_misinformation": "Misinformation",
+  "report_reason_other": "Other",
+  "report_detail_hint": "Add details (optional)",
+  "report_submit": "Submit Report",
+  "report_success": "Report submitted.",
+  "report_duplicate": "You have already reported this post.",
+  "report_cancel": "Cancel"
 }

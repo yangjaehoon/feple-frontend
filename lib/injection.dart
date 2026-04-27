@@ -12,6 +12,7 @@ import 'service/fcm_service.dart';
 import 'service/festival_service.dart';
 import 'service/notification_service.dart';
 import 'service/post_service.dart';
+import 'service/report_service.dart';
 import 'service/scrap_service.dart';
 import 'service/user_service.dart';
 
@@ -31,6 +32,7 @@ void setupDependencies() {
   sl.registerLazySingleton<FestivalService>(() => FestivalService());
   sl.registerLazySingleton<NotificationService>(() => NotificationService());
   sl.registerLazySingleton<PostService>(() => PostService());
+  sl.registerLazySingleton<ReportService>(() => ReportService());
   sl.registerLazySingleton<ScrapService>(() => ScrapService());
   sl.registerLazySingleton<UserService>(() => UserService());
 }

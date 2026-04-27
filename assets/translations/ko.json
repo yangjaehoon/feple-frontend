@@ -279,5 +279,17 @@
   "photo_category_sns": "SNS 사진",
   "photo_category_other": "기타",
 
-  "photo_collection_title": "사진 모아보기"
+  "photo_collection_title": "사진 모아보기",
+
+  "report_post": "게시글 신고",
+  "report_reason_spam": "스팸/광고",
+  "report_reason_abuse": "욕설/혐오",
+  "report_reason_obscene": "음란물",
+  "report_reason_misinformation": "허위정보",
+  "report_reason_other": "기타",
+  "report_detail_hint": "상세 내용을 입력하세요 (선택)",
+  "report_submit": "신고하기",
+  "report_success": "신고가 접수되었습니다.",
+  "report_duplicate": "이미 신고한 게시글입니다.",
+  "report_cancel": "취소"
 }

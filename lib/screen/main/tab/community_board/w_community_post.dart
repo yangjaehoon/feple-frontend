@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_write_post_fab.dart';
 import 'package:feple/common/constant/board_types.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
@@ -84,24 +85,13 @@ class _CommunityPostState extends State<CommunityPost> {
         foregroundColor: Colors.white,
       ),
       backgroundColor: colors.backgroundMain,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 80),
-        child: FloatingActionButton.extended(
-          backgroundColor: colors.activate,
-          onPressed: () {
-            Navigator.push(
-              context,
-              SlideRoute(
-                builder: (_) => WritePost(boardname: widget.boardname),
-              ),
-            ).then((_) => _refresh());
-          },
-          label: Text(
-            'write_post'.tr(),
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+      floatingActionButton: WritePostFab(
+        onPressed: () => Navigator.push(
+          context,
+          SlideRoute(
+            builder: (_) => WritePost(boardname: widget.boardname),
           ),
-          icon: const Icon(Icons.edit_rounded, color: Colors.white),
-        ),
+        ).then((_) => _refresh()),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: RefreshIndicator(

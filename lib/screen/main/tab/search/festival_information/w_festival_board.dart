@@ -1,12 +1,11 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/model/post_model.dart';
-import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
+import 'package:feple/screen/main/tab/community_board/w_board_preview_card.dart';
+import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_post_list.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
-import 'package:feple/common/widget/w_async_content_builder.dart';
-import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
@@ -35,144 +34,57 @@ class _FestivalBoardState extends State<FestivalBoard> {
     _postsFuture = _postService.fetchFestivalPosts(widget.festivalId);
   }
 
+  void _refresh() => setState(() {
+        _postsFuture = _postService.fetchFestivalPosts(widget.festivalId);
+      });
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.symmetric(
-          horizontal: AppDimens.paddingHorizontal,
-          vertical: AppDimens.paddingVertical),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius:
-            const BorderRadius.all(Radius.circular(AppDimens.cardRadius)),
-        boxShadow: [
-          BoxShadow(
-            color: colors.cardShadow.withValues(alpha: 0.12),
-            blurRadius: AppDimens.cardRadius,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          BoardCardHeader(
-            icon: Icons.festival_rounded,
-            title: 'name_board'.tr(args: [widget.festivalName]),
-            headerColor: colors.activate,
-            onTap: () {
-              Navigator.push(
-                context,
-                SlideRoute(
-                  builder: (_) => FestivalPostListScreen(
-                    festivalId: widget.festivalId,
-                    festivalName: widget.festivalName,
-                  ),
-                ),
-              );
-            },
-          ),
-          _buildPostList(colors),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSkeletonList() {
-    return Column(
-      children: List.generate(3, (i) {
-        return Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimens.paddingHorizontal, vertical: 10),
-              child: Row(
-                children: const [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SkeletonBox(height: 13),
-                        SizedBox(height: 5),
-                        SkeletonBox(width: 72, height: 10),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  SkeletonBox(width: 40, height: 13),
-                ],
-              ),
-            ),
-            Divider(height: 1, thickness: 1, indent: 16, endIndent: 16),
-          ],
-        );
-      }),
-    );
-  }
-
-  Widget _buildPostList(AbstractThemeColors colors) {
-    return AsyncContentBuilder<List<Post>>(
+    return BoardPreviewCard(
       future: _postsFuture,
-      useListViewForEmptyState: false,
-      loadingBuilder: (_) => _buildSkeletonList(),
-      builder: (context, postDataList) {
-        return ListView.separated(
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: postDataList.length,
-          itemBuilder: (_, index) {
-            final Post post = postDataList[index];
-            return ListTile(
-              dense: true,
-              visualDensity: const VisualDensity(vertical: -3),
-              minVerticalPadding: 0,
-              contentPadding: const EdgeInsets.symmetric(
-                  horizontal: AppDimens.paddingHorizontal, vertical: 0),
-              title: Text(
-                post.title,
-                style: TextStyle(
-                  color: colors.textTitle,
-                  fontWeight: FontWeight.w600,
-                  fontSize: AppDimens.fontSizeMd,
-                ),
-              ),
-              subtitle: Text(
-                post.nickname,
-                style: TextStyle(
-                  color: colors.textSecondary,
-                  fontSize: AppDimens.fontSizeXs,
-                ),
-              ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.favorite_border_rounded,
-                      color: colors.activate, size: AppDimens.iconSizeLg),
-                  const SizedBox(width: 4),
-                  Text(
-                    post.likeCount.toString(),
-                    style: TextStyle(
-                      fontSize: AppDimens.fontSizeMd,
-                      color: colors.textTitle,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Icon(Icons.chat_bubble_outline_rounded,
-                      color: colors.activate, size: AppDimens.iconSizeMd),
-                ],
-              ),
-            );
-          },
-          separatorBuilder: (_, __) => Divider(
-            thickness: 1,
-            color: colors.listDivider,
-            indent: AppDimens.paddingHorizontal,
-            endIndent: AppDimens.paddingHorizontal,
+      headerIcon: Icons.festival_rounded,
+      headerTitle: 'name_board'.tr(args: [widget.festivalName]),
+      headerColor: colors.activate,
+      onHeaderTap: () => Navigator.push(
+        context,
+        SlideRoute(
+          builder: (_) => FestivalPostListScreen(
+            festivalId: widget.festivalId,
+            festivalName: widget.festivalName,
           ),
-        );
-      },
+        ),
+      ),
+      onPostTap: (context, post) => Navigator.push(
+        context,
+        SlideRoute(
+          builder: (_) => EnralgePost(
+            boardname: 'name_board'.tr(args: [widget.festivalName]),
+            id: post.id,
+            nickname: post.nickname,
+            title: post.title,
+            content: post.content,
+            heart: post.likeCount,
+          ),
+        ),
+      ),
+      trailingBuilder: (post, colors) => [
+        Icon(Icons.favorite_border_rounded,
+            color: colors.activate, size: AppDimens.iconSizeLg),
+        const SizedBox(width: 4),
+        Text(
+          post.likeCount.toString(),
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeMd,
+            color: colors.textTitle,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Icon(Icons.chat_bubble_outline_rounded,
+            color: colors.activate, size: AppDimens.iconSizeMd),
+      ],
+      onRetry: _refresh,
     );
   }
 }

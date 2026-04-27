@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
+import 'package:feple/common/widget/w_write_post_fab.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/model/post_model.dart';
@@ -55,27 +56,16 @@ class _ArtistPostListScreenState extends State<ArtistPostListScreen> {
         foregroundColor: Colors.white,
       ),
       backgroundColor: colors.backgroundMain,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 80),
-        child: FloatingActionButton.extended(
-          backgroundColor: colors.activate,
-          onPressed: () {
-            Navigator.push(
-              context,
-              SlideRoute(
-                builder: (_) => ArtistWritePost(
-                  artistId: widget.artistId,
-                  artistName: widget.artistName,
-                ),
-              ),
-            ).then((_) => _refresh());
-          },
-          label: Text(
-            'write_post'.tr(),
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+      floatingActionButton: WritePostFab(
+        onPressed: () => Navigator.push(
+          context,
+          SlideRoute(
+            builder: (_) => ArtistWritePost(
+              artistId: widget.artistId,
+              artistName: widget.artistName,
+            ),
           ),
-          icon: const Icon(Icons.edit_rounded, color: Colors.white),
-        ),
+        ).then((_) => _refresh()),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: RefreshIndicator(

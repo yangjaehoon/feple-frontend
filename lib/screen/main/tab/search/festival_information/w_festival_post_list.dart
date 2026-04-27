@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_write_post_fab.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
@@ -52,27 +53,16 @@ class _FestivalPostListScreenState extends State<FestivalPostListScreen> {
         foregroundColor: Colors.white,
       ),
       backgroundColor: colors.backgroundMain,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 80),
-        child: FloatingActionButton.extended(
-          backgroundColor: colors.activate,
-          onPressed: () {
-            Navigator.push(
-              context,
-              SlideRoute(
-                builder: (_) => FestivalWritePost(
-                  festivalId: widget.festivalId,
-                  festivalName: widget.festivalName,
-                ),
-              ),
-            ).then((_) => _refresh());
-          },
-          label: Text(
-            'write_post'.tr(),
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+      floatingActionButton: WritePostFab(
+        onPressed: () => Navigator.push(
+          context,
+          SlideRoute(
+            builder: (_) => FestivalWritePost(
+              festivalId: widget.festivalId,
+              festivalName: widget.festivalName,
+            ),
           ),
-          icon: const Icon(Icons.edit_rounded, color: Colors.white),
-        ),
+        ).then((_) => _refresh()),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: AsyncContentBuilder<List<Post>>(

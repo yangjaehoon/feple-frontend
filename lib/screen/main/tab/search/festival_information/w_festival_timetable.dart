@@ -313,6 +313,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
 class _TimetableGrid extends StatelessWidget {
   static const double _minPx = 1.5;
   static const double _topPad = 20.0;
+  static const double _bottomPad = 24.0;
   static const double _timeColW = 52.0;
   static const double _stageHeaderH = 38.0;
   static const double _viewH = 460.0;
@@ -362,7 +363,7 @@ class _TimetableGrid extends StatelessWidget {
         : ((availableW - _timeColW) / stages.length)
             .clamp(_minStageW, double.infinity);
     final totalW = stages.isEmpty ? stageW : stages.length * stageW;
-    final totalH = (endHour - startHour) * 60 * _minPx + _topPad;
+    final totalH = (endHour - startHour) * 60 * _minPx + _topPad + _bottomPad;
 
     return Column(
       children: [

@@ -43,6 +43,18 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
     }
   }
 
+  Future<void> _showFestivalSearchSheet() async {
+    final result = await showModalBottomSheet<FestivalModel>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _FestivalSearchSheet(festivals: _festivals),
+    );
+    if (result != null) {
+      setState(() => _selectedFestival = result);
+    }
+  }
+
   Future<void> _submit() async {
     if (_selectedFestival == null) {
       context.showInfoSnackbar('select_festival_required_msg'.tr());
@@ -140,29 +152,26 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
                 )
               : Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: DropdownButtonFormField<FestivalModel>(
-                    key: ValueKey(_selectedFestival),
-                    initialValue: _selectedFestival,
-                    decoration: InputDecoration(
-                      labelText: 'tab_concert'.tr(),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                  child: InkWell(
+                    onTap: _showFestivalSearchSheet,
+                    borderRadius: BorderRadius.circular(12),
+                    child: InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: 'tab_concert'.tr(),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 12),
+                        suffixIcon: const Icon(Icons.arrow_drop_down),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 12),
+                      isEmpty: _selectedFestival == null,
+                      child: Text(
+                        _selectedFestival?.title ?? '',
+                        style: const TextStyle(fontSize: 14),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                    isExpanded: true,
-                    items: _festivals
-                        .map((f) => DropdownMenuItem(
-                              value: f,
-                              child: Text(
-                                f.title,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                            ))
-                        .toList(),
-                    onChanged: (val) => setState(() => _selectedFestival = val),
                   ),
                 ),
           const SizedBox(height: 16),
@@ -181,6 +190,115 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _FestivalSearchSheet extends StatefulWidget {
+  final List<FestivalModel> festivals;
+
+  const _FestivalSearchSheet({required this.festivals});
+
+  @override
+  State<_FestivalSearchSheet> createState() => _FestivalSearchSheetState();
+}
+
+class _FestivalSearchSheetState extends State<_FestivalSearchSheet> {
+  late List<FestivalModel> _filtered;
+  final _searchCtrl = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _filtered = widget.festivals;
+  }
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  void _onSearch(String query) {
+    setState(() {
+      _filtered = widget.festivals
+          .where((f) => f.title.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    return DraggableScrollableSheet(
+      initialChildSize: 0.7,
+      maxChildSize: 0.9,
+      minChildSize: 0.4,
+      expand: false,
+      builder: (ctx, scrollCtrl) {
+        return Container(
+          decoration: BoxDecoration(
+            color: colors.backgroundMain,
+            borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            children: [
+              const SizedBox(height: 12),
+              Center(
+                child: Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: colors.textSecondary.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                child: TextField(
+                  controller: _searchCtrl,
+                  autofocus: true,
+                  onChanged: _onSearch,
+                  decoration: InputDecoration(
+                    hintText: 'festival_search_hint'.tr(),
+                    prefixIcon: const Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 12),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: _filtered.isEmpty
+                    ? Center(
+                        child: Text(
+                          'search_no_result'.tr(),
+                          style: TextStyle(color: colors.textSecondary),
+                        ),
+                      )
+                    : ListView.builder(
+                        controller: scrollCtrl,
+                        itemCount: _filtered.length,
+                        itemBuilder: (_, i) {
+                          final festival = _filtered[i];
+                          return ListTile(
+                            title: Text(
+                              festival.title,
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                            onTap: () => Navigator.pop(ctx, festival),
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

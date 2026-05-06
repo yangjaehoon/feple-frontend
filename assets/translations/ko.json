@@ -235,6 +235,7 @@
   "photo_artwork_hint": "작품명을 입력하세요.",
   "required_field": "필수 입력 항목입니다.",
   "select_festival_hint": "페스티벌을 선택하세요",
+  "festival_search_hint": "페스티벌 이름 검색",
   "select_festival_required": "페스티벌을 선택해주세요.",
   "festival_label": "페스티벌",
   "photo_delete_title": "사진 삭제",

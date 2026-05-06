@@ -35,9 +35,7 @@ class _ImgCollectionState extends State<ImgCollection> {
         foregroundColor: Colors.white,
       ),
       backgroundColor: colors.backgroundMain,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 60),
-        child: FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
           backgroundColor: colors.activate,
           onPressed: () async {
             final result = await Navigator.push(
@@ -54,7 +52,6 @@ class _ImgCollectionState extends State<ImgCollection> {
             }
           },
           child: const Icon(Icons.add_photo_alternate, color: Colors.white),
-        ),
       ),
       body: CustomScrollView(
         slivers: [

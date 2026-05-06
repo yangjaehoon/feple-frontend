@@ -86,7 +86,7 @@ class _CommunityPostState extends State<CommunityPost> {
         onPressed: () => Navigator.push(
           context,
           SlideRoute(
-            builder: (_) => WritePost(boardname: widget.boardname),
+            builder: (_) => WritePost(boardname: _serviceBoardType),
           ),
         ).then((_) => _refresh()),
       ),

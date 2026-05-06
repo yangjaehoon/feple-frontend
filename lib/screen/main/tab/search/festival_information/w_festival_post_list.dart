@@ -76,7 +76,7 @@ class _FestivalPostListScreenState extends State<FestivalPostListScreen> {
                   Navigator.push(
                     context,
                     SlideRoute(
-                      builder: (_) => EnralgePost(
+                      builder: (_) => EnlargePost(
                         boardname: _boardname,
                         id: post.id,
                         nickname: post.nickname,

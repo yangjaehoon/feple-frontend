@@ -113,7 +113,7 @@ class _CommunityPostState extends State<CommunityPost> {
                       Navigator.push(
                         context,
                         SlideRoute(
-                          builder: (_) => EnralgePost(
+                          builder: (_) => EnlargePost(
                             boardname: widget.boardname,
                             id: post.id,
                             nickname: post.nickname,

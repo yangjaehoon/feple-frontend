@@ -40,6 +40,23 @@ class EnlargePost extends StatefulWidget {
 class _EnlargePostState extends State<EnlargePost> {
   final _commentController = TextEditingController();
   late final PostDetailNotifier _notifier;
+  int? _replyToCommentId;
+  String? _replyToNickname;
+
+  void _setReplyTo(int commentId, String nickname) {
+    setState(() {
+      _replyToCommentId = commentId;
+      _replyToNickname = nickname;
+    });
+    _commentController.clear();
+  }
+
+  void _cancelReply() {
+    setState(() {
+      _replyToCommentId = null;
+      _replyToNickname = null;
+    });
+  }
 
   @override
   void initState() {
@@ -50,6 +67,7 @@ class _EnlargePostState extends State<EnlargePost> {
     );
     _notifier.onCommentPosted = (key) {
       _commentController.clear();
+      _cancelReply();
       if (mounted) context.showSuccessSnackbar(key.tr());
     };
     _notifier.onError = (msg) {
@@ -330,8 +348,13 @@ class _EnlargePostState extends State<EnlargePost> {
           controller: _commentController,
           isSubmitting: _notifier.isSubmitting,
           onSubmit: () => _notifier.submitComment(
-              _commentController.text.trim(), userId),
+            _commentController.text.trim(),
+            userId,
+            parentId: _replyToCommentId,
+          ),
           errorText: _notifier.commentError?.tr(),
+          replyToNickname: _replyToNickname,
+          onCancelReply: _cancelReply,
         ),
       ),
       body: ListenableBuilder(
@@ -406,6 +429,9 @@ class _EnlargePostState extends State<EnlargePost> {
                   currentUserId: userId,
                   onReport: (commentId) =>
                       _showCommentReportSheet(context, commentId),
+                  onReply: _setReplyTo,
+                  onToggleLike: (commentId) =>
+                      _notifier.toggleCommentLike(commentId, userId),
                 ),
                 const SizedBox(height: 16),
               ],

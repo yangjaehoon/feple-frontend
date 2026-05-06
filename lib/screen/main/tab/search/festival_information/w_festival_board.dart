@@ -55,8 +55,7 @@ class _FestivalBoardState extends State<FestivalBoard> {
           ),
         ),
       ),
-      onPostTap: (context, post) => Navigator.push(
-        context,
+      onPostTap: (context, post) => Navigator.of(context, rootNavigator: true).push(
         SlideRoute(
           builder: (_) => EnlargePost(
             boardname: 'name_board'.tr(args: [widget.festivalName]),

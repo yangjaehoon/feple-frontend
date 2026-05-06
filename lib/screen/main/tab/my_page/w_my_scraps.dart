@@ -47,8 +47,7 @@ class MyScrapsScreen extends StatelessWidget {
       itemBuilder: (context, post, reload) {
         final colors = context.appColors;
         return ListTile(
-          onTap: () => Navigator.push(
-            context,
+          onTap: () => Navigator.of(context, rootNavigator: true).push(
             SlideRoute(
               builder: (_) => EnlargePost(
                 boardname: post.boardDisplayName,

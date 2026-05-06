@@ -471,7 +471,7 @@ class _PostTile extends StatelessWidget {
           ]),
         ],
       ),
-      onTap: () => Navigator.push(context, SlideRoute(
+      onTap: () => Navigator.of(context, rootNavigator: true).push(SlideRoute(
         builder: (_) => EnlargePost(
           boardname: boardName,
           id: id,

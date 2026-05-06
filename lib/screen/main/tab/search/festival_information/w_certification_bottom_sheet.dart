@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:dio/dio.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -52,11 +53,14 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
       Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
-      final msg = e.toString();
+      debugPrint('cert submit error: $e');
+      final backendMsg = e is DioException
+          ? (e.response?.data is Map ? e.response!.data['message'] as String? : null)
+          : null;
+      final isAlready = backendMsg?.contains('이미') == true ||
+          backendMsg?.contains('already') == true;
       context.showErrorSnackbar(
-        msg.contains('이미') || msg.contains('already')
-            ? 'cert_already_submitted'.tr()
-            : 'cert_submit_failed'.tr(args: [msg]),
+        isAlready ? 'cert_already_submitted'.tr() : 'cert_submit_failed'.tr(),
       );
     } finally {
       if (mounted) setState(() => _submitting = false);

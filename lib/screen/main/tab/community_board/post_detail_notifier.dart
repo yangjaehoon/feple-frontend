@@ -81,7 +81,8 @@ class PostDetailNotifier extends ChangeNotifier {
       await fetchComments();
       onCommentPosted?.call('comment_posted');
     } catch (e) {
-      onError?.call('comment_failed:${e.toString()}');
+      debugPrint('submitComment error: $e');
+      onError?.call('comment_failed');
     } finally {
       isSubmitting = false;
       notifyListeners();
@@ -116,7 +117,8 @@ class PostDetailNotifier extends ChangeNotifier {
       liked = nowLiked;
       heartCount = nowLiked ? heartCount + 1 : heartCount - 1;
     } catch (e) {
-      onError?.call('like_failed:${e.toString()}');
+      debugPrint('toggleLike error: $e');
+      onError?.call('like_failed');
     } finally {
       isToggling = false;
       notifyListeners();
@@ -132,7 +134,8 @@ class PostDetailNotifier extends ChangeNotifier {
       scrapCount = scraped ? scrapCount + 1 : scrapCount - 1;
       onCommentPosted?.call(scraped ? 'scrap_done' : 'scrap_cancel');
     } catch (e) {
-      onError?.call('scrap_failed:${e.toString()}');
+      debugPrint('toggleScrap error: $e');
+      onError?.call('scrap_failed');
     } finally {
       isScrapping = false;
       notifyListeners();

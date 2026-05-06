@@ -85,7 +85,8 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
       }
     } catch (e) {
       if (mounted) {
-        context.showErrorSnackbar('festival_reg_register_failed'.tr(args: [e.toString()]));
+        debugPrint('festival register error: $e');
+        context.showErrorSnackbar('festival_reg_register_failed'.tr());
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);

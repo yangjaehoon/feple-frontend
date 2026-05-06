@@ -84,7 +84,8 @@ class FestivalPreviewProvider extends ChangeNotifier {
       if (newItems.length < _size) _hasMore = false;
       _page += 1;
     } catch (e) {
-      _error = 'err_fetch_data'.tr(args: [e.toString()]);
+      debugPrint('festival preview error: $e');
+      _error = 'err_fetch_data'.tr();
     } finally {
       _isLoading = false;
       _isLoadingMore = false;

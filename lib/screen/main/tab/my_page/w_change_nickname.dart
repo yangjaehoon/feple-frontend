@@ -138,7 +138,8 @@ class _ChangeNicknameState extends State<ChangeNickname> {
                   if (mounted) {
                     setState(() {
                       _isSaving = false;
-                      _errorText = 'nickname_change_failed'.tr(args: [e.toString()]);
+                      debugPrint('nickname change error: $e');
+                      _errorText = 'nickname_change_failed'.tr();
                     });
                   }
                 }

@@ -98,12 +98,15 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
     final colors = context.appColors;
     return Scaffold(
       backgroundColor: colors.backgroundMain,
-      appBar: SecondaryAppBar(title: 'festival_reg_register_title'.tr(), elevation: 0),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(20),
-          children: [
+      body: Column(
+        children: [
+          SecondaryAppBar(title: 'festival_reg_register_title'.tr()),
+          Expanded(
+            child: Form(
+              key: _formKey,
+              child: ListView(
+                padding: const EdgeInsets.all(20),
+                children: [
             FestivalTextField(
               controller: _titleController,
               label: 'label_festival_name'.tr(),
@@ -244,8 +247,11 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
                       ),
               ),
             ),
-          ],
-        ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

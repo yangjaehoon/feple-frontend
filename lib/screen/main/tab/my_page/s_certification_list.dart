@@ -119,30 +119,50 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
 
     return Scaffold(
       backgroundColor: colors.backgroundMain,
-      appBar: AppBar(
-        toolbarHeight: AppDimens.appBarHeight,
-        backgroundColor: colors.backgroundMain,
-        elevation: 0,
-        foregroundColor: colors.textTitle,
-        title: Text('festival_certification'.tr()),
-        actions: [
-          TextButton.icon(
-            onPressed: _openSubmitSheet,
-            icon: Icon(Icons.add_photo_alternate_rounded,
-                color: colors.certRingColor, size: 20),
-            label: Text(
-              'cert_submit'.tr(),
-              style: TextStyle(
-                color: colors.certRingColor,
-                fontWeight: FontWeight.w700,
-                fontSize: 13,
+      body: Column(
+        children: [
+          SafeArea(
+            bottom: false,
+            child: Container(
+              height: AppDimens.appBarHeight,
+              color: colors.backgroundMain,
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back_ios_rounded, color: colors.textTitle),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  Expanded(
+                    child: Text(
+                      'festival_certification'.tr(),
+                      style: TextStyle(
+                        color: colors.textTitle,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  TextButton.icon(
+                    onPressed: _openSubmitSheet,
+                    icon: Icon(Icons.add_photo_alternate_rounded,
+                        color: colors.certRingColor, size: 20),
+                    label: Text(
+                      'cert_submit'.tr(),
+                      style: TextStyle(
+                        color: colors.certRingColor,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                ],
               ),
             ),
           ),
-          const SizedBox(width: 4),
-        ],
-      ),
-      body: RefreshIndicator(
+          Expanded(
+            child: RefreshIndicator(
         onRefresh: _load,
         color: colors.activate,
         child: _loading
@@ -173,6 +193,9 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
                           return _CertCard(cert: cert, colors: colors);
                         },
                       ),
+      ),
+          ),
+        ],
       ),
     );
   }

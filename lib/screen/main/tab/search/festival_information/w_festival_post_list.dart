@@ -48,7 +48,6 @@ class _FestivalPostListScreenState extends State<FestivalPostListScreen> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return Scaffold(
-      appBar: SecondaryAppBar(title: _boardname),
       backgroundColor: colors.backgroundMain,
       floatingActionButton: WritePostFab(
         onPressed: () => Navigator.push(
@@ -62,7 +61,11 @@ class _FestivalPostListScreenState extends State<FestivalPostListScreen> {
         ).then((_) => _refresh()),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: AsyncContentBuilder<List<Post>>(
+      body: Column(
+        children: [
+          SecondaryAppBar(title: _boardname),
+          Expanded(
+            child: AsyncContentBuilder<List<Post>>(
         future: _postsFuture,
         builder: (context, posts) {
           return ListView.separated(
@@ -96,6 +99,9 @@ class _FestivalPostListScreenState extends State<FestivalPostListScreen> {
             ),
           );
         },
+      ),
+          ),
+        ],
       ),
     );
   }

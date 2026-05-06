@@ -33,17 +33,46 @@ class _OpensourceScreenState extends State<OpensourceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: AppDimens.appBarHeight,
-        title: 'opensource'.tr().text.make(),
-      ),
-      body: ListView.separated(
-        itemBuilder: (context, index) => OpensourceItem(packageList[index]),
-        itemCount: packageList.length,
-        separatorBuilder: (BuildContext context, int index) {
-          return const Line().pSymmetric(h:20);
-        },
+      body: Column(
+        children: [
+          SafeArea(
+            bottom: false,
+            child: Container(
+              height: AppDimens.appBarHeight,
+              color: colors.appBarColor,
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  Expanded(
+                    child: Text(
+                      'opensource'.tr(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView.separated(
+              itemBuilder: (context, index) => OpensourceItem(packageList[index]),
+              itemCount: packageList.length,
+              separatorBuilder: (BuildContext context, int index) {
+                return const Line().pSymmetric(h: 20);
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

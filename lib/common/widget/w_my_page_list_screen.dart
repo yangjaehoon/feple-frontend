@@ -59,58 +59,64 @@ class _MyPageListScreenState<T> extends State<MyPageListScreen<T>> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return Scaffold(
-      appBar: SecondaryAppBar(title: widget.title),
       backgroundColor: colors.backgroundMain,
-      body: RefreshIndicator(
-        color: colors.activate,
-        onRefresh: _load,
-        child: _loading
-            ? widget.skeletonBuilder(colors)
-            : _hasError
-                ? _buildScrollable(
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.wifi_off_rounded,
-                            size: 48,
-                            color: colors.textSecondary.withValues(alpha: 0.4)),
-                        const SizedBox(height: 12),
-                        Text('err_fetch_data'.tr(args: ['']),
-                            style: TextStyle(color: colors.textSecondary),
-                            textAlign: TextAlign.center),
-                        const SizedBox(height: 16),
-                        FilledButton.icon(
-                          onPressed: _load,
-                          icon: const Icon(Icons.refresh_rounded, size: 18),
-                          label: Text('retry'.tr()),
-                          style: FilledButton.styleFrom(
-                            backgroundColor: colors.activate,
-                            shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(AppDimens.shapeButton)),
+      body: Column(
+        children: [
+          SecondaryAppBar(title: widget.title),
+          Expanded(
+            child: RefreshIndicator(
+              color: colors.activate,
+              onRefresh: _load,
+              child: _loading
+                  ? widget.skeletonBuilder(colors)
+                  : _hasError
+                      ? _buildScrollable(
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.wifi_off_rounded,
+                                  size: 48,
+                                  color: colors.textSecondary.withValues(alpha: 0.4)),
+                              const SizedBox(height: 12),
+                              Text('err_fetch_data'.tr(args: ['']),
+                                  style: TextStyle(color: colors.textSecondary),
+                                  textAlign: TextAlign.center),
+                              const SizedBox(height: 16),
+                              FilledButton.icon(
+                                onPressed: _load,
+                                icon: const Icon(Icons.refresh_rounded, size: 18),
+                                label: Text('retry'.tr()),
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: colors.activate,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(AppDimens.shapeButton)),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                  )
-                : _items.isEmpty
-                    ? _buildScrollable(
-                        EmptyState(
-                          icon: widget.emptyIcon,
-                          title: widget.emptyTitle,
-                        ),
-                      )
-                    : ListView.separated(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        itemCount: _items.length,
-                        separatorBuilder: (_, __) =>
-                            Divider(thickness: 1, color: colors.listDivider),
-                        itemBuilder: (context, index) => AnimatedListItem(
-                          index: index,
-                          child: widget.itemBuilder(
-                              context, _items[index], _load),
-                        ),
-                      ),
+                        )
+                      : _items.isEmpty
+                          ? _buildScrollable(
+                              EmptyState(
+                                icon: widget.emptyIcon,
+                                title: widget.emptyTitle,
+                              ),
+                            )
+                          : ListView.separated(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              itemCount: _items.length,
+                              separatorBuilder: (_, __) =>
+                                  Divider(thickness: 1, color: colors.listDivider),
+                              itemBuilder: (context, index) => AnimatedListItem(
+                                index: index,
+                                child: widget.itemBuilder(
+                                    context, _items[index], _load),
+                              ),
+                            ),
+            ),
+          ),
+        ],
       ),
     );
   }

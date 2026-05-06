@@ -317,30 +317,6 @@ class _EnlargePostState extends State<EnlargePost> {
     final userId = context.read<UserProvider>().user?.id;
 
     return Scaffold(
-      appBar: SecondaryAppBar(
-        title: widget.boardname,
-        actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert),
-            onSelected: (value) {
-              if (value == 'report') _showReportSheet(context);
-            },
-            itemBuilder: (_) => [
-              PopupMenuItem(
-                value: 'report',
-                child: Row(
-                  children: [
-                    const Icon(Icons.flag_outlined, size: 18, color: Colors.red),
-                    const SizedBox(width: 8),
-                    Text('report_post'.tr(),
-                        style: const TextStyle(color: Colors.red)),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
       resizeToAvoidBottomInset: true,
       bottomNavigationBar: ListenableBuilder(
         listenable: _notifier,
@@ -357,11 +333,38 @@ class _EnlargePostState extends State<EnlargePost> {
           onCancelReply: _cancelReply,
         ),
       ),
-      body: ListenableBuilder(
-        listenable: _notifier,
-        builder: (context, _) => Container(
-          color: colors.backgroundMain,
-          child: SingleChildScrollView(
+      body: Column(
+        children: [
+          SecondaryAppBar(
+            title: widget.boardname,
+            actions: [
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert),
+                onSelected: (value) {
+                  if (value == 'report') _showReportSheet(context);
+                },
+                itemBuilder: (_) => [
+                  PopupMenuItem(
+                    value: 'report',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.flag_outlined, size: 18, color: Colors.red),
+                        const SizedBox(width: 8),
+                        Text('report_post'.tr(),
+                            style: const TextStyle(color: Colors.red)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Expanded(
+            child: ListenableBuilder(
+              listenable: _notifier,
+              builder: (context, _) => Container(
+                color: colors.backgroundMain,
+                child: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -438,6 +441,9 @@ class _EnlargePostState extends State<EnlargePost> {
             ),
           ),
         ),
+            ),
+          ),
+        ],
       ),
     );
   }

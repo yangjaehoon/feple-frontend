@@ -235,6 +235,7 @@
   "photo_artwork_hint": "Enter artwork title",
   "required_field": "This field is required.",
   "select_festival_hint": "Select a festival",
+  "festival_search_hint": "Search festival name",
   "select_festival_required": "Please select a festival.",
   "festival_label": "Festival",
   "photo_delete_title": "Delete Photo",

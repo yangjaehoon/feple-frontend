@@ -283,6 +283,10 @@
 
   "photo_collection_title": "Photo Collection",
 
+  "reply_comment": "Reply",
+  "reply_to": "reply to",
+  "enter_reply": "Write a reply",
+
   "report_post": "Report Post",
   "report_comment": "Report Comment",
   "report_reason_spam": "Spam/Ads",

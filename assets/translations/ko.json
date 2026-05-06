@@ -283,6 +283,10 @@
 
   "photo_collection_title": "사진 모아보기",
 
+  "reply_comment": "답글 달기",
+  "reply_to": "에게 답글",
+  "enter_reply": "답글을 입력하세요",
+
   "report_post": "게시글 신고",
   "report_comment": "댓글 신고",
   "report_reason_spam": "스팸/광고",

@@ -55,7 +55,7 @@ class PostDetailNotifier extends ChangeNotifier {
     }
   }
 
-  Future<void> submitComment(String comment, int? userId) async {
+  Future<void> submitComment(String comment, int? userId, {int? parentId}) async {
     if (comment.isEmpty) {
       commentError = 'enter_comment_please';
       notifyListeners();
@@ -76,6 +76,7 @@ class PostDetailNotifier extends ChangeNotifier {
       await DioClient.dio.post('/comments', data: {
         'content': comment,
         'postId': postId,
+        if (parentId != null) 'parentId': parentId,
       });
       await fetchComments();
       onCommentPosted?.call('comment_posted');
@@ -84,6 +85,24 @@ class PostDetailNotifier extends ChangeNotifier {
     } finally {
       isSubmitting = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> toggleCommentLike(int commentId, int? userId) async {
+    if (userId == null) return;
+    try {
+      final resp = await DioClient.dio.post('/comments/$commentId/like');
+      final bool liked = resp.data['liked'] as bool;
+      final int likeCount = (resp.data['likeCount'] as num).toInt();
+      final idx = comments.indexWhere((c) => c['id'] == commentId);
+      if (idx != -1) {
+        comments[idx] = Map<String, dynamic>.from(comments[idx])
+          ..['liked'] = liked
+          ..['likeCount'] = likeCount;
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('toggleCommentLike error: $e');
     }
   }
 

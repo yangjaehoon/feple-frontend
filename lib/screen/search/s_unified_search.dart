@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -18,6 +20,9 @@ class UnifiedSearchScreen extends StatefulWidget {
 
 class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
   final _controller = TextEditingController();
+  final _focusNode = FocusNode();
+  Timer? _debounce;
+
   bool _loading = false;
   bool _searched = false;
   bool _hasError = false;
@@ -25,31 +30,91 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
   List<dynamic> _artists = [];
   List<dynamic> _festivals = [];
   List<dynamic> _posts = [];
+  List<_SuggestionItem> _suggestions = [];
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _controller.addListener(_onTextChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _focusNode.requestFocus();
+    });
+  }
+
+  void _onTextChanged() {
+    setState(() {
+      _searched = false;
+    });
+    _debounce?.cancel();
+    if (_controller.text.trim().isEmpty) {
+      setState(() => _suggestions = []);
+      return;
+    }
+    _debounce = Timer(
+      const Duration(milliseconds: 300),
+      () => _fetchSuggestions(_controller.text.trim()),
+    );
+  }
+
+  Future<void> _fetchSuggestions(String keyword) async {
+    try {
+      final res = await DioClient.dio.get('/search', queryParameters: {'keyword': keyword});
+      if (!mounted) return;
+      final data = res.data as Map<String, dynamic>;
+      final artists = (data['artists'] as List? ?? [])
+          .map((a) => _SuggestionItem(a['name'] as String? ?? '', 'artist'))
+          .where((s) => s.label.isNotEmpty)
+          .toList();
+      final festivals = (data['festivals'] as List? ?? [])
+          .map((f) => _SuggestionItem(f['title'] as String? ?? '', 'festival'))
+          .where((s) => s.label.isNotEmpty)
+          .toList();
+      setState(() => _suggestions = [...artists, ...festivals]);
+    } catch (_) {
+      // 연관검색어 실패는 무시
+    }
   }
 
   Future<void> _search(String keyword) async {
     if (keyword.trim().isEmpty) return;
-    setState(() { _loading = true; _searched = true; _hasError = false; });
+    _debounce?.cancel();
+    _focusNode.unfocus();
+    setState(() {
+      _loading = true;
+      _searched = true;
+      _hasError = false;
+      _suggestions = [];
+    });
     try {
       final res = await DioClient.dio.get('/search', queryParameters: {'keyword': keyword.trim()});
       final data = res.data as Map<String, dynamic>;
       if (mounted) {
         setState(() {
-        _artists  = (data['artists']  as List? ?? []);
-        _festivals = (data['festivals'] as List? ?? []);
-        _posts    = (data['posts']    as List? ?? []);
-        _loading  = false;
-      });
+          _artists   = (data['artists']   as List? ?? []);
+          _festivals = (data['festivals'] as List? ?? []);
+          _posts     = (data['posts']     as List? ?? []);
+          _loading   = false;
+        });
       }
     } catch (e) {
       debugPrint('[Search] 검색 실패: $e');
       if (mounted) setState(() { _loading = false; _hasError = true; });
     }
+  }
+
+  void _selectSuggestion(String label) {
+    _controller.text = label;
+    _controller.selection = TextSelection.collapsed(offset: label.length);
+    _search(label);
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _controller.removeListener(_onTextChanged);
+    _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -61,28 +126,35 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
       appBar: AppBar(
         backgroundColor: colors.appBarColor,
         foregroundColor: Colors.white,
+        toolbarHeight: AppDimens.appBarHeight,
         titleSpacing: 0,
         title: TextField(
           controller: _controller,
-          autofocus: true,
+          focusNode: _focusNode,
           style: const TextStyle(color: Colors.white, fontSize: 16),
           cursorColor: Colors.white70,
           decoration: InputDecoration(
             hintText: 'search_hint'.tr(),
             hintStyle: const TextStyle(color: Colors.white54),
             border: InputBorder.none,
+            filled: false,
             suffixIcon: _controller.text.isNotEmpty
                 ? IconButton(
                     icon: const Icon(Icons.clear, color: Colors.white70),
                     onPressed: () {
                       _controller.clear();
-                      setState(() { _searched = false; _artists = []; _festivals = []; _posts = []; });
+                      setState(() {
+                        _searched = false;
+                        _artists = [];
+                        _festivals = [];
+                        _posts = [];
+                        _suggestions = [];
+                      });
                     },
                   )
                 : null,
           ),
           textInputAction: TextInputAction.search,
-          onChanged: (_) => setState(() {}),
           onSubmitted: _search,
         ),
         actions: [
@@ -94,11 +166,69 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
       ),
       body: _loading
           ? Center(child: CircularProgressIndicator(color: colors.loadingIndicator))
-          : !_searched
-              ? _buildEmptyHint(colors)
-              : _hasError
-                  ? _buildError(colors)
-                  : _buildResults(colors),
+          : _searched
+              ? (_hasError ? _buildError(colors) : _buildResults(colors))
+              : _controller.text.isEmpty
+                  ? _buildEmptyHint(colors)
+                  : _buildSuggestions(colors),
+    );
+  }
+
+  Widget _buildSuggestions(AbstractThemeColors colors) {
+    if (_suggestions.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    return ListView.separated(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: _suggestions.length,
+      separatorBuilder: (_, __) => Divider(
+        height: 1,
+        thickness: 1,
+        color: colors.listDivider,
+        indent: 56,
+        endIndent: 16,
+      ),
+      itemBuilder: (_, index) {
+        final s = _suggestions[index];
+        return ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+          leading: Icon(
+            s.type == 'artist' ? Icons.person_rounded : Icons.festival_rounded,
+            color: colors.textSecondary,
+            size: 20,
+          ),
+          title: _buildHighlightedText(s.label, _controller.text.trim(), colors),
+          trailing: Icon(Icons.north_west_rounded, size: 16, color: colors.textSecondary),
+          onTap: () => _selectSuggestion(s.label),
+        );
+      },
+    );
+  }
+
+  Widget _buildHighlightedText(String label, String query, AbstractThemeColors colors) {
+    final lowerLabel = label.toLowerCase();
+    final lowerQuery = query.toLowerCase();
+    final matchIndex = lowerLabel.indexOf(lowerQuery);
+    if (matchIndex == -1 || query.isEmpty) {
+      return Text(label, style: TextStyle(color: colors.textTitle, fontSize: 15));
+    }
+    return RichText(
+      text: TextSpan(
+        style: TextStyle(color: colors.textTitle, fontSize: 15),
+        children: [
+          if (matchIndex > 0)
+            TextSpan(text: label.substring(0, matchIndex)),
+          TextSpan(
+            text: label.substring(matchIndex, matchIndex + query.length),
+            style: TextStyle(
+              color: colors.activate,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          if (matchIndex + query.length < label.length)
+            TextSpan(text: label.substring(matchIndex + query.length)),
+        ],
+      ),
     );
   }
 
@@ -193,6 +323,12 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
       ),
     );
   }
+}
+
+class _SuggestionItem {
+  final String label;
+  final String type; // 'artist' or 'festival'
+  _SuggestionItem(this.label, this.type);
 }
 
 // ── 아티스트 타일 ──
@@ -336,7 +472,7 @@ class _PostTile extends StatelessWidget {
         ],
       ),
       onTap: () => Navigator.push(context, SlideRoute(
-        builder: (_) => EnralgePost(
+        builder: (_) => EnlargePost(
           boardname: boardName,
           id: id,
           nickname: nickname,

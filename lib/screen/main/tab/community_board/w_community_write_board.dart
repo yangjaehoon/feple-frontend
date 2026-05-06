@@ -1,6 +1,7 @@
 import 'package:feple/common/constant/board_types.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/common/app_events.dart';
 import 'package:feple/injection.dart';
@@ -79,6 +80,7 @@ class _WritePostState extends State<WritePost> {
     final colors = context.appColors;
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: AppDimens.appBarHeight,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_rounded),
           onPressed: () => Navigator.pop(context),

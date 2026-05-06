@@ -133,6 +133,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     return Scaffold(
       backgroundColor: colors.backgroundMain,
       appBar: AppBar(
+        toolbarHeight: AppDimens.appBarHeight,
         backgroundColor: colors.backgroundMain,
         elevation: 0,
         foregroundColor: colors.textTitle,

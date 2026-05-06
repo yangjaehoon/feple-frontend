@@ -47,6 +47,7 @@ class _ChangeNicknameState extends State<ChangeNickname> {
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: AppDimens.appBarHeight,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_rounded),
           onPressed: () => Navigator.pop(context),

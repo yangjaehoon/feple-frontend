@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/screen/main/tab/search/artist_page/image_collection/w_image_upload.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,7 @@ class _ImgCollectionState extends State<ImgCollection> {
     final colors = context.appColors;
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: AppDimens.appBarHeight,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_rounded),
           onPressed: () => Navigator.pop(context),

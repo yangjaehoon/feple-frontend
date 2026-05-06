@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:dio/dio.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
@@ -70,11 +71,14 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
       Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
-      final msg = e.toString();
+      debugPrint('cert submit error: $e');
+      final backendMsg = e is DioException
+          ? (e.response?.data is Map ? e.response!.data['message'] as String? : null)
+          : null;
+      final isAlready = backendMsg?.contains('이미') == true ||
+          backendMsg?.contains('already') == true;
       context.showErrorSnackbar(
-        msg.contains('이미') || msg.contains('already')
-            ? 'cert_already_submitted'.tr()
-            : 'cert_submit_failed'.tr(args: [msg]),
+        isAlready ? 'cert_already_submitted'.tr() : 'cert_submit_failed'.tr(),
       );
       if (mounted) setState(() => _submitting = false);
     }

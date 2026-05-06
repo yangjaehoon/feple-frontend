@@ -45,7 +45,8 @@ class FestivalArtistsNotifier extends ChangeNotifier {
     } catch (e) {
       isLoading = false;
       notifyListeners();
-      onError?.call(e.toString());
+      debugPrint('festival artists fetch error: $e');
+      onError?.call('err_fetch_data');
     }
   }
 }

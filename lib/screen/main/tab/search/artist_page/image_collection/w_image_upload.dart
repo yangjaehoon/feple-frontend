@@ -72,11 +72,9 @@ class _ImgUploadState extends State<ImgUpload> {
       if (!mounted) return;
       Navigator.pop(context, true);
     } on DioException catch (e) {
-      final status = e.response?.statusCode;
-      final body = e.response?.data?.toString() ?? '';
-      debugPrint('status=$status  data=$body');
+      debugPrint('photo upload error: status=${e.response?.statusCode} data=${e.response?.data}');
       if (!mounted) return;
-      context.showErrorSnackbar('photo_upload_failed_detail'.tr(args: [status.toString(), body]));
+      context.showErrorSnackbar('photo_upload_failed_detail'.tr());
     } catch (e) {
       debugPrint('upload error: $e');
       if (!mounted) return;

@@ -154,7 +154,8 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
         });
       }
     } catch (e) {
-      if (mounted) setState(() { _error = e.toString(); _loading = false; });
+      debugPrint('timetable fetch error: $e');
+      if (mounted) setState(() { _error = 'err_fetch_data'.tr(); _loading = false; });
     }
   }
 

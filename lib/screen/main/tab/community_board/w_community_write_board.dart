@@ -69,7 +69,8 @@ class _WritePostState extends State<WritePost> {
       Navigator.of(context).pop();
     } catch (e) {
       if (!mounted) return;
-      context.showErrorSnackbar('post_failed'.tr(args: [e.toString()]));
+      debugPrint('post submit error: $e');
+      context.showErrorSnackbar('post_failed'.tr());
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }

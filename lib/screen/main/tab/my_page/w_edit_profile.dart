@@ -109,7 +109,8 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
       Navigator.of(context).pop();
     } catch (e) {
       if (!mounted) return;
-      context.showErrorSnackbar('save_failed'.tr(args: [e.toString()]));
+      debugPrint('profile save error: $e');
+      context.showErrorSnackbar('save_failed'.tr());
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }

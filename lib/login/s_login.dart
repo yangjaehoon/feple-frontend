@@ -2,7 +2,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
-import 'package:feple/login/signup.dart';
+import 'package:feple/login/s_signup.dart';
 import 'package:feple/service/auth_service.dart';
 import 'package:feple/service/fcm_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,7 +22,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  bool _isLoading = false;
+  bool _isEmailLoading = false;
+  bool _isKakaoLoading = false;
   String? _loginError;
 
   @override
@@ -102,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
                   width: double.infinity,
                   height: 52,
                   child: ElevatedButton(
-                    onPressed: _isLoading ? null : _loginWithEmail,
+                    onPressed: _isEmailLoading || _isKakaoLoading ? null : _loginWithEmail,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: themeColors.activate,
                       foregroundColor: Colors.white,
@@ -111,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    child: _isLoading
+                    child: _isEmailLoading
                         ? const SizedBox(
                             width: 22,
                             height: 22,
@@ -217,7 +218,7 @@ class _LoginPageState extends State<LoginPage> {
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-        onPressed: _isLoading ? null : () => signInWithKakao(context),
+        onPressed: _isEmailLoading || _isKakaoLoading ? null : () => signInWithKakao(context),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.kakaoYellow,
           foregroundColor: AppColors.kakaoText,
@@ -226,13 +227,13 @@ class _LoginPageState extends State<LoginPage> {
             borderRadius: BorderRadius.circular(AppDimens.shapeButton),
           ),
         ),
-        child: _isLoading
+        child: _isKakaoLoading
             ? const SizedBox(
                 width: 22,
                 height: 22,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation(AppColors.kakaoText),
+                  valueColor: AlwaysStoppedAnimation(Colors.white),
                 ),
               )
             : Row(
@@ -256,7 +257,7 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    setState(() { _isLoading = true; _loginError = null; });
+    setState(() { _isEmailLoading = true; _loginError = null; });
     final userProvider = context.read<UserProvider>();
     try {
       final user = await AuthService.instance.loginWithEmail(email, password);
@@ -277,7 +278,7 @@ class _LoginPageState extends State<LoginPage> {
         setState(() => _loginError = msg.isNotEmpty ? msg : 'login_failed'.tr());
       }
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) setState(() => _isEmailLoading = false);
     }
   }
 
@@ -329,8 +330,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> signInWithKakao(BuildContext context) async {
-    if (_isLoading) return;
-    setState(() { _isLoading = true; _loginError = null; });
+    if (_isEmailLoading || _isKakaoLoading) return;
+    setState(() { _isKakaoLoading = true; _loginError = null; });
     final userProvider = context.read<UserProvider>();
     try {
       final user = await AuthService.instance.loginWithKakao();
@@ -346,7 +347,7 @@ class _LoginPageState extends State<LoginPage> {
       debugPrint('=== 카카오 로그인 실패 에러 ===\n$e\n======================');
       if (mounted) setState(() => _loginError = 'login_failed'.tr());
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) setState(() => _isKakaoLoading = false);
     }
   }
 }

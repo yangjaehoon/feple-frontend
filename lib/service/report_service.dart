@@ -16,4 +16,11 @@ class ReportService {
       if (detail != null && detail.isNotEmpty) 'detail': detail,
     });
   }
+
+  Future<void> submitPhotoReport(int artistId, int photoId, ReportReason reason, {String? detail}) async {
+    await DioClient.dio.post('/artists/$artistId/photos/$photoId/report', data: {
+      'reason': reason.name,
+      if (detail != null && detail.isNotEmpty) 'detail': detail,
+    });
+  }
 }

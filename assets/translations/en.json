@@ -290,6 +290,8 @@
 
   "report_post": "Report Post",
   "report_comment": "Report Comment",
+  "report_photo": "Report Photo",
+  "report_photo_duplicate": "You have already reported this photo.",
   "report_reason_spam": "Spam/Ads",
   "report_reason_abuse": "Hate Speech",
   "report_reason_obscene": "Obscene Content",

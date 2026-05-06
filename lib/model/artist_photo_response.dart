@@ -28,7 +28,7 @@ class ArtistPhotoResponse {
       createdAt: DateTime.parse(json['createdAt']),
       title: json['title'] ?? '',
       description: json['description'] ?? '',
-      likecount: json['likecount'] ?? 0,
+      likecount: json['likeCount'] ?? 0,
       isLiked: json['isLiked'] ?? false,
     );
   }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'transparent_scaffold.dart';
+import 'w_transparent_scaffold.dart';
 
 class CenterDialogScaffold extends StatelessWidget {
   final Widget body;

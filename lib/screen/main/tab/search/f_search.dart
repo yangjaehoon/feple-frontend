@@ -1,6 +1,5 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/provider/festival_preview_provider.dart';
 import 'package:feple/screen/main/tab/search/w_circle_artist.dart';
 import 'package:feple/screen/main/tab/search/w_festival_list_swiper.dart';
@@ -25,7 +24,6 @@ class _SearchFragmentState extends State<SearchFragment> {
 
   @override
   Widget build(BuildContext context) {
-    final rs = ResponsiveSize(context);
     final colors = context.appColors;
     return Container(
       color: colors.backgroundMain,
@@ -37,8 +35,8 @@ class _SearchFragmentState extends State<SearchFragment> {
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.only(
-                top: rs.h(AppDimens.scrollPaddingTop),
-                bottom: rs.h(AppDimens.scrollPaddingBottom),
+                top: AppDimens.appBarHeight,
+                bottom: AppDimens.scrollPaddingBottom,
               ),
               child: Column(
                 children: [

@@ -1,6 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/provider/user_provider.dart';
+import 'package:feple/service/report_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:feple/model/artist_photo_response.dart';
@@ -60,6 +63,119 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
       ),
     );
     if (confirmed == true) _notifier.deletePhoto(photoId);
+  }
+
+  Future<void> _showPhotoReportSheet(int photoId) async {
+    final colors = context.appColors;
+    ReportReason? selected;
+    final detailController = TextEditingController();
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        return StatefulBuilder(builder: (ctx, setS) {
+          return Padding(
+            padding: EdgeInsets.only(
+              left: 20,
+              right: 20,
+              top: 20,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom +
+                  MediaQuery.of(ctx).viewPadding.bottom +
+                  20,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('report_photo'.tr(),
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: colors.textTitle)),
+                const SizedBox(height: 12),
+                ...ReportReason.values.map((r) {
+                  final label = switch (r) {
+                    ReportReason.SPAM => 'report_reason_spam'.tr(),
+                    ReportReason.ABUSE => 'report_reason_abuse'.tr(),
+                    ReportReason.OBSCENE => 'report_reason_obscene'.tr(),
+                    ReportReason.MISINFORMATION =>
+                      'report_reason_misinformation'.tr(),
+                    ReportReason.OTHER => 'report_reason_other'.tr(),
+                  };
+                  return RadioListTile<ReportReason>(
+                    value: r,
+                    groupValue: selected,
+                    title: Text(label,
+                        style: TextStyle(
+                            fontSize: 14, color: colors.textTitle)),
+                    onChanged: (v) => setS(() => selected = v),
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                  );
+                }),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: detailController,
+                  decoration: InputDecoration(
+                    hintText: 'report_detail_hint'.tr(),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 8),
+                  ),
+                  maxLines: 2,
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: Text('report_cancel'.tr()),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: selected == null
+                            ? null
+                            : () async {
+                                Navigator.pop(ctx);
+                                try {
+                                  await sl<ReportService>().submitPhotoReport(
+                                    widget.artistId,
+                                    photoId,
+                                    selected!,
+                                    detail: detailController.text.trim(),
+                                  );
+                                  if (mounted) {
+                                    context.showSuccessSnackbar(
+                                        'report_success'.tr());
+                                  }
+                                } on DioException catch (e) {
+                                  if (!mounted) return;
+                                  final msg =
+                                      e.response?.data?['message'] as String?;
+                                  context.showErrorSnackbar(
+                                      msg ?? 'report_photo_duplicate'.tr());
+                                }
+                              },
+                        child: Text('report_submit'.tr()),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        });
+      },
+    );
+    detailController.dispose();
   }
 
   void _showEditBottomSheet(ArtistPhotoResponse photo) {
@@ -248,20 +364,22 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
-                                  if (isUploader)
-                                    PopupMenuButton<String>(
-                                      padding: EdgeInsets.zero,
-                                      icon: Icon(Icons.more_vert_rounded,
-                                          color: colors.textSecondary,
-                                          size: 20),
-                                      onSelected: (value) {
-                                        if (value == 'edit') {
-                                          _showEditBottomSheet(photo);
-                                        } else if (value == 'delete') {
-                                          _confirmAndDelete(photo.photoId);
-                                        }
-                                      },
-                                      itemBuilder: (_) => [
+                                  PopupMenuButton<String>(
+                                    padding: EdgeInsets.zero,
+                                    icon: Icon(Icons.more_vert_rounded,
+                                        color: colors.textSecondary,
+                                        size: 20),
+                                    onSelected: (value) {
+                                      if (value == 'edit') {
+                                        _showEditBottomSheet(photo);
+                                      } else if (value == 'delete') {
+                                        _confirmAndDelete(photo.photoId);
+                                      } else if (value == 'report') {
+                                        _showPhotoReportSheet(photo.photoId);
+                                      }
+                                    },
+                                    itemBuilder: (_) => [
+                                      if (isUploader) ...[
                                         PopupMenuItem(
                                           value: 'edit',
                                           child: Row(children: [
@@ -283,8 +401,20 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
                                                     color: AppColors.errorRed)),
                                           ]),
                                         ),
-                                      ],
-                                    ),
+                                      ] else
+                                        PopupMenuItem(
+                                          value: 'report',
+                                          child: Row(children: [
+                                            const Icon(Icons.flag_rounded,
+                                                size: 16, color: AppColors.errorRed),
+                                            const SizedBox(width: 8),
+                                            Text('report_photo'.tr(),
+                                                style: const TextStyle(
+                                                    color: AppColors.errorRed)),
+                                          ]),
+                                        ),
+                                    ],
+                                  ),
                                 ],
                               ),
                               if (photo.description.isNotEmpty)

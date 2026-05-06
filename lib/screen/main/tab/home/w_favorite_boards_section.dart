@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/screen/main/tab/home/w_boards_section_skeleton.dart';
 import 'package:feple/model/favorite_board.dart';
 import 'package:feple/screen/main/tab/home/favorite_boards_prefs_manager.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_post_list.dart';
@@ -99,7 +100,7 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
     final colors = context.appColors;
 
     if (!_prefsLoaded) {
-      return const SizedBox(height: 150);
+      return const BoardsSectionSkeleton();
     }
 
     final selectedBoards = _orderedSelectedIds

@@ -1,10 +1,11 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/common/util/responsive_size.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/followed_artist.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/screen/main/tab/home/home_state_notifier.dart';
 import 'package:feple/screen/main/tab/home/w_favorite_boards_section.dart';
+import 'package:feple/screen/main/tab/home/w_boards_section_skeleton.dart';
 import 'package:feple/screen/main/tab/home/w_reorder_sheet.dart';
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
@@ -97,7 +98,6 @@ class _HomeFragmentState extends State<HomeFragment> {
 
   @override
   Widget build(BuildContext context) {
-    final rs = ResponsiveSize(context);
     final colors = context.appColors;
 
     return ListenableBuilder(
@@ -131,8 +131,8 @@ class _HomeFragmentState extends State<HomeFragment> {
                 child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: EdgeInsets.only(
-                  top: rs.h(AppDimens.scrollPaddingTop),
-                  bottom: rs.h(AppDimens.scrollPaddingBottom),
+                  top: AppDimens.scrollPaddingTop,
+                  bottom: AppDimens.scrollPaddingBottom,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,7 +177,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                     ),
                     const SizedBox(height: 8),
                     if (_notifier.boards == null)
-                      const SizedBox(height: 150)
+                      const BoardsSectionSkeleton()
                     else
                       FavoriteBoardsSection(
                         allBoards: _notifier.boards!,
@@ -260,8 +260,25 @@ class _ArtistsSection extends StatelessWidget {
     if (artists == null) {
       return SizedBox(
         height: 110,
-        child: Center(
-            child: CircularProgressIndicator(color: colors.loadingIndicator)),
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          itemCount: 5,
+          itemBuilder: (_, __) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Column(
+              children: [
+                SkeletonBox(
+                  width: 74,
+                  height: 74,
+                  borderRadius: BorderRadius.circular(37),
+                ),
+                const SizedBox(height: 6),
+                const SkeletonBox(width: 56, height: 12),
+              ],
+            ),
+          ),
+        ),
       );
     }
     if (artists!.isEmpty) {
@@ -375,9 +392,20 @@ class _FestivalsSection extends StatelessWidget {
 
     if (festivals == null) {
       return SizedBox(
-        height: 160,
-        child: Center(
-            child: CircularProgressIndicator(color: colors.loadingIndicator)),
+        height: 190,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          itemCount: 4,
+          itemBuilder: (_, __) => Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: SkeletonBox(
+              width: 130,
+              height: 190,
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+        ),
       );
     }
     if (festivals!.isEmpty) {

@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 /// 서브 페이지(뒤로가기 버튼이 있는 화면)용 공통 AppBar.
@@ -11,13 +12,14 @@ class SecondaryAppBar extends StatelessWidget implements PreferredSizeWidget {
   const SecondaryAppBar({super.key, required this.title, this.actions, this.elevation});
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(AppDimens.appBarHeight);
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return AppBar(
       title: Text(title),
+      toolbarHeight: AppDimens.appBarHeight,
       backgroundColor: colors.appBarColor,
       foregroundColor: Colors.white,
       elevation: elevation,

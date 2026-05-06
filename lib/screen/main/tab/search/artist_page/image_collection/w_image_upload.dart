@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/constant/photo_category.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/service/artist_schedule_service.dart';
@@ -96,6 +97,7 @@ class _ImgUploadState extends State<ImgUpload> {
     final colors = context.appColors;
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: AppDimens.appBarHeight,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_rounded),
           onPressed: () => Navigator.pop(context),

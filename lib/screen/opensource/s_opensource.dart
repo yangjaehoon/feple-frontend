@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/local_json.dart';
 import 'package:feple/model/vo_package.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +35,7 @@ class _OpensourceScreenState extends State<OpensourceScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: AppDimens.appBarHeight,
         title: 'opensource'.tr().text.make(),
       ),
       body: ListView.separated(

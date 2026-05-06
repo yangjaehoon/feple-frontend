@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -119,6 +120,7 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
     return Scaffold(
       backgroundColor: colors.backgroundMain,
       appBar: AppBar(
+        toolbarHeight: AppDimens.appBarHeight,
         backgroundColor: colors.backgroundMain,
         elevation: 0,
         foregroundColor: colors.textTitle,

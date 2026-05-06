@@ -73,8 +73,7 @@ class _FestivalPostListScreenState extends State<FestivalPostListScreen> {
               return PostListTile(
                 post: post,
                 onTap: () {
-                  Navigator.push(
-                    context,
+                  Navigator.of(context, rootNavigator: true).push(
                     SlideRoute(
                       builder: (_) => EnlargePost(
                         boardname: _boardname,

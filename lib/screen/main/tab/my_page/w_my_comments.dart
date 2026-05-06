@@ -51,8 +51,7 @@ class MyCommentsScreen extends StatelessWidget {
       itemBuilder: (context, c, reload) {
         final colors = context.appColors;
         return ListTile(
-          onTap: () => Navigator.push(
-            context,
+          onTap: () => Navigator.of(context, rootNavigator: true).push(
             SlideRoute(
               builder: (_) => EnlargePost(
                 boardname: c.boardDisplayName,

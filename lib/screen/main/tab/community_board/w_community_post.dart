@@ -110,8 +110,7 @@ class _CommunityPostState extends State<CommunityPost> {
                   child: PostListTile(
                     post: post,
                     onTap: () {
-                      Navigator.push(
-                        context,
+                      Navigator.of(context, rootNavigator: true).push(
                         SlideRoute(
                           builder: (_) => EnlargePost(
                             boardname: widget.boardname,

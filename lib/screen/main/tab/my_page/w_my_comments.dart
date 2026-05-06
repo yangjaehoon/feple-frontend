@@ -54,7 +54,7 @@ class MyCommentsScreen extends StatelessWidget {
           onTap: () => Navigator.push(
             context,
             SlideRoute(
-              builder: (_) => EnralgePost(
+              builder: (_) => EnlargePost(
                 boardname: c.boardDisplayName,
                 id: c.postId,
                 nickname: c.postNickname,

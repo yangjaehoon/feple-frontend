@@ -94,7 +94,7 @@ class _ArtistPostListScreenState extends State<ArtistPostListScreen> {
                   onTap: () => Navigator.push(
                     context,
                     SlideRoute(
-                      builder: (_) => EnralgePost(
+                      builder: (_) => EnlargePost(
                         boardname: _boardname,
                         id: post.id,
                         nickname: post.nickname,

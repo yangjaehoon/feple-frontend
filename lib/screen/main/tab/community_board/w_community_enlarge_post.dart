@@ -11,7 +11,7 @@ import 'post_detail_notifier.dart';
 import 'w_comment_section.dart' show CommentSection, CommentInputBar;
 import 'w_like_comment_row.dart';
 
-class EnralgePost extends StatefulWidget {
+class EnlargePost extends StatefulWidget {
   final String boardname;
   final int id;
   final String nickname;
@@ -21,7 +21,7 @@ class EnralgePost extends StatefulWidget {
   final bool certified;
   final String? userRole;
 
-  const EnralgePost({
+  const EnlargePost({
     super.key,
     required this.boardname,
     required this.id,
@@ -34,10 +34,10 @@ class EnralgePost extends StatefulWidget {
   });
 
   @override
-  State<EnralgePost> createState() => _EnralgePostState();
+  State<EnlargePost> createState() => _EnlargePostState();
 }
 
-class _EnralgePostState extends State<EnralgePost> {
+class _EnlargePostState extends State<EnlargePost> {
   final _commentController = TextEditingController();
   late final PostDetailNotifier _notifier;
 
@@ -87,7 +87,9 @@ class _EnralgePostState extends State<EnralgePost> {
               left: 20,
               right: 20,
               top: 20,
-              bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom +
+                  MediaQuery.of(ctx).viewPadding.bottom +
+                  20,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,

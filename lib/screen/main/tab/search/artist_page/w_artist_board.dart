@@ -58,7 +58,7 @@ class _ArtistBoardState extends State<ArtistBoard> {
       onPostTap: (context, post) => Navigator.push(
         context,
         SlideRoute(
-          builder: (_) => EnralgePost(
+          builder: (_) => EnlargePost(
             boardname: 'name_board'.tr(args: [widget.artistName]),
             id: post.id,
             nickname: post.nickname,

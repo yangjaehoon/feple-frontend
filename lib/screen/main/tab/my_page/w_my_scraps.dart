@@ -50,7 +50,7 @@ class MyScrapsScreen extends StatelessWidget {
           onTap: () => Navigator.push(
             context,
             SlideRoute(
-              builder: (_) => EnralgePost(
+              builder: (_) => EnlargePost(
                 boardname: post.boardDisplayName,
                 id: post.id,
                 nickname: post.nickname,

@@ -1,7 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/constant/festival_constants.dart';
-import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/screen/main/tab/festival_list/w_festival_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +20,6 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
 
   @override
   Widget build(BuildContext context) {
-    final rs = ResponsiveSize(context);
     final colors = context.appColors;
     // 필터 개수만 구독 — 페스티벌 목록 로딩과 무관하게 재빌드하지 않음
     final activeFilterCount = context.select<FestivalPreviewProvider, int>(
@@ -40,8 +38,8 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
               slivers: [
                 SliverPadding(
                   padding: EdgeInsets.only(
-                    top: rs.h(AppDimens.scrollPaddingTop),
-                    bottom: rs.h(AppDimens.scrollPaddingBottom),
+                    top: AppDimens.scrollPaddingTop,
+                    bottom: AppDimens.scrollPaddingBottom,
                   ),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([

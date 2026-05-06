@@ -1,6 +1,5 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_poster.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_timetable.dart';
@@ -31,7 +30,6 @@ class _FestivalInformationFragmentState
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final rs = ResponsiveSize(context);
     return Container(
       color: colors.backgroundMain,
       child: Stack(
@@ -42,7 +40,7 @@ class _FestivalInformationFragmentState
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.only(
-                bottom: rs.h(AppDimens.scrollPaddingBottom),
+                bottom: AppDimens.scrollPaddingBottom,
               ),
               child: Column(
                 children: [

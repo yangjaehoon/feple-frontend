@@ -1,6 +1,5 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_hot_board.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_free_board.dart';
@@ -14,7 +13,6 @@ class CommunityBoardFragment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final rs = ResponsiveSize(context);
     return Container(
       color: context.appColors.backgroundMain,
       child: Stack(
@@ -22,8 +20,8 @@ class CommunityBoardFragment extends StatelessWidget {
           SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.only(
-                top: rs.h(AppDimens.scrollPaddingTop),
-                bottom: rs.h(AppDimens.scrollPaddingBottomLarge),
+                top: AppDimens.scrollPaddingTop,
+                bottom: AppDimens.scrollPaddingBottomLarge,
               ),
               child: const Column(
                 children: [

@@ -9,8 +9,8 @@ class AppDimens {
 
   // ── Scroll padding (Stack 레이아웃에서 앱바/탭바 가림 방지) ──
   static const double scrollPaddingTop = appBarHeight;
-  static const double scrollPaddingBottom = 50.0;
-  static const double scrollPaddingBottomLarge = 100.0;
+  static const double scrollPaddingBottom = 80.0;
+  static const double scrollPaddingBottomLarge = 120.0;
   static const double fabBottomPadding = 80.0;
 
   // ── Shape (MD3 기준) ──

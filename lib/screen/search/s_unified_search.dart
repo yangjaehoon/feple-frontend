@@ -123,54 +123,69 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
 
     return Scaffold(
       backgroundColor: colors.backgroundMain,
-      appBar: AppBar(
-        backgroundColor: colors.appBarColor,
-        foregroundColor: Colors.white,
-        toolbarHeight: AppDimens.appBarHeight,
-        titleSpacing: 0,
-        title: TextField(
-          controller: _controller,
-          focusNode: _focusNode,
-          style: const TextStyle(color: Colors.white, fontSize: 16),
-          cursorColor: Colors.white70,
-          decoration: InputDecoration(
-            hintText: 'search_hint'.tr(),
-            hintStyle: const TextStyle(color: Colors.white54),
-            border: InputBorder.none,
-            filled: false,
-            suffixIcon: _controller.text.isNotEmpty
-                ? IconButton(
-                    icon: const Icon(Icons.clear, color: Colors.white70),
-                    onPressed: () {
-                      _controller.clear();
-                      setState(() {
-                        _searched = false;
-                        _artists = [];
-                        _festivals = [];
-                        _posts = [];
-                        _suggestions = [];
-                      });
-                    },
-                  )
-                : null,
+      body: Column(
+        children: [
+          SafeArea(
+            bottom: false,
+            child: Container(
+              height: AppDimens.appBarHeight,
+              color: colors.appBarColor,
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  Expanded(
+                    child: TextField(
+                      controller: _controller,
+                      focusNode: _focusNode,
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                      cursorColor: Colors.white70,
+                      decoration: InputDecoration(
+                        hintText: 'search_hint'.tr(),
+                        hintStyle: const TextStyle(color: Colors.white54),
+                        border: InputBorder.none,
+                        filled: false,
+                        suffixIcon: _controller.text.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.clear, color: Colors.white70),
+                                onPressed: () {
+                                  _controller.clear();
+                                  setState(() {
+                                    _searched = false;
+                                    _artists = [];
+                                    _festivals = [];
+                                    _posts = [];
+                                    _suggestions = [];
+                                  });
+                                },
+                              )
+                            : null,
+                      ),
+                      textInputAction: TextInputAction.search,
+                      onSubmitted: _search,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.search_rounded, color: Colors.white),
+                    onPressed: () => _search(_controller.text),
+                  ),
+                ],
+              ),
+            ),
           ),
-          textInputAction: TextInputAction.search,
-          onSubmitted: _search,
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search_rounded, color: Colors.white),
-            onPressed: () => _search(_controller.text),
+          Expanded(
+            child: _loading
+                ? Center(child: CircularProgressIndicator(color: colors.loadingIndicator))
+                : _searched
+                    ? (_hasError ? _buildError(colors) : _buildResults(colors))
+                    : _controller.text.isEmpty
+                        ? _buildEmptyHint(colors)
+                        : _buildSuggestions(colors),
           ),
         ],
       ),
-      body: _loading
-          ? Center(child: CircularProgressIndicator(color: colors.loadingIndicator))
-          : _searched
-              ? (_hasError ? _buildError(colors) : _buildResults(colors))
-              : _controller.text.isEmpty
-                  ? _buildEmptyHint(colors)
-                  : _buildSuggestions(colors),
     );
   }
 

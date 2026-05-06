@@ -46,18 +46,37 @@ class _ChangeNicknameState extends State<ChangeNickname> {
     User? user = userProvider.user;
 
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: AppDimens.appBarHeight,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_rounded),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text('change_nickname'.tr()),
-        backgroundColor: colors.appBarColor,
-        foregroundColor: Colors.white,
-      ),
       backgroundColor: colors.backgroundMain,
-      body: KeyboardDismiss(
+      body: Column(
+        children: [
+          SafeArea(
+            bottom: false,
+            child: Container(
+              height: AppDimens.appBarHeight,
+              color: colors.appBarColor,
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  Expanded(
+                    child: Text(
+                      'change_nickname'.tr(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: KeyboardDismiss(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 28),
           child: Column(
@@ -148,6 +167,9 @@ class _ChangeNicknameState extends State<ChangeNickname> {
           ],
         ),
       ),
+        ),
+          ),
+        ],
       ),
     );
   }

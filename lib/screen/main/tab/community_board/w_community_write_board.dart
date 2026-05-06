@@ -80,38 +80,55 @@ class _WritePostState extends State<WritePost> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: AppDimens.appBarHeight,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_rounded),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text('write_post'.tr()),
-        backgroundColor: colors.appBarColor,
-        foregroundColor: Colors.white,
-        actions: [
-          SizedBox(
-            width: 64,
-            child: TextButton(
-              onPressed: _isSubmitting ? null : () => _submit(),
-              child: _isSubmitting
-                  ? const Center(
-                      child: SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
-                      ),
-                    )
-                  : Text('done'.tr(),
+      backgroundColor: colors.backgroundMain,
+      body: Column(
+        children: [
+          SafeArea(
+            bottom: false,
+            child: Container(
+              height: AppDimens.appBarHeight,
+              color: colors.appBarColor,
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  Expanded(
+                    child: Text(
+                      'write_post'.tr(),
                       style: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.w700)),
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 64,
+                    child: TextButton(
+                      onPressed: _isSubmitting ? null : () => _submit(),
+                      child: _isSubmitting
+                          ? const Center(
+                              child: SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2, color: Colors.white),
+                              ),
+                            )
+                          : Text('done'.tr(),
+                              style: const TextStyle(
+                                  color: Colors.white, fontWeight: FontWeight.w700)),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ],
-      ),
-      backgroundColor: colors.backgroundMain,
-      body: KeyboardDismiss(
+          Expanded(
+            child: KeyboardDismiss(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: SingleChildScrollView(
@@ -178,6 +195,9 @@ class _WritePostState extends State<WritePost> {
           ),
         ),
       ),
+        ),
+          ),
+        ],
       ),
     );
   }

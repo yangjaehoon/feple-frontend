@@ -74,14 +74,15 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return Scaffold(
-      appBar: SecondaryAppBar(
-        title: 'artist_schedule_title'.tr(args: [widget.artistName]),
-      ),
       backgroundColor: colors.backgroundMain,
-      body: RefreshIndicator(
-        color: colors.activate,
-        onRefresh: _refresh,
-        child: FutureBuilder<List<ArtistScheduleModel>>(
+      body: Column(
+        children: [
+          SecondaryAppBar(title: 'artist_schedule_title'.tr(args: [widget.artistName])),
+          Expanded(
+            child: RefreshIndicator(
+              color: colors.activate,
+              onRefresh: _refresh,
+              child: FutureBuilder<List<ArtistScheduleModel>>(
           future: _future,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -132,6 +133,9 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
             );
           },
         ),
+      ),
+          ),
+        ],
       ),
     );
   }

@@ -35,19 +35,39 @@ class _ArtistPageState extends State<ArtistPage> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: AppDimens.appBarHeight,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_rounded),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(widget.artistName),
-        backgroundColor: colors.appBarColor,
-        foregroundColor: Colors.white,
-      ),
       backgroundColor: colors.backgroundMain,
-      body: SafeArea(
-        child: RefreshIndicator(
+      body: Column(
+        children: [
+          SafeArea(
+            bottom: false,
+            child: Container(
+              height: AppDimens.appBarHeight,
+              color: colors.appBarColor,
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  Expanded(
+                    child: Text(
+                      widget.artistName,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: SafeArea(
+              top: false,
+              child: RefreshIndicator(
           color: colors.activate,
           onRefresh: _onRefresh,
           child: SingleChildScrollView(
@@ -75,6 +95,9 @@ class _ArtistPageState extends State<ArtistPage> {
             ),
           ),
         ),
+      ),
+          ),
+        ],
       ),
     );
   }

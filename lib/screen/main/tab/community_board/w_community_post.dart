@@ -80,7 +80,6 @@ class _CommunityPostState extends State<CommunityPost> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return Scaffold(
-      appBar: SecondaryAppBar(title: widget.boardname),
       backgroundColor: colors.backgroundMain,
       floatingActionButton: WritePostFab(
         onPressed: () => Navigator.push(
@@ -91,10 +90,14 @@ class _CommunityPostState extends State<CommunityPost> {
         ).then((_) => _refresh()),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: RefreshIndicator(
-        color: colors.activate,
-        onRefresh: _refresh,
-        child: AsyncContentBuilder<List<Post>>(
+      body: Column(
+        children: [
+          SecondaryAppBar(title: widget.boardname),
+          Expanded(
+            child: RefreshIndicator(
+              color: colors.activate,
+              onRefresh: _refresh,
+              child: AsyncContentBuilder<List<Post>>(
           future: _postsFuture,
           onRetry: _refresh,
           loadingBuilder: (_) => _buildSkeletonList(),
@@ -135,6 +138,9 @@ class _CommunityPostState extends State<CommunityPost> {
             );
           },
         ),
+      ),
+          ),
+        ],
       ),
     );
   }

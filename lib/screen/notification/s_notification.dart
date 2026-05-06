@@ -132,14 +132,36 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
     return Scaffold(
       backgroundColor: colors.backgroundMain,
-      appBar: AppBar(
-        toolbarHeight: AppDimens.appBarHeight,
-        backgroundColor: colors.backgroundMain,
-        elevation: 0,
-        foregroundColor: colors.textTitle,
-        title: Text('notifications'.tr()),
-      ),
-      body: RefreshIndicator(
+      body: Column(
+        children: [
+          SafeArea(
+            bottom: false,
+            child: Container(
+              height: AppDimens.appBarHeight,
+              color: colors.backgroundMain,
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back_ios_rounded, color: colors.textTitle),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  Expanded(
+                    child: Text(
+                      'notifications'.tr(),
+                      style: TextStyle(
+                        color: colors.textTitle,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: RefreshIndicator(
         onRefresh: _load,
         color: colors.activate,
         child: _loading
@@ -213,6 +235,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           ),
                         ),
                       ),
+      ),
+          ),
+        ],
       ),
     );
   }

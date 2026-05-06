@@ -94,30 +94,47 @@ class _ImgUploadState extends State<ImgUpload> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: AppDimens.appBarHeight,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_rounded),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text('photo_upload_title'.tr()),
-        backgroundColor: colors.appBarColor,
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            onPressed: isUploading ? null : _submit,
-            icon: isUploading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2, color: Colors.white))
-                : const Icon(Icons.send_rounded),
-          ),
-        ],
-      ),
       backgroundColor: colors.backgroundMain,
-      body: SingleChildScrollView(
+      body: Column(
+        children: [
+          SafeArea(
+            bottom: false,
+            child: Container(
+              height: AppDimens.appBarHeight,
+              color: colors.appBarColor,
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  Expanded(
+                    child: Text(
+                      'photo_upload_title'.tr(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: isUploading ? null : _submit,
+                    icon: isUploading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Colors.white))
+                        : const Icon(Icons.send_rounded, color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(18.0),
           child: Column(
@@ -225,6 +242,9 @@ class _ImgUploadState extends State<ImgUpload> {
             ],
           ),
         ),
+          ),
+          ),
+        ],
       ),
     );
   }

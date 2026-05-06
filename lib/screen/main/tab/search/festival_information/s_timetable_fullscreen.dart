@@ -206,49 +206,57 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
 
     return Scaffold(
       backgroundColor: colors.backgroundMain,
-      appBar: AppBar(
-        toolbarHeight: AppDimens.appBarHeight,
-        backgroundColor: colors.surface,
-        elevation: 0,
-        surfaceTintColor: Colors.transparent,
-        leading: IconButton(
-          icon: Icon(Icons.close_rounded, color: colors.textTitle),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Row(
-          children: [
-            Icon(Icons.schedule_rounded, size: 15, color: colors.activate),
-            const SizedBox(width: 8),
-            Text(
-              'timetable'.tr(),
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: colors.textTitle),
-            ),
-          ],
-        ),
-        actions: [
-          if (_stages.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: TextButton.icon(
-                onPressed: _openAdd,
-                icon:
-                    Icon(Icons.add_rounded, size: 16, color: colors.activate),
-                label: Text(
-                  '추가',
-                  style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: colors.activate),
-                ),
+      body: Column(
+        children: [
+          SafeArea(
+            bottom: false,
+            child: Container(
+              height: AppDimens.appBarHeight,
+              color: colors.surface,
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.close_rounded, color: colors.textTitle),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Icon(Icons.schedule_rounded, size: 15, color: colors.activate),
+                        const SizedBox(width: 8),
+                        Text(
+                          'timetable'.tr(),
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: colors.textTitle),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (_stages.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: TextButton.icon(
+                        onPressed: _openAdd,
+                        icon: Icon(Icons.add_rounded, size: 16, color: colors.activate),
+                        label: Text(
+                          '추가',
+                          style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: colors.activate),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
-        ],
-      ),
-      body: SafeArea(
-        child: Column(
+          ),
+          Expanded(
+            child: SafeArea(
+              top: false,
+              child: Column(
           children: [
             // 날짜 탭 (2일 이상일 때만)
             if (widget.dates.length > 1)
@@ -302,6 +310,9 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
               ),
           ],
         ),
+      ),
+          ),
+        ],
       ),
     );
   }

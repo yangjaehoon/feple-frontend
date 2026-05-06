@@ -51,7 +51,6 @@ class _ArtistPostListScreenState extends State<ArtistPostListScreen> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return Scaffold(
-      appBar: SecondaryAppBar(title: _boardname),
       backgroundColor: colors.backgroundMain,
       floatingActionButton: WritePostFab(
         onPressed: () => Navigator.push(
@@ -65,10 +64,14 @@ class _ArtistPostListScreenState extends State<ArtistPostListScreen> {
         ).then((_) => _refresh()),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: RefreshIndicator(
-        color: colors.activate,
-        onRefresh: _refresh,
-        child: AsyncContentBuilder<List<Post>>(
+      body: Column(
+        children: [
+          SecondaryAppBar(title: _boardname),
+          Expanded(
+            child: RefreshIndicator(
+              color: colors.activate,
+              onRefresh: _refresh,
+              child: AsyncContentBuilder<List<Post>>(
           future: _postsFuture,
           onRetry: _refresh,
           emptyBuilder: (_) => ListView(
@@ -110,8 +113,11 @@ class _ArtistPostListScreenState extends State<ArtistPostListScreen> {
               thickness: 1,
               color: colors.listDivider,
             ),
+              ),
+            ),
           ),
-        ),
+          ),
+        ],
       ),
     );
   }

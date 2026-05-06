@@ -125,28 +125,31 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
     );
 
     return Scaffold(
-      appBar: SecondaryAppBar(
-        title: 'edit_profile'.tr(),
-        actions: [
-          TextButton(
-            onPressed: _isSaving ? null : _save,
-            child: _isSaving
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2, color: Colors.white),
-                  )
-                : Text(
-                    'save'.tr(),
-                    style: const TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w700),
-                  ),
-          ),
-        ],
-      ),
       backgroundColor: colors.backgroundMain,
-      body: SingleChildScrollView(
+      body: Column(
+        children: [
+          SecondaryAppBar(
+            title: 'edit_profile'.tr(),
+            actions: [
+              TextButton(
+                onPressed: _isSaving ? null : _save,
+                child: _isSaving
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white),
+                      )
+                    : Text(
+                        'save'.tr(),
+                        style: const TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.w700),
+                      ),
+              ),
+            ],
+          ),
+          Expanded(
+            child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 32),
         child: Column(
           children: [
@@ -275,6 +278,9 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
             ),
           ],
         ),
+      ),
+          ),
+        ],
       ),
     );
   }

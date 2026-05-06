@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/screen/main/s_main.dart';
 import 'package:feple/screen/notification/s_notification.dart';
 import 'package:feple/screen/search/s_unified_search.dart';
 import 'package:feple/injection.dart';
@@ -41,7 +42,6 @@ class _FepleAppBarState extends State<FepleAppBar> {
       context,
       SlideRoute(builder: (_) => const NotificationScreen()),
     );
-    // 돌아왔을 때 뱃지 갱신
     _loadUnreadCount();
   }
 
@@ -65,9 +65,23 @@ class _FepleAppBarState extends State<FepleAppBar> {
                   icon: const Icon(Icons.menu_rounded, color: Colors.white),
                   onPressed: () => Scaffold.of(context).openDrawer(),
                 ),
-          Text(
-            widget.appbarTitle,
-            style: titleStyle?.copyWith(color: Colors.white),
+          GestureDetector(
+            onTap: () => context.findAncestorStateOfType<MainScreenState>()?.goHome(),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(
+                  'assets/image/feple_clear_960.png',
+                  height: 50,
+                  width: 50,
+                ),
+                const SizedBox(width: 2),
+                Text(
+                  widget.appbarTitle,
+                  style: titleStyle?.copyWith(color: Colors.white),
+                ),
+              ],
+            ),
           ),
           const Spacer(),
           IconButton(

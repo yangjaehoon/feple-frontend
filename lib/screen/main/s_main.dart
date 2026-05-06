@@ -61,6 +61,7 @@ class MainScreenState extends State<MainScreen>
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
+    if (notification.metrics.axis != Axis.vertical) return false;
     if (notification is ScrollUpdateNotification) {
       final delta = notification.scrollDelta ?? 0;
       if (delta > 3 && _showBottomNav.value) {
@@ -187,6 +188,12 @@ class MainScreenState extends State<MainScreen>
 
   List<NavigationDestination> navigationDestinations() {
     return tabs.map((tab) => tab.toNavigationDestination()).toList();
+  }
+
+  void goHome() {
+    final homeIndex = tabs.indexOf(TabItem.home);
+    popAllHistory(navigatorKeys[homeIndex]);
+    _changeTab(homeIndex);
   }
 
   void _changeTab(int index) {

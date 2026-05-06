@@ -9,4 +9,11 @@ class ReportService {
       if (detail != null && detail.isNotEmpty) 'detail': detail,
     });
   }
+
+  Future<void> submitCommentReport(int commentId, ReportReason reason, {String? detail}) async {
+    await DioClient.dio.post('/comments/$commentId/report', data: {
+      'reason': reason.name,
+      if (detail != null && detail.isNotEmpty) 'detail': detail,
+    });
+  }
 }

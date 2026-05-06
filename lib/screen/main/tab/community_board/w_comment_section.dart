@@ -5,10 +5,14 @@ import 'package:flutter/services.dart';
 /// 댓글 목록 위젯
 class CommentSection extends StatelessWidget {
   final List<Map<String, dynamic>> comments;
+  final int? currentUserId;
+  final void Function(int commentId)? onReport;
 
   const CommentSection({
     super.key,
     required this.comments,
+    this.currentUserId,
+    this.onReport,
   });
 
   @override
@@ -24,7 +28,14 @@ class CommentSection extends StatelessWidget {
         height: 1,
       ),
       itemBuilder: (context, index) {
-        return _CommentTile(comment: comments[index]);
+        final comment = comments[index];
+        return _CommentTile(
+          comment: comment,
+          isOwn: currentUserId != null && comment['userId'] == currentUserId,
+          onReport: onReport != null
+              ? () => onReport!(comment['id'] as int)
+              : null,
+        );
       },
     );
   }
@@ -130,8 +141,14 @@ class CommentInputBar extends StatelessWidget {
 /// 개별 댓글 타일
 class _CommentTile extends StatelessWidget {
   final Map<String, dynamic> comment;
+  final bool isOwn;
+  final VoidCallback? onReport;
 
-  const _CommentTile({required this.comment});
+  const _CommentTile({
+    required this.comment,
+    required this.isOwn,
+    this.onReport,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -190,6 +207,27 @@ class _CommentTile extends StatelessWidget {
               ],
             ),
           ),
+          if (!isOwn && onReport != null)
+            PopupMenuButton<String>(
+              padding: EdgeInsets.zero,
+              icon: Icon(Icons.more_vert, size: 16, color: colors.textSecondary),
+              onSelected: (value) {
+                if (value == 'report') onReport!();
+              },
+              itemBuilder: (_) => [
+                PopupMenuItem(
+                  value: 'report',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.flag_outlined, size: 16, color: Colors.red),
+                      const SizedBox(width: 8),
+                      Text('report_comment'.tr(),
+                          style: const TextStyle(color: Colors.red, fontSize: 13)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
         ],
       ),
     );

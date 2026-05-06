@@ -7,6 +7,8 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/artist_schedule_model.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
+import 'package:feple/screen/main/tab/search/artist_page/s_artist_schedule_list.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
 class ArtistSchedule extends StatefulWidget {
@@ -66,7 +68,15 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
             icon: Icons.calendar_month_rounded,
             title: 'artist_schedule_title'.tr(args: [widget.artistName]),
             headerColor: colors.activate,
-            onTap: () {},
+            onTap: () => Navigator.push(
+              context,
+              SlideRoute(
+                builder: (_) => ArtistScheduleListScreen(
+                  artistId: widget.artistId,
+                  artistName: widget.artistName,
+                ),
+              ),
+            ),
           ),
           _buildScheduleList(colors),
         ],
@@ -133,8 +143,15 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
           );
         }
 
-        final items = snapshot.data ?? [];
-        if (items.isEmpty) {
+        final today = DateTime.now();
+        final upcoming = (snapshot.data ?? []).where((item) {
+          final dateStr = item.endDate ?? item.startDate;
+          if (dateStr == null) return true;
+          final date = DateTime.tryParse(dateStr);
+          return date == null || !date.isBefore(DateTime(today.year, today.month, today.day));
+        }).toList();
+
+        if (upcoming.isEmpty) {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: EmptyState(
@@ -147,8 +164,8 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
         return ListView.separated(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          itemCount: items.length,
-          itemBuilder: (_, index) => _buildScheduleItem(items[index], colors),
+          itemCount: upcoming.length,
+          itemBuilder: (_, index) => _buildScheduleItem(upcoming[index], colors),
           separatorBuilder: (_, __) => Divider(
             thickness: 1,
             color: colors.listDivider,
@@ -162,6 +179,7 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
 
   Widget _buildScheduleItem(ArtistScheduleModel item, AbstractThemeColors colors) {
     final typeConfig = _eventTypeConfig(item.eventType);
+    final hasPoster = item.posterUrl != null && item.posterUrl!.isNotEmpty;
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AppDimens.paddingHorizontal,
@@ -170,16 +188,17 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Type circle icon
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: typeConfig.color.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
-              border: Border.all(color: typeConfig.color.withValues(alpha: 0.4), width: 1.5),
-            ),
-            child: Icon(typeConfig.icon, color: typeConfig.color, size: 20),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+            child: hasPoster
+                ? CachedNetworkImage(
+                    imageUrl: item.posterUrl!,
+                    width: 42,
+                    height: 42,
+                    fit: BoxFit.cover,
+                    errorWidget: (_, __, ___) => _buildTypeIcon(typeConfig),
+                  )
+                : _buildTypeIcon(typeConfig),
           ),
           const SizedBox(width: 12),
           // Content
@@ -261,6 +280,19 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildTypeIcon(_EventTypeConfig config) {
+    return Container(
+      width: 42,
+      height: 42,
+      decoration: BoxDecoration(
+        color: config.color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+        border: Border.all(color: config.color.withValues(alpha: 0.4), width: 1.5),
+      ),
+      child: Icon(config.icon, color: config.color, size: 20),
     );
   }
 

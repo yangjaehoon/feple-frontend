@@ -64,7 +64,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
         ),
       );
     }
-    final items = previewProvider.items;
+    final items = previewProvider.items.where((f) => !f.isEnded).toList();
 
     return Stack(
       clipBehavior: Clip.none,

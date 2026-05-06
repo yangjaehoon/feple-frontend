@@ -92,7 +92,7 @@ class _FestivalArtistsState extends State<FestivalArtists> {
 
   Widget _buildArtistRow(AbstractThemeColors colors) {
     return SizedBox(
-      height: 78,
+      height: 80,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: _notifier.artists.length,
@@ -142,7 +142,7 @@ class _FestivalArtistsState extends State<FestivalArtists> {
 
   Widget _buildPlaceholderRow(AbstractThemeColors colors) {
     return SizedBox(
-      height: 78,
+      height: 80,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: 3,

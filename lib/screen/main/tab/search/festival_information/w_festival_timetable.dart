@@ -6,6 +6,7 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/provider/user_provider.dart';
+import 'package:feple/screen/main/tab/search/festival_information/s_timetable_fullscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -119,33 +120,30 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
   }
 
   Future<void> _fetch() async {
+    final user = context.read<UserProvider>().user;
     try {
-      final timetableFuture =
-          DioClient.dio.get('/festivals/${widget.festivalId}/timetable');
-
-      // 로그인한 경우 팔로우 아티스트 병렬 조회
-      final user = context.read<UserProvider>().user;
-      final followFuture = user != null
-          ? DioClient.dio.get('/users/${user.id}/following')
-          : null;
-
-      final timetableRes = await timetableFuture;
+      final timetableRes =
+          await DioClient.dio.get('/festivals/${widget.festivalId}/timetable');
       final rawTimetable = timetableRes.data;
       final list = (rawTimetable is List ? rawTimetable : <dynamic>[])
           .whereType<Map<String, dynamic>>()
           .map((e) => TimetableEntry.fromJson(e))
           .toList();
 
+      // 팔로우 조회 실패해도 타임테이블은 표시
       Set<String> followed = {};
-      if (followFuture != null) {
-        final followRes = await followFuture;
-        final rawFollow = followRes.data;
-        followed = (rawFollow is List ? rawFollow : <dynamic>[])
-            .whereType<Map<String, dynamic>>()
-            .map((a) => a['name'] as String? ?? '')
-            .where((name) => name.isNotEmpty)
-            .toSet();
-      }
+      try {
+        if (user != null) {
+          final followRes =
+              await DioClient.dio.get('/users/${user.id}/following');
+          final rawFollow = followRes.data;
+          followed = (rawFollow is List ? rawFollow : <dynamic>[])
+              .whereType<Map<String, dynamic>>()
+              .map((a) => a['name'] as String? ?? '')
+              .where((name) => name.isNotEmpty)
+              .toSet();
+        }
+      } catch (_) {}
 
       if (mounted) {
         setState(() {
@@ -209,7 +207,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
           children: [
             // 제목
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+              padding: const EdgeInsets.fromLTRB(16, 14, 12, 10),
               child: Row(
                 children: [
                   Icon(Icons.schedule_rounded, size: 15, color: colors.activate),
@@ -219,6 +217,34 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: colors.textTitle)),
+                  const Spacer(),
+                  // 확대 버튼
+                  if (!_loading && _error == null && _cachedFiltered.isNotEmpty)
+                    GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => TimetableFullscreenPage(
+                            entries: _entries,
+                            followedNames: _followedNames,
+                            dates: _dates,
+                            initialDate: _selectedDate,
+                          ),
+                        ),
+                      ),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: colors.activate.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.open_in_full_rounded,
+                          size: 16,
+                          color: colors.activate,
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),

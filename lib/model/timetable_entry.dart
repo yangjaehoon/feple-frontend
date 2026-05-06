@@ -19,11 +19,11 @@ class TimetableEntry {
   });
 
   factory TimetableEntry.fromJson(Map<String, dynamic> j) => TimetableEntry(
-        id: (j['id'] as num).toInt(),
-        stageName: j['stageName'] as String,
+        id: (j['id'] as num?)?.toInt() ?? 0,
+        stageName: j['stageName'] as String? ?? '',
         stageOrder: (j['stageOrder'] as num?)?.toInt() ?? 999,
-        artistName: j['artistName'] as String,
-        festivalDate: j['festivalDate'] as String,
+        artistName: j['artistName'] as String? ?? '',
+        festivalDate: j['festivalDate'] as String? ?? '',
         startTime: _toHHmm(j['startTime']),
         endTime: _toHHmm(j['endTime']),
       );

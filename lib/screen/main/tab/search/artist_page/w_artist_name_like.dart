@@ -212,8 +212,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
                   icon: Icons.photo_library_rounded,
                   label: 'action_gallery'.tr(),
                   onTap: () {
-                    Navigator.push(
-                      context,
+                    Navigator.of(context, rootNavigator: true).push(
                       SlideRoute(
                         builder: (context) => ImgCollection(
                           artistName: widget.artistName,

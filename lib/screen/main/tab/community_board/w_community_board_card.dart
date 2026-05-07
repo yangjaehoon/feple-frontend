@@ -85,43 +85,6 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
           ),
         ),
       ),
-      trailingBuilder: (post, colors) => [
-        Icon(Icons.favorite_border_rounded,
-            color: AppColors.kawaiiPink, size: AppDimens.iconSizeLg),
-        const SizedBox(width: 4),
-        Text(
-          post.likeCount.toString(),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeMd,
-            color: colors.textTitle,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(width: 10),
-        const Icon(Icons.star_border_rounded,
-            color: AppColors.sunnyYellow, size: AppDimens.iconSizeLg),
-        const SizedBox(width: 4),
-        Text(
-          post.scrapCount.toString(),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeMd,
-            color: colors.textTitle,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(width: 10),
-        Icon(Icons.chat_bubble_outline_rounded,
-            color: colors.activate, size: AppDimens.iconSizeMd),
-        const SizedBox(width: 4),
-        Text(
-          post.commentCount.toString(),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeMd,
-            color: colors.textTitle,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
       onRetry: _refresh,
     );
   }

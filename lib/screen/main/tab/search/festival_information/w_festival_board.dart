@@ -1,5 +1,4 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_preview_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
@@ -67,22 +66,6 @@ class _FestivalBoardState extends State<FestivalBoard> {
           ),
         ),
       ),
-      trailingBuilder: (post, colors) => [
-        Icon(Icons.favorite_border_rounded,
-            color: colors.activate, size: AppDimens.iconSizeLg),
-        const SizedBox(width: 4),
-        Text(
-          post.likeCount.toString(),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeMd,
-            color: colors.textTitle,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(width: 10),
-        Icon(Icons.chat_bubble_outline_rounded,
-            color: colors.activate, size: AppDimens.iconSizeMd),
-      ],
       onRetry: _refresh,
     );
   }

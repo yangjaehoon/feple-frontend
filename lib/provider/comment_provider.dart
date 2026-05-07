@@ -12,8 +12,12 @@ class CommentProvider with ChangeNotifier {
   List<Comment> get comments => _comments;
 
   Future<void> fetchComments(int postId) async {
-    _comments = await _service.fetchComments(postId);
-    notifyListeners();
+    try {
+      _comments = await _service.fetchComments(postId);
+      notifyListeners();
+    } catch (e) {
+      debugPrint('[CommentProvider] fetchComments error: $e');
+    }
   }
 
   Future<void> deleteComment(int commentId) async {

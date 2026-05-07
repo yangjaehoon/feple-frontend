@@ -84,7 +84,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
       backgroundColor: colors.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: Text(
-        widget.isEditing ? '내 일정 수정' : '내 일정 추가',
+        widget.isEditing ? 'timetable_edit_entry'.tr() : 'timetable_add_entry'.tr(),
         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: colors.textTitle),
       ),
       content: SingleChildScrollView(
@@ -96,7 +96,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
               controller: _labelCtrl,
               onChanged: (_) => setState(() {}),
               decoration: InputDecoration(
-                hintText: '일정 이름',
+                hintText: 'timetable_entry_name_hint'.tr(),
                 hintStyle: TextStyle(color: colors.textSecondary),
                 enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: colors.listDivider)),
@@ -106,7 +106,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
               style: TextStyle(color: colors.textTitle),
             ),
             const SizedBox(height: 16),
-            _Label('스테이지', colors),
+            _Label('timetable_stage'.tr(), colors),
             const SizedBox(height: 6),
             DropdownButton<String>(
               value: _stage,
@@ -126,7 +126,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
               children: [
                 Expanded(
                   child: _TimeBtn(
-                    label: '시작',
+                    label: 'timetable_start'.tr(),
                     time: _start,
                     onTap: () => _pickTime(true),
                     colors: colors,
@@ -142,7 +142,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
                 ),
                 Expanded(
                   child: _TimeBtn(
-                    label: '종료',
+                    label: 'timetable_end'.tr(),
                     time: _end,
                     onTap: () => _pickTime(false),
                     colors: colors,
@@ -151,7 +151,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
               ],
             ),
             const SizedBox(height: 16),
-            _Label('색상', colors),
+            _Label('timetable_color'.tr(), colors),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -185,11 +185,11 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
         if (widget.isEditing)
           TextButton(
             onPressed: () => Navigator.pop(context, 'delete'),
-            child: const Text('삭제', style: TextStyle(color: Colors.redAccent)),
+            child: Text('msg_delete'.tr(), style: const TextStyle(color: Colors.redAccent)),
           ),
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text('취소', style: TextStyle(color: colors.textSecondary)),
+          child: Text('cancel'.tr(), style: TextStyle(color: colors.textSecondary)),
         ),
         ElevatedButton(
           onPressed: valid ? () => Navigator.pop(context, _result) : null,
@@ -198,7 +198,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
             foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
-          child: Text(widget.isEditing ? '수정' : '추가'),
+          child: Text(widget.isEditing ? 'photo_edit_action'.tr() : 'timetable_add'.tr()),
         ),
       ],
     );

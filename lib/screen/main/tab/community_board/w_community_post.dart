@@ -45,7 +45,9 @@ class _CommunityPostState extends State<CommunityPost> {
     setState(() {
       _postsFuture = _postService.fetchPosts(_serviceBoardType);
     });
-    await _postsFuture;
+    try {
+      await _postsFuture;
+    } catch (_) {}
   }
 
   Widget _buildSkeletonList() {

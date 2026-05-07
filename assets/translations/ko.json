@@ -302,5 +302,16 @@
   "report_success": "신고가 접수되었습니다.",
   "report_duplicate": "이미 신고한 게시글입니다.",
   "report_comment_duplicate": "이미 신고한 댓글입니다.",
-  "report_cancel": "취소"
+  "report_cancel": "취소",
+  "timetable_add": "추가",
+  "timetable_add_entry": "내 일정 추가",
+  "timetable_edit_entry": "내 일정 수정",
+  "timetable_entry_name_hint": "일정 이름",
+  "timetable_stage": "스테이지",
+  "timetable_start": "시작",
+  "timetable_end": "종료",
+  "timetable_color": "색상",
+  "timetable_hint": "빈 공간을 탭해 내 일정 추가 · 내 일정 카드를 탭해 수정",
+  "no_booth": "등록된 부스가 없습니다.",
+  "photo_add": "사진 추가"
 }

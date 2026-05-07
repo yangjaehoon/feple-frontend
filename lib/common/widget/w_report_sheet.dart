@@ -50,12 +50,12 @@ Future<void> showReportSheet(
               const SizedBox(height: 12),
               ...ReportReason.values.map((r) {
                 final label = switch (r) {
-                  ReportReason.SPAM => 'report_reason_spam'.tr(),
-                  ReportReason.ABUSE => 'report_reason_abuse'.tr(),
-                  ReportReason.OBSCENE => 'report_reason_obscene'.tr(),
-                  ReportReason.MISINFORMATION =>
+                  ReportReason.spam => 'report_reason_spam'.tr(),
+                  ReportReason.abuse => 'report_reason_abuse'.tr(),
+                  ReportReason.obscene => 'report_reason_obscene'.tr(),
+                  ReportReason.misinformation =>
                     'report_reason_misinformation'.tr(),
-                  ReportReason.OTHER => 'report_reason_other'.tr(),
+                  ReportReason.other => 'report_reason_other'.tr(),
                 };
                 return RadioListTile<ReportReason>(
                   value: r,

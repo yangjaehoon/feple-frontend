@@ -128,35 +128,41 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 24),
 
                 // ── 로그인 버튼 ──
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton(
-                    onPressed: _isEmailLoading || _isKakaoLoading ? null : _loginWithEmail,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: themeColors.activate,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                IgnorePointer(
+                  ignoring: _isEmailLoading || _isKakaoLoading,
+                  child: Opacity(
+                    opacity: _isKakaoLoading ? 0.5 : 1.0,
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton(
+                        onPressed: _loginWithEmail,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: themeColors.activate,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: _isEmailLoading
+                            ? const SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                                ),
+                              )
+                            : Text(
+                                'login'.tr(),
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
                       ),
                     ),
-                    child: _isEmailLoading
-                        ? const SizedBox(
-                            width: 22,
-                            height: 22,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation(Colors.white),
-                            ),
-                          )
-                        : Text(
-                            'login'.tr(),
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -228,36 +234,42 @@ class _LoginPageState extends State<LoginPage> {
   // _buildTextField 제거됨 → AppTextField 공통 위젯 사용
 
   Widget _buildKakaoLoginButton(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 50,
-      child: ElevatedButton(
-        onPressed: _isEmailLoading || _isKakaoLoading ? null : () => signInWithKakao(context),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.kakaoYellow,
-          foregroundColor: AppColors.kakaoText,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppDimens.shapeButton),
+    return IgnorePointer(
+      ignoring: _isEmailLoading || _isKakaoLoading,
+      child: Opacity(
+        opacity: _isEmailLoading ? 0.5 : 1.0,
+        child: SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+            onPressed: () => signInWithKakao(context),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.kakaoYellow,
+              foregroundColor: AppColors.kakaoText,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppDimens.shapeButton),
+              ),
+            ),
+            child: _isKakaoLoading
+                ? const SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation(Colors.white),
+                    ),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset('assets/image/login/kakao_login_medium_narrow.png',
+                          height: 24),
+                      const SizedBox(width: 8),
+                    ],
+                  ),
           ),
         ),
-        child: _isKakaoLoading
-            ? const SizedBox(
-                width: 22,
-                height: 22,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation(Colors.white),
-                ),
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset('assets/image/login/kakao_login_medium_narrow.png',
-                      height: 24),
-                  const SizedBox(width: 8),
-                ],
-              ),
       ),
     );
   }

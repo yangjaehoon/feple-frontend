@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import '../../../../../model/festival_model.dart';
 import 'festival_poster_notifier.dart';
 import 'w_certification_bottom_sheet.dart';
+import 'w_festival_action_button.dart';
 
 class FestivalPoster extends StatefulWidget {
   const FestivalPoster({super.key, required this.poster});
@@ -212,7 +213,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
                                 const SizedBox(height: 14),
                                 Row(
                                   children: [
-                                    _ActionButton(
+                                    FestivalActionButton(
                                       onTap: () {
                                         HapticFeedback.lightImpact();
                                         _notifier.toggleLike();
@@ -229,16 +230,16 @@ class _FestivalPosterState extends State<FestivalPoster> {
                                               .withValues(alpha: 0.15),
                                     ),
                                     const SizedBox(width: 8),
-                                    _ActionButton(
+                                    FestivalActionButton(
                                       icon: Icons.calendar_month_outlined,
                                     ),
                                     const SizedBox(width: 8),
-                                    _ActionButton(
+                                    FestivalActionButton(
                                       onTap: _openKakaoMap,
                                       icon: Icons.location_on_rounded,
                                     ),
                                     const SizedBox(width: 8),
-                                    _ActionButton(
+                                    FestivalActionButton(
                                       onTap: _notifier.isCertified
                                           ? () => context.showInfoSnackbar(context.tr('cert_already_approved'))
                                           : _notifier.isPending
@@ -342,31 +343,3 @@ class _FestivalPosterState extends State<FestivalPoster> {
   }
 }
 
-class _ActionButton extends StatelessWidget {
-  final VoidCallback? onTap;
-  final IconData icon;
-  final Color? color;
-  final Color? bgColor;
-
-  const _ActionButton({
-    this.onTap,
-    required this.icon,
-    this.color,
-    this.bgColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(6),
-        decoration: BoxDecoration(
-          color: bgColor ?? Colors.white.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-        ),
-        child: Icon(icon, color: color ?? Colors.white, size: 20),
-      ),
-    );
-  }
-}

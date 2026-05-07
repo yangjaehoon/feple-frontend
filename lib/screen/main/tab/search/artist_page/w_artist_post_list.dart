@@ -42,7 +42,9 @@ class _ArtistPostListScreenState extends State<ArtistPostListScreen> {
     setState(() {
       _postsFuture = _postService.fetchArtistPosts(widget.artistId);
     });
-    await _postsFuture;
+    try {
+      await _postsFuture;
+    } catch (_) {}
   }
 
   String get _boardname => 'name_board'.tr(args: [widget.artistName]);

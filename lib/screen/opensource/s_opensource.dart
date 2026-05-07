@@ -26,6 +26,7 @@ class _OpensourceScreenState extends State<OpensourceScreen> {
 
   void initData() async {
     final list = await LocalJson.getObjectList<Package>("json/licenses.json");
+    if (!mounted) return;
     setState(() {
       packageList = list;
     });

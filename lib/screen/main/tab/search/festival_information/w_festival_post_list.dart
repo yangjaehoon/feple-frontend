@@ -42,7 +42,9 @@ class _FestivalPostListScreenState extends State<FestivalPostListScreen> {
     setState(() {
       _postsFuture = _postService.fetchFestivalPosts(widget.festivalId);
     });
-    await _postsFuture;
+    try {
+      await _postsFuture;
+    } catch (_) {}
   }
 
   String get _boardname => 'name_board'.tr(args: [widget.festivalName]);

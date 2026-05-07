@@ -652,8 +652,23 @@ class _OfficialCard extends StatelessWidget {
     required this.followed,
   });
 
+  int get _durationMinutes {
+    try {
+      final s = entry.startTime.split(':');
+      final e = entry.endTime.split(':');
+      return (int.parse(e[0]) * 60 + int.parse(e[1])) -
+          (int.parse(s[0]) * 60 + int.parse(s[1]));
+    } catch (_) {
+      return 0;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final subColor =
+        followed ? Colors.white70 : color.withValues(alpha: 0.7);
+    final subStyle = TextStyle(color: subColor, fontSize: 9, height: 1.2);
+
     return Container(
       decoration: BoxDecoration(
         color: followed ? color.withValues(alpha: 0.88) : Colors.transparent,
@@ -671,29 +686,23 @@ class _OfficialCard extends StatelessWidget {
             : null,
       ),
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Text(
-            entry.artistName,
-            style: TextStyle(
-                color: followed ? Colors.white : color,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                height: 1.2),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          if (cardH > 26)
-            Text(
-              '${entry.startTime} – ${entry.endTime}',
+          Text('${entry.startTime}–${entry.endTime}', style: subStyle),
+          Expanded(
+            child: Text(
+              entry.artistName,
+              textAlign: TextAlign.center,
               style: TextStyle(
-                  color: followed
-                      ? Colors.white70
-                      : color.withValues(alpha: 0.7),
-                  fontSize: 9,
-                  height: 1.3),
+                  color: followed ? Colors.white : color,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  height: 1.2),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
+          ),
+          Text('$_durationMinutes분', style: subStyle),
         ],
       ),
     );

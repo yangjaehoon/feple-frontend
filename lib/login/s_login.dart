@@ -161,13 +161,18 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 28),
 
                 // ── 비밀번호 찾기 ──
-                GestureDetector(
-                  onTap: _showForgotPasswordDialog,
+                TextButton(
+                  onPressed: _showForgotPasswordDialog,
+                  style: TextButton.styleFrom(
+                    foregroundColor: themeColors.activate,
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
                   child: Text(
                     'forgot_password'.tr(),
-                    style: TextStyle(
-                      color: themeColors.activate,
-                      fontSize: 13,
+                    style: const TextStyle(
+                      fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -185,16 +190,20 @@ class _LoginPageState extends State<LoginPage> {
                         fontSize: 14,
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () => Navigator.push(
+                    TextButton(
+                      onPressed: () => Navigator.push(
                         context,
-                        SlideRoute(
-                            builder: (context) => const SignupPage()),
+                        SlideRoute(builder: (context) => const SignupPage()),
+                      ),
+                      style: TextButton.styleFrom(
+                        foregroundColor: themeColors.activate,
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                       child: Text(
                         'signup'.tr(),
-                        style: TextStyle(
-                          color: themeColors.activate,
+                        style: const TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
                         ),

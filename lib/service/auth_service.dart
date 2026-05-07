@@ -60,7 +60,15 @@ class AuthService {
 
   Future<app.User> loginWithKakao() async {
     OAuthToken token;
-    if (await isKakaoTalkInstalled()) {
+
+    bool talkInstalled = false;
+    try {
+      talkInstalled = await isKakaoTalkInstalled();
+    } catch (_) {
+      // 시뮬레이터 또는 플랫폼 채널 미연결 환경에서 실패 → 웹 로그인으로 폴백
+    }
+
+    if (talkInstalled) {
       try {
         token = await UserApi.instance.loginWithKakaoTalk();
       } on PlatformException catch (e) {
@@ -143,8 +151,8 @@ class AuthService {
       if (data is! Map<String, dynamic>) throw Exception('auth_err_auth_failed'.tr());
       return _saveTokensAndParseUser(data);
     } on DioException catch (e) {
-      throw Exception(
-          'Spring 서버 로그인 실패: [${e.type.name}] ${e.response?.statusCode ?? 'no response'}');
+      debugPrint('[Auth] 카카오 서버 교환 실패: [${e.type.name}] ${e.response?.statusCode}');
+      throw Exception('auth_err_auth_failed'.tr());
     }
   }
 

@@ -174,7 +174,7 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
                         onPressed: _openAdd,
                         icon: Icon(Icons.add_rounded, size: 16, color: colors.activate),
                         label: Text(
-                          '추가',
+                          'timetable_add'.tr(),
                           style: TextStyle(
                               fontSize: 13, fontWeight: FontWeight.w600, color: colors.activate),
                         ),
@@ -226,7 +226,7 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
                           Icon(Icons.touch_app_rounded, size: 12, color: colors.textSecondary),
                           const SizedBox(width: 4),
                           Text(
-                            '빈 공간을 탭해 내 일정 추가 · 내 일정 카드를 탭해 수정',
+                            'timetable_hint'.tr(),
                             style: TextStyle(fontSize: 10, color: colors.textSecondary),
                           ),
                         ],

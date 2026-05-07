@@ -302,5 +302,16 @@
   "report_success": "Report submitted.",
   "report_duplicate": "You have already reported this post.",
   "report_comment_duplicate": "You have already reported this comment.",
-  "report_cancel": "Cancel"
+  "report_cancel": "Cancel",
+  "timetable_add": "Add",
+  "timetable_add_entry": "Add Schedule",
+  "timetable_edit_entry": "Edit Schedule",
+  "timetable_entry_name_hint": "Schedule name",
+  "timetable_stage": "Stage",
+  "timetable_start": "Start",
+  "timetable_end": "End",
+  "timetable_color": "Color",
+  "timetable_hint": "Tap empty space to add · Tap card to edit",
+  "no_booth": "No booths registered.",
+  "photo_add": "Add photo"
 }

@@ -189,7 +189,7 @@ class _FestivalBoothMapState extends State<FestivalBoothMap> {
               Padding(
                 padding: const EdgeInsets.all(32),
                 child: Center(
-                  child: Text('등록된 부스가 없습니다.',
+                  child: Text('no_booth'.tr(),
                       style: TextStyle(color: colors.textSecondary)),
                 ),
               )

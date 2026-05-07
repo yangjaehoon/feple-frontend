@@ -6,13 +6,13 @@ import 'package:flutter/material.dart';
 class ImagePickerBox extends StatelessWidget {
   final Uint8List? imageData;
   final VoidCallback onTap;
-  final String label;
+  final String? label;
 
   const ImagePickerBox({
     super.key,
     required this.imageData,
     required this.onTap,
-    this.label = '사진 추가',
+    this.label,
   });
 
   @override
@@ -50,7 +50,7 @@ class ImagePickerBox extends StatelessWidget {
                         color: AppColors.skyBlue, size: 40),
                     const SizedBox(height: 8),
                     Text(
-                      label,
+                      label ?? 'photo_add'.tr(),
                       style: TextStyle(
                         color: colors.textSecondary,
                         fontSize: 14,

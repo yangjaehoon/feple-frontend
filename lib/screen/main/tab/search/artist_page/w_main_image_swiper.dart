@@ -194,9 +194,11 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
             fit: BoxFit.cover,
           ),
         ),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-          child: Container(color: Colors.black.withValues(alpha: 0.5)),
+        child: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Container(color: Colors.black.withValues(alpha: 0.5)),
+          ),
         ),
       ),
     );

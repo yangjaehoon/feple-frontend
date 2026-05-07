@@ -8,11 +8,7 @@ import 'package:flutter/material.dart';
 
 /// 아티스트·페스티벌·커뮤니티 게시판 카드에서 공유하는 미리보기 카드 위젯.
 ///
-/// [future] 로 게시글을 로드하고, [headerIcon]/[headerTitle]/[headerColor]/[onHeaderTap]
-/// 으로 헤더를 구성합니다. [trailingBuilder] 로 목록 아이템의 trailing을 커스터마이징하고,
-/// [onPostTap] 으로 게시글 클릭 동작을 지정합니다.
-///
-/// [expandContent] 가 true 이면 컨텐츠가 Expanded로 감싸집니다 (고정 높이 카드용).
+/// [trailingBuilder] 를 생략하면 하트 수 + 댓글 수 기본 trailing이 사용됩니다.
 class BoardPreviewCard extends StatelessWidget {
   final Future<List<Post>> future;
   final IconData headerIcon;
@@ -20,7 +16,7 @@ class BoardPreviewCard extends StatelessWidget {
   final Color headerColor;
   final VoidCallback onHeaderTap;
   final void Function(BuildContext context, Post post) onPostTap;
-  final List<Widget> Function(Post post, AbstractThemeColors colors)
+  final List<Widget> Function(Post post, AbstractThemeColors colors)?
       trailingBuilder;
   final VoidCallback? onRetry;
   final double? height;
@@ -33,7 +29,7 @@ class BoardPreviewCard extends StatelessWidget {
     required this.headerColor,
     required this.onHeaderTap,
     required this.onPostTap,
-    required this.trailingBuilder,
+    this.trailingBuilder,
     this.onRetry,
     this.height,
   });
@@ -75,6 +71,32 @@ class BoardPreviewCard extends StatelessWidget {
       ),
     );
   }
+
+  List<Widget> _defaultTrailing(Post post, AbstractThemeColors colors) => [
+        const Icon(Icons.favorite_border_rounded,
+            color: AppColors.kawaiiPink, size: AppDimens.iconSizeLg),
+        const SizedBox(width: 4),
+        Text(
+          post.likeCount.toString(),
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeMd,
+            color: colors.textTitle,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Icon(Icons.chat_bubble_outline_rounded,
+            color: colors.activate, size: AppDimens.iconSizeMd),
+        const SizedBox(width: 4),
+        Text(
+          post.commentCount.toString(),
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeMd,
+            color: colors.textTitle,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ];
 
   Widget _buildSkeletonList() {
     return Column(
@@ -162,7 +184,7 @@ class BoardPreviewCard extends StatelessWidget {
             ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
-              children: trailingBuilder(post, colors),
+              children: (trailingBuilder ?? _defaultTrailing)(post, colors),
             ),
           );
         },

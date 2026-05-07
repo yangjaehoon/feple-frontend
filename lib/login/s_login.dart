@@ -24,7 +24,8 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
   bool _isEmailLoading = false;
   bool _isKakaoLoading = false;
-  String? _loginError;
+  String? _emailError;
+  String? _passwordError;
 
   @override
   void dispose() {
@@ -84,7 +85,8 @@ class _LoginPageState extends State<LoginPage> {
                   controller: emailController,
                   hintText: 'email'.tr(),
                   icon: Icons.mail_outline_rounded,
-                  onChanged: (_) { if (_loginError != null) setState(() => _loginError = null); },
+                  errorText: _emailError,
+                  onChanged: (_) { if (_emailError != null) setState(() => _emailError = null); },
                 ),
                 const SizedBox(height: 14),
 
@@ -94,7 +96,8 @@ class _LoginPageState extends State<LoginPage> {
                   hintText: 'password'.tr(),
                   icon: Icons.lock_outline_rounded,
                   obscureText: true,
-                  onChanged: (_) { if (_loginError != null) setState(() => _loginError = null); },
+                  errorText: _passwordError,
+                  onChanged: (_) { if (_passwordError != null) setState(() => _passwordError = null); },
                 ),
                 const SizedBox(height: 24),
 
@@ -130,31 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                   ),
                 ),
-                const SizedBox(height: 12),
-
-                // ── 로그인 에러 메시지 ──
-                if (_loginError != null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Row(
-                      children: [
-                        Icon(Icons.error_outline_rounded,
-                            color: themeColors.activate, size: 15),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            _loginError!,
-                            style: TextStyle(
-                              color: themeColors.activate,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 20),
 
                 // ── 카카오 로그인 ──
                 _buildKakaoLoginButton(context),
@@ -261,12 +240,14 @@ class _LoginPageState extends State<LoginPage> {
     final email = emailController.text.trim();
     final password = passwordController.text;
 
-    if (email.isEmpty || password.isEmpty) {
-      setState(() => _loginError = 'enter_email_password'.tr());
+    final emailErr = email.isEmpty ? 'enter_email'.tr() : null;
+    final passwordErr = password.isEmpty ? 'enter_password'.tr() : null;
+    if (emailErr != null || passwordErr != null) {
+      setState(() { _emailError = emailErr; _passwordError = passwordErr; });
       return;
     }
 
-    setState(() { _isEmailLoading = true; _loginError = null; });
+    setState(() { _isEmailLoading = true; _emailError = null; _passwordError = null; });
     final userProvider = context.read<UserProvider>();
     try {
       final user = await AuthService.instance.loginWithEmail(email, password);
@@ -274,18 +255,17 @@ class _LoginPageState extends State<LoginPage> {
       await userProvider.setUser(user);
       FcmService.instance.init().catchError((e) => debugPrint('[FCM] init failed: $e'));
     } on EmailNotVerifiedException {
-      if (mounted) {
-        setState(() => _loginError = 'email_not_verified'.tr());
-      }
+      if (mounted) setState(() => _emailError = 'email_not_verified'.tr());
     } on FirebaseAuthException catch (e) {
-      if (mounted) {
-        setState(() => _loginError = AuthService.instance.firebaseErrorMessage(e.code));
+      if (!mounted) return;
+      final msg = AuthService.instance.firebaseErrorMessage(e.code);
+      if (e.code == 'invalid-email') {
+        setState(() => _emailError = msg);
+      } else {
+        setState(() => _passwordError = msg);
       }
-    } catch (e) {
-      if (mounted) {
-        final msg = e.toString().replaceFirst('Exception: ', '');
-        setState(() => _loginError = msg.isNotEmpty ? msg : 'login_failed'.tr());
-      }
+    } catch (_) {
+      if (mounted) setState(() => _passwordError = 'login_failed'.tr());
     } finally {
       if (mounted) setState(() => _isEmailLoading = false);
     }
@@ -340,7 +320,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> signInWithKakao(BuildContext context) async {
     if (_isEmailLoading || _isKakaoLoading) return;
-    setState(() { _isKakaoLoading = true; _loginError = null; });
+    setState(() { _isKakaoLoading = true; _emailError = null; _passwordError = null; });
     final userProvider = context.read<UserProvider>();
     try {
       final user = await AuthService.instance.loginWithKakao();
@@ -350,11 +330,11 @@ class _LoginPageState extends State<LoginPage> {
     } on PlatformException catch (e) {
       debugPrint('=== 카카오 로그인 실패 에러 ===\n$e\n======================');
       if (e.code != 'CANCELED' && mounted) {
-        setState(() => _loginError = e.message ?? 'login_failed'.tr());
+        setState(() => _passwordError = e.message ?? 'login_failed'.tr());
       }
-    } catch (e) {
-      debugPrint('=== 카카오 로그인 실패 에러 ===\n$e\n======================');
-      if (mounted) setState(() => _loginError = 'login_failed'.tr());
+    } catch (_) {
+      debugPrint('=== 카카오 로그인 실패 ===');
+      if (mounted) setState(() => _passwordError = 'login_failed'.tr());
     } finally {
       if (mounted) setState(() => _isKakaoLoading = false);
     }

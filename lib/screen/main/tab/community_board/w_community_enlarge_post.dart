@@ -9,7 +9,8 @@ import 'package:provider/provider.dart';
 
 import '../../../../provider/user_provider.dart';
 import 'post_detail_notifier.dart';
-import 'w_comment_section.dart' show CommentSection, CommentInputBar;
+import 'w_comment_input_bar.dart';
+import 'w_comment_section.dart';
 import 'w_like_comment_row.dart';
 
 class EnlargePost extends StatefulWidget {

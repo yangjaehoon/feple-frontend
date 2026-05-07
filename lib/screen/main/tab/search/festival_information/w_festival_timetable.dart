@@ -12,14 +12,14 @@ import 'package:provider/provider.dart';
 
 // ── 상수 ──────────────────────────────────────────────────────────────────────
 const List<Color> _stageColors = [
-  Color(0xFF6C5CE7),
-  Color(0xFF00B894),
-  Color(0xFFE17055),
-  Color(0xFF74B9FF),
-  Color(0xFFFD79A8),
-  Color(0xFFA29BFE),
-  Color(0xFF55EFC4),
-  Color(0xFFFFCE54),
+  AppColors.skyBlue,       // 1번 스테이지: 앱 기본색
+  AppColors.sunnyYellow,
+  AppColors.kawaiiPink,
+  AppColors.kawaiiPurple,
+  AppColors.kawaiiMint,
+  AppColors.accentPink,
+  AppColors.accentPurple,
+  AppColors.skyBlueLight,
 ];
 
 // ── 위젯 ──────────────────────────────────────────────────────────────────────

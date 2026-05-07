@@ -3,16 +3,16 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:flutter/material.dart';
 
-// ── 스테이지 팔레트 (w_festival_timetable 과 동일) ────────────────────────────
+// ── 스테이지 팔레트 ────────────────────────────────────────────────────────────
 const List<Color> _stageColors = [
-  Color(0xFF6C5CE7),
-  Color(0xFF00B894),
-  Color(0xFFE17055),
-  Color(0xFF74B9FF),
-  Color(0xFFFD79A8),
-  Color(0xFFA29BFE),
-  Color(0xFF55EFC4),
-  Color(0xFFFFCE54),
+  AppColors.skyBlue,       // 1번 스테이지: 앱 기본색
+  AppColors.sunnyYellow,
+  AppColors.kawaiiPink,
+  AppColors.kawaiiPurple,
+  AppColors.kawaiiMint,
+  AppColors.accentPink,
+  AppColors.accentPurple,
+  AppColors.skyBlueLight,
 ];
 
 // ── 사용자 일정 색상 팔레트 ─────────────────────────────────────────────────

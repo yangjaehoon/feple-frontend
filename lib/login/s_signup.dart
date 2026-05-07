@@ -257,9 +257,9 @@ class _SignupPageState extends State<SignupPage> {
                     padding: const EdgeInsets.only(bottom: 12),
                     child: Text(
                       _generalError!,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 13,
-                        color: themeColors.activate,
+                        color: AppColors.errorRed,
                         fontWeight: FontWeight.w500,
                       ),
                       textAlign: TextAlign.center,
@@ -311,12 +311,17 @@ class _SignupPageState extends State<SignupPage> {
                         fontSize: 14,
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: TextButton.styleFrom(
+                        foregroundColor: themeColors.activate,
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
                       child: Text(
                         'login'.tr(),
-                        style: TextStyle(
-                          color: themeColors.activate,
+                        style: const TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
                         ),

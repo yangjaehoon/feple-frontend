@@ -25,7 +25,8 @@ class _LoginPageState extends State<LoginPage> {
   bool _isEmailLoading = false;
   bool _isKakaoLoading = false;
   String? _emailError;
-  String? _passwordError;
+  String? _passwordError;   // 빈 필드 → 빨간 테두리
+  String? _authError;       // 인증 실패 → 텍스트만, 테두리 없음
 
   @override
   void dispose() {
@@ -97,8 +98,33 @@ class _LoginPageState extends State<LoginPage> {
                   icon: Icons.lock_outline_rounded,
                   obscureText: true,
                   errorText: _passwordError,
-                  onChanged: (_) { if (_passwordError != null) setState(() => _passwordError = null); },
+                  onChanged: (_) {
+                    if (_passwordError != null || _authError != null) {
+                      setState(() { _passwordError = null; _authError = null; });
+                    }
+                  },
                 ),
+                if (_authError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6, left: 4),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.error_outline_rounded,
+                            color: AppColors.errorRed, size: 14),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            _authError!,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AppColors.errorRed,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 const SizedBox(height: 24),
 
                 // ── 로그인 버튼 ──
@@ -247,7 +273,7 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    setState(() { _isEmailLoading = true; _emailError = null; _passwordError = null; });
+    setState(() { _isEmailLoading = true; _emailError = null; _passwordError = null; _authError = null; });
     final userProvider = context.read<UserProvider>();
     try {
       final user = await AuthService.instance.loginWithEmail(email, password);
@@ -260,12 +286,12 @@ class _LoginPageState extends State<LoginPage> {
       if (!mounted) return;
       final msg = AuthService.instance.firebaseErrorMessage(e.code);
       if (e.code == 'invalid-email') {
-        setState(() => _emailError = msg);
+        setState(() => _emailError = msg);          // 형식 오류 → 이메일 필드 테두리
       } else {
-        setState(() => _passwordError = msg);
+        setState(() => _authError = msg);           // 인증 실패 → 테두리 없이 텍스트만
       }
     } catch (_) {
-      if (mounted) setState(() => _passwordError = 'login_failed'.tr());
+      if (mounted) setState(() => _authError = 'login_failed'.tr());
     } finally {
       if (mounted) setState(() => _isEmailLoading = false);
     }
@@ -320,7 +346,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> signInWithKakao(BuildContext context) async {
     if (_isEmailLoading || _isKakaoLoading) return;
-    setState(() { _isKakaoLoading = true; _emailError = null; _passwordError = null; });
+    setState(() { _isKakaoLoading = true; _emailError = null; _passwordError = null; _authError = null; });
     final userProvider = context.read<UserProvider>();
     try {
       final user = await AuthService.instance.loginWithKakao();
@@ -330,11 +356,11 @@ class _LoginPageState extends State<LoginPage> {
     } on PlatformException catch (e) {
       debugPrint('=== 카카오 로그인 실패 에러 ===\n$e\n======================');
       if (e.code != 'CANCELED' && mounted) {
-        setState(() => _passwordError = e.message ?? 'login_failed'.tr());
+        setState(() => _authError = e.message ?? 'login_failed'.tr());
       }
     } catch (_) {
       debugPrint('=== 카카오 로그인 실패 ===');
-      if (mounted) setState(() => _passwordError = 'login_failed'.tr());
+      if (mounted) setState(() => _authError = 'login_failed'.tr());
     } finally {
       if (mounted) setState(() => _isKakaoLoading = false);
     }

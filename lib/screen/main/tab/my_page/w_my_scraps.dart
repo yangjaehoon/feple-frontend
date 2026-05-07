@@ -6,6 +6,7 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
+import 'package:feple/screen/main/tab/community_board/w_like_comment_row.dart';
 import 'package:feple/service/scrap_service.dart';
 import 'package:flutter/material.dart';
 
@@ -70,21 +71,9 @@ class MyScrapsScreen extends StatelessWidget {
             post.boardDisplayName,
             style: TextStyle(color: colors.textSecondary, fontSize: 12),
           ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.favorite_border_rounded,
-                  color: AppColors.kawaiiPink, size: 16),
-              const SizedBox(width: 4),
-              Text(post.likeCount.toString(),
-                  style: TextStyle(color: colors.textTitle, fontSize: 13)),
-              const SizedBox(width: 8),
-              Icon(Icons.chat_bubble_outline_rounded,
-                  color: colors.textSecondary, size: 15),
-              const SizedBox(width: 4),
-              Text(post.commentCount.toString(),
-                  style: TextStyle(color: colors.textTitle, fontSize: 13)),
-            ],
+          trailing: PostStatRow(
+            likeCount: post.likeCount,
+            commentCount: post.commentCount,
           ),
         );
       },

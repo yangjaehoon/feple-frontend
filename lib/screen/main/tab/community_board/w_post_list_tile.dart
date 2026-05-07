@@ -1,6 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_profile_avatar.dart';
 import 'package:feple/model/post_model.dart';
+import 'package:feple/screen/main/tab/community_board/w_like_comment_row.dart';
 import 'package:flutter/material.dart';
 
 /// 게시글 목록에서 한 줄 타일
@@ -14,77 +15,17 @@ class PostListTile extends StatelessWidget {
     required this.onTap,
   });
 
-  bool get _hasCustomImage {
-    final url = post.profileImageUrl;
-    return url != null && !url.contains('feple_logo');
-  }
-
-  Widget _buildAvatar(AbstractThemeColors colors) {
-    final avatar = _hasCustomImage
-        ? CircleAvatar(
-            backgroundImage: CachedNetworkImageProvider(post.profileImageUrl!),
-            backgroundColor: colors.activate,
-          )
-        : CircleAvatar(
-            backgroundColor: colors.activate,
-            child: Text(
-              post.nickname.isNotEmpty ? post.nickname[0] : '?',
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          );
-
-    final hasBadge = post.certified || post.isAdmin || post.isArtist;
-    if (!hasBadge) return avatar;
-
-    Color badgeColor;
-    IconData badgeIcon;
-    String badgeTooltip;
-    if (post.isAdmin) {
-      badgeColor = AppColors.badgeAdmin;
-      badgeIcon = Icons.shield_rounded;
-      badgeTooltip = 'badge_admin'.tr();
-    } else if (post.isArtist) {
-      badgeColor = AppColors.badgeArtist;
-      badgeIcon = Icons.verified_rounded;
-      badgeTooltip = 'badge_artist_certified'.tr();
-    } else {
-      badgeColor = AppColors.badgeCertified;
-      badgeIcon = Icons.verified_rounded;
-      badgeTooltip = 'badge_festival_certified'.tr();
-    }
-
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        avatar,
-        Positioned(
-          right: -2,
-          bottom: -2,
-          child: Tooltip(
-            message: badgeTooltip,
-            child: Container(
-              width: 16,
-              height: 16,
-              decoration: BoxDecoration(
-                color: badgeColor,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(badgeIcon, size: 11, color: Colors.white),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return ListTile(
       onTap: onTap,
+      leading: ProfileAvatar(
+        imageUrl: post.profileImageUrl,
+        nickname: post.nickname,
+        certified: post.certified,
+        userRole: post.userRole,
+      ),
       title: Text(
         post.title,
         style: TextStyle(
@@ -98,46 +39,12 @@ class PostListTile extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.favorite_border_rounded,
-              color: AppColors.kawaiiPink, size: 18),
-          const SizedBox(width: 4),
-          Text(
-            post.likeCount.toString(),
-            style: TextStyle(
-              fontSize: 14,
-              color: colors.textTitle,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(width: 10),
-          const Icon(Icons.star_border_rounded,
-              color: AppColors.sunnyYellow, size: 18),
-          const SizedBox(width: 4),
-          Text(
-            post.scrapCount.toString(),
-            style: TextStyle(
-              fontSize: 14,
-              color: colors.textTitle,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Icon(Icons.comment_rounded, color: colors.textSecondary, size: 16),
-          const SizedBox(width: 4),
-          Text(
-            post.commentCount.toString(),
-            style: TextStyle(
-              fontSize: 14,
-              color: colors.textTitle,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
+      trailing: PostStatRow(
+        likeCount: post.likeCount,
+        commentCount: post.commentCount,
+        scrapCount: post.scrapCount,
+        compact: false,
       ),
-      leading: _buildAvatar(colors),
     );
   }
 }

@@ -8,6 +8,7 @@ import 'package:feple/model/artist_schedule_model.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
 import 'package:feple/screen/main/tab/search/artist_page/s_artist_schedule_list.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_event_type_config.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
@@ -178,7 +179,7 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
   }
 
   Widget _buildScheduleItem(ArtistScheduleModel item, AbstractThemeColors colors) {
-    final typeConfig = _eventTypeConfig(item.eventType);
+    final typeConfig = getEventTypeConfig(item.eventType);
     final hasPoster = item.posterUrl != null && item.posterUrl!.isNotEmpty;
     return Padding(
       padding: const EdgeInsets.symmetric(
@@ -196,9 +197,9 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
                     width: 42,
                     height: 42,
                     fit: BoxFit.cover,
-                    errorWidget: (_, __, ___) => _buildTypeIcon(typeConfig),
+                    errorWidget: (_, __, ___) => EventTypeIcon(config: typeConfig),
                   )
-                : _buildTypeIcon(typeConfig),
+                : EventTypeIcon(config: typeConfig),
           ),
           const SizedBox(width: 12),
           // Content
@@ -283,43 +284,4 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
     );
   }
 
-  Widget _buildTypeIcon(_EventTypeConfig config) {
-    return Container(
-      width: 42,
-      height: 42,
-      decoration: BoxDecoration(
-        color: config.color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-        border: Border.all(color: config.color.withValues(alpha: 0.4), width: 1.5),
-      ),
-      child: Icon(config.icon, color: config.color, size: 20),
-    );
-  }
-
-  _EventTypeConfig _eventTypeConfig(String eventType) {
-    switch (eventType) {
-      case 'FAN_MEETING':
-        return _EventTypeConfig(
-          icon: Icons.favorite_rounded,
-          color: AppColors.kawaiiPink,
-        );
-      case 'TV_SHOW':
-        return _EventTypeConfig(
-          icon: Icons.tv_rounded,
-          color: AppColors.kawaiiPurple,
-        );
-      case 'FESTIVAL':
-      default:
-        return _EventTypeConfig(
-          icon: Icons.music_note_rounded,
-          color: AppColors.skyBlue,
-        );
-    }
-  }
-}
-
-class _EventTypeConfig {
-  final IconData icon;
-  final Color color;
-  const _EventTypeConfig({required this.icon, required this.color});
 }

@@ -1,5 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_empty_state.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/screen/search/w_search_result_tiles.dart';
 import 'package:flutter/material.dart';
@@ -172,9 +174,9 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
             child: _loading
                 ? Center(child: CircularProgressIndicator(color: colors.loadingIndicator))
                 : _searched
-                    ? (_hasError ? _buildError(colors) : _buildResults(colors))
+                    ? (_hasError ? _buildError() : _buildResults(colors))
                     : _controller.text.isEmpty
-                        ? _buildEmptyHint(colors)
+                        ? _buildEmptyHint()
                         : _buildSuggestions(colors),
           ),
         ],
@@ -240,57 +242,21 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
     );
   }
 
-  Widget _buildError(AbstractThemeColors colors) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.cloud_off_rounded, size: 56,
-              color: colors.textSecondary.withValues(alpha: 0.3)),
-          const SizedBox(height: 12),
-          Text('search_error'.tr(),
-              style: TextStyle(color: colors.textSecondary, fontSize: 15)),
-          const SizedBox(height: 16),
-          TextButton.icon(
-            onPressed: () => _search(_controller.text),
-            icon: const Icon(Icons.refresh_rounded),
-            label: Text('retry'.tr()),
-          ),
-        ],
-      ),
+  Widget _buildError() {
+    return ErrorState(
+      message: 'search_error'.tr(),
+      onRetry: () => _search(_controller.text),
     );
   }
 
-  Widget _buildEmptyHint(AbstractThemeColors colors) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.search_rounded, size: 56,
-              color: colors.textSecondary.withValues(alpha: 0.3)),
-          const SizedBox(height: 12),
-          Text('search_hint'.tr(),
-              style: TextStyle(color: colors.textSecondary, fontSize: 15)),
-        ],
-      ),
-    );
+  Widget _buildEmptyHint() {
+    return EmptyState(icon: Icons.search_rounded, title: 'search_hint'.tr());
   }
 
   Widget _buildResults(AbstractThemeColors colors) {
     final total = _artists.length + _festivals.length + _posts.length;
     if (total == 0) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.search_off_rounded, size: 56,
-                color: colors.textSecondary.withValues(alpha: 0.3)),
-            const SizedBox(height: 12),
-            Text('search_no_result'.tr(),
-                style: TextStyle(color: colors.textSecondary, fontSize: 15)),
-          ],
-        ),
-      );
+      return EmptyState(icon: Icons.search_off_rounded, title: 'search_no_result'.tr());
     }
 
     return ListView(

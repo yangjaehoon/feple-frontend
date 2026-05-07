@@ -8,6 +8,7 @@ import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_schedule_model.dart';
 import 'package:feple/network/dio_client.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_event_type_config.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
@@ -163,7 +164,7 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
   }
 
   Widget _buildItem(ArtistScheduleModel item, bool isPast, AbstractThemeColors colors) {
-    final typeConfig = _eventTypeConfig(item.eventType);
+    final typeConfig = getEventTypeConfig(item.eventType);
     final hasPoster = item.posterUrl != null && item.posterUrl!.isNotEmpty;
     return Opacity(
       opacity: isPast ? 0.55 : 1.0,
@@ -187,9 +188,9 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
                           width: 42,
                           height: 42,
                           fit: BoxFit.cover,
-                          errorWidget: (_, __, ___) => _buildTypeIcon(typeConfig),
+                          errorWidget: (_, __, ___) => EventTypeIcon(config: typeConfig),
                         )
-                      : _buildTypeIcon(typeConfig),
+                      : EventTypeIcon(config: typeConfig),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -284,30 +285,6 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
     );
   }
 
-  Widget _buildTypeIcon(_EventTypeConfig config) {
-    return Container(
-      width: 42,
-      height: 42,
-      decoration: BoxDecoration(
-        color: config.color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-        border: Border.all(color: config.color.withValues(alpha: 0.4), width: 1.5),
-      ),
-      child: Icon(config.icon, color: config.color, size: 20),
-    );
-  }
-
-  _EventTypeConfig _eventTypeConfig(String eventType) {
-    switch (eventType) {
-      case 'FAN_MEETING':
-        return _EventTypeConfig(icon: Icons.favorite_rounded, color: AppColors.kawaiiPink);
-      case 'TV_SHOW':
-        return _EventTypeConfig(icon: Icons.tv_rounded, color: AppColors.kawaiiPurple);
-      case 'FESTIVAL':
-      default:
-        return _EventTypeConfig(icon: Icons.music_note_rounded, color: AppColors.skyBlue);
-    }
-  }
 }
 
 class _Row {
@@ -322,10 +299,4 @@ class _Row {
       _Row._(item: item, isPast: isPast);
 
   bool get isHeader => label != null;
-}
-
-class _EventTypeConfig {
-  final IconData icon;
-  final Color color;
-  const _EventTypeConfig({required this.icon, required this.color});
 }

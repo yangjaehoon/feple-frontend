@@ -1,4 +1,7 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_animated_list_item.dart';
+import 'package:feple/common/widget/w_async_content_builder.dart';
+import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_write_post_fab.dart';
 import 'package:feple/model/post_model.dart';
@@ -7,7 +10,6 @@ import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_write_post.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
-import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
@@ -36,10 +38,11 @@ class _FestivalPostListScreenState extends State<FestivalPostListScreen> {
     _postsFuture = _postService.fetchFestivalPosts(widget.festivalId);
   }
 
-  void _refresh() {
+  Future<void> _refresh() async {
     setState(() {
       _postsFuture = _postService.fetchFestivalPosts(widget.festivalId);
     });
+    await _postsFuture;
   }
 
   String get _boardname => 'name_board'.tr(args: [widget.festivalName]);
@@ -65,41 +68,57 @@ class _FestivalPostListScreenState extends State<FestivalPostListScreen> {
         children: [
           SecondaryAppBar(title: _boardname),
           Expanded(
-            child: AsyncContentBuilder<List<Post>>(
-        future: _postsFuture,
-        builder: (context, posts) {
-          return ListView.separated(
-            padding: const EdgeInsets.only(bottom: 80),
-            itemCount: posts.length,
-            itemBuilder: (context, index) {
-              final post = posts[index];
-              return PostListTile(
-                post: post,
-                onTap: () {
-                  Navigator.of(context, rootNavigator: true).push(
-                    SlideRoute(
-                      builder: (_) => EnlargePost(
-                        boardname: _boardname,
-                        id: post.id,
-                        nickname: post.nickname,
-                        title: post.title,
-                        content: post.content,
-                        heart: post.likeCount,
-                        certified: post.certified,
-                        userRole: post.userRole,
-                      ),
+            child: RefreshIndicator(
+              color: colors.activate,
+              onRefresh: _refresh,
+              child: AsyncContentBuilder<List<Post>>(
+                future: _postsFuture,
+                onRetry: _refresh,
+                emptyBuilder: (_) => ListView(
+                  children: [
+                    const SizedBox(height: 80),
+                    EmptyState(
+                      icon: Icons.article_outlined,
+                      title: 'no_posts_yet'.tr(),
+                      subtitle: 'first_post_hint'.tr(),
                     ),
-                  ).then((_) => _refresh());
-                },
-              );
-            },
-            separatorBuilder: (_, __) => Divider(
-              thickness: 1,
-              color: colors.listDivider,
+                  ],
+                ),
+                builder: (context, posts) => ListView.separated(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.only(bottom: 80),
+                  itemCount: posts.length,
+                  itemBuilder: (context, index) {
+                    final post = posts[index];
+                    return AnimatedListItem(
+                      index: index,
+                      child: PostListTile(
+                        post: post,
+                        onTap: () => Navigator.of(context, rootNavigator: true)
+                            .push(
+                          SlideRoute(
+                            builder: (_) => EnlargePost(
+                              boardname: _boardname,
+                              id: post.id,
+                              nickname: post.nickname,
+                              title: post.title,
+                              content: post.content,
+                              heart: post.likeCount,
+                              certified: post.certified,
+                              userRole: post.userRole,
+                            ),
+                          ),
+                        ).then((_) => _refresh()),
+                      ),
+                    );
+                  },
+                  separatorBuilder: (_, __) => Divider(
+                    thickness: 1,
+                    color: colors.listDivider,
+                  ),
+                ),
+              ),
             ),
-          );
-        },
-      ),
           ),
         ],
       ),

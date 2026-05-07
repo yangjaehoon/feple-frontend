@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_inline_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -261,28 +262,10 @@ class _CommentTile extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    if (comment['userRole'] == 'ADMIN') ...[
-                      const SizedBox(width: 4),
-                      Tooltip(
-                        message: 'badge_admin'.tr(),
-                        child: const Icon(Icons.shield_rounded,
-                            size: 12, color: AppColors.badgeAdmin),
-                      ),
-                    ] else if (comment['userRole'] == 'ARTIST') ...[
-                      const SizedBox(width: 4),
-                      Tooltip(
-                        message: 'badge_artist_certified'.tr(),
-                        child: const Icon(Icons.verified_rounded,
-                            size: 12, color: AppColors.badgeArtist),
-                      ),
-                    ] else if (comment['certified'] == true) ...[
-                      const SizedBox(width: 4),
-                      Tooltip(
-                        message: 'badge_festival_certified'.tr(),
-                        child: const Icon(Icons.verified_rounded,
-                            size: 12, color: AppColors.badgeCertified),
-                      ),
-                    ],
+                    InlineBadge(
+                      userRole: comment['userRole'] as String?,
+                      certified: comment['certified'] == true,
+                    ),
                   ],
                 ),
                 const SizedBox(height: 2),

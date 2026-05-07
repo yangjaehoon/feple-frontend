@@ -103,6 +103,8 @@ class _ArtistPostListScreenState extends State<ArtistPostListScreen> {
                         title: post.title,
                         content: post.content,
                         heart: post.likeCount,
+                        certified: post.certified,
+                        userRole: post.userRole,
                       ),
                     ),
                   ).then((_) => _refresh()),

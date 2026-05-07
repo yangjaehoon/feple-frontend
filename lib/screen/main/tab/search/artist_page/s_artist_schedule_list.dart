@@ -46,7 +46,9 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
 
   Future<void> _refresh() async {
     setState(() => _future = _fetch());
-    await _future;
+    try {
+      await _future;
+    } catch (_) {}
   }
 
   Future<void> _navigateToFestival(int festivalId) async {

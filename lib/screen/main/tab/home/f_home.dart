@@ -1,11 +1,13 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/common/widget/w_skeleton_box.dart';
-import 'package:feple/model/followed_artist.dart';
 import 'package:feple/model/festival_model.dart';
+import 'package:feple/model/followed_artist.dart';
 import 'package:feple/screen/main/tab/home/home_state_notifier.dart';
-import 'package:feple/screen/main/tab/home/w_favorite_boards_section.dart';
 import 'package:feple/screen/main/tab/home/w_boards_section_skeleton.dart';
+import 'package:feple/screen/main/tab/home/w_favorite_boards_section.dart';
+import 'package:feple/screen/main/tab/home/w_home_artists_section.dart';
+import 'package:feple/screen/main/tab/home/w_home_festivals_section.dart';
+import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
 import 'package:feple/screen/main/tab/home/w_reorder_sheet.dart';
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
@@ -13,7 +15,6 @@ import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../../common/app_events.dart';
 import '../../../../provider/user_provider.dart';
@@ -79,8 +80,8 @@ class _HomeFragmentState extends State<HomeFragment> {
     if (festivals == null || festivals.isEmpty) return;
     final items = _notifier
         .applyOrder(festivals, _notifier.festivalOrder, (f) => f.id)
-        .map(
-            (f) => ReorderItem(id: f.id, name: f.title, imageUrl: f.posterUrl))
+        .map((f) =>
+            ReorderItem(id: f.id, name: f.title, imageUrl: f.posterUrl))
         .toList();
     showModalBottomSheet(
       context: context,
@@ -96,6 +97,20 @@ class _HomeFragmentState extends State<HomeFragment> {
     );
   }
 
+  List<FollowedArtist>? get _orderedArtists {
+    final a = _notifier.artists;
+    return a == null
+        ? null
+        : _notifier.applyOrder(a, _notifier.artistOrder, (x) => x.id);
+  }
+
+  List<FestivalModel>? get _orderedFestivals {
+    final f = _notifier.festivals;
+    return f == null
+        ? null
+        : _notifier.applyOrder(f, _notifier.festivalOrder, (x) => x.id);
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -107,19 +122,10 @@ class _HomeFragmentState extends State<HomeFragment> {
           return Container(
             color: colors.backgroundMain,
             child: Center(
-                child:
-                    CircularProgressIndicator(color: colors.loadingIndicator)),
+                child: CircularProgressIndicator(
+                    color: colors.loadingIndicator)),
           );
         }
-
-        final artists = _notifier.artists == null
-            ? null
-            : _notifier.applyOrder(
-                _notifier.artists!, _notifier.artistOrder, (a) => a.id);
-        final festivals = _notifier.festivals == null
-            ? null
-            : _notifier.applyOrder(
-                _notifier.festivals!, _notifier.festivalOrder, (f) => f.id);
 
         return Container(
           color: colors.backgroundMain,
@@ -129,384 +135,69 @@ class _HomeFragmentState extends State<HomeFragment> {
                 color: colors.activate,
                 onRefresh: () async => _notifier.refresh(),
                 child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: EdgeInsets.only(
-                  top: AppDimens.scrollPaddingTop,
-                  bottom: AppDimens.scrollPaddingBottom,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _SectionHeader(
-                      title: 'followed_artists'.tr(),
-                      onSettings:
-                          _notifier.artists != null && _notifier.artists!.isNotEmpty
-                              ? _openArtistOrderSettings
-                              : null,
-                    ),
-                    _ArtistsSection(
-                      artists: artists,
-                      onTap: (artist) => Navigator.push(
-                        context,
-                        SlideRoute(
-                          builder: (_) => ArtistPage(
-                            artistId: artist.id,
-                            artistName: artist.name,
-                            followerCounter: 0,
-                          ),
-                        ),
-                      ).then((_) => _notifier.refresh()),
-                    ),
-                    const SizedBox(height: 8),
-                    _SectionHeader(
-                      title: 'liked_festivals'.tr(),
-                      onSettings: _notifier.festivals != null &&
-                              _notifier.festivals!.isNotEmpty
-                          ? _openFestivalOrderSettings
-                          : null,
-                    ),
-                    _FestivalsSection(
-                      festivals: festivals,
-                      onTap: (festival) => Navigator.push(
-                        context,
-                        SlideRoute(
-                          builder: (_) =>
-                              FestivalInformationFragment(poster: festival),
-                        ),
-                      ).then((_) => _notifier.refresh()),
-                    ),
-                    const SizedBox(height: 8),
-                    if (_notifier.boards == null)
-                      const BoardsSectionSkeleton()
-                    else
-                      FavoriteBoardsSection(
-                        allBoards: _notifier.boards!,
-                        userId: _notifier.userId!,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: EdgeInsets.only(
+                    top: AppDimens.scrollPaddingTop,
+                    bottom: AppDimens.scrollPaddingBottom,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      HomeSectionHeader(
+                        title: 'followed_artists'.tr(),
+                        onSettings: _notifier.artists != null &&
+                                _notifier.artists!.isNotEmpty
+                            ? _openArtistOrderSettings
+                            : null,
                       ),
-                  ],
+                      HomeArtistsSection(
+                        artists: _orderedArtists,
+                        onTap: (artist) => Navigator.push(
+                          context,
+                          SlideRoute(
+                            builder: (_) => ArtistPage(
+                              artistId: artist.id,
+                              artistName: artist.name,
+                              followerCounter: 0,
+                            ),
+                          ),
+                        ).then((_) => _notifier.refresh()),
+                      ),
+                      const SizedBox(height: 8),
+                      HomeSectionHeader(
+                        title: 'liked_festivals'.tr(),
+                        onSettings: _notifier.festivals != null &&
+                                _notifier.festivals!.isNotEmpty
+                            ? _openFestivalOrderSettings
+                            : null,
+                      ),
+                      HomeFestivalsSection(
+                        festivals: _orderedFestivals,
+                        onTap: (festival) => Navigator.push(
+                          context,
+                          SlideRoute(
+                            builder: (_) => FestivalInformationFragment(
+                                poster: festival),
+                          ),
+                        ).then((_) => _notifier.refresh()),
+                      ),
+                      const SizedBox(height: 8),
+                      if (_notifier.boards == null)
+                        const BoardsSectionSkeleton()
+                      else
+                        FavoriteBoardsSection(
+                          allBoards: _notifier.boards!,
+                          userId: _notifier.userId!,
+                        ),
+                    ],
+                  ),
                 ),
-              ),
               ),
               const FepleAppBar("Feple"),
             ],
           ),
         );
       },
-    );
-  }
-}
-
-// ── 섹션 헤더 ──────────────────────────────────────────────────────────────
-
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.title, this.onSettings});
-
-  final String title;
-  final VoidCallback? onSettings;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-    return Padding(
-      padding: EdgeInsets.fromLTRB(20, 16, onSettings != null ? 8 : 20, 8),
-      child: Row(
-        children: [
-          Container(
-            width: 3,
-            height: 20,
-            decoration: BoxDecoration(
-              color: colors.sectionBarColor,
-              borderRadius: BorderRadius.circular(AppDimens.barRadius),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: colors.textTitle,
-            ),
-          ),
-          if (onSettings != null) ...[
-            const Spacer(),
-            IconButton(
-              icon: Icon(Icons.settings_rounded,
-                  color: colors.textSecondary, size: 20),
-              onPressed: onSettings,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-            ),
-            const SizedBox(width: 12),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-// ── 팔로우 아티스트 섹션 ──────────────────────────────────────────────────
-
-class _ArtistsSection extends StatelessWidget {
-  const _ArtistsSection({required this.artists, required this.onTap});
-
-  final List<FollowedArtist>? artists;
-  final void Function(FollowedArtist) onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-
-    if (artists == null) {
-      return SizedBox(
-        height: 110,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemCount: 5,
-          itemBuilder: (_, __) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Column(
-              children: [
-                SkeletonBox(
-                  width: 74,
-                  height: 74,
-                  borderRadius: BorderRadius.circular(37),
-                ),
-                const SizedBox(height: 6),
-                const SkeletonBox(width: 56, height: 12),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-    if (artists!.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        child: Text('no_followed_artists'.tr(),
-            style: TextStyle(color: colors.textSecondary)),
-      );
-    }
-    return SizedBox(
-      height: 110,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: artists!.length,
-        itemBuilder: (_, index) => _ArtistItem(
-          key: ValueKey(artists![index].id),
-          artist: artists![index],
-          onTap: onTap,
-        ),
-      ),
-    );
-  }
-}
-
-class _ArtistItem extends StatelessWidget {
-  const _ArtistItem({
-    super.key,
-    required this.artist,
-    required this.onTap,
-  });
-
-  final FollowedArtist artist;
-  final void Function(FollowedArtist) onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-    return GestureDetector(
-      onTap: () => onTap(artist),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(3),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: colors.followRingColor,
-                boxShadow: [
-                  BoxShadow(
-                    color: colors.cardShadow.withValues(alpha: 0.15),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Container(
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle, color: colors.surface),
-                child: CircleAvatar(
-                  radius: 32,
-                  backgroundColor: colors.backgroundMain,
-                  backgroundImage: (artist.profileImageUrl != null &&
-                          artist.profileImageUrl!.isNotEmpty)
-                      ? CachedNetworkImageProvider(
-                          artist.profileImageUrl!,
-                          maxWidth: 150)
-                      : null,
-                  child: (artist.profileImageUrl == null ||
-                          artist.profileImageUrl!.isEmpty)
-                      ? Icon(Icons.person_rounded,
-                          size: 28, color: colors.textSecondary)
-                      : null,
-                ),
-              ),
-            ),
-            const SizedBox(height: 6),
-            SizedBox(
-              width: 64,
-              child: Text(
-                artist.name,
-                style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: colors.textTitle),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ── 좋아요한 페스티벌 섹션 ────────────────────────────────────────────────
-
-class _FestivalsSection extends StatelessWidget {
-  const _FestivalsSection({required this.festivals, required this.onTap});
-
-  final List<FestivalModel>? festivals;
-  final void Function(FestivalModel) onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-
-    if (festivals == null) {
-      return SizedBox(
-        height: 190,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemCount: 4,
-          itemBuilder: (_, __) => Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: SkeletonBox(
-              width: 130,
-              height: 190,
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
-        ),
-      );
-    }
-    if (festivals!.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        child: Text('no_liked_festivals'.tr(),
-            style: TextStyle(color: colors.textSecondary)),
-      );
-    }
-    return SizedBox(
-      height: 190,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: festivals!.length,
-        itemBuilder: (_, index) => _FestivalItem(
-          key: ValueKey(festivals![index].id),
-          festival: festivals![index],
-          onTap: onTap,
-        ),
-      ),
-    );
-  }
-}
-
-class _FestivalItem extends StatelessWidget {
-  const _FestivalItem({
-    super.key,
-    required this.festival,
-    required this.onTap,
-  });
-
-  final FestivalModel festival;
-  final void Function(FestivalModel) onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-    return GestureDetector(
-      onTap: () => onTap(festival),
-      child: Container(
-        width: 130,
-        margin: const EdgeInsets.only(right: 12),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: colors.cardShadow.withValues(alpha: 0.12),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              CachedNetworkImage(
-                imageUrl: festival.posterUrl,
-                memCacheWidth: 260,
-                fit: BoxFit.cover,
-                errorWidget: (_, __, ___) => Container(
-                  color: colors.surface,
-                  child: Icon(Icons.image_not_supported_rounded,
-                      color: colors.textSecondary),
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                      colors: [
-                        Colors.black.withValues(alpha: 0.7),
-                        Colors.transparent
-                      ],
-                    ),
-                  ),
-                  child: Text(
-                    festival.title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

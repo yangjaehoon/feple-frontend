@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_inline_badge.dart';
 import 'package:feple/common/widget/w_report_sheet.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/injection.dart';
@@ -170,28 +171,11 @@ class _EnlargePostState extends State<EnlargePost> {
                       style: TextStyle(
                           fontSize: 13, color: colors.textSecondary),
                     ),
-                    if (widget.userRole == 'ADMIN') ...[
-                      const SizedBox(width: 4),
-                      Tooltip(
-                        message: 'badge_admin'.tr(),
-                        child: const Icon(Icons.shield_rounded,
-                            size: 14, color: AppColors.badgeAdmin),
-                      ),
-                    ] else if (widget.userRole == 'ARTIST') ...[
-                      const SizedBox(width: 4),
-                      Tooltip(
-                        message: 'badge_artist_certified'.tr(),
-                        child: const Icon(Icons.verified_rounded,
-                            size: 14, color: AppColors.badgeArtist),
-                      ),
-                    ] else if (widget.certified) ...[
-                      const SizedBox(width: 4),
-                      Tooltip(
-                        message: 'badge_festival_certified'.tr(),
-                        child: const Icon(Icons.verified_rounded,
-                            size: 14, color: AppColors.badgeCertified),
-                      ),
-                    ],
+                    InlineBadge(
+                      userRole: widget.userRole,
+                      certified: widget.certified,
+                      size: 14,
+                    ),
                   ],
                 ),
                 Divider(

@@ -57,6 +57,8 @@ class MyScrapsScreen extends StatelessWidget {
                 title: post.title,
                 content: post.content,
                 heart: post.likeCount,
+                certified: post.certified,
+                userRole: post.userRole,
               ),
             ),
           ).then((_) => reload()),

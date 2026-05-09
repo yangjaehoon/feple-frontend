@@ -1,12 +1,31 @@
 import 'dart:typed_data';
+import 'package:feple/model/artist_photo_response.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:http/http.dart' as http;
 import 'package:feple/network/dio_client.dart';
 
 import 'package:feple/model/presign_response.dart';
 
-/// 아티스트 사진 업로드 서비스
 class ArtistPhotoService {
+  Future<List<ArtistPhotoResponse>> fetchPhotos(int artistId) async {
+    final response = await DioClient.dio.get('/artists/$artistId/photos');
+    return (response.data as List)
+        .map((json) => ArtistPhotoResponse.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<void> toggleLike(int artistId, int photoId) =>
+      DioClient.dio.post('/artists/$artistId/photos/$photoId/like');
+
+  Future<void> deletePhoto(int artistId, int photoId) =>
+      DioClient.dio.delete('/artists/$artistId/photos/$photoId');
+
+  Future<void> updatePhoto(
+          int artistId, int photoId, String title, String description) =>
+      DioClient.dio.patch(
+        '/artists/$artistId/photos/$photoId',
+        data: {'title': title, 'description': description},
+      );
   /// 이미지를 압축 → presign URL 요청 → S3 업로드 → 서버에 등록
   Future<void> uploadPhoto({
     required int artistId,

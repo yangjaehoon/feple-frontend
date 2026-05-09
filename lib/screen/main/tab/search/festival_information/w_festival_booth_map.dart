@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/model/booth_model.dart';
-import 'package:feple/network/dio_client.dart';
+import 'package:feple/service/festival_service.dart';
 import 'package:flutter/foundation.dart' show Factory;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -42,11 +43,7 @@ class _FestivalBoothMapState extends State<FestivalBoothMap> {
   Future<void> _fetchBooths() async {
     if (mounted) setState(() { _loading = true; _hasError = false; });
     try {
-      final res =
-          await DioClient.dio.get('/festivals/${widget.festivalId}/booths');
-      final list = (res.data as List)
-          .map((e) => BoothModel.fromJson(e as Map<String, dynamic>))
-          .toList();
+      final list = await sl<FestivalService>().fetchBooths(widget.festivalId);
       debugPrint('[BoothMap] 부스 ${list.length}개 로드됨 (festivalId=${widget.festivalId})');
       if (mounted) {
         setState(() {

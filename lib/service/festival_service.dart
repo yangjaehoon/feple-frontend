@@ -1,3 +1,4 @@
+import 'package:feple/model/booth_model.dart';
 import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/festival_preview.dart';
@@ -69,6 +70,23 @@ class FestivalService {
         'genres': genres,
         'region': region,
       });
+
+  Future<bool> isLiked(int festivalId) async {
+    final response = await DioClient.dio.get('/festivals/$festivalId/liked');
+    return response.data as bool;
+  }
+
+  Future<bool> toggleLike(int festivalId) async {
+    final response = await DioClient.dio.post('/festivals/$festivalId/like');
+    return response.data as bool;
+  }
+
+  Future<List<BoothModel>> fetchBooths(int festivalId) async {
+    final response = await DioClient.dio.get('/festivals/$festivalId/booths');
+    return (response.data as List)
+        .map((json) => BoothModel.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
 
   Future<List<TimetableEntry>> fetchTimetable(int festivalId) async {
     final resp = await DioClient.dio.get('/festivals/$festivalId/timetable');

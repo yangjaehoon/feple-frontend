@@ -17,6 +17,8 @@ class UserEntry {
     required this.color,
   });
 
+  String get timeRange => '$startTime – $endTime';
+
   UserEntry copyWith({
     String? stageName,
     String? label,

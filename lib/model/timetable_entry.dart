@@ -75,6 +75,19 @@ class TimetableEntry {
         endTime: _toHHmm(j['endTime']),
       );
 
+  String get timeRange => '$startTime – $endTime';
+
+  int get durationMinutes {
+    try {
+      final startParts = startTime.split(':');
+      final endParts = endTime.split(':');
+      return (int.parse(endParts[0]) * 60 + int.parse(endParts[1])) -
+          (int.parse(startParts[0]) * 60 + int.parse(startParts[1]));
+    } catch (_) {
+      return 0;
+    }
+  }
+
   static String _toHHmm(dynamic val) {
     final s = val?.toString() ?? '';
     return s.length >= 5 ? s.substring(0, 5) : s;

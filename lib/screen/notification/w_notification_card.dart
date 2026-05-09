@@ -52,7 +52,8 @@ class NotificationCard extends StatelessWidget {
                 color: _iconColor(item.type, colors).withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
-              child: Icon(_iconData(item.type),
+              child: Icon(
+                  item.type?.iconData ?? Icons.festival_rounded,
                   color: _iconColor(item.type, colors), size: 20),
             ),
             const SizedBox(width: 12),
@@ -78,12 +79,10 @@ class NotificationCard extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  if (item.createdAt != null) ...[
+                  if (item.formattedDate != null) ...[
                     const SizedBox(height: 4),
                     Text(
-                      item.createdAt!.length >= 10
-                          ? item.createdAt!.substring(0, 10)
-                          : item.createdAt!,
+                      item.formattedDate!,
                       style: TextStyle(
                         fontSize: 11,
                         color: colors.textSecondary.withValues(alpha: 0.6),
@@ -107,16 +106,6 @@ class NotificationCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  IconData _iconData(NotificationType? type) {
-    switch (type) {
-      case NotificationType.certApproved:     return Icons.verified_rounded;
-      case NotificationType.certRejected:     return Icons.cancel_outlined;
-      case NotificationType.newComment:       return Icons.chat_bubble_rounded;
-      case NotificationType.festivalReminder: return Icons.event_rounded;
-      default:                                return Icons.festival_rounded;
-    }
   }
 
   Color _iconColor(NotificationType? type, AbstractThemeColors colors) {

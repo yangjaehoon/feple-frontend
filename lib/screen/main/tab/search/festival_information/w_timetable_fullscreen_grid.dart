@@ -269,17 +269,6 @@ class _OfficialCard extends StatelessWidget {
     required this.followed,
   });
 
-  int get _durationMinutes {
-    try {
-      final startParts = entry.startTime.split(':');
-      final endParts = entry.endTime.split(':');
-      return (int.parse(endParts[0]) * 60 + int.parse(endParts[1])) -
-          (int.parse(startParts[0]) * 60 + int.parse(startParts[1]));
-    } catch (_) {
-      return 0;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final subColor = followed ? Colors.white70 : color.withValues(alpha: 0.7);
@@ -299,7 +288,7 @@ class _OfficialCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       child: Row(
         children: [
-          Text('${entry.startTime}–${entry.endTime}', style: subStyle),
+          Text(entry.timeRange, style: subStyle),
           Expanded(
             child: Text(
               entry.artistName,
@@ -313,7 +302,7 @@ class _OfficialCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          Text('$_durationMinutes분', style: subStyle),
+          Text('${entry.durationMinutes}분', style: subStyle),
         ],
       ),
     );
@@ -353,7 +342,7 @@ class _UserCard extends StatelessWidget {
                 ),
                 if (cardH > 26)
                   Text(
-                    '${entry.startTime} – ${entry.endTime}',
+                    entry.timeRange,
                     style: const TextStyle(color: Colors.white70, fontSize: 9, height: 1.3),
                   ),
               ],

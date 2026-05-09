@@ -33,6 +33,11 @@ class NotificationModel {
     );
   }
 
+  String? get formattedDate {
+    if (createdAt == null) return null;
+    return createdAt!.length >= 10 ? createdAt!.substring(0, 10) : createdAt;
+  }
+
   NotificationModel copyWithRead() => NotificationModel(
         id: id,
         type: type,

@@ -35,11 +35,15 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
     try {
       final certIds = await sl<CertificationService>().getApprovedFestivalIds();
       certCount = certIds.length;
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[MyPage] certCount fetch failed: $e');
+    }
     try {
       final scraps = await _scrapService.fetchMyScraps();
       scrapCount = scraps.length;
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[MyPage] scrapCount fetch failed: $e');
+    }
     return _UserStats(
       postCount: stats['postCount'] as int,
       commentCount: stats['commentCount'] as int,

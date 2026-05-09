@@ -5,6 +5,7 @@ import '../auth/token_store.dart';
 import '../model/user_model.dart' as app;
 
 class AuthProvider extends ChangeNotifier {
+  final _authApi = sl<AuthApi>();
   app.User? user;
   bool isLoading = false;
 
@@ -12,7 +13,7 @@ class AuthProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     try {
-      final u = await sl<AuthApi>().loginWithKakaoAccessToken(kakaoAccessToken);
+      final u = await _authApi.loginWithKakaoAccessToken(kakaoAccessToken);
       user = u;
     } finally {
       isLoading = false;

@@ -29,11 +29,11 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
   }
 
   Future<_UserStats> _fetchStats() async {
-    final stats = await UserService().fetchStats(widget.userId);
+    final stats = await sl<UserService>().fetchStats(widget.userId);
     int certCount = 0;
     int scrapCount = 0;
     try {
-      final certIds = await CertificationService().getApprovedFestivalIds();
+      final certIds = await sl<CertificationService>().getApprovedFestivalIds();
       certCount = certIds.length;
     } catch (_) {}
     try {

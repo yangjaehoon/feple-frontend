@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +28,7 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
   Future<void> _load() async {
     setState(() { _loading = true; _hasError = false; });
     try {
-      final data = await UserService().fetchFollowing(widget.userId);
+      final data = await sl<UserService>().fetchFollowing(widget.userId);
       final list = data.map((e) => _FollowedArtist.fromJson(e)).toList();
       if (mounted) setState(() { _artists = list; _loading = false; });
     } catch (_) {

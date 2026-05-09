@@ -14,6 +14,7 @@ class UserProvider with ChangeNotifier {
 
   User? _user;
   User? get user => _user;
+  int? get currentUserId => _user?.id;
 
   UserProvider(this._userService) {
     _loadFromSecureStorage();

@@ -1,13 +1,10 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/screen/main/tab/search/artist_page/artist_follow_notifier.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_festival_calendar.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:feple/injection.dart';
 import '../../../../../common/app_events.dart';
-import '../../../../../service/artist_follow_service.dart';
-import '../../../../../model/follow_response.dart';
 import 'image_collection/f_image_collection.dart';
 
 class ArtistNameLike extends StatefulWidget {
@@ -28,73 +25,45 @@ class ArtistNameLike extends StatefulWidget {
 
 class _ArtistNameLikeState extends State<ArtistNameLike>
     with SingleTickerProviderStateMixin {
-  final _followService = sl<ArtistFollowService>();
-
-  bool isFollowed = false;
-  int followCount = 0;
-  bool isLoading = false;
+  late final ArtistFollowNotifier _followNotifier;
   late AnimationController _heartController;
 
   @override
   void initState() {
     super.initState();
-    followCount = widget.initialFollowerCount ?? 0;
+    _followNotifier = ArtistFollowNotifier(
+      artistId: widget.artistId,
+      initialFollowerCount: widget.initialFollowerCount ?? 0,
+    )..addListener(() { if (mounted) setState(() {}); })
+     ..init();
     _heartController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
       lowerBound: 1.0,
       upperBound: 1.3,
     );
-    _initFollowState();
   }
 
   @override
   void dispose() {
+    _followNotifier.dispose();
     _heartController.dispose();
     super.dispose();
   }
 
-  Future<void> _initFollowState() async {
-    try {
-      final status = await _followService.getFollowStatus(widget.artistId);
-      if (!mounted) return;
-      setState(() {
-        isFollowed = status.followed;
-        followCount = status.followerCount;
-      });
-    } catch (e) {
-      // silently fail
-    }
-  }
-
-  Future<void> toggleFollow() async {
-    if (isLoading) return;
-    setState(() => isLoading = true);
-
-    HapticFeedback.mediumImpact();
-
-    // Play heart bounce animation
+  Future<void> _toggleFollow() async {
     _heartController.forward().then((_) => _heartController.reverse());
-
     try {
-      final FollowResponse res = isFollowed
-          ? await _followService.unfollow(widget.artistId)
-          : await _followService.follow(widget.artistId);
-
+      await _followNotifier.toggle();
       if (!mounted) return;
-      setState(() {
-        isFollowed = res.followed;
-        followCount = res.followerCount;
-      });
       AppEvents.likeChanged.value++;
-      context.showSuccessSnackbar(isFollowed ? 'follow_done'.tr() : 'follow_cancel'.tr());
-    } catch (e) {
+      context.showSuccessSnackbar(
+        _followNotifier.isFollowed ? 'follow_done'.tr() : 'follow_cancel'.tr(),
+      );
+    } catch (_) {
       if (!mounted) return;
       context.showErrorSnackbar('follow_failed'.tr());
     }
-
-    if (!mounted) return;
-    setState(() => isLoading = false);
   }
 
   @override
@@ -149,7 +118,10 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
             Row(
               children: [
                 // Follow button
-                _buildFollowButton(),
+                _buildFollowButton(
+                  isFollowed: _followNotifier.isFollowed,
+                  isLoading: _followNotifier.isLoading,
+                ),
 
                 const SizedBox(width: 12),
 
@@ -176,8 +148,8 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
                     child: FadeTransition(opacity: animation, child: child),
                   ),
                   child: Text(
-                    _formatCount(followCount),
-                    key: ValueKey(followCount),
+                    _formatCount(_followNotifier.followCount),
+                    key: ValueKey(_followNotifier.followCount),
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -231,9 +203,9 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
   }
 
   /// Pill-shaped follow/following button with gradient
-  Widget _buildFollowButton() {
+  Widget _buildFollowButton({required bool isFollowed, required bool isLoading}) {
     return GestureDetector(
-      onTap: isLoading ? null : toggleFollow,
+      onTap: isLoading ? null : _toggleFollow,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -263,9 +235,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
                       ),
                     )
                   : Icon(
-                      isFollowed
-                          ? Icons.check_rounded
-                          : Icons.favorite_rounded,
+                      isFollowed ? Icons.check_rounded : Icons.favorite_rounded,
                       color: Colors.white,
                       size: 16,
                     ),

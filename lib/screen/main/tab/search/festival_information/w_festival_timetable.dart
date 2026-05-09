@@ -1,12 +1,14 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/model/timetable_entry.dart';
-import 'package:feple/network/dio_client.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/festival_information/s_timetable_fullscreen.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_grid.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_skeleton.dart';
+import 'package:feple/service/festival_service.dart';
+import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -101,26 +103,14 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
   }
 
   Future<void> _fetch() async {
-    final user = context.read<UserProvider>().user;
+    final userId = context.read<UserProvider>().currentUserId;
     try {
-      final timetableRes =
-          await DioClient.dio.get('/festivals/${widget.festivalId}/timetable');
-      final rawTimetable = timetableRes.data;
-      final list = (rawTimetable is List ? rawTimetable : <dynamic>[])
-          .whereType<Map<String, dynamic>>()
-          .map((e) => TimetableEntry.fromJson(e))
-          .toList();
+      final list = await sl<FestivalService>().fetchTimetable(widget.festivalId);
 
       Set<String> followed = {};
       try {
-        if (user != null) {
-          final followRes = await DioClient.dio.get('/users/${user.id}/following');
-          final rawFollow = followRes.data;
-          followed = (rawFollow is List ? rawFollow : <dynamic>[])
-              .whereType<Map<String, dynamic>>()
-              .map((a) => a['name'] as String? ?? '')
-              .where((name) => name.isNotEmpty)
-              .toSet();
+        if (userId != null) {
+          followed = await sl<UserService>().fetchFollowedArtistNames(userId);
         }
       } catch (_) {}
 

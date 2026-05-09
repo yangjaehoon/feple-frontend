@@ -38,22 +38,22 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
     super.dispose();
   }
 
-  Future<void> _pickDate({required bool isStart}) async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-    );
-    if (picked == null) return;
-    setState(() {
-      if (isStart) {
-        _startDate = picked;
-      } else {
-        _endDate = picked;
-      }
-    });
+  Future<void> _pickStartDate() async {
+    final picked = await _showDatePicker();
+    if (picked != null) setState(() => _startDate = picked);
   }
+
+  Future<void> _pickEndDate() async {
+    final picked = await _showDatePicker();
+    if (picked != null) setState(() => _endDate = picked);
+  }
+
+  Future<DateTime?> _showDatePicker() => showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2020),
+        lastDate: DateTime(2030),
+      );
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -139,7 +139,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
                   child: FestivalDateTile(
                     label: 'label_start_date'.tr(),
                     date: _startDate,
-                    onTap: () => _pickDate(isStart: true),
+                    onTap: _pickStartDate,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -147,7 +147,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
                   child: FestivalDateTile(
                     label: 'label_end_date'.tr(),
                     date: _endDate,
-                    onTap: () => _pickDate(isStart: false),
+                    onTap: _pickEndDate,
                   ),
                 ),
               ],

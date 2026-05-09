@@ -53,18 +53,24 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
   String _fmt(TimeOfDay t) =>
       '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
 
-  Future<void> _pickTime(bool isStart) async {
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: isStart ? _start : _end,
-      builder: (ctx, child) => MediaQuery(
-        data: MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: true),
-        child: child!,
-      ),
-    );
-    if (picked == null) return;
-    setState(() => isStart ? _start = picked : _end = picked);
+  Future<void> _pickStartTime() async {
+    final picked = await _showTimePicker(_start);
+    if (picked != null) setState(() => _start = picked);
   }
+
+  Future<void> _pickEndTime() async {
+    final picked = await _showTimePicker(_end);
+    if (picked != null) setState(() => _end = picked);
+  }
+
+  Future<TimeOfDay?> _showTimePicker(TimeOfDay initial) => showTimePicker(
+        context: context,
+        initialTime: initial,
+        builder: (ctx, child) => MediaQuery(
+          data: MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        ),
+      );
 
   UserEntry get _result => UserEntry(
         id: widget.initial.id,
@@ -128,7 +134,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
                   child: _TimeBtn(
                     label: 'timetable_start'.tr(),
                     time: _start,
-                    onTap: () => _pickTime(true),
+                    onTap: _pickStartTime,
                     colors: colors,
                   ),
                 ),
@@ -144,7 +150,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
                   child: _TimeBtn(
                     label: 'timetable_end'.tr(),
                     time: _end,
-                    onTap: () => _pickTime(false),
+                    onTap: _pickEndTime,
                     colors: colors,
                   ),
                 ),

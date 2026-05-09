@@ -31,48 +31,13 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
   final Map<String, List<UserEntry>> _userEntriesMap = {};
   int _colorCursor = 0;
 
-  List<TimetableEntry> _filtered = [];
-  List<String> _stages = [];
-  int _startHour = 12;
-  int _endHour = 13;
+  late TimetableRange _range;
 
   @override
   void initState() {
     super.initState();
     _selectedDate = widget.initialDate;
-    _rebuildCache();
-  }
-
-  void _rebuildCache() {
-    _filtered = _selectedDate == null
-        ? []
-        : widget.entries.where((e) => e.festivalDate == _selectedDate).toList();
-
-    final seen = <String, int>{};
-    for (final e in _filtered) {
-      seen.putIfAbsent(e.stageName, () => e.stageOrder);
-    }
-    _stages = (seen.entries.toList()..sort((a, b) => a.value.compareTo(b.value)))
-        .map((e) => e.key)
-        .toList();
-
-    int minH = 12;
-    for (final e in _filtered) {
-      final hour = int.tryParse(e.startTime.split(':')[0]);
-      if (hour != null && hour < minH) minH = hour;
-    }
-    _startHour = minH;
-
-    int maxH = minH + 1;
-    for (final e in _filtered) {
-      final parts = e.endTime.split(':');
-      final hour = int.tryParse(parts[0]);
-      final minute = int.tryParse(parts.length > 1 ? parts[1] : '0');
-      if (hour == null || minute == null) continue;
-      final endH = minute > 0 ? hour + 1 : hour;
-      if (endH > maxH) maxH = endH;
-    }
-    _endHour = maxH;
+    _range = computeTimetableRange(widget.entries, _selectedDate);
   }
 
   List<UserEntry> get _currentUserEntries =>
@@ -107,18 +72,18 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
   }
 
   Future<void> _openAdd({String? stage, String? startTime}) async {
-    if (_stages.isEmpty) return;
+    if (_range.stages.isEmpty) return;
     final blank = UserEntry(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
-      stageName: stage ?? _stages.first,
+      stageName: stage ?? _range.stages.first,
       label: '',
-      startTime: startTime ?? '${_startHour.toString().padLeft(2, '0')}:00',
-      endTime: '${(_startHour + 1).clamp(0, 23).toString().padLeft(2, '0')}:00',
+      startTime: startTime ?? '${_range.startHour.toString().padLeft(2, '0')}:00',
+      endTime: '${(_range.startHour + 1).clamp(0, 23).toString().padLeft(2, '0')}:00',
       color: _nextColor(),
     );
     final result = await showDialog<UserEntry>(
       context: context,
-      builder: (_) => TimetableEntryDialog(stages: _stages, initial: blank, isEditing: false),
+      builder: (_) => TimetableEntryDialog(stages: _range.stages, initial: blank, isEditing: false),
     );
     if (result != null) _upsert(result);
   }
@@ -126,7 +91,7 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
   Future<void> _openEdit(UserEntry entry) async {
     final result = await showDialog<dynamic>(
       context: context,
-      builder: (_) => TimetableEntryDialog(stages: _stages, initial: entry, isEditing: true),
+      builder: (_) => TimetableEntryDialog(stages: _range.stages, initial: entry, isEditing: true),
     );
     if (result is UserEntry) {
       _upsert(result);
@@ -167,7 +132,7 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
                       ],
                     ),
                   ),
-                  if (_stages.isNotEmpty)
+                  if (_range.stages.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: TextButton.icon(
@@ -195,29 +160,29 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
                       selected: _selectedDate,
                       onSelect: (d) => setState(() {
                         _selectedDate = d;
-                        _rebuildCache();
+                        _range = computeTimetableRange(widget.entries, _selectedDate);
                       }),
                       colors: colors,
                     ),
                   Expanded(
-                    child: _filtered.isEmpty
+                    child: _range.filtered.isEmpty
                         ? Center(
                             child: Text('no_timetable'.tr(),
                                 style: TextStyle(color: colors.textSecondary)),
                           )
                         : TimetableFullscreenGrid(
-                            stages: _stages,
-                            filtered: _filtered,
+                            stages: _range.stages,
+                            filtered: _range.filtered,
                             userEntries: _currentUserEntries,
-                            startHour: _startHour,
-                            endHour: _endHour,
+                            startHour: _range.startHour,
+                            endHour: _range.endHour,
                             followedNames: widget.followedNames,
                             onTapGrid: (stage, start) =>
                                 _openAdd(stage: stage, startTime: start),
                             onTapUserEntry: _openEdit,
                           ),
                   ),
-                  if (_stages.isNotEmpty)
+                  if (_range.stages.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 4, bottom: 8),
                       child: Row(

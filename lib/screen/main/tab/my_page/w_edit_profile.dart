@@ -5,9 +5,10 @@ import 'package:dio/dio.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_nickname_field.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/model/user_model.dart';
-import 'package:feple/network/dio_client.dart';
 import 'package:feple/provider/user_provider.dart';
+import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -77,7 +78,8 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
     try {
       User updated = user;
 
-      // 1. 프로필 이미지 변경
+      final userService = sl<UserService>();
+
       final pickedImage = _pickedImage;
       if (pickedImage != null) {
         final formData = FormData.fromMap({
@@ -86,20 +88,11 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
             filename: pickedImage.name,
           ),
         });
-        final resp = await DioClient.dio.post(
-          '/users/${user.id}/profile-image',
-          data: formData,
-        );
-        updated = User.fromJson(resp.data as Map<String, dynamic>);
+        updated = await userService.updateProfileImage(user.id, formData);
       }
 
-      // 2. 닉네임 변경
       if (newNickname != user.nickname) {
-        final resp = await DioClient.dio.put(
-          '/users/${user.id}',
-          data: {'nickname': newNickname},
-        );
-        updated = User.fromJson(resp.data as Map<String, dynamic>);
+        updated = await userService.updateNickname(user.id, newNickname);
       }
 
       await userProvider.setUser(updated);

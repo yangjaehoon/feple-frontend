@@ -1,12 +1,14 @@
 import 'package:feple/common/app_events.dart';
-import 'package:feple/network/dio_client.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
+import 'package:feple/service/festival_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FestivalPosterNotifier extends ChangeNotifier {
   final int festivalId;
   final CertificationService certService;
+  final _festivalService = sl<FestivalService>();
 
   bool liked = false;
   bool descExpanded = true;
@@ -23,8 +25,7 @@ class FestivalPosterNotifier extends ChangeNotifier {
 
   Future<void> loadLikeState() async {
     try {
-      final resp = await DioClient.dio.get('/festivals/$festivalId/liked');
-      liked = resp.data as bool;
+      liked = await _festivalService.isLiked(festivalId);
       notifyListeners();
     } catch (e) {
       debugPrint('loadLikeState error: $e');
@@ -59,8 +60,7 @@ class FestivalPosterNotifier extends ChangeNotifier {
 
   Future<void> toggleLike() async {
     try {
-      final resp = await DioClient.dio.post('/festivals/$festivalId/like');
-      liked = resp.data as bool;
+      liked = await _festivalService.toggleLike(festivalId);
       notifyListeners();
       AppEvents.likeChanged.value++;
     } catch (e) {

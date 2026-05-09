@@ -1,9 +1,11 @@
+import 'package:feple/injection.dart';
 import 'package:feple/model/artist_photo_response.dart';
-import 'package:feple/network/dio_client.dart';
+import 'package:feple/service/artist_photo_service.dart';
 import 'package:flutter/foundation.dart';
 
 class ArtistPhotoNotifier extends ChangeNotifier {
   final int artistId;
+  final _photoService = sl<ArtistPhotoService>();
 
   List<ArtistPhotoResponse> photos = [];
   bool isLoading = true;
@@ -16,12 +18,7 @@ class ArtistPhotoNotifier extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     try {
-      final res = await DioClient.dio.get('/artists/$artistId/photos');
-      if (res.statusCode == 200) {
-        photos = (res.data as List)
-            .map((e) => ArtistPhotoResponse.fromJson(e))
-            .toList();
-      }
+      photos = await _photoService.fetchPhotos(artistId);
     } catch (e) {
       debugPrint('load photos error: $e');
     } finally {
@@ -32,8 +29,8 @@ class ArtistPhotoNotifier extends ChangeNotifier {
 
   Future<void> toggleLike(int photoId) async {
     try {
-      await DioClient.dio.post('/artists/$artistId/photos/$photoId/like');
-      final idx = photos.indexWhere((p) => p.photoId == photoId);
+      await _photoService.toggleLike(artistId, photoId);
+      final idx = photos.indexWhere((photo) => photo.photoId == photoId);
       if (idx != -1) {
         final photo = photos[idx];
         photos[idx] = ArtistPhotoResponse(
@@ -57,7 +54,7 @@ class ArtistPhotoNotifier extends ChangeNotifier {
 
   Future<void> deletePhoto(int photoId) async {
     try {
-      await DioClient.dio.delete('/artists/$artistId/photos/$photoId');
+      await _photoService.deletePhoto(artistId, photoId);
       await loadPhotos();
     } catch (e) {
       debugPrint('delete error: $e');
@@ -67,10 +64,7 @@ class ArtistPhotoNotifier extends ChangeNotifier {
 
   Future<void> updatePhoto(int photoId, String title, String description) async {
     try {
-      await DioClient.dio.patch(
-        '/artists/$artistId/photos/$photoId',
-        data: {'title': title, 'description': description},
-      );
+      await _photoService.updatePhoto(artistId, photoId, title, description);
       await loadPhotos();
     } catch (e) {
       debugPrint('update error: $e');

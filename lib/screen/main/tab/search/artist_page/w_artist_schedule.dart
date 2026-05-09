@@ -4,8 +4,9 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/model/artist_schedule_model.dart';
-import 'package:feple/network/dio_client.dart';
+import 'package:feple/service/artist_schedule_service.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
 import 'package:feple/screen/main/tab/search/artist_page/s_artist_schedule_list.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_event_type_config.dart';
@@ -35,12 +36,8 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
     _scheduleFuture = _fetchSchedule();
   }
 
-  Future<List<ArtistScheduleModel>> _fetchSchedule() async {
-    final resp = await DioClient.dio.get('/artists/${widget.artistId}/schedule');
-    return (resp.data as List)
-        .map((e) => ArtistScheduleModel.fromJson(e as Map<String, dynamic>))
-        .toList();
-  }
+  Future<List<ArtistScheduleModel>> _fetchSchedule() =>
+      sl<ArtistScheduleService>().fetchSchedule(widget.artistId);
 
   @override
   Widget build(BuildContext context) {

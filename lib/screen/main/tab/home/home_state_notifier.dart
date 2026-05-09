@@ -1,7 +1,8 @@
+import 'package:feple/injection.dart';
 import 'package:feple/model/favorite_board.dart';
 import 'package:feple/model/followed_artist.dart';
 import 'package:feple/model/festival_model.dart';
-import 'package:feple/network/dio_client.dart';
+import 'package:feple/service/user_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -103,32 +104,28 @@ class HomeStateNotifier extends ChangeNotifier {
     return saved?.map(int.parse).toList();
   }
 
-  Future<List<FollowedArtist>> _fetchArtists(int userId) async {
-    final resp = await DioClient.dio.get('/users/$userId/following');
-    return (resp.data as List).map((e) => FollowedArtist.fromJson(e)).toList();
-  }
+  Future<List<FollowedArtist>> _fetchArtists(int userId) =>
+      sl<UserService>().fetchFollowingArtists(userId);
 
-  Future<List<FestivalModel>> _fetchFestivals(int userId) async {
-    final resp = await DioClient.dio.get('/users/$userId/liked-festivals');
-    return (resp.data as List).map((e) => FestivalModel.fromJson(e)).toList();
-  }
+  Future<List<FestivalModel>> _fetchFestivals(int userId) =>
+      sl<UserService>().fetchLikedFestivals(userId);
 
   List<FavoriteBoard> _buildBoards(
       List<FollowedArtist> artists, List<FestivalModel> festivals) {
     return [
-      ...artists.map((a) => FavoriteBoard(
-            boardId: 'artist_${a.id}',
+      ...artists.map((artist) => FavoriteBoard(
+            boardId: 'artist_${artist.id}',
             type: 'artist',
-            entityId: a.id,
-            entityName: a.name,
-            imageUrl: a.profileImageUrl,
+            entityId: artist.id,
+            entityName: artist.name,
+            imageUrl: artist.profileImageUrl,
           )),
-      ...festivals.map((f) => FavoriteBoard(
-            boardId: 'festival_${f.id}',
+      ...festivals.map((festival) => FavoriteBoard(
+            boardId: 'festival_${festival.id}',
             type: 'festival',
-            entityId: f.id,
-            entityName: f.title,
-            imageUrl: f.posterUrl,
+            entityId: festival.id,
+            entityName: festival.title,
+            imageUrl: festival.posterUrl,
           )),
     ];
   }

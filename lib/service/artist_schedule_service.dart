@@ -1,9 +1,15 @@
+import 'package:feple/model/artist_schedule_model.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/network/dio_client.dart';
 
-/// 아티스트 일정(페스티벌) 조회 서비스.
-/// w_edit_photo_sheet, w_image_upload 등에서 공통으로 사용합니다.
 class ArtistScheduleService {
+  Future<List<ArtistScheduleModel>> fetchSchedule(int artistId) async {
+    final response = await DioClient.dio.get('/artists/$artistId/schedule');
+    return (response.data as List)
+        .map((json) => ArtistScheduleModel.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
   static Future<List<FestivalPreview>> fetchFestivals(int artistId) async {
     final resp = await DioClient.dio.get('/artists/$artistId/schedule');
     final list = resp.data as List<dynamic>;

@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:feple/model/festival_model.dart';
+import 'package:feple/model/followed_artist.dart';
 import 'package:feple/model/user_model.dart';
 import 'package:feple/network/dio_client.dart';
 
@@ -30,6 +32,28 @@ class UserService {
   Future<List<dynamic>> fetchFollowing(int userId) async {
     final resp = await DioClient.dio.get('/users/$userId/following');
     return resp.data as List;
+  }
+
+  Future<List<FollowedArtist>> fetchFollowingArtists(int userId) async {
+    final raw = await fetchFollowing(userId);
+    return raw.map((json) => FollowedArtist.fromJson(json as Map<String, dynamic>)).toList();
+  }
+
+  Future<List<FestivalModel>> fetchLikedFestivals(int userId) async {
+    final response = await DioClient.dio.get('/users/$userId/liked-festivals');
+    return (response.data as List)
+        .map((json) => FestivalModel.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<User> updateProfileImage(int userId, FormData formData) async {
+    final response = await DioClient.dio.post('/users/$userId/profile-image', data: formData);
+    return User.fromJson(response.data as Map<String, dynamic>);
+  }
+
+  Future<User> updateNickname(int userId, String nickname) async {
+    final response = await DioClient.dio.put('/users/$userId', data: {'nickname': nickname});
+    return User.fromJson(response.data as Map<String, dynamic>);
   }
 
   Future<Set<String>> fetchFollowedArtistNames(int userId) async {

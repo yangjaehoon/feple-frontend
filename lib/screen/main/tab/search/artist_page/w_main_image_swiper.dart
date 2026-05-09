@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/network/dio_client.dart';
-import 'package:feple/model/artist_photo_response.dart';
+import 'package:feple/injection.dart';
+import 'package:feple/service/artist_photo_service.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_name_like.dart';
 import 'package:flutter/material.dart';
 
@@ -50,19 +50,14 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
 
   Future<void> _loadPhotos() async {
     try {
-      final res = await DioClient.dio.get('/artists/${widget.artistId}/photos');
-      if (res.statusCode == 200) {
-        final urls = (res.data as List)
-            .map((e) => ArtistPhotoResponse.fromJson(e).url)
-            .take(10)
-            .toList();
-        if (!mounted) return;
-        setState(() {
-          _photoUrls = urls;
-          _loaded = true;
-        });
-        _startTimer();
-      }
+      final photos = await sl<ArtistPhotoService>().fetchPhotos(widget.artistId);
+      final urls = photos.map((photo) => photo.url).take(10).toList();
+      if (!mounted) return;
+      setState(() {
+        _photoUrls = urls;
+        _loaded = true;
+      });
+      _startTimer();
     } catch (e) {
       debugPrint('[ImageSwiper] 사진 로드 실패: $e');
       if (mounted) setState(() => _loaded = true);

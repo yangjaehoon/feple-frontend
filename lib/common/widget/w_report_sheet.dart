@@ -48,25 +48,29 @@ Future<void> showReportSheet(
                 ),
               ),
               const SizedBox(height: 12),
-              ...ReportReason.values.map((r) {
-                final label = switch (r) {
-                  ReportReason.spam => 'report_reason_spam'.tr(),
-                  ReportReason.abuse => 'report_reason_abuse'.tr(),
-                  ReportReason.obscene => 'report_reason_obscene'.tr(),
-                  ReportReason.misinformation =>
-                    'report_reason_misinformation'.tr(),
-                  ReportReason.other => 'report_reason_other'.tr(),
-                };
-                return RadioListTile<ReportReason>(
-                  value: r,
-                  groupValue: selected,
-                  title: Text(label,
-                      style: TextStyle(fontSize: 14, color: colors.textTitle)),
-                  onChanged: (v) => setS(() => selected = v),
-                  dense: true,
-                  contentPadding: EdgeInsets.zero,
-                );
-              }),
+              RadioGroup<ReportReason>(
+                groupValue: selected,
+                onChanged: (v) => setS(() => selected = v),
+                child: Column(
+                  children: ReportReason.values.map((r) {
+                    final label = switch (r) {
+                      ReportReason.spam => 'report_reason_spam'.tr(),
+                      ReportReason.abuse => 'report_reason_abuse'.tr(),
+                      ReportReason.obscene => 'report_reason_obscene'.tr(),
+                      ReportReason.misinformation =>
+                        'report_reason_misinformation'.tr(),
+                      ReportReason.other => 'report_reason_other'.tr(),
+                    };
+                    return RadioListTile<ReportReason>(
+                      value: r,
+                      title: Text(label,
+                          style: TextStyle(fontSize: 14, color: colors.textTitle)),
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                    );
+                  }).toList(),
+                ),
+              ),
               const SizedBox(height: 8),
               TextField(
                 controller: detailController,

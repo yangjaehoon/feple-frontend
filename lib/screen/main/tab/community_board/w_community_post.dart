@@ -135,15 +135,9 @@ class _CommunityPostState extends State<CommunityPost> {
                     onTap: () {
                       Navigator.of(context, rootNavigator: true).push(
                         SlideRoute(
-                          builder: (_) => EnlargePost(
+                          builder: (_) => EnlargePost.fromPost(
                             boardname: widget.boardname,
-                            id: post.id,
-                            nickname: post.nickname,
-                            title: post.title,
-                            content: post.content,
-                            heart: post.likeCount,
-                            certified: post.certified,
-                            userRole: post.userRole,
+                            post: post,
                           ),
                         ),
                       ).then((_) => _refresh());

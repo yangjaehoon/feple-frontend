@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_inline_badge.dart';
+import 'package:feple/model/post_model.dart';
 import 'package:feple/common/widget/w_report_sheet.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/injection.dart';
@@ -34,6 +35,18 @@ class EnlargePost extends StatefulWidget {
     this.certified = false,
     this.userRole,
   });
+
+  EnlargePost.fromPost({
+    super.key,
+    required this.boardname,
+    required Post post,
+  })  : id = post.id,
+        nickname = post.nickname,
+        title = post.title,
+        content = post.content,
+        heart = post.likeCount,
+        certified = post.certified,
+        userRole = post.userRole;
 
   @override
   State<EnlargePost> createState() => _EnlargePostState();

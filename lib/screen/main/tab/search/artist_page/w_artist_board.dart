@@ -1,15 +1,10 @@
-import 'package:feple/common/common.dart';
-import 'package:feple/model/post_model.dart';
-import 'package:feple/screen/main/tab/community_board/w_board_preview_card.dart';
-import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
-import 'package:feple/screen/main/tab/search/artist_page/w_artist_post_list.dart';
+import 'package:feple/common/widget/w_named_board.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
-import 'package:feple/common/util/app_route.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_artist_post_list.dart';
 import 'package:flutter/material.dart';
 
-/// 아티스트 페이지에 삽입되는 게시판 미리보기 카드
-class ArtistBoard extends StatefulWidget {
+class ArtistBoard extends StatelessWidget {
   final int artistId;
   final String artistName;
 
@@ -20,53 +15,16 @@ class ArtistBoard extends StatefulWidget {
   });
 
   @override
-  State<ArtistBoard> createState() => _ArtistBoardState();
-}
-
-class _ArtistBoardState extends State<ArtistBoard> {
-  final PostService _postService = sl<PostService>();
-  late Future<List<Post>> _postsFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _postsFuture = _postService.fetchArtistPosts(widget.artistId);
-  }
-
-  void _refresh() => setState(() {
-        _postsFuture = _postService.fetchArtistPosts(widget.artistId);
-      });
-
-  @override
   Widget build(BuildContext context) {
-    final colors = context.appColors;
-    return BoardPreviewCard(
-      future: _postsFuture,
+    final svc = sl<PostService>();
+    return NamedBoard(
+      name: artistName,
       headerIcon: Icons.forum_rounded,
-      headerTitle: 'name_board'.tr(args: [widget.artistName]),
-      headerColor: colors.activate,
-      onHeaderTap: () => Navigator.push(
-        context,
-        SlideRoute(
-          builder: (_) => ArtistPostListScreen(
-            artistId: widget.artistId,
-            artistName: widget.artistName,
-          ),
-        ),
+      fetchPosts: () => svc.fetchArtistPosts(artistId),
+      postListScreenFactory: () => ArtistPostListScreen(
+        artistId: artistId,
+        artistName: artistName,
       ),
-      onPostTap: (context, post) => Navigator.of(context, rootNavigator: true).push(
-        SlideRoute(
-          builder: (_) => EnlargePost(
-            boardname: 'name_board'.tr(args: [widget.artistName]),
-            id: post.id,
-            nickname: post.nickname,
-            title: post.title,
-            content: post.content,
-            heart: post.likeCount,
-          ),
-        ),
-      ),
-      onRetry: _refresh,
     );
   }
 }

@@ -21,7 +21,9 @@ class ArtistFollowNotifier extends ChangeNotifier {
       isFollowed = status.followed;
       followCount = status.followerCount;
       notifyListeners();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[FollowNotifier] init failed: $e');
+    }
   }
 
   Future<void> toggle() async {
@@ -35,8 +37,6 @@ class ArtistFollowNotifier extends ChangeNotifier {
           : await _followService.follow(artistId);
       isFollowed = res.followed;
       followCount = res.followerCount;
-    } catch (_) {
-      rethrow;
     } finally {
       isLoading = false;
       notifyListeners();

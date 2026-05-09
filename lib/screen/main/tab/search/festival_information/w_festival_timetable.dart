@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/provider/user_provider.dart';
@@ -66,7 +67,9 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
             '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}');
       }
       _selectedDate = _dates.isNotEmpty ? _dates.first : null;
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[Timetable] date parse failed: $e');
+    }
   }
 
   Future<void> _fetch() async {
@@ -79,7 +82,9 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
         if (userId != null) {
           followed = await sl<UserService>().fetchFollowedArtistNames(userId);
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[Timetable] fetchFollowedArtists failed: $e');
+      }
 
       if (mounted) {
         setState(() {
@@ -153,7 +158,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                     GestureDetector(
                       onTap: () => Navigator.push(
                         context,
-                        MaterialPageRoute(
+                        SlideRoute(
                           builder: (_) => TimetableFullscreenPage(
                             entries: _entries,
                             followedNames: _followedNames,

@@ -271,10 +271,10 @@ class _OfficialCard extends StatelessWidget {
 
   int get _durationMinutes {
     try {
-      final s = entry.startTime.split(':');
-      final e = entry.endTime.split(':');
-      return (int.parse(e[0]) * 60 + int.parse(e[1])) -
-          (int.parse(s[0]) * 60 + int.parse(s[1]));
+      final startParts = entry.startTime.split(':');
+      final endParts = entry.endTime.split(':');
+      return (int.parse(endParts[0]) * 60 + int.parse(endParts[1])) -
+          (int.parse(startParts[0]) * 60 + int.parse(startParts[1]));
     } catch (_) {
       return 0;
     }

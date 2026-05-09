@@ -43,9 +43,9 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   }
 
   void _onPageScroll() {
-    final p = _pageController.page;
-    if (p == null) return;
-    _scroll.value = p;
+    final currentPage = _pageController.page;
+    if (currentPage == null) return;
+    _scroll.value = currentPage;
   }
 
   Future<void> _loadPhotos() async {

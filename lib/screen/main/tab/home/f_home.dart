@@ -98,17 +98,17 @@ class _HomeFragmentState extends State<HomeFragment> {
   }
 
   List<FollowedArtist>? get _orderedArtists {
-    final a = _notifier.artists;
-    return a == null
+    final artists = _notifier.artists;
+    return artists == null
         ? null
-        : _notifier.applyOrder(a, _notifier.artistOrder, (x) => x.id);
+        : _notifier.applyOrder(artists, _notifier.artistOrder, (x) => x.id);
   }
 
   List<FestivalModel>? get _orderedFestivals {
-    final f = _notifier.festivals;
-    return f == null
+    final festivals = _notifier.festivals;
+    return festivals == null
         ? null
-        : _notifier.applyOrder(f, _notifier.festivalOrder, (x) => x.id);
+        : _notifier.applyOrder(festivals, _notifier.festivalOrder, (x) => x.id);
   }
 
   @override

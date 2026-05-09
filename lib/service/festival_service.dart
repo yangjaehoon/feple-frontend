@@ -42,6 +42,34 @@ class FestivalService {
         .toList();
   }
 
+  Future<List<FestivalModel>> fetchAll() async {
+    final response = await DioClient.dio.get('/festivals');
+    return (response.data as List)
+        .map((json) => FestivalModel.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<void> submitFestival({
+    required String title,
+    required String description,
+    required String location,
+    required String startDate,
+    required String endDate,
+    required String posterUrl,
+    required List<String> genres,
+    required String region,
+  }) =>
+      DioClient.dio.post('/festivals', data: {
+        'title': title,
+        'description': description,
+        'location': location,
+        'startDate': startDate,
+        'endDate': endDate,
+        'posterUrl': posterUrl,
+        'genres': genres,
+        'region': region,
+      });
+
   Future<List<TimetableEntry>> fetchTimetable(int festivalId) async {
     final resp = await DioClient.dio.get('/festivals/$festivalId/timetable');
     final raw = resp.data;

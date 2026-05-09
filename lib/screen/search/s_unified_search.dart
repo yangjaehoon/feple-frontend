@@ -2,8 +2,9 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
-import 'package:feple/network/dio_client.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/screen/search/w_search_result_tiles.dart';
+import 'package:feple/service/search_service.dart';
 import 'package:flutter/material.dart';
 
 class UnifiedSearchScreen extends StatefulWidget {
@@ -14,6 +15,7 @@ class UnifiedSearchScreen extends StatefulWidget {
 }
 
 class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
+  final _searchService = sl<SearchService>();
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
   Timer? _debounce;
@@ -25,7 +27,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
   List<dynamic> _artists = [];
   List<dynamic> _festivals = [];
   List<dynamic> _posts = [];
-  List<_SuggestionItem> _suggestions = [];
+  List<SearchSuggestion> _suggestions = [];
 
   @override
   void initState() {
@@ -53,18 +55,8 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
 
   Future<void> _fetchSuggestions(String keyword) async {
     try {
-      final res = await DioClient.dio.get('/search', queryParameters: {'keyword': keyword});
-      if (!mounted) return;
-      final data = res.data as Map<String, dynamic>;
-      final artists = (data['artists'] as List? ?? [])
-          .map((a) => _SuggestionItem(a['name'] as String? ?? '', 'artist'))
-          .where((s) => s.label.isNotEmpty)
-          .toList();
-      final festivals = (data['festivals'] as List? ?? [])
-          .map((f) => _SuggestionItem(f['title'] as String? ?? '', 'festival'))
-          .where((s) => s.label.isNotEmpty)
-          .toList();
-      setState(() => _suggestions = [...artists, ...festivals]);
+      final results = await _searchService.suggestions(keyword);
+      if (mounted) setState(() => _suggestions = results);
     } catch (_) {
       // 연관검색어 실패는 무시
     }
@@ -81,13 +73,12 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
       _suggestions = [];
     });
     try {
-      final res = await DioClient.dio.get('/search', queryParameters: {'keyword': keyword.trim()});
-      final data = res.data as Map<String, dynamic>;
+      final result = await _searchService.search(keyword);
       if (mounted) {
         setState(() {
-          _artists   = (data['artists']   as List? ?? []);
-          _festivals = (data['festivals'] as List? ?? []);
-          _posts     = (data['posts']     as List? ?? []);
+          _artists   = result.artists;
+          _festivals = result.festivals;
+          _posts     = result.posts;
           _loading   = false;
         });
       }
@@ -199,17 +190,17 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
         endIndent: 16,
       ),
       itemBuilder: (_, index) {
-        final s = _suggestions[index];
+        final suggestion = _suggestions[index];
         return ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
           leading: Icon(
-            s.type == 'artist' ? Icons.person_rounded : Icons.festival_rounded,
+            suggestion.type == 'artist' ? Icons.person_rounded : Icons.festival_rounded,
             color: colors.textSecondary,
             size: 20,
           ),
-          title: _buildHighlightedText(s.label, _controller.text.trim(), colors),
+          title: _buildHighlightedText(suggestion.label, _controller.text.trim(), colors),
           trailing: Icon(Icons.north_west_rounded, size: 16, color: colors.textSecondary),
-          onTap: () => _selectSuggestion(s.label),
+          onTap: () => _selectSuggestion(suggestion.label),
         );
       },
     );
@@ -264,17 +255,17 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
       children: [
         if (_artists.isNotEmpty) ...[
           _sectionHeader('search_artists'.tr(), _artists.length, colors),
-          ..._artists.map((a) => SearchArtistTile(data: a)),
+          ..._artists.map((artist) => SearchArtistTile(data: artist)),
           const SizedBox(height: 16),
         ],
         if (_festivals.isNotEmpty) ...[
           _sectionHeader('search_festivals'.tr(), _festivals.length, colors),
-          ..._festivals.map((f) => SearchFestivalTile(data: f)),
+          ..._festivals.map((festival) => SearchFestivalTile(data: festival)),
           const SizedBox(height: 16),
         ],
         if (_posts.isNotEmpty) ...[
           _sectionHeader('search_posts'.tr(), _posts.length, colors),
-          ..._posts.map((p) => SearchPostTile(data: p)),
+          ..._posts.map((post) => SearchPostTile(data: post)),
         ],
       ],
     );
@@ -297,10 +288,4 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
       ),
     );
   }
-}
-
-class _SuggestionItem {
-  final String label;
-  final String type; // 'artist' or 'festival'
-  _SuggestionItem(this.label, this.type);
 }

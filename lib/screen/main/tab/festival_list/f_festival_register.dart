@@ -1,8 +1,9 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/constant/festival_constants.dart';
-import 'package:feple/network/dio_client.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/screen/main/tab/festival_list/w_festival_form_fields.dart';
+import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -67,16 +68,16 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
 
     setState(() => _isLoading = true);
     try {
-      await DioClient.dio.post('/festivals', data: {
-        'title': _titleController.text.trim(),
-        'description': _descriptionController.text.trim(),
-        'location': _locationController.text.trim(),
-        'startDate': _startDate!.toIso8601String().split('T').first,
-        'endDate': _endDate!.toIso8601String().split('T').first,
-        'posterUrl': _posterUrlController.text.trim(),
-        'genres': _selectedGenres.toList(),
-        'region': _selectedRegion,
-      });
+      await sl<FestivalService>().submitFestival(
+        title: _titleController.text.trim(),
+        description: _descriptionController.text.trim(),
+        location: _locationController.text.trim(),
+        startDate: _startDate!.toIso8601String().split('T').first,
+        endDate: _endDate!.toIso8601String().split('T').first,
+        posterUrl: _posterUrlController.text.trim(),
+        genres: _selectedGenres.toList(),
+        region: _selectedRegion!,
+      );
 
       if (mounted) {
         context.read<FestivalPreviewProvider>().refresh();

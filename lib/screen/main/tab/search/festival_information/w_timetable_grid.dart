@@ -40,9 +40,9 @@ class TimetableGrid extends StatelessWidget {
 
   double _toY(String time) {
     final parts = time.split(':');
-    final h = int.tryParse(parts.isNotEmpty ? parts[0] : '0') ?? 0;
-    final m = int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0;
-    return ((h - startHour) * 60 + m) * _minPx;
+    final hour = int.tryParse(parts.isNotEmpty ? parts[0] : '0') ?? 0;
+    final minute = int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0;
+    return ((hour - startHour) * 60 + minute) * _minPx;
   }
 
   Color _colorFor(String stage) {

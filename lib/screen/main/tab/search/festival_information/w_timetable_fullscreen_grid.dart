@@ -41,9 +41,9 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
 
   double _toY(String time, double pxPerMin) {
     final parts = time.split(':');
-    final h = int.tryParse(parts.isNotEmpty ? parts[0] : '0') ?? 0;
-    final m = int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0;
-    return ((h - widget.startHour) * 60 + m) * pxPerMin;
+    final hour = int.tryParse(parts.isNotEmpty ? parts[0] : '0') ?? 0;
+    final minute = int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0;
+    return ((hour - widget.startHour) * 60 + minute) * pxPerMin;
   }
 
   Color _stageColor(String stage) {
@@ -59,10 +59,10 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
     final totalMins = (widget.endHour - widget.startHour) * 60;
     final rawMins = ((pos.dy - _topPad) / pxPerMin).round();
     final clampedMins = rawMins.clamp(0, totalMins);
-    final h = widget.startHour + (clampedMins ~/ 60);
-    final m = (clampedMins % 60 ~/ 10) * 10;
+    final hour = widget.startHour + (clampedMins ~/ 60);
+    final minute = (clampedMins % 60 ~/ 10) * 10;
     final timeStr =
-        '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
+        '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
 
     final si = (pos.dx / stageW).floor().clamp(0, widget.stages.length - 1);
     widget.onTapGrid(widget.stages[si], timeStr);

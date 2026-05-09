@@ -36,8 +36,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Future<void> _load() async {
     setState(() { _loading = true; _hasError = false; });
     try {
-      final list = await _notificationService.getMyNotifications();
-      if (mounted) setState(() { _items = list; _loading = false; });
+      final notifications = await _notificationService.getMyNotifications();
+      if (mounted) setState(() { _items = notifications; _loading = false; });
     } catch (_) {
       if (mounted) setState(() { _loading = false; _hasError = true; });
     }

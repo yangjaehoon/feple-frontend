@@ -14,13 +14,13 @@ class ArtistScheduleService {
     final resp = await DioClient.dio.get('/artists/$artistId/schedule');
     final list = resp.data as List<dynamic>;
     return list.map((e) {
-      final m = e as Map<String, dynamic>;
+      final scheduleJson = e as Map<String, dynamic>;
       return FestivalPreview(
-        id: (m['festivalId'] as num).toInt(),
-        title: (m['title'] ?? '') as String,
-        location: (m['location'] ?? '') as String,
-        posterUrl: (m['posterUrl'] ?? '') as String,
-        startDate: m['startDate']?.toString() ?? '',
+        id: (scheduleJson['festivalId'] as num).toInt(),
+        title: (scheduleJson['title'] ?? '') as String,
+        location: (scheduleJson['location'] ?? '') as String,
+        posterUrl: (scheduleJson['posterUrl'] ?? '') as String,
+        startDate: scheduleJson['startDate']?.toString() ?? '',
       );
     }).toList();
   }

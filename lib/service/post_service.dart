@@ -27,6 +27,25 @@ class PostService {
   Future<void> _createPost(String endpoint, String title, String content) =>
       DioClient.dio.post(endpoint, data: {'title': title, 'content': content});
 
+  /// 게시글 좋아요·스크랩 수 조회 (query only)
+  Future<({int likeCount, int scrapCount})> fetchCounts(int postId) async {
+    final resp = await DioClient.dio.get('/posts/$postId');
+    return (
+      likeCount: (resp.data['likeCount'] as num).toInt(),
+      scrapCount: (resp.data['scrapCount'] as num).toInt(),
+    );
+  }
+
+  /// 내가 이 게시글을 좋아요 했는지 조회 (query only)
+  Future<bool> isLiked(int postId) async {
+    final resp = await DioClient.dio.get('/posts/$postId/liked');
+    return resp.data as bool;
+  }
+
+  /// 좋아요 토글 (command only — CQS)
+  Future<void> toggleLike(int postId) =>
+      DioClient.dio.post('/posts/$postId/like');
+
   /// 게시글 작성 (userId는 서버에서 JWT로 추출)
   Future<void> createPost({
     required String boardType,

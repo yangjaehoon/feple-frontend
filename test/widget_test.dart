@@ -15,8 +15,6 @@ import 'package:feple/common/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/provider/festival_preview_provider.dart';
-import 'package:feple/provider/like_notifier.dart';
-import 'package:feple/provider/post_change_notifier.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:feple/service/user_service.dart';
@@ -65,8 +63,6 @@ Future<void> pumpApp(WidgetTester tester) async {
           ChangeNotifierProvider(create: (_) => AuthProvider()),
           ChangeNotifierProvider(create: (_) => UserProvider(sl<UserService>())),
           ChangeNotifierProvider(create: (_) => FestivalPreviewProvider(sl<FestivalService>())),
-          ChangeNotifierProvider(create: (_) => LikeNotifier()),
-          ChangeNotifierProvider(create: (_) => PostChangeNotifier()),
         ],
         child: const App(),
       )));

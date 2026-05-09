@@ -24,20 +24,16 @@ class PostService {
   Future<List<Post>> fetchPosts(String boardType) =>
       _fetchPostList(_endpointFor(boardType));
 
+  Future<void> _createPost(String endpoint, String title, String content) =>
+      DioClient.dio.post(endpoint, data: {'title': title, 'content': content});
+
   /// 게시글 작성 (userId는 서버에서 JWT로 추출)
   Future<void> createPost({
     required String boardType,
     required String title,
     required String content,
-  }) async {
-    await DioClient.dio.post(
-      _endpointFor(boardType),
-      data: {
-        'title': title,
-        'content': content,
-      },
-    );
-  }
+  }) =>
+      _createPost(_endpointFor(boardType), title, content);
 
   /// 아티스트 게시판 목록 조회
   Future<List<Post>> fetchArtistPosts(int artistId) =>
@@ -48,15 +44,8 @@ class PostService {
     required int artistId,
     required String title,
     required String content,
-  }) async {
-    await DioClient.dio.post(
-      '/posts/artist/$artistId',
-      data: {
-        'title': title,
-        'content': content,
-      },
-    );
-  }
+  }) =>
+      _createPost('/posts/artist/$artistId', title, content);
 
   /// 페스티벌 게시판 목록 조회
   Future<List<Post>> fetchFestivalPosts(int festivalId) =>
@@ -67,13 +56,6 @@ class PostService {
     required int festivalId,
     required String title,
     required String content,
-  }) async {
-    await DioClient.dio.post(
-      '/posts/festival/$festivalId',
-      data: {
-        'title': title,
-        'content': content,
-      },
-    );
-  }
+  }) =>
+      _createPost('/posts/festival/$festivalId', title, content);
 }

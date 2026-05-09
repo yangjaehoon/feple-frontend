@@ -2,18 +2,22 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_write_post_fab.dart';
+import 'package:feple/common/widget/w_write_post_screen.dart';
 import 'package:feple/common/constant/board_types.dart';
+import 'package:feple/common/app_events.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:flutter/material.dart';
-import 'package:feple/screen/main/tab/community_board/w_community_write_board.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/common/widget/w_async_content_builder.dart';
+import 'package:provider/provider.dart';
+
+import '../../../../provider/user_provider.dart';
 
 class CommunityPost extends StatefulWidget {
   final String boardname;
@@ -84,12 +88,26 @@ class _CommunityPostState extends State<CommunityPost> {
     return Scaffold(
       backgroundColor: colors.backgroundMain,
       floatingActionButton: WritePostFab(
-        onPressed: () => Navigator.push(
-          context,
-          SlideRoute(
-            builder: (_) => WritePost(boardname: _serviceBoardType),
-          ),
-        ).then((_) => _refresh()),
+        onPressed: () {
+          final user = context.read<UserProvider>().user;
+          if (user == null) {
+            context.showInfoSnackbar('no_login_info'.tr());
+            return;
+          }
+          Navigator.push(
+            context,
+            SlideRoute(
+              builder: (_) => WritePostScreen(
+                title: 'write_post'.tr(),
+                onSubmit: (t, c) async {
+                  await _postService.createPost(
+                      boardType: _serviceBoardType, title: t, content: c);
+                  AppEvents.postChanged.value++;
+                },
+              ),
+            ),
+          ).then((_) => _refresh());
+        },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Column(

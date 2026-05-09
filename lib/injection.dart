@@ -14,6 +14,7 @@ import 'service/notification_service.dart';
 import 'service/post_service.dart';
 import 'service/report_service.dart';
 import 'service/scrap_service.dart';
+import 'service/search_service.dart';
 import 'service/user_service.dart';
 
 final sl = GetIt.instance;
@@ -34,5 +35,6 @@ void setupDependencies() {
   sl.registerLazySingleton<PostService>(() => PostService());
   sl.registerLazySingleton<ReportService>(() => ReportService());
   sl.registerLazySingleton<ScrapService>(() => ScrapService());
+  sl.registerLazySingleton<SearchService>(() => SearchService());
   sl.registerLazySingleton<UserService>(() => UserService());
 }

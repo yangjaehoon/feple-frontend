@@ -4,9 +4,10 @@ import 'package:dio/dio.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/model/festival_model.dart';
-import 'package:feple/network/dio_client.dart';
 import 'package:feple/service/certification_service.dart';
+import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -35,9 +36,8 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
 
   Future<void> _loadFestivals() async {
     try {
-      final res = await DioClient.dio.get('/festivals');
-      final list = (res.data as List).map((j) => FestivalModel.fromJson(j)).toList();
-      if (mounted) setState(() { _festivals = list; _loadingFestivals = false; });
+      final festivals = await sl<FestivalService>().fetchAll();
+      if (mounted) setState(() { _festivals = festivals; _loadingFestivals = false; });
     } catch (_) {
       if (mounted) setState(() { _loadingFestivals = false; });
     }

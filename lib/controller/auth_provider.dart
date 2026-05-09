@@ -13,8 +13,7 @@ class AuthProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     try {
-      final u = await _authApi.loginWithKakaoAccessToken(kakaoAccessToken);
-      user = u;
+      user = await _authApi.loginWithKakaoAccessToken(kakaoAccessToken);
     } finally {
       isLoading = false;
       notifyListeners();

@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/model/certification_model.dart';
 import 'package:feple/screen/main/tab/my_page/s_certification_list.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
@@ -17,7 +18,7 @@ class FtvCertificationWidget extends StatefulWidget {
 
 class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
   final _certService = sl<CertificationService>();
-  List<Map<String, dynamic>>? _certifications;
+  List<CertificationModel>? _certifications;
   bool _loading = true;
   bool _hasError = false;
 
@@ -172,12 +173,11 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
     );
   }
 
-  Widget _buildCertItem(Map<String, dynamic> cert, AbstractThemeColors colors) {
-    final status = cert['status'] as String? ?? 'PENDING';
-    final festivalTitle = cert['festivalTitle'] as String? ?? '';
-    final imageUrl = cert['festivalPosterUrl'] as String? ?? cert['photoUrl'] as String?;
-    final isApproved = status == 'APPROVED';
-    final isPending = status == 'PENDING';
+  Widget _buildCertItem(CertificationModel cert, AbstractThemeColors colors) {
+    final festivalTitle = cert.festivalTitle;
+    final imageUrl = cert.posterUrl;
+    final isApproved = cert.status == CertStatus.approved;
+    final isPending = cert.status == CertStatus.pending;
 
     Color ringColor;
     if (isApproved) {

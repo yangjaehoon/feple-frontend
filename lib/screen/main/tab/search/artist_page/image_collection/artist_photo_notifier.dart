@@ -40,10 +40,10 @@ class ArtistPhotoNotifier extends ChangeNotifier {
           createdAt: photo.createdAt,
           title: photo.title,
           description: photo.description,
-          likecount: photo.isLiked ? photo.likecount - 1 : photo.likecount + 1,
+          likeCount: photo.isLiked ? photo.likeCount - 1 : photo.likeCount + 1,
           isLiked: !photo.isLiked,
         );
-        photos.sort((a, b) => b.likecount.compareTo(a.likecount));
+        photos.sort((a, b) => b.likeCount.compareTo(a.likeCount));
         notifyListeners();
       }
     } catch (e) {

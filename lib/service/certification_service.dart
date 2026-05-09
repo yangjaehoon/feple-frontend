@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:http/http.dart' as http;
+import 'package:feple/model/certification_model.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/model/presign_response.dart';
 
@@ -46,9 +47,12 @@ class CertificationService {
   }
 
   /// 내 인증 목록 조회
-  Future<List<Map<String, dynamic>>> getMyCertifications() async {
+  Future<List<CertificationModel>> getMyCertifications() async {
     final res = await DioClient.dio.get('/certifications/my');
-    return (res.data as List).cast<Map<String, dynamic>>();
+    return (res.data as List)
+        .cast<Map<String, dynamic>>()
+        .map(CertificationModel.fromJson)
+        .toList();
   }
 
   /// 승인된 페스티벌 ID 목록 조회

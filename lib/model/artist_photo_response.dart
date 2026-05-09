@@ -5,7 +5,7 @@ class ArtistPhotoResponse {
   final DateTime createdAt;
   final String title;
   final String description;
-  final int likecount;
+  final int likeCount;
   final bool isLiked;
 
 
@@ -16,7 +16,7 @@ class ArtistPhotoResponse {
     required this.createdAt,
     required this.title,
     required this.description,
-    required this.likecount,
+    required this.likeCount,
     required this.isLiked,
   });
 
@@ -28,7 +28,7 @@ class ArtistPhotoResponse {
       createdAt: DateTime.parse(json['createdAt']),
       title: json['title'] ?? '',
       description: json['description'] ?? '',
-      likecount: json['likeCount'] ?? 0,
+      likeCount: json['likeCount'] ?? 0,
       isLiked: json['isLiked'] ?? false,
     );
   }

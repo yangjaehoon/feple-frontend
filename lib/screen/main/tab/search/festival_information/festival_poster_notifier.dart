@@ -1,5 +1,6 @@
 import 'package:feple/common/app_events.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/model/certification_model.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:flutter/foundation.dart';
@@ -49,9 +50,9 @@ class FestivalPosterNotifier extends ChangeNotifier {
   Future<void> loadCertState() async {
     try {
       final certs = await certService.getMyCertifications();
-      final mine = certs.where((c) => c['festivalId'] == festivalId).toList();
-      isCertified = mine.any((c) => c['status'] == 'APPROVED');
-      isPending = !isCertified && mine.any((c) => c['status'] == 'PENDING');
+      final mine = certs.where((c) => c.festivalId == festivalId).toList();
+      isCertified = mine.any((c) => c.status == CertStatus.approved);
+      isPending = !isCertified && mine.any((c) => c.status == CertStatus.pending);
       notifyListeners();
     } catch (e) {
       debugPrint('[FestivalPoster] 인증 상태 로드 실패: $e');

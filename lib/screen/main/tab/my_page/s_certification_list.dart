@@ -5,6 +5,7 @@ import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/model/certification_model.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:flutter/material.dart';
 
@@ -20,7 +21,7 @@ class CertificationListScreen extends StatefulWidget {
 
 class _CertificationListScreenState extends State<CertificationListScreen> {
   final _certService = sl<CertificationService>();
-  List<Map<String, dynamic>> _certifications = [];
+  List<CertificationModel> _certifications = [];
   bool _loading = true;
   bool _hasError = false;
 
@@ -202,21 +203,20 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
 }
 
 class _CertCard extends StatelessWidget {
-  final Map<String, dynamic> cert;
+  final CertificationModel cert;
   final AbstractThemeColors colors;
 
   const _CertCard({required this.cert, required this.colors});
 
   @override
   Widget build(BuildContext context) {
-    final status = cert['status'] as String? ?? 'PENDING';
-    final festivalTitle = cert['festivalTitle'] as String? ?? '';
-    final posterUrl = cert['festivalPosterUrl'] as String? ?? cert['photoUrl'] as String?;
-    final rejectionMessage = cert['rejectionMessage'] as String?;
-    final createdAt = cert['createdAt'] as String?;
+    final festivalTitle = cert.festivalTitle;
+    final posterUrl = cert.posterUrl;
+    final rejectionMessage = cert.rejectionMessage;
+    final createdAt = cert.formattedDate;
 
-    final isApproved = status == 'APPROVED';
-    final isPending = status == 'PENDING';
+    final isApproved = cert.status == CertStatus.approved;
+    final isPending = cert.status == CertStatus.pending;
 
     Color statusColor;
     String statusLabel;
@@ -317,9 +317,7 @@ class _CertCard extends StatelessWidget {
                   if (createdAt != null) ...[
                     const SizedBox(height: 4),
                     Text(
-                      createdAt.length >= 10
-                          ? createdAt.substring(0, 10)
-                          : createdAt,
+                      createdAt,
                       style: TextStyle(
                           fontSize: 11, color: colors.textSecondary),
                     ),

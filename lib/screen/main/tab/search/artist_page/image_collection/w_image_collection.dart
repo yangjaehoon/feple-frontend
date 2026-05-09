@@ -214,7 +214,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    '${photo.likecount}',
+                                    '${photo.likeCount}',
                                     style: const TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,

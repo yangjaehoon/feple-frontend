@@ -263,7 +263,7 @@ class _PerformanceCard extends StatelessWidget {
           ),
           if (cardHeight > 28)
             Text(
-              '${entry.startTime} – ${entry.endTime}',
+              entry.timeRange,
               style: TextStyle(
                   color: isFollowed ? Colors.white70 : color.withValues(alpha: 0.7),
                   fontSize: 9,

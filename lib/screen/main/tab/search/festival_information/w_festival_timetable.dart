@@ -63,8 +63,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
       final end = widget.endDate.isNotEmpty ? DateTime.parse(widget.endDate) : start;
       _dates = [];
       for (var d = start; !d.isAfter(end); d = d.add(const Duration(days: 1))) {
-        _dates.add(
-            '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}');
+        _dates.add(d.toYMD);
       }
       _selectedDate = _dates.isNotEmpty ? _dates.first : null;
     } catch (e) {

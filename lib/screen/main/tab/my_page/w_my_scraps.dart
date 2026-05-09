@@ -1,8 +1,6 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_my_page_list_screen.dart';
-import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
@@ -18,47 +16,15 @@ class MyScrapsScreen extends StatelessWidget {
     return MyPageListScreen<Post>(
       title: 'my_scraps'.tr(),
       loader: () => sl<ScrapService>().fetchMyScraps(),
-      skeletonBuilder: (colors) => ListView.separated(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: 5,
-        separatorBuilder: (_, __) =>
-            Divider(thickness: 1, color: colors.listDivider),
-        itemBuilder: (_, __) => Padding(
-          padding: const EdgeInsets.symmetric(
-              horizontal: AppDimens.paddingHorizontal, vertical: 12),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    SkeletonBox(height: 15),
-                    SizedBox(height: 6),
-                    SkeletonBox(width: 80, height: 11),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 12),
-              const SkeletonBox(width: 50, height: 13),
-            ],
-          ),
-        ),
-      ),
+      skeletonBuilder: postListSkeleton,
       itemBuilder: (context, post, reload) {
         final colors = context.appColors;
         return ListTile(
           onTap: () => Navigator.of(context, rootNavigator: true).push(
             SlideRoute(
-              builder: (_) => EnlargePost(
+              builder: (_) => EnlargePost.fromPost(
                 boardname: post.boardDisplayName,
-                id: post.id,
-                nickname: post.nickname,
-                title: post.title,
-                content: post.content,
-                heart: post.likeCount,
-                certified: post.certified,
-                userRole: post.userRole,
+                post: post,
               ),
             ),
           ).then((_) => reload()),

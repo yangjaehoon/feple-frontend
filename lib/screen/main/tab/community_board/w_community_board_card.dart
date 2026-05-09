@@ -75,13 +75,9 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
       ),
       onPostTap: (context, post) => Navigator.of(context, rootNavigator: true).push(
         SlideRoute(
-          builder: (_) => EnlargePost(
+          builder: (_) => EnlargePost.fromPost(
             boardname: widget.boardname,
-            id: post.id,
-            nickname: post.nickname,
-            title: post.title,
-            content: post.content,
-            heart: post.likeCount,
+            post: post,
           ),
         ),
       ),

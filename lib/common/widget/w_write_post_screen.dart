@@ -1,0 +1,149 @@
+import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_keyboard_dismiss.dart';
+import 'package:feple/common/widget/w_secondary_app_bar.dart';
+import 'package:flutter/material.dart';
+
+class WritePostScreen extends StatefulWidget {
+  final String title;
+  final Future<void> Function(String title, String content) onSubmit;
+
+  const WritePostScreen({
+    super.key,
+    required this.title,
+    required this.onSubmit,
+  });
+
+  @override
+  State<WritePostScreen> createState() => _WritePostScreenState();
+}
+
+class _WritePostScreenState extends State<WritePostScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _titleController = TextEditingController();
+  final _contentController = TextEditingController();
+  bool _isSubmitting = false;
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _contentController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    final title = _titleController.text.trim();
+    final content = _contentController.text.trim();
+    setState(() => _isSubmitting = true);
+    try {
+      await widget.onSubmit(title, content);
+      if (!mounted) return;
+      context.showSuccessSnackbar('post_success'.tr());
+      Navigator.of(context).pop();
+    } catch (e) {
+      if (!mounted) return;
+      debugPrint('post submit error: $e');
+      context.showErrorSnackbar('post_failed'.tr());
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
+  }
+
+  InputDecoration _fieldDecoration(String hintKey) {
+    final colors = context.appColors;
+    final radius = BorderRadius.circular(12);
+    return InputDecoration(
+      hintText: hintKey.tr(),
+      hintStyle: TextStyle(color: colors.textSecondary),
+      counterStyle: TextStyle(color: colors.textSecondary, fontSize: 11),
+      border: OutlineInputBorder(borderRadius: radius),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: radius,
+        borderSide: BorderSide(color: colors.activate, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: radius,
+        borderSide: const BorderSide(color: AppColors.errorRed, width: 1.5),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: radius,
+        borderSide: const BorderSide(color: AppColors.errorRed, width: 2),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    return Scaffold(
+      backgroundColor: colors.backgroundMain,
+      body: Column(
+        children: [
+          SecondaryAppBar(
+            title: widget.title,
+            actions: [
+              SizedBox(
+                width: 64,
+                child: TextButton(
+                  onPressed: _isSubmitting ? null : _submit,
+                  child: _isSubmitting
+                      ? const Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Colors.white),
+                          ),
+                        )
+                      : Text(
+                          'done'.tr(),
+                          style: const TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.w700),
+                        ),
+                ),
+              ),
+            ],
+          ),
+          Expanded(
+            child: KeyboardDismiss(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: SingleChildScrollView(
+                  child: Form(
+                    key: _formKey,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: _titleController,
+                          maxLength: 50,
+                          style: TextStyle(color: colors.textTitle),
+                          decoration: _fieldDecoration('enter_title'),
+                          validator: (v) => (v == null || v.trim().isEmpty)
+                              ? 'enter_title'.tr()
+                              : null,
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _contentController,
+                          maxLines: null,
+                          minLines: 8,
+                          maxLength: 500,
+                          style: TextStyle(color: colors.textTitle),
+                          decoration: _fieldDecoration('enter_content'),
+                          validator: (v) => (v == null || v.trim().isEmpty)
+                              ? 'enter_content'.tr()
+                              : null,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

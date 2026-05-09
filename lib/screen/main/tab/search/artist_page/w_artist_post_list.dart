@@ -1,20 +1,10 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/widget/w_animated_list_item.dart';
-import 'package:feple/common/widget/w_async_content_builder.dart';
-import 'package:feple/common/widget/w_empty_state.dart';
-import 'package:feple/common/widget/w_secondary_app_bar.dart';
-import 'package:feple/common/widget/w_write_post_fab.dart';
-import 'package:feple/model/post_model.dart';
-import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
-import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
-import 'package:feple/screen/main/tab/search/artist_page/w_artist_write_post.dart';
+import 'package:feple/common/widget/w_board_post_list_screen.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
-import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
-/// 아티스트별 전체 게시글 목록 화면
-class ArtistPostListScreen extends StatefulWidget {
+class ArtistPostListScreen extends StatelessWidget {
   final int artistId;
   final String artistName;
 
@@ -25,104 +15,14 @@ class ArtistPostListScreen extends StatefulWidget {
   });
 
   @override
-  State<ArtistPostListScreen> createState() => _ArtistPostListScreenState();
-}
-
-class _ArtistPostListScreenState extends State<ArtistPostListScreen> {
-  final PostService _postService = sl<PostService>();
-  late Future<List<Post>> _postsFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _postsFuture = _postService.fetchArtistPosts(widget.artistId);
-  }
-
-  Future<void> _refresh() async {
-    setState(() {
-      _postsFuture = _postService.fetchArtistPosts(widget.artistId);
-    });
-    try {
-      await _postsFuture;
-    } catch (_) {}
-  }
-
-  String get _boardname => 'name_board'.tr(args: [widget.artistName]);
-
-  @override
   Widget build(BuildContext context) {
-    final colors = context.appColors;
-    return Scaffold(
-      backgroundColor: colors.backgroundMain,
-      floatingActionButton: WritePostFab(
-        onPressed: () => Navigator.push(
-          context,
-          SlideRoute(
-            builder: (_) => ArtistWritePost(
-              artistId: widget.artistId,
-              artistName: widget.artistName,
-            ),
-          ),
-        ).then((_) => _refresh()),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: Column(
-        children: [
-          SecondaryAppBar(title: _boardname),
-          Expanded(
-            child: RefreshIndicator(
-              color: colors.activate,
-              onRefresh: _refresh,
-              child: AsyncContentBuilder<List<Post>>(
-          future: _postsFuture,
-          onRetry: _refresh,
-          emptyBuilder: (_) => ListView(
-            children: [
-              const SizedBox(height: 80),
-              EmptyState(
-                icon: Icons.article_outlined,
-                title: 'no_posts_yet'.tr(),
-                subtitle: 'first_post_hint'.tr(),
-              ),
-            ],
-          ),
-          builder: (context, posts) => ListView.separated(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.only(bottom: 80),
-            itemCount: posts.length,
-            itemBuilder: (context, index) {
-              final post = posts[index];
-              return AnimatedListItem(
-                index: index,
-                child: PostListTile(
-                  post: post,
-                  onTap: () => Navigator.of(context, rootNavigator: true).push(
-                    SlideRoute(
-                      builder: (_) => EnlargePost(
-                        boardname: _boardname,
-                        id: post.id,
-                        nickname: post.nickname,
-                        title: post.title,
-                        content: post.content,
-                        heart: post.likeCount,
-                        certified: post.certified,
-                        userRole: post.userRole,
-                      ),
-                    ),
-                  ).then((_) => _refresh()),
-                ),
-              );
-            },
-            separatorBuilder: (_, __) => Divider(
-              thickness: 1,
-              color: colors.listDivider,
-            ),
-              ),
-            ),
-          ),
-          ),
-        ],
-      ),
+    final svc = sl<PostService>();
+    return BoardPostListScreen(
+      boardname: 'name_board'.tr(args: [artistName]),
+      writeScreenTitle: 'name_board_write'.tr(args: [artistName]),
+      fetchPosts: () => svc.fetchArtistPosts(artistId),
+      onSubmitPost: (t, c) =>
+          svc.createArtistPost(artistId: artistId, title: t, content: c),
     );
   }
 }

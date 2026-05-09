@@ -58,18 +58,18 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
 
     int minH = 12;
     for (final e in _filtered) {
-      final h = int.tryParse(e.startTime.split(':')[0]);
-      if (h != null && h < minH) minH = h;
+      final hour = int.tryParse(e.startTime.split(':')[0]);
+      if (hour != null && hour < minH) minH = hour;
     }
     _startHour = minH;
 
     int maxH = minH + 1;
     for (final e in _filtered) {
       final parts = e.endTime.split(':');
-      final h = int.tryParse(parts[0]);
-      final m = int.tryParse(parts.length > 1 ? parts[1] : '0');
-      if (h == null || m == null) continue;
-      final endH = m > 0 ? h + 1 : h;
+      final hour = int.tryParse(parts[0]);
+      final minute = int.tryParse(parts.length > 1 ? parts[1] : '0');
+      if (hour == null || minute == null) continue;
+      final endH = minute > 0 ? hour + 1 : hour;
       if (endH > maxH) maxH = endH;
     }
     _endHour = maxH;
@@ -79,9 +79,9 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
       _userEntriesMap[_selectedDate ?? ''] ?? [];
 
   Color _nextColor() {
-    final c = kUserScheduleColors[_colorCursor % kUserScheduleColors.length];
+    final color = kUserScheduleColors[_colorCursor % kUserScheduleColors.length];
     _colorCursor++;
-    return c;
+    return color;
   }
 
   void _upsert(UserEntry entry) {

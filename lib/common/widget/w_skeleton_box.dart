@@ -50,15 +50,15 @@ class _SkeletonBoxState extends State<SkeletonBox>
     return AnimatedBuilder(
       animation: _shimmer,
       builder: (_, __) {
-        final v = _shimmer.value;
+        final shimmerValue = _shimmer.value;
         return Container(
           width: widget.width,
           height: widget.height,
           decoration: BoxDecoration(
             borderRadius: widget.borderRadius,
             gradient: LinearGradient(
-              begin: Alignment(v - 1, 0),
-              end: Alignment(v + 1, 0),
+              begin: Alignment(shimmerValue - 1, 0),
+              end: Alignment(shimmerValue + 1, 0),
               colors: [base, highlight, base],
             ),
           ),

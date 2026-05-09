@@ -1,0 +1,86 @@
+import 'package:feple/model/festival_artist_item.dart';
+import 'package:feple/screen/main/tab/search/festival_information/festival_artists_notifier.dart';
+import 'package:feple/service/artist_follow_service.dart';
+import 'package:feple/service/festival_service.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+class MockFestivalService extends Mock implements FestivalService {}
+class MockArtistFollowService extends Mock implements ArtistFollowService {}
+
+FestivalArtistItem _artist(int id, String name) =>
+    FestivalArtistItem(artistId: id, artistName: name);
+
+void main() {
+  late MockFestivalService mockFestivalService;
+  late MockArtistFollowService mockFollowService;
+
+  setUp(() {
+    mockFestivalService = MockFestivalService();
+    mockFollowService = MockArtistFollowService();
+  });
+
+  FestivalArtistsNotifier _make({int? userId}) => FestivalArtistsNotifier(
+        festivalId: 10,
+        userId: userId,
+        festivalService: mockFestivalService,
+        followService: mockFollowService,
+      );
+
+  group('fetch', () {
+    test('팔로우한 아티스트를 앞으로 정렬', () async {
+      final artists = [_artist(1, 'A'), _artist(2, 'B'), _artist(3, 'C')];
+      when(() => mockFestivalService.fetchFestivalArtists(10))
+          .thenAnswer((_) async => artists);
+      when(() => mockFollowService.getFollowingIds(99))
+          .thenAnswer((_) async => {2, 3});
+
+      final notifier = _make(userId: 99);
+      await notifier.fetch();
+
+      expect(notifier.artists.first.artistId, anyOf(2, 3));
+      expect(notifier.artists.last.artistId, 1);
+      expect(notifier.followedIds, {2, 3});
+      expect(notifier.isLoading, false);
+    });
+
+    test('userId null이면 getFollowingIds 호출 안 함', () async {
+      when(() => mockFestivalService.fetchFestivalArtists(10))
+          .thenAnswer((_) async => [_artist(1, 'A')]);
+
+      final notifier = _make(userId: null);
+      await notifier.fetch();
+
+      verifyNever(() => mockFollowService.getFollowingIds(any()));
+      expect(notifier.followedIds, isEmpty);
+    });
+
+    test('fetchFestivalArtists 예외 시 isLoading false, onError 호출', () async {
+      when(() => mockFestivalService.fetchFestivalArtists(10))
+          .thenThrow(Exception('network'));
+
+      final notifier = _make();
+      String? errorKey;
+      notifier.onError = (k) => errorKey = k;
+
+      await notifier.fetch();
+
+      expect(notifier.isLoading, false);
+      expect(notifier.artists, isEmpty);
+      expect(errorKey, 'err_fetch_data');
+    });
+
+    test('팔로우 없는 경우 원래 순서 유지', () async {
+      final artists = [_artist(1, 'A'), _artist(2, 'B')];
+      when(() => mockFestivalService.fetchFestivalArtists(10))
+          .thenAnswer((_) async => artists);
+      when(() => mockFollowService.getFollowingIds(99))
+          .thenAnswer((_) async => {});
+
+      final notifier = _make(userId: 99);
+      await notifier.fetch();
+
+      expect(notifier.artists.map((a) => a.artistId).toList(), [1, 2]);
+    });
+  });
+}

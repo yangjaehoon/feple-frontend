@@ -1,6 +1,7 @@
 import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/festival_preview.dart';
+import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/network/dio_client.dart';
 
 class FestivalService {
@@ -38,6 +39,15 @@ class FestivalService {
     final resp = await DioClient.dio.get('/festivals/$festivalId/artists');
     return (resp.data as List)
         .map((e) => FestivalArtistItem.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<List<TimetableEntry>> fetchTimetable(int festivalId) async {
+    final resp = await DioClient.dio.get('/festivals/$festivalId/timetable');
+    final raw = resp.data;
+    return (raw is List ? raw : <dynamic>[])
+        .whereType<Map<String, dynamic>>()
+        .map((e) => TimetableEntry.fromJson(e))
         .toList();
   }
 }

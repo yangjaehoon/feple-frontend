@@ -274,6 +274,18 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  void _clearErrors() {
+    _emailError = null;
+    _passwordError = null;
+    _authError = null;
+  }
+
+  Future<void> _handleLoginSuccess(dynamic user) async {
+    if (!mounted) return;
+    await context.read<UserProvider>().setUser(user);
+    FcmService.instance.init().catchError((e) => debugPrint('[FCM] init failed: $e'));
+  }
+
   Future<void> _loginWithEmail() async {
     final email = emailController.text.trim();
     final password = passwordController.text;
@@ -285,22 +297,19 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    setState(() { _isEmailLoading = true; _emailError = null; _passwordError = null; _authError = null; });
-    final userProvider = context.read<UserProvider>();
+    setState(() { _isEmailLoading = true; _clearErrors(); });
     try {
       final user = await AuthService.instance.loginWithEmail(email, password);
-      if (!mounted) return;
-      await userProvider.setUser(user);
-      FcmService.instance.init().catchError((e) => debugPrint('[FCM] init failed: $e'));
+      await _handleLoginSuccess(user);
     } on EmailNotVerifiedException {
       if (mounted) setState(() => _emailError = 'email_not_verified'.tr());
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       final msg = AuthService.instance.firebaseErrorMessage(e.code);
       if (e.code == 'invalid-email') {
-        setState(() => _emailError = msg);          // 형식 오류 → 이메일 필드 테두리
+        setState(() => _emailError = msg);
       } else {
-        setState(() => _authError = msg);           // 인증 실패 → 테두리 없이 텍스트만
+        setState(() => _authError = msg);
       }
     } catch (_) {
       if (mounted) setState(() => _authError = 'login_failed'.tr());
@@ -358,13 +367,10 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> signInWithKakao(BuildContext context) async {
     if (_isEmailLoading || _isKakaoLoading) return;
-    setState(() { _isKakaoLoading = true; _emailError = null; _passwordError = null; _authError = null; });
-    final userProvider = context.read<UserProvider>();
+    setState(() { _isKakaoLoading = true; _clearErrors(); });
     try {
       final user = await AuthService.instance.loginWithKakao();
-      if (!mounted) return;
-      await userProvider.setUser(user);
-      FcmService.instance.init().catchError((e) => debugPrint('[FCM] init failed: $e'));
+      await _handleLoginSuccess(user);
     } on PlatformException catch (e) {
       debugPrint('=== 카카오 로그인 실패 에러 ===\n$e\n======================');
       if (e.code != 'CANCELED' && mounted) {

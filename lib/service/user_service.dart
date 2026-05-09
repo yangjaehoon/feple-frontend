@@ -32,6 +32,15 @@ class UserService {
     return resp.data as List;
   }
 
+  Future<Set<String>> fetchFollowedArtistNames(int userId) async {
+    final raw = await fetchFollowing(userId);
+    return raw
+        .whereType<Map<String, dynamic>>()
+        .map((a) => a['name'] as String? ?? '')
+        .where((name) => name.isNotEmpty)
+        .toSet();
+  }
+
   Future<List<dynamic>> fetchPosts(int userId) async {
     final resp = await DioClient.dio.get('/users/$userId/posts');
     return resp.data as List;

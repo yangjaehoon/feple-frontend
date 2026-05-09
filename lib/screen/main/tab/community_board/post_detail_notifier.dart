@@ -1,10 +1,13 @@
 import 'package:feple/injection.dart';
-import 'package:feple/network/dio_client.dart';
+import 'package:feple/service/comment_service.dart';
+import 'package:feple/service/post_service.dart';
 import 'package:feple/service/scrap_service.dart';
 import 'package:flutter/foundation.dart';
 
 class PostDetailNotifier extends ChangeNotifier {
   final int postId;
+  final _postService = sl<PostService>();
+  final _commentService = sl<CommentService>();
   final _scrapService = sl<ScrapService>();
 
   List<Map<String, dynamic>> comments = [];
@@ -30,15 +33,15 @@ class PostDetailNotifier extends ChangeNotifier {
 
   Future<void> loadPostState() async {
     try {
-      final results = await Future.wait([
-        DioClient.dio.get('/posts/$postId'),
-        DioClient.dio.get('/posts/$postId/liked'),
-        DioClient.dio.get('/posts/$postId/scraped'),
-      ]);
-      heartCount = (results[0].data['likeCount'] as num?)?.toInt() ?? heartCount;
-      scrapCount = (results[0].data['scrapCount'] as num?)?.toInt() ?? scrapCount;
-      liked = results[1].data as bool? ?? liked;
-      scraped = results[2].data as bool? ?? scraped;
+      // 세 요청을 병렬 실행 (LoD: DioClient를 직접 알지 않음)
+      final countsFuture = _postService.fetchCounts(postId);
+      final likedFuture = _postService.isLiked(postId);
+      final scrapedFuture = _scrapService.isScraped(postId);
+      final counts = await countsFuture;
+      liked = await likedFuture;
+      scraped = await scrapedFuture;
+      heartCount = counts.likeCount;
+      scrapCount = counts.scrapCount;
       notifyListeners();
     } catch (e) {
       debugPrint('loadPostState error: $e');
@@ -47,8 +50,7 @@ class PostDetailNotifier extends ChangeNotifier {
 
   Future<void> fetchComments() async {
     try {
-      final resp = await DioClient.dio.get('/comments/post/$postId');
-      comments = (resp.data as List).map((e) => e as Map<String, dynamic>).toList();
+      comments = await _commentService.fetchPostComments(postId);
       notifyListeners();
     } catch (e) {
       debugPrint('fetchComments error: $e');
@@ -73,11 +75,11 @@ class PostDetailNotifier extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await DioClient.dio.post('/comments', data: {
-        'content': comment,
-        'postId': postId,
-        if (parentId != null) 'parentId': parentId,
-      });
+      await _commentService.submitComment(
+        content: comment,
+        postId: postId,
+        parentId: parentId,
+      );
       await fetchComments();
       onCommentPosted?.call('comment_posted');
     } catch (e) {
@@ -92,14 +94,12 @@ class PostDetailNotifier extends ChangeNotifier {
   Future<void> toggleCommentLike(int commentId, int? userId) async {
     if (userId == null) return;
     try {
-      final resp = await DioClient.dio.post('/comments/$commentId/like');
-      final bool liked = resp.data['liked'] as bool;
-      final int likeCount = (resp.data['likeCount'] as num).toInt();
+      final result = await _commentService.toggleCommentLike(commentId);
       final idx = comments.indexWhere((c) => c['id'] == commentId);
       if (idx != -1) {
         comments[idx] = Map<String, dynamic>.from(comments[idx])
-          ..['liked'] = liked
-          ..['likeCount'] = likeCount;
+          ..['liked'] = result.liked
+          ..['likeCount'] = result.likeCount;
         notifyListeners();
       }
     } catch (e) {
@@ -110,13 +110,16 @@ class PostDetailNotifier extends ChangeNotifier {
   Future<void> toggleLike(int? userId) async {
     if (isToggling || userId == null) return;
     isToggling = true;
+    // 낙관적 업데이트 (TDA: 서버 응답을 물어서 결정하는 대신, 바로 토글 지시)
+    final wasLiked = liked;
+    liked = !liked;
+    heartCount += liked ? 1 : -1;
     notifyListeners();
     try {
-      final resp = await DioClient.dio.post('/posts/$postId/like');
-      final bool nowLiked = resp.data as bool;
-      liked = nowLiked;
-      heartCount = nowLiked ? heartCount + 1 : heartCount - 1;
+      await _postService.toggleLike(postId);
     } catch (e) {
+      liked = wasLiked;
+      heartCount += liked ? 1 : -1;
       debugPrint('toggleLike error: $e');
       onError?.call('like_failed');
     } finally {
@@ -128,12 +131,17 @@ class PostDetailNotifier extends ChangeNotifier {
   Future<void> toggleScrap(int? userId) async {
     if (isScrapping || userId == null) return;
     isScrapping = true;
+    // 낙관적 업데이트 (TDA: 서버 응답 bool을 받아 결정하는 대신, 바로 토글 지시)
+    final wasScraped = scraped;
+    scraped = !scraped;
+    scrapCount += scraped ? 1 : -1;
     notifyListeners();
     try {
-      scraped = await _scrapService.toggleScrap(postId);
-      scrapCount = scraped ? scrapCount + 1 : scrapCount - 1;
+      await _scrapService.toggleScrap(postId);
       onCommentPosted?.call(scraped ? 'scrap_done' : 'scrap_cancel');
     } catch (e) {
+      scraped = wasScraped;
+      scrapCount += wasScraped ? 1 : -1;
       debugPrint('toggleScrap error: $e');
       onError?.call('scrap_failed');
     } finally {

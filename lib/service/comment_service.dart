@@ -14,4 +14,31 @@ class CommentService {
       throw Exception('댓글 삭제 실패: ${resp.statusCode}');
     }
   }
+
+  /// 게시글 댓글 목록 조회 (상세 화면용 — Map 포맷, liked/likeCount 포함)
+  Future<List<Map<String, dynamic>>> fetchPostComments(int postId) async {
+    final resp = await DioClient.dio.get('/comments/post/$postId');
+    return (resp.data as List).cast<Map<String, dynamic>>();
+  }
+
+  /// 댓글 작성 (command only — CQS)
+  Future<void> submitComment({
+    required String content,
+    required int postId,
+    int? parentId,
+  }) =>
+      DioClient.dio.post('/comments', data: {
+        'content': content,
+        'postId': postId,
+        if (parentId != null) 'parentId': parentId,
+      });
+
+  /// 댓글 좋아요 토글 → 서버 반환 상태로 UI 즉시 반영
+  Future<({bool liked, int likeCount})> toggleCommentLike(int commentId) async {
+    final resp = await DioClient.dio.post('/comments/$commentId/like');
+    return (
+      liked: resp.data['liked'] as bool,
+      likeCount: (resp.data['likeCount'] as num).toInt(),
+    );
+  }
 }

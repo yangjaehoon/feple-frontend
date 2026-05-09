@@ -43,41 +43,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
   List<String> _dates = [];
   String? _selectedDate;
 
-  List<TimetableEntry> _cachedFiltered = [];
-  List<String> _cachedStages = [];
-  int _cachedStartHour = 12;
-  int _cachedEndHour = 13;
-
-  void _rebuildCache() {
-    _cachedFiltered = _selectedDate == null
-        ? []
-        : _entries.where((e) => e.festivalDate == _selectedDate).toList();
-
-    final seen = <String, int>{};
-    for (final e in _cachedFiltered) {
-      seen.putIfAbsent(e.stageName, () => e.stageOrder);
-    }
-    final sorted = seen.entries.toList()..sort((a, b) => a.value.compareTo(b.value));
-    _cachedStages = sorted.map((e) => e.key).toList();
-
-    int minH = 12;
-    for (final e in _cachedFiltered) {
-      final hour = int.tryParse(e.startTime.split(':')[0]);
-      if (hour != null && hour < minH) minH = hour;
-    }
-    _cachedStartHour = minH;
-
-    int maxH = minH + 1;
-    for (final e in _cachedFiltered) {
-      final parts = e.endTime.split(':');
-      final hour = int.tryParse(parts[0]);
-      final minute = int.tryParse(parts.length > 1 ? parts[1] : '0');
-      if (hour == null || minute == null) continue;
-      final endH = minute > 0 ? hour + 1 : hour;
-      if (endH > maxH) maxH = endH;
-    }
-    _cachedEndHour = maxH;
-  }
+  TimetableRange _range = const TimetableRange(filtered: [], stages: [], startHour: 12, endHour: 13);
 
   @override
   void initState() {
@@ -85,6 +51,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
     _vContent.addListener(_onV);
     _hContent.addListener(_onH);
     _buildDates();
+    _range = computeTimetableRange(_entries, _selectedDate);
     _fetch();
   }
 
@@ -119,7 +86,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
           _entries = list;
           _followedNames = followed;
           _loading = false;
-          _rebuildCache();
+          _range = computeTimetableRange(_entries, _selectedDate);
         });
       }
     } catch (e) {
@@ -182,7 +149,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                       style: TextStyle(
                           fontSize: 15, fontWeight: FontWeight.w700, color: colors.textTitle)),
                   const Spacer(),
-                  if (!_loading && _error == null && _cachedFiltered.isNotEmpty)
+                  if (!_loading && _error == null && _range.filtered.isNotEmpty)
                     GestureDetector(
                       onTap: () => Navigator.push(
                         context,
@@ -219,7 +186,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                     return GestureDetector(
                       onTap: () => setState(() {
                         _selectedDate = date;
-                        _rebuildCache();
+                        _range = computeTimetableRange(_entries, _selectedDate);
                       }),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 150),
@@ -260,15 +227,15 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                   }),
                 ),
               )
-            else if (_cachedFiltered.isEmpty)
+            else if (_range.filtered.isEmpty)
               EmptyState(icon: Icons.schedule_rounded, title: 'no_timetable'.tr())
             else
               LayoutBuilder(
                 builder: (_, constraints) => TimetableGrid(
-                  stages: _cachedStages,
-                  filtered: _cachedFiltered,
-                  startHour: _cachedStartHour,
-                  endHour: _cachedEndHour,
+                  stages: _range.stages,
+                  filtered: _range.filtered,
+                  startHour: _range.startHour,
+                  endHour: _range.endHour,
                   followedNames: _followedNames,
                   availableW: constraints.maxWidth,
                   hHeader: _hHeader,

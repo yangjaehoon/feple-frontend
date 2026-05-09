@@ -1,3 +1,50 @@
+class TimetableRange {
+  final List<TimetableEntry> filtered;
+  final List<String> stages;
+  final int startHour;
+  final int endHour;
+
+  const TimetableRange({
+    required this.filtered,
+    required this.stages,
+    required this.startHour,
+    required this.endHour,
+  });
+}
+
+TimetableRange computeTimetableRange(List<TimetableEntry> entries, String? date) {
+  const defaultStart = 12;
+  final filtered = date == null
+      ? <TimetableEntry>[]
+      : entries.where((e) => e.festivalDate == date).toList();
+
+  final seen = <String, int>{};
+  for (final e in filtered) {
+    seen.putIfAbsent(e.stageName, () => e.stageOrder);
+  }
+  final stages = (seen.entries.toList()..sort((a, b) => a.value.compareTo(b.value)))
+      .map((e) => e.key)
+      .toList();
+
+  int startHour = defaultStart;
+  for (final e in filtered) {
+    final hour = int.tryParse(e.startTime.split(':')[0]);
+    if (hour != null && hour < startHour) startHour = hour;
+  }
+
+  int endHour = startHour + 1;
+  for (final e in filtered) {
+    final parts = e.endTime.split(':');
+    final hour = int.tryParse(parts[0]);
+    final minute = int.tryParse(parts.length > 1 ? parts[1] : '0');
+    if (hour == null || minute == null) continue;
+    final candidateEnd = minute > 0 ? hour + 1 : hour;
+    if (candidateEnd > endHour) endHour = candidateEnd;
+  }
+
+  return TimetableRange(filtered: filtered, stages: stages, startHour: startHour, endHour: endHour);
+}
+
 /// 타임테이블 항목 모델
 class TimetableEntry {
   final int id;

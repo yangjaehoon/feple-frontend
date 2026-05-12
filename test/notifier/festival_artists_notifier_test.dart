@@ -20,7 +20,7 @@ void main() {
     mockFollowService = MockArtistFollowService();
   });
 
-  FestivalArtistsNotifier _make({int? userId}) => FestivalArtistsNotifier(
+  FestivalArtistsNotifier make({int? userId}) => FestivalArtistsNotifier(
         festivalId: 10,
         userId: userId,
         festivalService: mockFestivalService,
@@ -35,7 +35,7 @@ void main() {
       when(() => mockFollowService.getFollowingIds(99))
           .thenAnswer((_) async => {2, 3});
 
-      final notifier = _make(userId: 99);
+      final notifier = make(userId: 99);
       await notifier.fetch();
 
       expect(notifier.artists.first.artistId, anyOf(2, 3));
@@ -48,7 +48,7 @@ void main() {
       when(() => mockFestivalService.fetchFestivalArtists(10))
           .thenAnswer((_) async => [_artist(1, 'A')]);
 
-      final notifier = _make(userId: null);
+      final notifier = make(userId: null);
       await notifier.fetch();
 
       verifyNever(() => mockFollowService.getFollowingIds(any()));
@@ -59,7 +59,7 @@ void main() {
       when(() => mockFestivalService.fetchFestivalArtists(10))
           .thenThrow(Exception('network'));
 
-      final notifier = _make();
+      final notifier = make();
       String? errorKey;
       notifier.onError = (k) => errorKey = k;
 
@@ -77,7 +77,7 @@ void main() {
       when(() => mockFollowService.getFollowingIds(99))
           .thenAnswer((_) async => {});
 
-      final notifier = _make(userId: 99);
+      final notifier = make(userId: 99);
       await notifier.fetch();
 
       expect(notifier.artists.map((a) => a.artistId).toList(), [1, 2]);

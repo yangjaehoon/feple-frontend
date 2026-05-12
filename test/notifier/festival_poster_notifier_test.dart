@@ -33,7 +33,7 @@ void main() {
     sl.unregister<FestivalService>();
   });
 
-  FestivalPosterNotifier _make(int festivalId) => FestivalPosterNotifier(
+  FestivalPosterNotifier make(int festivalId) => FestivalPosterNotifier(
         festivalId: festivalId,
         certService: mockCertService,
       );
@@ -45,7 +45,7 @@ void main() {
             _cert(99, CertStatus.approved),
           ]);
 
-      final notifier = _make(5);
+      final notifier = make(5);
       await notifier.loadCertState();
 
       expect(notifier.isCertified, true);
@@ -57,7 +57,7 @@ void main() {
             _cert(5, CertStatus.pending),
           ]);
 
-      final notifier = _make(5);
+      final notifier = make(5);
       await notifier.loadCertState();
 
       expect(notifier.isCertified, false);
@@ -69,7 +69,7 @@ void main() {
             _cert(99, CertStatus.approved),
           ]);
 
-      final notifier = _make(5);
+      final notifier = make(5);
       await notifier.loadCertState();
 
       expect(notifier.isCertified, false);
@@ -81,7 +81,7 @@ void main() {
             _cert(5, CertStatus.rejected),
           ]);
 
-      final notifier = _make(5);
+      final notifier = make(5);
       await notifier.loadCertState();
 
       expect(notifier.isCertified, false);
@@ -91,7 +91,7 @@ void main() {
     test('서비스 예외 시 크래시 없이 기본값 유지', () async {
       when(() => mockCertService.getMyCertifications()).thenThrow(Exception('err'));
 
-      final notifier = _make(5);
+      final notifier = make(5);
       await expectLater(notifier.loadCertState(), completes);
 
       expect(notifier.isCertified, false);
@@ -104,7 +104,7 @@ void main() {
       when(() => mockFestivalService.toggleLike(5))
           .thenAnswer((_) async => true);
 
-      final notifier = _make(5);
+      final notifier = make(5);
       notifier.liked = false;
       await notifier.toggleLike();
 
@@ -114,7 +114,7 @@ void main() {
     test('서비스 예외 시 liked 상태 변경 없음', () async {
       when(() => mockFestivalService.toggleLike(5)).thenThrow(Exception('err'));
 
-      final notifier = _make(5);
+      final notifier = make(5);
       notifier.liked = false;
       await notifier.toggleLike();
 

@@ -1,8 +1,8 @@
 /// 페스티벌 장르 목록 (서버 enum 값, 표시 이름)
 const kGenreOptions = [
-  ('HIP_HOP', 'Hip-hop'),
-  ('INDIE', 'Indie'),
-  ('BAND', 'Band'),
+  ('HIP_HOP', 'genre_hip_hop'),
+  ('INDIE', 'genre_indie'),
+  ('BAND', 'genre_band'),
   ('ETC', 'genre_etc'),
 ];
 

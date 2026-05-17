@@ -23,4 +23,5 @@ class Artist {
       followerCount: (json['followerCount'] ?? 0) as int,
     );
   }
+
 }

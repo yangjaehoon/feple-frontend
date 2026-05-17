@@ -107,6 +107,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
             ? allArtists
             : allArtists.where((a) => a.genre == _selectedGenre).toList();
 
+
         return Padding(
           padding: const EdgeInsets.only(top: 16),
           child: Column(
@@ -137,7 +138,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
                       onTap: () => setState(() => _selectedGenre = null),
                     ),
                     ...genres.map((genre) => _GenreChip(
-                          label: genre,
+                          label: _genreLabel(genre),
                           selected: _selectedGenre == genre,
                           onTap: () => setState(() => _selectedGenre = genre),
                         )),
@@ -238,6 +239,17 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
         );
       },
     );
+  }
+}
+
+String _genreLabel(String genre) {
+  switch (genre) {
+    case 'Band': return 'genre_band'.tr();
+    case 'Hip-hop': return 'genre_hip_hop'.tr();
+    case 'Indie': return 'genre_indie'.tr();
+    case 'Ballad': return 'genre_ballad'.tr();
+    case 'R&B': return 'genre_rnb'.tr();
+    default: return 'genre_etc'.tr();
   }
 }
 

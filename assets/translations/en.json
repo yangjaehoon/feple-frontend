@@ -325,7 +325,7 @@
   "photo_add": "Add photo",
 
   "song_request_button": "Request a Song",
-  "song_request_title": "Request a song for {}",
+  "song_request_title": "Request a Song",
   "song_request_desc": "Request a song you'd like to see. An admin will review and add it.",
   "song_request_song_title": "Song title",
   "song_request_song_title_hint": "Enter the song title",

@@ -260,6 +260,9 @@
   "schedule_upcoming": "예정된 일정",
   "schedule_past": "지난 일정",
   "artist_schedule_title": "{} 일정",
+  "artist_songs_title": "{} 노래",
+  "no_songs": "등록된 곡이 없습니다.",
+  "youtube_open_failed": "YouTube Music을 열 수 없습니다.",
   "follower_count": "팔로워 {}",
 
   "booth_map_title": "부스 지도",

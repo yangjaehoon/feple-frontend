@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_schedule.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_artist_songs.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_main_image_swiper.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_board.dart';
 
@@ -83,6 +84,11 @@ class _ArtistPageState extends State<ArtistPage> {
                 ),
                 ArtistBoard(
                   key: ValueKey('board_$_refreshKey'),
+                  artistId: widget.artistId,
+                  artistName: widget.artistName,
+                ),
+                ArtistSongs(
+                  key: ValueKey('songs_$_refreshKey'),
                   artistId: widget.artistId,
                   artistName: widget.artistName,
                 ),

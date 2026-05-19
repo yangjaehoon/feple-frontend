@@ -4,6 +4,7 @@ class SongModel {
   final String youtubeVideoId;
   final String? thumbnailUrl;
   final String youtubeUrl;
+  final int festivalCount;
 
   const SongModel({
     required this.id,
@@ -11,6 +12,7 @@ class SongModel {
     required this.youtubeVideoId,
     this.thumbnailUrl,
     required this.youtubeUrl,
+    this.festivalCount = 0,
   });
 
   factory SongModel.fromJson(Map<String, dynamic> json) {
@@ -21,6 +23,7 @@ class SongModel {
       thumbnailUrl: json['thumbnailUrl'] as String?,
       youtubeUrl: json['youtubeUrl'] as String? ??
           'https://music.youtube.com/watch?v=${json['youtubeVideoId']}',
+      festivalCount: (json['festivalCount'] as num?)?.toInt() ?? 0,
     );
   }
 }

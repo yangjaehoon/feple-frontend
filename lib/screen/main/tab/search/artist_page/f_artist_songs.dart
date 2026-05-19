@@ -84,7 +84,7 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
                 icon: const Icon(Icons.add_rounded, size: 16),
                 label: Text('song_request_button'.tr()),
                 style: TextButton.styleFrom(
-                  foregroundColor: context.appColors.activate,
+                  foregroundColor: Colors.white,
                   textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                 ),
               ),

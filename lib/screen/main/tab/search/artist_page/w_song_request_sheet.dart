@@ -101,7 +101,7 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
               child: Text(
-                'song_request_title'.tr(args: [widget.artistName]),
+                'song_request_title'.tr(),
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,

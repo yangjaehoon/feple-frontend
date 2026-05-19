@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -8,6 +9,7 @@ import 'package:feple/injection.dart';
 import 'package:feple/model/song_model.dart';
 import 'package:feple/service/song_service.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
+import 'package:feple/screen/main/tab/search/artist_page/f_artist_songs.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -75,7 +77,15 @@ class _ArtistSongsState extends State<ArtistSongs> {
             icon: Icons.music_note_rounded,
             title: 'artist_songs_title'.tr(args: [widget.artistName]),
             headerColor: colors.activate,
-            onTap: () {},
+            onTap: () => Navigator.push(
+              context,
+              SlideRoute(
+                builder: (_) => ArtistSongsScreen(
+                  artistId: widget.artistId,
+                  artistName: widget.artistName,
+                ),
+              ),
+            ),
           ),
           _buildSongList(colors),
         ],
@@ -146,17 +156,59 @@ class _ArtistSongsState extends State<ArtistSongs> {
           );
         }
 
-        return ListView.separated(
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: songs.length,
-          itemBuilder: (_, index) => _buildSongItem(songs[index], index, colors),
-          separatorBuilder: (_, __) => Divider(
-            thickness: 1,
-            color: colors.listDivider,
-            indent: AppDimens.paddingHorizontal,
-            endIndent: AppDimens.paddingHorizontal,
-          ),
+        songs.sort((a, b) {
+          final c = b.festivalCount.compareTo(a.festivalCount);
+          return c != 0 ? c : a.title.compareTo(b.title);
+        });
+        final preview = songs.take(5).toList();
+
+        return Column(
+          children: [
+            ListView.separated(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: preview.length,
+              itemBuilder: (_, index) =>
+                  _buildSongItem(preview[index], index, colors),
+              separatorBuilder: (_, __) => Divider(
+                thickness: 1,
+                color: colors.listDivider,
+                indent: AppDimens.paddingHorizontal,
+                endIndent: AppDimens.paddingHorizontal,
+              ),
+            ),
+            if (songs.length > 5)
+              InkWell(
+                onTap: () => Navigator.push(
+                  context,
+                  SlideRoute(
+                    builder: (_) => ArtistSongsScreen(
+                      artistId: widget.artistId,
+                      artistName: widget.artistName,
+                    ),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'see_more'.tr(),
+                        style: TextStyle(
+                          fontSize: AppDimens.fontSizeSm,
+                          fontWeight: FontWeight.w600,
+                          color: colors.activate,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(Icons.keyboard_arrow_down_rounded,
+                          size: 18, color: colors.activate),
+                    ],
+                  ),
+                ),
+              ),
+          ],
         );
       },
     );

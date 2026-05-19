@@ -44,7 +44,7 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
   }
 
   Future<void> _refresh() async {
-    setState(() => _future = _fetch());
+    setState(() { _future = _fetch(); });
     try {
       await _future;
     } catch (_) {}

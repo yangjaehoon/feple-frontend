@@ -153,6 +153,7 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
                 isLoading: _submitting,
                 isSuccess: _submitSuccess,
                 onPressed: _submit,
+                backgroundColor: context.appColors.activate,
                 height: 50,
                 borderRadius: 12,
               ),

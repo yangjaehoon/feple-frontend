@@ -71,7 +71,7 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
                 icon: Icons.verified_rounded,
                 label: 'certification_badge'.tr(),
                 value: certCount,
-                color: AppColors.sunnyYellow,
+                color: AppColors.skyBlue,
                 onTap: () => Navigator.push(
                     context,
                     SlideRoute(
@@ -95,7 +95,7 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
                 icon: Icons.chat_bubble_rounded,
                 label: 'comments'.tr(),
                 value: commentCount,
-                color: AppColors.kawaiiPink,
+                color: AppColors.skyBlue,
                 onTap: () => Navigator.push(
                     context,
                     SlideRoute(

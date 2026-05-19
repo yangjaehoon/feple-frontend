@@ -263,6 +263,7 @@
   "artist_songs_title": "{}'s Songs",
   "no_songs": "No songs registered.",
   "youtube_open_failed": "Cannot open YouTube Music.",
+  "festival_performed_count": "{} performances",
   "follower_count": "{} Followers",
 
   "booth_map_title": "Booth Map",

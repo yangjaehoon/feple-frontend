@@ -196,15 +196,38 @@ class _ArtistSongsState extends State<ArtistSongs> {
               _thumbnailPlaceholder(colors),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(
-                song.title,
-                style: TextStyle(
-                  fontSize: AppDimens.fontSizeMd,
-                  fontWeight: FontWeight.w500,
-                  color: colors.textTitle,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    song.title,
+                    style: TextStyle(
+                      fontSize: AppDimens.fontSizeMd,
+                      fontWeight: FontWeight.w500,
+                      color: colors.textTitle,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (song.festivalCount > 0) ...[
+                    const SizedBox(height: 3),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: colors.activate.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        'festival_performed_count'.tr(args: [song.festivalCount.toString()]),
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: colors.activate,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
             const SizedBox(width: 8),

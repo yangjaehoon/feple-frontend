@@ -10,7 +10,6 @@ import 'package:feple/model/song_model.dart';
 import 'package:feple/service/song_service.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_songs.dart';
-import 'package:feple/screen/main/tab/search/artist_page/w_song_request_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -89,7 +88,6 @@ class _ArtistSongsState extends State<ArtistSongs> {
             ),
           ),
           _buildSongList(colors),
-          _buildRequestButton(colors),
         ],
       ),
     );
@@ -256,47 +254,6 @@ class _ArtistSongsState extends State<ArtistSongs> {
             const SizedBox(width: 8),
             Icon(Icons.open_in_new_rounded, size: 14, color: colors.textSecondary),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRequestButton(AbstractThemeColors colors) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppDimens.paddingHorizontal,
-        8,
-        AppDimens.paddingHorizontal,
-        16,
-      ),
-      child: SizedBox(
-        width: double.infinity,
-        child: OutlinedButton.icon(
-          onPressed: () => showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            builder: (_) => SongRequestSheet(
-              artistId: widget.artistId,
-              artistName: widget.artistName,
-            ),
-          ),
-          icon: Icon(Icons.add_rounded, size: 16, color: colors.activate),
-          label: Text(
-            'song_request_button'.tr(),
-            style: TextStyle(
-              fontSize: AppDimens.fontSizeSm,
-              fontWeight: FontWeight.w600,
-              color: colors.activate,
-            ),
-          ),
-          style: OutlinedButton.styleFrom(
-            side: BorderSide(color: colors.activate.withValues(alpha: 0.4)),
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-            ),
-          ),
         ),
       ),
     );

@@ -322,5 +322,17 @@
   "timetable_color": "Color",
   "timetable_hint": "Tap empty space to add · Tap card to edit",
   "no_booth": "No booths registered.",
-  "photo_add": "Add photo"
+  "photo_add": "Add photo",
+
+  "song_request_button": "Request a Song",
+  "song_request_title": "Request a song for {}",
+  "song_request_desc": "Request a song you'd like to see. An admin will review and add it.",
+  "song_request_song_title": "Song title",
+  "song_request_song_title_hint": "Enter the song title",
+  "song_request_youtube_url": "YouTube URL (optional)",
+  "song_request_youtube_url_hint": "https://youtu.be/...",
+  "song_request_submit": "Send Request",
+  "song_request_title_required": "Please enter a song title.",
+  "song_request_duplicate": "You have already requested this song.",
+  "song_request_failed": "Failed to send request. Please try again."
 }

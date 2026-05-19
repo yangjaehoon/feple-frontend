@@ -15,6 +15,7 @@ import 'service/post_service.dart';
 import 'service/report_service.dart';
 import 'service/scrap_service.dart';
 import 'service/search_service.dart';
+import 'service/song_request_service.dart';
 import 'service/song_service.dart';
 import 'service/user_service.dart';
 
@@ -37,6 +38,7 @@ void setupDependencies() {
   sl.registerLazySingleton<ReportService>(() => ReportService());
   sl.registerLazySingleton<ScrapService>(() => ScrapService());
   sl.registerLazySingleton<SearchService>(() => SearchService());
+  sl.registerLazySingleton<SongRequestService>(() => SongRequestService());
   sl.registerLazySingleton<SongService>(() => SongService());
   sl.registerLazySingleton<UserService>(() => UserService());
 }

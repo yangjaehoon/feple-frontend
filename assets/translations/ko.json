@@ -322,5 +322,17 @@
   "timetable_color": "색상",
   "timetable_hint": "빈 공간을 탭해 내 일정 추가 · 내 일정 카드를 탭해 수정",
   "no_booth": "등록된 부스가 없습니다.",
-  "photo_add": "사진 추가"
+  "photo_add": "사진 추가",
+
+  "song_request_button": "노래 요청하기",
+  "song_request_title": "{} 에게 노래 요청",
+  "song_request_desc": "듣고 싶은 노래를 요청해보세요. 관리자가 검토 후 등록합니다.",
+  "song_request_song_title": "노래 제목",
+  "song_request_song_title_hint": "요청할 노래 제목을 입력하세요",
+  "song_request_youtube_url": "YouTube URL (선택)",
+  "song_request_youtube_url_hint": "https://youtu.be/...",
+  "song_request_submit": "요청 보내기",
+  "song_request_title_required": "노래 제목을 입력해주세요.",
+  "song_request_duplicate": "이미 요청한 노래입니다.",
+  "song_request_failed": "요청 전송에 실패했습니다. 다시 시도해주세요."
 }

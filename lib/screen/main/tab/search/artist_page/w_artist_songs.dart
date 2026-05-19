@@ -177,37 +177,6 @@ class _ArtistSongsState extends State<ArtistSongs> {
                 endIndent: AppDimens.paddingHorizontal,
               ),
             ),
-            if (songs.length > 5)
-              InkWell(
-                onTap: () => Navigator.push(
-                  context,
-                  SlideRoute(
-                    builder: (_) => ArtistSongsScreen(
-                      artistId: widget.artistId,
-                      artistName: widget.artistName,
-                    ),
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'see_more'.tr(),
-                        style: TextStyle(
-                          fontSize: AppDimens.fontSizeSm,
-                          fontWeight: FontWeight.w600,
-                          color: colors.activate,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Icon(Icons.keyboard_arrow_down_rounded,
-                          size: 18, color: colors.activate),
-                    ],
-                  ),
-                ),
-              ),
           ],
         );
       },

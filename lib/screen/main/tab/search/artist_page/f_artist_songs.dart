@@ -6,6 +6,7 @@ import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/song_model.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_song_request_sheet.dart';
 import 'package:feple/service/song_service.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -69,6 +70,25 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
         children: [
           SecondaryAppBar(
             title: 'artist_songs_title'.tr(args: [widget.artistName]),
+            actions: [
+              TextButton.icon(
+                onPressed: () => showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (_) => SongRequestSheet(
+                    artistId: widget.artistId,
+                    artistName: widget.artistName,
+                  ),
+                ),
+                icon: const Icon(Icons.add_rounded, size: 16),
+                label: Text('song_request_button'.tr()),
+                style: TextButton.styleFrom(
+                  foregroundColor: context.appColors.activate,
+                  textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
           ),
           Expanded(
             child: RefreshIndicator(

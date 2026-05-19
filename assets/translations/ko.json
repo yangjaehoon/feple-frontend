@@ -326,7 +326,7 @@
 
   "song_request_button": "노래 요청하기",
   "song_request_title": "{} 에게 노래 요청",
-  "song_request_desc": "듣고 싶은 노래를 요청해보세요. 관리자가 검토 후 등록합니다.",
+  "song_request_desc": "셋리스트에 없는 노래를 요청해보세요. 관리자가 검토 후 등록합니다.",
   "song_request_song_title": "노래 제목",
   "song_request_song_title_hint": "요청할 노래 제목을 입력하세요",
   "song_request_youtube_url": "YouTube URL (선택)",

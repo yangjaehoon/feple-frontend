@@ -260,6 +260,9 @@
   "schedule_upcoming": "Upcoming",
   "schedule_past": "Past Schedules",
   "artist_schedule_title": "{}'s Schedule",
+  "artist_songs_title": "{}'s Songs",
+  "no_songs": "No songs registered.",
+  "youtube_open_failed": "Cannot open YouTube Music.",
   "follower_count": "{} Followers",
 
   "booth_map_title": "Booth Map",

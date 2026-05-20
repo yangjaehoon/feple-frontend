@@ -108,47 +108,7 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
       backgroundColor: colors.backgroundMain,
       body: Column(
         children: [
-          SafeArea(
-            bottom: false,
-            child: Container(
-              height: AppDimens.appBarHeight,
-              color: colors.surface,
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.close_rounded, color: colors.textTitle),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Icon(Icons.schedule_rounded, size: 15, color: colors.activate),
-                        const SizedBox(width: 8),
-                        Text(
-                          'timetable'.tr(),
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w700, color: colors.textTitle),
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (_range.stages.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: TextButton.icon(
-                        onPressed: _openAdd,
-                        icon: Icon(Icons.add_rounded, size: 16, color: colors.activate),
-                        label: Text(
-                          'timetable_add'.tr(),
-                          style: TextStyle(
-                              fontSize: 13, fontWeight: FontWeight.w600, color: colors.activate),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
+          _buildAppBar(colors),
           Expanded(
             child: SafeArea(
               top: false,
@@ -164,39 +124,88 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
                       }),
                       colors: colors,
                     ),
-                  Expanded(
-                    child: _range.filtered.isEmpty
-                        ? Center(
-                            child: Text('no_timetable'.tr(),
-                                style: TextStyle(color: colors.textSecondary)),
-                          )
-                        : TimetableFullscreenGrid(
-                            range: _range,
-                            userEntries: _currentUserEntries,
-                            followedNames: widget.followedNames,
-                            onTapGrid: (stage, start) =>
-                                _openAdd(stage: stage, startTime: start),
-                            onTapUserEntry: _openEdit,
-                          ),
-                  ),
-                  if (_range.stages.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4, bottom: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.touch_app_rounded, size: 12, color: colors.textSecondary),
-                          const SizedBox(width: 4),
-                          Text(
-                            'timetable_hint'.tr(),
-                            style: TextStyle(fontSize: 10, color: colors.textSecondary),
-                          ),
-                        ],
-                      ),
-                    ),
+                  Expanded(child: _buildGridArea(colors)),
+                  if (_range.stages.isNotEmpty) _buildHint(colors),
                 ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAppBar(AbstractThemeColors colors) {
+    return SafeArea(
+      bottom: false,
+      child: Container(
+        height: AppDimens.appBarHeight,
+        color: colors.surface,
+        child: Row(
+          children: [
+            IconButton(
+              icon: Icon(Icons.close_rounded, color: colors.textTitle),
+              onPressed: () => Navigator.pop(context),
+            ),
+            Expanded(
+              child: Row(
+                children: [
+                  Icon(Icons.schedule_rounded, size: 15, color: colors.activate),
+                  const SizedBox(width: 8),
+                  Text(
+                    'timetable'.tr(),
+                    style: TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w700, color: colors.textTitle),
+                  ),
+                ],
+              ),
+            ),
+            if (_range.stages.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: TextButton.icon(
+                  onPressed: _openAdd,
+                  icon: Icon(Icons.add_rounded, size: 16, color: colors.activate),
+                  label: Text(
+                    'timetable_add'.tr(),
+                    style: TextStyle(
+                        fontSize: 13, fontWeight: FontWeight.w600, color: colors.activate),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGridArea(AbstractThemeColors colors) {
+    if (_range.filtered.isEmpty) {
+      return Center(
+        child: Text('no_timetable'.tr(),
+            style: TextStyle(color: colors.textSecondary)),
+      );
+    }
+    return TimetableFullscreenGrid(
+      range: _range,
+      userEntries: _currentUserEntries,
+      followedNames: widget.followedNames,
+      onTapGrid: (stage, start) => _openAdd(stage: stage, startTime: start),
+      onTapUserEntry: _openEdit,
+    );
+  }
+
+  Widget _buildHint(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 4, bottom: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.touch_app_rounded, size: 12, color: colors.textSecondary),
+          const SizedBox(width: 4),
+          Text(
+            'timetable_hint'.tr(),
+            style: TextStyle(fontSize: 10, color: colors.textSecondary),
           ),
         ],
       ),

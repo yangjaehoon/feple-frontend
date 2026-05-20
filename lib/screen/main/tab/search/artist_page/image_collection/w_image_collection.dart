@@ -93,55 +93,59 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
 
     return ListenableBuilder(
       listenable: _notifier,
-      builder: (context, _) {
-        if (_notifier.isLoading) {
-          return SliverToBoxAdapter(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 80),
-                child:
-                    CircularProgressIndicator(color: colors.loadingIndicator),
-              ),
-            ),
-          );
-        }
+      builder: (context, _) => _buildContent(colors, currentUserId),
+    );
+  }
 
-        if (_notifier.photos.isEmpty) {
-          return SliverToBoxAdapter(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 80),
-                child: Column(
-                  children: [
-                    Icon(Icons.photo_library_outlined,
-                        size: 48, color: colors.textSecondary),
-                    const SizedBox(height: 12),
-                    Text(
-                      'photo_no_photos'.tr(),
-                      style: TextStyle(
-                          color: colors.textSecondary, fontSize: 15),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        }
+  Widget _buildContent(AbstractThemeColors colors, int? currentUserId) {
+    if (_notifier.isLoading) {
+      return SliverToBoxAdapter(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 80),
+            child: CircularProgressIndicator(color: colors.loadingIndicator),
+          ),
+        ),
+      );
+    }
 
-        return SliverList.builder(
-          itemCount: _notifier.photos.length,
-          itemBuilder: (context, index) {
-            final photo = _notifier.photos[index];
-            final isUploader =
-                currentUserId != null && photo.uploaderUserId == currentUserId;
-            return Padding(
-              padding: EdgeInsets.only(
-                  bottom: index == _notifier.photos.length - 1 ? 0 : 12.0),
-              child: _buildPhotoCard(photo, isUploader, colors),
-            );
-          },
+    if (_notifier.photos.isEmpty) {
+      return _buildEmptyState(colors);
+    }
+
+    return SliverList.builder(
+      itemCount: _notifier.photos.length,
+      itemBuilder: (context, index) {
+        final photo = _notifier.photos[index];
+        final isUploader =
+            currentUserId != null && photo.uploaderUserId == currentUserId;
+        return Padding(
+          padding: EdgeInsets.only(
+              bottom: index == _notifier.photos.length - 1 ? 0 : 12.0),
+          child: _buildPhotoCard(photo, isUploader, colors),
         );
       },
+    );
+  }
+
+  Widget _buildEmptyState(AbstractThemeColors colors) {
+    return SliverToBoxAdapter(
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 80),
+          child: Column(
+            children: [
+              Icon(Icons.photo_library_outlined,
+                  size: 48, color: colors.textSecondary),
+              const SizedBox(height: 12),
+              Text(
+                'photo_no_photos'.tr(),
+                style: TextStyle(color: colors.textSecondary, fontSize: 15),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

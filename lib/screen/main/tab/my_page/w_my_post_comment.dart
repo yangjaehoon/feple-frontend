@@ -58,64 +58,67 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: FutureBuilder<_UserStats>(
         future: _statsFuture,
-        builder: (context, snapshot) {
-          final postCount = snapshot.data?.postCount.toString() ?? '-';
-          final commentCount = snapshot.data?.commentCount.toString() ?? '-';
-          final certCount = snapshot.data?.certificationCount.toString() ?? '-';
-          final scrapCount = snapshot.data?.scrapCount.toString() ?? '-';
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildStatCard(
-                context,
-                icon: Icons.verified_rounded,
-                label: 'certification_badge'.tr(),
-                value: certCount,
-                color: AppColors.skyBlue,
-                onTap: () => Navigator.push(
-                    context,
-                    SlideRoute(
-                      builder: (_) => const CertificationListScreen(),
-                    )),
-              ),
-              _buildStatCard(
-                context,
-                icon: Icons.article_rounded,
-                label: 'posts'.tr(),
-                value: postCount,
-                color: AppColors.skyBlue,
-                onTap: () => Navigator.push(
-                    context,
-                    SlideRoute(
-                      builder: (_) => MyPostsScreen(userId: widget.userId),
-                    )),
-              ),
-              _buildStatCard(
-                context,
-                icon: Icons.chat_bubble_rounded,
-                label: 'comments'.tr(),
-                value: commentCount,
-                color: AppColors.skyBlue,
-                onTap: () => Navigator.push(
-                    context,
-                    SlideRoute(
-                      builder: (_) => MyCommentsScreen(userId: widget.userId),
-                    )),
-              ),
-              _buildStatCard(
-                context,
-                icon: Icons.star_rounded,
-                label: 'scraps'.tr(),
-                value: scrapCount,
-                color: AppColors.sunnyYellow,
-                onTap: () => Navigator.push(
-                    context,
-                    SlideRoute(builder: (_) => const MyScrapsScreen())),
-              ),
-            ],
-          );
-        },
+        builder: (context, snapshot) => _buildStatRow(context, snapshot),
       ),
+    );
+  }
+
+  Widget _buildStatRow(
+      BuildContext context, AsyncSnapshot<_UserStats> snapshot) {
+    final postCount = snapshot.data?.postCount.toString() ?? '-';
+    final commentCount = snapshot.data?.commentCount.toString() ?? '-';
+    final certCount = snapshot.data?.certificationCount.toString() ?? '-';
+    final scrapCount = snapshot.data?.scrapCount.toString() ?? '-';
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _buildStatCard(
+          context,
+          icon: Icons.verified_rounded,
+          label: 'certification_badge'.tr(),
+          value: certCount,
+          color: context.appColors.activate,
+          onTap: () => Navigator.push(
+              context,
+              SlideRoute(
+                builder: (_) => const CertificationListScreen(),
+              )),
+        ),
+        _buildStatCard(
+          context,
+          icon: Icons.article_rounded,
+          label: 'posts'.tr(),
+          value: postCount,
+          color: context.appColors.activate,
+          onTap: () => Navigator.push(
+              context,
+              SlideRoute(
+                builder: (_) => MyPostsScreen(userId: widget.userId),
+              )),
+        ),
+        _buildStatCard(
+          context,
+          icon: Icons.chat_bubble_rounded,
+          label: 'comments'.tr(),
+          value: commentCount,
+          color: context.appColors.activate,
+          onTap: () => Navigator.push(
+              context,
+              SlideRoute(
+                builder: (_) => MyCommentsScreen(userId: widget.userId),
+              )),
+        ),
+        _buildStatCard(
+          context,
+          icon: Icons.star_rounded,
+          label: 'scraps'.tr(),
+          value: scrapCount,
+          color: AppColors.sunnyYellow,
+          onTap: () => Navigator.push(
+              context,
+              SlideRoute(builder: (_) => const MyScrapsScreen())),
+        ),
+      ],
     );
   }
 

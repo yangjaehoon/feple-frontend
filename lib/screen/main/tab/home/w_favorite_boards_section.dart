@@ -117,64 +117,70 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 섹션 헤더
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 8, 8),
-          child: Row(
-            children: [
-              Container(
-                width: 3,
-                height: 20,
-                decoration: BoxDecoration(
-                  color: colors.sectionBarColor,
-                  borderRadius: BorderRadius.circular(AppDimens.barRadius),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'favorite_boards'.tr(),
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: colors.textTitle,
-                ),
-              ),
-              const Spacer(),
-              IconButton(
-                icon: Icon(Icons.settings_rounded,
-                    color: colors.textSecondary, size: 20),
-                onPressed: _openSettings,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-              ),
-              const SizedBox(width: 12),
-            ],
-          ),
-        ),
-
-        // 가로 스크롤 타일
-        if (selectedBoards.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            child: Text(
-              'select_boards_prompt'.tr(),
-              style: TextStyle(color: colors.textSecondary),
-            ),
-          )
-        else
-          SizedBox(
-            height: 120,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: selectedBoards.length,
-              itemBuilder: (context, index) {
-                final board = selectedBoards[index];
-                return _BoardTile(board: board, colors: colors);
-              },
-            ),
-          ),
+        _buildSectionHeader(colors),
+        _buildBoardList(selectedBoards, colors),
       ],
+    );
+  }
+
+  Widget _buildSectionHeader(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 8, 8),
+      child: Row(
+        children: [
+          Container(
+            width: 3,
+            height: 20,
+            decoration: BoxDecoration(
+              color: colors.sectionBarColor,
+              borderRadius: BorderRadius.circular(AppDimens.barRadius),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'favorite_boards'.tr(),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: colors.textTitle,
+            ),
+          ),
+          const Spacer(),
+          IconButton(
+            icon: Icon(Icons.settings_rounded,
+                color: colors.textSecondary, size: 20),
+            onPressed: _openSettings,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+          ),
+          const SizedBox(width: 12),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBoardList(
+      List<FavoriteBoard> selectedBoards, AbstractThemeColors colors) {
+    if (selectedBoards.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        child: Text(
+          'select_boards_prompt'.tr(),
+          style: TextStyle(color: colors.textSecondary),
+        ),
+      );
+    }
+    return SizedBox(
+      height: 120,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: selectedBoards.length,
+        itemBuilder: (context, index) {
+          final board = selectedBoards[index];
+          return _BoardTile(board: board, colors: colors);
+        },
+      ),
     );
   }
 }
@@ -232,46 +238,54 @@ class _BoardTile extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              if (board.imageUrl != null && board.imageUrl!.isNotEmpty)
-                CachedNetworkImage(
-                  imageUrl: board.imageUrl!,
-                  fit: BoxFit.cover,
-                  memCacheWidth: 220,
-                  errorWidget: (_, __, ___) => _buildPlaceholder(),
-                )
-              else
-                _buildPlaceholder(),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                      colors: [
-                        Colors.black.withValues(alpha: 0.72),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                  child: Text(
-                    board.displayName,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ),
+              ..._buildImageLayers(),
+              _buildNameOverlay(),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildImageLayers() => [
+        if (board.imageUrl != null && board.imageUrl!.isNotEmpty)
+          CachedNetworkImage(
+            imageUrl: board.imageUrl!,
+            fit: BoxFit.cover,
+            memCacheWidth: 220,
+            errorWidget: (_, __, ___) => _buildPlaceholder(),
+          )
+        else
+          _buildPlaceholder(),
+      ];
+
+  Widget _buildNameOverlay() {
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: Container(
+        padding:
+            const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+            colors: [
+              Colors.black.withValues(alpha: 0.72),
+              Colors.transparent,
+            ],
+          ),
+        ),
+        child: Text(
+          board.displayName,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 10,
+            fontWeight: FontWeight.w700,
+          ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
     );
@@ -284,5 +298,3 @@ class _BoardTile extends StatelessWidget {
     );
   }
 }
-
-

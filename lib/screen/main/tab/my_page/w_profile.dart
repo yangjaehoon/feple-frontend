@@ -45,65 +45,11 @@ class _ProfileWidgetState extends State<ProfileWidget> {
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
       child: Column(
         children: [
-          // Profile Image with solid ring
-          Container(
-            width: 110,
-            height: 110,
-            padding: const EdgeInsets.all(3),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: colors.profileRingColor,
-              boxShadow: [
-                BoxShadow(
-                  color: colors.cardShadow.withValues(alpha: 0.2),
-                  blurRadius: 20,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Container(
-              padding: const EdgeInsets.all(3),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: colors.surface,
-              ),
-              child: CircleAvatar(
-                radius: 48,
-                backgroundImage: (user.profileImageUrl != null &&
-                        user.profileImageUrl!.isNotEmpty)
-                    ? CachedNetworkImageProvider(user.profileImageUrl!,
-                        maxWidth: 150) as ImageProvider
-                    : const AssetImage('assets/image/feple_logo.png'),
-                backgroundColor: colors.backgroundMain,
-              ),
-            ),
-          ),
+          _buildProfileImage(user, colors),
           const SizedBox(height: 16),
-          Text(
-            user.nickname,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-              color: colors.textTitle,
-              letterSpacing: -0.5,
-            ),
-          ),
+          _buildNicknameText(user, colors),
           const SizedBox(height: 4),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              color: colors.levelBadgeBg.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              'Lv.${user.level}',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: colors.levelBadgeText,
-              ),
-            ),
-          ),
+          _buildLevelBadge(user, colors),
           const SizedBox(height: 16),
           _buildActionButton(
             context,
@@ -119,6 +65,71 @@ class _ProfileWidgetState extends State<ProfileWidget> {
             isPrimary: true,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildProfileImage(dynamic user, AbstractThemeColors colors) {
+    return Container(
+      width: 110,
+      height: 110,
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: colors.profileRingColor,
+        boxShadow: [
+          BoxShadow(
+            color: colors.cardShadow.withValues(alpha: 0.2),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(3),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: colors.surface,
+        ),
+        child: CircleAvatar(
+          radius: 48,
+          backgroundImage: (user.profileImageUrl != null &&
+                  user.profileImageUrl!.isNotEmpty)
+              ? CachedNetworkImageProvider(user.profileImageUrl!,
+                  maxWidth: 150) as ImageProvider
+              : const AssetImage('assets/image/feple_logo.png'),
+          backgroundColor: colors.backgroundMain,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNicknameText(dynamic user, AbstractThemeColors colors) {
+    return Text(
+      user.nickname,
+      style: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.w800,
+        color: colors.textTitle,
+        letterSpacing: -0.5,
+      ),
+    );
+  }
+
+  Widget _buildLevelBadge(dynamic user, AbstractThemeColors colors) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: colors.levelBadgeBg.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        'Lv.${user.level}',
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w700,
+          color: colors.levelBadgeText,
+        ),
       ),
     );
   }

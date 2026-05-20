@@ -116,69 +116,87 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
         children: [
           const SizedBox(height: 12),
           const BottomSheetHandle(),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
-            child: Text(
-              'cert_submit_title'.tr(),
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                color: colors.textTitle,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
-            child: Text(
-              'cert_photo_guide'.tr(),
-              style: TextStyle(
-                  fontSize: 13, color: colors.textSecondary, height: 1.5),
-            ),
-          ),
-          _loadingFestivals
-              ? const Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Center(child: CircularProgressIndicator()),
-                )
-              : Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: InkWell(
-                    onTap: _showFestivalSearchSheet,
-                    borderRadius: BorderRadius.circular(12),
-                    child: InputDecorator(
-                      decoration: InputDecoration(
-                        labelText: 'tab_concert'.tr(),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 12),
-                        suffixIcon: const Icon(Icons.arrow_drop_down),
-                      ),
-                      isEmpty: _selectedFestival == null,
-                      child: Text(
-                        _selectedFestival?.title ?? '',
-                        style: const TextStyle(fontSize: 14),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                ),
+          _buildSheetHeader(colors),
+          _buildFestivalSelector(colors),
           const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: LoadingButton(
-              label: 'cert_select_photo'.tr(),
-              icon: Icons.add_photo_alternate_rounded,
-              isLoading: _submitting,
-              isSuccess: _submitSuccess,
-              onPressed: _submit,
-              backgroundColor: colors.certRingColor,
-              height: 50,
-              borderRadius: 12,
+          _buildSubmitButton(colors),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSheetHeader(AbstractThemeColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+          child: Text(
+            'cert_submit_title'.tr(),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: colors.textTitle,
             ),
           ),
-        ],
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+          child: Text(
+            'cert_photo_guide'.tr(),
+            style: TextStyle(
+                fontSize: 13, color: colors.textSecondary, height: 1.5),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFestivalSelector(AbstractThemeColors colors) {
+    if (_loadingFestivals) {
+      return const Padding(
+        padding: EdgeInsets.all(20),
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: InkWell(
+        onTap: _showFestivalSearchSheet,
+        borderRadius: BorderRadius.circular(12),
+        child: InputDecorator(
+          decoration: InputDecoration(
+            labelText: 'tab_concert'.tr(),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14, vertical: 12),
+            suffixIcon: const Icon(Icons.arrow_drop_down),
+          ),
+          isEmpty: _selectedFestival == null,
+          child: Text(
+            _selectedFestival?.title ?? '',
+            style: const TextStyle(fontSize: 14),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSubmitButton(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: LoadingButton(
+        label: 'cert_select_photo'.tr(),
+        icon: Icons.add_photo_alternate_rounded,
+        isLoading: _submitting,
+        isSuccess: _submitSuccess,
+        onPressed: _submit,
+        backgroundColor: colors.certRingColor,
+        height: 50,
+        borderRadius: 12,
       ),
     );
   }
@@ -236,48 +254,56 @@ class _FestivalSearchSheetState extends State<_FestivalSearchSheet> {
             children: [
               const SizedBox(height: 12),
               const BottomSheetHandle(),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                child: TextField(
-                  controller: _searchCtrl,
-                  autofocus: true,
-                  onChanged: _onSearch,
-                  decoration: InputDecoration(
-                    hintText: 'festival_search_hint'.tr(),
-                    prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 12),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: _filtered.isEmpty
-                    ? Center(
-                        child: Text(
-                          'search_no_result'.tr(),
-                          style: TextStyle(color: colors.textSecondary),
-                        ),
-                      )
-                    : ListView.builder(
-                        controller: scrollCtrl,
-                        itemCount: _filtered.length,
-                        itemBuilder: (_, i) {
-                          final festival = _filtered[i];
-                          return ListTile(
-                            title: Text(
-                              festival.title,
-                              style: const TextStyle(fontSize: 14),
-                            ),
-                            onTap: () => Navigator.pop(ctx, festival),
-                          );
-                        },
-                      ),
-              ),
+              _buildSearchField(colors),
+              Expanded(child: _buildFestivalList(ctx, scrollCtrl, colors)),
             ],
           ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSearchField(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+      child: TextField(
+        controller: _searchCtrl,
+        autofocus: true,
+        onChanged: _onSearch,
+        decoration: InputDecoration(
+          hintText: 'festival_search_hint'.tr(),
+          prefixIcon: const Icon(Icons.search),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14, vertical: 12),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFestivalList(BuildContext ctx,
+      ScrollController scrollCtrl, AbstractThemeColors colors) {
+    if (_filtered.isEmpty) {
+      return Center(
+        child: Text(
+          'search_no_result'.tr(),
+          style: TextStyle(color: colors.textSecondary),
+        ),
+      );
+    }
+    return ListView.builder(
+      controller: scrollCtrl,
+      itemCount: _filtered.length,
+      itemBuilder: (_, i) {
+        final festival = _filtered[i];
+        return ListTile(
+          title: Text(
+            festival.title,
+            style: const TextStyle(fontSize: 14),
+          ),
+          onTap: () => Navigator.pop(ctx, festival),
         );
       },
     );

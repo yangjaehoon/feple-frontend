@@ -348,5 +348,6 @@
   "weather_snow": "Snow",
   "weather_shower": "Shower",
   "weather_temp_range": "Low {}° / High {}°",
-  "weather_rain_prob": "Rain {}%"
+  "weather_rain_prob": "Rain {}%",
+  "weather_no_data": "Weather data unavailable."
 }

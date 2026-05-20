@@ -49,12 +49,14 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
 
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+
     return Container(
       decoration: BoxDecoration(
         color: colors.backgroundMain,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
+      padding: EdgeInsets.fromLTRB(24, 12, 24, 16 + bottomInset),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

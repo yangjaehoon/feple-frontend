@@ -131,7 +131,10 @@ class ScaffoldMessenger extends StatefulWidget {
   ///
   ///  * [maybeOf], which is a similar function but will return null instead of
   ///    throwing if there is no [ScaffoldMessenger] ancestor.
-  ///  * [debugCheckHasScaffoldMessenger], which asserts that the given context
+  ///  * [
+  ///
+  ///
+  ///  debugCheckHasScaffoldMessenger], which asserts that the given context
   ///    has a [ScaffoldMessenger] ancestor.
   static ScaffoldMessengerState of(BuildContext context) {
     assert(debugCheckHasScaffoldMessenger(context));

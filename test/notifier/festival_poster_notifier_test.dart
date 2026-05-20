@@ -4,6 +4,7 @@ import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MockCertificationService extends Mock implements CertificationService {}
 class MockFestivalService extends Mock implements FestivalService {}
@@ -20,6 +21,7 @@ void main() {
   late MockFestivalService mockFestivalService;
 
   setUp(() {
+    SharedPreferences.setMockInitialValues({});
     mockCertService = MockCertificationService();
     mockFestivalService = MockFestivalService();
   });
@@ -114,6 +116,35 @@ void main() {
     });
   });
 
+  group('loadLikeState', () {
+    test('서비스가 true 반환 시 liked true', () async {
+      when(() => mockFestivalService.isLiked(5)).thenAnswer((_) async => true);
+
+      final notifier = make(5);
+      await notifier.loadLikeState();
+
+      expect(notifier.liked, true);
+    });
+
+    test('서비스가 false 반환 시 liked false', () async {
+      when(() => mockFestivalService.isLiked(5)).thenAnswer((_) async => false);
+
+      final notifier = make(5);
+      await notifier.loadLikeState();
+
+      expect(notifier.liked, false);
+    });
+
+    test('서비스 예외 시 liked 기본값 false 유지', () async {
+      when(() => mockFestivalService.isLiked(5)).thenThrow(Exception('err'));
+
+      final notifier = make(5);
+      await expectLater(notifier.loadLikeState(), completes);
+
+      expect(notifier.liked, false);
+    });
+  });
+
   group('toggleLike', () {
     test('liked false → true로 전환', () async {
       when(() => mockFestivalService.toggleLike(5))
@@ -126,6 +157,17 @@ void main() {
       expect(notifier.liked, true);
     });
 
+    test('liked true → false로 전환', () async {
+      when(() => mockFestivalService.toggleLike(5))
+          .thenAnswer((_) async => false);
+
+      final notifier = make(5);
+      notifier.liked = true;
+      await notifier.toggleLike();
+
+      expect(notifier.liked, false);
+    });
+
     test('서비스 예외 시 liked 상태 변경 없음', () async {
       when(() => mockFestivalService.toggleLike(5)).thenThrow(Exception('err'));
 
@@ -134,6 +176,26 @@ void main() {
       await notifier.toggleLike();
 
       expect(notifier.liked, false);
+    });
+  });
+
+  group('toggleDesc', () {
+    test('descExpanded true → false로 전환', () {
+      final notifier = make(5);
+      expect(notifier.descExpanded, true);
+
+      notifier.toggleDesc();
+
+      expect(notifier.descExpanded, false);
+    });
+
+    test('descExpanded false → true로 전환', () {
+      final notifier = make(5);
+      notifier.descExpanded = false;
+
+      notifier.toggleDesc();
+
+      expect(notifier.descExpanded, true);
     });
   });
 }

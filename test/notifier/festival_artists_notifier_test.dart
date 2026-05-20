@@ -96,6 +96,20 @@ void main() {
       expect(notifier.isLoading, false);
     });
 
+    test('모든 아티스트가 팔로우된 경우 원래 순서 유지', () async {
+      final artists = [_artist(1, 'A'), _artist(2, 'B'), _artist(3, 'C')];
+      when(() => mockFestivalService.fetchFestivalArtists(10))
+          .thenAnswer((_) async => artists);
+      when(() => mockFollowService.getFollowingIds(99))
+          .thenAnswer((_) async => {1, 2, 3});
+
+      final notifier = make(userId: 99);
+      await notifier.fetch();
+
+      expect(notifier.artists.map((a) => a.artistId).toList(), [1, 2, 3]);
+      expect(notifier.followedIds, {1, 2, 3});
+    });
+
     test('getFollowingIds 예외 시 아티스트 데이터도 버려지고 onError 호출', () async {
       when(() => mockFestivalService.fetchFestivalArtists(10))
           .thenAnswer((_) async => [_artist(1, 'A')]);

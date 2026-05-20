@@ -101,6 +101,48 @@ void main() {
       expect(model.id, 9007199254740991);
     });
 
+    test('title null이면 빈 문자열 기본값', () {
+      final json = {
+        'id': 1,
+        'type': 'NEW_COMMENT',
+        'title': null,
+        'body': '본문',
+        'read': false,
+      };
+
+      final model = NotificationModel.fromJson(json);
+
+      expect(model.title, '');
+    });
+
+    test('body null이면 빈 문자열 기본값', () {
+      final json = {
+        'id': 1,
+        'type': 'NEW_COMMENT',
+        'title': '제목',
+        'body': null,
+        'read': false,
+      };
+
+      final model = NotificationModel.fromJson(json);
+
+      expect(model.body, '');
+    });
+
+    test('read null이면 false 기본값', () {
+      final json = {
+        'id': 1,
+        'type': 'NEW_COMMENT',
+        'title': '제목',
+        'body': '본문',
+        'read': null,
+      };
+
+      final model = NotificationModel.fromJson(json);
+
+      expect(model.read, false);
+    });
+
     test('모든 NotificationType 값 파싱', () {
       final cases = {
         'NEW_FESTIVAL': NotificationType.newFestival,
@@ -154,6 +196,43 @@ void main() {
       original.copyWithRead();
 
       expect(original.read, false);
+    });
+  });
+
+  group('NotificationModel.formattedDate', () {
+    test('createdAt null이면 null 반환', () {
+      final model = NotificationModel(
+        id: 1, type: null, title: '', body: '', read: false, createdAt: null,
+      );
+
+      expect(model.formattedDate, isNull);
+    });
+
+    test('createdAt 길이 10 이상이면 앞 10자리만 반환', () {
+      final model = NotificationModel(
+        id: 1, type: null, title: '', body: '', read: false,
+        createdAt: '2025-05-01T10:00:00',
+      );
+
+      expect(model.formattedDate, '2025-05-01');
+    });
+
+    test('createdAt 길이 정확히 10이면 그대로 반환', () {
+      final model = NotificationModel(
+        id: 1, type: null, title: '', body: '', read: false,
+        createdAt: '2025-05-01',
+      );
+
+      expect(model.formattedDate, '2025-05-01');
+    });
+
+    test('createdAt 길이 10 미만이면 그대로 반환', () {
+      final model = NotificationModel(
+        id: 1, type: null, title: '', body: '', read: false,
+        createdAt: '2025-05',
+      );
+
+      expect(model.formattedDate, '2025-05');
     });
   });
 

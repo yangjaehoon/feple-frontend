@@ -117,6 +117,66 @@ class NicknameFieldState extends State<NicknameField> {
     }
   }
 
+  Widget _buildTextField(AbstractThemeColors colors) {
+    return TextField(
+      controller: controller,
+      maxLength: 8,
+      onChanged: _onTextChanged,
+      style: TextStyle(fontSize: 15, color: colors.text),
+      decoration: InputDecoration(
+        counterText: '',
+        prefixIcon: Icon(Icons.badge_outlined, color: colors.activate, size: 22),
+        hintText: 'nickname_hint_format'.tr(),
+        hintStyle: TextStyle(color: colors.hintText, fontSize: 15),
+        filled: true,
+        fillColor: colors.surface,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colors.divider),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: _available == false
+                ? AppColors.errorRed
+                : _available == true
+                    ? AppColors.successGreen
+                    : colors.divider,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colors.focusedBorder, width: 2),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCheckButton(AbstractThemeColors colors) {
+    return SizedBox(
+      height: 52,
+      child: ElevatedButton(
+        onPressed: _isChecking ? null : checkNickname,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: colors.activate,
+          foregroundColor: Colors.white,
+          elevation: 0,
+        ),
+        child: _isChecking
+            ? const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+              )
+            : Text(
+                'check_duplication'.tr(),
+                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -126,68 +186,9 @@ class NicknameFieldState extends State<NicknameField> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: TextField(
-                controller: controller,
-                maxLength: 8,
-                onChanged: _onTextChanged,
-                style: TextStyle(
-                    fontSize: 15, color: colors.text),
-                decoration: InputDecoration(
-                  counterText: '',
-                  prefixIcon: Icon(Icons.badge_outlined,
-                      color: colors.activate, size: 22),
-                  hintText: 'nickname_hint_format'.tr(),
-                  hintStyle: TextStyle(
-                      color: colors.hintText, fontSize: 15),
-                  filled: true,
-                  fillColor: colors.surface,
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 16),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                        color: colors.divider),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                        color: _available == false
-                            ? AppColors.errorRed
-                            : _available == true
-                                ? AppColors.successGreen
-                                : colors.divider),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                        color: colors.focusedBorder, width: 2),
-                  ),
-                ),
-              ),
-            ),
+            Expanded(child: _buildTextField(colors)),
             const SizedBox(width: 8),
-            SizedBox(
-              height: 52,
-              child: ElevatedButton(
-                onPressed: _isChecking ? null : checkNickname,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.activate,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                ),
-                child: _isChecking
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
-                      )
-                    : Text('check_duplication'.tr(),
-                        style: const TextStyle(
-                            fontSize: 13, fontWeight: FontWeight.w600)),
-              ),
-            ),
+            _buildCheckButton(colors),
           ],
         ),
         if (_message.isNotEmpty)

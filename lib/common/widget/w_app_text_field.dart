@@ -25,6 +25,32 @@ class AppTextField extends StatelessWidget {
     this.onChanged,
   });
 
+  InputDecoration _buildInputDecoration(AbstractThemeColors colors) {
+    return InputDecoration(
+      counterText: maxLength != null ? '' : null,
+      prefixIcon: Icon(icon, color: colors.activate, size: 22),
+      hintText: hintText,
+      hintStyle: TextStyle(color: colors.hintText, fontSize: 15),
+      filled: true,
+      fillColor: colors.surface,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: colors.divider),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+          color: errorText != null ? AppColors.errorRed : colors.divider,
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: colors.focusedBorder, width: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -38,35 +64,7 @@ class AppTextField extends StatelessWidget {
           maxLength: maxLength,
           onChanged: onChanged,
           style: TextStyle(fontSize: 15, color: colors.text),
-          decoration: InputDecoration(
-            counterText: maxLength != null ? '' : null,
-            prefixIcon: Icon(icon, color: colors.activate, size: 22),
-            hintText: hintText,
-            hintStyle:
-                TextStyle(color: colors.hintText, fontSize: 15),
-            filled: true,
-            fillColor: colors.surface,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                  color: colors.divider),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: errorText != null
-                    ? AppColors.errorRed
-                    : colors.divider,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide:
-                  BorderSide(color: colors.focusedBorder, width: 2),
-            ),
-          ),
+          decoration: _buildInputDecoration(colors),
         ),
         if (errorText != null)
           Padding(

@@ -72,6 +72,55 @@ class _WritePostScreenState extends State<WritePostScreen> {
     );
   }
 
+  Widget _buildSubmitAction() {
+    return SizedBox(
+      width: 64,
+      child: TextButton(
+        onPressed: _isSubmitting ? null : _submit,
+        child: _isSubmitting
+            ? const Center(
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                ),
+              )
+            : Text(
+                'done'.tr(),
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+              ),
+      ),
+    );
+  }
+
+  Widget _buildForm(AbstractThemeColors colors) {
+    return Form(
+      key: _formKey,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      child: Column(
+        children: [
+          TextFormField(
+            controller: _titleController,
+            maxLength: 50,
+            style: TextStyle(color: colors.textTitle),
+            decoration: _fieldDecoration('enter_title'),
+            validator: (v) => (v == null || v.trim().isEmpty) ? 'enter_title'.tr() : null,
+          ),
+          const SizedBox(height: 12),
+          TextFormField(
+            controller: _contentController,
+            maxLines: null,
+            minLines: 8,
+            maxLength: 500,
+            style: TextStyle(color: colors.textTitle),
+            decoration: _fieldDecoration('enter_content'),
+            validator: (v) => (v == null || v.trim().isEmpty) ? 'enter_content'.tr() : null,
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -81,64 +130,13 @@ class _WritePostScreenState extends State<WritePostScreen> {
         children: [
           SecondaryAppBar(
             title: widget.title,
-            actions: [
-              SizedBox(
-                width: 64,
-                child: TextButton(
-                  onPressed: _isSubmitting ? null : _submit,
-                  child: _isSubmitting
-                      ? const Center(
-                          child: SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                                strokeWidth: 2, color: Colors.white),
-                          ),
-                        )
-                      : Text(
-                          'done'.tr(),
-                          style: const TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.w700),
-                        ),
-                ),
-              ),
-            ],
+            actions: [_buildSubmitAction()],
           ),
           Expanded(
             child: KeyboardDismiss(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: SingleChildScrollView(
-                  child: Form(
-                    key: _formKey,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          controller: _titleController,
-                          maxLength: 50,
-                          style: TextStyle(color: colors.textTitle),
-                          decoration: _fieldDecoration('enter_title'),
-                          validator: (v) => (v == null || v.trim().isEmpty)
-                              ? 'enter_title'.tr()
-                              : null,
-                        ),
-                        const SizedBox(height: 12),
-                        TextFormField(
-                          controller: _contentController,
-                          maxLines: null,
-                          minLines: 8,
-                          maxLength: 500,
-                          style: TextStyle(color: colors.textTitle),
-                          decoration: _fieldDecoration('enter_content'),
-                          validator: (v) => (v == null || v.trim().isEmpty)
-                              ? 'enter_content'.tr()
-                              : null,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                child: SingleChildScrollView(child: _buildForm(colors)),
               ),
             ),
           ),

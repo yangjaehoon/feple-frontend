@@ -349,5 +349,7 @@
   "weather_shower": "Shower",
   "weather_temp_range": "Low {}° / High {}°",
   "weather_rain_prob": "Rain {}%",
-  "weather_no_data": "Weather data unavailable."
+  "weather_no_data": "Weather data unavailable.",
+  "weather_too_early": "Weather is available\n3 days before the festival.",
+  "weather_too_early_hint": "Check back closer to the date!"
 }

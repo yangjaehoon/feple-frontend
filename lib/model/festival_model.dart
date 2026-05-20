@@ -1,9 +1,6 @@
-//import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class FestivalModel with ChangeNotifier {
-  //final FutureBuilder<QuerySnapshot<Object?>> collectionPoster;
-
   final int id;
   final String title;
   final String description;

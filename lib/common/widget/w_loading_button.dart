@@ -1,4 +1,5 @@
 import 'package:feple/common/constant/app_colors.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -40,7 +41,7 @@ class _LoadingButtonState extends State<LoadingButton>
     super.initState();
     _checkController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 350),
+      duration: AppDimens.animSlow,
     );
     _checkScale = CurvedAnimation(
       parent: _checkController,
@@ -73,7 +74,7 @@ class _LoadingButtonState extends State<LoadingButton>
       width: double.infinity,
       height: widget.height,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
+        duration: AppDimens.animFast,
         decoration: BoxDecoration(
           color: widget.isSuccess
               ? successColor

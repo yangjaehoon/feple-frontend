@@ -4,23 +4,23 @@ import 'package:feple/network/dio_client.dart';
 
 class ArtistFollowService {
   Future<FollowResponse> follow(int artistId) async {
-    final res = await DioClient.dio.post('/artists/$artistId/follow');
-    return FollowResponse.fromJson(res.data as Map<String, dynamic>);
+    final response = await DioClient.dio.post('/artists/$artistId/follow');
+    return FollowResponse.fromJson(response.data as Map<String, dynamic>);
   }
 
   Future<FollowResponse> unfollow(int artistId) async {
-    final res = await DioClient.dio.delete('/artists/$artistId/follow');
-    return FollowResponse.fromJson(res.data as Map<String, dynamic>);
+    final response = await DioClient.dio.delete('/artists/$artistId/follow');
+    return FollowResponse.fromJson(response.data as Map<String, dynamic>);
   }
 
   Future<FollowStatus> getFollowStatus(int artistId) async {
-    final res = await DioClient.dio.get('/artists/$artistId/follow');
-    return FollowStatus.fromJson(res.data as Map<String, dynamic>);
+    final response = await DioClient.dio.get('/artists/$artistId/follow');
+    return FollowStatus.fromJson(response.data as Map<String, dynamic>);
   }
 
   Future<Set<int>> getFollowingIds(int userId) async {
-    final res = await DioClient.dio.get('/users/$userId/following');
-    return (res.data as List)
+    final response = await DioClient.dio.get('/users/$userId/following');
+    return (response.data as List)
         .map((a) => (a['id'] as num).toInt())
         .toSet();
   }

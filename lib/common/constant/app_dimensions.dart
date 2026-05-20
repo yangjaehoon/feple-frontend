@@ -46,4 +46,10 @@ class AppDimens {
   static const double fontSizeLg = 15.0;
   static const double fontSizeXl = 16.0;
   static const double fontSizeTitle = 20.0;
+
+  // ── Animation Duration ──
+  static const Duration animFast = Duration(milliseconds: 200);
+  static const Duration animNormal = Duration(milliseconds: 300);
+  static const Duration animSlow = Duration(milliseconds: 350);
+  static const Duration animVerySlow = Duration(milliseconds: 500);
 }

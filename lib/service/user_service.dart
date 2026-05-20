@@ -8,21 +8,18 @@ import 'package:feple/network/dio_client.dart';
 
 class UserService {
   Future<User> fetchUser(int userId) async {
-    final resp = await DioClient.dio.get('/users/$userId');
-    if (resp.statusCode != 200) {
-      throw Exception('사용자 정보 불러오기 실패: ${resp.statusCode}');
-    }
-    final raw = resp.data is String ? jsonDecode(resp.data) : resp.data;
+    final response = await DioClient.dio.get('/users/$userId');
+    final raw = response.data is String ? jsonDecode(response.data) : response.data;
     if (raw is! Map<String, dynamic>) throw Exception('사용자 정보 형식 오류');
     return User.fromJson(raw);
   }
 
   Future<User> fetchUserFromToken(String token) async {
-    final res = await DioClient.dio.get(
+    final response = await DioClient.dio.get(
       '/users/me',
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
-    return User.fromJson(res.data);
+    return User.fromJson(response.data);
   }
 
   Future<void> deleteUser(int userId) async {
@@ -30,8 +27,8 @@ class UserService {
   }
 
   Future<List<dynamic>> fetchFollowing(int userId) async {
-    final resp = await DioClient.dio.get('/users/$userId/following');
-    return resp.data as List;
+    final response = await DioClient.dio.get('/users/$userId/following');
+    return response.data as List;
   }
 
   Future<List<FollowedArtist>> fetchFollowingArtists(int userId) async {
@@ -66,17 +63,17 @@ class UserService {
   }
 
   Future<List<dynamic>> fetchPosts(int userId) async {
-    final resp = await DioClient.dio.get('/users/$userId/posts');
-    return resp.data as List;
+    final response = await DioClient.dio.get('/users/$userId/posts');
+    return response.data as List;
   }
 
   Future<List<dynamic>> fetchComments(int userId) async {
-    final resp = await DioClient.dio.get('/users/$userId/comments');
-    return resp.data as List;
+    final response = await DioClient.dio.get('/users/$userId/comments');
+    return response.data as List;
   }
 
   Future<Map<String, dynamic>> fetchStats(int userId) async {
-    final resp = await DioClient.dio.get('/users/$userId/stats');
-    return resp.data as Map<String, dynamic>;
+    final response = await DioClient.dio.get('/users/$userId/stats');
+    return response.data as Map<String, dynamic>;
   }
 }

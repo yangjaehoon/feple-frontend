@@ -11,8 +11,8 @@ class ArtistScheduleService {
   }
 
   static Future<List<FestivalPreview>> fetchFestivals(int artistId) async {
-    final resp = await DioClient.dio.get('/artists/$artistId/schedule');
-    final list = resp.data as List<dynamic>;
+    final response = await DioClient.dio.get('/artists/$artistId/schedule');
+    final list = response.data as List<dynamic>;
     return list.map((e) {
       final scheduleJson = e as Map<String, dynamic>;
       return FestivalPreview(

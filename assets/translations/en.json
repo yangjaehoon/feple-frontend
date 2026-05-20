@@ -255,6 +255,7 @@
   "load_error": "Failed to load",
   "offline_banner": "Check your internet connection",
   "timetable": "Timetable",
+  "no_participating_artists": "No participating artists.",
   "no_timetable": "No timetable available.",
   "no_schedule": "No schedules available.",
   "schedule_upcoming": "Upcoming",

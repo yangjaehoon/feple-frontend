@@ -114,6 +114,83 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
     if (result == true) _load();
   }
 
+  Widget _buildAppBar(AbstractThemeColors colors) {
+    return SafeArea(
+      bottom: false,
+      child: Container(
+        height: AppDimens.appBarHeight,
+        color: colors.backgroundMain,
+        child: Row(
+          children: [
+            IconButton(
+              icon: Icon(Icons.arrow_back_ios_rounded, color: colors.textTitle),
+              onPressed: () => Navigator.pop(context),
+            ),
+            Expanded(
+              child: Text(
+                'festival_certification'.tr(),
+                style: TextStyle(
+                  color: colors.textTitle,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            TextButton.icon(
+              onPressed: _openSubmitSheet,
+              icon: Icon(Icons.add_photo_alternate_rounded,
+                  color: colors.certRingColor, size: 20),
+              label: Text(
+                'cert_submit'.tr(),
+                style: TextStyle(
+                  color: colors.certRingColor,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                ),
+              ),
+            ),
+            const SizedBox(width: 4),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBody(AbstractThemeColors colors) {
+    return RefreshIndicator(
+      onRefresh: _load,
+      color: colors.activate,
+      child: _loading
+          ? _buildSkeleton(colors)
+          : _hasError
+              ? _buildScrollable(
+                  ErrorState(
+                    message: 'err_fetch_data'.tr(args: ['']),
+                    onRetry: _load,
+                  ),
+                )
+              : _certifications.isEmpty
+                  ? _buildScrollable(
+                      EmptyState(
+                        icon: Icons.verified_outlined,
+                        title: 'cert_no_history'.tr(),
+                        subtitle: 'cert_no_history_hint'.tr(),
+                      ),
+                    )
+                  : ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                      itemCount: _certifications.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 10),
+                      itemBuilder: (context, index) {
+                        final cert = _certifications[index];
+                        return _CertCard(cert: cert, colors: colors);
+                      },
+                    ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -122,80 +199,8 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
       backgroundColor: colors.backgroundMain,
       body: Column(
         children: [
-          SafeArea(
-            bottom: false,
-            child: Container(
-              height: AppDimens.appBarHeight,
-              color: colors.backgroundMain,
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_back_ios_rounded, color: colors.textTitle),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  Expanded(
-                    child: Text(
-                      'festival_certification'.tr(),
-                      style: TextStyle(
-                        color: colors.textTitle,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  TextButton.icon(
-                    onPressed: _openSubmitSheet,
-                    icon: Icon(Icons.add_photo_alternate_rounded,
-                        color: colors.certRingColor, size: 20),
-                    label: Text(
-                      'cert_submit'.tr(),
-                      style: TextStyle(
-                        color: colors.certRingColor,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                ],
-              ),
-            ),
-          ),
-          Expanded(
-            child: RefreshIndicator(
-        onRefresh: _load,
-        color: colors.activate,
-        child: _loading
-            ? _buildSkeleton(colors)
-            : _hasError
-                ? _buildScrollable(
-                    ErrorState(
-                      message: 'err_fetch_data'.tr(args: ['']),
-                      onRetry: _load,
-                    ),
-                  )
-                : _certifications.isEmpty
-                    ? _buildScrollable(
-                        EmptyState(
-                          icon: Icons.verified_outlined,
-                          title: 'cert_no_history'.tr(),
-                          subtitle: 'cert_no_history_hint'.tr(),
-                        ),
-                      )
-                    : ListView.separated(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-                        itemCount: _certifications.length,
-                        separatorBuilder: (_, __) =>
-                            const SizedBox(height: 10),
-                        itemBuilder: (context, index) {
-                          final cert = _certifications[index];
-                          return _CertCard(cert: cert, colors: colors);
-                        },
-                      ),
-      ),
-          ),
+          _buildAppBar(colors),
+          Expanded(child: _buildBody(colors)),
         ],
       ),
     );
@@ -208,13 +213,105 @@ class _CertCard extends StatelessWidget {
 
   const _CertCard({required this.cert, required this.colors});
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildPosterImage(String? posterUrl) {
+    return ClipRRect(
+      borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
+      child: SizedBox(
+        width: 90,
+        height: 90,
+        child: posterUrl != null
+            ? CachedNetworkImage(
+                imageUrl: posterUrl,
+                fit: BoxFit.cover,
+                placeholder: (_, __) => const SkeletonBox(height: double.infinity),
+                errorWidget: (_, __, ___) => _buildPhotoPlaceholder(),
+              )
+            : _buildPhotoPlaceholder(),
+      ),
+    );
+  }
+
+  Widget _buildStatusBadge(Color statusColor, String statusLabel) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      decoration: BoxDecoration(
+        color: statusColor.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.circle, size: 7, color: statusColor),
+          const SizedBox(width: 4),
+          Text(
+            statusLabel,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: statusColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCardContent(
+    AbstractThemeColors colors,
+    Color statusColor,
+    String statusLabel,
+    bool isApproved,
+    bool isPending,
+  ) {
     final festivalTitle = cert.festivalTitle;
-    final posterUrl = cert.posterUrl;
     final rejectionMessage = cert.rejectionMessage;
     final createdAt = cert.formattedDate;
 
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              festivalTitle,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: colors.textTitle,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 6),
+            _buildStatusBadge(statusColor, statusLabel),
+            if (!isPending &&
+                !isApproved &&
+                rejectionMessage != null &&
+                rejectionMessage.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text(
+                'cert_rejection_reason'.tr(args: [rejectionMessage]),
+                style: TextStyle(fontSize: 11, color: colors.textSecondary),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+            if (createdAt != null) ...[
+              const SizedBox(height: 4),
+              Text(
+                createdAt,
+                style: TextStyle(fontSize: 11, color: colors.textSecondary),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final isApproved = cert.status == CertStatus.approved;
     final isPending = cert.status == CertStatus.pending;
 
@@ -245,87 +342,8 @@ class _CertCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          ClipRRect(
-            borderRadius:
-                const BorderRadius.horizontal(left: Radius.circular(16)),
-            child: SizedBox(
-              width: 90,
-              height: 90,
-              child: posterUrl != null
-                  ? CachedNetworkImage(
-                      imageUrl: posterUrl,
-                      fit: BoxFit.cover,
-                      placeholder: (_, __) => const SkeletonBox(height: double.infinity),
-                      errorWidget: (_, __, ___) => _buildPhotoPlaceholder(),
-                    )
-                  : _buildPhotoPlaceholder(),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    festivalTitle,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: colors.textTitle,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 6),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: statusColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.circle, size: 7, color: statusColor),
-                        const SizedBox(width: 4),
-                        Text(
-                          statusLabel,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: statusColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (!isPending &&
-                      !isApproved &&
-                      rejectionMessage != null &&
-                      rejectionMessage.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      'cert_rejection_reason'.tr(args: [rejectionMessage]),
-                      style: TextStyle(fontSize: 11, color: colors.textSecondary),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                  if (createdAt != null) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      createdAt,
-                      style: TextStyle(
-                          fontSize: 11, color: colors.textSecondary),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ),
+          _buildPosterImage(cert.posterUrl),
+          _buildCardContent(colors, statusColor, statusLabel, isApproved, isPending),
         ],
       ),
     );

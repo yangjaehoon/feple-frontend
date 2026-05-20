@@ -11,6 +11,77 @@ class MyCommentsScreen extends StatelessWidget {
   final int userId;
   const MyCommentsScreen({super.key, required this.userId});
 
+  Widget _buildSkeleton(AbstractThemeColors colors) {
+    return ListView.separated(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: 5,
+      separatorBuilder: (_, __) =>
+          Divider(thickness: 1, color: colors.listDivider),
+      itemBuilder: (_, __) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: const [
+            SkeletonBox(
+              width: 36,
+              height: 36,
+              borderRadius: BorderRadius.all(Radius.circular(18)),
+            ),
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SkeletonBox(height: 14),
+                  SizedBox(height: 6),
+                  SkeletonBox(width: 120, height: 11),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildItem(
+    BuildContext context,
+    _MyComment c,
+    VoidCallback reload,
+    AbstractThemeColors colors,
+  ) {
+    return ListTile(
+      onTap: () async {
+        await Navigator.of(context, rootNavigator: true).push(
+          SlideRoute(
+            builder: (_) => EnlargePost(
+              boardname: c.boardDisplayName,
+              id: c.postId,
+              nickname: c.postNickname,
+              title: c.postTitle,
+              content: c.postContent,
+              heart: c.postLikeCount,
+            ),
+          ),
+        );
+        reload();
+      },
+      leading: Icon(Icons.chat_bubble_rounded, color: colors.activate, size: 20),
+      title: Text(
+        c.content,
+        style: TextStyle(color: colors.textTitle, fontWeight: FontWeight.w600),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+      subtitle: Text(
+        '${c.boardDisplayName} • ${c.postTitle}',
+        style: TextStyle(color: colors.textSecondary, fontSize: 12),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MyPageListScreen<_MyComment>(
@@ -19,70 +90,10 @@ class MyCommentsScreen extends StatelessWidget {
         final data = await sl<UserService>().fetchComments(userId);
         return data.map((e) => _MyComment.fromJson(e)).toList();
       },
-      skeletonBuilder: (colors) => ListView.separated(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: 5,
-        separatorBuilder: (_, __) =>
-            Divider(thickness: 1, color: colors.listDivider),
-        itemBuilder: (_, __) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
-            children: const [
-              SkeletonBox(
-                width: 36,
-                height: 36,
-                borderRadius: BorderRadius.all(Radius.circular(18)),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SkeletonBox(height: 14),
-                    SizedBox(height: 6),
-                    SkeletonBox(width: 120, height: 11),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      skeletonBuilder: _buildSkeleton,
       itemBuilder: (context, c, reload) {
         final colors = context.appColors;
-        return ListTile(
-          onTap: () async {
-            await Navigator.of(context, rootNavigator: true).push(
-              SlideRoute(
-                builder: (_) => EnlargePost(
-                  boardname: c.boardDisplayName,
-                  id: c.postId,
-                  nickname: c.postNickname,
-                  title: c.postTitle,
-                  content: c.postContent,
-                  heart: c.postLikeCount,
-                ),
-              ),
-            );
-            reload();
-          },
-          leading:
-              Icon(Icons.chat_bubble_rounded, color: colors.activate, size: 20),
-          title: Text(
-            c.content,
-            style: TextStyle(
-                color: colors.textTitle, fontWeight: FontWeight.w600),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          subtitle: Text(
-            '${c.boardDisplayName} • ${c.postTitle}',
-            style: TextStyle(color: colors.textSecondary, fontSize: 12),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        );
+        return _buildItem(context, c, reload, colors);
       },
       emptyIcon: Icons.chat_bubble_outline_rounded,
       emptyTitle: 'no_comments'.tr(),

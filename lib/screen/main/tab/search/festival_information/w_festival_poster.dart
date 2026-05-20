@@ -266,10 +266,10 @@ class _FestivalPosterState extends State<FestivalPoster> {
                   : _submitCertification,
           icon: _notifier.isPending ? Icons.hourglass_top_rounded : Icons.verified_rounded,
           color: _notifier.isCertified
-              ? AppColors.skyBlueLight
+              ? colors.activate.withValues(alpha: 0.7)
               : _notifier.isPending ? AppColors.statusPending : Colors.white,
           bgColor: _notifier.isCertified
-              ? AppColors.skyBlue.withValues(alpha: 0.35)
+              ? colors.activate.withValues(alpha: 0.35)
               : _notifier.isPending ? AppColors.statusPending.withValues(alpha: 0.25) : null,
         ),
       ],

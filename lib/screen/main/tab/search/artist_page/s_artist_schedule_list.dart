@@ -83,60 +83,70 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
               color: colors.activate,
               onRefresh: _refresh,
               child: FutureBuilder<List<ArtistScheduleModel>>(
-          future: _future,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (snapshot.hasError) {
-              return ErrorState(
-                message: 'err_fetch_data'.tr(args: ['']),
-                onRetry: _refresh,
-              );
-            }
-            final all = snapshot.data ?? [];
-            if (all.isEmpty) {
-              return ListView(
-                children: [
-                  const SizedBox(height: 80),
-                  EmptyState(
-                    icon: Icons.calendar_today_outlined,
-                    title: 'no_schedule'.tr(),
-                  ),
-                ],
-              );
-            }
-
-            final upcoming = all.where((e) => !_isPast(e)).toList();
-            final past = all.where(_isPast).toList();
-
-            // flat list: [upcomingHeader?, ...upcoming, pastHeader?, ...past]
-            final rows = <_Row>[];
-            if (upcoming.isNotEmpty) {
-              rows.add(_Row.header('schedule_upcoming'.tr()));
-              for (final item in upcoming) { rows.add(_Row.item(item, isPast: false)); }
-            }
-            if (past.isNotEmpty) {
-              rows.add(_Row.header('schedule_past'.tr()));
-              for (final item in past) { rows.add(_Row.item(item, isPast: true)); }
-            }
-
-            return ListView.builder(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.only(top: 8, bottom: 24),
-              itemCount: rows.length,
-              itemBuilder: (_, index) {
-                final row = rows[index];
-                if (row.isHeader) return _buildSectionHeader(row.label!, colors);
-                return _buildItem(row.item!, row.isPast, colors);
-              },
-            );
-          },
-        ),
-      ),
+                future: _future,
+                builder: (context, snapshot) =>
+                    _buildBody(context, snapshot, colors),
+              ),
+            ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildBody(
+    BuildContext context,
+    AsyncSnapshot<List<ArtistScheduleModel>> snapshot,
+    AbstractThemeColors colors,
+  ) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (snapshot.hasError) {
+      return ErrorState(
+        message: 'err_fetch_data'.tr(args: ['']),
+        onRetry: _refresh,
+      );
+    }
+    final all = snapshot.data ?? [];
+    if (all.isEmpty) {
+      return ListView(
+        children: [
+          const SizedBox(height: 80),
+          EmptyState(
+            icon: Icons.calendar_today_outlined,
+            title: 'no_schedule'.tr(),
+          ),
+        ],
+      );
+    }
+    return _buildScheduleList(all, colors);
+  }
+
+  Widget _buildScheduleList(List<ArtistScheduleModel> all, AbstractThemeColors colors) {
+    final upcoming = all.where((e) => !_isPast(e)).toList();
+    final past = all.where(_isPast).toList();
+
+    // flat list: [upcomingHeader?, ...upcoming, pastHeader?, ...past]
+    final rows = <_Row>[];
+    if (upcoming.isNotEmpty) {
+      rows.add(_Row.header('schedule_upcoming'.tr()));
+      for (final item in upcoming) { rows.add(_Row.item(item, isPast: false)); }
+    }
+    if (past.isNotEmpty) {
+      rows.add(_Row.header('schedule_past'.tr()));
+      for (final item in past) { rows.add(_Row.item(item, isPast: true)); }
+    }
+
+    return ListView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(top: 8, bottom: 24),
+      itemCount: rows.length,
+      itemBuilder: (_, index) {
+        final row = rows[index];
+        if (row.isHeader) return _buildSectionHeader(row.label!, colors);
+        return _buildItem(row.item!, row.isPast, colors);
+      },
     );
   }
 

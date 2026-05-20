@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:feple/common/util/dio_error_helper.dart';
+import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -161,31 +162,12 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
           const SizedBox(height: 20),
 
           // 제출 버튼
-          SizedBox(
-            width: double.infinity,
+          LoadingButton(
+            label: 'cert_submit'.tr(),
+            onPressed: _pickedFile == null ? null : _submit,
+            isLoading: _submitting,
+            backgroundColor: colors.activate,
             height: 50,
-            child: ElevatedButton(
-              onPressed: (_pickedFile == null || _submitting) ? null : _submit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colors.activate,
-                foregroundColor: Colors.white,
-                disabledBackgroundColor: colors.activate.withValues(alpha: 0.3),
-                elevation: 0,
-              ),
-              child: _submitting
-                  ? const SizedBox(
-                      width: 22,
-                      height: 22,
-                      child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation(Colors.white)),
-                    )
-                  : Text(
-                      'cert_submit'.tr(),
-                      style: const TextStyle(
-                          fontSize: 15, fontWeight: FontWeight.w700),
-                    ),
-            ),
           ),
         ],
       ),

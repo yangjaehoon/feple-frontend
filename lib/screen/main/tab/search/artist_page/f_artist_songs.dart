@@ -68,76 +68,85 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
       backgroundColor: colors.backgroundMain,
       body: Column(
         children: [
-          SecondaryAppBar(
-            title: 'artist_songs_title'.tr(args: [widget.artistName]),
-            actions: [
-              TextButton.icon(
-                onPressed: () => showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (_) => SongRequestSheet(
-                    artistId: widget.artistId,
-                    artistName: widget.artistName,
-                  ),
-                ),
-                icon: const Icon(Icons.add_rounded, size: 16),
-                label: Text('song_request_button'.tr()),
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-                ),
-              ),
-            ],
-          ),
+          _buildAppBar(context, colors),
           Expanded(
             child: RefreshIndicator(
               color: colors.activate,
               onRefresh: _refresh,
               child: FutureBuilder<List<SongModel>>(
                 future: _future,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (snapshot.hasError) {
-                    return ErrorState(
-                      message: 'err_fetch_data'.tr(args: ['']),
-                      onRetry: _refresh,
-                    );
-                  }
-                  final songs = snapshot.data ?? [];
-                  if (songs.isEmpty) {
-                    return ListView(
-                      children: [
-                        const SizedBox(height: 80),
-                        EmptyState(
-                          icon: Icons.music_off_rounded,
-                          title: 'no_songs'.tr(),
-                        ),
-                      ],
-                    );
-                  }
-                  return ListView.separated(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.only(top: 8, bottom: 24),
-                    itemCount: songs.length,
-                    separatorBuilder: (_, __) => Divider(
-                      height: 1,
-                      thickness: 1,
-                      color: colors.listDivider,
-                      indent: AppDimens.paddingHorizontal,
-                      endIndent: AppDimens.paddingHorizontal,
-                    ),
-                    itemBuilder: (_, index) =>
-                        _buildSongItem(songs[index], index, colors),
-                  );
-                },
+                builder: (context, snapshot) =>
+                    _buildBody(snapshot, colors),
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildAppBar(BuildContext context, AbstractThemeColors colors) {
+    return SecondaryAppBar(
+      title: 'artist_songs_title'.tr(args: [widget.artistName]),
+      actions: [
+        TextButton.icon(
+          onPressed: () => showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (_) => SongRequestSheet(
+              artistId: widget.artistId,
+              artistName: widget.artistName,
+            ),
+          ),
+          icon: const Icon(Icons.add_rounded, size: 16),
+          label: Text('song_request_button'.tr()),
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.white,
+            textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBody(
+    AsyncSnapshot<List<SongModel>> snapshot,
+    AbstractThemeColors colors,
+  ) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (snapshot.hasError) {
+      return ErrorState(
+        message: 'err_fetch_data'.tr(args: ['']),
+        onRetry: _refresh,
+      );
+    }
+    final songs = snapshot.data ?? [];
+    if (songs.isEmpty) {
+      return ListView(
+        children: [
+          const SizedBox(height: 80),
+          EmptyState(
+            icon: Icons.music_off_rounded,
+            title: 'no_songs'.tr(),
+          ),
+        ],
+      );
+    }
+    return ListView.separated(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(top: 8, bottom: 24),
+      itemCount: songs.length,
+      separatorBuilder: (_, __) => Divider(
+        height: 1,
+        thickness: 1,
+        color: colors.listDivider,
+        indent: AppDimens.paddingHorizontal,
+        endIndent: AppDimens.paddingHorizontal,
+      ),
+      itemBuilder: (_, index) => _buildSongItem(songs[index], index, colors),
     );
   }
 

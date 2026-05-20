@@ -107,7 +107,7 @@ class _FestivalArtistListScreenState extends State<FestivalArtistListScreen> {
                                   borderRadius: BorderRadius.circular(20.0),
                                   border: isFollowed
                                       ? Border.all(
-                                          color: AppColors.skyBlue,
+                                          color: colors.activate,
                                           width: 2.5,
                                         )
                                       : null,
@@ -146,7 +146,7 @@ class _FestivalArtistListScreenState extends State<FestivalArtistListScreen> {
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
                                 color: isFollowed
-                                    ? AppColors.skyBlue
+                                    ? colors.activate
                                     : colors.textTitle,
                               ),
                               textAlign: TextAlign.center,

@@ -88,68 +88,80 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
           children: [
             const SizedBox(height: 12),
             const BottomSheetHandle(),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
-              child: Text(
-                'song_request_title'.tr(),
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: colors.textTitle,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
-              child: Text(
-                'song_request_desc'.tr(),
-                style: TextStyle(fontSize: 13, color: colors.textSecondary, height: 1.5),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: TextField(
-                controller: _titleCtrl,
-                onChanged: (_) { if (_titleError != null) setState(() => _titleError = null); },
-                decoration: InputDecoration(
-                  labelText: 'song_request_song_title'.tr(),
-                  hintText: 'song_request_song_title_hint'.tr(),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                  errorText: _titleError,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: TextField(
-                controller: _urlCtrl,
-                keyboardType: TextInputType.url,
-                decoration: InputDecoration(
-                  labelText: 'song_request_youtube_url'.tr(),
-                  hintText: 'song_request_youtube_url_hint'.tr(),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                ),
-              ),
-            ),
+            ..._buildHeader(colors),
+            ..._buildFormFields(),
             const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: LoadingButton(
-                label: 'song_request_submit'.tr(),
-                icon: Icons.send_rounded,
-                isLoading: _submitting,
-                isSuccess: _submitSuccess,
-                onPressed: _submit,
-                backgroundColor: context.appColors.activate,
-                height: 50,
-                borderRadius: 12,
-              ),
-            ),
+            _buildSubmitButton(context),
           ],
         ),
+      ),
+    );
+  }
+
+  List<Widget> _buildHeader(AbstractThemeColors colors) => [
+    Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+      child: Text(
+        'song_request_title'.tr(),
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w800,
+          color: colors.textTitle,
+        ),
+      ),
+    ),
+    Padding(
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
+      child: Text(
+        'song_request_desc'.tr(),
+        style: TextStyle(fontSize: 13, color: colors.textSecondary, height: 1.5),
+      ),
+    ),
+  ];
+
+  List<Widget> _buildFormFields() => [
+    Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: TextField(
+        controller: _titleCtrl,
+        onChanged: (_) { if (_titleError != null) setState(() => _titleError = null); },
+        decoration: InputDecoration(
+          labelText: 'song_request_song_title'.tr(),
+          hintText: 'song_request_song_title_hint'.tr(),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          errorText: _titleError,
+        ),
+      ),
+    ),
+    const SizedBox(height: 12),
+    Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: TextField(
+        controller: _urlCtrl,
+        keyboardType: TextInputType.url,
+        decoration: InputDecoration(
+          labelText: 'song_request_youtube_url'.tr(),
+          hintText: 'song_request_youtube_url_hint'.tr(),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        ),
+      ),
+    ),
+  ];
+
+  Widget _buildSubmitButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: LoadingButton(
+        label: 'song_request_submit'.tr(),
+        icon: Icons.send_rounded,
+        isLoading: _submitting,
+        isSuccess: _submitSuccess,
+        onPressed: _submit,
+        backgroundColor: context.appColors.activate,
+        height: 50,
+        borderRadius: 12,
       ),
     );
   }

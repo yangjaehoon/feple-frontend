@@ -15,8 +15,30 @@ class ArtistCircleImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    if (!isFollowed) return _buildPlainImage(colors);
+    return _buildFollowedImage(colors);
+  }
 
-    final image = Container(
+  Widget _buildAvatarContent(AbstractThemeColors colors, {double size = 26}) {
+    final icon = Icon(
+      Icons.person_rounded,
+      color: colors.activate.withValues(alpha: 0.5),
+      size: size,
+    );
+    if (imageUrl != null && imageUrl!.isNotEmpty) {
+      return CachedNetworkImage(
+        imageUrl: imageUrl!,
+        fit: BoxFit.cover,
+        width: 52,
+        height: 52,
+        errorWidget: (context, url, error) => icon,
+      );
+    }
+    return icon;
+  }
+
+  Widget _buildPlainImage(AbstractThemeColors colors) {
+    return Container(
       width: 52,
       height: 52,
       decoration: BoxDecoration(
@@ -30,27 +52,11 @@ class ArtistCircleImage extends StatelessWidget {
           ),
         ],
       ),
-      child: ClipOval(
-        child: (imageUrl != null && imageUrl!.isNotEmpty)
-            ? CachedNetworkImage(
-                imageUrl: imageUrl!,
-                fit: BoxFit.cover,
-                errorWidget: (context, url, error) => Icon(
-                  Icons.person_rounded,
-                  color: colors.activate.withValues(alpha: 0.5),
-                  size: 26,
-                ),
-              )
-            : Icon(
-                Icons.person_rounded,
-                color: colors.activate.withValues(alpha: 0.5),
-                size: 26,
-              ),
-      ),
+      child: ClipOval(child: _buildAvatarContent(colors)),
     );
+  }
 
-    if (!isFollowed) return image;
-
+  Widget _buildFollowedImage(AbstractThemeColors colors) {
     return Container(
       width: 56,
       height: 56,
@@ -69,25 +75,7 @@ class ArtistCircleImage extends StatelessWidget {
           color: Colors.white,
         ),
         padding: const EdgeInsets.all(1.5),
-        child: ClipOval(
-          child: (imageUrl != null && imageUrl!.isNotEmpty)
-              ? CachedNetworkImage(
-                  imageUrl: imageUrl!,
-                  fit: BoxFit.cover,
-                  width: 52,
-                  height: 52,
-                  errorWidget: (context, url, error) => Icon(
-                    Icons.person_rounded,
-                    color: colors.activate.withValues(alpha: 0.5),
-                    size: 26,
-                  ),
-                )
-              : Icon(
-                  Icons.person_rounded,
-                  color: colors.activate.withValues(alpha: 0.5),
-                  size: 26,
-                ),
-        ),
+        child: ClipOval(child: _buildAvatarContent(colors)),
       ),
     );
   }

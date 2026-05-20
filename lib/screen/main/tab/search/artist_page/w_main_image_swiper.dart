@@ -100,65 +100,74 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
       child: Stack(
         children: [
           _buildBackground(),
-          if (_photoUrls.isNotEmpty)
-            SizedBox(
-              height: 250,
-              child: PageView.builder(
-                onPageChanged: _onPageChanged,
-                controller: _pageController,
-                itemCount: _photoUrls.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 30, 0, 20),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ValueListenableBuilder<double>(
-                          valueListenable: _scroll,
-                          builder: (context, scroll, child) {
-                            final difference = (scroll - index).abs();
-                            final scale = 1 - (difference * 0.2);
-                            return Transform.scale(
-                              scale: scale,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-                                child: Container(
-                                  height: 200,
-                                  width: 200,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[800],
-                                    borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.4),
-                                        blurRadius: 10,
-                                        spreadRadius: 2,
-                                        offset: const Offset(0, 8),
-                                      ),
-                                    ],
-                                  ),
-                                  child: CachedNetworkImage(
-                                    imageUrl: _photoUrls[index],
-                                    fit: BoxFit.cover,
-                                    memCacheWidth: 300,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
+          if (_photoUrls.isNotEmpty) _buildPhotoPageView(),
           ArtistNameLike(
             artistName: widget.artistName,
             artistId: widget.artistId,
             initialFollowerCount: widget.followerCount,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPhotoPageView() {
+    return SizedBox(
+      height: 250,
+      child: PageView.builder(
+        onPageChanged: _onPageChanged,
+        controller: _pageController,
+        itemCount: _photoUrls.length,
+        itemBuilder: (context, index) => _buildPhotoItem(index),
+      ),
+    );
+  }
+
+  Widget _buildPhotoItem(int index) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 30, 0, 20),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ValueListenableBuilder<double>(
+            valueListenable: _scroll,
+            builder: (context, scroll, child) {
+              final difference = (scroll - index).abs();
+              final scale = 1 - (difference * 0.2);
+              return Transform.scale(
+                scale: scale,
+                child: _buildPhotoCard(index),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPhotoCard(int index) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+      child: Container(
+        height: 200,
+        width: 200,
+        decoration: BoxDecoration(
+          color: Colors.grey[800],
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.4),
+              blurRadius: 10,
+              spreadRadius: 2,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: CachedNetworkImage(
+          imageUrl: _photoUrls[index],
+          fit: BoxFit.cover,
+          memCacheWidth: 300,
+        ),
       ),
     );
   }

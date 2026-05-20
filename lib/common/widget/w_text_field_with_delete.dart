@@ -113,6 +113,67 @@ class TextFieldWithDeleteState extends State<TextFieldWithDelete> {
     super.dispose();
   }
 
+  Widget _buildTextField(BuildContext context) {
+    return TextField(
+      autofocus: widget.autofocus ?? false,
+      focusNode: focusNode,
+      controller: widget.controller,
+      keyboardType: widget.keyboardType,
+      enabled: widget.enabled,
+      obscureText: widget.obscureText,
+      textInputAction: widget.textInputAction,
+      inputFormatters: widget.inputFormatters,
+      onEditingComplete: widget.onEditingComplete,
+      style: TextStyle(fontSize: widget.fontSize, fontWeight: widget.fontWeight),
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.only(
+            left: widget.leftImage == null ? 0 : 30, top: 10, bottom: 14),
+        hintText: widget.texthint,
+        hintStyle: TextStyle(
+            fontSize: widget.fontSize,
+            fontWeight: widget.fontWeight,
+            color: context.appColors.hintText),
+        enabledBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.transparent),
+        ),
+        focusedBorder: UnderlineInputBorder(
+          borderSide:
+              BorderSide(color: context.appColors.focusedBorder, width: 8),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDeleteOverlay(BuildContext context) {
+    return Positioned.fill(
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: showDeleteButton && isFocused
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Tap(
+                    onTap: () {
+                      widget.controller.clear();
+                      widget.onTapDelete?.invoke();
+                    },
+                    child: Padding(
+                      padding:
+                          EdgeInsets.only(right: widget.deleteRightPadding),
+                      child: SvgPicture.asset(
+                        '$basePath/icon/delete_x.svg',
+                        colorFilter: ui.ColorFilter.mode(
+                            context.appColors.iconButton, ui.BlendMode.srcIn),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            : const SizedBox.shrink(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -121,71 +182,15 @@ class TextFieldWithDeleteState extends State<TextFieldWithDelete> {
         Stack(
           children: <Widget>[
             widget.leftImage == null
-                ? Container()
+                ? const SizedBox.shrink()
                 : Positioned.fill(
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: widget.leftImage,
                     ),
                   ),
-            TextField(
-              autofocus: widget.autofocus ?? false,
-              focusNode: focusNode,
-              controller: widget.controller,
-              keyboardType: widget.keyboardType,
-              enabled: widget.enabled,
-              obscureText: widget.obscureText,
-              textInputAction: widget.textInputAction,
-              inputFormatters: widget.inputFormatters,
-              onEditingComplete: widget.onEditingComplete,
-              style: TextStyle(
-                  fontSize: widget.fontSize, fontWeight: widget.fontWeight),
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.only(
-                    left: widget.leftImage == null ? 0 : 30,
-                    top: 10,
-                    bottom: 14),
-                hintText: widget.texthint,
-                hintStyle: TextStyle(
-                    fontSize: widget.fontSize,
-                    fontWeight: widget.fontWeight,
-                    color: context.appColors.hintText),
-                enabledBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.transparent),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                      color: context.appColors.focusedBorder, width: 8),
-                ),
-              ),
-            ),
-            Positioned.fill(
-              child: Align(
-                  alignment: Alignment.centerRight,
-                  child: showDeleteButton && isFocused
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            Tap(
-                              onTap: () {
-                                widget.controller.clear();
-                                widget.onTapDelete?.invoke();
-                              },
-                              child: Padding(
-                                padding: EdgeInsets.only(
-                                    right: widget.deleteRightPadding),
-                                child: SvgPicture.asset(
-                                  '$basePath/icon/delete_x.svg',
-                                  colorFilter: ui.ColorFilter.mode(
-                                      context.appColors.iconButton,
-                                      ui.BlendMode.srcIn),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      : Container()),
-            )
+            _buildTextField(context),
+            _buildDeleteOverlay(context),
           ],
         ),
       ],

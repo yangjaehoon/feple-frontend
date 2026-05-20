@@ -47,6 +47,42 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
     _load(); // 돌아왔을 때 목록 새로고침
   }
 
+  Widget _buildHeader(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 8, 8),
+      child: Row(
+        children: [
+          Container(
+            width: 3,
+            height: 20,
+            decoration: BoxDecoration(
+              color: colors.sectionBarColor,
+              borderRadius: BorderRadius.circular(AppDimens.barRadius),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'festival_certification'.tr(),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: colors.textTitle,
+            ),
+          ),
+          const Spacer(),
+          IconButton(
+            icon: Icon(Icons.settings_rounded,
+                color: colors.textSecondary, size: 20),
+            onPressed: _loading ? null : _openDetail,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+          ),
+          const SizedBox(width: 12),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -54,39 +90,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 8, 8),
-          child: Row(
-            children: [
-              Container(
-                width: 3,
-                height: 20,
-                decoration: BoxDecoration(
-                  color: colors.sectionBarColor,
-                  borderRadius: BorderRadius.circular(AppDimens.barRadius),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'festival_certification'.tr(),
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: colors.textTitle,
-                ),
-              ),
-              const Spacer(),
-              IconButton(
-                icon: Icon(Icons.settings_rounded,
-                    color: colors.textSecondary, size: 20),
-                onPressed: _loading ? null : _openDetail,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-              ),
-              const SizedBox(width: 12),
-            ],
-          ),
-        ),
+        _buildHeader(colors),
         SizedBox(
           height: 150,
           child: _loading

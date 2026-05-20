@@ -76,4 +76,18 @@ class UserService {
     final response = await DioClient.dio.get('/users/$userId/stats');
     return response.data as Map<String, dynamic>;
   }
+
+  Future<Map<String, dynamic>> checkNicknameAvailability(
+    String nickname, {
+    int? excludeUserId,
+  }) async {
+    final response = await DioClient.dio.get(
+      '/users/check-nickname',
+      queryParameters: {
+        'nickname': nickname,
+        if (excludeUserId != null) 'excludeUserId': excludeUserId,
+      },
+    );
+    return response.data as Map<String, dynamic>;
+  }
 }

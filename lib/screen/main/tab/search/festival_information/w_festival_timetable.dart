@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/util/app_route.dart';
@@ -193,7 +194,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                         _range = computeTimetableRange(_entries, _selectedDate);
                       }),
                       child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 150),
+                        duration: AppDimens.animXFast,
                         margin: const EdgeInsets.only(right: 8, bottom: 10),
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                         decoration: BoxDecoration(

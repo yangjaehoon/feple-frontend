@@ -224,7 +224,7 @@ class _FilterSection extends StatelessWidget {
             return GestureDetector(
               onTap: () => onToggle(value),
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
+                duration: AppDimens.animXFast,
                 padding: const EdgeInsets.symmetric(
                     horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(

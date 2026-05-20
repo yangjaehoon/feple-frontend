@@ -38,7 +38,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
      ..init();
     _heartController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: AppDimens.animNormal,
       lowerBound: 1.0,
       upperBound: 1.3,
     );
@@ -136,7 +136,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
                 ),
                 const SizedBox(width: 4),
                 AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
+                  duration: AppDimens.animNormal,
                   transitionBuilder: (child, animation) => SlideTransition(
                     position: Tween<Offset>(
                       begin: const Offset(0, 0.5),
@@ -207,7 +207,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
     return GestureDetector(
       onTap: isLoading ? null : _toggleFollow,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
+        duration: AppDimens.animNormal,
         curve: Curves.easeInOut,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: BoxDecoration(

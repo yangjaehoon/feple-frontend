@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/constant/festival_constants.dart';
 import 'package:feple/injection.dart';
@@ -170,7 +171,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
                         : _selectedGenres.add(value);
                   }),
                   child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 150),
+                    duration: AppDimens.animXFast,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(

@@ -54,4 +54,6 @@ class AppDimens {
   static const Duration animSlow = Duration(milliseconds: 350);
   static const Duration animVerySlow = Duration(milliseconds: 500);
   static const Duration animSuccessDelay = Duration(milliseconds: 700);
+  static const Duration animRefresh = Duration(milliseconds: 400);
+  static const Duration animXFast = Duration(milliseconds: 150);
 }

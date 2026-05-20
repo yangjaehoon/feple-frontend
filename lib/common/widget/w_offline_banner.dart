@@ -68,32 +68,29 @@ class _OfflineBannerState extends State<OfflineBanner>
           right: 0,
           child: SlideTransition(
             position: _slideAnim,
-            child: Material(
-              color: Colors.transparent,
-              child: Container(
-                color: AppColors.offlineBannerBg,
-                padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).padding.top + 8,
-                  bottom: 10,
-                  left: 16,
-                  right: 16,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.wifi_off_rounded,
-                        color: Colors.white70, size: 16),
-                    const SizedBox(width: 8),
-                    Text(
-                      'offline_banner'.tr(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
+            child: Container(
+              color: AppColors.offlineBannerBg,
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top + 8,
+                bottom: 10,
+                left: 16,
+                right: 16,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.wifi_off_rounded,
+                      color: Colors.white70, size: 16),
+                  const SizedBox(width: 8),
+                  Text(
+                    'offline_banner'.tr(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),

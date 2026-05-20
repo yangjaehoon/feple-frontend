@@ -1,6 +1,7 @@
-import 'package:dio/dio.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
+import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/song_request_service.dart';
@@ -56,9 +57,7 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
     } catch (e) {
       if (!mounted) return;
       debugPrint('song request submit error: $e');
-      final backendMsg = e is DioException
-          ? (e.response?.data is Map ? e.response!.data['message'] as String? : null)
-          : null;
+      final backendMsg = dioBackendMessage(e);
       final isDuplicate = backendMsg?.contains('이미') == true ||
           backendMsg?.contains('already') == true;
       context.showErrorSnackbar(
@@ -88,16 +87,7 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 12),
-            Center(
-              child: Container(
-                width: 36,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: colors.textSecondary.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(AppDimens.barRadius),
-                ),
-              ),
-            ),
+            const BottomSheetHandle(),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
               child: Text(

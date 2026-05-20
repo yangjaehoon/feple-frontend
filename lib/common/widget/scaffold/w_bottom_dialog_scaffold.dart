@@ -18,14 +18,7 @@ class BottomDialogScaffold extends StatelessWidget {
               color: context.backgroundColor,
               borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(15), topRight: Radius.circular(15))),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              body,
-            ],
-          ),
+          child: body,
         ),
       ),
     );

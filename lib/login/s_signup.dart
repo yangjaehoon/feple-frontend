@@ -55,27 +55,21 @@ class _SignupPageState extends State<SignupPage> {
     final nicknameState = _nicknameKey.currentState;
     final nickname = nicknameState?.currentNickname ?? '';
 
-    // 에러 초기화
-    setState(() {
-      _emailError = null;
-      _passwordError = null;
-      _generalError = null;
-    });
-
-    // 인라인 유효성 검사
+    String? emailError;
+    String? passwordError;
     bool hasError = false;
 
     if (email.isEmpty) {
-      _emailError = 'enter_email'.tr();
+      emailError = 'enter_email'.tr();
       hasError = true;
     }
     if (password.isEmpty) {
-      _passwordError = 'enter_password'.tr();
+      passwordError = 'enter_password'.tr();
       hasError = true;
     } else {
       final pwError = _validatePassword(password);
       if (pwError != null) {
-        _passwordError = pwError;
+        passwordError = pwError;
         hasError = true;
       }
     }
@@ -95,7 +89,11 @@ class _SignupPageState extends State<SignupPage> {
     }
 
     if (hasError) {
-      setState(() {});
+      setState(() {
+        _emailError = emailError;
+        _passwordError = passwordError;
+        _generalError = null;
+      });
       return;
     }
 

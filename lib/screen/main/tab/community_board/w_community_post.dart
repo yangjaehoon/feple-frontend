@@ -184,15 +184,16 @@ class _CommunityPostState extends State<CommunityPost> {
           index: index,
           child: PostListTile(
             post: post,
-            onTap: () {
-              Navigator.of(context, rootNavigator: true).push(
+            onTap: () async {
+              await Navigator.of(context, rootNavigator: true).push(
                 SlideRoute(
                   builder: (_) => EnlargePost.fromPost(
                     boardname: widget.boardname,
                     post: post,
                   ),
                 ),
-              ).then((_) => _refresh());
+              );
+              _refresh();
             },
           ),
         );
@@ -210,13 +211,13 @@ class _CommunityPostState extends State<CommunityPost> {
     return Scaffold(
       backgroundColor: colors.backgroundMain,
       floatingActionButton: WritePostFab(
-        onPressed: () {
+        onPressed: () async {
           final user = context.read<UserProvider>().user;
           if (user == null) {
             context.showInfoSnackbar('no_login_info'.tr());
             return;
           }
-          Navigator.push(
+          await Navigator.push(
             context,
             SlideRoute(
               builder: (_) => WritePostScreen(
@@ -228,7 +229,8 @@ class _CommunityPostState extends State<CommunityPost> {
                 },
               ),
             ),
-          ).then((_) => _refresh());
+          );
+          _refresh();
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

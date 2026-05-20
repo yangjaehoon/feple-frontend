@@ -147,16 +147,19 @@ class _HomeFragmentState extends State<HomeFragment> {
         ),
         HomeArtistsSection(
           artists: _orderedArtists,
-          onTap: (artist) => Navigator.push(
-            context,
-            SlideRoute(
-              builder: (_) => ArtistPage(
-                artistId: artist.id,
-                artistName: artist.name,
-                followerCounter: 0,
+          onTap: (artist) async {
+            await Navigator.push(
+              context,
+              SlideRoute(
+                builder: (_) => ArtistPage(
+                  artistId: artist.id,
+                  artistName: artist.name,
+                  followerCounter: 0,
+                ),
               ),
-            ),
-          ).then((_) => _notifier.refresh()),
+            );
+            _notifier.refresh();
+          },
         ),
         const SizedBox(height: 8),
         HomeSectionHeader(
@@ -167,10 +170,13 @@ class _HomeFragmentState extends State<HomeFragment> {
         ),
         HomeFestivalsSection(
           festivals: _orderedFestivals,
-          onTap: (festival) => Navigator.push(
-            context,
-            SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)),
-          ).then((_) => _notifier.refresh()),
+          onTap: (festival) async {
+            await Navigator.push(
+              context,
+              SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)),
+            );
+            _notifier.refresh();
+          },
         ),
         const SizedBox(height: 8),
         if (_notifier.boards == null)

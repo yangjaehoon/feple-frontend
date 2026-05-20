@@ -82,6 +82,11 @@ class _ArtistPageState extends State<ArtistPage> {
                   followerCount: widget.followerCounter,
                   profileImageUrl: widget.profileImageUrl,
                 ),
+                ArtistSchedule(
+                  key: ValueKey('schedule_$_refreshKey'),
+                  artistId: widget.artistId,
+                  artistName: widget.artistName,
+                ),
                 ArtistBoard(
                   key: ValueKey('board_$_refreshKey'),
                   artistId: widget.artistId,
@@ -89,11 +94,6 @@ class _ArtistPageState extends State<ArtistPage> {
                 ),
                 ArtistSongs(
                   key: ValueKey('songs_$_refreshKey'),
-                  artistId: widget.artistId,
-                  artistName: widget.artistName,
-                ),
-                ArtistSchedule(
-                  key: ValueKey('schedule_$_refreshKey'),
                   artistId: widget.artistId,
                   artistName: widget.artistName,
                 ),

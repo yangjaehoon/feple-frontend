@@ -1,5 +1,6 @@
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/common/widget/w_nickname_field.dart';
 import 'package:feple/login/w_password_checklist.dart';
@@ -266,37 +267,11 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                   ),
 
-                // ── 가입 버튼 ──
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _register,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: themeColors.activate,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: _isLoading
-                        ? const SizedBox(
-                            width: 22,
-                            height: 22,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation(Colors.white),
-                            ),
-                          )
-                        : Text(
-                            'register'.tr(),
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                  ),
+                LoadingButton(
+                  label: 'register'.tr(),
+                  onPressed: _register,
+                  isLoading: _isLoading,
+                  backgroundColor: themeColors.activate,
                 ),
                 const SizedBox(height: 24),
 

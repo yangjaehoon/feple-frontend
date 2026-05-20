@@ -1,4 +1,5 @@
 import 'package:feple/injection.dart';
+import 'package:feple/model/comment_detail.dart';
 import 'package:feple/service/comment_service.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/service/scrap_service.dart';
@@ -10,7 +11,7 @@ class PostDetailNotifier extends ChangeNotifier {
   final _commentService = sl<CommentService>();
   final _scrapService = sl<ScrapService>();
 
-  List<Map<String, dynamic>> comments = [];
+  List<CommentDetail> comments = [];
   bool liked = false;
   bool scraped = false;
   late int heartCount;
@@ -95,11 +96,9 @@ class PostDetailNotifier extends ChangeNotifier {
     if (userId == null) return;
     try {
       final result = await _commentService.toggleCommentLike(commentId);
-      final idx = comments.indexWhere((c) => c['id'] == commentId);
+      final idx = comments.indexWhere((c) => c.id == commentId);
       if (idx != -1) {
-        comments[idx] = Map<String, dynamic>.from(comments[idx])
-          ..['liked'] = result.liked
-          ..['likeCount'] = result.likeCount;
+        comments[idx] = comments[idx].copyWith(liked: result.liked, likeCount: result.likeCount);
         notifyListeners();
       }
     } catch (e) {

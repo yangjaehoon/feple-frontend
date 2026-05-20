@@ -1,10 +1,11 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_inline_badge.dart';
+import 'package:feple/model/comment_detail.dart';
 import 'package:flutter/material.dart';
 
 /// 댓글 목록 위젯
 class CommentSection extends StatelessWidget {
-  final List<Map<String, dynamic>> comments;
+  final List<CommentDetail> comments;
   final int? currentUserId;
   final void Function(int commentId)? onReport;
   final void Function(int commentId, String nickname)? onReply;
@@ -25,12 +26,11 @@ class CommentSection extends StatelessWidget {
     if (comments.isEmpty) return const SizedBox.shrink();
 
     // 루트 댓글 / 대댓글 분리
-    final roots = comments.where((c) => c['parentId'] == null).toList();
-    final repliesMap = <int, List<Map<String, dynamic>>>{};
+    final roots = comments.where((c) => c.parentId == null).toList();
+    final repliesMap = <int, List<CommentDetail>>{};
     for (final c in comments) {
-      final pid = c['parentId'];
-      if (pid != null) {
-        repliesMap.putIfAbsent(pid as int, () => []).add(c);
+      if (c.parentId != null) {
+        repliesMap.putIfAbsent(c.parentId!, () => []).add(c);
       }
     }
 
@@ -40,19 +40,13 @@ class CommentSection extends StatelessWidget {
       if (i > 0) items.add(Divider(color: colors.listDivider, height: 1));
       items.add(_CommentTile(
         comment: root,
-        isOwn: currentUserId != null && root['userId'] == currentUserId,
-        onReport: onReport != null ? () => onReport!(root['id'] as int) : null,
-        onReply: onReply != null
-            ? () => onReply!(
-                root['id'] as int,
-                root['nickname'] as String? ?? 'User')
-            : null,
-        onToggleLike: onToggleLike != null
-            ? () => onToggleLike!(root['id'] as int)
-            : null,
+        isOwn: currentUserId != null && root.userId == currentUserId,
+        onReport: onReport != null ? () => onReport!(root.id) : null,
+        onReply: onReply != null ? () => onReply!(root.id, root.nickname) : null,
+        onToggleLike: onToggleLike != null ? () => onToggleLike!(root.id) : null,
       ));
 
-      final replies = repliesMap[root['id'] as int] ?? [];
+      final replies = repliesMap[root.id] ?? [];
       for (final reply in replies) {
         items.add(Divider(
             color: colors.listDivider, height: 1, indent: 48, endIndent: 0));
@@ -61,11 +55,9 @@ class CommentSection extends StatelessWidget {
           child: _CommentTile(
             comment: reply,
             isReply: true,
-            isOwn: currentUserId != null && reply['userId'] == currentUserId,
-            onReport: onReport != null ? () => onReport!(reply['id'] as int) : null,
-            onToggleLike: onToggleLike != null
-                ? () => onToggleLike!(reply['id'] as int)
-                : null,
+            isOwn: currentUserId != null && reply.userId == currentUserId,
+            onReport: onReport != null ? () => onReport!(reply.id) : null,
+            onToggleLike: onToggleLike != null ? () => onToggleLike!(reply.id) : null,
           ),
         ));
       }
@@ -80,7 +72,7 @@ class CommentSection extends StatelessWidget {
 
 /// 개별 댓글 타일
 class _CommentTile extends StatelessWidget {
-  final Map<String, dynamic> comment;
+  final CommentDetail comment;
   final bool isOwn;
   final bool isReply;
   final VoidCallback? onReport;
@@ -99,8 +91,6 @@ class _CommentTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final bool liked = comment['liked'] as bool? ?? false;
-    final int likeCount = (comment['likeCount'] as num?)?.toInt() ?? 0;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -121,8 +111,7 @@ class _CommentTile extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      comment['nickname'] as String? ??
-                          'User ${comment['userId']}',
+                      comment.nickname,
                       style: TextStyle(
                         color: colors.textSecondary,
                         fontSize: 12,
@@ -130,18 +119,17 @@ class _CommentTile extends StatelessWidget {
                       ),
                     ),
                     InlineBadge(
-                      userRole: comment['userRole'] as String?,
-                      certified: comment['certified'] == true,
+                      userRole: comment.userRole,
+                      certified: comment.certified,
                     ),
                   ],
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  comment['content'] as String,
+                  comment.content,
                   style: TextStyle(color: colors.textTitle),
                 ),
                 const SizedBox(height: 4),
-                // 좋아요 / 답글 버튼
                 Row(
                   children: [
                     GestureDetector(
@@ -150,18 +138,18 @@ class _CommentTile extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            liked
+                            comment.liked
                                 ? Icons.favorite_rounded
                                 : Icons.favorite_border_rounded,
                             size: 13,
-                            color: liked
+                            color: comment.liked
                                 ? AppColors.kawaiiPink
                                 : colors.textSecondary,
                           ),
-                          if (likeCount > 0) ...[
+                          if (comment.likeCount > 0) ...[
                             const SizedBox(width: 3),
                             Text(
-                              likeCount.toString(),
+                              comment.likeCount.toString(),
                               style: TextStyle(
                                   fontSize: 11, color: colors.textSecondary),
                             ),

@@ -7,7 +7,6 @@ import 'package:feple/provider/user_provider.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/login/s_login.dart';
-import 'package:feple/controller/auth_provider.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
 import 'app.dart';
@@ -43,7 +42,6 @@ void main() async {
       useOnlyLangCode: true,
       child: MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (context) => AuthProvider()),
           ChangeNotifierProvider<UserProvider>(
               create: (_) => UserProvider(sl<UserService>())),
         ],

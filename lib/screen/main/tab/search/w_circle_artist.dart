@@ -35,62 +35,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
       future: _artistsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
-          return Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: SkeletonBox(width: 72, height: 20),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 36,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    children: List.generate(
-                      4,
-                      (_) => const Padding(
-                        padding: EdgeInsets.only(right: 8),
-                        child: SkeletonBox(
-                          width: 60,
-                          height: 36,
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                GridView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 6,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 12,
-                    childAspectRatio: 0.75,
-                  ),
-                  itemBuilder: (_, __) => Column(
-                    children: const [
-                      Expanded(
-                        child: SkeletonBox(
-                          height: double.infinity,
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      SkeletonBox(width: 60, height: 13),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
+          return _buildSkeleton();
         }
         if (snapshot.hasError) {
           return ErrorState(
@@ -100,144 +45,201 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
             }),
           );
         }
-
         final allArtists = snapshot.data ?? [];
         final genres = allArtists.map((a) => a.genre).toSet().toList()..sort();
         final artists = _selectedGenre == null
             ? allArtists
             : allArtists.where((a) => a.genre == _selectedGenre).toList();
-
-
-        return Padding(
-          padding: const EdgeInsets.only(top: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  'artist'.tr(),
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    color: colors.textTitle,
-                    letterSpacing: -0.3,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                height: 36,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  children: [
-                    _GenreChip(
-                      label: 'filter_all'.tr(),
-                      selected: _selectedGenre == null,
-                      onTap: () => setState(() => _selectedGenre = null),
-                    ),
-                    ...genres.map((genre) => _GenreChip(
-                          label: _genreLabel(genre),
-                          selected: _selectedGenre == genre,
-                          onTap: () => setState(() => _selectedGenre = genre),
-                        )),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              GridView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: artists.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 12,
-                  childAspectRatio: 0.75,
-                ),
-                itemBuilder: (BuildContext context, int index) {
-                  final artist = artists[index];
-
-                  return AnimatedListItem(
-                    index: index,
-                    child: TapScale(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        SlideRoute(
-                          builder: (context) => ArtistPage(
-                            artistName: artist.name,
-                            artistId: artist.id,
-                            followerCounter: artist.followerCount,
-                            profileImageUrl: artist.profileImageUrl,
-                          ),
-                        ),
-                      );
-                    },
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20.0),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: colors.cardShadow.withValues(alpha: 0.15),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Hero(
-                              tag: 'artist_image_${artist.id}',
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(20.0),
-                                child: CachedNetworkImage(
-                                  imageUrl: artist.profileImageUrl,
-                                  memCacheWidth: 200,
-                                  fit: BoxFit.cover,
-                                  placeholder: (context, url) => const SkeletonBox(height: double.infinity),
-                                  errorWidget: (context, error, stack) =>
-                                      Container(
-                                    decoration: BoxDecoration(
-                                      color: colors.activate.withValues(alpha: 0.1),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: Icon(
-                                      Icons.person_rounded,
-                                      color: colors.activate,
-                                      size: 40,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          artist.name,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: colors.textTitle,
-                          ),
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  );
-                },
-              ),
-            ],
-          ),
-        );
+        return _buildContent(artists, genres, colors);
       },
+    );
+  }
+
+  Widget _buildSkeleton() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: SkeletonBox(width: 72, height: 20),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            height: 36,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              children: List.generate(
+                4,
+                (_) => const Padding(
+                  padding: EdgeInsets.only(right: 8),
+                  child: SkeletonBox(
+                    width: 60,
+                    height: 36,
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          GridView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: 6,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 12,
+              childAspectRatio: 0.75,
+            ),
+            itemBuilder: (_, __) => Column(
+              children: const [
+                Expanded(
+                  child: SkeletonBox(
+                    height: double.infinity,
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                  ),
+                ),
+                SizedBox(height: 8),
+                SkeletonBox(width: 60, height: 13),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContent(
+      List<Artist> artists, List<String> genres, AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              'artist'.tr(),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: colors.textTitle,
+                letterSpacing: -0.3,
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            height: 36,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              children: [
+                _GenreChip(
+                  label: 'filter_all'.tr(),
+                  selected: _selectedGenre == null,
+                  onTap: () => setState(() => _selectedGenre = null),
+                ),
+                ...genres.map((genre) => _GenreChip(
+                      label: _genreLabel(genre),
+                      selected: _selectedGenre == genre,
+                      onTap: () => setState(() => _selectedGenre = genre),
+                    )),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          GridView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: artists.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 12,
+              childAspectRatio: 0.75,
+            ),
+            itemBuilder: (context, index) {
+              final artist = artists[index];
+              return AnimatedListItem(
+                index: index,
+                child: TapScale(
+                  onTap: () => Navigator.push(
+                    context,
+                    SlideRoute(
+                      builder: (context) => ArtistPage(
+                        artistName: artist.name,
+                        artistId: artist.id,
+                        followerCounter: artist.followerCount,
+                        profileImageUrl: artist.profileImageUrl,
+                      ),
+                    ),
+                  ),
+                  child: _buildArtistCard(artist, colors),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildArtistCard(Artist artist, AbstractThemeColors colors) {
+    return Column(
+      children: [
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20.0),
+              boxShadow: [
+                BoxShadow(
+                  color: colors.cardShadow.withValues(alpha: 0.15),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Hero(
+              tag: 'artist_image_${artist.id}',
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20.0),
+                child: CachedNetworkImage(
+                  imageUrl: artist.profileImageUrl,
+                  memCacheWidth: 200,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => const SkeletonBox(height: double.infinity),
+                  errorWidget: (_, __, ___) => Container(
+                    decoration: BoxDecoration(
+                      color: colors.activate.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Icon(Icons.person_rounded, color: colors.activate, size: 40),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          artist.name,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: colors.textTitle,
+          ),
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
     );
   }
 }

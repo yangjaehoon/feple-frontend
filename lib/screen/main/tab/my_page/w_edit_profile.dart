@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_nickname_field.dart';
 import 'package:feple/injection.dart';
@@ -195,7 +196,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                       width: 30,
                       height: 30,
                       decoration: BoxDecoration(
-                        color: AppColors.skyBlue,
+                        color: colors.activate,
                         shape: BoxShape.circle,
                         border: Border.all(color: colors.surface, width: 2),
                       ),
@@ -242,32 +243,11 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
             const SizedBox(height: 40),
 
             // ── 저장 버튼 ──
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                onPressed: _isSaving ? null : _save,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.skyBlue,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 0,
-                ),
-                child: _isSaving
-                    ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
-                      )
-                    : Text(
-                        'save'.tr(),
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w700),
-                      ),
-              ),
+            LoadingButton(
+              label: 'save'.tr(),
+              onPressed: _save,
+              isLoading: _isSaving,
+              backgroundColor: colors.activate,
             ),
           ],
         ),

@@ -1,5 +1,6 @@
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
+import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/login/s_signup.dart';
@@ -44,190 +45,167 @@ class _LoginPageState extends State<LoginPage> {
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 28),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // ── 로고 영역 ──
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(AppDimens.cardRadius),
-                  child: Image.asset(
-                    'assets/image/login/feple_logo.png',
-                    width: 120,
-                    height: 120,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-                const SizedBox(height: 28),
-
-                // ── 환영 텍스트 ──
-                Text(
-                  'welcome'.tr(),
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w800,
-                    color: themeColors.textTitle,
-                    letterSpacing: -0.5,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'login_subtitle'.tr(),
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: themeColors.textSecondary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 40),
-
-                // ── 이메일 입력 ──
-                AppTextField(
-                  controller: emailController,
-                  hintText: 'email'.tr(),
-                  icon: Icons.mail_outline_rounded,
-                  errorText: _emailError,
-                  onChanged: (_) { if (_emailError != null) setState(() => _emailError = null); },
-                ),
-                const SizedBox(height: 14),
-
-                // ── 비밀번호 입력 ──
-                AppTextField(
-                  controller: passwordController,
-                  hintText: 'password'.tr(),
-                  icon: Icons.lock_outline_rounded,
-                  obscureText: true,
-                  errorText: _passwordError,
-                  onChanged: (_) {
-                    if (_passwordError != null || _authError != null) {
-                      setState(() { _passwordError = null; _authError = null; });
-                    }
-                  },
-                ),
-                if (_authError != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 6, left: 4),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.error_outline_rounded,
-                            color: AppColors.errorRed, size: 14),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            _authError!,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.errorRed,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                const SizedBox(height: 24),
-
-                // ── 로그인 버튼 ──
-                IgnorePointer(
-                  ignoring: _isEmailLoading || _isKakaoLoading,
-                  child: Opacity(
-                    opacity: _isKakaoLoading ? 0.5 : 1.0,
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 52,
-                      child: ElevatedButton(
+              padding: const EdgeInsets.symmetric(horizontal: 28),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildHeader(themeColors),
+                  _buildForm(themeColors),
+                  const SizedBox(height: 24),
+                  IgnorePointer(
+                    ignoring: _isEmailLoading || _isKakaoLoading,
+                    child: Opacity(
+                      opacity: _isKakaoLoading ? 0.5 : 1.0,
+                      child: LoadingButton(
+                        label: 'login'.tr(),
                         onPressed: _loginWithEmail,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: themeColors.activate,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: _isEmailLoading
-                            ? const SizedBox(
-                                width: 22,
-                                height: 22,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation(Colors.white),
-                                ),
-                              )
-                            : Text(
-                                'login'.tr(),
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
+                        isLoading: _isEmailLoading,
+                        backgroundColor: themeColors.activate,
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 20),
-
-                // ── 카카오 로그인 ──
-                _buildKakaoLoginButton(context),
-                const SizedBox(height: 28),
-
-                // ── 비밀번호 찾기 ──
-                TextButton(
-                  onPressed: _showForgotPasswordDialog,
-                  style: TextButton.styleFrom(
-                    foregroundColor: themeColors.activate,
-                    padding: EdgeInsets.zero,
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  child: Text(
-                    'forgot_password'.tr(),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // ── 회원가입 링크 ──
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'not_member_yet'.tr(),
-                      style: TextStyle(
-                        color: themeColors.textSecondary,
-                        fontSize: 14,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        SlideRoute(builder: (context) => const SignupPage()),
-                      ),
-                      style: TextButton.styleFrom(
-                        foregroundColor: themeColors.activate,
-                        padding: EdgeInsets.zero,
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: Text(
-                        'signup'.tr(),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                  const SizedBox(height: 20),
+                  _buildKakaoLoginButton(context),
+                  const SizedBox(height: 28),
+                  _buildLinks(context, themeColors),
+                ],
+              ),
             ),
           ),
         ),
       ),
-      ),
+    );
+  }
+
+  Widget _buildHeader(AbstractThemeColors themeColors) {
+    return Column(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(AppDimens.cardRadius),
+          child: Image.asset(
+            'assets/image/login/feple_logo.png',
+            width: 120,
+            height: 120,
+            fit: BoxFit.contain,
+          ),
+        ),
+        const SizedBox(height: 28),
+        Text(
+          'welcome'.tr(),
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w800,
+            color: themeColors.textTitle,
+            letterSpacing: -0.5,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'login_subtitle'.tr(),
+          style: TextStyle(
+            fontSize: 15,
+            color: themeColors.textSecondary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 40),
+      ],
+    );
+  }
+
+  Widget _buildForm(AbstractThemeColors themeColors) {
+    return Column(
+      children: [
+        AppTextField(
+          controller: emailController,
+          hintText: 'email'.tr(),
+          icon: Icons.mail_outline_rounded,
+          errorText: _emailError,
+          onChanged: (_) {
+            if (_emailError != null) setState(() => _emailError = null);
+          },
+        ),
+        const SizedBox(height: 14),
+        AppTextField(
+          controller: passwordController,
+          hintText: 'password'.tr(),
+          icon: Icons.lock_outline_rounded,
+          obscureText: true,
+          errorText: _passwordError,
+          onChanged: (_) {
+            if (_passwordError != null || _authError != null) {
+              setState(() { _passwordError = null; _authError = null; });
+            }
+          },
+        ),
+        if (_authError != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 6, left: 4),
+            child: Row(
+              children: [
+                const Icon(Icons.error_outline_rounded,
+                    color: AppColors.errorRed, size: 14),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    _authError!,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.errorRed,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildLinks(BuildContext context, AbstractThemeColors themeColors) {
+    return Column(
+      children: [
+        TextButton(
+          onPressed: _showForgotPasswordDialog,
+          style: TextButton.styleFrom(
+            foregroundColor: themeColors.activate,
+            padding: EdgeInsets.zero,
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          child: Text(
+            'forgot_password'.tr(),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          ),
+        ),
+        const SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'not_member_yet'.tr(),
+              style: TextStyle(color: themeColors.textSecondary, fontSize: 14),
+            ),
+            TextButton(
+              onPressed: () => Navigator.push(
+                context,
+                SlideRoute(builder: (context) => const SignupPage()),
+              ),
+              style: TextButton.styleFrom(
+                foregroundColor: themeColors.activate,
+                padding: EdgeInsets.zero,
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: Text(
+                'signup'.tr(),
+                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 

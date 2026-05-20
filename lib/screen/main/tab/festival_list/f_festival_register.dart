@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/constant/festival_constants.dart';
 import 'package:feple/injection.dart';
@@ -226,28 +227,11 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
             ),
             const SizedBox(height: 32),
 
-            SizedBox(
-              height: 52,
-              child: ElevatedButton(
-                onPressed: _isLoading ? null : _submit,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.activate,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                ),
-                child: _isLoading
-                    ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                            color: Colors.white, strokeWidth: 2),
-                      )
-                    : Text(
-                        'btn_register'.tr(),
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w700),
-                      ),
-              ),
+            LoadingButton(
+              label: 'btn_register'.tr(),
+              onPressed: _submit,
+              isLoading: _isLoading,
+              backgroundColor: colors.activate,
             ),
                 ],
               ),

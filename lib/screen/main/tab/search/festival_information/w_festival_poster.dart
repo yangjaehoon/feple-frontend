@@ -13,6 +13,7 @@ import '../../../../../model/festival_model.dart';
 import 'festival_poster_notifier.dart';
 import 'w_certification_bottom_sheet.dart';
 import 'w_festival_action_button.dart';
+import 'w_weather_bottom_sheet.dart';
 
 class FestivalPoster extends StatefulWidget {
   const FestivalPoster({super.key, required this.poster});
@@ -60,6 +61,14 @@ class _FestivalPosterState extends State<FestivalPoster> {
       final webUri = Uri.parse('https://map.kakao.com/link/search/$name');
       await launchUrl(webUri, mode: LaunchMode.externalApplication);
     }
+  }
+
+  void _showWeather() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => WeatherBottomSheet(festivalId: widget.poster.id),
+    );
   }
 
   Future<void> _submitCertification() async {
@@ -232,6 +241,11 @@ class _FestivalPosterState extends State<FestivalPoster> {
                                     const SizedBox(width: 8),
                                     FestivalActionButton(
                                       icon: Icons.calendar_month_outlined,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    FestivalActionButton(
+                                      onTap: _showWeather,
+                                      icon: Icons.cloud_outlined,
                                     ),
                                     const SizedBox(width: 8),
                                     FestivalActionButton(

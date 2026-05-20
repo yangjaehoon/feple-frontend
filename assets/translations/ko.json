@@ -348,5 +348,6 @@
   "weather_snow": "눈",
   "weather_shower": "소나기",
   "weather_temp_range": "최저 {}° / 최고 {}°",
-  "weather_rain_prob": "강수확률 {}%"
+  "weather_rain_prob": "강수확률 {}%",
+  "weather_no_data": "날씨 정보를 불러올 수 없습니다."
 }

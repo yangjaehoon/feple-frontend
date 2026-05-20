@@ -30,7 +30,7 @@ class _FtvYoutubeState extends State<FtvYoutube> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return CircularProgressIndicator();
           } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
+            return const SizedBox.shrink();
           } else {
             // 데이터 사용 예제
             final data = snapshot.data!;

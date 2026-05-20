@@ -60,7 +60,7 @@ class AsyncContentBuilder<T> extends StatelessWidget {
         if (snapshot.hasError) {
           if (errorBuilder != null) return errorBuilder!(snapshot.error);
           final errorWidget = ErrorState(
-            message: 'err_fetch_data'.tr(args: [snapshot.error.toString()]),
+            message: 'err_fetch_data'.tr(),
             onRetry: onRetry,
           );
           if (useListViewForEmptyState) {

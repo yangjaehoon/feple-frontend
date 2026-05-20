@@ -56,75 +56,96 @@ class _FepleAppBarState extends State<FepleAppBar> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          widget.showBackButton
-              ? IconButton(
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
-                  onPressed: () => Navigator.of(context).pop(),
-                )
-              : IconButton(
-                  icon: const Icon(Icons.menu_rounded, color: Colors.white),
-                  onPressed: () => Scaffold.of(context).openDrawer(),
-                ),
-          GestureDetector(
-            onTap: () => context.findAncestorStateOfType<MainScreenState>()?.goHome(),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Image.asset(
-                  'assets/image/feple_clear_960.png',
-                  height: 50,
-                  width: 50,
-                ),
-                const SizedBox(width: 2),
-                Text(
-                  widget.appbarTitle,
-                  style: titleStyle?.copyWith(color: Colors.white),
-                ),
-              ],
-            ),
-          ),
+          _buildLeadingButton(context),
+          _buildTitleLogo(context, titleStyle),
           const Spacer(),
-          IconButton(
-            icon: const Icon(Icons.search_rounded, color: Colors.white),
-            onPressed: () => Navigator.push(
-              context,
-              SlideRoute(builder: (_) => const UnifiedSearchScreen()),
-            ),
+          _buildSearchButton(context),
+          _buildNotificationButton(colors),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLeadingButton(BuildContext context) {
+    if (widget.showBackButton) {
+      return IconButton(
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+        onPressed: () => Navigator.of(context).pop(),
+      );
+    }
+    return IconButton(
+      icon: const Icon(Icons.menu_rounded, color: Colors.white),
+      onPressed: () => Scaffold.of(context).openDrawer(),
+    );
+  }
+
+  Widget _buildTitleLogo(BuildContext context, TextStyle? titleStyle) {
+    return GestureDetector(
+      onTap: () => context.findAncestorStateOfType<MainScreenState>()?.goHome(),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(
+            'assets/image/feple_clear_960.png',
+            height: 50,
+            width: 50,
           ),
-          Stack(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.notifications_rounded, color: Colors.white),
-                onPressed: _openNotifications,
-              ),
-              if (_unreadCount > 0)
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Container(
-                    padding: const EdgeInsets.all(2),
-                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-                    decoration: BoxDecoration(
-                      color: AppColors.errorRed,
-                      shape: _unreadCount > 9 ? BoxShape.rectangle : BoxShape.circle,
-                      borderRadius:
-                          _unreadCount > 9 ? BorderRadius.circular(8) : null,
-                      border: Border.all(color: Colors.white, width: 1.5),
-                    ),
-                    child: Text(
-                      _unreadCount > 99 ? '99+' : '$_unreadCount',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 9,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-            ],
+          const SizedBox(width: 2),
+          Text(
+            widget.appbarTitle,
+            style: titleStyle?.copyWith(color: Colors.white),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSearchButton(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.search_rounded, color: Colors.white),
+      onPressed: () => Navigator.push(
+        context,
+        SlideRoute(builder: (_) => const UnifiedSearchScreen()),
+      ),
+    );
+  }
+
+  Widget _buildNotificationButton(AbstractThemeColors colors) {
+    return Stack(
+      children: [
+        IconButton(
+          icon: const Icon(Icons.notifications_rounded, color: Colors.white),
+          onPressed: _openNotifications,
+        ),
+        if (_unreadCount > 0)
+          Positioned(
+            top: 8,
+            right: 8,
+            child: _buildUnreadBadge(),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildUnreadBadge() {
+    return Container(
+      padding: const EdgeInsets.all(2),
+      constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+      decoration: BoxDecoration(
+        color: AppColors.errorRed,
+        shape: _unreadCount > 9 ? BoxShape.rectangle : BoxShape.circle,
+        borderRadius:
+            _unreadCount > 9 ? BorderRadius.circular(8) : null,
+        border: Border.all(color: Colors.white, width: 1.5),
+      ),
+      child: Text(
+        _unreadCount > 99 ? '99+' : '$_unreadCount',
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 9,
+          fontWeight: FontWeight.w700,
+        ),
+        textAlign: TextAlign.center,
       ),
     );
   }

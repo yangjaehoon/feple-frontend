@@ -22,8 +22,8 @@ class FestivalService {
     if (genres.isNotEmpty) params['genres'] = genres;
     if (regions.isNotEmpty) params['regions'] = regions;
 
-    final resp = await DioClient.dio.get('/festivals', queryParameters: params);
-    final decoded = resp.data;
+    final response = await DioClient.dio.get('/festivals', queryParameters: params);
+    final decoded = response.data;
     final List<dynamic> list =
         decoded is List ? decoded : (decoded['content'] as List<dynamic>);
 
@@ -33,13 +33,13 @@ class FestivalService {
   }
 
   Future<FestivalModel> fetchById(int festivalId) async {
-    final resp = await DioClient.dio.get('/festivals/$festivalId');
-    return FestivalModel.fromJson(resp.data as Map<String, dynamic>);
+    final response = await DioClient.dio.get('/festivals/$festivalId');
+    return FestivalModel.fromJson(response.data as Map<String, dynamic>);
   }
 
   Future<List<FestivalArtistItem>> fetchFestivalArtists(int festivalId) async {
-    final resp = await DioClient.dio.get('/festivals/$festivalId/artists');
-    return (resp.data as List)
+    final response = await DioClient.dio.get('/festivals/$festivalId/artists');
+    return (response.data as List)
         .map((e) => FestivalArtistItem.fromJson(e as Map<String, dynamic>))
         .toList();
   }
@@ -90,8 +90,8 @@ class FestivalService {
   }
 
   Future<List<TimetableEntry>> fetchTimetable(int festivalId) async {
-    final resp = await DioClient.dio.get('/festivals/$festivalId/timetable');
-    final raw = resp.data;
+    final response = await DioClient.dio.get('/festivals/$festivalId/timetable');
+    final raw = response.data;
     return (raw is List ? raw : <dynamic>[])
         .whereType<Map<String, dynamic>>()
         .map((e) => TimetableEntry.fromJson(e))
@@ -99,8 +99,8 @@ class FestivalService {
   }
 
   Future<WeatherModel?> fetchWeather(int festivalId) async {
-    final resp = await DioClient.dio.get('/festivals/$festivalId/weather');
-    if (resp.statusCode == 204 || resp.data == null) return null;
-    return WeatherModel.fromJson(resp.data as Map<String, dynamic>);
+    final response = await DioClient.dio.get('/festivals/$festivalId/weather');
+    if (response.statusCode == 204 || response.data == null) return null;
+    return WeatherModel.fromJson(response.data as Map<String, dynamic>);
   }
 }

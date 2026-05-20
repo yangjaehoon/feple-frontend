@@ -8,14 +8,14 @@ class ScrapService {
 
   /// 특정 게시글 스크랩 여부 조회
   Future<bool> isScraped(int postId) async {
-    final resp = await DioClient.dio.get('/posts/$postId/scraped');
-    return resp.data as bool;
+    final response = await DioClient.dio.get('/posts/$postId/scraped');
+    return response.data as bool;
   }
 
   /// 내 스크랩 목록 조회
   Future<List<Post>> fetchMyScraps() async {
-    final resp = await DioClient.dio.get('/posts/my/scrapped');
-    return (resp.data as List<dynamic>)
+    final response = await DioClient.dio.get('/posts/my/scrapped');
+    return (response.data as List<dynamic>)
         .map((json) => Post.fromJson(json as Map<String, dynamic>))
         .toList();
   }

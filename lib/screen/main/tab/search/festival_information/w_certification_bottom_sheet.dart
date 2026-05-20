@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../../common/common.dart';
-import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 
 class CertificationBottomSheet extends StatefulWidget {
   final String festivalName;
@@ -83,17 +83,7 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 핸들
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: colors.textSecondary.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(AppDimens.barRadius),
-              ),
-            ),
-          ),
+          const BottomSheetHandle(),
           const SizedBox(height: 20),
 
           // 타이틀

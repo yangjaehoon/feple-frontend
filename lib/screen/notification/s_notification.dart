@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/notification_model.dart';
@@ -190,30 +191,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
             ? _buildSkeleton(colors)
             : _hasError
                 ? _buildScrollable(
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.wifi_off_rounded,
-                            size: 52,
-                            color: colors.textSecondary.withValues(alpha: 0.4)),
-                        const SizedBox(height: 16),
-                        Text(
-                          'err_fetch_data'.tr(args: ['']),
-                          style: TextStyle(color: colors.textSecondary),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 20),
-                        FilledButton.icon(
-                          onPressed: _load,
-                          icon: const Icon(Icons.refresh_rounded, size: 18),
-                          label: Text('retry'.tr()),
-                          style: FilledButton.styleFrom(
-                            backgroundColor: colors.activate,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(AppDimens.shapeButton)),
-                          ),
-                        ),
-                      ],
+                    ErrorState(
+                      message: 'err_fetch_data'.tr(args: ['']),
+                      onRetry: _load,
                     ),
                   )
                 : _items.isEmpty

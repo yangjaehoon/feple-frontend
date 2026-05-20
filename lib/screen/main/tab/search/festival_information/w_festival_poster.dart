@@ -7,6 +7,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
+import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../../model/festival_model.dart';
@@ -33,6 +34,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
     _notifier = FestivalPosterNotifier(
       festivalId: widget.poster.id,
       certService: sl<CertificationService>(),
+      festivalService: sl<FestivalService>(),
     );
     _notifier.init();
   }

@@ -1,4 +1,3 @@
-import 'package:feple/injection.dart';
 import 'package:feple/model/certification_model.dart';
 import 'package:feple/screen/main/tab/search/festival_information/festival_poster_notifier.dart';
 import 'package:feple/service/certification_service.dart';
@@ -23,19 +22,12 @@ void main() {
   setUp(() {
     mockCertService = MockCertificationService();
     mockFestivalService = MockFestivalService();
-    if (sl.isRegistered<FestivalService>()) {
-      sl.unregister<FestivalService>();
-    }
-    sl.registerSingleton<FestivalService>(mockFestivalService);
-  });
-
-  tearDown(() {
-    sl.unregister<FestivalService>();
   });
 
   FestivalPosterNotifier make(int festivalId) => FestivalPosterNotifier(
         festivalId: festivalId,
         certService: mockCertService,
+        festivalService: mockFestivalService,
       );
 
   group('loadCertState', () {

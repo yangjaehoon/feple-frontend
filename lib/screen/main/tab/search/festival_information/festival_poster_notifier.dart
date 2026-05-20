@@ -1,5 +1,4 @@
 import 'package:feple/common/app_events.dart';
-import 'package:feple/injection.dart';
 import 'package:feple/model/certification_model.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_service.dart';
@@ -9,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class FestivalPosterNotifier extends ChangeNotifier {
   final int festivalId;
   final CertificationService certService;
-  final _festivalService = sl<FestivalService>();
+  final FestivalService festivalService;
 
   bool liked = false;
   bool descExpanded = true;
@@ -18,7 +17,11 @@ class FestivalPosterNotifier extends ChangeNotifier {
 
   String get _descPrefKey => 'festival_desc_expanded_$festivalId';
 
-  FestivalPosterNotifier({required this.festivalId, required this.certService});
+  FestivalPosterNotifier({
+    required this.festivalId,
+    required this.certService,
+    required this.festivalService,
+  });
 
   Future<void> init() async {
     await Future.wait([loadLikeState(), loadDescState(), loadCertState()]);
@@ -26,7 +29,7 @@ class FestivalPosterNotifier extends ChangeNotifier {
 
   Future<void> loadLikeState() async {
     try {
-      liked = await _festivalService.isLiked(festivalId);
+      liked = await festivalService.isLiked(festivalId);
       notifyListeners();
     } catch (e) {
       debugPrint('loadLikeState error: $e');
@@ -61,7 +64,7 @@ class FestivalPosterNotifier extends ChangeNotifier {
 
   Future<void> toggleLike() async {
     try {
-      liked = await _festivalService.toggleLike(festivalId);
+      liked = await festivalService.toggleLike(festivalId);
       notifyListeners();
       AppEvents.likeChanged.value++;
     } catch (e) {

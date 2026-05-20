@@ -51,15 +51,18 @@ class _BoardPostListScreenState extends State<BoardPostListScreen> {
     return Scaffold(
       backgroundColor: colors.backgroundMain,
       floatingActionButton: WritePostFab(
-        onPressed: () => Navigator.push(
-          context,
-          SlideRoute(
-            builder: (_) => WritePostScreen(
-              title: widget.writeScreenTitle,
-              onSubmit: widget.onSubmitPost,
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            SlideRoute(
+              builder: (_) => WritePostScreen(
+                title: widget.writeScreenTitle,
+                onSubmit: widget.onSubmitPost,
+              ),
             ),
-          ),
-        ).then((_) => _refresh()),
+          );
+          _refresh();
+        },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Column(
@@ -92,15 +95,17 @@ class _BoardPostListScreenState extends State<BoardPostListScreen> {
                       index: index,
                       child: PostListTile(
                         post: post,
-                        onTap: () => Navigator.of(context, rootNavigator: true)
-                            .push(
-                          SlideRoute(
-                            builder: (_) => EnlargePost.fromPost(
-                              boardname: widget.boardname,
-                              post: post,
+                        onTap: () async {
+                          await Navigator.of(context, rootNavigator: true).push(
+                            SlideRoute(
+                              builder: (_) => EnlargePost.fromPost(
+                                boardname: widget.boardname,
+                                post: post,
+                              ),
                             ),
-                          ),
-                        ).then((_) => _refresh()),
+                          );
+                          _refresh();
+                        },
                       ),
                     );
                   },

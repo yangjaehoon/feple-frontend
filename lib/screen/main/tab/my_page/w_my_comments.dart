@@ -52,18 +52,21 @@ class MyCommentsScreen extends StatelessWidget {
       itemBuilder: (context, c, reload) {
         final colors = context.appColors;
         return ListTile(
-          onTap: () => Navigator.of(context, rootNavigator: true).push(
-            SlideRoute(
-              builder: (_) => EnlargePost(
-                boardname: c.boardDisplayName,
-                id: c.postId,
-                nickname: c.postNickname,
-                title: c.postTitle,
-                content: c.postContent,
-                heart: c.postLikeCount,
+          onTap: () async {
+            await Navigator.of(context, rootNavigator: true).push(
+              SlideRoute(
+                builder: (_) => EnlargePost(
+                  boardname: c.boardDisplayName,
+                  id: c.postId,
+                  nickname: c.postNickname,
+                  title: c.postTitle,
+                  content: c.postContent,
+                  heart: c.postLikeCount,
+                ),
               ),
-            ),
-          ).then((_) => reload()),
+            );
+            reload();
+          },
           leading:
               Icon(Icons.chat_bubble_rounded, color: colors.activate, size: 20),
           title: Text(

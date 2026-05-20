@@ -20,14 +20,17 @@ class MyScrapsScreen extends StatelessWidget {
       itemBuilder: (context, post, reload) {
         final colors = context.appColors;
         return ListTile(
-          onTap: () => Navigator.of(context, rootNavigator: true).push(
-            SlideRoute(
-              builder: (_) => EnlargePost.fromPost(
-                boardname: post.boardDisplayName,
-                post: post,
+          onTap: () async {
+            await Navigator.of(context, rootNavigator: true).push(
+              SlideRoute(
+                builder: (_) => EnlargePost.fromPost(
+                  boardname: post.boardDisplayName,
+                  post: post,
+                ),
               ),
-            ),
-          ).then((_) => reload()),
+            );
+            reload();
+          },
           leading: const Icon(Icons.star_rounded,
               color: AppColors.sunnyYellow, size: 22),
           title: Text(

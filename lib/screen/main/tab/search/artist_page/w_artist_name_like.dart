@@ -52,7 +52,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
   }
 
   Future<void> _toggleFollow() async {
-    _heartController.forward().then((_) => _heartController.reverse());
+    _heartController.forward().whenComplete(_heartController.reverse);
     try {
       await _followNotifier.toggle();
       if (!mounted) return;

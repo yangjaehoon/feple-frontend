@@ -296,9 +296,9 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _showForgotPasswordDialog() {
+  Future<void> _showForgotPasswordDialog() async {
     final emailCtrl = TextEditingController(text: emailController.text.trim());
-    showDialog(
+    await showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text('reset_password'.tr(),
@@ -340,7 +340,8 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ],
       ),
-    ).then((_) => emailCtrl.dispose());
+    );
+    emailCtrl.dispose();
   }
 
   Future<void> signInWithKakao(BuildContext context) async {

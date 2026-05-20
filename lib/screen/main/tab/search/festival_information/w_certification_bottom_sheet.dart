@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:dio/dio.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -54,9 +54,7 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
     } catch (e) {
       if (!mounted) return;
       debugPrint('cert submit error: $e');
-      final backendMsg = e is DioException
-          ? (e.response?.data is Map ? e.response!.data['message'] as String? : null)
-          : null;
+      final backendMsg = dioBackendMessage(e);
       final isAlready = backendMsg?.contains('이미') == true ||
           backendMsg?.contains('already') == true;
       context.showErrorSnackbar(

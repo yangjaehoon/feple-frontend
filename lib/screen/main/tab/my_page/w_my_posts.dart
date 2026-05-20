@@ -24,14 +24,17 @@ class MyPostsScreen extends StatelessWidget {
       itemBuilder: (context, post, reload) {
         final colors = context.appColors;
         return ListTile(
-          onTap: () => Navigator.of(context, rootNavigator: true).push(
-            SlideRoute(
-              builder: (_) => EnlargePost.fromPost(
-                boardname: post.boardDisplayName,
-                post: post,
+          onTap: () async {
+            await Navigator.of(context, rootNavigator: true).push(
+              SlideRoute(
+                builder: (_) => EnlargePost.fromPost(
+                  boardname: post.boardDisplayName,
+                  post: post,
+                ),
               ),
-            ),
-          ).then((_) => reload()),
+            );
+            reload();
+          },
           title: Text(
             post.title,
             style: TextStyle(

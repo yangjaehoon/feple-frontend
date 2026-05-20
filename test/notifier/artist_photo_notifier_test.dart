@@ -108,6 +108,26 @@ void main() {
 
       verify(() => mockService.fetchPhotos(1)).called(1);
     });
+
+    test('likeCount=0인 좋아요 상태 사진 토글 시 likeCount -1 (낙관적 업데이트)', () async {
+      when(() => mockService.toggleLike(1, 1)).thenAnswer((_) async {});
+      notifier.photos = [_photo(id: 1, likeCount: 0, isLiked: true)];
+
+      await notifier.toggleLike(1);
+
+      expect(notifier.photos.first.isLiked, false);
+      expect(notifier.photos.first.likeCount, -1);
+    });
+
+    test('photos 빈 상태에서 toggleLike 호출 시 서비스는 호출되나 상태 변경 없음', () async {
+      when(() => mockService.toggleLike(1, 99)).thenAnswer((_) async {});
+      notifier.photos = [];
+
+      await notifier.toggleLike(99);
+
+      expect(notifier.photos, isEmpty);
+      verify(() => mockService.toggleLike(1, 99)).called(1);
+    });
   });
 
   group('deletePhoto', () {

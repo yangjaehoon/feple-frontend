@@ -72,6 +72,35 @@ void main() {
       expect(model.type, isNull);
     });
 
+    test('빈 문자열 title/body 파싱 성공', () {
+      final json = {
+        'id': 5,
+        'type': 'NEW_COMMENT',
+        'title': '',
+        'body': '',
+        'read': false,
+      };
+
+      final model = NotificationModel.fromJson(json);
+
+      expect(model.title, '');
+      expect(model.body, '');
+    });
+
+    test('매우 큰 id 값(2^53-1) 파싱 성공', () {
+      final json = {
+        'id': 9007199254740991,
+        'type': 'NEW_COMMENT',
+        'title': '제목',
+        'body': '본문',
+        'read': false,
+      };
+
+      final model = NotificationModel.fromJson(json);
+
+      expect(model.id, 9007199254740991);
+    });
+
     test('모든 NotificationType 값 파싱', () {
       final cases = {
         'NEW_FESTIVAL': NotificationType.newFestival,

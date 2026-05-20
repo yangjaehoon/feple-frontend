@@ -1,10 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
-import 'package:feple/screen/main/tab/search/artist_page/w_artist_circle_image.dart';
 import 'package:feple/screen/main/tab/search/festival_information/festival_artists_notifier.dart';
 import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/festival_service.dart';
@@ -56,9 +59,7 @@ class _FestivalArtistListScreenState extends State<FestivalArtistListScreen> {
               listenable: _notifier,
               builder: (context, _) {
                 if (_notifier.isLoading) {
-                  return Center(
-                    child: CircularProgressIndicator(color: colors.activate),
-                  );
+                  return _buildSkeleton();
                 }
                 if (_notifier.artists.isEmpty) {
                   return Center(
@@ -72,11 +73,12 @@ class _FestivalArtistListScreenState extends State<FestivalArtistListScreen> {
                   );
                 }
                 return GridView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20, vertical: 16),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    mainAxisSpacing: 20,
-                    crossAxisSpacing: 8,
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 12,
                     childAspectRatio: 0.75,
                   ),
                   itemCount: _notifier.artists.length,
@@ -84,39 +86,75 @@ class _FestivalArtistListScreenState extends State<FestivalArtistListScreen> {
                     final artist = _notifier.artists[index];
                     final isFollowed =
                         _notifier.followedIds.contains(artist.artistId);
-                    return GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        SlideRoute(
-                          builder: (_) => ArtistPage(
-                            artistId: artist.artistId,
-                            artistName: artist.artistName,
-                            followerCounter: 0,
+                    return AnimatedListItem(
+                      index: index,
+                      child: TapScale(
+                        onTap: () => Navigator.push(
+                          context,
+                          SlideRoute(
+                            builder: (_) => ArtistPage(
+                              artistId: artist.artistId,
+                              artistName: artist.artistName,
+                              followerCounter: 0,
+                            ),
                           ),
                         ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ArtistCircleImage(
-                            imageUrl: artist.profileImageUrl,
-                            isFollowed: isFollowed,
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            artist.displayName,
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: isFollowed
-                                  ? AppColors.skyBlue
-                                  : colors.textTitle,
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  border: isFollowed
+                                      ? Border.all(
+                                          color: AppColors.skyBlue,
+                                          width: 2.5,
+                                        )
+                                      : null,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: colors.cardShadow
+                                          .withValues(alpha: 0.15),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(
+                                      isFollowed ? 17.5 : 20.0),
+                                  child: artist.profileImageUrl != null &&
+                                          artist.profileImageUrl!.isNotEmpty
+                                      ? CachedNetworkImage(
+                                          imageUrl: artist.profileImageUrl!,
+                                          memCacheWidth: 200,
+                                          fit: BoxFit.cover,
+                                          placeholder: (_, __) =>
+                                              const SkeletonBox(
+                                                  height: double.infinity),
+                                          errorWidget: (_, __, ___) =>
+                                              _placeholderBox(colors),
+                                        )
+                                      : _placeholderBox(colors),
+                                ),
+                              ),
                             ),
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
+                            const SizedBox(height: 8),
+                            Text(
+                              artist.displayName,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: isFollowed
+                                    ? AppColors.skyBlue
+                                    : colors.textTitle,
+                              ),
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },
@@ -124,6 +162,47 @@ class _FestivalArtistListScreenState extends State<FestivalArtistListScreen> {
               },
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _placeholderBox(AbstractThemeColors colors) {
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.activate.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Icon(
+        Icons.person_rounded,
+        color: colors.activate,
+        size: 40,
+      ),
+    );
+  }
+
+  Widget _buildSkeleton() {
+    return GridView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 9,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: 16,
+        crossAxisSpacing: 12,
+        childAspectRatio: 0.75,
+      ),
+      itemBuilder: (_, __) => Column(
+        children: const [
+          Expanded(
+            child: SkeletonBox(
+              height: double.infinity,
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+            ),
+          ),
+          SizedBox(height: 8),
+          SkeletonBox(width: 60, height: 13),
         ],
       ),
     );

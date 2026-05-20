@@ -106,7 +106,7 @@ class _EnlargePostState extends State<EnlargePost> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final userId = context.read<UserProvider>().user?.id;
+    final userId = context.read<UserProvider>().currentUserId;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,

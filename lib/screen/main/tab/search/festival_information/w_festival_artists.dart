@@ -28,7 +28,7 @@ class _FestivalArtistsState extends State<FestivalArtists> {
   @override
   void initState() {
     super.initState();
-    final userId = context.read<UserProvider>().user?.id;
+    final userId = context.read<UserProvider>().currentUserId;
     _notifier = FestivalArtistsNotifier(
       festivalId: widget.festivalId,
       userId: userId,

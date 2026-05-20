@@ -43,53 +43,58 @@ class AsyncContentBuilder<T> extends StatelessWidget {
     this.useListViewForEmptyState = true,
   });
 
+  Widget _buildLoading(BuildContext context) {
+    if (loadingBuilder != null) return loadingBuilder!(context);
+    return Center(
+      child: CircularProgressIndicator(color: context.appColors.activate),
+    );
+  }
+
+  Widget _buildError(BuildContext context, Object? error) {
+    if (errorBuilder != null) return errorBuilder!(error);
+    final errorWidget = ErrorState(
+      message: 'err_fetch_data'.tr(),
+      onRetry: onRetry,
+    );
+    if (useListViewForEmptyState) {
+      return ListView(children: [const SizedBox(height: 60), errorWidget]);
+    }
+    return errorWidget;
+  }
+
+  Widget _buildEmpty(BuildContext context) {
+    if (emptyBuilder != null) return emptyBuilder!(context);
+    return _buildStateWidget(context, 'no_posts_yet'.tr());
+  }
+
+  bool _isDataEmpty(T data) {
+    if (isEmpty != null) return isEmpty!(data);
+    if (data is List) return data.isEmpty;
+    if (data is Map) return data.isEmpty;
+    if (data is String) return data.isEmpty;
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<T>(
       future: future,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          if (loadingBuilder != null) return loadingBuilder!(context);
-          return Center(
-            child: CircularProgressIndicator(
-              color: context.appColors.activate,
-            ),
-          );
+          return _buildLoading(context);
         }
 
         if (snapshot.hasError) {
-          if (errorBuilder != null) return errorBuilder!(snapshot.error);
-          final errorWidget = ErrorState(
-            message: 'err_fetch_data'.tr(),
-            onRetry: onRetry,
-          );
-          if (useListViewForEmptyState) {
-            return ListView(children: [const SizedBox(height: 60), errorWidget]);
-          }
-          return errorWidget;
+          return _buildError(context, snapshot.error);
         }
 
         if (!snapshot.hasData) {
-          if (emptyBuilder != null) return emptyBuilder!(context);
-          return _buildStateWidget(context, 'no_posts_yet'.tr());
+          return _buildEmpty(context);
         }
 
         final data = snapshot.data as T;
-        
-        bool empty = false;
-        if (isEmpty != null) {
-          empty = isEmpty!(data);
-        } else if (data is List) {
-          empty = data.isEmpty;
-        } else if (data is Map) {
-          empty = data.isEmpty;
-        } else if (data is String) {
-          empty = data.isEmpty;
-        }
-
-        if (empty) {
-          if (emptyBuilder != null) return emptyBuilder!(context);
-          return _buildStateWidget(context, 'no_posts_yet'.tr());
+        if (_isDataEmpty(data)) {
+          return _buildEmpty(context);
         }
 
         return builder(context, data);

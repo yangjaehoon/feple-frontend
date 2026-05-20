@@ -30,7 +30,7 @@ class ImagePickerBox extends StatelessWidget {
             color: colors.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: AppColors.skyBlueLight,
+              color: colors.activate.withValues(alpha: 0.4),
               width: 1.5,
               strokeAlign: BorderSide.strokeAlignInside,
             ),
@@ -47,7 +47,7 @@ class ImagePickerBox extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.add_photo_alternate_rounded,
-                        color: AppColors.skyBlue, size: 40),
+                        color: colors.activate, size: 40),
                     const SizedBox(height: 8),
                     Text(
                       label ?? 'photo_add'.tr(),

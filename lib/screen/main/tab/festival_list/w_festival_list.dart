@@ -21,6 +21,34 @@ class ConcertListWidget extends StatefulWidget {
 }
 
 class _ConcertListWidgetState extends State<ConcertListWidget> {
+  Widget _buildFestivalItem(BuildContext context, dynamic item, int index) {
+    return AnimatedListItem(
+      index: index,
+      child: TapScale(
+        onTap: () {
+          final poster = FestivalModel(
+            id: item.id,
+            title: item.title,
+            description: item.description,
+            location: item.location,
+            startDate: item.startDate,
+            endDate: item.endDate ?? '',
+            posterUrl: item.posterUrl,
+            latitude: item.latitude,
+            longitude: item.longitude,
+          );
+          Navigator.push(
+            context,
+            SlideRoute(
+              builder: (context) => FestivalInformationFragment(poster: poster),
+            ),
+          );
+        },
+        child: FestivalPreviewCard(festival: item),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final previewPoster = context.watch<FestivalPreviewProvider>();
@@ -45,35 +73,10 @@ class _ConcertListWidgetState extends State<ConcertListWidget> {
 
     final items = previewPoster.items;
     return Column(
-      children: List.generate(items.length, (index) {
-        final item = items[index];
-        return AnimatedListItem(
-          index: index,
-          child: TapScale(
-            onTap: () {
-              final poster = FestivalModel(
-                id: item.id,
-                title: item.title,
-                description: item.description,
-                location: item.location,
-                startDate: item.startDate,
-                endDate: item.endDate ?? '',
-                posterUrl: item.posterUrl,
-                latitude: item.latitude,
-                longitude: item.longitude,
-              );
-              Navigator.push(
-                context,
-                SlideRoute(
-                  builder: (context) =>
-                      FestivalInformationFragment(poster: poster),
-                ),
-              );
-            },
-            child: FestivalPreviewCard(festival: item),
-          ),
-        );
-      }),
+      children: List.generate(
+        items.length,
+        (index) => _buildFestivalItem(context, items[index], index),
+      ),
     );
   }
 }

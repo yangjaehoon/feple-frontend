@@ -39,69 +39,77 @@ class _ArtistPageState extends State<ArtistPage> {
       backgroundColor: colors.backgroundMain,
       body: Column(
         children: [
-          SafeArea(
-            bottom: false,
-            child: Container(
-              height: AppDimens.appBarHeight,
-              color: colors.appBarColor,
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  Expanded(
-                    child: Text(
-                      widget.artistName,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          _buildAppBar(context, colors),
           Expanded(
             child: SafeArea(
               top: false,
               child: RefreshIndicator(
-          color: colors.activate,
-          onRefresh: _onRefresh,
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              children: [
-                MainImageSwiper(
-                  key: ValueKey('swiper_$_refreshKey'),
-                  artistName: widget.artistName,
-                  artistId: widget.artistId,
-                  followerCount: widget.followerCounter,
-                  profileImageUrl: widget.profileImageUrl,
-                ),
-                ArtistSchedule(
-                  key: ValueKey('schedule_$_refreshKey'),
-                  artistId: widget.artistId,
-                  artistName: widget.artistName,
-                ),
-                ArtistBoard(
-                  key: ValueKey('board_$_refreshKey'),
-                  artistId: widget.artistId,
-                  artistName: widget.artistName,
-                ),
-                ArtistSongs(
-                  key: ValueKey('songs_$_refreshKey'),
-                  artistId: widget.artistId,
-                  artistName: widget.artistName,
-                ),
-              ],
+                color: colors.activate,
+                onRefresh: _onRefresh,
+                child: _buildScrollBody(),
+              ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAppBar(BuildContext context, AbstractThemeColors colors) {
+    return SafeArea(
+      bottom: false,
+      child: Container(
+        height: AppDimens.appBarHeight,
+        color: colors.appBarColor,
+        child: Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            ),
+            Expanded(
+              child: Text(
+                widget.artistName,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
         ),
       ),
+    );
+  }
+
+  Widget _buildScrollBody() {
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Column(
+        children: [
+          MainImageSwiper(
+            key: ValueKey('swiper_$_refreshKey'),
+            artistName: widget.artistName,
+            artistId: widget.artistId,
+            followerCount: widget.followerCounter,
+            profileImageUrl: widget.profileImageUrl,
+          ),
+          ArtistSchedule(
+            key: ValueKey('schedule_$_refreshKey'),
+            artistId: widget.artistId,
+            artistName: widget.artistName,
+          ),
+          ArtistBoard(
+            key: ValueKey('board_$_refreshKey'),
+            artistId: widget.artistId,
+            artistName: widget.artistName,
+          ),
+          ArtistSongs(
+            key: ValueKey('songs_$_refreshKey'),
+            artistId: widget.artistId,
+            artistName: widget.artistName,
           ),
         ],
       ),

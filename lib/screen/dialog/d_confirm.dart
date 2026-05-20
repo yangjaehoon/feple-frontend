@@ -34,80 +34,87 @@ class ConfirmDialog extends DialogWidget<SimpleResult> {
 class _MessageDialogState extends DialogState<ConfirmDialog> {
   var isChecked = false;
 
+  Widget _buildMessageRow(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Text(
+              widget.message!,
+              style: TextStyle(
+                  fontSize: widget.fontSize,
+                  height: 1.8,
+                  color: context.appColors.text),
+              textAlign: widget.textAlign,
+            ),
+          ),
+        ),
+        const SizedBox(height: 4),
+      ],
+    );
+  }
+
+  Widget _buildActionButtons(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Tap(
+            onTap: () {
+              widget.hide(SimpleResult.failure());
+            },
+            child: Container(
+                height: 50,
+                alignment: Alignment.center,
+                child: Text(
+                  widget.cancelButtonText,
+                  style: TextStyle(
+                    color: context.appColors.confirmText,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    fontStyle: FontStyle.normal,
+                  ),
+                )),
+          ),
+        ),
+        Expanded(
+          child: Tap(
+            onTap: () {
+              widget.hide(SimpleResult.success());
+            },
+            child: Container(
+                height: 50,
+                alignment: Alignment.center,
+                child: Text(
+                  widget.buttonText,
+                  style: TextStyle(
+                    color: context.appColors.confirmText,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    fontStyle: FontStyle.normal,
+                  ),
+                )),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return CenterDialogScaffold(
         body: Container(
             constraints: BoxConstraints(maxHeight: context.deviceHeight),
             decoration: BoxDecoration(
-                color: context.appColors.drawerBg, borderRadius: BorderRadius.circular(28)),
+                color: context.appColors.drawerBg,
+                borderRadius: BorderRadius.circular(28)),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Text(
-                          widget.message!,
-                          style: TextStyle(
-                              fontSize: widget.fontSize,
-                              height: 1.8,
-                              color: context.appColors.text),
-                          textAlign: widget.textAlign,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 4,
-                    )
-                  ],
-                ),
+                _buildMessageRow(context),
                 Line(color: context.appColors.divider),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Tap(
-                        onTap: () {
-                          widget.hide(SimpleResult.failure());
-                        },
-                        child: Container(
-                            height: 50,
-                            alignment: Alignment.center,
-                            child: Text(
-                              widget.cancelButtonText,
-                              style: TextStyle(
-                                color: context.appColors.confirmText,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                fontStyle: FontStyle.normal,
-                              ),
-                            )),
-                      ),
-                    ),
-                    Expanded(
-                      child: Tap(
-                        onTap: () {
-                          widget.hide(SimpleResult.success());
-                        },
-                        child: Container(
-                            height: 50,
-                            alignment: Alignment.center,
-                            child: Text(
-                              widget.buttonText,
-                              style: TextStyle(
-                                color: context.appColors.confirmText,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                fontStyle: FontStyle.normal,
-                              ),
-                            )),
-                      ),
-                    ),
-                  ],
-                )
+                _buildActionButtons(context),
               ],
             )));
   }

@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/model/favorite_board.dart';
 import 'package:flutter/material.dart';
 
@@ -61,16 +62,8 @@ class _BoardSettingsSheetState extends State<BoardSettingsSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // 핸들
           const SizedBox(height: 12),
-          Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: colors.textSecondary.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(AppDimens.barRadius),
-            ),
-          ),
+          const BottomSheetHandle(),
           const SizedBox(height: 16),
 
           // 타이틀

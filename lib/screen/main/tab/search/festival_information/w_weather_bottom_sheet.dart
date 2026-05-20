@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/weather_model.dart';
 import 'package:feple/service/festival_service.dart';
@@ -60,14 +61,7 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: colors.textSecondary.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
+          const BottomSheetHandle(),
           const SizedBox(height: 20),
           Text(
             'weather_title'.tr(),

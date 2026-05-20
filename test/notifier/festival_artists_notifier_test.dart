@@ -82,5 +82,35 @@ void main() {
 
       expect(notifier.artists.map((a) => a.artistId).toList(), [1, 2]);
     });
+
+    test('아티스트 목록이 빈 배열이면 artists 비어있고 isLoading false', () async {
+      when(() => mockFestivalService.fetchFestivalArtists(10))
+          .thenAnswer((_) async => []);
+      when(() => mockFollowService.getFollowingIds(99))
+          .thenAnswer((_) async => {});
+
+      final notifier = make(userId: 99);
+      await notifier.fetch();
+
+      expect(notifier.artists, isEmpty);
+      expect(notifier.isLoading, false);
+    });
+
+    test('getFollowingIds 예외 시 아티스트 데이터도 버려지고 onError 호출', () async {
+      when(() => mockFestivalService.fetchFestivalArtists(10))
+          .thenAnswer((_) async => [_artist(1, 'A')]);
+      when(() => mockFollowService.getFollowingIds(99))
+          .thenThrow(Exception('network'));
+
+      final notifier = make(userId: 99);
+      String? errorKey;
+      notifier.onError = (k) => errorKey = k;
+
+      await notifier.fetch();
+
+      expect(notifier.artists, isEmpty);
+      expect(notifier.isLoading, false);
+      expect(errorKey, 'err_fetch_data');
+    });
   });
 }

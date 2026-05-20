@@ -89,6 +89,29 @@ void main() {
       expect(notifier.isCertified, false);
       expect(notifier.isPending, false);
     });
+
+    test('인증 목록 비어있으면 둘 다 false', () async {
+      when(() => mockCertService.getMyCertifications()).thenAnswer((_) async => []);
+
+      final notifier = make(5);
+      await notifier.loadCertState();
+
+      expect(notifier.isCertified, false);
+      expect(notifier.isPending, false);
+    });
+
+    test('동일 페스티벌에 APPROVED와 PENDING 둘 다 있으면 isCertified 우선', () async {
+      when(() => mockCertService.getMyCertifications()).thenAnswer((_) async => [
+            _cert(5, CertStatus.approved),
+            _cert(5, CertStatus.pending),
+          ]);
+
+      final notifier = make(5);
+      await notifier.loadCertState();
+
+      expect(notifier.isCertified, true);
+      expect(notifier.isPending, false);
+    });
   });
 
   group('toggleLike', () {

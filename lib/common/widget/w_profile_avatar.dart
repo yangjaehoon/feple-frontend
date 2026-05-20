@@ -24,31 +24,30 @@ class ProfileAvatar extends StatelessWidget {
     return url != null && !url.contains('feple_logo');
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-    final avatar = _hasCustomImage
-        ? CircleAvatar(
-            radius: radius,
-            backgroundImage: CachedNetworkImageProvider(imageUrl!),
-            backgroundColor: colors.activate,
-          )
-        : CircleAvatar(
-            radius: radius,
-            backgroundColor: colors.activate,
-            child: Text(
-              nickname.isNotEmpty ? nickname[0] : '?',
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          );
+  Widget _buildAvatar(AbstractThemeColors colors) {
+    if (_hasCustomImage) {
+      return CircleAvatar(
+        radius: radius,
+        backgroundImage: CachedNetworkImageProvider(imageUrl!),
+        backgroundColor: colors.activate,
+      );
+    }
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor: colors.activate,
+      child: Text(
+        nickname.isNotEmpty ? nickname[0] : '?',
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
 
+  Widget _buildWithBadge(Widget avatar) {
     final isAdmin = userRole == 'ADMIN';
     final isArtist = userRole == 'ARTIST';
-    final hasBadge = certified || isAdmin || isArtist;
-    if (!hasBadge) return avatar;
 
     final Color badgeColor;
     final IconData badgeIcon;
@@ -90,5 +89,18 @@ class ProfileAvatar extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final avatar = _buildAvatar(colors);
+
+    final isAdmin = userRole == 'ADMIN';
+    final isArtist = userRole == 'ARTIST';
+    final hasBadge = certified || isAdmin || isArtist;
+    if (!hasBadge) return avatar;
+
+    return _buildWithBadge(avatar);
   }
 }

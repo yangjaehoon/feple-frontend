@@ -45,78 +45,90 @@ class _BoardPostListScreenState extends State<BoardPostListScreen> {
     } catch (_) {}
   }
 
+  Widget _buildFab() {
+    return WritePostFab(
+      onPressed: () async {
+        await Navigator.push(
+          context,
+          SlideRoute(
+            builder: (_) => WritePostScreen(
+              title: widget.writeScreenTitle,
+              onSubmit: widget.onSubmitPost,
+            ),
+          ),
+        );
+        _refresh();
+      },
+    );
+  }
+
+  Widget _buildPostList(AbstractThemeColors colors, List<Post> posts) {
+    return ListView.separated(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(bottom: 80),
+      itemCount: posts.length,
+      itemBuilder: (context, index) {
+        final post = posts[index];
+        return AnimatedListItem(
+          index: index,
+          child: PostListTile(
+            post: post,
+            onTap: () async {
+              await Navigator.of(context, rootNavigator: true).push(
+                SlideRoute(
+                  builder: (_) => EnlargePost.fromPost(
+                    boardname: widget.boardname,
+                    post: post,
+                  ),
+                ),
+              );
+              _refresh();
+            },
+          ),
+        );
+      },
+      separatorBuilder: (_, __) =>
+          Divider(thickness: 1, color: colors.listDivider),
+    );
+  }
+
+  Widget _buildBody(AbstractThemeColors colors) {
+    return Column(
+      children: [
+        SecondaryAppBar(title: widget.boardname),
+        Expanded(
+          child: RefreshIndicator(
+            color: colors.activate,
+            onRefresh: _refresh,
+            child: AsyncContentBuilder<List<Post>>(
+              future: _postsFuture,
+              onRetry: _refresh,
+              emptyBuilder: (_) => ListView(
+                children: [
+                  const SizedBox(height: 80),
+                  EmptyState(
+                    icon: Icons.article_outlined,
+                    title: 'no_posts_yet'.tr(),
+                    subtitle: 'first_post_hint'.tr(),
+                  ),
+                ],
+              ),
+              builder: (context, posts) => _buildPostList(colors, posts),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return Scaffold(
       backgroundColor: colors.backgroundMain,
-      floatingActionButton: WritePostFab(
-        onPressed: () async {
-          await Navigator.push(
-            context,
-            SlideRoute(
-              builder: (_) => WritePostScreen(
-                title: widget.writeScreenTitle,
-                onSubmit: widget.onSubmitPost,
-              ),
-            ),
-          );
-          _refresh();
-        },
-      ),
+      floatingActionButton: _buildFab(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: Column(
-        children: [
-          SecondaryAppBar(title: widget.boardname),
-          Expanded(
-            child: RefreshIndicator(
-              color: colors.activate,
-              onRefresh: _refresh,
-              child: AsyncContentBuilder<List<Post>>(
-                future: _postsFuture,
-                onRetry: _refresh,
-                emptyBuilder: (_) => ListView(
-                  children: [
-                    const SizedBox(height: 80),
-                    EmptyState(
-                      icon: Icons.article_outlined,
-                      title: 'no_posts_yet'.tr(),
-                      subtitle: 'first_post_hint'.tr(),
-                    ),
-                  ],
-                ),
-                builder: (context, posts) => ListView.separated(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.only(bottom: 80),
-                  itemCount: posts.length,
-                  itemBuilder: (context, index) {
-                    final post = posts[index];
-                    return AnimatedListItem(
-                      index: index,
-                      child: PostListTile(
-                        post: post,
-                        onTap: () async {
-                          await Navigator.of(context, rootNavigator: true).push(
-                            SlideRoute(
-                              builder: (_) => EnlargePost.fromPost(
-                                boardname: widget.boardname,
-                                post: post,
-                              ),
-                            ),
-                          );
-                          _refresh();
-                        },
-                      ),
-                    );
-                  },
-                  separatorBuilder: (_, __) =>
-                      Divider(thickness: 1, color: colors.listDivider),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+      body: _buildBody(colors),
     );
   }
 }

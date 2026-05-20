@@ -169,6 +169,7 @@
   "msg_review": "리뷰",
   "msg_delete": "삭제",
   "err_fetch_data": "데이터를 불러오는 중 오류가 발생했습니다.",
+  "api_error": "네트워크 오류가 발생했습니다.",
   "no_festival_condition": "해당 조건의 페스티벌이 없습니다.",
   "genre_band": "밴드",
   "genre_hip_hop": "힙합",

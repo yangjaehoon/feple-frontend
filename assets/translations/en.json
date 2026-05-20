@@ -169,6 +169,7 @@
   "msg_review": "Review",
   "msg_delete": "Delete",
   "err_fetch_data": "An error occurred while fetching data.",
+  "api_error": "A network error occurred.",
   "no_festival_condition": "No festival matches the selected condition.",
   "genre_band": "Band",
   "genre_hip_hop": "Hip-hop",

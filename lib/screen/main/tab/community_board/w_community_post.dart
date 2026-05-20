@@ -212,8 +212,7 @@ class _CommunityPostState extends State<CommunityPost> {
       backgroundColor: colors.backgroundMain,
       floatingActionButton: WritePostFab(
         onPressed: () async {
-          final user = context.read<UserProvider>().user;
-          if (user == null) {
+          if (context.read<UserProvider>().currentUserId == null) {
             context.showInfoSnackbar('no_login_info'.tr());
             return;
           }

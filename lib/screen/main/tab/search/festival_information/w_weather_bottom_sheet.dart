@@ -49,7 +49,6 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-
     final bottomInset = MediaQuery.of(context).padding.bottom;
 
     return Container(
@@ -75,62 +74,66 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
           if (_tooEarly)
             _TooEarlyMessage(colors: colors)
           else
-            FutureBuilder<WeatherModel?>(
-              future: _future,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 32),
-                    child: CircularProgressIndicator(color: colors.activate),
-                  );
-                }
-
-                final data = snapshot.data;
-                if (data == null) {
-                  return _NoDataMessage(colors: colors);
-                }
-
-                final minT = data.minTemp.toStringAsFixed(0);
-                final maxT = data.maxTemp.toStringAsFixed(0);
-
-                return Column(
-                  children: [
-                    Text(data.conditionIcon,
-                        style: const TextStyle(fontSize: 64)),
-                    const SizedBox(height: 8),
-                    Text(
-                      data.conditionKey.tr(),
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: colors.text,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _InfoChip(
-                          icon: Icons.thermostat_rounded,
-                          label: 'weather_temp_range'.tr(args: [minT, maxT]),
-                          color: const Color(0xFFFF7043),
-                        ),
-                        const SizedBox(width: 12),
-                        _InfoChip(
-                          icon: Icons.water_drop_rounded,
-                          label: 'weather_rain_prob'
-                              .tr(args: ['${data.rainProb}']),
-                          color: _rainColor(data.rainProb),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                );
-              },
-            ),
+            _buildWeatherFuture(colors),
         ],
       ),
+    );
+  }
+
+  Widget _buildWeatherFuture(AbstractThemeColors colors) {
+    return FutureBuilder<WeatherModel?>(
+      future: _future,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 32),
+            child: CircularProgressIndicator(color: colors.activate),
+          );
+        }
+        final data = snapshot.data;
+        if (data == null) {
+          return _NoDataMessage(colors: colors);
+        }
+        return _buildWeatherData(data, colors);
+      },
+    );
+  }
+
+  Widget _buildWeatherData(WeatherModel data, AbstractThemeColors colors) {
+    final minT = data.minTemp.toStringAsFixed(0);
+    final maxT = data.maxTemp.toStringAsFixed(0);
+
+    return Column(
+      children: [
+        Text(data.conditionIcon, style: const TextStyle(fontSize: 64)),
+        const SizedBox(height: 8),
+        Text(
+          data.conditionKey.tr(),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: colors.text,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _InfoChip(
+              icon: Icons.thermostat_rounded,
+              label: 'weather_temp_range'.tr(args: [minT, maxT]),
+              color: const Color(0xFFFF7043),
+            ),
+            const SizedBox(width: 12),
+            _InfoChip(
+              icon: Icons.water_drop_rounded,
+              label: 'weather_rain_prob'.tr(args: ['${data.rainProb}']),
+              color: _rainColor(data.rainProb),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+      ],
     );
   }
 

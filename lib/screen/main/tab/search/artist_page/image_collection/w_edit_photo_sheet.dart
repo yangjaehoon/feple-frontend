@@ -99,71 +99,81 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
             ),
           ),
           const SizedBox(height: 16),
-          TextField(
-            controller: _titleCtrl,
-            decoration: InputDecoration(
-              labelText: 'photo_title_label'.tr(),
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: colors.activate, width: 2),
-              ),
-            ),
-          ),
+          _buildTitleField(colors),
           const SizedBox(height: 12),
-          DropdownButtonFormField<FestivalPreview>(
-            initialValue: _selectedFestival,
-            decoration: InputDecoration(
-              labelText: 'festival_label'.tr(),
-              labelStyle: TextStyle(color: colors.textSecondary),
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: colors.activate, width: 2),
-              ),
-            ),
-            hint: _loadingFestivals
-                ? Text('loading'.tr())
-                : Text('select_festival_hint'.tr()),
-            items: [
-              ..._festivals.map((f) => DropdownMenuItem(
-                    value: f,
-                    child: Text(f.title, overflow: TextOverflow.ellipsis),
-                  )),
-              DropdownMenuItem(value: photoCategoryDaily, child: Text('photo_category_daily'.tr())),
-              DropdownMenuItem(value: photoCategorySns, child: Text('photo_category_sns'.tr())),
-              DropdownMenuItem(value: photoCategoryOther, child: Text('photo_category_other'.tr())),
-            ],
-            onChanged: (f) => setState(() => _selectedFestival = f),
-          ),
+          _buildFestivalDropdown(colors),
           const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: ElevatedButton(
-              onPressed: () {
-                final newTitle = _titleCtrl.text.trim();
-                if (newTitle.isEmpty) return;
-                final newDesc = _selectedFestival?.id == -1
-                    ? ''
-                    : (_selectedFestival?.title ?? '');
-                Navigator.pop(context);
-                widget.onSave(newTitle, newDesc);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colors.activate,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                elevation: 0,
-              ),
-              child: Text('save'.tr(),
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-            ),
-          ),
+          _buildSaveButton(colors),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTitleField(AbstractThemeColors colors) {
+    return TextField(
+      controller: _titleCtrl,
+      decoration: InputDecoration(
+        labelText: 'photo_title_label'.tr(),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colors.activate, width: 2),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFestivalDropdown(AbstractThemeColors colors) {
+    return DropdownButtonFormField<FestivalPreview>(
+      initialValue: _selectedFestival,
+      decoration: InputDecoration(
+        labelText: 'festival_label'.tr(),
+        labelStyle: TextStyle(color: colors.textSecondary),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colors.activate, width: 2),
+        ),
+      ),
+      hint: _loadingFestivals
+          ? Text('loading'.tr())
+          : Text('select_festival_hint'.tr()),
+      items: [
+        ..._festivals.map((f) => DropdownMenuItem(
+              value: f,
+              child: Text(f.title, overflow: TextOverflow.ellipsis),
+            )),
+        DropdownMenuItem(value: photoCategoryDaily, child: Text('photo_category_daily'.tr())),
+        DropdownMenuItem(value: photoCategorySns, child: Text('photo_category_sns'.tr())),
+        DropdownMenuItem(value: photoCategoryOther, child: Text('photo_category_other'.tr())),
+      ],
+      onChanged: (f) => setState(() => _selectedFestival = f),
+    );
+  }
+
+  Widget _buildSaveButton(AbstractThemeColors colors) {
+    return SizedBox(
+      width: double.infinity,
+      height: 48,
+      child: ElevatedButton(
+        onPressed: () {
+          final newTitle = _titleCtrl.text.trim();
+          if (newTitle.isEmpty) return;
+          final newDesc = _selectedFestival?.id == -1
+              ? ''
+              : (_selectedFestival?.title ?? '');
+          Navigator.pop(context);
+          widget.onSave(newTitle, newDesc);
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: colors.activate,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12)),
+          elevation: 0,
+        ),
+        child: Text('save'.tr(),
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
       ),
     );
   }

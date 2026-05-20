@@ -25,49 +25,10 @@ class _ImgCollectionState extends State<ImgCollection> {
     final colors = context.appColors;
     return Scaffold(
       backgroundColor: colors.backgroundMain,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: colors.activate,
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            SlideRoute(
-              builder: (context) => ImgUpload(
-                artistName: widget.artistName,
-                artistId: widget.artistId,
-              ),
-            ),
-          );
-          if (result == true) {
-            _imgCollectionKey.currentState?.refresh();
-          }
-        },
-        child: const Icon(Icons.add_photo_alternate, color: Colors.white),
-      ),
+      floatingActionButton: _buildFab(colors),
       body: Column(
         children: [
-          SafeArea(
-            bottom: false,
-            child: Container(
-              height: AppDimens.appBarHeight,
-              color: colors.appBarColor,
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  Text(
-                    'photo_collection_title'.tr(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          _buildAppBar(colors),
           Expanded(
             child: CustomScrollView(
               slivers: [
@@ -83,6 +44,53 @@ class _ImgCollectionState extends State<ImgCollection> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildFab(AbstractThemeColors colors) {
+    return FloatingActionButton(
+      backgroundColor: colors.activate,
+      onPressed: () async {
+        final result = await Navigator.push(
+          context,
+          SlideRoute(
+            builder: (context) => ImgUpload(
+              artistName: widget.artistName,
+              artistId: widget.artistId,
+            ),
+          ),
+        );
+        if (result == true) {
+          _imgCollectionKey.currentState?.refresh();
+        }
+      },
+      child: const Icon(Icons.add_photo_alternate, color: Colors.white),
+    );
+  }
+
+  Widget _buildAppBar(AbstractThemeColors colors) {
+    return SafeArea(
+      bottom: false,
+      child: Container(
+        height: AppDimens.appBarHeight,
+        color: colors.appBarColor,
+        child: Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            ),
+            Text(
+              'photo_collection_title'.tr(),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -66,35 +66,43 @@ class _FestivalArtistsState extends State<FestivalArtists> {
       ),
       child: Column(
         children: [
-          BoardCardHeader(
-            icon: Icons.music_note_rounded,
-            title: 'participating_artists'.tr(),
-            headerColor: colors.activate,
-            onTap: () => Navigator.push(
-              context,
-              SlideRoute(
-                builder: (_) => FestivalArtistListScreen(
-                  festivalId: widget.festivalId,
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppDimens.paddingHorizontal,
-              vertical: 12,
-            ),
-            child: ListenableBuilder(
-              listenable: _notifier,
-              builder: (context, _) {
-                if (_notifier.isLoading || _notifier.artists.isEmpty) {
-                  return _buildPlaceholderRow(colors);
-                }
-                return _buildArtistRow(colors);
-              },
-            ),
-          ),
+          _buildHeader(colors),
+          _buildArtistListArea(colors),
         ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(AbstractThemeColors colors) {
+    return BoardCardHeader(
+      icon: Icons.music_note_rounded,
+      title: 'participating_artists'.tr(),
+      headerColor: colors.activate,
+      onTap: () => Navigator.push(
+        context,
+        SlideRoute(
+          builder: (_) => FestivalArtistListScreen(
+            festivalId: widget.festivalId,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildArtistListArea(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppDimens.paddingHorizontal,
+        vertical: 12,
+      ),
+      child: ListenableBuilder(
+        listenable: _notifier,
+        builder: (context, _) {
+          if (_notifier.isLoading || _notifier.artists.isEmpty) {
+            return _buildPlaceholderRow(colors);
+          }
+          return _buildArtistRow(colors);
+        },
       ),
     );
   }
@@ -134,7 +142,7 @@ class _FestivalArtistsState extends State<FestivalArtists> {
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: isFollowed ? AppColors.skyBlue : colors.textTitle,
+                      color: isFollowed ? colors.activate : colors.textTitle,
                     ),
                     textAlign: TextAlign.center,
                     maxLines: 1,

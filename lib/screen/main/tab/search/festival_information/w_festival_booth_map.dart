@@ -135,83 +135,101 @@ class _FestivalBoothMapState extends State<FestivalBoothMap> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
-              child: Row(
-                children: [
-                  Icon(Icons.store_rounded, size: 15, color: colors.activate),
-                  const SizedBox(width: 8),
-                  Text('booth_map_title'.tr(),
-                      style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: colors.textTitle)),
-                  const SizedBox(width: 10),
-                  _LegendDot(color: AppColors.boothFood, label: 'booth_food'.tr()),
-                  const SizedBox(width: 8),
-                  _LegendDot(color: AppColors.boothAlcohol, label: 'booth_alcohol'.tr()),
-                  const SizedBox(width: 8),
-                  _LegendDot(color: AppColors.boothEvent, label: 'booth_event'.tr()),
-                ],
-              ),
-            ),
-            if (_loading)
-              const SizedBox(
-                height: 300,
-                child: Center(child: CircularProgressIndicator()),
-              )
-            else if (_hasError)
-              SizedBox(
-                height: 200,
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.cloud_off_rounded, size: 40,
-                          color: colors.textSecondary.withValues(alpha: 0.4)),
-                      const SizedBox(height: 8),
-                      Text('load_error'.tr(),
-                          style: TextStyle(color: colors.textSecondary)),
-                      const SizedBox(height: 12),
-                      TextButton.icon(
-                        onPressed: _fetchBooths,
-                        icon: const Icon(Icons.refresh_rounded),
-                        label: Text('retry'.tr()),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            else if (_booths.isEmpty)
-              Padding(
-                padding: const EdgeInsets.all(32),
-                child: Center(
-                  child: Text('no_booth'.tr(),
-                      style: TextStyle(color: colors.textSecondary)),
-                ),
-              )
-            else
-              SizedBox(
-                height: 340,
-                child: GoogleMap(
-                  initialCameraPosition: CameraPosition(
-                    target: _initialPosition,
-                    zoom: 17,
-                  ),
-                  markers: _markers,
-                  myLocationEnabled: _userPosition != null,
-                  myLocationButtonEnabled: _userPosition != null,
-                  onMapCreated: (c) => _mapController = c,
-                  zoomControlsEnabled: false,
-                  gestureRecognizers: {
-                    Factory<OneSequenceGestureRecognizer>(
-                      () => EagerGestureRecognizer(),
-                    ),
-                  },
-                ),
-              ),
+            _buildHeader(colors),
+            _buildBody(colors),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+      child: Row(
+        children: [
+          Icon(Icons.store_rounded, size: 15, color: colors.activate),
+          const SizedBox(width: 8),
+          Text('booth_map_title'.tr(),
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: colors.textTitle)),
+          const SizedBox(width: 10),
+          _LegendDot(color: AppColors.boothFood, label: 'booth_food'.tr()),
+          const SizedBox(width: 8),
+          _LegendDot(color: AppColors.boothAlcohol, label: 'booth_alcohol'.tr()),
+          const SizedBox(width: 8),
+          _LegendDot(color: AppColors.boothEvent, label: 'booth_event'.tr()),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBody(AbstractThemeColors colors) {
+    if (_loading) {
+      return const SizedBox(
+        height: 300,
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (_hasError) {
+      return _buildErrorState(colors);
+    }
+    if (_booths.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.all(32),
+        child: Center(
+          child: Text('no_booth'.tr(),
+              style: TextStyle(color: colors.textSecondary)),
+        ),
+      );
+    }
+    return _buildMap();
+  }
+
+  Widget _buildErrorState(AbstractThemeColors colors) {
+    return SizedBox(
+      height: 200,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.cloud_off_rounded, size: 40,
+                color: colors.textSecondary.withValues(alpha: 0.4)),
+            const SizedBox(height: 8),
+            Text('load_error'.tr(),
+                style: TextStyle(color: colors.textSecondary)),
+            const SizedBox(height: 12),
+            TextButton.icon(
+              onPressed: _fetchBooths,
+              icon: const Icon(Icons.refresh_rounded),
+              label: Text('retry'.tr()),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMap() {
+    return SizedBox(
+      height: 340,
+      child: GoogleMap(
+        initialCameraPosition: CameraPosition(
+          target: _initialPosition,
+          zoom: 17,
+        ),
+        markers: _markers,
+        myLocationEnabled: _userPosition != null,
+        myLocationButtonEnabled: _userPosition != null,
+        onMapCreated: (c) => _mapController = c,
+        zoomControlsEnabled: false,
+        gestureRecognizers: {
+          Factory<OneSequenceGestureRecognizer>(
+            () => EagerGestureRecognizer(),
+          ),
+        },
       ),
     );
   }

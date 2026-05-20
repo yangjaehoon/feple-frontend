@@ -67,7 +67,11 @@ class _FestivalPosterState extends State<FestivalPoster> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (_) => WeatherBottomSheet(festivalId: widget.poster.id),
+      builder: (_) => WeatherBottomSheet(
+        festivalId: widget.poster.id,
+        startDate: widget.poster.startDate,
+        endDate: widget.poster.endDate,
+      ),
     );
   }
 

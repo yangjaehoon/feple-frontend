@@ -73,7 +73,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
         final nextPage = (_currentPage + 1) % _photoUrls.length;
         _pageController.animateToPage(
           nextPage,
-          duration: const Duration(milliseconds: 350),
+          duration: AppDimens.animSlow,
           curve: Curves.easeIn,
         );
       });
@@ -180,7 +180,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
       return Container(color: Colors.black54);
     }
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 500),
+      duration: AppDimens.animVerySlow,
       child: Container(
         key: ValueKey(_currentPage),
         decoration: BoxDecoration(

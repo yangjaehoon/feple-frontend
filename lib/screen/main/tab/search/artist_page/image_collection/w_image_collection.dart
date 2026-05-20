@@ -134,221 +134,210 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
             final photo = _notifier.photos[index];
             final isUploader =
                 currentUserId != null && photo.uploaderUserId == currentUserId;
-
             return Padding(
               padding: EdgeInsets.only(
                   bottom: index == _notifier.photos.length - 1 ? 0 : 12.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: colors.surface,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: colors.cardShadow.withValues(alpha: 0.08),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Stack(
-                      children: [
-                        GestureDetector(
-                          onDoubleTap: () =>
-                              _notifier.toggleLike(photo.photoId),
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(16),
-                              bottomLeft: Radius.circular(16),
-                            ),
-                            child: CachedNetworkImage(
-                              imageUrl: photo.url,
-                              width: 195,
-                              height: 195,
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) => Container(
-                                width: 195,
-                                height: 195,
-                                color: colors.listDivider,
-                                child: Center(
-                                  child: CircularProgressIndicator(
-                                    color: colors.loadingIndicator,
-                                    strokeWidth: 2,
-                                  ),
-                                ),
-                              ),
-                              errorWidget: (context, url, error) => Container(
-                                width: 195,
-                                height: 195,
-                                color: colors.listDivider,
-                                child: Icon(Icons.broken_image_rounded,
-                                    color: colors.textSecondary),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          left: 6,
-                          bottom: 6,
-                          child: GestureDetector(
-                            onTap: () => _notifier.toggleLike(photo.photoId),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withValues(alpha: 0.45),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    photo.isLiked
-                                        ? Icons.favorite_rounded
-                                        : Icons.favorite_border_rounded,
-                                    color: photo.isLiked
-                                        ? AppColors.kawaiiPink
-                                        : Colors.white,
-                                    size: 18,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '${photo.likeCount}',
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Expanded(
-                      child: SizedBox(
-                        height: 195,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(14, 12, 4, 12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      photo.title,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 16,
-                                        color: colors.textTitle,
-                                      ),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  PopupMenuButton<String>(
-                                    padding: EdgeInsets.zero,
-                                    icon: Icon(Icons.more_vert_rounded,
-                                        color: colors.textSecondary,
-                                        size: 20),
-                                    onSelected: (value) {
-                                      if (value == 'edit') {
-                                        _showEditBottomSheet(photo);
-                                      } else if (value == 'delete') {
-                                        _confirmAndDelete(photo.photoId);
-                                      } else if (value == 'report') {
-                                        showReportSheet(
-                                          context,
-                                          titleKey: 'report_photo',
-                                          onSubmit: (reason, detail) =>
-                                              sl<ReportService>().submitPhotoReport(
-                                            widget.artistId,
-                                            photo.photoId,
-                                            reason,
-                                            detail: detail,
-                                          ),
-                                          duplicateErrorKey:
-                                              'report_photo_duplicate',
-                                        );
-                                      }
-                                    },
-                                    itemBuilder: (_) => [
-                                      if (isUploader) ...[
-                                        PopupMenuItem(
-                                          value: 'edit',
-                                          child: Row(children: [
-                                            Icon(Icons.edit_rounded,
-                                                size: 16,
-                                                color: colors.textSecondary),
-                                            const SizedBox(width: 8),
-                                            Text('photo_edit_action'.tr()),
-                                          ]),
-                                        ),
-                                        PopupMenuItem(
-                                          value: 'delete',
-                                          child: Row(children: [
-                                            const Icon(Icons.delete_rounded,
-                                                size: 16, color: AppColors.errorRed),
-                                            const SizedBox(width: 8),
-                                            Text('msg_delete'.tr(),
-                                                style: const TextStyle(
-                                                    color: AppColors.errorRed)),
-                                          ]),
-                                        ),
-                                      ] else
-                                        PopupMenuItem(
-                                          value: 'report',
-                                          child: Row(children: [
-                                            const Icon(Icons.flag_rounded,
-                                                size: 16, color: AppColors.errorRed),
-                                            const SizedBox(width: 8),
-                                            Text('report_photo'.tr(),
-                                                style: const TextStyle(
-                                                    color: AppColors.errorRed)),
-                                          ]),
-                                        ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              if (photo.description.isNotEmpty)
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 3),
-                                  decoration: BoxDecoration(
-                                    color: colors.activate
-                                        .withValues(alpha: 0.12),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Text(
-                                    photo.description,
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w600,
-                                      color: colors.activate,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              child: _buildPhotoCard(photo, isUploader, colors),
             );
           },
         );
       },
+    );
+  }
+
+  Widget _buildPhotoCard(
+      ArtistPhotoResponse photo, bool isUploader, AbstractThemeColors colors) {
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+              color: colors.cardShadow.withValues(alpha: 0.08),
+              blurRadius: 10,
+              offset: const Offset(0, 2)),
+        ],
+      ),
+      child: Row(
+        children: [
+          _buildPhotoImageArea(photo, colors),
+          Expanded(child: _buildPhotoInfoArea(photo, isUploader, colors)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPhotoImageArea(ArtistPhotoResponse photo, AbstractThemeColors colors) {
+    return Stack(
+      children: [
+        GestureDetector(
+          onDoubleTap: () => _notifier.toggleLike(photo.photoId),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(16),
+              bottomLeft: Radius.circular(16),
+            ),
+            child: CachedNetworkImage(
+              imageUrl: photo.url,
+              width: 195,
+              height: 195,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Container(
+                width: 195,
+                height: 195,
+                color: colors.listDivider,
+                child: Center(
+                  child: CircularProgressIndicator(
+                      color: colors.loadingIndicator, strokeWidth: 2),
+                ),
+              ),
+              errorWidget: (context, url, error) => Container(
+                width: 195,
+                height: 195,
+                color: colors.listDivider,
+                child: Icon(Icons.broken_image_rounded, color: colors.textSecondary),
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: 6,
+          bottom: 6,
+          child: GestureDetector(
+            onTap: () => _notifier.toggleLike(photo.photoId),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.45),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    photo.isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                    color: photo.isLiked ? AppColors.kawaiiPink : Colors.white,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${photo.likeCount}',
+                    style: const TextStyle(
+                        fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPhotoInfoArea(
+      ArtistPhotoResponse photo, bool isUploader, AbstractThemeColors colors) {
+    return SizedBox(
+      height: 195,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 12, 4, 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    photo.title,
+                    style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                        color: colors.textTitle),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                PopupMenuButton<String>(
+                  padding: EdgeInsets.zero,
+                  icon: Icon(Icons.more_vert_rounded,
+                      color: colors.textSecondary, size: 20),
+                  onSelected: (value) {
+                    if (value == 'edit') {
+                      _showEditBottomSheet(photo);
+                    } else if (value == 'delete') {
+                      _confirmAndDelete(photo.photoId);
+                    } else if (value == 'report') {
+                      showReportSheet(
+                        context,
+                        titleKey: 'report_photo',
+                        onSubmit: (reason, detail) =>
+                            sl<ReportService>().submitPhotoReport(
+                          widget.artistId,
+                          photo.photoId,
+                          reason,
+                          detail: detail,
+                        ),
+                        duplicateErrorKey: 'report_photo_duplicate',
+                      );
+                    }
+                  },
+                  itemBuilder: (_) => [
+                    if (isUploader) ...[
+                      PopupMenuItem(
+                        value: 'edit',
+                        child: Row(children: [
+                          Icon(Icons.edit_rounded,
+                              size: 16, color: colors.textSecondary),
+                          const SizedBox(width: 8),
+                          Text('photo_edit_action'.tr()),
+                        ]),
+                      ),
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: Row(children: [
+                          const Icon(Icons.delete_rounded,
+                              size: 16, color: AppColors.errorRed),
+                          const SizedBox(width: 8),
+                          Text('msg_delete'.tr(),
+                              style: const TextStyle(color: AppColors.errorRed)),
+                        ]),
+                      ),
+                    ] else
+                      PopupMenuItem(
+                        value: 'report',
+                        child: Row(children: [
+                          const Icon(Icons.flag_rounded,
+                              size: 16, color: AppColors.errorRed),
+                          const SizedBox(width: 8),
+                          Text('report_photo'.tr(),
+                              style: const TextStyle(color: AppColors.errorRed)),
+                        ]),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+            if (photo.description.isNotEmpty)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: colors.activate.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  photo.description,
+                  style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: colors.activate),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

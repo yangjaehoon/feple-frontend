@@ -231,7 +231,7 @@ class _DateTabBar extends StatelessWidget {
           return GestureDetector(
             onTap: () => onSelect(date),
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
+              duration: AppDimens.animXFast,
               margin: const EdgeInsets.only(right: 8),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
               decoration: BoxDecoration(

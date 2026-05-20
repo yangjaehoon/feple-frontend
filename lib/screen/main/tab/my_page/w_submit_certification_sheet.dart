@@ -78,7 +78,7 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
       );
       if (!mounted) return;
       setState(() { _submitting = false; _submitSuccess = true; });
-      await Future.delayed(const Duration(milliseconds: 700));
+      await Future.delayed(AppDimens.animSuccessDelay);
       if (!mounted) return;
       Navigator.pop(context, true);
     } catch (e) {

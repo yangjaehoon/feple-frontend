@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/network/dio_client.dart';
+import 'package:feple/injection.dart';
+import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
 
 /// signup, edit_profile, change_nickname에서 공통으로 사용하는
@@ -29,6 +30,7 @@ class NicknameField extends StatefulWidget {
 }
 
 class NicknameFieldState extends State<NicknameField> {
+  final _userService = sl<UserService>();
   late final TextEditingController controller;
   bool _isChecking = false;
   bool? _available;
@@ -70,15 +72,10 @@ class NicknameFieldState extends State<NicknameField> {
 
     setState(() => _isChecking = true);
     try {
-      final response = await DioClient.dio.get(
-        '/users/check-nickname',
-        queryParameters: {
-          'nickname': nickname,
-          if (widget.excludeUserId != null)
-            'excludeUserId': widget.excludeUserId,
-        },
+      final body = await _userService.checkNicknameAvailability(
+        nickname,
+        excludeUserId: widget.excludeUserId,
       );
-      final body = response.data as Map<String, dynamic>;
       final available = body['available'] as bool;
       String backendMsg = body['message'] as String;
       String localizedMsg = backendMsg;

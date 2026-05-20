@@ -71,188 +71,178 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-
     return LayoutBuilder(builder: (_, constraints) {
-      final availW = constraints.maxWidth;
-      final availH = constraints.maxHeight;
-
-      final gridH = availH - _stageHeaderH;
+      final gridH = constraints.maxHeight - _stageHeaderH;
       final totalMins = (widget.endHour - widget.startHour) * 60;
       final pxPerMin = (gridH - _topPad - _bottomPad) / totalMins.clamp(1, 99999);
-
       final stageW = widget.stages.isEmpty
-          ? availW - _timeColW
-          : (availW - _timeColW) / widget.stages.length;
+          ? constraints.maxWidth - _timeColW
+          : (constraints.maxWidth - _timeColW) / widget.stages.length;
 
       return Column(
         children: [
-          // 스테이지 헤더
-          SizedBox(
-            height: _stageHeaderH,
-            child: Row(
-              children: [
-                Container(
-                  width: _timeColW,
-                  decoration: BoxDecoration(
-                    color: colors.surface,
-                    border: Border(
-                      bottom: BorderSide(color: colors.listDivider),
-                      right: BorderSide(color: colors.listDivider),
-                    ),
-                  ),
-                ),
-                ...widget.stages.map((stage) {
-                  final color = _stageColor(stage);
-                  return Container(
-                    width: stageW,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: color.withValues(alpha: 0.12),
-                      border: Border(
-                        bottom: BorderSide(color: colors.listDivider),
-                        right: BorderSide(color: colors.listDivider, width: 0.5),
-                      ),
-                    ),
-                    child: Text(
-                      stage,
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: color),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  );
-                }),
-              ],
-            ),
-          ),
-
-          // 그리드 본문
+          _buildStageHeader(stageW, colors),
           SizedBox(
             height: gridH,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 시간 열
-                SizedBox(
-                  width: _timeColW,
-                  height: gridH,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: List.generate(
-                      widget.endHour - widget.startHour + 1,
-                      (i) {
-                        final hour = widget.startHour + i;
-                        return Positioned(
-                          top: _topPad + i * 60.0 * pxPerMin - 8,
-                          left: 0,
-                          right: 0,
-                          child: Text(
-                            '${hour.toString().padLeft(2, '0')}:00',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
-                                color: colors.textSecondary),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-
-                // 그리드 내용
-                SizedBox(
-                  width: widget.stages.length * stageW,
-                  height: gridH,
-                  child: GestureDetector(
-                    onTapDown: (d) => _tapPos = d.localPosition,
-                    onTap: () => _handleTap(pxPerMin, stageW),
-                    child: Stack(
-                      clipBehavior: Clip.hardEdge,
-                      children: [
-                        // 세로 구분선
-                        ...List.generate(
-                          widget.stages.length,
-                          (i) => Positioned(
-                            left: (i + 1) * stageW - 0.5,
-                            top: 0,
-                            bottom: 0,
-                            width: 0.5,
-                            child: Container(color: colors.listDivider),
-                          ),
-                        ),
-
-                        // 가로선
-                        ...List.generate(
-                          (widget.endHour - widget.startHour) * 6 + 1,
-                          (i) {
-                            final mins = i * 10;
-                            final isHour = mins % 60 == 0;
-                            final isHalf = mins % 30 == 0;
-                            return Positioned(
-                              top: _topPad + mins * pxPerMin,
-                              left: 0,
-                              right: 0,
-                              height: 0.5,
-                              child: Container(
-                                color: isHour
-                                    ? colors.listDivider.withValues(alpha: 0.9)
-                                    : isHalf
-                                        ? colors.listDivider.withValues(alpha: 0.5)
-                                        : colors.listDivider.withValues(alpha: 0.2),
-                              ),
-                            );
-                          },
-                        ),
-
-                        // 공식 공연 카드
-                        ...widget.filtered.map((entry) {
-                          final si = widget.stages.indexOf(entry.stageName);
-                          if (si < 0) return const SizedBox.shrink();
-                          final rawTop = _toY(entry.startTime, pxPerMin);
-                          final cardH = _toY(entry.endTime, pxPerMin) - rawTop;
-                          final color = _stageColor(entry.stageName);
-                          final followed = widget.followedNames.contains(entry.artistName);
-                          return Positioned(
-                            left: si * stageW + 3,
-                            top: _topPad + rawTop + 2,
-                            width: stageW - 6,
-                            height: (cardH - 4).clamp(4.0, double.infinity),
-                            child: _OfficialCard(
-                              entry: entry,
-                              color: color,
-                              cardH: cardH - 4,
-                              followed: followed,
-                            ),
-                          );
-                        }),
-
-                        // 사용자 일정 카드
-                        ...widget.userEntries.map((entry) {
-                          final si = widget.stages.indexOf(entry.stageName);
-                          if (si < 0) return const SizedBox.shrink();
-                          final rawTop = _toY(entry.startTime, pxPerMin);
-                          final cardH = _toY(entry.endTime, pxPerMin) - rawTop;
-                          return Positioned(
-                            left: si * stageW + 3,
-                            top: _topPad + rawTop + 2,
-                            width: stageW - 6,
-                            height: (cardH - 4).clamp(4.0, double.infinity),
-                            child: GestureDetector(
-                              behavior: HitTestBehavior.opaque,
-                              onTap: () => widget.onTapUserEntry(entry),
-                              child: _UserCard(entry: entry, cardH: cardH - 4),
-                            ),
-                          );
-                        }),
-                      ],
-                    ),
-                  ),
-                ),
+                _buildTimeColumn(gridH, pxPerMin, colors),
+                _buildGridContent(gridH, pxPerMin, stageW, colors),
               ],
             ),
           ),
         ],
       );
     });
+  }
+
+  Widget _buildStageHeader(double stageW, AbstractThemeColors colors) {
+    return SizedBox(
+      height: _stageHeaderH,
+      child: Row(
+        children: [
+          Container(
+            width: _timeColW,
+            decoration: BoxDecoration(
+              color: colors.surface,
+              border: Border(
+                bottom: BorderSide(color: colors.listDivider),
+                right: BorderSide(color: colors.listDivider),
+              ),
+            ),
+          ),
+          ...widget.stages.map((stage) {
+            final color = _stageColor(stage);
+            return Container(
+              width: stageW,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.12),
+                border: Border(
+                  bottom: BorderSide(color: colors.listDivider),
+                  right: BorderSide(color: colors.listDivider, width: 0.5),
+                ),
+              ),
+              child: Text(
+                stage,
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: color),
+                overflow: TextOverflow.ellipsis,
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimeColumn(double gridH, double pxPerMin, AbstractThemeColors colors) {
+    return SizedBox(
+      width: _timeColW,
+      height: gridH,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: List.generate(widget.endHour - widget.startHour + 1, (i) {
+          final hour = widget.startHour + i;
+          return Positioned(
+            top: _topPad + i * 60.0 * pxPerMin - 8,
+            left: 0,
+            right: 0,
+            child: Text(
+              '${hour.toString().padLeft(2, '0')}:00',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: colors.textSecondary),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildGridContent(
+      double gridH, double pxPerMin, double stageW, AbstractThemeColors colors) {
+    return SizedBox(
+      width: widget.stages.length * stageW,
+      height: gridH,
+      child: GestureDetector(
+        onTapDown: (d) => _tapPos = d.localPosition,
+        onTap: () => _handleTap(pxPerMin, stageW),
+        child: Stack(
+          clipBehavior: Clip.hardEdge,
+          children: [
+            ...List.generate(
+              widget.stages.length,
+              (i) => Positioned(
+                left: (i + 1) * stageW - 0.5,
+                top: 0,
+                bottom: 0,
+                width: 0.5,
+                child: Container(color: colors.listDivider),
+              ),
+            ),
+            ...List.generate(
+              (widget.endHour - widget.startHour) * 6 + 1,
+              (i) {
+                final mins = i * 10;
+                final isHour = mins % 60 == 0;
+                final isHalf = mins % 30 == 0;
+                return Positioned(
+                  top: _topPad + mins * pxPerMin,
+                  left: 0,
+                  right: 0,
+                  height: 0.5,
+                  child: Container(
+                    color: isHour
+                        ? colors.listDivider.withValues(alpha: 0.9)
+                        : isHalf
+                            ? colors.listDivider.withValues(alpha: 0.5)
+                            : colors.listDivider.withValues(alpha: 0.2),
+                  ),
+                );
+              },
+            ),
+            ...widget.filtered.map((entry) {
+              final si = widget.stages.indexOf(entry.stageName);
+              if (si < 0) return const SizedBox.shrink();
+              final rawTop = _toY(entry.startTime, pxPerMin);
+              final cardH = _toY(entry.endTime, pxPerMin) - rawTop;
+              return Positioned(
+                left: si * stageW + 3,
+                top: _topPad + rawTop + 2,
+                width: stageW - 6,
+                height: (cardH - 4).clamp(4.0, double.infinity),
+                child: _OfficialCard(
+                  entry: entry,
+                  color: _stageColor(entry.stageName),
+                  cardH: cardH - 4,
+                  followed: widget.followedNames.contains(entry.artistName),
+                ),
+              );
+            }),
+            ...widget.userEntries.map((entry) {
+              final si = widget.stages.indexOf(entry.stageName);
+              if (si < 0) return const SizedBox.shrink();
+              final rawTop = _toY(entry.startTime, pxPerMin);
+              final cardH = _toY(entry.endTime, pxPerMin) - rawTop;
+              return Positioned(
+                left: si * stageW + 3,
+                top: _topPad + rawTop + 2,
+                width: stageW - 6,
+                height: (cardH - 4).clamp(4.0, double.infinity),
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => widget.onTapUserEntry(entry),
+                  child: _UserCard(entry: entry, cardH: cardH - 4),
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
+    );
   }
 }
 

@@ -5,8 +5,8 @@ import 'package:feple/screen/main/tab/search/festival_information/w_festival_pos
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_timetable.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_artists.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_board.dart';
-import 'package:feple/screen/main/tab/search/festival_information/w_festival_air_quality.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_booth_map.dart';
+import 'package:feple/screen/main/tab/search/festival_information/w_festival_weather.dart';
 import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -71,8 +71,8 @@ class _FestivalInformationFragmentState
                     festivalLat: widget.poster.latitude,
                     festivalLng: widget.poster.longitude,
                   ),
-                  FestivalAirQuality(
-                    key: ValueKey('aqi_$_refreshKey'),
+                  FestivalWeather(
+                    key: ValueKey('weather_$_refreshKey'),
                     festivalId: widget.poster.id,
                   ),
                 ],

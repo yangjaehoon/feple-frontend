@@ -2,10 +2,11 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
+import 'package:feple/injection.dart';
+import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../model/user_model.dart';
-import '../../../../network/dio_client.dart';
 import '../../../../provider/user_provider.dart';
 
 class ChangeNickname extends StatefulWidget {
@@ -16,6 +17,7 @@ class ChangeNickname extends StatefulWidget {
 }
 
 class _ChangeNicknameState extends State<ChangeNickname> {
+  final _userService = sl<UserService>();
   final nicknameController = TextEditingController();
   bool _isSaving = false;
   bool _isSuccess = false;
@@ -29,13 +31,7 @@ class _ChangeNicknameState extends State<ChangeNickname> {
 
   Future<void> _updateNickname(UserProvider userProvider, int id) async {
     final nickname = nicknameController.text.trim();
-
-    final resp = await DioClient.dio.put(
-      '/users/$id',
-      data: {'nickname': nickname},
-    );
-
-    final updated = User.fromJson(resp.data as Map<String, dynamic>);
+    final updated = await _userService.updateNickname(id, nickname);
     await userProvider.setUser(updated);
   }
 
@@ -150,7 +146,7 @@ class _ChangeNicknameState extends State<ChangeNickname> {
                   await _updateNickname(userProvider, user.id);
                   if (!mounted) return;
                   setState(() { _isSaving = false; _isSuccess = true; });
-                  await Future.delayed(const Duration(milliseconds: 700));
+                  await Future.delayed(AppDimens.animSuccessDelay);
                   if (!context.mounted) return;
                   Navigator.pop(context);
                 } catch (e) {

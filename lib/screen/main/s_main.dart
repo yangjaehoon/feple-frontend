@@ -1,3 +1,4 @@
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_offline_banner.dart';
 import 'package:feple/screen/main/tab/tab_item.dart';
 import 'package:feple/screen/main/tab/tab_navigator.dart';
@@ -88,62 +89,70 @@ class MainScreenState extends State<MainScreen>
 
   @override
   Widget build(BuildContext context) {
-    return OfflineBanner(child: PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) async {
-        if (didPop) return;
-        final navigator = _currentTabNavigationKey.currentState;
-        if (navigator != null && navigator.canPop()) {
-          navigator.pop();
-        } else if (_currentTab != TabItem.home) {
-          _changeTab(tabs.indexOf(TabItem.home));
-        }
-      },
-      child: Scaffold(
-        extendBody: extendBody,
-        drawer: const MenuDrawer(),
-        // ValueListenableBuilder: 스크롤 이벤트 시 body 패딩만 재빌드
-        body: ValueListenableBuilder<bool>(
-          valueListenable: _showBottomNav,
-          builder: (context, show, child) {
-            final bottomPadding =
-                show ? 0.0 : MediaQuery.of(context).padding.bottom;
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeInOut,
-              color: context.appColors.backgroundMain,
-              padding: EdgeInsets.only(bottom: bottomPadding),
-              child: child!,
-            );
-          },
-          // child는 ValueNotifier 변경과 무관하게 한 번만 빌드
-          child: SafeArea(
-            bottom: !extendBody,
-            child: NotificationListener<ScrollNotification>(
-              onNotification: _handleScrollNotification,
-              child: pages,
-            ),
-          ),
-        ),
-        // ValueListenableBuilder: 스크롤 이벤트 시 하단바만 재빌드
-        bottomNavigationBar: ValueListenableBuilder<bool>(
-          valueListenable: _showBottomNav,
-          builder: (context, show, _) => ClipRRect(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(bottomNavigationBarBorderRadius),
-              topRight: Radius.circular(bottomNavigationBarBorderRadius),
-            ),
-            child: AnimatedAlign(
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeInOut,
-              alignment: Alignment.topCenter,
-              heightFactor: show ? 1.0 : 0.0,
-              child: _buildBottomNavigationBar(context),
-            ),
-          ),
+    return OfflineBanner(
+      child: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
+          if (didPop) return;
+          final navigator = _currentTabNavigationKey.currentState;
+          if (navigator != null && navigator.canPop()) {
+            navigator.pop();
+          } else if (_currentTab != TabItem.home) {
+            _changeTab(tabs.indexOf(TabItem.home));
+          }
+        },
+        child: Scaffold(
+          extendBody: extendBody,
+          drawer: const MenuDrawer(),
+          body: _buildAnimatedBody(),
+          bottomNavigationBar: _buildAnimatedBottomNav(),
         ),
       ),
-    ));
+    );
+  }
+
+  // ValueListenableBuilder: 스크롤 이벤트 시 body 패딩만 재빌드.
+  // child를 분리해 ValueNotifier 변경과 무관하게 탭 페이지는 한 번만 빌드.
+  Widget _buildAnimatedBody() {
+    return ValueListenableBuilder<bool>(
+      valueListenable: _showBottomNav,
+      builder: (context, show, child) {
+        final bottomPadding = show ? 0.0 : MediaQuery.of(context).padding.bottom;
+        return AnimatedContainer(
+          duration: AppDimens.animFast,
+          curve: Curves.easeInOut,
+          color: context.appColors.backgroundMain,
+          padding: EdgeInsets.only(bottom: bottomPadding),
+          child: child!,
+        );
+      },
+      child: SafeArea(
+        bottom: !extendBody,
+        child: NotificationListener<ScrollNotification>(
+          onNotification: _handleScrollNotification,
+          child: pages,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAnimatedBottomNav() {
+    return ValueListenableBuilder<bool>(
+      valueListenable: _showBottomNav,
+      builder: (context, show, _) => ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(bottomNavigationBarBorderRadius),
+          topRight: Radius.circular(bottomNavigationBarBorderRadius),
+        ),
+        child: AnimatedAlign(
+          duration: AppDimens.animFast,
+          curve: Curves.easeInOut,
+          alignment: Alignment.topCenter,
+          heightFactor: show ? 1.0 : 0.0,
+          child: _buildBottomNavigationBar(context),
+        ),
+      ),
+    );
   }
 
   Widget get pages => IndexedStack(
@@ -181,7 +190,7 @@ class MainScreenState extends State<MainScreen>
         backgroundColor: colors.bottomNavBg,
         elevation: 0,
         height: 64,
-        animationDuration: const Duration(milliseconds: 250),
+        animationDuration: AppDimens.animQuick,
       ),
     );
   }

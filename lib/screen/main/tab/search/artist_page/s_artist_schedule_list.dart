@@ -7,9 +7,9 @@ import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_schedule_model.dart';
-import 'package:feple/network/dio_client.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_event_type_config.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
+import 'package:feple/service/artist_schedule_service.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
 
@@ -29,6 +29,7 @@ class ArtistScheduleListScreen extends StatefulWidget {
 
 class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
   late Future<List<ArtistScheduleModel>> _future;
+  final _scheduleService = sl<ArtistScheduleService>();
   final _festivalService = sl<FestivalService>();
 
   @override
@@ -37,12 +38,8 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
     _future = _fetch();
   }
 
-  Future<List<ArtistScheduleModel>> _fetch() async {
-    final resp = await DioClient.dio.get('/artists/${widget.artistId}/schedule');
-    return (resp.data as List)
-        .map((e) => ArtistScheduleModel.fromJson(e as Map<String, dynamic>))
-        .toList();
-  }
+  Future<List<ArtistScheduleModel>> _fetch() =>
+      _scheduleService.fetchSchedule(widget.artistId);
 
   Future<void> _refresh() async {
     setState(() => _future = _fetch());

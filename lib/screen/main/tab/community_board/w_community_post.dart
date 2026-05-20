@@ -14,7 +14,6 @@ import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/model/post_model.dart';
-import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../provider/user_provider.dart';
@@ -29,8 +28,17 @@ class CommunityPost extends StatefulWidget {
 }
 
 class _CommunityPostState extends State<CommunityPost> {
+  static const _pageSize = 20;
+
   final PostService _postService = sl<PostService>();
-  late Future<List<Post>> _postsFuture;
+  final ScrollController _scrollController = ScrollController();
+
+  final List<Post> _posts = [];
+  bool _loading = true;
+  bool _loadingMore = false;
+  bool _hasMore = true;
+  bool _hasError = false;
+  int _page = 0;
 
   String get _serviceBoardType {
     if (widget.boardname == 'companion_board'.tr()) return BoardTypes.mate;
@@ -39,19 +47,69 @@ class _CommunityPostState extends State<CommunityPost> {
     return widget.boardname;
   }
 
+  bool get _isPaginated =>
+      _serviceBoardType == BoardTypes.free || _serviceBoardType == BoardTypes.mate;
+
   @override
   void initState() {
     super.initState();
-    _postsFuture = _postService.fetchPosts(_serviceBoardType);
+    _load();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_loadingMore || !_hasMore || !_isPaginated) return;
+    final pos = _scrollController.position;
+    if (pos.pixels >= pos.maxScrollExtent - 200) {
+      _loadMore();
+    }
+  }
+
+  Future<void> _load() async {
+    setState(() { _loading = true; _hasError = false; _posts.clear(); _page = 0; _hasMore = true; });
+    try {
+      final items = _isPaginated
+          ? await _postService.fetchPostsPage(_serviceBoardType, page: 0, size: _pageSize)
+          : await _postService.fetchPosts(_serviceBoardType);
+      if (!mounted) return;
+      setState(() {
+        _posts.addAll(items);
+        _loading = false;
+        if (_isPaginated) {
+          _page = 1;
+          _hasMore = items.length == _pageSize;
+        }
+      });
+    } catch (_) {
+      if (mounted) setState(() { _loading = false; _hasError = true; });
+    }
+  }
+
+  Future<void> _loadMore() async {
+    if (!_hasMore || _loadingMore) return;
+    setState(() => _loadingMore = true);
+    try {
+      final items = await _postService.fetchPostsPage(_serviceBoardType, page: _page, size: _pageSize);
+      if (!mounted) return;
+      setState(() {
+        _posts.addAll(items);
+        _page++;
+        _hasMore = items.length == _pageSize;
+        _loadingMore = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _loadingMore = false);
+    }
   }
 
   Future<void> _refresh() async {
-    setState(() {
-      _postsFuture = _postService.fetchPosts(_serviceBoardType);
-    });
-    try {
-      await _postsFuture;
-    } catch (_) {}
+    await _load();
   }
 
   Widget _buildSkeletonList() {
@@ -79,6 +137,70 @@ class _CommunityPostState extends State<CommunityPost> {
         ),
       ),
       separatorBuilder: (_, __) => const Divider(height: 1, thickness: 1, indent: 16, endIndent: 16),
+    );
+  }
+
+  Widget _buildList(AbstractThemeColors colors) {
+    if (_hasError) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.wifi_off_rounded, size: 48, color: colors.textSecondary.withValues(alpha: 0.4)),
+            const SizedBox(height: 12),
+            Text('err_fetch_data'.tr(args: ['']), style: TextStyle(color: colors.textSecondary)),
+            const SizedBox(height: 16),
+            FilledButton.icon(
+              onPressed: _refresh,
+              icon: const Icon(Icons.refresh_rounded, size: 18),
+              label: Text('retry'.tr()),
+              style: FilledButton.styleFrom(backgroundColor: colors.activate),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_posts.isEmpty) {
+      return Center(
+        child: Text('no_posts_yet'.tr(), style: TextStyle(color: colors.textSecondary)),
+      );
+    }
+
+    return ListView.separated(
+      controller: _scrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(bottom: 80),
+      itemCount: _posts.length + (_loadingMore ? 1 : 0),
+      itemBuilder: (context, index) {
+        if (index == _posts.length) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+        final post = _posts[index];
+        return AnimatedListItem(
+          index: index,
+          child: PostListTile(
+            post: post,
+            onTap: () {
+              Navigator.of(context, rootNavigator: true).push(
+                SlideRoute(
+                  builder: (_) => EnlargePost.fromPost(
+                    boardname: widget.boardname,
+                    post: post,
+                  ),
+                ),
+              ).then((_) => _refresh());
+            },
+          ),
+        );
+      },
+      separatorBuilder: (_, __) => Divider(
+        thickness: 1,
+        color: colors.listDivider,
+      ),
     );
   }
 
@@ -117,42 +239,8 @@ class _CommunityPostState extends State<CommunityPost> {
             child: RefreshIndicator(
               color: colors.activate,
               onRefresh: _refresh,
-              child: AsyncContentBuilder<List<Post>>(
-          future: _postsFuture,
-          onRetry: _refresh,
-          loadingBuilder: (_) => _buildSkeletonList(),
-          builder: (context, posts) {
-            return ListView.separated(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.only(bottom: 80),
-              itemCount: posts.length,
-              itemBuilder: (context, index) {
-                final post = posts[index];
-                return AnimatedListItem(
-                  index: index,
-                  child: PostListTile(
-                    post: post,
-                    onTap: () {
-                      Navigator.of(context, rootNavigator: true).push(
-                        SlideRoute(
-                          builder: (_) => EnlargePost.fromPost(
-                            boardname: widget.boardname,
-                            post: post,
-                          ),
-                        ),
-                      ).then((_) => _refresh());
-                    },
-                  ),
-                );
-              },
-              separatorBuilder: (_, __) => Divider(
-                thickness: 1,
-                color: colors.listDivider,
-              ),
-            );
-          },
-        ),
-      ),
+              child: _loading ? _buildSkeletonList() : _buildList(colors),
+            ),
           ),
         ],
       ),

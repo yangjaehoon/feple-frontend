@@ -18,7 +18,6 @@ import 'package:feple/provider/festival_preview_provider.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:feple/service/user_service.dart';
-import 'package:feple/controller/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -60,7 +59,6 @@ Future<void> pumpApp(WidgetTester tester) async {
       useOnlyLangCode: true,
       child: MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => AuthProvider()),
           ChangeNotifierProvider(create: (_) => UserProvider(sl<UserService>())),
           ChangeNotifierProvider(create: (_) => FestivalPreviewProvider(sl<FestivalService>())),
         ],

@@ -20,9 +20,16 @@ class PostService {
     return (resp.data as List<dynamic>).map((json) => Post.fromJson(json)).toList();
   }
 
-  /// 게시글 목록 조회
+  /// 게시글 목록 조회 (hot은 페이지네이션 미지원)
   Future<List<Post>> fetchPosts(String boardType) =>
       _fetchPostList(_endpointFor(boardType));
+
+  /// 게시글 페이지 조회 (free/mate 전용)
+  Future<List<Post>> fetchPostsPage(String boardType, {int page = 0, int size = 20}) async {
+    final endpoint = _endpointFor(boardType);
+    final resp = await DioClient.dio.get(endpoint, queryParameters: {'page': page, 'size': size});
+    return (resp.data as List<dynamic>).map((json) => Post.fromJson(json)).toList();
+  }
 
   Future<void> _createPost(String endpoint, String title, String content) =>
       DioClient.dio.post(endpoint, data: {'title': title, 'content': content});

@@ -1,3 +1,4 @@
+import 'package:feple/model/comment_detail.dart';
 import 'package:feple/model/comment_model.dart';
 import 'package:feple/network/dio_client.dart';
 
@@ -15,10 +16,12 @@ class CommentService {
     }
   }
 
-  /// 게시글 댓글 목록 조회 (상세 화면용 — Map 포맷, liked/likeCount 포함)
-  Future<List<Map<String, dynamic>>> fetchPostComments(int postId) async {
+  /// 게시글 댓글 목록 조회 (상세 화면용 — liked/likeCount 포함)
+  Future<List<CommentDetail>> fetchPostComments(int postId) async {
     final resp = await DioClient.dio.get('/comments/post/$postId');
-    return (resp.data as List).cast<Map<String, dynamic>>();
+    return (resp.data as List)
+        .map((e) => CommentDetail.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   /// 댓글 작성 (command only — CQS)

@@ -61,6 +61,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
     }
   }
 
+  Future<void> _markAllRead() async {
+    if (_items.every((n) => n.read)) return;
+    setState(() => _items = _items.map((n) => n.read ? n : n.copyWithRead()).toList());
+    try {
+      await _notificationService.markAllRead();
+    } catch (e) {
+      debugPrint('[Notification] markAllRead error: $e');
+    }
+  }
+
   Future<void> _dismissNotification(int index) async {
     if (index < 0 || index >= _items.length) return;
     final removed = _items[index];
@@ -156,6 +166,18 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
+                  if (_items.any((n) => !n.read))
+                    TextButton(
+                      onPressed: _markAllRead,
+                      child: Text(
+                        'mark_all_read'.tr(),
+                        style: TextStyle(
+                          color: colors.activate,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),

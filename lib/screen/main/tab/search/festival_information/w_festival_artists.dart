@@ -1,9 +1,12 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/provider/user_provider.dart';
+import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_circle_image.dart';
 import 'package:feple/screen/main/tab/search/festival_information/festival_artists_notifier.dart';
+import 'package:feple/screen/main/tab/search/festival_information/w_festival_artist_list.dart';
 import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:feple/common/util/app_route.dart';
@@ -45,45 +48,51 @@ class _FestivalArtistsState extends State<FestivalArtists> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(
+        horizontal: AppDimens.paddingHorizontal,
+        vertical: AppDimens.paddingVertical,
+      ),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: const BorderRadius.all(Radius.circular(AppDimens.cardRadius)),
         boxShadow: [
           BoxShadow(
-            color: colors.cardShadow.withValues(alpha: 0.10),
-            blurRadius: 16,
+            color: colors.cardShadow.withValues(alpha: 0.12),
+            blurRadius: AppDimens.cardRadius,
             offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(Icons.music_note_rounded, color: colors.activate, size: 18),
-              const SizedBox(width: 6),
-              Text(
-                'participating_artists'.tr(),
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: colors.textTitle,
+          BoardCardHeader(
+            icon: Icons.music_note_rounded,
+            title: 'participating_artists'.tr(),
+            headerColor: colors.activate,
+            onTap: () => Navigator.push(
+              context,
+              SlideRoute(
+                builder: (_) => FestivalArtistListScreen(
+                  festivalId: widget.festivalId,
                 ),
               ),
-            ],
+            ),
           ),
-          const SizedBox(height: 14),
-          ListenableBuilder(
-            listenable: _notifier,
-            builder: (context, _) {
-              if (_notifier.isLoading || _notifier.artists.isEmpty) {
-                return _buildPlaceholderRow(colors);
-              }
-              return _buildArtistRow(colors);
-            },
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppDimens.paddingHorizontal,
+              vertical: 12,
+            ),
+            child: ListenableBuilder(
+              listenable: _notifier,
+              builder: (context, _) {
+                if (_notifier.isLoading || _notifier.artists.isEmpty) {
+                  return _buildPlaceholderRow(colors);
+                }
+                return _buildArtistRow(colors);
+              },
+            ),
           ),
         ],
       ),

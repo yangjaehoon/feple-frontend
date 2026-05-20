@@ -20,13 +20,13 @@ class DioClient {
     final refreshToken = await TokenStore.readRefreshToken();
     if (refreshToken == null || refreshToken.isEmpty) return null;
 
-    final resp = await _plainDio.post(
+    final response = await _plainDio.post(
       '/auth/refresh',
       data: {'refreshToken': refreshToken},
     );
-    final newAccessToken = resp.data['accessToken'] as String?;
+    final newAccessToken = response.data['accessToken'] as String?;
     if (newAccessToken == null) throw Exception('accessToken missing');
-    final newRefreshToken = resp.data['refreshToken'] as String?;
+    final newRefreshToken = response.data['refreshToken'] as String?;
 
     await TokenStore.saveAccessToken(newAccessToken);
     if (newRefreshToken != null) {

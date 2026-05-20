@@ -1,5 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 /// 네트워크 연결이 끊기면 상단에 배너를 표시하는 래퍼 위젯
@@ -24,7 +25,7 @@ class _OfflineBannerState extends State<OfflineBanner>
     super.initState();
     _animCtrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: AppDimens.animNormal,
     );
     _slideAnim = Tween<Offset>(
       begin: const Offset(0, -1),

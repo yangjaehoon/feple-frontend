@@ -1,3 +1,4 @@
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 import '../../../common/common.dart';
@@ -27,7 +28,7 @@ class ModeSwitch extends StatefulWidget {
 }
 
 class _ModeSwitchState extends State<ModeSwitch> {
-  final duration = const Duration(milliseconds: 250);
+  final duration = AppDimens.animQuick;
 
   @override
   Widget build(BuildContext context) {

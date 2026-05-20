@@ -53,26 +53,26 @@ class _HomeFragmentState extends State<HomeFragment> {
 
   void _onLikeChanged() => _notifier.refresh();
 
-  void _openArtistOrderSettings() {
-    final artists = _notifier.artists;
-    if (artists == null || artists.isEmpty) return;
-    final items = _notifier
-        .applyOrder(artists, _notifier.artistOrder, (a) => a.id)
-        .map((a) =>
-            ReorderItem(id: a.id, name: a.name, imageUrl: a.profileImageUrl))
-        .toList();
+  void _showReorderSheet(
+      String title, List<ReorderItem> items, Future<void> Function(List<int>) onSave) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => ReorderSheet(
-        title: 'followed_artists'.tr(),
-        items: items,
-        onSave: _notifier.saveArtistOrder,
-      ),
+      builder: (_) => ReorderSheet(title: title, items: items, onSave: onSave),
     );
+  }
+
+  void _openArtistOrderSettings() {
+    final artists = _notifier.artists;
+    if (artists == null || artists.isEmpty) return;
+    final items = _notifier
+        .applyOrder(artists, _notifier.artistOrder, (a) => a.id)
+        .map((a) => ReorderItem(id: a.id, name: a.name, imageUrl: a.profileImageUrl))
+        .toList();
+    _showReorderSheet('followed_artists'.tr(), items, _notifier.saveArtistOrder);
   }
 
   void _openFestivalOrderSettings() {
@@ -80,21 +80,9 @@ class _HomeFragmentState extends State<HomeFragment> {
     if (festivals == null || festivals.isEmpty) return;
     final items = _notifier
         .applyOrder(festivals, _notifier.festivalOrder, (f) => f.id)
-        .map((f) =>
-            ReorderItem(id: f.id, name: f.title, imageUrl: f.posterUrl))
+        .map((f) => ReorderItem(id: f.id, name: f.title, imageUrl: f.posterUrl))
         .toList();
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => ReorderSheet(
-        title: 'liked_festivals'.tr(),
-        items: items,
-        onSave: _notifier.saveFestivalOrder,
-      ),
-    );
+    _showReorderSheet('liked_festivals'.tr(), items, _notifier.saveFestivalOrder);
   }
 
   List<FollowedArtist>? get _orderedArtists {
@@ -114,85 +102,29 @@ class _HomeFragmentState extends State<HomeFragment> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-
     return ListenableBuilder(
       listenable: _notifier,
       builder: (context, _) {
         if (_notifier.userId == null) {
           return Container(
             color: colors.backgroundMain,
-            child: Center(
-                child: CircularProgressIndicator(
-                    color: colors.loadingIndicator)),
+            child: Center(child: CircularProgressIndicator(color: colors.loadingIndicator)),
           );
         }
-
         return Container(
           color: colors.backgroundMain,
           child: Stack(
             children: [
               RefreshIndicator(
                 color: colors.activate,
-                onRefresh: () async {
-                  await _notifier.refresh();
-                },
+                onRefresh: () async => _notifier.refresh(),
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
-                  padding: EdgeInsets.only(
+                  padding: const EdgeInsets.only(
                     top: AppDimens.scrollPaddingTop,
                     bottom: AppDimens.scrollPaddingBottom,
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      HomeSectionHeader(
-                        title: 'followed_artists'.tr(),
-                        onSettings: _notifier.artists != null &&
-                                _notifier.artists!.isNotEmpty
-                            ? _openArtistOrderSettings
-                            : null,
-                      ),
-                      HomeArtistsSection(
-                        artists: _orderedArtists,
-                        onTap: (artist) => Navigator.push(
-                          context,
-                          SlideRoute(
-                            builder: (_) => ArtistPage(
-                              artistId: artist.id,
-                              artistName: artist.name,
-                              followerCounter: 0,
-                            ),
-                          ),
-                        ).then((_) => _notifier.refresh()),
-                      ),
-                      const SizedBox(height: 8),
-                      HomeSectionHeader(
-                        title: 'liked_festivals'.tr(),
-                        onSettings: _notifier.festivals != null &&
-                                _notifier.festivals!.isNotEmpty
-                            ? _openFestivalOrderSettings
-                            : null,
-                      ),
-                      HomeFestivalsSection(
-                        festivals: _orderedFestivals,
-                        onTap: (festival) => Navigator.push(
-                          context,
-                          SlideRoute(
-                            builder: (_) => FestivalInformationFragment(
-                                poster: festival),
-                          ),
-                        ).then((_) => _notifier.refresh()),
-                      ),
-                      const SizedBox(height: 8),
-                      if (_notifier.boards == null)
-                        const BoardsSectionSkeleton()
-                      else
-                        FavoriteBoardsSection(
-                          allBoards: _notifier.boards!,
-                          userId: _notifier.userId!,
-                        ),
-                    ],
-                  ),
+                  child: _buildScrollContent(context, colors),
                 ),
               ),
               const FepleAppBar("Feple"),
@@ -200,6 +132,55 @@ class _HomeFragmentState extends State<HomeFragment> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildScrollContent(BuildContext context, AbstractThemeColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        HomeSectionHeader(
+          title: 'followed_artists'.tr(),
+          onSettings: (_notifier.artists?.isNotEmpty ?? false)
+              ? _openArtistOrderSettings
+              : null,
+        ),
+        HomeArtistsSection(
+          artists: _orderedArtists,
+          onTap: (artist) => Navigator.push(
+            context,
+            SlideRoute(
+              builder: (_) => ArtistPage(
+                artistId: artist.id,
+                artistName: artist.name,
+                followerCounter: 0,
+              ),
+            ),
+          ).then((_) => _notifier.refresh()),
+        ),
+        const SizedBox(height: 8),
+        HomeSectionHeader(
+          title: 'liked_festivals'.tr(),
+          onSettings: (_notifier.festivals?.isNotEmpty ?? false)
+              ? _openFestivalOrderSettings
+              : null,
+        ),
+        HomeFestivalsSection(
+          festivals: _orderedFestivals,
+          onTap: (festival) => Navigator.push(
+            context,
+            SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)),
+          ).then((_) => _notifier.refresh()),
+        ),
+        const SizedBox(height: 8),
+        if (_notifier.boards == null)
+          const BoardsSectionSkeleton()
+        else
+          FavoriteBoardsSection(
+            allBoards: _notifier.boards!,
+            userId: _notifier.userId!,
+          ),
+      ],
     );
   }
 }

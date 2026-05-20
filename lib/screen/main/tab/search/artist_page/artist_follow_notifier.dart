@@ -32,11 +32,11 @@ class ArtistFollowNotifier extends ChangeNotifier {
     notifyListeners();
     HapticFeedback.mediumImpact();
     try {
-      final res = isFollowed
+      final result = isFollowed
           ? await _followService.unfollow(artistId)
           : await _followService.follow(artistId);
-      isFollowed = res.followed;
-      followCount = res.followerCount;
+      isFollowed = result.followed;
+      followCount = result.followerCount;
     } finally {
       isLoading = false;
       notifyListeners();

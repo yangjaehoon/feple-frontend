@@ -48,7 +48,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
       return;
     }
     _debounce = Timer(
-      const Duration(milliseconds: 300),
+      AppDimens.animNormal,
       () => _fetchSuggestions(_controller.text.trim()),
     );
   }
@@ -106,73 +106,77 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-
     return Scaffold(
       backgroundColor: colors.backgroundMain,
       body: Column(
         children: [
-          SafeArea(
-            bottom: false,
-            child: Container(
-              height: AppDimens.appBarHeight,
-              color: colors.appBarColor,
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      focusNode: _focusNode,
-                      style: const TextStyle(color: Colors.white, fontSize: 16),
-                      cursorColor: Colors.white70,
-                      decoration: InputDecoration(
-                        hintText: 'search_hint'.tr(),
-                        hintStyle: const TextStyle(color: Colors.white54),
-                        border: InputBorder.none,
-                        filled: false,
-                        suffixIcon: _controller.text.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.clear, color: Colors.white70),
-                                onPressed: () {
-                                  _controller.clear();
-                                  setState(() {
-                                    _searched = false;
-                                    _artists = [];
-                                    _festivals = [];
-                                    _posts = [];
-                                    _suggestions = [];
-                                  });
-                                },
-                              )
-                            : null,
-                      ),
-                      textInputAction: TextInputAction.search,
-                      onSubmitted: _search,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.search_rounded, color: Colors.white),
-                    onPressed: () => _search(_controller.text),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Expanded(
-            child: _loading
-                ? Center(child: CircularProgressIndicator(color: colors.loadingIndicator))
-                : _searched
-                    ? (_hasError ? _buildError() : _buildResults(colors))
-                    : _controller.text.isEmpty
-                        ? _buildEmptyHint()
-                        : _buildSuggestions(colors),
-          ),
+          _buildSearchBar(colors),
+          Expanded(child: _buildContent(colors)),
         ],
       ),
     );
+  }
+
+  Widget _buildSearchBar(AbstractThemeColors colors) {
+    return SafeArea(
+      bottom: false,
+      child: Container(
+        height: AppDimens.appBarHeight,
+        color: colors.appBarColor,
+        child: Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            ),
+            Expanded(
+              child: TextField(
+                controller: _controller,
+                focusNode: _focusNode,
+                style: const TextStyle(color: Colors.white, fontSize: AppDimens.fontSizeXl),
+                cursorColor: Colors.white70,
+                decoration: InputDecoration(
+                  hintText: 'search_hint'.tr(),
+                  hintStyle: const TextStyle(color: Colors.white54),
+                  border: InputBorder.none,
+                  filled: false,
+                  suffixIcon: _controller.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear, color: Colors.white70),
+                          onPressed: () {
+                            _controller.clear();
+                            setState(() {
+                              _searched = false;
+                              _artists = [];
+                              _festivals = [];
+                              _posts = [];
+                              _suggestions = [];
+                            });
+                          },
+                        )
+                      : null,
+                ),
+                textInputAction: TextInputAction.search,
+                onSubmitted: _search,
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.search_rounded, color: Colors.white),
+              onPressed: () => _search(_controller.text),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(AbstractThemeColors colors) {
+    if (_loading) {
+      return Center(child: CircularProgressIndicator(color: colors.loadingIndicator));
+    }
+    if (_searched) return _hasError ? _buildError() : _buildResults(colors);
+    if (_controller.text.isEmpty) return _buildEmptyHint();
+    return _buildSuggestions(colors);
   }
 
   Widget _buildSuggestions(AbstractThemeColors colors) {

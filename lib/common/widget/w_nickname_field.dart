@@ -70,7 +70,7 @@ class NicknameFieldState extends State<NicknameField> {
 
     setState(() => _isChecking = true);
     try {
-      final resp = await DioClient.dio.get(
+      final response = await DioClient.dio.get(
         '/users/check-nickname',
         queryParameters: {
           'nickname': nickname,
@@ -78,7 +78,7 @@ class NicknameFieldState extends State<NicknameField> {
             'excludeUserId': widget.excludeUserId,
         },
       );
-      final body = resp.data as Map<String, dynamic>;
+      final body = response.data as Map<String, dynamic>;
       final available = body['available'] as bool;
       String backendMsg = body['message'] as String;
       String localizedMsg = backendMsg;

@@ -337,5 +337,16 @@
   "song_request_submit": "요청 보내기",
   "song_request_title_required": "노래 제목을 입력해주세요.",
   "song_request_duplicate": "이미 요청한 노래입니다.",
-  "song_request_failed": "요청 전송에 실패했습니다. 다시 시도해주세요."
+  "song_request_failed": "요청 전송에 실패했습니다. 다시 시도해주세요.",
+
+  "weather_title": "페스티벌 날씨",
+  "weather_sunny": "맑음",
+  "weather_cloudy": "구름많음",
+  "weather_overcast": "흐림",
+  "weather_rain": "비",
+  "weather_snow_rain": "비/눈",
+  "weather_snow": "눈",
+  "weather_shower": "소나기",
+  "weather_temp_range": "최저 {}° / 최고 {}°",
+  "weather_rain_prob": "강수확률 {}%"
 }

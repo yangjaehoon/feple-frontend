@@ -337,5 +337,16 @@
   "song_request_submit": "Send Request",
   "song_request_title_required": "Please enter a song title.",
   "song_request_duplicate": "You have already requested this song.",
-  "song_request_failed": "Failed to send request. Please try again."
+  "song_request_failed": "Failed to send request. Please try again.",
+
+  "weather_title": "Festival Weather",
+  "weather_sunny": "Sunny",
+  "weather_cloudy": "Partly Cloudy",
+  "weather_overcast": "Overcast",
+  "weather_rain": "Rain",
+  "weather_snow_rain": "Rain/Snow",
+  "weather_snow": "Snow",
+  "weather_shower": "Shower",
+  "weather_temp_range": "Low {}° / High {}°",
+  "weather_rain_prob": "Rain {}%"
 }

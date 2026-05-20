@@ -1,9 +1,9 @@
-import 'package:feple/model/air_quality_model.dart';
 import 'package:feple/model/booth_model.dart';
 import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/model/timetable_entry.dart';
+import 'package:feple/model/weather_model.dart';
 import 'package:feple/network/dio_client.dart';
 
 class FestivalService {
@@ -98,9 +98,9 @@ class FestivalService {
         .toList();
   }
 
-  Future<AirQualityModel?> fetchAirQuality(int festivalId) async {
-    final resp = await DioClient.dio.get('/festivals/$festivalId/air-quality');
+  Future<WeatherModel?> fetchWeather(int festivalId) async {
+    final resp = await DioClient.dio.get('/festivals/$festivalId/weather');
     if (resp.statusCode == 204 || resp.data == null) return null;
-    return AirQualityModel.fromJson(resp.data as Map<String, dynamic>);
+    return WeatherModel.fromJson(resp.data as Map<String, dynamic>);
   }
 }

@@ -201,11 +201,13 @@ class _EnlargePostState extends State<EnlargePost> {
                 Divider(
                     thickness: 1, height: 40, color: colors.listDivider),
                 LikeCommentRow(
-                  liked: _notifier.liked,
-                  heartCount: _notifier.heartCount,
-                  commentCount: _notifier.comments.length,
-                  scraped: _notifier.scraped,
-                  scrapCount: _notifier.scrapCount,
+                  data: PostInteractionData(
+                    liked: _notifier.liked,
+                    heartCount: _notifier.heartCount,
+                    commentCount: _notifier.comments.length,
+                    scraped: _notifier.scraped,
+                    scrapCount: _notifier.scrapCount,
+                  ),
                   onLikeTap: () => _notifier.toggleLike(userId),
                   onScrapTap: () => _notifier.toggleScrap(userId),
                 ),

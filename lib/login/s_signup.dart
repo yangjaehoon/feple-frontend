@@ -143,10 +143,10 @@ class _SignupPageState extends State<SignupPage> {
         }
       });
     } catch (e) {
+      debugPrint('[Signup] unexpected error: $e');
       if (!mounted) return;
-      final errMsg = e.toString().replaceFirst('Exception: ', '');
       setState(() {
-        _generalError = errMsg.isEmpty ? 'unknown_error'.tr() : errMsg;
+        _generalError = 'unknown_error'.tr();
       });
     } finally {
       if (mounted) setState(() => _isLoading = false);

@@ -94,7 +94,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
         }
         if (snapshot.hasError) {
           return ErrorState(
-            message: 'err_fetch_data'.tr(args: [snapshot.error.toString()]),
+            message: 'err_fetch_data'.tr(),
             onRetry: () => setState(() {
               _artistsFuture = sl<ArtistService>().fetchArtists();
             }),

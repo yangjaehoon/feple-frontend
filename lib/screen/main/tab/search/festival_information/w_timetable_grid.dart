@@ -4,6 +4,20 @@ import 'package:feple/common/constant/timetable_colors.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:flutter/material.dart';
 
+class TimetableScrollControllers {
+  final ScrollController hHeader;
+  final ScrollController hContent;
+  final ScrollController vContent;
+  final ScrollController vTime;
+
+  const TimetableScrollControllers({
+    required this.hHeader,
+    required this.hContent,
+    required this.vContent,
+    required this.vTime,
+  });
+}
+
 class TimetableGrid extends StatelessWidget {
   static const double _minPx = 1.5;
   static const double _topPad = 20.0;
@@ -19,10 +33,7 @@ class TimetableGrid extends StatelessWidget {
   final int endHour;
   final Set<String> followedNames;
   final double availableW;
-  final ScrollController hHeader;
-  final ScrollController hContent;
-  final ScrollController vContent;
-  final ScrollController vTime;
+  final TimetableScrollControllers scrollControllers;
 
   const TimetableGrid({
     super.key,
@@ -32,10 +43,7 @@ class TimetableGrid extends StatelessWidget {
     required this.endHour,
     required this.followedNames,
     required this.availableW,
-    required this.hHeader,
-    required this.hContent,
-    required this.vContent,
-    required this.vTime,
+    required this.scrollControllers,
   });
 
   double _toY(String time) {
@@ -77,7 +85,7 @@ class TimetableGrid extends StatelessWidget {
             ),
             Expanded(
               child: SingleChildScrollView(
-                controller: hHeader,
+                controller: scrollControllers.hHeader,
                 scrollDirection: Axis.horizontal,
                 physics: const NeverScrollableScrollPhysics(),
                 child: Row(
@@ -116,7 +124,7 @@ class TimetableGrid extends StatelessWidget {
               SizedBox(
                 width: _timeColW,
                 child: SingleChildScrollView(
-                  controller: vTime,
+                  controller: scrollControllers.vTime,
                   physics: const NeverScrollableScrollPhysics(),
                   child: SizedBox(
                     height: totalH,
@@ -145,10 +153,10 @@ class TimetableGrid extends StatelessWidget {
               // 그리드
               Expanded(
                 child: SingleChildScrollView(
-                  controller: hContent,
+                  controller: scrollControllers.hContent,
                   scrollDirection: Axis.horizontal,
                   child: SingleChildScrollView(
-                    controller: vContent,
+                    controller: scrollControllers.vContent,
                     child: SizedBox(
                       width: totalW,
                       height: totalH,

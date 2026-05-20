@@ -171,11 +171,8 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
                                 style: TextStyle(color: colors.textSecondary)),
                           )
                         : TimetableFullscreenGrid(
-                            stages: _range.stages,
-                            filtered: _range.filtered,
+                            range: _range,
                             userEntries: _currentUserEntries,
-                            startHour: _range.startHour,
-                            endHour: _range.endHour,
                             followedNames: widget.followedNames,
                             onTapGrid: (stage, start) =>
                                 _openAdd(stage: stage, startTime: start),

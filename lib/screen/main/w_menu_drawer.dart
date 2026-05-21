@@ -13,6 +13,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../screen/dialog/d_message.dart';
 import '../../common/common.dart';
 import '../../common/theme/theme_util.dart';
+import '../../common/util/confirm_dialog.dart';
 import '../../common/widget/w_mode_switch.dart';
 
 class MenuDrawer extends StatefulWidget {
@@ -159,27 +160,13 @@ class _MenuDrawerState extends State<MenuDrawer> {
             icon: Icons.person_remove_rounded,
             color: Theme.of(context).colorScheme.error,
             onTap: () async {
-              final confirmed = await showDialog<bool>(
-                context: context,
-                builder: (ctx) => AlertDialog(
-                  title: Text('delete_account'.tr()),
-                  content: Text(
-                    'delete_account_confirm'.tr(),
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx, false),
-                      child: Text('cancel'.tr()),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx, true),
-                      style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
-                      child: Text('delete_account'.tr()),
-                    ),
-                  ],
-                ),
+              final confirmed = await showConfirmDialog(
+                context,
+                title: 'delete_account'.tr(),
+                content: 'delete_account_confirm'.tr(),
+                confirmLabel: 'delete_account'.tr(),
               );
-              if (confirmed != true || !context.mounted) return;
+              if (!confirmed || !context.mounted) return;
               final userProvider = context.read<UserProvider>();
               closeDrawer(context);
               try {

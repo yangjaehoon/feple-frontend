@@ -77,6 +77,31 @@ class _FestivalPosterState extends State<FestivalPoster> {
     );
   }
 
+  VoidCallback? _certButtonTap() {
+    if (_notifier.isCertified) {
+      return () => context.showInfoSnackbar(context.tr('cert_already_approved'));
+    }
+    if (_notifier.isPending) {
+      return () => context.showInfoSnackbar(context.tr('cert_pending_notice'));
+    }
+    return _submitCertification;
+  }
+
+  IconData _certButtonIcon() =>
+      _notifier.isPending ? Icons.hourglass_top_rounded : Icons.verified_rounded;
+
+  Color _certButtonColor(AbstractThemeColors colors) {
+    if (_notifier.isCertified) return colors.activate.withValues(alpha: 0.7);
+    if (_notifier.isPending) return AppColors.statusPending;
+    return Colors.white;
+  }
+
+  Color? _certButtonBgColor(AbstractThemeColors colors) {
+    if (_notifier.isCertified) return colors.activate.withValues(alpha: 0.35);
+    if (_notifier.isPending) return AppColors.statusPending.withValues(alpha: 0.25);
+    return null;
+  }
+
   Future<void> _submitCertification() async {
     await showModalBottomSheet(
       context: context,
@@ -259,18 +284,10 @@ class _FestivalPosterState extends State<FestivalPoster> {
         FestivalActionButton(onTap: _openKakaoMap, icon: Icons.location_on_rounded),
         const SizedBox(width: 8),
         FestivalActionButton(
-          onTap: _notifier.isCertified
-              ? () => context.showInfoSnackbar(context.tr('cert_already_approved'))
-              : _notifier.isPending
-                  ? () => context.showInfoSnackbar(context.tr('cert_pending_notice'))
-                  : _submitCertification,
-          icon: _notifier.isPending ? Icons.hourglass_top_rounded : Icons.verified_rounded,
-          color: _notifier.isCertified
-              ? colors.activate.withValues(alpha: 0.7)
-              : _notifier.isPending ? AppColors.statusPending : Colors.white,
-          bgColor: _notifier.isCertified
-              ? colors.activate.withValues(alpha: 0.35)
-              : _notifier.isPending ? AppColors.statusPending.withValues(alpha: 0.25) : null,
+          onTap: _certButtonTap(),
+          icon: _certButtonIcon(),
+          color: _certButtonColor(colors),
+          bgColor: _certButtonBgColor(colors),
         ),
       ],
     );

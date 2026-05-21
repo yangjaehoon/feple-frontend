@@ -9,6 +9,7 @@ import 'package:feple/model/certification_model.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:flutter/material.dart';
 
+import 'cert_status_style.dart';
 import 'w_submit_certification_sheet.dart';
 
 class CertificationListScreen extends StatefulWidget {
@@ -314,19 +315,8 @@ class _CertCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isApproved = cert.status == CertStatus.approved;
     final isPending = cert.status == CertStatus.pending;
-
-    Color statusColor;
-    String statusLabel;
-    if (isApproved) {
-      statusColor = colors.certRingColor;
-      statusLabel = 'cert_status_approved'.tr();
-    } else if (isPending) {
-      statusColor = AppColors.statusPending;
-      statusLabel = 'cert_status_pending'.tr();
-    } else {
-      statusColor = colors.textSecondary;
-      statusLabel = 'cert_status_rejected'.tr();
-    }
+    final statusColor = cert.status.displayColor(colors);
+    final statusLabel = cert.status.labelKey.tr();
 
     return Container(
       decoration: BoxDecoration(

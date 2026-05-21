@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/certification_model.dart';
+import 'package:feple/screen/main/tab/my_page/cert_status_style.dart';
 import 'package:feple/screen/main/tab/my_page/s_certification_list.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
@@ -181,16 +182,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
     final festivalTitle = cert.festivalTitle;
     final imageUrl = cert.posterUrl;
     final isApproved = cert.status == CertStatus.approved;
-    final isPending = cert.status == CertStatus.pending;
-
-    Color ringColor;
-    if (isApproved) {
-      ringColor = colors.certRingColor;
-    } else if (isPending) {
-      ringColor = AppColors.statusPending;
-    } else {
-      ringColor = colors.textSecondary;
-    }
+    final ringColor = cert.status.displayColor(colors);
 
     return GestureDetector(
       onTap: _openDetail,
@@ -251,11 +243,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                isApproved
-                    ? 'cert_status_approved'.tr()
-                    : isPending
-                        ? 'cert_status_pending'.tr()
-                        : 'cert_status_rejected'.tr(),
+                cert.status.labelKey.tr(),
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w600,

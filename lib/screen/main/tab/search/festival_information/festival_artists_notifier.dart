@@ -22,6 +22,8 @@ class FestivalArtistsNotifier extends ChangeNotifier {
   })  : _festivalService = festivalService,
         _followService = followService;
 
+  bool isFollowed(int artistId) => followedIds.contains(artistId);
+
   Future<void> fetch() async {
     try {
       final fetched = await _festivalService.fetchFestivalArtists(festivalId);

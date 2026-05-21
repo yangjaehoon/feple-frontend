@@ -116,7 +116,7 @@ class _FestivalArtistsState extends State<FestivalArtists> {
         separatorBuilder: (_, __) => const SizedBox(width: 16),
         itemBuilder: (context, index) {
           final artist = _notifier.artists[index];
-          final isFollowed = _notifier.followedIds.contains(artist.artistId);
+          final isFollowed = _notifier.isFollowed(artist.artistId);
           return GestureDetector(
             onTap: () => Navigator.push(
               context,

@@ -84,8 +84,7 @@ class _FestivalArtistListScreenState extends State<FestivalArtistListScreen> {
                   itemCount: _notifier.artists.length,
                   itemBuilder: (context, index) {
                     final artist = _notifier.artists[index];
-                    final isFollowed =
-                        _notifier.followedIds.contains(artist.artistId);
+                    final isFollowed = _notifier.isFollowed(artist.artistId);
                     return AnimatedListItem(
                       index: index,
                       child: TapScale(

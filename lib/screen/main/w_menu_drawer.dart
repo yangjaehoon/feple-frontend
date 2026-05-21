@@ -202,27 +202,6 @@ class _MenuDrawerState extends State<MenuDrawer> {
           const Height(10),
           const MenuLanguageSelector(),
           const Height(10),
-          Row(
-            children: [
-              Expanded(
-                child: Tap(
-                  child: Container(
-                      height: 30,
-                      width: 100,
-                      padding: const EdgeInsets.only(left: 15),
-                      child: ''
-                          .selectableText
-                          .size(10)
-                          .color(colors.textSecondary)
-                          .makeWithDefaultFont()),
-                  onTap: () async {},
-                ),
-              ),
-
-
-
-            ],
-          )
         ],
       ),
     );

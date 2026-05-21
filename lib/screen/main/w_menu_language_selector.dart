@@ -13,43 +13,40 @@ class MenuLanguageSelector extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Tap(
-          child: Container(
-            padding: const EdgeInsets.only(left: 5, right: 5),
-            margin: const EdgeInsets.only(left: 15, right: 20),
-            decoration: BoxDecoration(
-              border: Border.all(color: colors.listDivider),
-              borderRadius: BorderRadius.circular(16),
-              color: colors.surface,
-              boxShadow: [context.appShadows.buttonShadowSmall],
-            ),
-            child: Row(
-              children: [
-                const Width(10),
-                DropdownButton<String>(
-                  items: [
-                    _menuItem(context, currentLanguage),
-                    _menuItem(
-                      context,
-                      Language.values
-                          .where((e) => e != currentLanguage)
-                          .first,
-                    ),
-                  ],
-                  onChanged: (value) async {
-                    if (value == null) return;
-                    await context
-                        .setLocale(Language.find(value.toLowerCase()).locale);
-                  },
-                  value: currentLanguage.name.capitalizeFirst,
-                  underline: const SizedBox.shrink(),
-                  elevation: 1,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ],
-            ),
+        Container(
+          padding: const EdgeInsets.only(left: 5, right: 5),
+          margin: const EdgeInsets.only(left: 15, right: 20),
+          decoration: BoxDecoration(
+            border: Border.all(color: colors.listDivider),
+            borderRadius: BorderRadius.circular(16),
+            color: colors.surface,
+            boxShadow: [context.appShadows.buttonShadowSmall],
           ),
-          onTap: () async {},
+          child: Row(
+            children: [
+              const Width(10),
+              DropdownButton<String>(
+                items: [
+                  _menuItem(context, currentLanguage),
+                  _menuItem(
+                    context,
+                    Language.values
+                        .where((e) => e != currentLanguage)
+                        .first,
+                  ),
+                ],
+                onChanged: (value) async {
+                  if (value == null) return;
+                  await context
+                      .setLocale(Language.find(value.toLowerCase()).locale);
+                },
+                value: currentLanguage.name.capitalizeFirst,
+                underline: const SizedBox.shrink(),
+                elevation: 1,
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ],
+          ),
         ),
       ],
     );

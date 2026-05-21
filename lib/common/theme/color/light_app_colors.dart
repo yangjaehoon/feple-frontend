@@ -5,9 +5,6 @@ class LightAppColors extends AbstractThemeColors {
   const LightAppColors();
 
   @override
-  Color get seedColor => AppColors.skyBlue;
-
-  @override
   Color get drawerBg => AppColors.surfaceWhite;
 
   @override
@@ -33,9 +30,6 @@ class LightAppColors extends AbstractThemeColors {
 
   @override
   Color get badgeBg => AppColors.sunnyYellow;
-
-  @override
-  Color get blueButtonBackground => AppColors.skyBlue;
 
   @override
   Color get confirmText => AppColors.skyBlue;

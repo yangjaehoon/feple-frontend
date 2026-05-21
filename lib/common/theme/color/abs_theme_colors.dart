@@ -8,13 +8,7 @@ typedef ColorProvider = Color Function();
 abstract class AbstractThemeColors {
   const AbstractThemeColors();
 
-  Color get seedColor => AppColors.skyBlue;
-
-  Color get veryBrightGrey => AppColors.brightGrey;
-
   Color get drawerBg => AppColors.surfaceWhite;
-
-  Color get scrollableItem => AppColors.textMain;
 
   Color get iconButton => AppColors.skyBlue;
 
@@ -25,8 +19,6 @@ abstract class AbstractThemeColors {
   Color get activate => AppColors.skyBlue;
 
   Color get badgeBg => AppColors.sunnyYellow;
-
-  Color get textBadgeText => AppColors.textMain;
 
   Color get badgeBorder => Colors.transparent;
 
@@ -40,11 +32,7 @@ abstract class AbstractThemeColors {
 
   Color get confirmText => AppColors.skyBlue;
 
-  Color get drawerText => AppColors.textMain;
-
   Color get snackbarBgColor => AppColors.skyBlue;
-
-  Color get blueButtonBackground => AppColors.skyBlue;
 
   Color get appBarBackground => AppColors.skyBlue;
 

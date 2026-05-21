@@ -223,7 +223,6 @@ class _SignupPageState extends State<SignupPage> {
                 // ── 닉네임 입력 + 중복 확인 ──
                 NicknameField(
                   key: _nicknameKey,
-                  onResult: (_, __) {},
                 ),
                 const SizedBox(height: 14),
 

@@ -65,7 +65,7 @@ class _WritePostScreenState extends State<WritePostScreen> {
     }
   }
 
-  InputDecoration _fieldDecoration(String hintKey) {
+  InputDecoration _fieldDecoration(String hintKey, {bool isError = false}) {
     final colors = context.appColors;
     final radius = BorderRadius.circular(12);
     return InputDecoration(
@@ -85,6 +85,8 @@ class _WritePostScreenState extends State<WritePostScreen> {
         borderRadius: radius,
         borderSide: const BorderSide(color: AppColors.errorRed, width: 2),
       ),
+      errorText: isError ? ' ' : null,
+      errorStyle: const TextStyle(fontSize: 0, height: 0),
     );
   }
 
@@ -120,7 +122,7 @@ class _WritePostScreenState extends State<WritePostScreen> {
             controller: _titleController,
             maxLength: 50,
             style: TextStyle(color: colors.textTitle),
-            decoration: _fieldDecoration('enter_title'),
+            decoration: _fieldDecoration('enter_title', isError: _hasBannedWordError),
             validator: (v) => (v == null || v.trim().isEmpty) ? 'enter_title'.tr() : null,
           ),
           const SizedBox(height: 12),
@@ -130,7 +132,7 @@ class _WritePostScreenState extends State<WritePostScreen> {
             minLines: 8,
             maxLength: 500,
             style: TextStyle(color: colors.textTitle),
-            decoration: _fieldDecoration('enter_content'),
+            decoration: _fieldDecoration('enter_content', isError: _hasBannedWordError),
             validator: (v) => (v == null || v.trim().isEmpty) ? 'enter_content'.tr() : null,
           ),
           if (_hasBannedWordError) ...[

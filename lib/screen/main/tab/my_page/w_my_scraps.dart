@@ -31,8 +31,8 @@ class MyScrapsScreen extends StatelessWidget {
             );
             reload();
           },
-          leading: const Icon(Icons.star_rounded,
-              color: AppColors.sunnyYellow, size: 22),
+          leading: Icon(Icons.star_rounded,
+              color: colors.accentColor, size: 22),
           title: Text(
             post.title,
             style: TextStyle(

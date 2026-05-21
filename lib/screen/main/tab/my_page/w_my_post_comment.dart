@@ -113,7 +113,7 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
           icon: Icons.star_rounded,
           label: 'scraps'.tr(),
           value: scrapCount,
-          color: AppColors.sunnyYellow,
+          color: context.appColors.accentColor,
           onTap: () => Navigator.push(
               context,
               SlideRoute(builder: (_) => const MyScrapsScreen())),

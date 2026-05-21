@@ -7,6 +7,7 @@ import 'package:feple/service/report_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:feple/model/artist_photo_response.dart';
+import 'package:feple/common/util/confirm_dialog.dart';
 import 'artist_photo_notifier.dart';
 import 'w_edit_photo_sheet.dart';
 
@@ -44,27 +45,27 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
   void refresh() => _notifier.loadPhotos();
 
   Future<void> _confirmAndDelete(int photoId) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('photo_delete_title'.tr()),
-        content: Text('photo_delete_confirm'.tr()),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text('cancel'.tr()),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text('msg_delete'.tr(),
-                style: const TextStyle(color: AppColors.errorRed)),
-          ),
-        ],
-      ),
+    final confirmed = await showConfirmDialog(
+      context,
+      title: 'photo_delete_title'.tr(),
+      content: 'photo_delete_confirm'.tr(),
+      confirmLabel: 'msg_delete'.tr(),
     );
-    if (confirmed == true) _notifier.deletePhoto(photoId);
+    if (confirmed) _notifier.deletePhoto(photoId);
   }
 
+
+  PopupMenuItem<String> _menuItem(
+    String value, IconData icon, String label, AbstractThemeColors colors, {Color? color}) {
+    return PopupMenuItem(
+      value: value,
+      child: Row(children: [
+        Icon(icon, size: 16, color: color ?? colors.textSecondary),
+        const SizedBox(width: 8),
+        Text(label, style: color != null ? TextStyle(color: color) : null),
+      ]),
+    );
+  }
 
   void _showEditBottomSheet(ArtistPhotoResponse photo) {
     final colors = context.appColors;
@@ -288,36 +289,10 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
                   },
                   itemBuilder: (_) => [
                     if (isUploader) ...[
-                      PopupMenuItem(
-                        value: 'edit',
-                        child: Row(children: [
-                          Icon(Icons.edit_rounded,
-                              size: 16, color: colors.textSecondary),
-                          const SizedBox(width: 8),
-                          Text('photo_edit_action'.tr()),
-                        ]),
-                      ),
-                      PopupMenuItem(
-                        value: 'delete',
-                        child: Row(children: [
-                          const Icon(Icons.delete_rounded,
-                              size: 16, color: AppColors.errorRed),
-                          const SizedBox(width: 8),
-                          Text('msg_delete'.tr(),
-                              style: const TextStyle(color: AppColors.errorRed)),
-                        ]),
-                      ),
+                      _menuItem('edit', Icons.edit_rounded, 'photo_edit_action'.tr(), colors),
+                      _menuItem('delete', Icons.delete_rounded, 'msg_delete'.tr(), colors, color: AppColors.errorRed),
                     ] else
-                      PopupMenuItem(
-                        value: 'report',
-                        child: Row(children: [
-                          const Icon(Icons.flag_rounded,
-                              size: 16, color: AppColors.errorRed),
-                          const SizedBox(width: 8),
-                          Text('report_photo'.tr(),
-                              style: const TextStyle(color: AppColors.errorRed)),
-                        ]),
-                      ),
+                      _menuItem('report', Icons.flag_rounded, 'report_photo'.tr(), colors, color: AppColors.errorRed),
                   ],
                 ),
               ],

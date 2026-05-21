@@ -162,12 +162,6 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
 
                 // Action icons
                 _buildActionIcon(
-                  icon: Icons.textsms_rounded,
-                  label: 'action_chat'.tr(),
-                  onTap: () {},
-                ),
-                const SizedBox(width: 4),
-                _buildActionIcon(
                   icon: Icons.calendar_month_rounded,
                   label: 'action_schedule'.tr(),
                   onTap: () {

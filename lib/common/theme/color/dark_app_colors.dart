@@ -13,9 +13,6 @@ class DarkAppColors extends AbstractThemeColors {
   static const Color _darkDivider = Color(0xFF2E4050);
 
   @override
-  Color get seedColor => AppColors.skyBlue;
-
-  @override
   Color get activate => AppColors.skyBlue;
 
   @override
@@ -47,12 +44,6 @@ class DarkAppColors extends AbstractThemeColors {
 
   @override
   Color get confirmText => AppColors.skyBlue;
-
-  @override
-  Color get blueButtonBackground => AppColors.skyBlue;
-
-  @override
-  Color get drawerText => _darkTextPrimary;
 
   @override
   Color get snackbarBgColor => AppColors.skyBlue;
@@ -135,7 +126,4 @@ class DarkAppColors extends AbstractThemeColors {
 
   @override
   Color get accentColor => AppColors.sunnyYellow;
-
-  @override
-  Color get scrollableItem => _darkTextPrimary;
 }

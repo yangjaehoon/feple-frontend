@@ -232,7 +232,6 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                     key: _nicknameKey,
                     excludeUserId: userId,
                     initialValue: _originalNickname,
-                    onResult: (_, __) {},
                   ),
                 ),
               ],

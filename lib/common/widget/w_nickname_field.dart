@@ -167,7 +167,7 @@ class NicknameFieldState extends State<NicknameField> {
           children: [
             Expanded(child: _buildTextField(colors)),
             const SizedBox(width: 8),
-            _buildCheckButton(colors),
+            IntrinsicWidth(child: _buildCheckButton(colors)),
           ],
         ),
         if (_message.isNotEmpty)

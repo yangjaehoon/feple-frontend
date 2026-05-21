@@ -68,7 +68,7 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
       maxWidth: 1920,
       maxHeight: 1920,
     );
-    if (picked == null) return;
+    if (picked == null || !mounted) return;
 
     setState(() => _submitting = true);
     try {

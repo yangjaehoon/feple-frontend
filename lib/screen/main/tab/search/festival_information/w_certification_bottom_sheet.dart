@@ -37,7 +37,7 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
       maxWidth: 1920,
       maxHeight: 1920,
     );
-    if (picked != null) setState(() => _pickedFile = picked);
+    if (picked != null && mounted) setState(() => _pickedFile = picked);
   }
 
   Future<void> _submit() async {

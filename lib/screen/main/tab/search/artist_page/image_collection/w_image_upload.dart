@@ -48,7 +48,7 @@ class _ImgUploadState extends State<ImgUpload> {
     final image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       imageData = await image.readAsBytes();
-      setState(() => _imageError = null);
+      if (mounted) setState(() => _imageError = null);
     }
   }
 

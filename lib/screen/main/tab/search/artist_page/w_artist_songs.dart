@@ -103,7 +103,7 @@ class _ArtistSongsState extends State<ArtistSongs> {
                   horizontal: AppDimens.paddingHorizontal, vertical: 12),
               child: Row(
                 children: [
-                  const SkeletonBox(width: 52, height: 39, borderRadius: BorderRadius.all(Radius.circular(4))),
+                  const SkeletonBox(width: 52, height: 52, borderRadius: BorderRadius.all(Radius.circular(4))),
                   const SizedBox(width: 12),
                   const Expanded(
                     child: Column(
@@ -208,7 +208,7 @@ class _ArtistSongsState extends State<ArtistSongs> {
                 child: CachedNetworkImage(
                   imageUrl: song.thumbnailUrl!,
                   width: 52,
-                  height: 39,
+                  height: 52,
                   fit: BoxFit.cover,
                   errorWidget: (_, __, ___) => _thumbnailPlaceholder(colors),
                 ),
@@ -262,7 +262,7 @@ class _ArtistSongsState extends State<ArtistSongs> {
   Widget _thumbnailPlaceholder(AbstractThemeColors colors) {
     return Container(
       width: 52,
-      height: 39,
+      height: 52,
       decoration: BoxDecoration(
         color: colors.backgroundMain,
         borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),

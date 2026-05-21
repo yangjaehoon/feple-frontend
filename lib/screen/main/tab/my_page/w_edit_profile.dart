@@ -42,7 +42,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
       source: ImageSource.gallery,
       imageQuality: 90,
     );
-    if (picked != null) setState(() => _pickedImage = picked);
+    if (picked != null && mounted) setState(() => _pickedImage = picked);
   }
 
   Future<void> _save() async {

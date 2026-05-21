@@ -45,9 +45,12 @@ class DioClient {
   )..interceptors.add(
     InterceptorsWrapper(
       onRequest: (options, handler) async {
-        final jwt = await TokenStore.readAccessToken();
-        if (jwt != null && jwt.isNotEmpty) {
-          options.headers['Authorization'] = 'Bearer $jwt';
+        // per-request Authorization이 이미 있으면 덮어쓰지 않음 (예: 카카오 액세스 토큰)
+        if (!options.headers.containsKey('Authorization')) {
+          final jwt = await TokenStore.readAccessToken();
+          if (jwt != null && jwt.isNotEmpty) {
+            options.headers['Authorization'] = 'Bearer $jwt';
+          }
         }
         handler.next(options);
       },

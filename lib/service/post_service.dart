@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:feple/common/constant/board_types.dart';
+import 'package:feple/common/exception/banned_word_exception.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/network/dio_client.dart';
 
@@ -31,8 +33,23 @@ class PostService {
     return (response.data as List<dynamic>).map((json) => Post.fromJson(json)).toList();
   }
 
-  Future<void> _createPost(String endpoint, String title, String content) =>
-      DioClient.dio.post(endpoint, data: {'title': title, 'content': content});
+  Future<void> _createPost(String endpoint, String title, String content) async {
+    try {
+      await DioClient.dio.post(endpoint, data: {'title': title, 'content': content});
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        final data = e.response?.data;
+        String msg = '';
+        if (data is Map) {
+          msg = (data['message'] as String?) ?? '';
+        } else if (data is String) {
+          msg = data;
+        }
+        if (msg.contains('금칙어')) throw const BannedWordException();
+      }
+      rethrow;
+    }
+  }
 
   /// 게시글 좋아요·스크랩 수 조회 (query only)
   Future<({int likeCount, int scrapCount})> fetchCounts(int postId) async {

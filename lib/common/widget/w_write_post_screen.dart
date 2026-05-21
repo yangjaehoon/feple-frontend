@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/exception/banned_word_exception.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,18 @@ class _WritePostScreenState extends State<WritePostScreen> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
   bool _isSubmitting = false;
+  bool _hasBannedWordError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController.addListener(_clearBannedWordError);
+    _contentController.addListener(_clearBannedWordError);
+  }
+
+  void _clearBannedWordError() {
+    if (_hasBannedWordError) setState(() => _hasBannedWordError = false);
+  }
 
   @override
   void dispose() {
@@ -40,6 +53,9 @@ class _WritePostScreenState extends State<WritePostScreen> {
       if (!mounted) return;
       context.showSuccessSnackbar('post_success'.tr());
       Navigator.of(context).pop();
+    } on BannedWordException {
+      if (!mounted) return;
+      setState(() => _hasBannedWordError = true);
     } catch (e) {
       if (!mounted) return;
       debugPrint('post submit error: $e');
@@ -98,6 +114,7 @@ class _WritePostScreenState extends State<WritePostScreen> {
       key: _formKey,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextFormField(
             controller: _titleController,
@@ -116,6 +133,21 @@ class _WritePostScreenState extends State<WritePostScreen> {
             decoration: _fieldDecoration('enter_content'),
             validator: (v) => (v == null || v.trim().isEmpty) ? 'enter_content'.tr() : null,
           ),
+          if (_hasBannedWordError) ...[
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                const Icon(Icons.error_outline, color: AppColors.errorRed, size: 16),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    'post_banned_word'.tr(),
+                    style: const TextStyle(color: AppColors.errorRed, fontSize: 13),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );

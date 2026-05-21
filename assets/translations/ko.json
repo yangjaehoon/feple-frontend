@@ -63,6 +63,7 @@
   "no_login_info": "로그인 정보가 없습니다.",
   "post_success": "게시글이 성공적으로 등록되었습니다.",
   "post_failed": "게시글 등록에 실패했습니다.",
+  "post_banned_word": "욕설, 혐오, 비방 표현은 사용할 수 없습니다.",
   "enter_comment": "댓글을 입력하세요.",
   "enter_comment_please": "댓글을 입력해주세요.",
   "comment_posted": "댓글이 등록되었습니다.",

@@ -17,6 +17,7 @@ import 'service/scrap_service.dart';
 import 'service/search_service.dart';
 import 'service/song_request_service.dart';
 import 'service/song_service.dart';
+import 'service/user_activity_service.dart';
 import 'service/user_service.dart';
 
 final sl = GetIt.instance;
@@ -40,5 +41,6 @@ void setupDependencies() {
   sl.registerLazySingleton<SearchService>(() => SearchService());
   sl.registerLazySingleton<SongRequestService>(() => SongRequestService());
   sl.registerLazySingleton<SongService>(() => SongService());
+  sl.registerLazySingleton<UserActivityService>(() => UserActivityService());
   sl.registerLazySingleton<UserService>(() => UserService());
 }

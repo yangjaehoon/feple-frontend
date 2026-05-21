@@ -61,15 +61,6 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
     }
   }
 
-  bool _isPast(ArtistScheduleModel item) {
-    final dateStr = item.endDate ?? item.startDate;
-    if (dateStr == null) return false;
-    final date = DateTime.tryParse(dateStr);
-    if (date == null) return false;
-    final today = DateTime.now();
-    return date.isBefore(DateTime(today.year, today.month, today.day));
-  }
-
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -124,8 +115,8 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
   }
 
   Widget _buildScheduleList(List<ArtistScheduleModel> all, AbstractThemeColors colors) {
-    final upcoming = all.where((e) => !_isPast(e)).toList();
-    final past = all.where(_isPast).toList();
+    final upcoming = all.where((e) => !e.isPast).toList();
+    final past = all.where((e) => e.isPast).toList();
 
     // flat list: [upcomingHeader?, ...upcoming, pastHeader?, ...past]
     final rows = <_Row>[];

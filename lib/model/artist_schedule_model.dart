@@ -21,6 +21,15 @@ class ArtistScheduleModel {
     required this.coArtists,
   });
 
+  bool get isPast {
+    final dateStr = endDate ?? startDate;
+    if (dateStr == null) return false;
+    final date = DateTime.tryParse(dateStr);
+    if (date == null) return false;
+    final today = DateTime.now();
+    return date.isBefore(DateTime(today.year, today.month, today.day));
+  }
+
   factory ArtistScheduleModel.fromJson(Map<String, dynamic> json) {
     return ArtistScheduleModel(
       festivalId: json['festivalId'] as int,

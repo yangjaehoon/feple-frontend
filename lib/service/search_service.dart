@@ -1,28 +1,9 @@
+import 'package:feple/model/search_result.dart';
+import 'package:feple/model/search_suggestion.dart';
 import 'package:feple/network/dio_client.dart';
 
-class SearchResult {
-  final List<dynamic> artists;
-  final List<dynamic> festivals;
-  final List<dynamic> posts;
-
-  const SearchResult({
-    required this.artists,
-    required this.festivals,
-    required this.posts,
-  });
-
-  factory SearchResult.fromJson(Map<String, dynamic> json) => SearchResult(
-        artists: json['artists'] as List? ?? [],
-        festivals: json['festivals'] as List? ?? [],
-        posts: json['posts'] as List? ?? [],
-      );
-}
-
-class SearchSuggestion {
-  final String label;
-  final String type; // 'artist' or 'festival'
-  const SearchSuggestion(this.label, this.type);
-}
+export 'package:feple/model/search_result.dart';
+export 'package:feple/model/search_suggestion.dart';
 
 class SearchService {
   Future<SearchResult> search(String keyword) async {

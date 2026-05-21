@@ -45,7 +45,7 @@ class PostStatRow extends StatelessWidget {
         if (scrapCount != null) ...[
           SizedBox(width: _spacing),
           Icon(Icons.star_border_rounded,
-              color: AppColors.sunnyYellow, size: _starSize),
+              color: colors.accentColor, size: _starSize),
           const SizedBox(width: 4),
           Text(scrapCount!.toString(), style: textStyle),
         ],
@@ -128,7 +128,7 @@ class LikeCommentRow extends StatelessWidget {
             children: [
               Icon(
                 data.scraped ? Icons.star_rounded : Icons.star_border_rounded,
-                color: AppColors.sunnyYellow,
+                color: colors.accentColor,
                 size: 24,
               ),
               const SizedBox(width: 4),

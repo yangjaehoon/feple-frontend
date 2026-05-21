@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
@@ -154,26 +155,13 @@ class NicknameFieldState extends State<NicknameField> {
   }
 
   Widget _buildCheckButton(AbstractThemeColors colors) {
-    return SizedBox(
+    return LoadingButton(
+      label: 'check_duplication'.tr(),
+      onPressed: _isChecking ? null : checkNickname,
+      isLoading: _isChecking,
+      backgroundColor: colors.activate,
       height: 52,
-      child: ElevatedButton(
-        onPressed: _isChecking ? null : checkNickname,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: colors.activate,
-          foregroundColor: Colors.white,
-          elevation: 0,
-        ),
-        child: _isChecking
-            ? const SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-              )
-            : Text(
-                'check_duplication'.tr(),
-                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-              ),
-      ),
+      borderRadius: 12,
     );
   }
 

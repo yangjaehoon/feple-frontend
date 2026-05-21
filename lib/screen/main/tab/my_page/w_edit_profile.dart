@@ -115,7 +115,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
     final colors = context.appColors;
     // profileImageUrl·userId만 구독 — 다른 UserProvider 상태 변경 시 재빌드 안 함
     final (profileImageUrl, userId) = context.select<UserProvider, (String?, int?)>(
-      (p) => (p.user?.profileImageUrl, p.user?.id),
+      (p) => (p.currentProfileImageUrl, p.currentUserId),
     );
 
     return Scaffold(

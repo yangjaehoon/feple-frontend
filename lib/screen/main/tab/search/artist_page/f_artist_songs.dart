@@ -180,7 +180,7 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
                 child: CachedNetworkImage(
                   imageUrl: song.thumbnailUrl!,
                   width: 52,
-                  height: 39,
+                  height: 52,
                   fit: BoxFit.cover,
                   errorWidget: (_, __, ___) => _thumbnailPlaceholder(colors),
                 ),
@@ -237,7 +237,7 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
   Widget _thumbnailPlaceholder(AbstractThemeColors colors) {
     return Container(
       width: 52,
-      height: 39,
+      height: 52,
       decoration: BoxDecoration(
         color: colors.backgroundMain,
         borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),

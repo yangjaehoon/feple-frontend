@@ -2,7 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/scrap_service.dart';
-import 'package:feple/service/user_service.dart';
+import 'package:feple/service/user_activity_service.dart';
 import 'package:feple/screen/main/tab/my_page/s_certification_list.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_comments.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_posts.dart';
@@ -29,7 +29,7 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
   }
 
   Future<_UserStats> _fetchStats() async {
-    final stats = await sl<UserService>().fetchStats(widget.userId);
+    final stats = await sl<UserActivityService>().fetchStats(widget.userId);
     int certCount = 0;
     int scrapCount = 0;
     try {

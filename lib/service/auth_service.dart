@@ -1,5 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:feple/common/exception/email_not_verified_exception.dart';
 import 'package:feple/network/dio_client.dart';
+
+export 'package:feple/common/exception/email_not_verified_exception.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -169,8 +172,3 @@ class AuthService {
   }
 }
 
-/// 이메일 인증이 완료되지 않은 경우 발생하는 예외
-class EmailNotVerifiedException implements Exception {
-  @override
-  String toString() => 'EmailNotVerifiedException';
-}

@@ -2,7 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_my_page_list_screen.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
-import 'package:feple/service/user_service.dart';
+import 'package:feple/service/user_activity_service.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
@@ -87,7 +87,7 @@ class MyCommentsScreen extends StatelessWidget {
     return MyPageListScreen<_MyComment>(
       title: 'my_comments'.tr(),
       loader: () async {
-        final data = await sl<UserService>().fetchComments(userId);
+        final data = await sl<UserActivityService>().fetchComments(userId);
         return data.map((e) => _MyComment.fromJson(e)).toList();
       },
       skeletonBuilder: _buildSkeleton,

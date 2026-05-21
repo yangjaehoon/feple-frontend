@@ -1,6 +1,7 @@
+import 'package:feple/model/report_reason.dart';
 import 'package:feple/network/dio_client.dart';
 
-enum ReportReason { spam, abuse, obscene, misinformation, other }
+export 'package:feple/model/report_reason.dart';
 
 class ReportService {
   Future<void> submitReport(int postId, ReportReason reason, {String? detail}) async {

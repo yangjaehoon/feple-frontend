@@ -141,13 +141,7 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
           );
         }
 
-        final today = DateTime.now();
-        final upcoming = (snapshot.data ?? []).where((item) {
-          final dateStr = item.endDate ?? item.startDate;
-          if (dateStr == null) return true;
-          final date = DateTime.tryParse(dateStr);
-          return date == null || !date.isBefore(DateTime(today.year, today.month, today.day));
-        }).toList();
+        final upcoming = (snapshot.data ?? []).where((item) => !item.isPast).toList();
 
         if (upcoming.isEmpty) {
           return Padding(

@@ -89,7 +89,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     final currentUserId =
-        Provider.of<UserProvider>(context, listen: false).user?.id;
+        Provider.of<UserProvider>(context, listen: false).currentUserId;
 
     return ListenableBuilder(
       listenable: _notifier,

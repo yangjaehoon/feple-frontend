@@ -15,6 +15,7 @@ class UserProvider with ChangeNotifier {
   User? _user;
   User? get user => _user;
   int? get currentUserId => _user?.id;
+  String? get currentProfileImageUrl => _user?.profileImageUrl;
 
   UserProvider(this._userService) {
     _loadFromSecureStorage();

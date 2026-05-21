@@ -22,32 +22,33 @@ class AppPreferences {
 
   static bool checkIsNullable<T>() => null is T;
 
-  static Future<bool> setValue<T>(PreferenceItem<T> item, T? value) async {
+  static Future<void> setValue<T>(PreferenceItem<T> item, T? value) async {
     final String key = getPrefKey(item);
     final isNullable = checkIsNullable<T>();
 
     if (isNullable && value == null) {
       //null을 세팅한다는 것은 값을 지운다는 의미로 해석. 필요에 따라 변경해서 쓰시면 되요.
-      return _prefs.remove(key);
+      await _prefs.remove(key);
+      return;
     }
 
     if (isNullable) {
       switch (T.toString()) {
         case "int?":
-          return _prefs.setInt(key, value as int);
+          await _prefs.setInt(key, value as int);
         case "String?":
-          return _prefs.setString(key, value as String);
+          await _prefs.setString(key, value as String);
         case "double?":
-          return _prefs.setDouble(key, value as double);
+          await _prefs.setDouble(key, value as double);
         case "bool?":
-          return _prefs.setBool(key, value as bool);
+          await _prefs.setBool(key, value as bool);
         case "List<String>?":
-          return _prefs.setStringList(key, value as List<String>);
+          await _prefs.setStringList(key, value as List<String>);
         case "DateTime?":
-          return _prefs.setString(key, (value as DateTime).toIso8601String());
+          await _prefs.setString(key, (value as DateTime).toIso8601String());
         default:
           if (value is Enum) {
-            return _prefs.setString(key, value.name);
+            await _prefs.setString(key, value.name);
           } else {
             throw Exception('$T 타입에 대한 저장 transform 함수를 추가 해주세요.');
           }
@@ -55,20 +56,20 @@ class AppPreferences {
     } else {
       switch (T) {
         case const (int):
-          return _prefs.setInt(key, value as int);
+          await _prefs.setInt(key, value as int);
         case const (String):
-          return _prefs.setString(key, value as String);
+          await _prefs.setString(key, value as String);
         case const (double):
-          return _prefs.setDouble(key, value as double);
+          await _prefs.setDouble(key, value as double);
         case const (bool):
-          return _prefs.setBool(key, value as bool);
+          await _prefs.setBool(key, value as bool);
         case const (List<String>):
-          return _prefs.setStringList(key, value as List<String>);
+          await _prefs.setStringList(key, value as List<String>);
         case const (DateTime):
-          return _prefs.setString(key, (value as DateTime).toIso8601String());
+          await _prefs.setString(key, (value as DateTime).toIso8601String());
         default:
           if (value is Enum) {
-            return _prefs.setString(key, value.name);
+            await _prefs.setString(key, value.name);
           } else {
             throw Exception('$T 타입에 대한 저장 transform 함수를 추가 해주세요.');
           }
@@ -76,9 +77,9 @@ class AppPreferences {
     }
   }
 
-  static Future<bool> deleteValue<T>(PreferenceItem<T> item) async {
+  static Future<void> deleteValue<T>(PreferenceItem<T> item) async {
     final String key = getPrefKey(item);
-    return _prefs.remove(key);
+    await _prefs.remove(key);
   }
 
   static T getValue<T>(PreferenceItem<T> item) {

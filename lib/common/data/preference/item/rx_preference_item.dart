@@ -22,7 +22,7 @@ class RxPreferenceItem<T, R extends Rx<T>> extends PreferenceItem<T> {
   }
 
   @override
-  Future<bool> set(T value) {
+  Future<void> set(T value) {
     _rxValue.value = value;
     return super.set(value);
   }
@@ -40,9 +40,7 @@ class RxPreferenceItem<T, R extends Rx<T>> extends PreferenceItem<T> {
   }
 
   @override
-  Future<bool> delete() {
-    return AppPreferences.deleteValue<T>(this);
-  }
+  Future<void> delete() => AppPreferences.deleteValue<T>(this);
 
   static R createRxValue<T, R extends Rx<T>>(T defaultValue) {
     switch (T) {

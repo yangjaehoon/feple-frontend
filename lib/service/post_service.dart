@@ -45,7 +45,9 @@ class PostService {
         } else if (data is String) {
           msg = data;
         }
-        if (msg.contains('금칙어')) throw const BannedWordException();
+        if (msg.startsWith('title:')) throw const BannedWordException('title');
+        if (msg.startsWith('content:')) throw const BannedWordException('content');
+        if (msg.contains('금칙어')) throw const BannedWordException('content');
       }
       rethrow;
     }

@@ -23,17 +23,22 @@ class _WritePostScreenState extends State<WritePostScreen> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
   bool _isSubmitting = false;
-  bool _hasBannedWordError = false;
+  bool _titleHasBannedWord = false;
+  bool _contentHasBannedWord = false;
 
   @override
   void initState() {
     super.initState();
-    _titleController.addListener(_clearBannedWordError);
-    _contentController.addListener(_clearBannedWordError);
+    _titleController.addListener(_clearTitleBannedWord);
+    _contentController.addListener(_clearContentBannedWord);
   }
 
-  void _clearBannedWordError() {
-    if (_hasBannedWordError) setState(() => _hasBannedWordError = false);
+  void _clearTitleBannedWord() {
+    if (_titleHasBannedWord) setState(() => _titleHasBannedWord = false);
+  }
+
+  void _clearContentBannedWord() {
+    if (_contentHasBannedWord) setState(() => _contentHasBannedWord = false);
   }
 
   @override
@@ -53,9 +58,12 @@ class _WritePostScreenState extends State<WritePostScreen> {
       if (!mounted) return;
       context.showSuccessSnackbar('post_success'.tr());
       Navigator.of(context).pop();
-    } on BannedWordException {
+    } on BannedWordException catch (e) {
       if (!mounted) return;
-      setState(() => _hasBannedWordError = true);
+      setState(() {
+        _titleHasBannedWord = e.field == 'title';
+        _contentHasBannedWord = e.field == 'content';
+      });
     } catch (e) {
       if (!mounted) return;
       debugPrint('post submit error: $e');
@@ -65,7 +73,7 @@ class _WritePostScreenState extends State<WritePostScreen> {
     }
   }
 
-  InputDecoration _fieldDecoration(String hintKey, {bool isError = false}) {
+  InputDecoration _fieldDecoration(String hintKey, {String? bannedWordMessage}) {
     final colors = context.appColors;
     final radius = BorderRadius.circular(12);
     return InputDecoration(
@@ -85,8 +93,7 @@ class _WritePostScreenState extends State<WritePostScreen> {
         borderRadius: radius,
         borderSide: const BorderSide(color: AppColors.errorRed, width: 2),
       ),
-      errorText: isError ? ' ' : null,
-      errorStyle: const TextStyle(fontSize: 0, height: 0),
+      errorText: bannedWordMessage,
     );
   }
 
@@ -122,7 +129,10 @@ class _WritePostScreenState extends State<WritePostScreen> {
             controller: _titleController,
             maxLength: 50,
             style: TextStyle(color: colors.textTitle),
-            decoration: _fieldDecoration('enter_title', isError: _hasBannedWordError),
+            decoration: _fieldDecoration(
+              'enter_title',
+              bannedWordMessage: _titleHasBannedWord ? 'post_banned_word'.tr() : null,
+            ),
             validator: (v) => (v == null || v.trim().isEmpty) ? 'enter_title'.tr() : null,
           ),
           const SizedBox(height: 12),
@@ -132,24 +142,12 @@ class _WritePostScreenState extends State<WritePostScreen> {
             minLines: 8,
             maxLength: 500,
             style: TextStyle(color: colors.textTitle),
-            decoration: _fieldDecoration('enter_content', isError: _hasBannedWordError),
+            decoration: _fieldDecoration(
+              'enter_content',
+              bannedWordMessage: _contentHasBannedWord ? 'post_banned_word'.tr() : null,
+            ),
             validator: (v) => (v == null || v.trim().isEmpty) ? 'enter_content'.tr() : null,
           ),
-          if (_hasBannedWordError) ...[
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                const Icon(Icons.error_outline, color: AppColors.errorRed, size: 16),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    'post_banned_word'.tr(),
-                    style: const TextStyle(color: AppColors.errorRed, fontSize: 13),
-                  ),
-                ),
-              ],
-            ),
-          ],
         ],
       ),
     );

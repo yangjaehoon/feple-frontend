@@ -1,6 +1,8 @@
 class BannedWordException implements Exception {
-  const BannedWordException();
+  final String field; // 'title' or 'content'
+
+  const BannedWordException(this.field);
 
   @override
-  String toString() => 'BannedWordException';
+  String toString() => 'BannedWordException(field: $field)';
 }

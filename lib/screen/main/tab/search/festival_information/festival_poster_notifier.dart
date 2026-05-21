@@ -63,11 +63,15 @@ class FestivalPosterNotifier extends ChangeNotifier {
   }
 
   Future<void> toggleLike() async {
+    final prev = liked;
+    liked = !liked;
+    notifyListeners();
+    AppEvents.likeChanged.value++;
     try {
-      liked = await festivalService.toggleLike(festivalId);
-      notifyListeners();
-      AppEvents.likeChanged.value++;
+      await festivalService.toggleLike(festivalId);
     } catch (e) {
+      liked = prev;
+      notifyListeners();
       debugPrint('toggleLike error: $e');
     }
   }

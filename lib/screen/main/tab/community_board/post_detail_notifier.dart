@@ -94,14 +94,20 @@ class PostDetailNotifier extends ChangeNotifier {
 
   Future<void> toggleCommentLike(int commentId, int? userId) async {
     if (userId == null) return;
+    final idx = comments.indexWhere((c) => c.id == commentId);
+    if (idx == -1) return;
+    final prev = comments[idx];
+    final newLiked = !prev.liked;
+    comments[idx] = prev.copyWith(
+      liked: newLiked,
+      likeCount: prev.likeCount + (newLiked ? 1 : -1),
+    );
+    notifyListeners();
     try {
-      final result = await _commentService.toggleCommentLike(commentId);
-      final idx = comments.indexWhere((c) => c.id == commentId);
-      if (idx != -1) {
-        comments[idx] = comments[idx].copyWith(liked: result.liked, likeCount: result.likeCount);
-        notifyListeners();
-      }
+      await _commentService.toggleCommentLike(commentId);
     } catch (e) {
+      comments[idx] = prev;
+      notifyListeners();
       debugPrint('toggleCommentLike error: $e');
     }
   }

@@ -43,15 +43,11 @@ class UserService {
         .toList();
   }
 
-  Future<User> updateProfileImage(int userId, FormData formData) async {
-    final response = await DioClient.dio.post('/users/$userId/profile-image', data: formData);
-    return User.fromJson(response.data as Map<String, dynamic>);
-  }
+  Future<void> updateProfileImage(int userId, FormData formData) =>
+      DioClient.dio.post('/users/$userId/profile-image', data: formData);
 
-  Future<User> updateNickname(int userId, String nickname) async {
-    final response = await DioClient.dio.put('/users/$userId', data: {'nickname': nickname});
-    return User.fromJson(response.data as Map<String, dynamic>);
-  }
+  Future<void> updateNickname(int userId, String nickname) =>
+      DioClient.dio.put('/users/$userId', data: {'nickname': nickname});
 
   Future<Set<String>> fetchFollowedArtistNames(int userId) async {
     final raw = await fetchFollowing(userId);

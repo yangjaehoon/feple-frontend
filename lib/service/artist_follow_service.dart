@@ -1,17 +1,12 @@
-import 'package:feple/model/follow_response.dart';
 import 'package:feple/model/follow_status.dart';
 import 'package:feple/network/dio_client.dart';
 
 class ArtistFollowService {
-  Future<FollowResponse> follow(int artistId) async {
-    final response = await DioClient.dio.post('/artists/$artistId/follow');
-    return FollowResponse.fromJson(response.data as Map<String, dynamic>);
-  }
+  Future<void> follow(int artistId) =>
+      DioClient.dio.post('/artists/$artistId/follow');
 
-  Future<FollowResponse> unfollow(int artistId) async {
-    final response = await DioClient.dio.delete('/artists/$artistId/follow');
-    return FollowResponse.fromJson(response.data as Map<String, dynamic>);
-  }
+  Future<void> unfollow(int artistId) =>
+      DioClient.dio.delete('/artists/$artistId/follow');
 
   Future<FollowStatus> getFollowStatus(int artistId) async {
     final response = await DioClient.dio.get('/artists/$artistId/follow');

@@ -68,16 +68,10 @@ void main() {
       );
     });
 
-    test('toggleCommentLike parses liked and likeCount record', () async {
-      server.enqueue(
-        body: '{"liked":true,"likeCount":3}',
-        headers: {'Content-Type': 'application/json'},
-      );
+    test('toggleCommentLike completes without error', () async {
+      server.enqueue(httpCode: 200);
 
-      final result = await service.toggleCommentLike(1);
-
-      expect(result.liked, true);
-      expect(result.likeCount, 3);
+      await expectLater(service.toggleCommentLike(1), completes);
     });
 
     test('deleteComment completes on 204', () async {

@@ -5,7 +5,7 @@ import 'package:feple/network/dio_client.dart';
 
 class CertificationService {
   /// 인증 사진 업로드 → 서버에 인증 신청
-  Future<Map<String, dynamic>> submit({
+  Future<void> submit({
     required int festivalId,
     required Uint8List imageData,
   }) async {
@@ -13,15 +13,13 @@ class CertificationService {
       presignEndpoint: '/certifications/presign',
       imageData: imageData,
     );
-
-    final submitResponse = await DioClient.dio.post(
+    await DioClient.dio.post(
       '/certifications',
       data: {
         'festivalId': festivalId,
         'photoKey': presign.objectKey,
       },
     );
-    return submitResponse.data as Map<String, dynamic>;
   }
 
   /// 내 인증 목록 조회

@@ -43,15 +43,16 @@ class AuthService {
     final credential = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
 
+    final firebaseUser = credential.user!;
     try {
       // 닉네임을 Firebase displayName에 저장 (이메일 인증 후 첫 로그인 시 백엔드에서 사용)
-      await credential.user!.updateDisplayName(nickname);
-      await credential.user!.sendEmailVerification();
+      await firebaseUser.updateDisplayName(nickname);
+      await firebaseUser.sendEmailVerification();
       await FirebaseAuth.instance.signOut();
     } catch (e) {
       // 실패 시 Firebase 계정 롤백
       try {
-        await credential.user?.delete();
+        await firebaseUser.delete();
       } catch (e) {
         debugPrint('[Auth] 계정 롤백 실패: $e');
       }

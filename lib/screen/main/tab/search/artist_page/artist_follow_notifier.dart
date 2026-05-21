@@ -29,14 +29,22 @@ class ArtistFollowNotifier extends ChangeNotifier {
   Future<void> toggle() async {
     if (isLoading) return;
     isLoading = true;
+    final prevFollowed = isFollowed;
+    final prevCount = followCount;
+    isFollowed = !isFollowed;
+    followCount += isFollowed ? 1 : -1;
     notifyListeners();
     HapticFeedback.mediumImpact();
     try {
-      final result = isFollowed
-          ? await _followService.unfollow(artistId)
-          : await _followService.follow(artistId);
-      isFollowed = result.followed;
-      followCount = result.followerCount;
+      if (prevFollowed) {
+        await _followService.unfollow(artistId);
+      } else {
+        await _followService.follow(artistId);
+      }
+    } catch (e) {
+      isFollowed = prevFollowed;
+      followCount = prevCount;
+      debugPrint('[FollowNotifier] toggle error: $e');
     } finally {
       isLoading = false;
       notifyListeners();

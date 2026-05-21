@@ -31,8 +31,8 @@ class _ChangeNicknameState extends State<ChangeNickname> {
 
   Future<void> _updateNickname(UserProvider userProvider, int id) async {
     final nickname = nicknameController.text.trim();
-    final updated = await _userService.updateNickname(id, nickname);
-    await userProvider.setUser(updated);
+    await _userService.updateNickname(id, nickname);
+    await userProvider.fetchUser(id);
   }
 
   @override

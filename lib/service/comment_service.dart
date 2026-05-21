@@ -36,12 +36,6 @@ class CommentService {
         if (parentId != null) 'parentId': parentId,
       });
 
-  /// 댓글 좋아요 토글 → 서버 반환 상태로 UI 즉시 반영
-  Future<({bool liked, int likeCount})> toggleCommentLike(int commentId) async {
-    final response = await DioClient.dio.post('/comments/$commentId/like');
-    return (
-      liked: response.data['liked'] as bool,
-      likeCount: (response.data['likeCount'] as num).toInt(),
-    );
-  }
+  Future<void> toggleCommentLike(int commentId) =>
+      DioClient.dio.post('/comments/$commentId/like');
 }

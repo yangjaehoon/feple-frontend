@@ -7,7 +7,6 @@ import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_nickname_field.dart';
 import 'package:feple/injection.dart';
-import 'package:feple/model/user_model.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
@@ -77,8 +76,6 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
 
     setState(() => _isSaving = true);
     try {
-      User updated = user;
-
       final userService = sl<UserService>();
 
       final pickedImage = _pickedImage;
@@ -89,14 +86,14 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
             filename: pickedImage.name,
           ),
         });
-        updated = await userService.updateProfileImage(user.id, formData);
+        await userService.updateProfileImage(user.id, formData);
       }
 
       if (newNickname != user.nickname) {
-        updated = await userService.updateNickname(user.id, newNickname);
+        await userService.updateNickname(user.id, newNickname);
       }
 
-      await userProvider.setUser(updated);
+      await userProvider.fetchUser(user.id);
 
       if (!mounted) return;
       context.showSuccessSnackbar('profile_updated'.tr());

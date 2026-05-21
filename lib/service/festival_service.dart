@@ -77,10 +77,8 @@ class FestivalService {
     return response.data as bool;
   }
 
-  Future<bool> toggleLike(int festivalId) async {
-    final response = await DioClient.dio.post('/festivals/$festivalId/like');
-    return response.data as bool;
-  }
+  Future<void> toggleLike(int festivalId) =>
+      DioClient.dio.post('/festivals/$festivalId/like');
 
   Future<List<BoothModel>> fetchBooths(int festivalId) async {
     final response = await DioClient.dio.get('/festivals/$festivalId/booths');

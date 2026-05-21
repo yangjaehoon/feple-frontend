@@ -346,10 +346,13 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> signInWithKakao(BuildContext context) async {
     if (_isEmailLoading || _isKakaoLoading) return;
+    // async gap 전에 캡처 — 카카오 OAuth 브라우저/앱 복귀 시 mounted가 false일 수 있음
+    final userProvider = context.read<UserProvider>();
     setState(() { _isKakaoLoading = true; _clearErrors(); });
     try {
       final user = await AuthService.instance.loginWithKakao();
-      await _handleLoginSuccess(user);
+      await userProvider.setUser(user);
+      FcmService.instance.init().catchError((e) => debugPrint('[FCM] init failed: $e'));
     } on PlatformException catch (e) {
       debugPrint('=== 카카오 로그인 실패 에러 ===\n$e\n======================');
       if (e.code != 'CANCELED' && mounted) {

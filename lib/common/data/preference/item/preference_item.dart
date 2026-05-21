@@ -10,15 +10,11 @@ class PreferenceItem<T> {
     AppPreferences.setValue<T>(this, value);
   }
 
-  Future<bool> set(T value) {
-    return AppPreferences.setValue<T>(this, value);
-  }
+  Future<void> set(T value) => AppPreferences.setValue<T>(this, value);
 
   T get() {
     return AppPreferences.getValue<T>(this);
   }
 
-  Future<bool> delete() {
-    return AppPreferences.deleteValue<T>(this);
-  }
+  Future<void> delete() => AppPreferences.deleteValue<T>(this);
 }

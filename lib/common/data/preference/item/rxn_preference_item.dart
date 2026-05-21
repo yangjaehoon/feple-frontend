@@ -21,7 +21,7 @@ class RxnPreferenceItem<T, R extends Rxn<T>> extends NullablePreferenceItem<T> {
   }
 
   @override
-  Future<bool> set(T? value) {
+  Future<void> set(T? value) {
     _rxnValue.value = value;
     return super.set(value);
   }
@@ -39,9 +39,7 @@ class RxnPreferenceItem<T, R extends Rxn<T>> extends NullablePreferenceItem<T> {
   }
 
   @override
-  Future<bool> delete() {
-    return AppPreferences.deleteValue<T?>(this);
-  }
+  Future<void> delete() => AppPreferences.deleteValue<T?>(this);
 
   static R createRxnValue<T, R extends Rxn<T>>([T? defaultValue]) {
     switch (T) {

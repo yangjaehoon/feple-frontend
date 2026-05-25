@@ -13,6 +13,7 @@ class FestivalService {
     required bool includeEnded,
     List<String> genres = const [],
     List<String> regions = const [],
+    List<String> ageRestrictions = const [],
   }) async {
     final Map<String, dynamic> params = {
       'page': page,
@@ -21,6 +22,7 @@ class FestivalService {
     };
     if (genres.isNotEmpty) params['genres'] = genres;
     if (regions.isNotEmpty) params['regions'] = regions;
+    if (ageRestrictions.isNotEmpty) params['ageRestrictions'] = ageRestrictions;
 
     final response = await DioClient.dio.get('/festivals', queryParameters: params);
     final decoded = response.data;

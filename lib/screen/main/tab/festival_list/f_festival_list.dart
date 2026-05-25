@@ -23,7 +23,7 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
     final colors = context.appColors;
     // 필터 개수만 구독 — 페스티벌 목록 로딩과 무관하게 재빌드하지 않음
     final activeFilterCount = context.select<FestivalPreviewProvider, int>(
-      (p) => p.selectedGenres.length + p.selectedRegions.length,
+      (p) => p.selectedGenres.length + p.selectedRegions.length + p.selectedAgeRestrictions.length,
     );
 
     return Container(
@@ -176,6 +176,13 @@ class _FilterPanel extends StatelessWidget {
                     items: kRegionOptions,
                     selected: provider.selectedRegions,
                     onToggle: provider.toggleRegion,
+                  ),
+                  const SizedBox(height: 12),
+                  _FilterSection(
+                    label: 'filter_age_restriction'.tr(),
+                    items: kAgeRestrictionOptions,
+                    selected: provider.selectedAgeRestrictions,
+                    onToggle: provider.toggleAgeRestriction,
                   ),
                 ],
               ),

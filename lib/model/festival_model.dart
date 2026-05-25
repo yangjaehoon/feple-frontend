@@ -10,18 +10,22 @@ class FestivalModel with ChangeNotifier {
   final String posterUrl;
   final double? latitude;
   final double? longitude;
+  final List<String> genres;
+  final String? ageRestriction;
 
-  FestivalModel(
-      {required this.id,
-      required this.title,
-      required this.description,
-      required this.location,
-      required this.startDate,
-      required this.endDate,
-      required this.posterUrl,
-      this.latitude,
-      this.longitude,
-      });
+  FestivalModel({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.location,
+    required this.startDate,
+    required this.endDate,
+    required this.posterUrl,
+    this.latitude,
+    this.longitude,
+    this.genres = const [],
+    this.ageRestriction,
+  });
 
   factory FestivalModel.fromJson(Map<String, dynamic> json) {
     return FestivalModel(
@@ -34,6 +38,8 @@ class FestivalModel with ChangeNotifier {
       posterUrl: json['posterUrl'],
       latitude: (json['latitude'] as num?)?.toDouble(),
       longitude: (json['longitude'] as num?)?.toDouble(),
+      genres: (json['genres'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
+      ageRestriction: json['ageRestriction'] as String?,
     );
   }
 }

@@ -222,7 +222,9 @@ class _FestivalPosterState extends State<FestivalPoster> {
           softWrap: true,
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
+        _buildTagRow(),
+        const SizedBox(height: 8),
         Row(
           children: [
             Icon(Icons.calendar_today_rounded, color: colors.accentColor, size: 15),
@@ -264,6 +266,49 @@ class _FestivalPosterState extends State<FestivalPoster> {
       ],
     );
   }
+
+  Widget _buildTagRow() {
+    final tags = <Widget>[];
+
+    for (final genre in widget.poster.genres) {
+      final key = _genreI18nKey(genre);
+      if (key == null) continue;
+      tags.add(_Tag(label: key.tr()));
+    }
+
+    final age = widget.poster.ageRestriction;
+    if (age != null && age != 'NONE') {
+      final key = _ageI18nKey(age);
+      if (key != null) {
+        tags.add(_Tag(label: key.tr(), color: _ageColor(age)));
+      }
+    }
+
+    if (tags.isEmpty) return const SizedBox.shrink();
+    return Wrap(spacing: 6, runSpacing: 4, children: tags);
+  }
+
+  static String? _genreI18nKey(String genre) => switch (genre) {
+        'HIP_HOP' => 'genre_hip_hop',
+        'INDIE'   => 'genre_indie',
+        'BAND'    => 'genre_band',
+        'ETC'     => 'genre_etc',
+        _         => null,
+      };
+
+  static String? _ageI18nKey(String age) => switch (age) {
+        'AGE_12' => 'age_12',
+        'AGE_15' => 'age_15',
+        'AGE_19' => 'age_19',
+        _        => null,
+      };
+
+  static Color _ageColor(String age) => switch (age) {
+        'AGE_12' => const Color(0xFF4CAF50),
+        'AGE_15' => const Color(0xFFFF9800),
+        'AGE_19' => const Color(0xFFF44336),
+        _        => Colors.white,
+      };
 
   Widget _buildActionButtons(AbstractThemeColors colors) {
     return Row(
@@ -339,5 +384,28 @@ class _FestivalPosterState extends State<FestivalPoster> {
           duration: AppDimens.animFast,
         ),
       ];
+}
+
+class _Tag extends StatelessWidget {
+  final String label;
+  final Color color;
+
+  const _Tag({required this.label, this.color = Colors.white});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.18),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.5), width: 0.8),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color),
+      ),
+    );
+  }
 }
 

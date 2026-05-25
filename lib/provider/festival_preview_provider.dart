@@ -16,8 +16,10 @@ class FestivalPreviewProvider extends ChangeNotifier {
 
   Set<String> _selectedGenres = {};
   Set<String> _selectedRegions = {};
+  Set<String> _selectedAgeRestrictions = {};
   Set<String> get selectedGenres => Set.unmodifiable(_selectedGenres);
   Set<String> get selectedRegions => Set.unmodifiable(_selectedRegions);
+  Set<String> get selectedAgeRestrictions => Set.unmodifiable(_selectedAgeRestrictions);
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -48,9 +50,19 @@ class FestivalPreviewProvider extends ChangeNotifier {
     refresh();
   }
 
+  void toggleAgeRestriction(String ageRestriction) {
+    if (_selectedAgeRestrictions.contains(ageRestriction)) {
+      _selectedAgeRestrictions.remove(ageRestriction);
+    } else {
+      _selectedAgeRestrictions.add(ageRestriction);
+    }
+    refresh();
+  }
+
   void clearFilters() {
     _selectedGenres = {};
     _selectedRegions = {};
+    _selectedAgeRestrictions = {};
     refresh();
   }
 
@@ -78,6 +90,7 @@ class FestivalPreviewProvider extends ChangeNotifier {
         includeEnded: true,
         genres: _selectedGenres.toList(),
         regions: _selectedRegions.toList(),
+        ageRestrictions: _selectedAgeRestrictions.toList(),
       );
 
       _items.addAll(newItems);

@@ -269,37 +269,26 @@
   "youtube_open_failed": "Cannot open YouTube Music.",
   "festival_performed_count": "{} performances",
   "follower_count": "{} Followers",
-
   "booth_map_title": "Booth Map",
   "booth_food": "Food",
   "booth_alcohol": "Drinks",
   "booth_event": "Event",
-
   "filter_all": "All",
   "filter_genre": "Genre",
   "filter_region": "Region",
-
   "action_schedule": "Schedule",
   "action_gallery": "Gallery",
-
   "select_festival_required_msg": "Please select a festival.",
-
-  "confirm": "Confirm",
-
   "badge_admin": "Admin",
   "badge_artist_certified": "Artist Verified",
   "badge_festival_certified": "Festival Certified",
-
   "photo_category_daily": "Daily",
   "photo_category_sns": "SNS",
   "photo_category_other": "Other",
-
   "photo_collection_title": "Photo Collection",
-
   "reply_comment": "Reply",
   "reply_to": "reply to",
   "enter_reply": "Write a reply",
-
   "report_post": "Report Post",
   "report_comment": "Report Comment",
   "report_photo": "Report Photo",
@@ -326,7 +315,6 @@
   "timetable_hint": "Tap empty space to add · Tap card to edit",
   "no_booth": "No booths registered.",
   "photo_add": "Add photo",
-
   "song_request_button": "Request a Song",
   "song_request_title": "Request a Song",
   "song_request_desc": "Request a song you'd like to see. An admin will review and add it.",
@@ -338,7 +326,6 @@
   "song_request_title_required": "Please enter a song title.",
   "song_request_duplicate": "You have already requested this song.",
   "song_request_failed": "Failed to send request. Please try again.",
-
   "weather_title": "Festival Weather",
   "weather_sunny": "Sunny",
   "weather_cloudy": "Partly Cloudy",
@@ -351,5 +338,9 @@
   "weather_rain_prob": "Rain {}%",
   "weather_no_data": "Weather data unavailable.",
   "weather_too_early": "Weather is available\n3 days before the festival.",
-  "weather_too_early_hint": "Check back closer to the date!"
+  "weather_too_early_hint": "Check back closer to the date!",
+  "filter_age_restriction": "Age Restriction",
+  "age_12": "12+",
+  "age_15": "15+",
+  "age_19": "19+"
 }

@@ -269,37 +269,26 @@
   "youtube_open_failed": "YouTube Music을 열 수 없습니다.",
   "festival_performed_count": "{}회 공연",
   "follower_count": "팔로워 {}",
-
   "booth_map_title": "부스 지도",
   "booth_food": "음식",
   "booth_alcohol": "주류",
   "booth_event": "이벤트",
-
   "filter_all": "전체",
   "filter_genre": "장르",
   "filter_region": "지역",
-
   "action_schedule": "일정",
   "action_gallery": "갤러리",
-
   "select_festival_required_msg": "페스티벌을 선택해주세요.",
-
-  "confirm": "확인",
-
   "badge_admin": "관리자",
   "badge_artist_certified": "아티스트 인증",
   "badge_festival_certified": "페스티벌 인증 완료",
-
   "photo_category_daily": "일상 사진",
   "photo_category_sns": "SNS 사진",
   "photo_category_other": "기타",
-
   "photo_collection_title": "사진 모아보기",
-
   "reply_comment": "답글 달기",
   "reply_to": "에게 답글",
   "enter_reply": "답글을 입력하세요",
-
   "report_post": "게시글 신고",
   "report_comment": "댓글 신고",
   "report_photo": "사진 신고",
@@ -326,7 +315,6 @@
   "timetable_hint": "빈 공간을 탭해 내 일정 추가 · 내 일정 카드를 탭해 수정",
   "no_booth": "등록된 부스가 없습니다.",
   "photo_add": "사진 추가",
-
   "song_request_button": "노래 요청하기",
   "song_request_title": "노래 요청",
   "song_request_desc": "셋리스트에 없는 노래를 요청해보세요. 관리자가 검토 후 등록합니다.",
@@ -338,7 +326,6 @@
   "song_request_title_required": "노래 제목을 입력해주세요.",
   "song_request_duplicate": "이미 요청한 노래입니다.",
   "song_request_failed": "요청 전송에 실패했습니다. 다시 시도해주세요.",
-
   "weather_title": "페스티벌 날씨",
   "weather_sunny": "맑음",
   "weather_cloudy": "구름많음",
@@ -351,5 +338,9 @@
   "weather_rain_prob": "강수확률 {}%",
   "weather_no_data": "날씨 정보를 불러올 수 없습니다.",
   "weather_too_early": "페스티벌 시작 3일 전부터\n날씨를 확인할 수 있습니다.",
-  "weather_too_early_hint": "조금만 기다려 주세요!"
+  "weather_too_early_hint": "조금만 기다려 주세요!",
+  "filter_age_restriction": "연령 제한",
+  "age_12": "만 12세 이상",
+  "age_15": "만 15세 이상",
+  "age_19": "만 19세 이상"
 }

@@ -8,6 +8,7 @@ class FestivalPreview {
   final String? endDate;
   final List<String> genres;
   final String? region;
+  final String? ageRestriction;
   final double? latitude;
   final double? longitude;
 
@@ -21,6 +22,7 @@ class FestivalPreview {
     this.endDate,
     this.genres = const [],
     this.region,
+    this.ageRestriction,
     this.latitude,
     this.longitude,
   });
@@ -46,6 +48,7 @@ class FestivalPreview {
       endDate: json['endDate'] as String?,
       genres: (json['genres'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
       region: json['region'] as String?,
+      ageRestriction: json['ageRestriction'] as String?,
       latitude: (json['latitude'] as num?)?.toDouble(),
       longitude: (json['longitude'] as num?)?.toDouble(),
     );

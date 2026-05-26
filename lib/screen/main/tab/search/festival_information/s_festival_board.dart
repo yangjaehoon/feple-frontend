@@ -200,7 +200,7 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
                     labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
                     unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
                     tabs: [
-                      Tab(text: 'board'.tr()),
+                      Tab(text: 'free_board'.tr()),
                       Tab(text: 'companion_tab'.tr()),
                       Tab(text: 'ticket_tab'.tr()),
                     ],

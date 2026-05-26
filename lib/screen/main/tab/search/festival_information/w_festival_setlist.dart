@@ -1,13 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/festival_setlist_entry.dart';
 import 'package:feple/model/song_model.dart';
 import 'package:feple/service/festival_service.dart';
+import 'package:feple/service/song_service.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -41,6 +44,21 @@ class _FestivalSetlistState extends State<FestivalSetlist> {
           SnackBar(content: Text('youtube_open_failed'.tr())),
         );
       }
+    }
+  }
+
+  Future<void> _openEditSheet(FestivalSetlistEntry entry) async {
+    final result = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _SetlistEditSheet(
+        festivalId: widget.festivalId,
+        entry: entry,
+      ),
+    );
+    if (result == true && mounted) {
+      setState(() => _future = _fetch());
     }
   }
 
@@ -140,6 +158,7 @@ class _FestivalSetlistState extends State<FestivalSetlist> {
             }
           }),
           onSongTap: _openYoutubeMusic,
+          onEdit: () => _openEditSheet(entry),
         );
       }).toList(),
     );
@@ -170,6 +189,7 @@ class _ArtistSetlistTile extends StatelessWidget {
   final AbstractThemeColors colors;
   final VoidCallback onToggle;
   final void Function(String url) onSongTap;
+  final VoidCallback onEdit;
 
   const _ArtistSetlistTile({
     required this.entry,
@@ -178,6 +198,7 @@ class _ArtistSetlistTile extends StatelessWidget {
     required this.colors,
     required this.onToggle,
     required this.onSongTap,
+    required this.onEdit,
   });
 
   @override
@@ -215,6 +236,11 @@ class _ArtistSetlistTile extends StatelessWidget {
                   turns: isExpanded ? 0.5 : 0,
                   duration: AppDimens.animXFast,
                   child: Icon(Icons.keyboard_arrow_down_rounded, size: 18, color: colors.textSecondary),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: onEdit,
+                  child: Icon(Icons.edit_rounded, size: 16, color: colors.activate),
                 ),
               ],
             ),
@@ -266,6 +292,213 @@ class _ArtistSetlistTile extends StatelessWidget {
           onTap: () => onSongTap(e.value.youtubeUrl),
         );
       }).toList(),
+    );
+  }
+}
+
+class _SetlistEditSheet extends StatefulWidget {
+  final int festivalId;
+  final FestivalSetlistEntry entry;
+
+  const _SetlistEditSheet({required this.festivalId, required this.entry});
+
+  @override
+  State<_SetlistEditSheet> createState() => _SetlistEditSheetState();
+}
+
+class _SetlistEditSheetState extends State<_SetlistEditSheet> {
+  late Future<List<SongModel>> _songsFuture;
+  late Set<int> _selectedIds;
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIds = widget.entry.songs.map((s) => s.id).toSet();
+    _songsFuture = sl<SongService>().fetchSongs(widget.entry.artistId);
+  }
+
+  Future<void> _save() async {
+    setState(() => _saving = true);
+    try {
+      await sl<FestivalService>().updateSetlist(
+        widget.festivalId,
+        widget.entry.artistFestivalId,
+        _selectedIds.toList(),
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('setlist_saved'.tr())),
+        );
+        Navigator.pop(context, true);
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('setlist_save_failed'.tr())),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    return DraggableScrollableSheet(
+      initialChildSize: 0.75,
+      minChildSize: 0.4,
+      maxChildSize: 0.92,
+      builder: (_, controller) => Container(
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            const SizedBox(height: 12),
+            const BottomSheetHandle(),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  Text(
+                    widget.entry.artistName,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: colors.textTitle,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'edit_setlist'.tr(),
+                    style: TextStyle(fontSize: 13, color: colors.textSecondary),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 6),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'select_songs_hint'.tr(),
+                style: TextStyle(fontSize: 12, color: colors.textSecondary),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Expanded(child: _buildSongList(colors, controller)),
+            _buildFooter(colors),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSongList(AbstractThemeColors colors, ScrollController controller) {
+    return FutureBuilder<List<SongModel>>(
+      future: _songsFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError || snapshot.data == null || snapshot.data!.isEmpty) {
+          return Center(
+            child: Text('no_setlist'.tr(), style: TextStyle(color: colors.textSecondary)),
+          );
+        }
+        final songs = snapshot.data!;
+        return ListView.separated(
+          controller: controller,
+          itemCount: songs.length,
+          separatorBuilder: (_, __) => Divider(
+            height: 1,
+            color: colors.listDivider,
+            indent: 16,
+            endIndent: 16,
+          ),
+          itemBuilder: (_, i) {
+            final song = songs[i];
+            final checked = _selectedIds.contains(song.id);
+            return CheckboxListTile(
+              value: checked,
+              onChanged: (_) => setState(() {
+                if (checked) {
+                  _selectedIds.remove(song.id);
+                } else {
+                  _selectedIds.add(song.id);
+                }
+              }),
+              activeColor: colors.activate,
+              checkColor: colors.surface,
+              title: Text(
+                song.title,
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: colors.textTitle),
+              ),
+              secondary: song.thumbnailUrl != null
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+                      child: CachedNetworkImage(
+                        imageUrl: song.thumbnailUrl!,
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.cover,
+                        errorWidget: (_, __, ___) => _songThumbnailPlaceholder(colors),
+                      ),
+                    )
+                  : _songThumbnailPlaceholder(colors),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildFooter(AbstractThemeColors colors) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        child: Row(
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                onPressed: _saving ? null : () => Navigator.pop(context),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: colors.activate),
+                  foregroundColor: colors.activate,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                child: Text('cancel'.tr()),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: LoadingButton(
+                label: 'save'.tr(),
+                onPressed: _save,
+                isLoading: _saving,
+                backgroundColor: colors.activate,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _songThumbnailPlaceholder(AbstractThemeColors colors) {
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        color: colors.backgroundMain,
+        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+      ),
+      child: Icon(Icons.music_note_rounded, size: 16, color: colors.textSecondary),
     );
   }
 }

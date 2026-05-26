@@ -65,15 +65,15 @@ class _FestivalInformationFragmentState
                     startDate: widget.poster.startDate,
                     endDate: widget.poster.endDate,
                   ),
-                  FestivalSetlist(
-                    key: ValueKey('setlist_$_refreshKey'),
-                    festivalId: widget.poster.id,
-                  ),
                   FestivalBoothMap(
                     key: ValueKey('map_$_refreshKey'),
                     festivalId: widget.poster.id,
                     festivalLat: widget.poster.latitude,
                     festivalLng: widget.poster.longitude,
+                  ),
+                  FestivalSetlist(
+                    key: ValueKey('setlist_$_refreshKey'),
+                    festivalId: widget.poster.id,
                   ),
                 ],
               ),

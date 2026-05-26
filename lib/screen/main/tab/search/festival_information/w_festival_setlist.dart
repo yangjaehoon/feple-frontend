@@ -206,45 +206,53 @@ class _ArtistSetlistTile extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        InkWell(
-          onTap: onToggle,
-          borderRadius: BorderRadius.vertical(
-            bottom: isLast && !isExpanded ? const Radius.circular(AppDimens.cardRadius) : Radius.zero,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              children: [
-                _buildArtistAvatar(),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    entry.artistName,
-                    style: TextStyle(
-                      fontSize: AppDimens.fontSizeMd,
-                      fontWeight: FontWeight.w600,
-                      color: colors.textTitle,
-                    ),
+        Row(
+          children: [
+            Expanded(
+              child: InkWell(
+                onTap: onToggle,
+                borderRadius: BorderRadius.vertical(
+                  bottom: isLast && !isExpanded ? const Radius.circular(AppDimens.cardRadius) : Radius.zero,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 0, 12),
+                  child: Row(
+                    children: [
+                      _buildArtistAvatar(),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          entry.artistName,
+                          style: TextStyle(
+                            fontSize: AppDimens.fontSizeMd,
+                            fontWeight: FontWeight.w600,
+                            color: colors.textTitle,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        '${entry.songs.length}',
+                        style: TextStyle(fontSize: 12, color: colors.textSecondary),
+                      ),
+                      const SizedBox(width: 4),
+                      AnimatedRotation(
+                        turns: isExpanded ? 0.5 : 0,
+                        duration: AppDimens.animXFast,
+                        child: Icon(Icons.keyboard_arrow_down_rounded, size: 18, color: colors.textSecondary),
+                      ),
+                    ],
                   ),
                 ),
-                Text(
-                  '${entry.songs.length}',
-                  style: TextStyle(fontSize: 12, color: colors.textSecondary),
-                ),
-                const SizedBox(width: 4),
-                AnimatedRotation(
-                  turns: isExpanded ? 0.5 : 0,
-                  duration: AppDimens.animXFast,
-                  child: Icon(Icons.keyboard_arrow_down_rounded, size: 18, color: colors.textSecondary),
-                ),
-                const SizedBox(width: 8),
-                GestureDetector(
-                  onTap: onEdit,
-                  child: Icon(Icons.edit_rounded, size: 16, color: colors.activate),
-                ),
-              ],
+              ),
             ),
-          ),
+            GestureDetector(
+              onTap: onEdit,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                child: Icon(Icons.edit_rounded, size: 16, color: colors.activate),
+              ),
+            ),
+          ],
         ),
         if (isExpanded) _buildSongList(),
         if (!isLast)

@@ -111,4 +111,10 @@ class FestivalService {
         .map((e) => FestivalSetlistEntry.fromJson(e as Map<String, dynamic>))
         .toList();
   }
+
+  Future<void> updateSetlist(int festivalId, int artistFestivalId, List<int> songIds) =>
+      DioClient.dio.put(
+        '/festivals/$festivalId/artists/$artistFestivalId/setlist',
+        data: songIds,
+      );
 }

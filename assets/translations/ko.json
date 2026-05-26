@@ -269,6 +269,8 @@
   "setlist_saved": "셋리스트가 저장되었습니다.",
   "setlist_save_failed": "셋리스트 저장에 실패했습니다.",
   "select_songs_hint": "이 페스티벌에서 부른 곡을 선택하세요.",
+  "total_songs": "{}곡",
+  "view_all": "전체 보기",
   "no_participating_artists": "참여 아티스트가 없습니다.",
   "no_timetable": "등록된 타임테이블이 없습니다.",
   "no_schedule": "등록된 일정이 없습니다.",

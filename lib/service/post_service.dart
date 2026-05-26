@@ -103,4 +103,28 @@ class PostService {
     required String content,
   }) =>
       _createPost('/posts/festival/$festivalId', title, content);
+
+  /// 동행구하기 게시판 목록 조회
+  Future<List<Post>> fetchFestivalCompanionPosts(int festivalId) =>
+      _fetchPostList('/posts/festival/$festivalId/companion');
+
+  /// 동행구하기 게시판 글 작성
+  Future<void> createFestivalCompanionPost({
+    required int festivalId,
+    required String title,
+    required String content,
+  }) =>
+      _createPost('/posts/festival/$festivalId/companion', title, content);
+
+  /// 티켓양도 게시판 목록 조회
+  Future<List<Post>> fetchFestivalTicketPosts(int festivalId) =>
+      _fetchPostList('/posts/festival/$festivalId/ticket');
+
+  /// 티켓양도 게시판 글 작성
+  Future<void> createFestivalTicketPost({
+    required int festivalId,
+    required String title,
+    required String content,
+  }) =>
+      _createPost('/posts/festival/$festivalId/ticket', title, content);
 }

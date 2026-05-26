@@ -4,7 +4,7 @@ import 'package:feple/screen/main/tab/home/w_boards_section_skeleton.dart';
 import 'package:feple/model/favorite_board.dart';
 import 'package:feple/screen/main/tab/home/favorite_boards_prefs_manager.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_post_list.dart';
-import 'package:feple/screen/main/tab/search/festival_information/w_festival_post_list.dart';
+import 'package:feple/screen/main/tab/search/festival_information/s_festival_board.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -206,7 +206,7 @@ class _BoardTile extends StatelessWidget {
       Navigator.push(
         context,
         SlideRoute(
-          builder: (_) => FestivalPostListScreen(
+          builder: (_) => FestivalBoardScreen(
             festivalId: board.entityId,
             festivalName: board.entityName,
           ),

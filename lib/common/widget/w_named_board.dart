@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 /// 전체 목록 화면으로 이동합니다.
 class NamedBoard extends StatefulWidget {
   final String name;
+  final String? boardname;
   final IconData headerIcon;
   final Future<List<Post>> Function() fetchPosts;
   final Widget Function() postListScreenFactory;
@@ -18,6 +19,7 @@ class NamedBoard extends StatefulWidget {
   const NamedBoard({
     super.key,
     required this.name,
+    this.boardname,
     required this.headerIcon,
     required this.fetchPosts,
     required this.postListScreenFactory,
@@ -41,7 +43,7 @@ class _NamedBoardState extends State<NamedBoard> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final boardname = 'name_board'.tr(args: [widget.name]);
+    final boardname = widget.boardname ?? 'name_board'.tr(args: [widget.name]);
     return BoardPreviewCard(
       future: _postsFuture,
       headerIcon: widget.headerIcon,

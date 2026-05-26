@@ -68,7 +68,9 @@ class _FestivalSetlistFullPageState extends State<FestivalSetlistFullPage> {
     final colors = context.appColors;
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (_, __) => Navigator.pop(context, _changed),
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) Navigator.pop(context, _changed);
+      },
       child: Scaffold(
         backgroundColor: colors.backgroundMain,
         appBar: AppBar(

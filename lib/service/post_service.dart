@@ -104,6 +104,10 @@ class PostService {
   }) =>
       _createPost('/posts/festival/$festivalId', title, content);
 
+  /// 페스티벌 인기 글 조회 (likeCount 내림차순, 전체 게시판)
+  Future<List<Post>> fetchFestivalPopularPosts(int festivalId) =>
+      _fetchPostList('/posts/festival/$festivalId/popular');
+
   /// 동행구하기 게시판 목록 조회
   Future<List<Post>> fetchFestivalCompanionPosts(int festivalId) =>
       _fetchPostList('/posts/festival/$festivalId/companion');

@@ -291,6 +291,15 @@ class _ArtistSetlistTile extends StatelessWidget {
   }
 
   Widget _buildSongList() {
+    if (entry.songs.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+        child: Text(
+          'no_setlist'.tr(),
+          style: TextStyle(fontSize: 12, color: colors.textSecondary),
+        ),
+      );
+    }
     return Column(
       children: entry.songs.asMap().entries.map((e) {
         return _SongRow(

@@ -34,4 +34,22 @@ class UserEntry {
         endTime: endTime ?? this.endTime,
         color: color ?? this.color,
       );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'stageName': stageName,
+        'label': label,
+        'startTime': startTime,
+        'endTime': endTime,
+        'color': color.toARGB32(),
+      };
+
+  factory UserEntry.fromJson(Map<String, dynamic> j) => UserEntry(
+        id: j['id'] as String,
+        stageName: j['stageName'] as String,
+        label: j['label'] as String,
+        startTime: j['startTime'] as String,
+        endTime: j['endTime'] as String,
+        color: Color(j['color'] as int),
+      );
 }

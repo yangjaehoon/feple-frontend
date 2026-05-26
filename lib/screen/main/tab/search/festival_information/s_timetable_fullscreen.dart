@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/constant/timetable_colors.dart';
@@ -6,8 +8,10 @@ import 'package:feple/screen/main/tab/search/festival_information/w_timetable_en
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_fullscreen_grid.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_user_entry.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TimetableFullscreenPage extends StatefulWidget {
+  final int festivalId;
   final List<TimetableEntry> entries;
   final Set<String> followedNames;
   final List<String> dates;
@@ -15,6 +19,7 @@ class TimetableFullscreenPage extends StatefulWidget {
 
   const TimetableFullscreenPage({
     super.key,
+    required this.festivalId,
     required this.entries,
     required this.followedNames,
     required this.dates,
@@ -33,11 +38,40 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
 
   late TimetableRange _range;
 
+  String get _prefKey => 'user_timetable_entries_${widget.festivalId}';
+
   @override
   void initState() {
     super.initState();
     _selectedDate = widget.initialDate;
     _range = computeTimetableRange(widget.entries, _selectedDate);
+    _loadEntries();
+  }
+
+  Future<void> _loadEntries() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_prefKey);
+    if (raw == null || !mounted) return;
+    try {
+      final decoded = jsonDecode(raw) as Map<String, dynamic>;
+      final map = decoded.map(
+        (k, v) => MapEntry(
+          k,
+          (v as List).map((e) => UserEntry.fromJson(e as Map<String, dynamic>)).toList(),
+        ),
+      );
+      setState(() => _userEntriesMap.addAll(map));
+    } catch (e) {
+      debugPrint('[Timetable] load user entries failed: $e');
+    }
+  }
+
+  Future<void> _saveEntries() async {
+    final prefs = await SharedPreferences.getInstance();
+    final encoded = jsonEncode(
+      _userEntriesMap.map((k, v) => MapEntry(k, v.map((e) => e.toJson()).toList())),
+    );
+    await prefs.setString(_prefKey, encoded);
   }
 
   List<UserEntry> get _currentUserEntries =>
@@ -61,6 +95,7 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
       }
       _userEntriesMap[key] = list;
     });
+    _saveEntries();
   }
 
   void _remove(String id) {
@@ -69,6 +104,7 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
       _userEntriesMap[key] =
           (_userEntriesMap[key] ?? []).where((e) => e.id != id).toList();
     });
+    _saveEntries();
   }
 
   Future<void> _openAdd({String? stage, String? startTime}) async {

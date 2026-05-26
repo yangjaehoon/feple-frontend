@@ -160,6 +160,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                         context,
                         SlideRoute(
                           builder: (_) => TimetableFullscreenPage(
+                            festivalId: widget.festivalId,
                             entries: _entries,
                             followedNames: _followedNames,
                             dates: _dates,

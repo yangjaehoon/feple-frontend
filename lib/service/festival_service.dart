@@ -2,6 +2,7 @@ import 'package:feple/model/booth_model.dart';
 import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/festival_preview.dart';
+import 'package:feple/model/festival_setlist_entry.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/model/weather_model.dart';
 import 'package:feple/network/dio_client.dart';
@@ -102,5 +103,12 @@ class FestivalService {
     final response = await DioClient.dio.get('/festivals/$festivalId/weather');
     if (response.statusCode == 204 || response.data == null) return null;
     return WeatherModel.fromJson(response.data as Map<String, dynamic>);
+  }
+
+  Future<List<FestivalSetlistEntry>> fetchSetlist(int festivalId) async {
+    final response = await DioClient.dio.get('/festivals/$festivalId/setlist');
+    return (response.data as List)
+        .map((e) => FestivalSetlistEntry.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 }

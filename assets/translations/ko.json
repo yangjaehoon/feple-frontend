@@ -263,6 +263,8 @@
   "load_error": "불러오기 실패",
   "offline_banner": "인터넷 연결을 확인해주세요",
   "timetable": "타임테이블",
+  "setlist": "셋리스트",
+  "no_setlist": "등록된 셋리스트가 없습니다.",
   "no_participating_artists": "참여 아티스트가 없습니다.",
   "no_timetable": "등록된 타임테이블이 없습니다.",
   "no_schedule": "등록된 일정이 없습니다.",

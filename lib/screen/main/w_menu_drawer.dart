@@ -131,9 +131,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
             icon: Icons.headset_mic_rounded,
             onTap: () async {
               final uri = Uri.parse('https://open.kakao.com/o/guLhbJki');
-              if (await canLaunchUrl(uri)) {
-                await launchUrl(uri, mode: LaunchMode.externalApplication);
-              }
+              await launchUrl(uri, mode: LaunchMode.externalApplication);
             },
           ),
           Divider(

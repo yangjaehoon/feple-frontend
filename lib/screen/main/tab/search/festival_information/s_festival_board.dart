@@ -30,6 +30,7 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
   late final TabController _tabController;
   late final PostService _svc;
   late List<Future<List<Post>>> _futures;
+  final List<int> _tabRefreshKeys = [0, 0, 0];
 
   @override
   void initState() {
@@ -65,7 +66,10 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
       1 => _svc.fetchFestivalCompanionPosts(widget.festivalId),
       _ => _svc.fetchFestivalTicketPosts(widget.festivalId),
     };
-    setState(() => _futures[index] = future);
+    setState(() {
+      _futures[index] = future;
+      _tabRefreshKeys[index]++;
+    });
   }
 
   List<String> get _boardNames => [
@@ -104,6 +108,7 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
         try { await _futures[index]; } catch (_) {}
       },
       child: AsyncContentBuilder<List<Post>>(
+        key: ValueKey(_tabRefreshKeys[index]),
         future: _futures[index],
         onRetry: () => _refreshTab(index),
         emptyBuilder: (_) => ListView(

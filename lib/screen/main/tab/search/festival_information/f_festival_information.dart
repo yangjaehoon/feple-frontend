@@ -6,6 +6,7 @@ import 'package:feple/screen/main/tab/search/festival_information/w_festival_tim
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_artists.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_board.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_booth_map.dart';
+import 'package:feple/screen/main/tab/search/festival_information/w_festival_setlist.dart';
 import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -63,6 +64,10 @@ class _FestivalInformationFragmentState
                     festivalId: widget.poster.id,
                     startDate: widget.poster.startDate,
                     endDate: widget.poster.endDate,
+                  ),
+                  FestivalSetlist(
+                    key: ValueKey('setlist_$_refreshKey'),
+                    festivalId: widget.poster.id,
                   ),
                   FestivalBoothMap(
                     key: ValueKey('map_$_refreshKey'),

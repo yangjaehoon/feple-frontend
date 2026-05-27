@@ -59,6 +59,12 @@ class FestivalPreviewCard extends StatelessWidget {
                           ),
                         ),
                       ],
+                      if (!festival.isEnded && festival.dDaysUntil != null)
+                        Positioned(
+                          top: 6,
+                          left: 6,
+                          child: _DayBadge(dDays: festival.dDaysUntil!),
+                        ),
                     ],
                   ),
                 ),
@@ -130,6 +136,49 @@ class FestivalPreviewCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _DayBadge extends StatelessWidget {
+  final int dDays;
+  const _DayBadge({required this.dDays});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final String label;
+    final Color color;
+
+    if (dDays < 0) {
+      label = 'festival_ongoing'.tr();
+      color = Colors.green.shade600;
+    } else if (dDays == 0) {
+      label = 'd_day'.tr();
+      color = Colors.redAccent;
+    } else if (dDays <= 7) {
+      label = 'D-$dDays';
+      color = colors.activate;
+    } else {
+      label = 'D-$dDays';
+      color = colors.textSecondary;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 10,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 0.5,
+        ),
       ),
     );
   }

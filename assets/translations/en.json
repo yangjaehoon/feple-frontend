@@ -400,5 +400,7 @@
   "clear_all": "Clear All",
   "search_all": "All",
   "no_upcoming_festivals": "No upcoming festivals",
-  "following": "Following"
+  "following": "Following",
+  "festival_ongoing": "Ongoing",
+  "d_day": "D-DAY"
 }

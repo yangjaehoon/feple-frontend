@@ -400,5 +400,7 @@
   "clear_all": "전체 삭제",
   "search_all": "전체",
   "no_upcoming_festivals": "예정된 페스티벌이 없습니다",
-  "following": "팔로잉"
+  "following": "팔로잉",
+  "festival_ongoing": "진행중",
+  "d_day": "D-DAY"
 }

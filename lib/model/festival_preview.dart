@@ -27,6 +27,20 @@ class FestivalPreview {
     this.longitude,
   });
 
+  /// 오늘 기준 D-day. 음수 = 진행중, 0 = 오늘 시작, 양수 = N일 후. null = 날짜 파싱 불가 또는 종료됨
+  int? get dDaysUntil {
+    if (isEnded || startDate.isEmpty) return null;
+    try {
+      final start = DateTime.parse(startDate);
+      final today = DateTime.now();
+      final todayDate = DateTime(today.year, today.month, today.day);
+      final startDay = DateTime(start.year, start.month, start.day);
+      return startDay.difference(todayDate).inDays;
+    } catch (_) {
+      return null;
+    }
+  }
+
   bool get isEnded {
     if (endDate == null || endDate!.isEmpty) return false;
     try {

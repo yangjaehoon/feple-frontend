@@ -1,5 +1,4 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
@@ -18,7 +17,6 @@ class _ArtistSuggestionSheetState extends State<ArtistSuggestionSheet> {
   final _nameCtrl = TextEditingController();
   final _noteCtrl = TextEditingController();
   bool _submitting = false;
-  bool _submitSuccess = false;
   String? _nameError;
 
   @override
@@ -42,10 +40,8 @@ class _ArtistSuggestionSheetState extends State<ArtistSuggestionSheet> {
         note: _noteCtrl.text.trim().isEmpty ? null : _noteCtrl.text.trim(),
       );
       if (!mounted) return;
-      setState(() { _submitting = false; _submitSuccess = true; });
-      await Future.delayed(AppDimens.animSuccessDelay);
-      if (!mounted) return;
       Navigator.pop(context, true);
+      context.showSuccessSnackbar('artist_suggestion_success'.tr());
     } catch (e) {
       if (!mounted) return;
       debugPrint('artist suggestion submit error: $e');
@@ -57,7 +53,7 @@ class _ArtistSuggestionSheetState extends State<ArtistSuggestionSheet> {
             ? 'artist_suggestion_duplicate'.tr()
             : 'artist_suggestion_failed'.tr(),
       );
-      if (mounted) setState(() => _submitting = false);
+      if (mounted) setState(() { _submitting = false; });
     }
   }
 
@@ -153,7 +149,6 @@ class _ArtistSuggestionSheetState extends State<ArtistSuggestionSheet> {
         label: 'artist_suggestion_submit'.tr(),
         icon: Icons.send_rounded,
         isLoading: _submitting,
-        isSuccess: _submitSuccess,
         onPressed: _submit,
         backgroundColor: context.appColors.activate,
         height: 50,

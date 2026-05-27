@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -63,6 +64,11 @@ class _FestivalPosterState extends State<FestivalPoster> {
       final webUri = Uri.parse('https://map.kakao.com/link/search/$name');
       await launchUrl(webUri, mode: LaunchMode.externalApplication);
     }
+  }
+
+  void _shareFestival() {
+    final p = widget.poster;
+    Share.share('${p.title}\n${p.location}\n${p.startDate}');
   }
 
   void _showWeather() {
@@ -322,7 +328,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
               : Colors.white.withValues(alpha: 0.15),
         ),
         const SizedBox(width: 8),
-        FestivalActionButton(icon: Icons.calendar_month_outlined),
+        FestivalActionButton(onTap: _shareFestival, icon: Icons.share_outlined),
         const SizedBox(width: 8),
         FestivalActionButton(onTap: _showWeather, icon: Icons.cloud_outlined),
         const SizedBox(width: 8),

@@ -100,6 +100,7 @@ class _FestivalArtistsState extends State<FestivalArtists> {
         listenable: _notifier,
         builder: (context, _) {
           if (_notifier.isLoading) return _buildSkeletonRow();
+          if (_notifier.hasError) return _buildErrorRow(colors);
           if (_notifier.artists.isEmpty) return _buildEmptyRow(colors);
           return _buildArtistRow(colors);
         },
@@ -191,6 +192,35 @@ class _FestivalArtistsState extends State<FestivalArtists> {
           'no_participating_artists'.tr(),
           style: TextStyle(fontSize: 13, color: colors.textSecondary),
         ),
+      ),
+    );
+  }
+
+  Widget _buildErrorRow(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.cloud_off_outlined, size: 18, color: colors.textSecondary),
+          const SizedBox(width: 8),
+          Text(
+            'err_fetch_data'.tr(),
+            style: TextStyle(fontSize: 13, color: colors.textSecondary),
+          ),
+          const SizedBox(width: 12),
+          GestureDetector(
+            onTap: _notifier.retry,
+            child: Text(
+              'retry'.tr(),
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: colors.activate,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

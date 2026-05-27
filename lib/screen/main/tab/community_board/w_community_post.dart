@@ -33,6 +33,7 @@ class _CommunityPostState extends State<CommunityPost> {
 
   final PostService _postService = sl<PostService>();
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
 
   final List<Post> _posts = [];
   bool _loading = true;
@@ -42,6 +43,8 @@ class _CommunityPostState extends State<CommunityPost> {
   int _page = 0;
   int _loadId = 0;
   String _sort = 'latest';
+  bool _isSearching = false;
+  List<Post>? _searchResults;
 
   String get _serviceBoardType => widget.boardType;
 
@@ -58,6 +61,7 @@ class _CommunityPostState extends State<CommunityPost> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -111,6 +115,20 @@ class _CommunityPostState extends State<CommunityPost> {
     await _load();
   }
 
+  Future<void> _search(String keyword) async {
+    if (keyword.trim().isEmpty) {
+      setState(() => _searchResults = null);
+      return;
+    }
+    setState(() => _isSearching = true);
+    try {
+      final results = await _postService.searchInBoard(keyword.trim(), _serviceBoardType);
+      if (mounted) setState(() { _searchResults = results; _isSearching = false; });
+    } catch (_) {
+      if (mounted) setState(() => _isSearching = false);
+    }
+  }
+
   Widget _buildSkeletonList() {
     return ListView.separated(
       padding: const EdgeInsets.only(bottom: 80),
@@ -140,6 +158,34 @@ class _CommunityPostState extends State<CommunityPost> {
   }
 
   Widget _buildList(AbstractThemeColors colors) {
+    final displayPosts = _searchResults;
+    if (displayPosts != null) {
+      if (_isSearching) return const Center(child: CircularProgressIndicator());
+      if (displayPosts.isEmpty) {
+        return Center(
+          child: Text('no_search_results'.tr(), style: TextStyle(color: colors.textSecondary)),
+        );
+      }
+      return ListView.separated(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.only(bottom: 80),
+        itemCount: displayPosts.length,
+        itemBuilder: (context, index) {
+          final post = displayPosts[index];
+          return PostListTile(
+            post: post,
+            onTap: () async {
+              await Navigator.of(context, rootNavigator: true).push(
+                SlideRoute(builder: (_) => EnlargePost.fromPost(boardname: widget.boardname, post: post)),
+              );
+              _refresh();
+            },
+          );
+        },
+        separatorBuilder: (_, __) => Divider(thickness: 1, color: colors.listDivider),
+      );
+    }
+
     if (_hasError) {
       return Center(
         child: Column(
@@ -249,6 +295,39 @@ class _CommunityPostState extends State<CommunityPost> {
       body: Column(
         children: [
           SecondaryAppBar(title: widget.boardname),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            child: StatefulBuilder(
+              builder: (context, setSearchState) => TextField(
+                controller: _searchController,
+                onChanged: (v) {
+                  setSearchState(() {});
+                  _search(v);
+                },
+                onSubmitted: (v) => _search(v),
+                style: TextStyle(color: colors.textTitle, fontSize: 14),
+                decoration: InputDecoration(
+                  hintText: 'search_posts_hint'.tr(),
+                  prefixIcon: Icon(Icons.search_rounded, color: colors.textSecondary, size: 20),
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: Icon(Icons.close_rounded, size: 18, color: colors.textSecondary),
+                          onPressed: () {
+                            _searchController.clear();
+                            setSearchState(() {});
+                            setState(() => _searchResults = null);
+                          },
+                        )
+                      : null,
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  filled: true,
+                  fillColor: colors.surface,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+                ),
+              ),
+            ),
+          ),
           if (_isPaginated)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

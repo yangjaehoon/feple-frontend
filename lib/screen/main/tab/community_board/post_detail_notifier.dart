@@ -23,6 +23,7 @@ class PostDetailNotifier extends ChangeNotifier {
 
   void Function(String)? onCommentPosted;
   void Function(String)? onError;
+  void Function()? onPostDeleted;
 
   PostDetailNotifier({required this.postId, required int initialHeartCount}) {
     heartCount = initialHeartCount;
@@ -89,6 +90,30 @@ class PostDetailNotifier extends ChangeNotifier {
     } finally {
       isSubmitting = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> deletePost() async {
+    try {
+      await _postService.deletePost(postId);
+      onPostDeleted?.call();
+    } catch (e) {
+      debugPrint('deletePost error: $e');
+      onError?.call('post_delete_failed');
+    }
+  }
+
+  Future<void> deleteComment(int commentId) async {
+    final prev = List<CommentDetail>.from(comments);
+    comments = comments.where((c) => c.id != commentId).toList();
+    notifyListeners();
+    try {
+      await _commentService.deleteComment(commentId);
+    } catch (e) {
+      comments = prev;
+      notifyListeners();
+      debugPrint('deleteComment error: $e');
+      onError?.call('comment_delete_failed');
     }
   }
 

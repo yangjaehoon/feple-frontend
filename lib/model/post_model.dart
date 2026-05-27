@@ -15,6 +15,7 @@ class Post {
   final String? userRole; // 'USER' | 'ARTIST' | 'ADMIN'
   final bool anonymous;
   final DateTime? createdAt;
+  final int? userId;
 
   Post({
     required this.id,
@@ -33,6 +34,7 @@ class Post {
     this.userRole,
     this.anonymous = false,
     this.createdAt,
+    this.userId,
   });
 
   bool get isAdmin => userRole == 'ADMIN';
@@ -57,6 +59,7 @@ class Post {
       userRole: json['userRole'] as String?,
       anonymous: json['anonymous'] as bool? ?? false,
       createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt'] as String) : null,
+      userId: (json['userId'] as num?)?.toInt(),
     );
   }
 }

@@ -45,6 +45,7 @@ class _CommunityPostState extends State<CommunityPost> {
   String _sort = 'latest';
   bool _isSearching = false;
   List<Post>? _searchResults;
+  bool _showScrollTop = false;
 
   String get _serviceBoardType => widget.boardType;
 
@@ -66,8 +67,10 @@ class _CommunityPostState extends State<CommunityPost> {
   }
 
   void _onScroll() {
-    if (_loadingMore || !_hasMore || !_isPaginated) return;
     final pos = _scrollController.position;
+    final showTop = pos.pixels > 300;
+    if (showTop != _showScrollTop) setState(() => _showScrollTop = showTop);
+    if (_loadingMore || !_hasMore || !_isPaginated) return;
     if (pos.pixels >= pos.maxScrollExtent - 200) {
       _loadMore();
     }
@@ -270,27 +273,47 @@ class _CommunityPostState extends State<CommunityPost> {
     final colors = context.appColors;
     return Scaffold(
       backgroundColor: colors.backgroundMain,
-      floatingActionButton: WritePostFab(
-        onPressed: () async {
-          if (context.read<UserProvider>().currentUserId == null) {
-            context.showInfoSnackbar('no_login_info'.tr());
-            return;
-          }
-          await Navigator.push(
-            context,
-            SlideRoute(
-              builder: (_) => WritePostScreen(
-                title: 'write_post'.tr(),
-                onSubmit: (t, c, a, img) async {
-                  await _postService.createPost(
-                      boardType: _serviceBoardType, title: t, content: c, anonymous: a, imageObjectKey: img);
-                  AppEvents.postChanged.value++;
-                },
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (_showScrollTop) ...[
+            FloatingActionButton.small(
+              heroTag: 'scrollTop',
+              onPressed: () => _scrollController.animateTo(
+                0,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut,
               ),
+              backgroundColor: colors.surface,
+              foregroundColor: colors.textTitle,
+              elevation: 2,
+              child: const Icon(Icons.arrow_upward_rounded, size: 20),
             ),
-          );
-          _refresh();
-        },
+            const SizedBox(height: 8),
+          ],
+          WritePostFab(
+            onPressed: () async {
+              if (context.read<UserProvider>().currentUserId == null) {
+                context.showInfoSnackbar('no_login_info'.tr());
+                return;
+              }
+              await Navigator.push(
+                context,
+                SlideRoute(
+                  builder: (_) => WritePostScreen(
+                    title: 'write_post'.tr(),
+                    onSubmit: (t, c, a, img) async {
+                      await _postService.createPost(
+                          boardType: _serviceBoardType, title: t, content: c, anonymous: a, imageObjectKey: img);
+                      AppEvents.postChanged.value++;
+                    },
+                  ),
+                ),
+              );
+              _refresh();
+            },
+          ),
+        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Column(

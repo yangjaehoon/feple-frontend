@@ -34,6 +34,7 @@ class EnlargePost extends StatefulWidget {
   final String? profileImageUrl;
   final String? imageUrl;
   final DateTime? createdAt;
+  final DateTime? updatedAt;
   final int? postUserId;
 
   const EnlargePost({
@@ -49,6 +50,7 @@ class EnlargePost extends StatefulWidget {
     this.profileImageUrl,
     this.imageUrl,
     this.createdAt,
+    this.updatedAt,
     this.postUserId,
   });
 
@@ -66,6 +68,7 @@ class EnlargePost extends StatefulWidget {
         profileImageUrl = post.profileImageUrl,
         imageUrl = post.imageUrl,
         createdAt = post.createdAt,
+        updatedAt = post.updatedAt,
         postUserId = post.userId;
 
   @override
@@ -81,6 +84,7 @@ class _EnlargePostState extends State<EnlargePost> {
   late String _title;
   late String _content;
   String? _imageUrl;
+  DateTime? _updatedAt;
 
   void _setReplyTo(int commentId, String nickname) {
     setState(() {
@@ -103,6 +107,7 @@ class _EnlargePostState extends State<EnlargePost> {
     _title = widget.title;
     _content = widget.content;
     _imageUrl = widget.imageUrl;
+    _updatedAt = widget.updatedAt;
     _notifier = PostDetailNotifier(
       postId: widget.id,
       initialHeartCount: widget.heart,
@@ -209,6 +214,7 @@ class _EnlargePostState extends State<EnlargePost> {
                                 _title = t;
                                 _content = c;
                                 _imageUrl = img;
+                                _updatedAt = DateTime.now();
                               });
                               context.showSuccessSnackbar('post_updated'.tr());
                             }
@@ -346,9 +352,20 @@ class _EnlargePostState extends State<EnlargePost> {
                           ],
                         ),
                         if (widget.createdAt != null)
-                          Text(
-                            widget.createdAt!.relativeTime,
-                            style: TextStyle(fontSize: 11, color: colors.textSecondary.withValues(alpha: 0.65)),
+                          Row(
+                            children: [
+                              Text(
+                                widget.createdAt!.relativeTime,
+                                style: TextStyle(fontSize: 11, color: colors.textSecondary.withValues(alpha: 0.65)),
+                              ),
+                              if (_updatedAt != null && _updatedAt!.difference(widget.createdAt!).inSeconds > 10) ...[
+                                const SizedBox(width: 4),
+                                Text(
+                                  'edited'.tr(),
+                                  style: TextStyle(fontSize: 10, color: colors.textSecondary.withValues(alpha: 0.45)),
+                                ),
+                              ],
+                            ],
                           ),
                       ],
                     ),

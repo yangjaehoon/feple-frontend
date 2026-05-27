@@ -9,6 +9,7 @@ class CommentDetail {
   final String? profileImageUrl;
   final String content;
   final DateTime createdAt;
+  final DateTime? updatedAt;
   final bool certified;
   final String? userRole;
   final int? parentId;
@@ -23,6 +24,7 @@ class CommentDetail {
     this.profileImageUrl,
     required this.content,
     required this.createdAt,
+    this.updatedAt,
     required this.certified,
     this.userRole,
     this.parentId,
@@ -39,6 +41,7 @@ class CommentDetail {
       profileImageUrl: json['profileImageUrl'] as String?,
       content: json['content'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
+      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt'] as String) : null,
       certified: json['certified'] as bool? ?? false,
       userRole: json['userRole'] as String?,
       parentId: json['parentId'] != null ? (json['parentId'] as num).toInt() : null,
@@ -47,7 +50,7 @@ class CommentDetail {
     );
   }
 
-  CommentDetail copyWith({bool? liked, int? likeCount, String? content}) => CommentDetail(
+  CommentDetail copyWith({bool? liked, int? likeCount, String? content, DateTime? updatedAt}) => CommentDetail(
         id: id,
         postId: postId,
         userId: userId,
@@ -55,12 +58,18 @@ class CommentDetail {
         profileImageUrl: profileImageUrl,
         content: content ?? this.content,
         createdAt: createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
         certified: certified,
         userRole: userRole,
         parentId: parentId,
         likeCount: likeCount ?? this.likeCount,
         liked: liked ?? this.liked,
       );
+
+  bool get isEdited {
+    if (updatedAt == null) return false;
+    return updatedAt!.difference(createdAt).inSeconds > 10;
+  }
 
   bool get isReply => parentId != null;
 

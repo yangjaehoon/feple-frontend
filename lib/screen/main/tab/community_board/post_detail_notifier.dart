@@ -117,7 +117,7 @@ class PostDetailNotifier extends ChangeNotifier {
     final idx = comments.indexWhere((c) => c.id == commentId);
     if (idx == -1) return;
     final prev = comments[idx];
-    comments[idx] = prev.copyWith(content: newContent);
+    comments[idx] = prev.copyWith(content: newContent, updatedAt: DateTime.now());
     notifyListeners();
     try {
       await _commentService.updateComment(commentId, newContent);

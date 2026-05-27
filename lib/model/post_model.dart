@@ -15,6 +15,7 @@ class Post {
   final String? userRole; // 'USER' | 'ARTIST' | 'ADMIN'
   final bool anonymous;
   final DateTime? createdAt;
+  final DateTime? updatedAt;
   final int? userId;
   final int viewCount;
 
@@ -35,6 +36,7 @@ class Post {
     this.userRole,
     this.anonymous = false,
     this.createdAt,
+    this.updatedAt,
     this.userId,
     this.viewCount = 0,
   });
@@ -61,6 +63,7 @@ class Post {
       userRole: json['userRole'] as String?,
       anonymous: json['anonymous'] as bool? ?? false,
       createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt'] as String) : null,
+      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt'] as String) : null,
       userId: (json['userId'] as num?)?.toInt(),
       viewCount: (json['viewCount'] as num?)?.toInt() ?? 0,
     );

@@ -393,5 +393,6 @@
   "edit_comment": "댓글 수정",
   "comment_update_failed": "댓글 수정에 실패했습니다",
   "share": "공유하기",
-  "view_count": "조회수 {}"
+  "view_count": "조회수 {}",
+  "edited": "(수정됨)"
 }

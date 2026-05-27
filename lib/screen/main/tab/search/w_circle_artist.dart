@@ -198,7 +198,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
                         profileImageUrl: artist.profileImageUrl,
                       ),
                     ),
-                  ),
+                  ).then((_) => _loadFollowedIds()),
                   child: _buildArtistCard(
                     artist,
                     colors,
@@ -224,60 +224,46 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
     return Column(
       children: [
         Expanded(
-          child: Stack(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: colors.cardShadow.withValues(alpha: 0.15),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20.0),
+              boxShadow: [
+                BoxShadow(
+                  color: isFollowed
+                      ? colors.activate.withValues(alpha: 0.35)
+                      : colors.cardShadow.withValues(alpha: 0.15),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
                 ),
-                child: Hero(
-                  tag: 'artist_image_${artist.id}',
-                  child: ClipRRect(
+              ],
+            ),
+            foregroundDecoration: isFollowed
+                ? BoxDecoration(
                     borderRadius: BorderRadius.circular(20.0),
-                    child: CachedNetworkImage(
-                      imageUrl: artist.profileImageUrl,
-                      memCacheWidth: 200,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) =>
-                          const SkeletonBox(height: double.infinity),
-                      errorWidget: (_, __, ___) => Container(
-                        decoration: BoxDecoration(
-                          color: colors.activate.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Icon(Icons.person_rounded,
-                            color: colors.activate, size: 40),
-                      ),
+                    border: Border.all(color: colors.activate, width: 2.5),
+                  )
+                : null,
+            child: Hero(
+              tag: 'artist_image_${artist.id}',
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20.0),
+                child: CachedNetworkImage(
+                  imageUrl: artist.profileImageUrl,
+                  memCacheWidth: 200,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) =>
+                      const SkeletonBox(height: double.infinity),
+                  errorWidget: (_, __, ___) => Container(
+                    decoration: BoxDecoration(
+                      color: colors.activate.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(20),
                     ),
+                    child: Icon(Icons.person_rounded,
+                        color: colors.activate, size: 40),
                   ),
                 ),
               ),
-              if (isFollowed)
-                Positioned(
-                  top: 6,
-                  right: 6,
-                  child: Container(
-                    padding: const EdgeInsets.all(3),
-                    decoration: BoxDecoration(
-                      color: colors.activate,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 1.5),
-                    ),
-                    child: const Icon(
-                      Icons.check_rounded,
-                      color: Colors.white,
-                      size: 10,
-                    ),
-                  ),
-                ),
-            ],
+            ),
           ),
         ),
         const SizedBox(height: 8),

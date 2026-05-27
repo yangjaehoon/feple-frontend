@@ -37,13 +37,16 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
       return _buildSkeleton();
     }
 
+    if (previewProvider.error != null && previewProvider.items.isEmpty) {
+      return _buildError(colors, previewProvider);
+    }
+
     final items = previewProvider.items.where((f) => !f.isEnded).toList();
 
     if (items.isEmpty) {
       return _buildEmpty(colors);
     }
 
-    // Clamp page index in case items shrunk after filter
     final safeCurrentPage = _currentPage.clamp(0, items.length - 1);
 
     return Stack(
@@ -193,6 +196,35 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
     );
   }
 
+  Widget _buildError(AbstractThemeColors colors, FestivalPreviewProvider provider) {
+    return Container(
+      height: 160,
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.wifi_off_rounded,
+              size: 36, color: colors.textSecondary.withValues(alpha: 0.4)),
+          const SizedBox(height: 8),
+          Text(
+            'err_fetch_data'.tr(args: ['']),
+            style: TextStyle(fontSize: 13, color: colors.textSecondary),
+          ),
+          const SizedBox(height: 10),
+          FilledButton.icon(
+            onPressed: provider.refresh,
+            icon: const Icon(Icons.refresh_rounded, size: 16),
+            label: Text('retry'.tr(), style: const TextStyle(fontSize: 13)),
+            style: FilledButton.styleFrom(
+              backgroundColor: colors.activate,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildEmpty(AbstractThemeColors colors) {
     return Container(
       height: 160,
@@ -206,7 +238,8 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
           Text(
             'no_upcoming_festivals'.tr(),
             style: TextStyle(
-                fontSize: 14, color: colors.textSecondary.withValues(alpha: 0.6)),
+                fontSize: 14,
+                color: colors.textSecondary.withValues(alpha: 0.6)),
           ),
         ],
       ),

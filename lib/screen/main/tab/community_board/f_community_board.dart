@@ -1,3 +1,4 @@
+import 'package:feple/common/app_events.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
@@ -17,18 +18,25 @@ class CommunityBoardFragment extends StatelessWidget {
       color: context.appColors.backgroundMain,
       child: Stack(
         children: [
-          SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.only(
-                top: AppDimens.scrollPaddingTop,
-                bottom: AppDimens.scrollPaddingBottomLarge,
-              ),
-              child: const Column(
-                children: [
-                  HotBoard(),
-                  FreeBoard(),
-                  GetUserBoard(),
-                ],
+          RefreshIndicator(
+            color: context.appColors.activate,
+            onRefresh: () async {
+              AppEvents.postChanged.value++;
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Padding(
+                padding: EdgeInsets.only(
+                  top: AppDimens.scrollPaddingTop,
+                  bottom: AppDimens.scrollPaddingBottomLarge,
+                ),
+                child: const Column(
+                  children: [
+                    HotBoard(),
+                    FreeBoard(),
+                    GetUserBoard(),
+                  ],
+                ),
               ),
             ),
           ),

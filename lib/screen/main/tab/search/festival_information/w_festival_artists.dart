@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
@@ -98,9 +99,8 @@ class _FestivalArtistsState extends State<FestivalArtists> {
       child: ListenableBuilder(
         listenable: _notifier,
         builder: (context, _) {
-          if (_notifier.isLoading || _notifier.artists.isEmpty) {
-            return _buildPlaceholderRow(colors);
-          }
+          if (_notifier.isLoading) return _buildSkeletonRow();
+          if (_notifier.artists.isEmpty) return _buildEmptyRow(colors);
           return _buildArtistRow(colors);
         },
       ),
@@ -157,45 +157,39 @@ class _FestivalArtistsState extends State<FestivalArtists> {
     );
   }
 
-  Widget _buildPlaceholderRow(AbstractThemeColors colors) {
+  Widget _buildSkeletonRow() {
     return SizedBox(
       height: 80,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: 3,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: 4,
         separatorBuilder: (_, __) => const SizedBox(width: 16),
-        itemBuilder: (_, __) => SizedBox(
+        itemBuilder: (_, __) => const SizedBox(
           width: 64,
           child: Column(
             children: [
-              Container(
+              SkeletonBox(
                 width: 56,
                 height: 56,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: colors.activate.withValues(alpha: 0.08),
-                  border: Border.all(
-                    color: colors.activate.withValues(alpha: 0.2),
-                    width: 1.5,
-                  ),
-                ),
-                child: Icon(
-                  Icons.person_rounded,
-                  color: colors.activate.withValues(alpha: 0.4),
-                  size: 28,
-                ),
+                borderRadius: BorderRadius.all(Radius.circular(28)),
               ),
-              const SizedBox(height: 6),
-              Container(
-                width: 40,
-                height: 10,
-                decoration: BoxDecoration(
-                  color: colors.activate.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-              ),
+              SizedBox(height: 6),
+              SkeletonBox(width: 40, height: 10),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyRow(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Center(
+        child: Text(
+          'no_participating_artists'.tr(),
+          style: TextStyle(fontSize: 13, color: colors.textSecondary),
         ),
       ),
     );

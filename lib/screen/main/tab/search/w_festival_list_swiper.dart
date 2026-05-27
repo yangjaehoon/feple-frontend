@@ -25,9 +25,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
   int _currentPage = 0;
 
   void _onPageChanged(int newPage) {
-    setState(() {
-      _currentPage = newPage;
-    });
+    setState(() => _currentPage = newPage);
   }
 
   @override
@@ -35,36 +33,18 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
     final previewProvider = Provider.of<FestivalPreviewProvider>(context);
     final colors = context.appColors;
 
-    if (previewProvider.items.isEmpty) {
-      return SizedBox(
-        height: 300,
-        child: Stack(
-          children: [
-            SkeletonBox(height: 300, borderRadius: BorderRadius.zero),
-            Center(
-              child: SkeletonBox(
-                width: 180,
-                height: 254.5,
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
-            Positioned(
-              bottom: 12,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: SkeletonBox(
-                  width: 48,
-                  height: 14,
-                  borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
+    if (previewProvider.isLoading && previewProvider.items.isEmpty) {
+      return _buildSkeleton();
     }
+
     final items = previewProvider.items.where((f) => !f.isEnded).toList();
+
+    if (items.isEmpty) {
+      return _buildEmpty(colors);
+    }
+
+    // Clamp page index in case items shrunk after filter
+    final safeCurrentPage = _currentPage.clamp(0, items.length - 1);
 
     return Stack(
       clipBehavior: Clip.none,
@@ -76,7 +56,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
               image: DecorationImage(
                 image: ResizeImage(
                   CachedNetworkImageProvider(
-                    items[_currentPage].posterUrl,
+                    items[safeCurrentPage].posterUrl,
                   ),
                   width: 100,
                 ),
@@ -150,11 +130,13 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
                         imageUrl: item.posterUrl,
                         memCacheWidth: 360,
                         fit: BoxFit.fill,
-                        placeholder: (context, url) => const SkeletonBox(height: double.infinity),
+                        placeholder: (context, url) =>
+                            const SkeletonBox(height: double.infinity),
                         errorWidget: (context, url, error) => Container(
                           color: Colors.grey.withValues(alpha: 0.12),
                           child: Icon(Icons.broken_image_rounded,
-                              size: 36, color: Colors.grey.withValues(alpha: 0.45)),
+                              size: 36,
+                              color: Colors.grey.withValues(alpha: 0.45)),
                         ),
                       ),
                     ),
@@ -178,6 +160,56 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildSkeleton() {
+    return SizedBox(
+      height: 300,
+      child: Stack(
+        children: [
+          SkeletonBox(height: 300, borderRadius: BorderRadius.zero),
+          Center(
+            child: SkeletonBox(
+              width: 180,
+              height: 254.5,
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+          Positioned(
+            bottom: 12,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: SkeletonBox(
+                width: 48,
+                height: 14,
+                borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmpty(AbstractThemeColors colors) {
+    return Container(
+      height: 160,
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.festival_rounded,
+              size: 40, color: colors.textSecondary.withValues(alpha: 0.3)),
+          const SizedBox(height: 10),
+          Text(
+            'no_upcoming_festivals'.tr(),
+            style: TextStyle(
+                fontSize: 14, color: colors.textSecondary.withValues(alpha: 0.6)),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -12,6 +12,7 @@ import '../../../../model/artist_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/injection.dart';
 import '../../../../service/artist_service.dart';
+import '../../../../service/artist_follow_service.dart';
 import 'artist_page/f_artist_page.dart';
 
 class CircleArtistWidget extends StatefulWidget {
@@ -22,13 +23,27 @@ class CircleArtistWidget extends StatefulWidget {
 }
 
 class _CircleArtistWidgetState extends State<CircleArtistWidget> {
-  late final Future<List<Artist>> _artistsFuture;
+  late Future<List<Artist>> _artistsFuture;
   String? _selectedGenre;
+  Set<int> _followedIds = {};
 
   @override
   void initState() {
     super.initState();
     _artistsFuture = sl<ArtistService>().fetchArtists();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadFollowedIds());
+  }
+
+  Future<void> _loadFollowedIds() async {
+    if (!mounted) return;
+    final userId = context.read<UserProvider>().currentUserId;
+    if (userId == null) return;
+    try {
+      final ids = await sl<ArtistFollowService>().getFollowingIds(userId);
+      if (mounted) setState(() => _followedIds = ids);
+    } catch (e) {
+      debugPrint('[CircleArtist] follow ids load failed: $e');
+    }
   }
 
   @override
@@ -184,7 +199,11 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
                       ),
                     ),
                   ),
-                  child: _buildArtistCard(artist, colors),
+                  child: _buildArtistCard(
+                    artist,
+                    colors,
+                    isFollowed: _followedIds.contains(artist.id),
+                  ),
                 ),
               );
             },
@@ -197,40 +216,68 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
     );
   }
 
-  Widget _buildArtistCard(Artist artist, AbstractThemeColors colors) {
+  Widget _buildArtistCard(
+    Artist artist,
+    AbstractThemeColors colors, {
+    required bool isFollowed,
+  }) {
     return Column(
       children: [
         Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20.0),
-              boxShadow: [
-                BoxShadow(
-                  color: colors.cardShadow.withValues(alpha: 0.15),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Hero(
-              tag: 'artist_image_${artist.id}',
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
-                child: CachedNetworkImage(
-                  imageUrl: artist.profileImageUrl,
-                  memCacheWidth: 200,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => const SkeletonBox(height: double.infinity),
-                  errorWidget: (_, __, ___) => Container(
-                    decoration: BoxDecoration(
-                      color: colors.activate.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(20),
+          child: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: colors.cardShadow.withValues(alpha: 0.15),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
                     ),
-                    child: Icon(Icons.person_rounded, color: colors.activate, size: 40),
+                  ],
+                ),
+                child: Hero(
+                  tag: 'artist_image_${artist.id}',
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20.0),
+                    child: CachedNetworkImage(
+                      imageUrl: artist.profileImageUrl,
+                      memCacheWidth: 200,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) =>
+                          const SkeletonBox(height: double.infinity),
+                      errorWidget: (_, __, ___) => Container(
+                        decoration: BoxDecoration(
+                          color: colors.activate.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Icon(Icons.person_rounded,
+                            color: colors.activate, size: 40),
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+              if (isFollowed)
+                Positioned(
+                  top: 6,
+                  right: 6,
+                  child: Container(
+                    padding: const EdgeInsets.all(3),
+                    decoration: BoxDecoration(
+                      color: colors.activate,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 1.5),
+                    ),
+                    child: const Icon(
+                      Icons.check_rounded,
+                      color: Colors.white,
+                      size: 10,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
         const SizedBox(height: 8),
@@ -238,8 +285,8 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
           artist.name,
           style: TextStyle(
             fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: colors.textTitle,
+            fontWeight: isFollowed ? FontWeight.w700 : FontWeight.w600,
+            color: isFollowed ? colors.activate : colors.textTitle,
           ),
           textAlign: TextAlign.center,
           maxLines: 1,
@@ -252,12 +299,18 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
 
 String _genreLabel(String genre) {
   switch (genre) {
-    case 'Band': return 'genre_band'.tr();
-    case 'Hip-hop': return 'genre_hip_hop'.tr();
-    case 'Indie': return 'genre_indie'.tr();
-    case 'Ballad': return 'genre_ballad'.tr();
-    case 'R&B': return 'genre_rnb'.tr();
-    default: return 'genre_etc'.tr();
+    case 'Band':
+      return 'genre_band'.tr();
+    case 'Hip-hop':
+      return 'genre_hip_hop'.tr();
+    case 'Indie':
+      return 'genre_indie'.tr();
+    case 'Ballad':
+      return 'genre_ballad'.tr();
+    case 'R&B':
+      return 'genre_rnb'.tr();
+    default:
+      return 'genre_etc'.tr();
   }
 }
 
@@ -316,7 +369,8 @@ class _ArtistSuggestionBanner extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(Icons.chevron_right_rounded, color: colors.textSecondary, size: 20),
+            Icon(Icons.chevron_right_rounded,
+                color: colors.textSecondary, size: 20),
           ],
         ),
       ),

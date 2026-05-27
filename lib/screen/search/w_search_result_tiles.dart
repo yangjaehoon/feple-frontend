@@ -8,9 +8,41 @@ import 'package:feple/screen/main/tab/search/festival_information/f_festival_inf
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
+Widget _buildHighlightedText(
+  String text,
+  String? keyword,
+  TextStyle baseStyle,
+  Color highlightColor,
+) {
+  if (keyword == null || keyword.isEmpty) {
+    return Text(text, style: baseStyle, maxLines: 1, overflow: TextOverflow.ellipsis);
+  }
+  final lower = text.toLowerCase();
+  final lowerKw = keyword.toLowerCase();
+  final spans = <TextSpan>[];
+  int start = 0;
+  for (final match in RegExp(RegExp.escape(lowerKw)).allMatches(lower)) {
+    if (match.start > start) {
+      spans.add(TextSpan(text: text.substring(start, match.start)));
+    }
+    spans.add(TextSpan(
+      text: text.substring(match.start, match.end),
+      style: TextStyle(color: highlightColor, fontWeight: FontWeight.w700),
+    ));
+    start = match.end;
+  }
+  if (start < text.length) spans.add(TextSpan(text: text.substring(start)));
+  return RichText(
+    text: TextSpan(style: baseStyle, children: spans),
+    maxLines: 1,
+    overflow: TextOverflow.ellipsis,
+  );
+}
+
 class SearchArtistTile extends StatelessWidget {
   final dynamic data;
-  const SearchArtistTile({super.key, required this.data});
+  final String? highlightKeyword;
+  const SearchArtistTile({super.key, required this.data, this.highlightKeyword});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +62,12 @@ class SearchArtistTile extends StatelessWidget {
         child: imageUrl == null || imageUrl.isEmpty
             ? Icon(Icons.person, color: colors.textSecondary) : null,
       ),
-      title: Text(name, style: TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle)),
+      title: _buildHighlightedText(
+        name,
+        highlightKeyword,
+        TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle),
+        colors.activate,
+      ),
       subtitle: Text(genre, style: TextStyle(color: colors.textSecondary, fontSize: 12)),
       trailing: Text('follower_count'.tr(args: ['$followerCount']),
           style: TextStyle(fontSize: 11, color: colors.textSecondary)),
@@ -47,7 +84,8 @@ class SearchArtistTile extends StatelessWidget {
 
 class SearchFestivalTile extends StatelessWidget {
   final dynamic data;
-  const SearchFestivalTile({super.key, required this.data});
+  final String? highlightKeyword;
+  const SearchFestivalTile({super.key, required this.data, this.highlightKeyword});
 
   @override
   Widget build(BuildContext context) {
@@ -70,8 +108,12 @@ class SearchFestivalTile extends StatelessWidget {
               : _placeholder(colors),
         ),
       ),
-      title: Text(title, style: TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle),
-          maxLines: 1, overflow: TextOverflow.ellipsis),
+      title: _buildHighlightedText(
+        title,
+        highlightKeyword,
+        TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle),
+        colors.activate,
+      ),
       subtitle: Text('$location · $startDate',
           style: TextStyle(color: colors.textSecondary, fontSize: 12)),
       onTap: () => Navigator.push(context, SlideRoute(
@@ -100,7 +142,8 @@ class SearchFestivalTile extends StatelessWidget {
 
 class SearchPostTile extends StatelessWidget {
   final dynamic data;
-  const SearchPostTile({super.key, required this.data});
+  final String? highlightKeyword;
+  const SearchPostTile({super.key, required this.data, this.highlightKeyword});
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +154,12 @@ class SearchPostTile extends StatelessWidget {
     final likeCount = data['likeCount'] as int? ?? 0;
     final commentCount = data['commentCount'] as int? ?? 0;
     final nickname = data['nickname'] as String? ?? '';
-    final id = data['id'] as int? ?? 0;
+    final id = (data['id'] as num?)?.toInt() ?? 0;
+    final profileImageUrl = data['profileImageUrl'] as String?;
+    final imageUrl = data['imageUrl'] as String?;
+    final postUserId = (data['userId'] as num?)?.toInt();
+    final createdAtStr = data['createdAt'] as String?;
+    final updatedAtStr = data['updatedAt'] as String?;
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
@@ -124,8 +172,12 @@ class SearchPostTile extends StatelessWidget {
         ),
         child: Icon(Icons.article_rounded, color: colors.activate, size: 22),
       ),
-      title: Text(title, style: TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle),
-          maxLines: 1, overflow: TextOverflow.ellipsis),
+      title: _buildHighlightedText(
+        title,
+        highlightKeyword,
+        TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle),
+        colors.activate,
+      ),
       subtitle: Text(content, style: TextStyle(color: colors.textSecondary, fontSize: 12),
           maxLines: 1, overflow: TextOverflow.ellipsis),
       trailing: Column(
@@ -153,6 +205,11 @@ class SearchPostTile extends StatelessWidget {
           title: title,
           content: content,
           heart: likeCount,
+          profileImageUrl: profileImageUrl,
+          imageUrl: imageUrl,
+          postUserId: postUserId,
+          createdAt: createdAtStr != null ? DateTime.tryParse(createdAtStr) : null,
+          updatedAt: updatedAtStr != null ? DateTime.tryParse(updatedAtStr) : null,
         ),
       )),
     );

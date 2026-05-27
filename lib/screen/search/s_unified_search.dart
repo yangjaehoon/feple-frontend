@@ -6,6 +6,7 @@ import 'package:feple/injection.dart';
 import 'package:feple/screen/search/w_search_result_tiles.dart';
 import 'package:feple/service/search_service.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UnifiedSearchScreen extends StatefulWidget {
   const UnifiedSearchScreen({super.key});
@@ -14,11 +15,16 @@ class UnifiedSearchScreen extends StatefulWidget {
   State<UnifiedSearchScreen> createState() => _UnifiedSearchScreenState();
 }
 
-class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
+class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
+    with SingleTickerProviderStateMixin {
+  static const _prefsKey = 'feple_recent_searches';
+  static const _maxRecent = 10;
+
   final _searchService = sl<SearchService>();
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
   Timer? _debounce;
+  late final TabController _tabController;
 
   bool _loading = false;
   bool _searched = false;
@@ -28,20 +34,53 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
   List<dynamic> _festivals = [];
   List<dynamic> _posts = [];
   List<SearchSuggestion> _suggestions = [];
+  List<String> _recentSearches = [];
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 4, vsync: this);
     _controller.addListener(_onTextChanged);
+    _loadRecentSearches();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _focusNode.requestFocus();
     });
   }
 
+  // ── recent searches ──────────────────────────────────────────────────────
+
+  Future<void> _loadRecentSearches() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (mounted) setState(() => _recentSearches = prefs.getStringList(_prefsKey) ?? []);
+  }
+
+  Future<void> _addRecentSearch(String keyword) async {
+    if (keyword.trim().isEmpty) return;
+    final prefs = await SharedPreferences.getInstance();
+    final list = List<String>.from(_recentSearches)..remove(keyword);
+    list.insert(0, keyword);
+    if (list.length > _maxRecent) list.removeLast();
+    await prefs.setStringList(_prefsKey, list);
+    if (mounted) setState(() => _recentSearches = list);
+  }
+
+  Future<void> _removeRecentSearch(String keyword) async {
+    final prefs = await SharedPreferences.getInstance();
+    final list = List<String>.from(_recentSearches)..remove(keyword);
+    await prefs.setStringList(_prefsKey, list);
+    if (mounted) setState(() => _recentSearches = list);
+  }
+
+  Future<void> _clearRecentSearches() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_prefsKey);
+    if (mounted) setState(() => _recentSearches = []);
+  }
+
+  // ── search ────────────────────────────────────────────────────────────────
+
   void _onTextChanged() {
-    setState(() {
-      _searched = false;
-    });
+    setState(() => _searched = false);
     _debounce?.cancel();
     if (_controller.text.trim().isEmpty) {
       setState(() => _suggestions = []);
@@ -57,9 +96,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
     try {
       final results = await _searchService.suggestions(keyword);
       if (mounted) setState(() => _suggestions = results);
-    } catch (_) {
-      // 연관검색어 실패는 무시
-    }
+    } catch (_) {}
   }
 
   Future<void> _search(String keyword) async {
@@ -72,14 +109,16 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
       _hasError = false;
       _suggestions = [];
     });
+    await _addRecentSearch(keyword.trim());
     try {
       final result = await _searchService.search(keyword);
       if (mounted) {
+        _tabController.animateTo(0);
         setState(() {
-          _artists   = result.artists;
+          _artists = result.artists;
           _festivals = result.festivals;
-          _posts     = result.posts;
-          _loading   = false;
+          _posts = result.posts;
+          _loading = false;
         });
       }
     } catch (e) {
@@ -97,11 +136,14 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
   @override
   void dispose() {
     _debounce?.cancel();
+    _tabController.dispose();
     _controller.removeListener(_onTextChanged);
     _controller.dispose();
     _focusNode.dispose();
     super.dispose();
   }
+
+  // ── build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -175,14 +217,88 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
       return Center(child: CircularProgressIndicator(color: colors.loadingIndicator));
     }
     if (_searched) return _hasError ? _buildError() : _buildResults(colors);
-    if (_controller.text.isEmpty) return _buildEmptyHint();
+    if (_controller.text.isEmpty) return _buildRecentSearches(colors);
     return _buildSuggestions(colors);
   }
 
+  Widget _buildRecentSearches(AbstractThemeColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 8, 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'recent_searches'.tr(),
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: colors.textSecondary,
+                ),
+              ),
+              if (_recentSearches.isNotEmpty)
+                TextButton(
+                  onPressed: _clearRecentSearches,
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(
+                    'clear_all'.tr(),
+                    style: TextStyle(fontSize: 12, color: colors.textSecondary),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        if (_recentSearches.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Text(
+              'no_recent_searches'.tr(),
+              style: TextStyle(fontSize: 13, color: colors.textSecondary.withValues(alpha: 0.6)),
+            ),
+          )
+        else
+          Expanded(
+            child: ListView.builder(
+              padding: EdgeInsets.zero,
+              itemCount: _recentSearches.length,
+              itemBuilder: (_, index) {
+                final keyword = _recentSearches[index];
+                return ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                  dense: true,
+                  leading: Icon(Icons.history_rounded, size: 18, color: colors.textSecondary),
+                  title: Text(
+                    keyword,
+                    style: TextStyle(fontSize: 14, color: colors.textTitle),
+                  ),
+                  trailing: IconButton(
+                    icon: Icon(Icons.close_rounded, size: 16, color: colors.textSecondary),
+                    onPressed: () => _removeRecentSearch(keyword),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                  onTap: () {
+                    _controller.text = keyword;
+                    _controller.selection =
+                        TextSelection.collapsed(offset: keyword.length);
+                    _search(keyword);
+                  },
+                );
+              },
+            ),
+          ),
+      ],
+    );
+  }
+
   Widget _buildSuggestions(AbstractThemeColors colors) {
-    if (_suggestions.isEmpty) {
-      return const SizedBox.shrink();
-    }
+    if (_suggestions.isEmpty) return const SizedBox.shrink();
     return ListView.separated(
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: _suggestions.length,
@@ -202,7 +318,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
             color: colors.textSecondary,
             size: 20,
           ),
-          title: _buildHighlightedText(suggestion.label, _controller.text.trim(), colors),
+          title: _buildHighlightedSuggestion(suggestion.label, _controller.text.trim(), colors),
           trailing: Icon(Icons.north_west_rounded, size: 16, color: colors.textSecondary),
           onTap: () => _selectSuggestion(suggestion.label),
         );
@@ -210,7 +326,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
     );
   }
 
-  Widget _buildHighlightedText(String label, String query, AbstractThemeColors colors) {
+  Widget _buildHighlightedSuggestion(String label, String query, AbstractThemeColors colors) {
     final lowerLabel = label.toLowerCase();
     final lowerQuery = query.toLowerCase();
     final matchIndex = lowerLabel.indexOf(lowerQuery);
@@ -221,14 +337,10 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
       text: TextSpan(
         style: TextStyle(color: colors.textTitle, fontSize: 15),
         children: [
-          if (matchIndex > 0)
-            TextSpan(text: label.substring(0, matchIndex)),
+          if (matchIndex > 0) TextSpan(text: label.substring(0, matchIndex)),
           TextSpan(
             text: label.substring(matchIndex, matchIndex + query.length),
-            style: TextStyle(
-              color: colors.activate,
-              fontWeight: FontWeight.w700,
-            ),
+            style: TextStyle(color: colors.activate, fontWeight: FontWeight.w700),
           ),
           if (matchIndex + query.length < label.length)
             TextSpan(text: label.substring(matchIndex + query.length)),
@@ -244,34 +356,111 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
     );
   }
 
-  Widget _buildEmptyHint() {
-    return EmptyState(icon: Icons.search_rounded, title: 'search_hint'.tr());
-  }
-
   Widget _buildResults(AbstractThemeColors colors) {
     final total = _artists.length + _festivals.length + _posts.length;
     if (total == 0) {
       return EmptyState(icon: Icons.search_off_rounded, title: 'search_no_result'.tr());
     }
 
+    final keyword = _controller.text.trim();
+
+    return Column(
+      children: [
+        _buildTabBar(colors),
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildAllTab(colors, keyword),
+              _buildCategoryTab(
+                colors,
+                items: _artists,
+                builder: (d) => SearchArtistTile(data: d, highlightKeyword: keyword),
+                emptyIcon: Icons.person_search_rounded,
+              ),
+              _buildCategoryTab(
+                colors,
+                items: _festivals,
+                builder: (d) => SearchFestivalTile(data: d, highlightKeyword: keyword),
+                emptyIcon: Icons.festival_rounded,
+              ),
+              _buildCategoryTab(
+                colors,
+                items: _posts,
+                builder: (d) => SearchPostTile(data: d, highlightKeyword: keyword),
+                emptyIcon: Icons.article_rounded,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTabBar(AbstractThemeColors colors) {
+    final labels = [
+      'search_all'.tr(),
+      'search_artists'.tr(),
+      'search_festivals'.tr(),
+      'search_posts'.tr(),
+    ];
+    final counts = [null, _artists.length, _festivals.length, _posts.length];
+
+    return TabBar(
+      controller: _tabController,
+      isScrollable: true,
+      tabAlignment: TabAlignment.start,
+      labelColor: colors.activate,
+      unselectedLabelColor: colors.textSecondary,
+      indicatorColor: colors.activate,
+      indicatorWeight: 2,
+      labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+      unselectedLabelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w400),
+      tabs: List.generate(labels.length, (i) {
+        final count = counts[i];
+        return Tab(
+          text: count != null && count > 0 ? '${labels[i]} ($count)' : labels[i],
+        );
+      }),
+    );
+  }
+
+  Widget _buildAllTab(AbstractThemeColors colors, String keyword) {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
       children: [
         if (_artists.isNotEmpty) ...[
           _sectionHeader('search_artists'.tr(), _artists.length, colors),
-          ..._artists.map((artist) => SearchArtistTile(data: artist)),
+          ..._artists.map((d) => SearchArtistTile(data: d, highlightKeyword: keyword)),
           const SizedBox(height: 16),
         ],
         if (_festivals.isNotEmpty) ...[
           _sectionHeader('search_festivals'.tr(), _festivals.length, colors),
-          ..._festivals.map((festival) => SearchFestivalTile(data: festival)),
+          ..._festivals.map((d) => SearchFestivalTile(data: d, highlightKeyword: keyword)),
           const SizedBox(height: 16),
         ],
         if (_posts.isNotEmpty) ...[
           _sectionHeader('search_posts'.tr(), _posts.length, colors),
-          ..._posts.map((post) => SearchPostTile(data: post)),
+          ..._posts.map((d) => SearchPostTile(data: d, highlightKeyword: keyword)),
         ],
       ],
+    );
+  }
+
+  Widget _buildCategoryTab(
+    AbstractThemeColors colors, {
+    required List<dynamic> items,
+    required Widget Function(dynamic) builder,
+    required IconData emptyIcon,
+  }) {
+    if (items.isEmpty) {
+      return EmptyState(icon: emptyIcon, title: 'search_no_result'.tr());
+    }
+    return ListView.separated(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+      itemCount: items.length,
+      itemBuilder: (_, i) => builder(items[i]),
+      separatorBuilder: (_, __) => Divider(height: 1, color: colors.listDivider),
     );
   }
 
@@ -280,12 +469,18 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen> {
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         children: [
-          Container(width: 3, height: 18,
-              decoration: BoxDecoration(
-                  color: colors.sectionBarColor,
-                  borderRadius: BorderRadius.circular(AppDimens.barRadius))),
+          Container(
+            width: 3,
+            height: 18,
+            decoration: BoxDecoration(
+              color: colors.sectionBarColor,
+              borderRadius: BorderRadius.circular(AppDimens.barRadius),
+            ),
+          ),
           const SizedBox(width: 8),
-          Text(title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: colors.textTitle)),
+          Text(title,
+              style: TextStyle(
+                  fontSize: 15, fontWeight: FontWeight.w800, color: colors.textTitle)),
           const SizedBox(width: 6),
           Text('($count)', style: TextStyle(fontSize: 13, color: colors.textSecondary)),
         ],

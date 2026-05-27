@@ -394,5 +394,9 @@
   "comment_update_failed": "Failed to update comment",
   "share": "Share",
   "view_count": "Views {}",
-  "edited": "(edited)"
+  "edited": "(edited)",
+  "recent_searches": "Recent Searches",
+  "no_recent_searches": "No recent searches",
+  "clear_all": "Clear All",
+  "search_all": "All"
 }

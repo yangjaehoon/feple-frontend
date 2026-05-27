@@ -394,5 +394,9 @@
   "comment_update_failed": "댓글 수정에 실패했습니다",
   "share": "공유하기",
   "view_count": "조회수 {}",
-  "edited": "(수정됨)"
+  "edited": "(수정됨)",
+  "recent_searches": "최근 검색어",
+  "no_recent_searches": "최근 검색어가 없습니다",
+  "clear_all": "전체 삭제",
+  "search_all": "전체"
 }

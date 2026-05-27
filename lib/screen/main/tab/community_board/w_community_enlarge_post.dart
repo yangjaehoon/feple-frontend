@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_inline_badge.dart';
+import 'package:feple/common/widget/w_profile_avatar.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/common/widget/w_report_sheet.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
@@ -23,6 +24,8 @@ class EnlargePost extends StatefulWidget {
   final int heart;
   final bool certified;
   final String? userRole;
+  final String? profileImageUrl;
+  final DateTime? createdAt;
 
   const EnlargePost({
     super.key,
@@ -34,6 +37,8 @@ class EnlargePost extends StatefulWidget {
     required this.heart,
     this.certified = false,
     this.userRole,
+    this.profileImageUrl,
+    this.createdAt,
   });
 
   EnlargePost.fromPost({
@@ -46,7 +51,9 @@ class EnlargePost extends StatefulWidget {
         content = post.content,
         heart = post.likeCount,
         certified = post.certified,
-        userRole = post.userRole;
+        userRole = post.userRole,
+        profileImageUrl = post.profileImageUrl,
+        createdAt = post.createdAt;
 
   @override
   State<EnlargePost> createState() => _EnlargePostState();
@@ -177,18 +184,39 @@ class _EnlargePostState extends State<EnlargePost> {
                     color: colors.textTitle,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 12),
                 Row(
                   children: [
-                    Text(
-                      widget.nickname,
-                      style: TextStyle(
-                          fontSize: 13, color: colors.textSecondary),
-                    ),
-                    InlineBadge(
-                      userRole: widget.userRole,
+                    ProfileAvatar(
+                      imageUrl: widget.profileImageUrl,
+                      nickname: widget.nickname,
                       certified: widget.certified,
-                      size: 14,
+                      userRole: widget.userRole,
+                      radius: 16,
+                    ),
+                    const SizedBox(width: 10),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              widget.nickname,
+                              style: TextStyle(fontSize: 13, color: colors.textSecondary, fontWeight: FontWeight.w600),
+                            ),
+                            InlineBadge(
+                              userRole: widget.userRole,
+                              certified: widget.certified,
+                              size: 14,
+                            ),
+                          ],
+                        ),
+                        if (widget.createdAt != null)
+                          Text(
+                            widget.createdAt!.relativeTime,
+                            style: TextStyle(fontSize: 11, color: colors.textSecondary.withValues(alpha: 0.65)),
+                          ),
+                      ],
                     ),
                   ],
                 ),

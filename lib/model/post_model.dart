@@ -13,6 +13,7 @@ class Post {
   final bool certified;
   final String? userRole; // 'USER' | 'ARTIST' | 'ADMIN'
   final bool anonymous;
+  final DateTime? createdAt;
 
   Post({
     required this.id,
@@ -29,6 +30,7 @@ class Post {
     this.certified = false,
     this.userRole,
     this.anonymous = false,
+    this.createdAt,
   });
 
   bool get isAdmin => userRole == 'ADMIN';
@@ -51,6 +53,7 @@ class Post {
       certified: json['certified'] as bool? ?? false,
       userRole: json['userRole'] as String?,
       anonymous: json['anonymous'] as bool? ?? false,
+      createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt'] as String) : null,
     );
   }
 }

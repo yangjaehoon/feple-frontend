@@ -20,8 +20,9 @@ import '../../../../provider/user_provider.dart';
 
 class CommunityPost extends StatefulWidget {
   final String boardname;
+  final String boardType;
 
-  const CommunityPost({super.key, required this.boardname});
+  const CommunityPost({super.key, required this.boardname, required this.boardType});
 
   @override
   State<CommunityPost> createState() => _CommunityPostState();
@@ -41,12 +42,7 @@ class _CommunityPostState extends State<CommunityPost> {
   int _page = 0;
   int _loadId = 0;
 
-  String get _serviceBoardType {
-    if (widget.boardname == 'companion_board'.tr()) return BoardTypes.mate;
-    if (widget.boardname == 'hot_board'.tr()) return BoardTypes.hot;
-    if (widget.boardname == 'free_board'.tr()) return BoardTypes.free;
-    return widget.boardname;
-  }
+  String get _serviceBoardType => widget.boardType;
 
   bool get _isPaginated =>
       _serviceBoardType == BoardTypes.free || _serviceBoardType == BoardTypes.mate;
@@ -165,7 +161,21 @@ class _CommunityPostState extends State<CommunityPost> {
 
     if (_posts.isEmpty) {
       return Center(
-        child: Text('no_posts_yet'.tr(), style: TextStyle(color: colors.textSecondary)),
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.chat_bubble_outline_rounded, size: 48, color: colors.textSecondary.withValues(alpha: 0.3)),
+              const SizedBox(height: 12),
+              Text(
+                'be_first_to_discuss'.tr(args: [widget.boardname]),
+                style: TextStyle(fontSize: 14, color: colors.textSecondary),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
       );
     }
 

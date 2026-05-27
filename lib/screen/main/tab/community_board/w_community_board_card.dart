@@ -71,7 +71,7 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
       onHeaderTap: () => Navigator.push(
         context,
         SlideRoute(
-          builder: (_) => CommunityPost(boardname: widget.boardname),
+          builder: (_) => CommunityPost(boardname: widget.boardname, boardType: widget.serviceBoardType),
         ),
       ),
       onPostTap: (context, post) => Navigator.of(context, rootNavigator: true).push(

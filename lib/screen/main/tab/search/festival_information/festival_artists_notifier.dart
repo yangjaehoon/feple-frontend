@@ -12,6 +12,7 @@ class FestivalArtistsNotifier extends ChangeNotifier {
   List<FestivalArtistItem> artists = [];
   Set<int> followedIds = {};
   bool isLoading = true;
+  bool hasError = false;
   void Function(String)? onError;
 
   FestivalArtistsNotifier({
@@ -23,6 +24,13 @@ class FestivalArtistsNotifier extends ChangeNotifier {
         _followService = followService;
 
   bool isFollowed(int artistId) => followedIds.contains(artistId);
+
+  Future<void> retry() async {
+    hasError = false;
+    isLoading = true;
+    notifyListeners();
+    await fetch();
+  }
 
   Future<void> fetch() async {
     try {
@@ -46,6 +54,7 @@ class FestivalArtistsNotifier extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       isLoading = false;
+      hasError = true;
       notifyListeners();
       debugPrint('festival artists fetch error: $e');
       onError?.call('err_fetch_data');

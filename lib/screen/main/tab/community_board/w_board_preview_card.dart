@@ -4,6 +4,7 @@ import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
+import 'package:feple/screen/main/tab/community_board/w_like_comment_row.dart';
 import 'package:flutter/material.dart';
 
 /// 아티스트·페스티벌·커뮤니티 게시판 카드에서 공유하는 미리보기 카드 위젯.
@@ -75,28 +76,11 @@ class BoardPreviewCard extends StatelessWidget {
   }
 
   List<Widget> _defaultTrailing(Post post, AbstractThemeColors colors) => [
-        const Icon(Icons.favorite_border_rounded,
-            color: AppColors.kawaiiPink, size: AppDimens.iconSizeLg),
-        const SizedBox(width: 4),
-        Text(
-          post.likeCount.toString(),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeMd,
-            color: colors.textTitle,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(width: 10),
-        Icon(Icons.chat_bubble_outline_rounded,
-            color: colors.activate, size: AppDimens.iconSizeMd),
-        const SizedBox(width: 4),
-        Text(
-          post.commentCount.toString(),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeMd,
-            color: colors.textTitle,
-            fontWeight: FontWeight.w600,
-          ),
+        PostStatRow(
+          likeCount: post.likeCount,
+          commentCount: post.commentCount,
+          scrapCount: post.scrapCount,
+          compact: true,
         ),
       ];
 

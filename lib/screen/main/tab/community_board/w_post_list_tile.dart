@@ -33,11 +33,22 @@ class PostListTile extends StatelessWidget {
           fontWeight: FontWeight.w600,
         ),
       ),
-      subtitle: Text(
-        post.content,
-        style: TextStyle(color: colors.textSecondary),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            post.content,
+            style: TextStyle(color: colors.textSecondary),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          if (post.createdAt != null)
+            Text(
+              post.createdAt!.relativeTime,
+              style: TextStyle(fontSize: 11, color: colors.textSecondary.withValues(alpha: 0.6)),
+            ),
+        ],
       ),
       trailing: PostStatRow(
         likeCount: post.likeCount,

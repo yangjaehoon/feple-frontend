@@ -147,6 +147,8 @@ class _HomeFragmentState extends State<HomeFragment> {
         ),
         HomeArtistsSection(
           artists: _orderedArtists,
+          hasError: _notifier.hasError,
+          onRetry: _notifier.retry,
           onTap: (artist) async {
             await Navigator.push(
               context,
@@ -170,6 +172,8 @@ class _HomeFragmentState extends State<HomeFragment> {
         ),
         HomeFestivalsSection(
           festivals: _orderedFestivals,
+          hasError: _notifier.hasError,
+          onRetry: _notifier.retry,
           onTap: (festival) async {
             await Navigator.push(
               context,
@@ -179,7 +183,9 @@ class _HomeFragmentState extends State<HomeFragment> {
           },
         ),
         const SizedBox(height: 8),
-        if (_notifier.boards == null)
+        if (_notifier.hasError)
+          const SizedBox.shrink()
+        else if (_notifier.boards == null)
           const BoardsSectionSkeleton()
         else
           FavoriteBoardsSection(

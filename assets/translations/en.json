@@ -352,6 +352,7 @@
   "artist_suggestion_name_required": "Please enter an artist name.",
   "artist_suggestion_duplicate": "You have already requested this artist.",
   "artist_suggestion_failed": "Failed to submit request. Please try again.",
+  "artist_suggestion_success": "Request submitted! We'll notify you after review.",
   "weather_title": "Festival Weather",
   "weather_sunny": "Sunny",
   "weather_cloudy": "Partly Cloudy",

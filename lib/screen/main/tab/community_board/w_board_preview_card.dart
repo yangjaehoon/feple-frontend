@@ -20,6 +20,7 @@ class BoardPreviewCard extends StatelessWidget {
       trailingBuilder;
   final VoidCallback? onRetry;
   final double? height;
+  final String? emptyHint;
 
   const BoardPreviewCard({
     super.key,
@@ -32,6 +33,7 @@ class BoardPreviewCard extends StatelessWidget {
     this.trailingBuilder,
     this.onRetry,
     this.height,
+    this.emptyHint,
   });
 
   @override
@@ -137,18 +139,19 @@ class BoardPreviewCard extends StatelessWidget {
       loadingBuilder: (_) => _buildSkeletonList(),
       onRetry: onRetry,
       emptyBuilder: (_) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: AppDimens.paddingHorizontal),
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.article_outlined,
+              Icon(Icons.chat_bubble_outline_rounded,
                   size: 32,
                   color: colors.textSecondary.withValues(alpha: 0.3)),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               Text(
-                'no_posts_yet'.tr(),
+                emptyHint ?? 'no_posts_yet'.tr(),
                 style: TextStyle(fontSize: 13, color: colors.textSecondary),
+                textAlign: TextAlign.center,
               ),
             ],
           ),

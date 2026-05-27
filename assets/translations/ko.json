@@ -79,6 +79,7 @@
   "like_failed": "좋아요 처리에 실패했습니다.",
   "see_more": "더보기",
   "no_posts_yet": "아직 게시글이 없습니다.",
+  "be_first_to_discuss": "가장 먼저 {}에 대한 이야기를 나눠보세요",
   "artist": "아티스트",
   "artist_load_failed": "아티스트 정보를 불러오지 못했습니다.",
   "name_board_write": "{} 게시판 글쓰기",

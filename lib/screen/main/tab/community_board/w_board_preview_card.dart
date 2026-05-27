@@ -49,7 +49,7 @@ class BoardPreviewCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius:
-            const BorderRadius.all(Radius.circular(AppDimens.cardRadius)),
+            const BorderRadius.all(Radius.circular(AppDimens.cardRadiusTiny)),
         boxShadow: [
           BoxShadow(
             color: colors.cardShadow.withValues(alpha: 0.12),

@@ -115,11 +115,13 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
               childAspectRatio: 0.75,
             ),
             itemBuilder: (_, __) => Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: const [
-                Expanded(
+                AspectRatio(
+                  aspectRatio: 1.0,
                   child: SkeletonBox(
                     height: double.infinity,
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
                   ),
                 ),
                 SizedBox(height: 8),
@@ -222,11 +224,13 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
     required bool isFollowed,
   }) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Expanded(
+        AspectRatio(
+          aspectRatio: 1.0,
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20.0),
+              borderRadius: BorderRadius.circular(12.0),
               boxShadow: [
                 BoxShadow(
                   color: isFollowed
@@ -239,14 +243,14 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
             ),
             foregroundDecoration: isFollowed
                 ? BoxDecoration(
-                    borderRadius: BorderRadius.circular(20.0),
+                    borderRadius: BorderRadius.circular(12.0),
                     border: Border.all(color: colors.activate, width: 2.5),
                   )
                 : null,
             child: Hero(
               tag: 'artist_image_${artist.id}',
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
+                borderRadius: BorderRadius.circular(12.0),
                 child: CachedNetworkImage(
                   imageUrl: artist.profileImageUrl,
                   memCacheWidth: 200,
@@ -256,7 +260,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
                   errorWidget: (_, __, ___) => Container(
                     decoration: BoxDecoration(
                       color: colors.activate.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(Icons.person_rounded,
                         color: colors.activate, size: 40),

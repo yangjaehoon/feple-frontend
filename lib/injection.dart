@@ -15,6 +15,7 @@ import 'service/post_service.dart';
 import 'service/report_service.dart';
 import 'service/scrap_service.dart';
 import 'service/search_service.dart';
+import 'service/artist_suggestion_service.dart';
 import 'service/song_request_service.dart';
 import 'service/song_service.dart';
 import 'service/user_activity_service.dart';
@@ -28,6 +29,7 @@ void setupDependencies() {
   sl.registerLazySingleton<FcmService>(() => FcmService.instance);
 
   sl.registerLazySingleton<ArtistFollowService>(() => ArtistFollowService());
+  sl.registerLazySingleton<ArtistSuggestionService>(() => ArtistSuggestionService());
   sl.registerLazySingleton<ArtistPhotoService>(() => ArtistPhotoService());
   sl.registerLazySingleton<ArtistScheduleService>(() => ArtistScheduleService());
   sl.registerLazySingleton<ArtistService>(() => ArtistService());

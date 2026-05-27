@@ -4,7 +4,10 @@ import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/provider/user_provider.dart';
+import 'package:feple/screen/main/tab/search/w_artist_suggestion_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../../model/artist_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/injection.dart';
@@ -186,6 +189,9 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
               );
             },
           ),
+          const SizedBox(height: 20),
+          _ArtistSuggestionBanner(colors: colors),
+          const SizedBox(height: 8),
         ],
       ),
     );
@@ -252,6 +258,69 @@ String _genreLabel(String genre) {
     case 'Ballad': return 'genre_ballad'.tr();
     case 'R&B': return 'genre_rnb'.tr();
     default: return 'genre_etc'.tr();
+  }
+}
+
+class _ArtistSuggestionBanner extends StatelessWidget {
+  final AbstractThemeColors colors;
+
+  const _ArtistSuggestionBanner({required this.colors});
+
+  void _openSheet(BuildContext context) {
+    final userId = context.read<UserProvider>().currentUserId;
+    if (userId == null) {
+      context.showInfoSnackbar('no_login_info'.tr());
+      return;
+    }
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const ArtistSuggestionSheet(),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => _openSheet(context),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: colors.activate.withValues(alpha: 0.25)),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.person_add_rounded, color: colors.activate, size: 22),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'artist_suggestion_banner'.tr(),
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: colors.textTitle,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'artist_suggestion_banner_sub'.tr(),
+                    style: TextStyle(fontSize: 12, color: colors.textSecondary),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right_rounded, color: colors.textSecondary, size: 20),
+          ],
+        ),
+      ),
+    );
   }
 }
 

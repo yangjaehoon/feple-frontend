@@ -49,6 +49,7 @@ class _NamedBoardState extends State<NamedBoard> {
       headerIcon: widget.headerIcon,
       headerTitle: boardname,
       headerColor: colors.activate,
+      emptyHint: 'be_first_to_discuss'.tr(args: [widget.name]),
       onHeaderTap: () => Navigator.push(
         context,
         SlideRoute(builder: (_) => widget.postListScreenFactory()),

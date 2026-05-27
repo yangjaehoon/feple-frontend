@@ -79,6 +79,7 @@
   "like_failed": "Failed to process like.",
   "see_more": "More",
   "no_posts_yet": "No posts yet.",
+  "be_first_to_discuss": "Be the first to talk about {}",
   "artist": "Artist",
   "artist_load_failed": "Failed to load artist information.",
   "name_board_write": "{} Board - Write Post",

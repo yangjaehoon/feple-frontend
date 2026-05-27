@@ -67,6 +67,7 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
       headerTitle: widget.title,
       headerColor: widget.headerColorFn(colors),
       height: rs.h(AppDimens.boardCardHeight),
+      emptyHint: 'be_first_to_discuss'.tr(args: [widget.title]),
       onHeaderTap: () => Navigator.push(
         context,
         SlideRoute(

@@ -11,12 +11,12 @@ enum TabItem {
       inActiveIcon: Icons.search_outlined),
   home(Icons.home_rounded, 'tab_home', HomeFragment(),
       inActiveIcon: Icons.home_outlined),
-  concertList(Icons.music_note_rounded, 'tab_concert', ConcertListFragment(),
-      inActiveIcon: Icons.music_note_outlined),
+  concertList(Icons.queue_music_rounded, 'tab_concert', ConcertListFragment(),
+      inActiveIcon: Icons.queue_music_outlined),
   communityBoard(Icons.forum_rounded, 'tab_board', CommunityBoardFragment(),
       inActiveIcon: Icons.forum_outlined),
   favorite(Icons.person_rounded, 'tab_my', MypageFragment(),
-      inActiveIcon: Icons.person_outline_rounded);
+      inActiveIcon: Icons.person_outlined);
 
   final IconData activeIcon;
   final IconData inActiveIcon;
@@ -31,8 +31,8 @@ enum TabItem {
 
   NavigationDestination toNavigationDestination() {
     return NavigationDestination(
-      icon: Icon(inActiveIcon),
-      selectedIcon: Icon(activeIcon),
+      icon: Icon(inActiveIcon, size: 24),
+      selectedIcon: Icon(activeIcon, size: 24),
       label: tabName,
     );
   }

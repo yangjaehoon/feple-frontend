@@ -221,9 +221,9 @@ class _CommunityPostState extends State<CommunityPost> {
             SlideRoute(
               builder: (_) => WritePostScreen(
                 title: 'write_post'.tr(),
-                onSubmit: (t, c) async {
+                onSubmit: (t, c, a) async {
                   await _postService.createPost(
-                      boardType: _serviceBoardType, title: t, content: c);
+                      boardType: _serviceBoardType, title: t, content: c, anonymous: a);
                   AppEvents.postChanged.value++;
                 },
               ),

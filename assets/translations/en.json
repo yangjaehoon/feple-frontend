@@ -69,6 +69,7 @@
   "post_success": "Post registered successfully.",
   "post_failed": "Failed to register post.",
   "post_banned_word": "Profanity, hate speech, and slander are not allowed.",
+  "post_anonymous": "Post anonymously",
   "enter_comment": "Enter a comment.",
   "enter_comment_please": "Please enter a comment.",
   "comment_posted": "Comment posted.",

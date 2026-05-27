@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/widget/w_inline_badge.dart';
 import 'package:feple/common/widget/w_profile_avatar.dart';
 import 'package:feple/model/comment_detail.dart';
@@ -11,6 +12,7 @@ class CommentSection extends StatelessWidget {
   final void Function(int commentId)? onReport;
   final void Function(int commentId, String nickname)? onReply;
   final void Function(int commentId)? onToggleLike;
+  final void Function(int commentId)? onDeleteComment;
 
   const CommentSection({
     super.key,
@@ -19,6 +21,7 @@ class CommentSection extends StatelessWidget {
     this.onReport,
     this.onReply,
     this.onToggleLike,
+    this.onDeleteComment,
   });
 
   @override
@@ -45,6 +48,7 @@ class CommentSection extends StatelessWidget {
         onReport: onReport != null ? () => onReport!(root.id) : null,
         onReply: onReply != null ? () => onReply!(root.id, root.nickname) : null,
         onToggleLike: onToggleLike != null ? () => onToggleLike!(root.id) : null,
+        onDelete: onDeleteComment != null ? () => onDeleteComment!(root.id) : null,
       ));
 
       final replies = repliesMap[root.id] ?? [];
@@ -59,6 +63,7 @@ class CommentSection extends StatelessWidget {
             isOwn: currentUserId != null && reply.userId == currentUserId,
             onReport: onReport != null ? () => onReport!(reply.id) : null,
             onToggleLike: onToggleLike != null ? () => onToggleLike!(reply.id) : null,
+            onDelete: onDeleteComment != null ? () => onDeleteComment!(reply.id) : null,
           ),
         ));
       }
@@ -79,6 +84,7 @@ class _CommentTile extends StatelessWidget {
   final VoidCallback? onReport;
   final VoidCallback? onReply;
   final VoidCallback? onToggleLike;
+  final VoidCallback? onDelete;
 
   const _CommentTile({
     required this.comment,
@@ -87,6 +93,7 @@ class _CommentTile extends StatelessWidget {
     this.onReport,
     this.onReply,
     this.onToggleLike,
+    this.onDelete,
   });
 
   @override
@@ -184,7 +191,38 @@ class _CommentTile extends StatelessWidget {
               ],
             ),
           ),
-          if (!isOwn && onReport != null)
+          if (isOwn)
+            PopupMenuButton<String>(
+              padding: EdgeInsets.zero,
+              icon: Icon(Icons.more_vert, size: 16, color: colors.textSecondary),
+              onSelected: (value) async {
+                if (value == 'delete') {
+                  final confirmed = await showConfirmDialog(
+                    context,
+                    title: 'delete_comment'.tr(),
+                    content: 'delete_comment_confirm'.tr(),
+                    confirmLabel: 'delete_comment'.tr(),
+                  );
+                  if (confirmed) onDelete?.call();
+                }
+              },
+              itemBuilder: (_) => [
+                PopupMenuItem(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.delete_outline_rounded,
+                          size: 16, color: Colors.red),
+                      const SizedBox(width: 8),
+                      Text('delete_comment'.tr(),
+                          style: const TextStyle(
+                              color: Colors.red, fontSize: 13)),
+                    ],
+                  ),
+                ),
+              ],
+            )
+          else if (!isOwn && onReport != null)
             PopupMenuButton<String>(
               padding: EdgeInsets.zero,
               icon: Icon(Icons.more_vert,

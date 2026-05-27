@@ -12,11 +12,17 @@ import 'package:image_picker/image_picker.dart';
 class WritePostScreen extends StatefulWidget {
   final String title;
   final Future<void> Function(String title, String content, bool anonymous, String? imageObjectKey) onSubmit;
+  final String? initialTitle;
+  final String? initialContent;
+  final bool showAnonymous;
 
   const WritePostScreen({
     super.key,
     required this.title,
     required this.onSubmit,
+    this.initialTitle,
+    this.initialContent,
+    this.showAnonymous = true,
   });
 
   @override
@@ -36,6 +42,8 @@ class _WritePostScreenState extends State<WritePostScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialTitle != null) _titleController.text = widget.initialTitle!;
+    if (widget.initialContent != null) _contentController.text = widget.initialContent!;
     _titleController.addListener(_clearTitleBannedWord);
     _contentController.addListener(_clearContentBannedWord);
   }
@@ -208,27 +216,29 @@ class _WritePostScreenState extends State<WritePostScreen> {
           ),
           const SizedBox(height: 12),
           _buildImagePicker(colors),
-          const SizedBox(height: 4),
-          GestureDetector(
-            onTap: () => setState(() => _anonymous = !_anonymous),
-            behavior: HitTestBehavior.opaque,
-            child: Row(
-              children: [
-                Switch(
-                  value: _anonymous,
-                  onChanged: (v) => setState(() => _anonymous = v),
-                  activeThumbColor: colors.activate,
-                  activeTrackColor: colors.activate.withValues(alpha: 0.5),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  'post_anonymous'.tr(),
-                  style: TextStyle(fontSize: 14, color: colors.textTitle),
-                ),
-              ],
+          if (widget.showAnonymous) ...[
+            const SizedBox(height: 4),
+            GestureDetector(
+              onTap: () => setState(() => _anonymous = !_anonymous),
+              behavior: HitTestBehavior.opaque,
+              child: Row(
+                children: [
+                  Switch(
+                    value: _anonymous,
+                    onChanged: (v) => setState(() => _anonymous = v),
+                    activeThumbColor: colors.activate,
+                    activeTrackColor: colors.activate.withValues(alpha: 0.5),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'post_anonymous'.tr(),
+                    style: TextStyle(fontSize: 14, color: colors.textTitle),
+                  ),
+                ],
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );

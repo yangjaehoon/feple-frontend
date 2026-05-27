@@ -1,11 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:feple/common/app_events.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/widget/w_inline_badge.dart';
 import 'package:feple/common/widget/w_profile_avatar.dart';
+import 'package:feple/common/widget/w_write_post_screen.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/common/widget/w_report_sheet.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/service/post_service.dart';
 import 'package:feple/service/report_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +33,7 @@ class EnlargePost extends StatefulWidget {
   final String? profileImageUrl;
   final String? imageUrl;
   final DateTime? createdAt;
+  final int? postUserId;
 
   const EnlargePost({
     super.key,
@@ -42,6 +48,7 @@ class EnlargePost extends StatefulWidget {
     this.profileImageUrl,
     this.imageUrl,
     this.createdAt,
+    this.postUserId,
   });
 
   EnlargePost.fromPost({
@@ -57,7 +64,8 @@ class EnlargePost extends StatefulWidget {
         userRole = post.userRole,
         profileImageUrl = post.profileImageUrl,
         imageUrl = post.imageUrl,
-        createdAt = post.createdAt;
+        createdAt = post.createdAt,
+        postUserId = post.userId;
 
   @override
   State<EnlargePost> createState() => _EnlargePostState();
@@ -103,6 +111,10 @@ class _EnlargePostState extends State<EnlargePost> {
       final arg = parts.length > 1 ? parts.sublist(1).join(':') : '';
       context.showErrorSnackbar(key.tr(args: [arg]));
     };
+    _notifier.onPostDeleted = () {
+      AppEvents.postChanged.value++;
+      if (mounted) Navigator.of(context, rootNavigator: true).pop();
+    };
     _notifier.init();
   }
 
@@ -113,11 +125,33 @@ class _EnlargePostState extends State<EnlargePost> {
     super.dispose();
   }
 
+  void _showImageViewer(BuildContext context, String imageUrl) {
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        opaque: false,
+        barrierColor: Colors.black87,
+        pageBuilder: (_, __, ___) => GestureDetector(
+          onTap: () => Navigator.of(context).pop(),
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Center(
+              child: InteractiveViewer(
+                minScale: 0.5,
+                maxScale: 4.0,
+                child: CachedNetworkImage(imageUrl: imageUrl),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
     final userId = context.read<UserProvider>().currentUserId;
+    final bool isOwn = userId != null && userId == widget.postUserId;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -143,8 +177,39 @@ class _EnlargePostState extends State<EnlargePost> {
             actions: [
               PopupMenuButton<String>(
                 icon: const Icon(Icons.more_vert),
-                onSelected: (value) {
-                  if (value == 'report') {
+                onSelected: (value) async {
+                  if (value == 'edit') {
+                    await Navigator.push(
+                      context,
+                      SlideRoute(
+                        builder: (_) => WritePostScreen(
+                          title: 'edit_post'.tr(),
+                          initialTitle: widget.title,
+                          initialContent: widget.content,
+                          showAnonymous: false,
+                          onSubmit: (t, c, _, __) async {
+                            await sl<PostService>().updatePost(
+                              postId: widget.id,
+                              title: t,
+                              content: c,
+                            );
+                            AppEvents.postChanged.value++;
+                            if (context.mounted) {
+                              context.showSuccessSnackbar('post_updated'.tr());
+                            }
+                          },
+                        ),
+                      ),
+                    );
+                  } else if (value == 'delete') {
+                    final confirmed = await showConfirmDialog(
+                      context,
+                      title: 'delete_post'.tr(),
+                      content: 'delete_post_confirm'.tr(),
+                      confirmLabel: 'delete_post'.tr(),
+                    );
+                    if (confirmed) await _notifier.deletePost();
+                  } else if (value == 'report') {
                     showReportSheet(
                       context,
                       titleKey: 'report_post',
@@ -154,19 +219,47 @@ class _EnlargePostState extends State<EnlargePost> {
                     );
                   }
                 },
-                itemBuilder: (_) => [
-                  PopupMenuItem(
-                    value: 'report',
-                    child: Row(
-                      children: [
-                        const Icon(Icons.flag_outlined, size: 18, color: Colors.red),
-                        const SizedBox(width: 8),
-                        Text('report_post'.tr(),
-                            style: const TextStyle(color: Colors.red)),
-                      ],
-                    ),
-                  ),
-                ],
+                itemBuilder: (_) {
+                  if (isOwn) {
+                    return [
+                      PopupMenuItem(
+                        value: 'edit',
+                        child: Row(
+                          children: [
+                            const Icon(Icons.edit_outlined, size: 18),
+                            const SizedBox(width: 8),
+                            Text('edit_post'.tr()),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            const Icon(Icons.delete_outline_rounded, size: 18, color: Colors.red),
+                            const SizedBox(width: 8),
+                            Text('delete_post'.tr(),
+                                style: const TextStyle(color: Colors.red)),
+                          ],
+                        ),
+                      ),
+                    ];
+                  } else {
+                    return [
+                      PopupMenuItem(
+                        value: 'report',
+                        child: Row(
+                          children: [
+                            const Icon(Icons.flag_outlined, size: 18, color: Colors.red),
+                            const SizedBox(width: 8),
+                            Text('report_post'.tr(),
+                                style: const TextStyle(color: Colors.red)),
+                          ],
+                        ),
+                      ),
+                    ];
+                  }
+                },
               ),
             ],
           ),
@@ -232,12 +325,15 @@ class _EnlargePostState extends State<EnlargePost> {
                 ),
                 if (widget.imageUrl != null) ...[
                   const SizedBox(height: 12),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: CachedNetworkImage(
-                      imageUrl: widget.imageUrl!,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
+                  GestureDetector(
+                    onTap: () => _showImageViewer(context, widget.imageUrl!),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: CachedNetworkImage(
+                        imageUrl: widget.imageUrl!,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      ),
                     ),
                   ),
                 ],
@@ -268,6 +364,7 @@ class _EnlargePostState extends State<EnlargePost> {
                   onReply: _setReplyTo,
                   onToggleLike: (commentId) =>
                       _notifier.toggleCommentLike(commentId, userId),
+                  onDeleteComment: (commentId) => _notifier.deleteComment(commentId),
                 ),
                 const SizedBox(height: 16),
               ],

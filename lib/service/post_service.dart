@@ -148,4 +148,24 @@ class PostService {
     String? imageObjectKey,
   }) =>
       _createPost('/posts/festival/$festivalId/ticket', title, content, anonymous: anonymous, imageObjectKey: imageObjectKey);
+
+  /// 게시글 삭제
+  Future<void> deletePost(int postId) => DioClient.dio.delete('/posts/$postId');
+
+  /// 게시글 수정
+  Future<void> updatePost({
+    required int postId,
+    required String title,
+    required String content,
+  }) =>
+      DioClient.dio.put('/posts/$postId', data: {'title': title, 'content': content});
+
+  /// 게시판 내 키워드 검색
+  Future<List<Post>> searchInBoard(String keyword, String boardType) async {
+    final response = await DioClient.dio.get('/posts/search', queryParameters: {
+      'keyword': keyword,
+      'boardType': boardType,
+    });
+    return (response.data as List).map((j) => Post.fromJson(j as Map<String, dynamic>)).toList();
+  }
 }

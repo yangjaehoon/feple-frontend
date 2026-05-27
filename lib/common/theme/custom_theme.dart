@@ -33,6 +33,7 @@ enum CustomTheme {
 
 ThemeData lightTheme = ThemeData(
   useMaterial3: true,
+  fontFamily: 'Pretendard',
   visualDensity: VisualDensity.adaptivePlatformDensity,
   brightness: Brightness.light,
   scaffoldBackgroundColor: AppColors.backgroundLight,
@@ -152,6 +153,7 @@ const _darkSurface = Color(0xFF1A2C38);
 
 ThemeData darkTheme = ThemeData(
   useMaterial3: true,
+  fontFamily: 'Pretendard',
   visualDensity: VisualDensity.adaptivePlatformDensity,
   brightness: Brightness.dark,
   scaffoldBackgroundColor: _darkBg,

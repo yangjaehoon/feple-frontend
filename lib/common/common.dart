@@ -1,5 +1,3 @@
-import 'package:google_fonts/google_fonts.dart';
-
 export 'dart:async';
 
 export 'package:easy_localization/easy_localization.dart';
@@ -25,4 +23,3 @@ export 'widget/w_height_and_width.dart';
 export 'widget/w_line.dart';
 export 'widget/w_tap.dart';
 
-const defaultFontStyle = GoogleFonts.ptSerif;

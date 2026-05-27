@@ -166,13 +166,6 @@ class BoardPreviewCard extends StatelessWidget {
                 fontSize: AppDimens.fontSizeMd,
               ),
             ),
-            subtitle: Text(
-              post.nickname,
-              style: TextStyle(
-                color: colors.textSecondary,
-                fontSize: AppDimens.fontSizeXs,
-              ),
-            ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: (trailingBuilder ?? _defaultTrailing)(post, colors),

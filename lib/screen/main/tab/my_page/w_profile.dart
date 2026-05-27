@@ -17,13 +17,23 @@ class ProfileWidget extends StatefulWidget {
 
 class _ProfileWidgetState extends State<ProfileWidget> {
   bool _fetched = false;
+  bool _hasError = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_fetched) {
-      context.read<UserProvider>().fetchUser(widget.userId);
       _fetched = true;
+      _fetchUser();
+    }
+  }
+
+  Future<void> _fetchUser() async {
+    setState(() => _hasError = false);
+    try {
+      await context.read<UserProvider>().fetchUser(widget.userId);
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
     }
   }
 
@@ -31,6 +41,26 @@ class _ProfileWidgetState extends State<ProfileWidget> {
   Widget build(BuildContext context) {
     final user = context.watch<UserProvider>().user;
     final colors = context.appColors;
+
+    if (_hasError && user == null) {
+      return Padding(
+        padding: const EdgeInsets.all(32),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.cloud_off_outlined, size: 36, color: colors.textSecondary),
+              const SizedBox(height: 12),
+              TextButton(
+                onPressed: () { _fetched = false; didChangeDependencies(); },
+                child: Text('retry'.tr(),
+                    style: TextStyle(color: colors.activate, fontWeight: FontWeight.w600)),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     if (user == null) {
       return Center(

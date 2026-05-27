@@ -9,14 +9,41 @@ class HomeFestivalsSection extends StatelessWidget {
     super.key,
     required this.festivals,
     required this.onTap,
+    this.hasError = false,
+    this.onRetry,
   });
 
   final List<FestivalModel>? festivals;
   final void Function(FestivalModel) onTap;
+  final bool hasError;
+  final VoidCallback? onRetry;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+
+    if (hasError) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        child: Row(
+          children: [
+            Icon(Icons.cloud_off_outlined, size: 16, color: colors.textSecondary),
+            const SizedBox(width: 8),
+            Text('err_fetch_data'.tr(),
+                style: TextStyle(fontSize: 13, color: colors.textSecondary)),
+            const SizedBox(width: 12),
+            GestureDetector(
+              onTap: onRetry,
+              child: Text('retry'.tr(),
+                  style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: colors.activate)),
+            ),
+          ],
+        ),
+      );
+    }
 
     if (festivals == null) {
       return SizedBox(

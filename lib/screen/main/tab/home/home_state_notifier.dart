@@ -10,6 +10,7 @@ class HomeStateNotifier extends ChangeNotifier {
   List<FollowedArtist>? artists;
   List<FestivalModel>? festivals;
   List<FavoriteBoard>? boards;
+  bool hasError = false;
 
   List<int> artistOrder = [];
   List<int> festivalOrder = [];
@@ -24,6 +25,7 @@ class HomeStateNotifier extends ChangeNotifier {
     artists = null;
     festivals = null;
     boards = null;
+    hasError = false;
     notifyListeners();
     await loadData();
   }
@@ -31,6 +33,8 @@ class HomeStateNotifier extends ChangeNotifier {
   Future<void> loadData() async {
     final id = userId;
     if (id == null) return;
+
+    hasError = false;
 
     final orders = await Future.wait([
       _loadArtistOrder(),
@@ -50,9 +54,7 @@ class HomeStateNotifier extends ChangeNotifier {
       festivals = fetchedFestivals;
       boards = _buildBoards(fetchedArtists, fetchedFestivals);
     } catch (_) {
-      artists ??= [];
-      festivals ??= [];
-      boards ??= [];
+      hasError = true;
     }
     notifyListeners();
   }
@@ -61,6 +63,16 @@ class HomeStateNotifier extends ChangeNotifier {
     artists = null;
     festivals = null;
     boards = null;
+    hasError = false;
+    notifyListeners();
+    await loadData();
+  }
+
+  Future<void> retry() async {
+    artists = null;
+    festivals = null;
+    boards = null;
+    hasError = false;
     notifyListeners();
     await loadData();
   }

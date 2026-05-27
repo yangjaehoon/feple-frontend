@@ -33,9 +33,9 @@ class PostService {
     return (response.data as List<dynamic>).map((json) => Post.fromJson(json)).toList();
   }
 
-  Future<void> _createPost(String endpoint, String title, String content) async {
+  Future<void> _createPost(String endpoint, String title, String content, {bool anonymous = false}) async {
     try {
-      await DioClient.dio.post(endpoint, data: {'title': title, 'content': content});
+      await DioClient.dio.post(endpoint, data: {'title': title, 'content': content, 'anonymous': anonymous});
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         final data = e.response?.data;
@@ -77,8 +77,9 @@ class PostService {
     required String boardType,
     required String title,
     required String content,
+    bool anonymous = false,
   }) =>
-      _createPost(_endpointFor(boardType), title, content);
+      _createPost(_endpointFor(boardType), title, content, anonymous: anonymous);
 
   /// 아티스트 게시판 목록 조회
   Future<List<Post>> fetchArtistPosts(int artistId) =>
@@ -89,8 +90,9 @@ class PostService {
     required int artistId,
     required String title,
     required String content,
+    bool anonymous = false,
   }) =>
-      _createPost('/posts/artist/$artistId', title, content);
+      _createPost('/posts/artist/$artistId', title, content, anonymous: anonymous);
 
   /// 페스티벌 게시판 목록 조회
   Future<List<Post>> fetchFestivalPosts(int festivalId) =>
@@ -101,8 +103,9 @@ class PostService {
     required int festivalId,
     required String title,
     required String content,
+    bool anonymous = false,
   }) =>
-      _createPost('/posts/festival/$festivalId', title, content);
+      _createPost('/posts/festival/$festivalId', title, content, anonymous: anonymous);
 
   /// 페스티벌 인기 글 조회 (likeCount 내림차순, 전체 게시판)
   Future<List<Post>> fetchFestivalPopularPosts(int festivalId) =>
@@ -117,8 +120,9 @@ class PostService {
     required int festivalId,
     required String title,
     required String content,
+    bool anonymous = false,
   }) =>
-      _createPost('/posts/festival/$festivalId/companion', title, content);
+      _createPost('/posts/festival/$festivalId/companion', title, content, anonymous: anonymous);
 
   /// 티켓양도 게시판 목록 조회
   Future<List<Post>> fetchFestivalTicketPosts(int festivalId) =>
@@ -129,6 +133,7 @@ class PostService {
     required int festivalId,
     required String title,
     required String content,
+    bool anonymous = false,
   }) =>
-      _createPost('/posts/festival/$festivalId/ticket', title, content);
+      _createPost('/posts/festival/$festivalId/ticket', title, content, anonymous: anonymous);
 }

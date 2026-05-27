@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 class WritePostScreen extends StatefulWidget {
   final String title;
-  final Future<void> Function(String title, String content) onSubmit;
+  final Future<void> Function(String title, String content, bool anonymous) onSubmit;
 
   const WritePostScreen({
     super.key,
@@ -25,6 +25,7 @@ class _WritePostScreenState extends State<WritePostScreen> {
   bool _isSubmitting = false;
   bool _titleHasBannedWord = false;
   bool _contentHasBannedWord = false;
+  bool _anonymous = false;
 
   @override
   void initState() {
@@ -54,7 +55,7 @@ class _WritePostScreenState extends State<WritePostScreen> {
     final content = _contentController.text.trim();
     setState(() => _isSubmitting = true);
     try {
-      await widget.onSubmit(title, content);
+      await widget.onSubmit(title, content, _anonymous);
       if (!mounted) return;
       context.showSuccessSnackbar('post_success'.tr());
       Navigator.of(context).pop();
@@ -147,6 +148,27 @@ class _WritePostScreenState extends State<WritePostScreen> {
               bannedWordMessage: _contentHasBannedWord ? 'post_banned_word'.tr() : null,
             ),
             validator: (v) => (v == null || v.trim().isEmpty) ? 'enter_content'.tr() : null,
+          ),
+          const SizedBox(height: 4),
+          GestureDetector(
+            onTap: () => setState(() => _anonymous = !_anonymous),
+            behavior: HitTestBehavior.opaque,
+            child: Row(
+              children: [
+                Switch(
+                  value: _anonymous,
+                  onChanged: (v) => setState(() => _anonymous = v),
+                  activeThumbColor: colors.activate,
+                  activeTrackColor: colors.activate.withValues(alpha: 0.5),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  'post_anonymous'.tr(),
+                  style: TextStyle(fontSize: 14, color: colors.textTitle),
+                ),
+              ],
+            ),
           ),
         ],
       ),

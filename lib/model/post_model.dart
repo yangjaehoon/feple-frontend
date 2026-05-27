@@ -12,6 +12,7 @@ class Post {
   final String boardDisplayName;
   final bool certified;
   final String? userRole; // 'USER' | 'ARTIST' | 'ADMIN'
+  final bool anonymous;
 
   Post({
     required this.id,
@@ -27,6 +28,7 @@ class Post {
     this.boardDisplayName = '게시판',
     this.certified = false,
     this.userRole,
+    this.anonymous = false,
   });
 
   bool get isAdmin => userRole == 'ADMIN';
@@ -48,6 +50,7 @@ class Post {
       boardDisplayName: json['boardDisplayName'] as String? ?? '게시판',
       certified: json['certified'] as bool? ?? false,
       userRole: json['userRole'] as String?,
+      anonymous: json['anonymous'] as bool? ?? false,
     );
   }
 }

@@ -21,8 +21,8 @@ class ArtistPostListScreen extends StatelessWidget {
       boardname: 'name_board'.tr(args: [artistName]),
       writeScreenTitle: 'name_board_write'.tr(args: [artistName]),
       fetchPosts: () => svc.fetchArtistPosts(artistId),
-      onSubmitPost: (t, c, a) =>
-          svc.createArtistPost(artistId: artistId, title: t, content: c, anonymous: a),
+      onSubmitPost: (t, c, a, img) =>
+          svc.createArtistPost(artistId: artistId, title: t, content: c, anonymous: a, imageObjectKey: img),
     );
   }
 }

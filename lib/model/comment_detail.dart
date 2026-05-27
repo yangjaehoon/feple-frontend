@@ -6,6 +6,7 @@ class CommentDetail {
   final int postId;
   final int userId;
   final String nickname;
+  final String? profileImageUrl;
   final String content;
   final DateTime createdAt;
   final bool certified;
@@ -19,6 +20,7 @@ class CommentDetail {
     required this.postId,
     required this.userId,
     required this.nickname,
+    this.profileImageUrl,
     required this.content,
     required this.createdAt,
     required this.certified,
@@ -34,6 +36,7 @@ class CommentDetail {
       postId: (json['postId'] as num).toInt(),
       userId: (json['userId'] as num).toInt(),
       nickname: json['nickname'] as String? ?? 'User',
+      profileImageUrl: json['profileImageUrl'] as String?,
       content: json['content'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
       certified: json['certified'] as bool? ?? false,
@@ -49,6 +52,7 @@ class CommentDetail {
         postId: postId,
         userId: userId,
         nickname: nickname,
+        profileImageUrl: profileImageUrl,
         content: content,
         createdAt: createdAt,
         certified: certified,

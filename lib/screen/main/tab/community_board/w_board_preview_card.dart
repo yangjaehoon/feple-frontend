@@ -22,6 +22,7 @@ class BoardPreviewCard extends StatelessWidget {
   final VoidCallback? onRetry;
   final double? height;
   final String? emptyHint;
+  final int? maxItems;
 
   const BoardPreviewCard({
     super.key,
@@ -35,6 +36,7 @@ class BoardPreviewCard extends StatelessWidget {
     this.onRetry,
     this.height,
     this.emptyHint,
+    this.maxItems,
   });
 
   @override
@@ -141,12 +143,14 @@ class BoardPreviewCard extends StatelessWidget {
           ),
         ),
       ),
-      builder: (ctx, posts) => ListView.separated(
+      builder: (ctx, posts) {
+        final displayPosts = maxItems != null ? posts.take(maxItems!).toList() : posts;
+        return ListView.separated(
         physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
-        itemCount: posts.length,
+        itemCount: displayPosts.length,
         itemBuilder: (_, index) {
-          final post = posts[index];
+          final post = displayPosts[index];
           return ListTile(
             dense: true,
             visualDensity: const VisualDensity(vertical: -3),
@@ -181,7 +185,8 @@ class BoardPreviewCard extends StatelessWidget {
           indent: AppDimens.paddingHorizontal,
           endIndent: AppDimens.paddingHorizontal,
         ),
-      ),
+      );
+      },
     );
   }
 }

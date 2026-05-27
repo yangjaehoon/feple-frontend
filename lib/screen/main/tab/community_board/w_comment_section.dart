@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_inline_badge.dart';
+import 'package:feple/common/widget/w_profile_avatar.dart';
 import 'package:feple/model/comment_detail.dart';
 import 'package:flutter/material.dart';
 
@@ -97,11 +98,12 @@ class _CommentTile extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
+          ProfileAvatar(
+            imageUrl: comment.profileImageUrl,
+            nickname: comment.nickname,
+            certified: comment.certified,
+            userRole: comment.userRole,
             radius: isReply ? 13 : 16,
-            backgroundColor: colors.activate,
-            child: Icon(Icons.person,
-                size: isReply ? 14 : 18, color: Colors.white),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -123,6 +125,13 @@ class _CommentTile extends StatelessWidget {
                       certified: comment.certified,
                     ),
                   ],
+                ),
+                Text(
+                  comment.createdAt.relativeTime,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: colors.textSecondary.withValues(alpha: 0.6),
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(

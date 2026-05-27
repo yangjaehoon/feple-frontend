@@ -8,6 +8,7 @@ class Post {
   final int commentCount;
   final String nickname;
   final String? profileImageUrl;
+  final String? imageUrl;
   final int? artistId;
   final String boardDisplayName;
   final bool certified;
@@ -25,6 +26,7 @@ class Post {
     this.commentCount = 0,
     required this.nickname,
     this.profileImageUrl,
+    this.imageUrl,
     this.artistId,
     this.boardDisplayName = '게시판',
     this.certified = false,
@@ -48,6 +50,7 @@ class Post {
       commentCount: json['commentCount'] as int? ?? 0,
       nickname: json['nickname'] as String,
       profileImageUrl: json['profileImageUrl'] as String?,
+      imageUrl: json['imageUrl'] as String?,
       artistId: json['artistId'] as int?,
       boardDisplayName: json['boardDisplayName'] as String? ?? '게시판',
       certified: json['certified'] as bool? ?? false,

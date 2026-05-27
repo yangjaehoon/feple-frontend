@@ -78,10 +78,10 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
     'ticket_board'.tr(),
   ];
 
-  List<Future<void> Function(String, String, bool)> get _submitFns => [
-    (t, c, a) => _svc.createFestivalPost(festivalId: widget.festivalId, title: t, content: c, anonymous: a),
-    (t, c, a) => _svc.createFestivalCompanionPost(festivalId: widget.festivalId, title: t, content: c, anonymous: a),
-    (t, c, a) => _svc.createFestivalTicketPost(festivalId: widget.festivalId, title: t, content: c, anonymous: a),
+  List<Future<void> Function(String, String, bool, String?)> get _submitFns => [
+    (t, c, a, img) => _svc.createFestivalPost(festivalId: widget.festivalId, title: t, content: c, anonymous: a, imageObjectKey: img),
+    (t, c, a, img) => _svc.createFestivalCompanionPost(festivalId: widget.festivalId, title: t, content: c, anonymous: a, imageObjectKey: img),
+    (t, c, a, img) => _svc.createFestivalTicketPost(festivalId: widget.festivalId, title: t, content: c, anonymous: a, imageObjectKey: img),
   ];
 
   Future<void> _openWrite(int index) async {

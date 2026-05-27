@@ -38,4 +38,7 @@ class CommentService {
 
   Future<void> toggleCommentLike(int commentId) =>
       DioClient.dio.post('/comments/$commentId/like');
+
+  Future<void> updateComment(int commentId, String content) =>
+      DioClient.dio.put('/comments/$commentId', data: {'content': content});
 }

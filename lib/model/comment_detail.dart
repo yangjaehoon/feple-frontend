@@ -47,13 +47,13 @@ class CommentDetail {
     );
   }
 
-  CommentDetail copyWith({bool? liked, int? likeCount}) => CommentDetail(
+  CommentDetail copyWith({bool? liked, int? likeCount, String? content}) => CommentDetail(
         id: id,
         postId: postId,
         userId: userId,
         nickname: nickname,
         profileImageUrl: profileImageUrl,
-        content: content,
+        content: content ?? this.content,
         createdAt: createdAt,
         certified: certified,
         userRole: userRole,

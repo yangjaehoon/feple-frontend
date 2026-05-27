@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/exception/banned_word_exception.dart';
 import 'package:feple/common/util/image_upload_helper.dart';
@@ -15,6 +16,7 @@ class WritePostScreen extends StatefulWidget {
   final String? initialTitle;
   final String? initialContent;
   final bool showAnonymous;
+  final String? initialImageUrl;
 
   const WritePostScreen({
     super.key,
@@ -23,6 +25,7 @@ class WritePostScreen extends StatefulWidget {
     this.initialTitle,
     this.initialContent,
     this.showAnonymous = true,
+    this.initialImageUrl,
   });
 
   @override
@@ -38,12 +41,14 @@ class _WritePostScreenState extends State<WritePostScreen> {
   bool _contentHasBannedWord = false;
   bool _anonymous = false;
   Uint8List? _selectedImage;
+  String? _existingImageUrl;
 
   @override
   void initState() {
     super.initState();
     if (widget.initialTitle != null) _titleController.text = widget.initialTitle!;
     if (widget.initialContent != null) _contentController.text = widget.initialContent!;
+    _existingImageUrl = widget.initialImageUrl;
     _titleController.addListener(_clearTitleBannedWord);
     _contentController.addListener(_clearContentBannedWord);
   }
@@ -88,6 +93,8 @@ class _WritePostScreenState extends State<WritePostScreen> {
           imageData: _selectedImage!,
         );
         imageObjectKey = presign.objectKey;
+      } else if (_existingImageUrl != null) {
+        imageObjectKey = _existingImageUrl;
       }
       await widget.onSubmit(title, content, _anonymous, imageObjectKey);
       if (!mounted) return;
@@ -154,6 +161,19 @@ class _WritePostScreenState extends State<WritePostScreen> {
   }
 
   Widget _buildImagePicker(AbstractThemeColors colors) {
+    Widget? preview;
+    if (_selectedImage != null) {
+      preview = ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.memory(_selectedImage!, fit: BoxFit.cover, width: 72, height: 72),
+      );
+    } else if (_existingImageUrl != null) {
+      preview = ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: CachedNetworkImage(imageUrl: _existingImageUrl!, width: 72, height: 72, fit: BoxFit.cover),
+      );
+    }
+
     return Row(
       children: [
         GestureDetector(
@@ -165,19 +185,17 @@ class _WritePostScreenState extends State<WritePostScreen> {
               border: Border.all(color: colors.listDivider),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: _selectedImage != null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.memory(_selectedImage!, fit: BoxFit.cover),
-                  )
-                : Icon(Icons.add_photo_alternate_outlined, color: colors.textSecondary, size: 32),
+            child: preview ?? Icon(Icons.add_photo_alternate_outlined, color: colors.textSecondary, size: 32),
           ),
         ),
-        if (_selectedImage != null) ...[
+        if (_selectedImage != null || _existingImageUrl != null) ...[
           const SizedBox(width: 8),
           IconButton(
             icon: Icon(Icons.close_rounded, color: colors.textSecondary, size: 20),
-            onPressed: () => setState(() => _selectedImage = null),
+            onPressed: () => setState(() {
+              _selectedImage = null;
+              _existingImageUrl = null;
+            }),
           ),
         ],
       ],

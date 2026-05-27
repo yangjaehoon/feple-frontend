@@ -160,6 +160,12 @@ class PostService {
   }) =>
       DioClient.dio.put('/posts/$postId', data: {'title': title, 'content': content});
 
+  /// 게시글 조회수 증가 (command + query — 새 viewCount 반환)
+  Future<int> incrementPostView(int postId) async {
+    final res = await DioClient.dio.post('/posts/$postId/view');
+    return (res.data as num).toInt();
+  }
+
   /// 게시판 내 키워드 검색
   Future<List<Post>> searchInBoard(String keyword, String boardType) async {
     final response = await DioClient.dio.get('/posts/search', queryParameters: {

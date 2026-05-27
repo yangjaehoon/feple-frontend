@@ -16,6 +16,7 @@ class Post {
   final bool anonymous;
   final DateTime? createdAt;
   final int? userId;
+  final int viewCount;
 
   Post({
     required this.id,
@@ -35,6 +36,7 @@ class Post {
     this.anonymous = false,
     this.createdAt,
     this.userId,
+    this.viewCount = 0,
   });
 
   bool get isAdmin => userRole == 'ADMIN';
@@ -60,6 +62,7 @@ class Post {
       anonymous: json['anonymous'] as bool? ?? false,
       createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt'] as String) : null,
       userId: (json['userId'] as num?)?.toInt(),
+      viewCount: (json['viewCount'] as num?)?.toInt() ?? 0,
     );
   }
 }

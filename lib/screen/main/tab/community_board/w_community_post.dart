@@ -174,6 +174,7 @@ class _CommunityPostState extends State<CommunityPost> {
           final post = displayPosts[index];
           return PostListTile(
             post: post,
+            highlightKeyword: _searchController.text.trim(),
             onTap: () async {
               await Navigator.of(context, rootNavigator: true).push(
                 SlideRoute(builder: (_) => EnlargePost.fromPost(boardname: widget.boardname, post: post)),

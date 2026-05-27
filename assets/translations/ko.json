@@ -388,5 +388,10 @@
   "age_15": "만 15세 이상",
   "age_19": "만 19세 이상",
   "sort_latest": "최신순",
-  "sort_popular": "인기순"
+  "sort_popular": "인기순",
+  "be_first_to_comment": "첫 댓글을 달아보세요!",
+  "edit_comment": "댓글 수정",
+  "comment_update_failed": "댓글 수정에 실패했습니다",
+  "share": "공유하기",
+  "view_count": "조회수 {}"
 }

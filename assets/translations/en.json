@@ -388,5 +388,10 @@
   "age_15": "15+",
   "age_19": "19+",
   "sort_latest": "Latest",
-  "sort_popular": "Popular"
+  "sort_popular": "Popular",
+  "be_first_to_comment": "Be the first to comment!",
+  "edit_comment": "Edit comment",
+  "comment_update_failed": "Failed to update comment",
+  "share": "Share",
+  "view_count": "Views {}"
 }

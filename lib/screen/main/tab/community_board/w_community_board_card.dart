@@ -1,7 +1,9 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/responsive_size.dart';
+import 'package:feple/common/widget/w_write_post_screen.dart';
 import 'package:feple/model/post_model.dart';
+import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_preview_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_post.dart';
@@ -10,6 +12,7 @@ import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 /// 게시판 미리보기 카드 — 3개 게시판(인기/자유/동행)이 공유하는 공용 위젯
 class CommunityBoardCard extends StatefulWidget {
@@ -84,6 +87,33 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
         ),
       ),
       onRetry: _refresh,
+      onWriteTap: () async {
+        if (!context.mounted) return;
+        final userId = context.read<UserProvider>().currentUserId;
+        if (userId == null) {
+          context.showInfoSnackbar('no_login_info'.tr());
+          return;
+        }
+        await Navigator.push(
+          context,
+          SlideRoute(
+            builder: (_) => WritePostScreen(
+              title: 'write_post'.tr(),
+              onSubmit: (t, c, a, img) async {
+                await sl<PostService>().createPost(
+                  boardType: widget.serviceBoardType,
+                  title: t,
+                  content: c,
+                  anonymous: a,
+                  imageObjectKey: img,
+                );
+                AppEvents.postChanged.value++;
+              },
+            ),
+          ),
+        );
+        _refresh();
+      },
     );
   }
 }

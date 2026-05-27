@@ -158,6 +158,8 @@ class SearchPostTile extends StatelessWidget {
     final profileImageUrl = data['profileImageUrl'] as String?;
     final imageUrl = data['imageUrl'] as String?;
     final postUserId = (data['userId'] as num?)?.toInt();
+    final certified = data['certified'] as bool? ?? false;
+    final userRole = data['userRole'] as String?;
     final createdAtStr = data['createdAt'] as String?;
     final updatedAtStr = data['updatedAt'] as String?;
 
@@ -208,6 +210,8 @@ class SearchPostTile extends StatelessWidget {
           profileImageUrl: profileImageUrl,
           imageUrl: imageUrl,
           postUserId: postUserId,
+          certified: certified,
+          userRole: userRole,
           createdAt: createdAtStr != null ? DateTime.tryParse(createdAtStr) : null,
           updatedAt: updatedAtStr != null ? DateTime.tryParse(updatedAtStr) : null,
         ),

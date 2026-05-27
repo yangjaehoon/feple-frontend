@@ -78,6 +78,10 @@ class _EnlargePostState extends State<EnlargePost> {
   int? _replyToCommentId;
   String? _replyToNickname;
 
+  late String _title;
+  late String _content;
+  String? _imageUrl;
+
   void _setReplyTo(int commentId, String nickname) {
     setState(() {
       _replyToCommentId = commentId;
@@ -96,6 +100,9 @@ class _EnlargePostState extends State<EnlargePost> {
   @override
   void initState() {
     super.initState();
+    _title = widget.title;
+    _content = widget.content;
+    _imageUrl = widget.imageUrl;
     _notifier = PostDetailNotifier(
       postId: widget.id,
       initialHeartCount: widget.heart,
@@ -185,18 +192,24 @@ class _EnlargePostState extends State<EnlargePost> {
                       SlideRoute(
                         builder: (_) => WritePostScreen(
                           title: 'edit_post'.tr(),
-                          initialTitle: widget.title,
-                          initialContent: widget.content,
-                          initialImageUrl: widget.imageUrl,
+                          initialTitle: _title,
+                          initialContent: _content,
+                          initialImageUrl: _imageUrl,
                           showAnonymous: false,
                           onSubmit: (t, c, _, img) async {
                             await sl<PostService>().updatePost(
                               postId: widget.id,
                               title: t,
                               content: c,
+                              imageObjectKey: img,
                             );
                             AppEvents.postChanged.value++;
                             if (context.mounted) {
+                              setState(() {
+                                _title = t;
+                                _content = c;
+                                _imageUrl = img;
+                              });
                               context.showSuccessSnackbar('post_updated'.tr());
                             }
                           },
@@ -298,7 +311,7 @@ class _EnlargePostState extends State<EnlargePost> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.title,
+                  _title,
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
@@ -344,17 +357,17 @@ class _EnlargePostState extends State<EnlargePost> {
                 Divider(
                     thickness: 1, height: 24, color: colors.listDivider),
                 Text(
-                  widget.content,
+                  _content,
                   style: TextStyle(color: colors.textTitle, fontSize: 15),
                 ),
-                if (widget.imageUrl != null) ...[
+                if (_imageUrl != null) ...[
                   const SizedBox(height: 12),
                   GestureDetector(
-                    onTap: () => _showImageViewer(context, widget.imageUrl!),
+                    onTap: () => _showImageViewer(context, _imageUrl!),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: CachedNetworkImage(
-                        imageUrl: widget.imageUrl!,
+                        imageUrl: _imageUrl!,
                         fit: BoxFit.cover,
                         width: double.infinity,
                       ),

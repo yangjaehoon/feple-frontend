@@ -7,12 +7,15 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/notification_model.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
+import 'package:feple/screen/notification/notification_type.dart';
 import 'package:feple/screen/notification/w_notification_card.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:feple/service/notification_service.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
+
+enum _NotifFilter { all, cert, comment, festival }
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -27,6 +30,30 @@ class _NotificationScreenState extends State<NotificationScreen> {
   List<NotificationModel> _items = [];
   bool _loading = true;
   bool _hasError = false;
+  _NotifFilter _filter = _NotifFilter.all;
+
+  List<NotificationModel> get _filtered {
+    if (_filter == _NotifFilter.all) return _items;
+    return _items.where((n) {
+      final t = n.type;
+      if (t == null) return _filter == _NotifFilter.all;
+      switch (_filter) {
+        case _NotifFilter.cert:
+          return t == NotificationType.certApproved ||
+              t == NotificationType.certRejected;
+        case _NotifFilter.comment:
+          return t == NotificationType.newComment;
+        case _NotifFilter.festival:
+          return t == NotificationType.newFestival ||
+              t == NotificationType.festivalReminder ||
+              t == NotificationType.songRequestApproved ||
+              t == NotificationType.songRequestRejected ||
+              t == NotificationType.artistSuggestionProcessed;
+        case _NotifFilter.all:
+          return true;
+      }
+    }).toList();
+  }
 
   @override
   void initState() {
@@ -44,12 +71,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
     }
   }
 
-  Future<void> _onTap(int index) async {
-    if (index < 0 || index >= _items.length) return;
-    final item = _items[index];
+  Future<void> _onTap(NotificationModel item) async {
+    final realIndex = _items.indexWhere((n) => n.id == item.id);
+    if (realIndex < 0) return;
 
     if (!item.read) {
-      setState(() => _items[index] = item.copyWithRead());
+      setState(() => _items[realIndex] = item.copyWithRead());
       try {
         await _notificationService.markRead(item.id);
       } catch (e) {
@@ -72,12 +99,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
     }
   }
 
-  Future<void> _dismissNotification(int index) async {
-    if (index < 0 || index >= _items.length) return;
-    final removed = _items[index];
-    setState(() => _items.removeAt(index));
+  Future<void> _dismissNotification(NotificationModel item) async {
+    final realIndex = _items.indexWhere((n) => n.id == item.id);
+    if (realIndex < 0) return;
+    setState(() => _items.removeAt(realIndex));
     try {
-      await _notificationService.markRead(removed.id);
+      await _notificationService.markRead(item.id);
     } catch (e) {
       debugPrint('[Notification] markRead 실패: $e');
     }
@@ -183,6 +210,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
               ),
             ),
           ),
+          _buildFilterChips(colors),
           Expanded(
             child: RefreshIndicator(
         onRefresh: _load,
@@ -203,44 +231,89 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           title: 'no_notifications'.tr(),
                         ),
                       )
-                    : ListView.separated(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-                        itemCount: _items.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 8),
-                        itemBuilder: (_, i) => AnimatedListItem(
-                          index: i,
-                          child: Dismissible(
-                            key: ValueKey(_items[i].id),
-                            direction: DismissDirection.endToStart,
-                            onDismissed: (_) => _dismissNotification(i),
-                            background: Container(
-                              alignment: Alignment.centerRight,
-                              padding: const EdgeInsets.only(right: 20),
-                              decoration: BoxDecoration(
-                                color: AppColors.errorRed,
-                                borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-                              ),
-                              child: const Icon(
-                                Icons.delete_rounded,
-                                color: Colors.white,
-                                size: 22,
-                              ),
-                            ),
-                            child: TapScale(
-                              onTap: () => _onTap(i),
-                              child: NotificationCard(
-                                item: _items[i],
-                                onTap: () => _onTap(i),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                    : _buildNotificationList(colors),
       ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildFilterChips(AbstractThemeColors colors) {
+    return SizedBox(
+      height: 40,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        children: [
+          _FilterChip(
+            label: 'filter_all'.tr(),
+            selected: _filter == _NotifFilter.all,
+            onTap: () => setState(() => _filter = _NotifFilter.all),
+            colors: colors,
+          ),
+          _FilterChip(
+            label: 'notif_filter_cert'.tr(),
+            selected: _filter == _NotifFilter.cert,
+            onTap: () => setState(() => _filter = _NotifFilter.cert),
+            colors: colors,
+          ),
+          _FilterChip(
+            label: 'notif_filter_comment'.tr(),
+            selected: _filter == _NotifFilter.comment,
+            onTap: () => setState(() => _filter = _NotifFilter.comment),
+            colors: colors,
+          ),
+          _FilterChip(
+            label: 'notif_filter_festival'.tr(),
+            selected: _filter == _NotifFilter.festival,
+            onTap: () => setState(() => _filter = _NotifFilter.festival),
+            colors: colors,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNotificationList(AbstractThemeColors colors) {
+    final displayed = _filtered;
+    if (displayed.isEmpty) {
+      return _buildScrollable(
+        EmptyState(
+          icon: Icons.notifications_none_rounded,
+          title: 'no_notifications'.tr(),
+        ),
+      );
+    }
+    return ListView.separated(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+      itemCount: displayed.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      itemBuilder: (_, i) {
+        final item = displayed[i];
+        return AnimatedListItem(
+          index: i,
+          child: Dismissible(
+            key: ValueKey(item.id),
+            direction: DismissDirection.endToStart,
+            onDismissed: (_) => _dismissNotification(item),
+            background: Container(
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 20),
+              decoration: BoxDecoration(
+                color: AppColors.errorRed,
+                borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
+              ),
+              child: const Icon(Icons.delete_rounded, color: Colors.white, size: 22),
+            ),
+            child: TapScale(
+              onTap: () => _onTap(item),
+              child: NotificationCard(item: item, onTap: () => _onTap(item)),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -251,6 +324,47 @@ class _NotificationScreenState extends State<NotificationScreen> {
         child: SizedBox(
           height: constraints.maxHeight,
           child: Center(child: child),
+        ),
+      ),
+    );
+  }
+}
+
+class _FilterChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+  final AbstractThemeColors colors;
+
+  const _FilterChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+    required this.colors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: AppDimens.animXFast,
+        margin: const EdgeInsets.only(right: 8, bottom: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected ? colors.activate : colors.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected ? colors.activate : colors.listDivider,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: selected ? Colors.white : colors.textSecondary,
+          ),
         ),
       ),
     );

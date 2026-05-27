@@ -157,8 +157,13 @@ class PostService {
     required int postId,
     required String title,
     required String content,
+    String? imageObjectKey,
   }) =>
-      DioClient.dio.put('/posts/$postId', data: {'title': title, 'content': content});
+      DioClient.dio.put('/posts/$postId', data: {
+        'title': title,
+        'content': content,
+        'imageUrl': imageObjectKey,
+      });
 
   /// 게시글 조회수 증가 (command + query — 새 viewCount 반환)
   Future<int> incrementPostView(int postId) async {

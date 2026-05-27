@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/app_events.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
@@ -186,8 +187,9 @@ class _EnlargePostState extends State<EnlargePost> {
                           title: 'edit_post'.tr(),
                           initialTitle: widget.title,
                           initialContent: widget.content,
+                          initialImageUrl: widget.imageUrl,
                           showAnonymous: false,
-                          onSubmit: (t, c, _, __) async {
+                          onSubmit: (t, c, _, img) async {
                             await sl<PostService>().updatePost(
                               postId: widget.id,
                               title: t,
@@ -217,6 +219,8 @@ class _EnlargePostState extends State<EnlargePost> {
                           sl<ReportService>().submitReport(widget.id, reason, detail: detail),
                       duplicateErrorKey: 'report_duplicate',
                     );
+                  } else if (value == 'share') {
+                    Share.share('${widget.title}\n\n${widget.content}');
                   }
                 },
                 itemBuilder: (_) {
@@ -243,6 +247,16 @@ class _EnlargePostState extends State<EnlargePost> {
                           ],
                         ),
                       ),
+                      PopupMenuItem(
+                        value: 'share',
+                        child: Row(
+                          children: [
+                            const Icon(Icons.share_outlined, size: 18),
+                            const SizedBox(width: 8),
+                            Text('share'.tr()),
+                          ],
+                        ),
+                      ),
                     ];
                   } else {
                     return [
@@ -254,6 +268,16 @@ class _EnlargePostState extends State<EnlargePost> {
                             const SizedBox(width: 8),
                             Text('report_post'.tr(),
                                 style: const TextStyle(color: Colors.red)),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'share',
+                        child: Row(
+                          children: [
+                            const Icon(Icons.share_outlined, size: 18),
+                            const SizedBox(width: 8),
+                            Text('share'.tr()),
                           ],
                         ),
                       ),
@@ -350,6 +374,17 @@ class _EnlargePostState extends State<EnlargePost> {
                   onLikeTap: () => _notifier.toggleLike(userId),
                   onScrapTap: () => _notifier.toggleScrap(userId),
                 ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Icon(Icons.remove_red_eye_outlined, size: 14, color: colors.textSecondary.withValues(alpha: 0.5)),
+                    const SizedBox(width: 4),
+                    Text(
+                      'view_count'.tr(args: [_notifier.viewCount.toString()]),
+                      style: TextStyle(fontSize: 12, color: colors.textSecondary.withValues(alpha: 0.5)),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 24),
                 CommentSection(
                   comments: _notifier.comments,
@@ -365,6 +400,35 @@ class _EnlargePostState extends State<EnlargePost> {
                   onToggleLike: (commentId) =>
                       _notifier.toggleCommentLike(commentId, userId),
                   onDeleteComment: (commentId) => _notifier.deleteComment(commentId),
+                  onEditComment: (commentId, currentContent) async {
+                    final controller = TextEditingController(text: currentContent);
+                    final result = await showDialog<String>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: Text('edit_comment'.tr()),
+                        content: TextField(
+                          controller: controller,
+                          autofocus: true,
+                          maxLines: null,
+                          decoration: InputDecoration(hintText: 'enter_comment'.tr()),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: Text('cancel'.tr()),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+                            child: Text('done'.tr()),
+                          ),
+                        ],
+                      ),
+                    );
+                    controller.dispose();
+                    if (result != null && result.isNotEmpty) {
+                      await _notifier.updateComment(commentId, result);
+                    }
+                  },
                 ),
                 const SizedBox(height: 16),
               ],

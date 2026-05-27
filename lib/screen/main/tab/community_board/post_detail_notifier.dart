@@ -16,6 +16,7 @@ class PostDetailNotifier extends ChangeNotifier {
   bool scraped = false;
   late int heartCount;
   int scrapCount = 0;
+  int viewCount = 0;
   bool isSubmitting = false;
   String? commentError;
   bool isToggling = false;
@@ -30,7 +31,16 @@ class PostDetailNotifier extends ChangeNotifier {
   }
 
   Future<void> init() async {
-    await Future.wait([loadPostState(), fetchComments()]);
+    await Future.wait([loadPostState(), fetchComments(), _incrementView()]);
+  }
+
+  Future<void> _incrementView() async {
+    try {
+      viewCount = await _postService.incrementPostView(postId);
+      notifyListeners();
+    } catch (e) {
+      debugPrint('incrementView error: $e');
+    }
   }
 
   Future<void> loadPostState() async {
@@ -100,6 +110,22 @@ class PostDetailNotifier extends ChangeNotifier {
     } catch (e) {
       debugPrint('deletePost error: $e');
       onError?.call('post_delete_failed');
+    }
+  }
+
+  Future<void> updateComment(int commentId, String newContent) async {
+    final idx = comments.indexWhere((c) => c.id == commentId);
+    if (idx == -1) return;
+    final prev = comments[idx];
+    comments[idx] = prev.copyWith(content: newContent);
+    notifyListeners();
+    try {
+      await _commentService.updateComment(commentId, newContent);
+    } catch (e) {
+      comments[idx] = prev;
+      notifyListeners();
+      debugPrint('updateComment error: $e');
+      onError?.call('comment_update_failed');
     }
   }
 

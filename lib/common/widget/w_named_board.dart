@@ -15,6 +15,7 @@ class NamedBoard extends StatefulWidget {
   final IconData headerIcon;
   final Future<List<Post>> Function() fetchPosts;
   final Widget Function() postListScreenFactory;
+  final VoidCallback? onWriteTap;
 
   const NamedBoard({
     super.key,
@@ -23,6 +24,7 @@ class NamedBoard extends StatefulWidget {
     required this.headerIcon,
     required this.fetchPosts,
     required this.postListScreenFactory,
+    this.onWriteTap,
   });
 
   @override
@@ -61,6 +63,7 @@ class _NamedBoardState extends State<NamedBoard> {
         ),
       ),
       onRetry: _refresh,
+      onWriteTap: widget.onWriteTap,
     );
   }
 }

@@ -23,6 +23,7 @@ class BoardPreviewCard extends StatelessWidget {
   final double? height;
   final String? emptyHint;
   final int? maxItems;
+  final VoidCallback? onWriteTap;
 
   const BoardPreviewCard({
     super.key,
@@ -37,6 +38,7 @@ class BoardPreviewCard extends StatelessWidget {
     this.height,
     this.emptyHint,
     this.maxItems,
+    this.onWriteTap,
   });
 
   @override
@@ -139,6 +141,12 @@ class BoardPreviewCard extends StatelessWidget {
                 style: TextStyle(fontSize: 13, color: colors.textSecondary),
                 textAlign: TextAlign.center,
               ),
+              if (onWriteTap != null)
+                TextButton.icon(
+                  onPressed: onWriteTap,
+                  icon: const Icon(Icons.edit_outlined, size: 16),
+                  label: Text('write_post'.tr(), style: const TextStyle(fontSize: 13)),
+                ),
             ],
           ),
         ),

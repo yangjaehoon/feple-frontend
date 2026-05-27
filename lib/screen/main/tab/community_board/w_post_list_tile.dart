@@ -9,12 +9,33 @@ import 'package:flutter/material.dart';
 class PostListTile extends StatelessWidget {
   final Post post;
   final VoidCallback onTap;
+  final String? highlightKeyword;
 
   const PostListTile({
     super.key,
     required this.post,
     required this.onTap,
+    this.highlightKeyword,
   });
+
+  List<TextSpan> _buildHighlightedSpans(String text, String keyword, TextStyle base, Color highlightColor) {
+    if (keyword.isEmpty) return [TextSpan(text: text, style: base)];
+    final pattern = RegExp(RegExp.escape(keyword), caseSensitive: false);
+    final spans = <TextSpan>[];
+    int last = 0;
+    for (final match in pattern.allMatches(text)) {
+      if (match.start > last) {
+        spans.add(TextSpan(text: text.substring(last, match.start), style: base));
+      }
+      spans.add(TextSpan(
+        text: text.substring(match.start, match.end),
+        style: base.copyWith(color: highlightColor, fontWeight: FontWeight.w700),
+      ));
+      last = match.end;
+    }
+    if (last < text.length) spans.add(TextSpan(text: text.substring(last), style: base));
+    return spans;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,13 +48,24 @@ class PostListTile extends StatelessWidget {
         certified: post.certified,
         userRole: post.userRole,
       ),
-      title: Text(
-        post.title,
-        style: TextStyle(
-          color: colors.textTitle,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
+      title: highlightKeyword != null && highlightKeyword!.isNotEmpty
+          ? RichText(
+              text: TextSpan(
+                children: _buildHighlightedSpans(
+                  post.title,
+                  highlightKeyword!,
+                  TextStyle(color: colors.textTitle, fontWeight: FontWeight.w600),
+                  colors.activate,
+                ),
+              ),
+            )
+          : Text(
+              post.title,
+              style: TextStyle(
+                color: colors.textTitle,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,

@@ -13,6 +13,7 @@ class CommentSection extends StatelessWidget {
   final void Function(int commentId, String nickname)? onReply;
   final void Function(int commentId)? onToggleLike;
   final void Function(int commentId)? onDeleteComment;
+  final void Function(int commentId, String currentContent)? onEditComment;
 
   const CommentSection({
     super.key,
@@ -22,12 +23,23 @@ class CommentSection extends StatelessWidget {
     this.onReply,
     this.onToggleLike,
     this.onDeleteComment,
+    this.onEditComment,
   });
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    if (comments.isEmpty) return const SizedBox.shrink();
+    if (comments.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Center(
+          child: Text(
+            'be_first_to_comment'.tr(),
+            style: TextStyle(fontSize: 13, color: colors.textSecondary),
+          ),
+        ),
+      );
+    }
 
     // 루트 댓글 / 대댓글 분리
     final roots = comments.where((c) => c.parentId == null).toList();
@@ -49,6 +61,7 @@ class CommentSection extends StatelessWidget {
         onReply: onReply != null ? () => onReply!(root.id, root.nickname) : null,
         onToggleLike: onToggleLike != null ? () => onToggleLike!(root.id) : null,
         onDelete: onDeleteComment != null ? () => onDeleteComment!(root.id) : null,
+        onEdit: onEditComment != null ? () => onEditComment!(root.id, root.content) : null,
       ));
 
       final replies = repliesMap[root.id] ?? [];
@@ -64,6 +77,7 @@ class CommentSection extends StatelessWidget {
             onReport: onReport != null ? () => onReport!(reply.id) : null,
             onToggleLike: onToggleLike != null ? () => onToggleLike!(reply.id) : null,
             onDelete: onDeleteComment != null ? () => onDeleteComment!(reply.id) : null,
+            onEdit: onEditComment != null ? () => onEditComment!(reply.id, reply.content) : null,
           ),
         ));
       }
@@ -85,6 +99,7 @@ class _CommentTile extends StatelessWidget {
   final VoidCallback? onReply;
   final VoidCallback? onToggleLike;
   final VoidCallback? onDelete;
+  final VoidCallback? onEdit;
 
   const _CommentTile({
     required this.comment,
@@ -94,6 +109,7 @@ class _CommentTile extends StatelessWidget {
     this.onReply,
     this.onToggleLike,
     this.onDelete,
+    this.onEdit,
   });
 
   @override
@@ -196,7 +212,9 @@ class _CommentTile extends StatelessWidget {
               padding: EdgeInsets.zero,
               icon: Icon(Icons.more_vert, size: 16, color: colors.textSecondary),
               onSelected: (value) async {
-                if (value == 'delete') {
+                if (value == 'edit') {
+                  onEdit?.call();
+                } else if (value == 'delete') {
                   final confirmed = await showConfirmDialog(
                     context,
                     title: 'delete_comment'.tr(),
@@ -207,6 +225,16 @@ class _CommentTile extends StatelessWidget {
                 }
               },
               itemBuilder: (_) => [
+                PopupMenuItem(
+                  value: 'edit',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.edit_outlined, size: 16),
+                      const SizedBox(width: 8),
+                      Text('edit_comment'.tr(), style: const TextStyle(fontSize: 13)),
+                    ],
+                  ),
+                ),
                 PopupMenuItem(
                   value: 'delete',
                   child: Row(

@@ -39,6 +39,7 @@ class _CommunityPostState extends State<CommunityPost> {
   bool _hasMore = true;
   bool _hasError = false;
   int _page = 0;
+  int _loadId = 0;
 
   String get _serviceBoardType {
     if (widget.boardname == 'companion_board'.tr()) return BoardTypes.mate;
@@ -72,12 +73,13 @@ class _CommunityPostState extends State<CommunityPost> {
   }
 
   Future<void> _load() async {
+    final myId = ++_loadId;
     setState(() { _loading = true; _hasError = false; _posts.clear(); _page = 0; _hasMore = true; });
     try {
       final items = _isPaginated
           ? await _postService.fetchPostsPage(_serviceBoardType, page: 0, size: _pageSize)
           : await _postService.fetchPosts(_serviceBoardType);
-      if (!mounted) return;
+      if (!mounted || _loadId != myId) return;
       setState(() {
         _posts.addAll(items);
         _loading = false;
@@ -87,7 +89,7 @@ class _CommunityPostState extends State<CommunityPost> {
         }
       });
     } catch (_) {
-      if (mounted) setState(() { _loading = false; _hasError = true; });
+      if (mounted && _loadId == myId) setState(() { _loading = false; _hasError = true; });
     }
   }
 

@@ -1,9 +1,11 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:feple/screen/main/tab/my_page/w_follow_artists.dart';
 import 'package:feple/screen/main/tab/my_page/w_festival_certification.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_post_comment.dart';
 import 'package:feple/screen/main/tab/my_page/w_profile.dart';
+import 'package:feple/screen/settings/s_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../provider/user_provider.dart';
@@ -56,7 +58,18 @@ class _MypageFragmentState extends State<MypageFragment> {
               ),
             ),
           ),
-          const FepleAppBar("Feple"),
+          FepleAppBar(
+            "Feple",
+            extraTrailingActions: [
+              IconButton(
+                icon: const Icon(Icons.settings_rounded, color: Colors.white),
+                onPressed: () => Navigator.push(
+                  context,
+                  SlideRoute(builder: (_) => const SettingsScreen()),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

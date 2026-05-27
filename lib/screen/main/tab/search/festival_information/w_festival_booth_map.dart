@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/booth_model.dart';
 import 'package:feple/service/festival_service.dart';
@@ -168,10 +169,7 @@ class _FestivalBoothMapState extends State<FestivalBoothMap> {
 
   Widget _buildBody(AbstractThemeColors colors) {
     if (_loading) {
-      return const SizedBox(
-        height: 300,
-        child: Center(child: CircularProgressIndicator()),
-      );
+      return _buildSkeleton();
     }
     if (_hasError) {
       return _buildErrorState(colors);
@@ -186,6 +184,29 @@ class _FestivalBoothMapState extends State<FestivalBoothMap> {
       );
     }
     return _buildMap();
+  }
+
+  Widget _buildSkeleton() {
+    return SizedBox(
+      height: 300,
+      child: Stack(
+        children: [
+          const SkeletonBox(height: 300, borderRadius: BorderRadius.zero),
+          const Positioned(
+            top: 70, left: 60,
+            child: SkeletonBox(width: 32, height: 32, borderRadius: BorderRadius.all(Radius.circular(16))),
+          ),
+          const Positioned(
+            top: 140, left: 180,
+            child: SkeletonBox(width: 32, height: 32, borderRadius: BorderRadius.all(Radius.circular(16))),
+          ),
+          const Positioned(
+            top: 200, left: 110,
+            child: SkeletonBox(width: 32, height: 32, borderRadius: BorderRadius.all(Radius.circular(16))),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildErrorState(AbstractThemeColors colors) {

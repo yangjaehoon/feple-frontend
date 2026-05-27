@@ -405,5 +405,12 @@
   "no_upcoming_festivals": "예정된 페스티벌이 없습니다",
   "following": "팔로잉",
   "festival_ongoing": "진행중",
+  "settings": "설정",
+  "settings_account": "계정",
+  "settings_app": "앱 설정",
+  "settings_support": "고객지원",
+  "dark_mode": "다크 모드",
+  "language": "언어",
+  "logout_confirm": "정말 로그아웃 하시겠습니까?",
   "d_day": "D-DAY"
 }

@@ -9,10 +9,11 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
 class FepleAppBar extends StatefulWidget {
-  const FepleAppBar(this.appbarTitle, {super.key, this.showBackButton = false});
+  const FepleAppBar(this.appbarTitle, {super.key, this.showBackButton = false, this.extraTrailingActions = const []});
 
   final String appbarTitle;
   final bool showBackButton;
+  final List<Widget> extraTrailingActions;
 
   @override
   State<FepleAppBar> createState() => _FepleAppBarState();
@@ -59,6 +60,7 @@ class _FepleAppBarState extends State<FepleAppBar> {
           _buildLeadingButton(context),
           _buildTitleLogo(context, titleStyle),
           const Spacer(),
+          ...widget.extraTrailingActions,
           _buildSearchButton(context),
           _buildNotificationButton(colors),
         ],

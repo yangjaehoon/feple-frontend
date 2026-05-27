@@ -15,7 +15,7 @@ class BoardPostListScreen extends StatefulWidget {
   final String boardname;
   final Future<List<Post>> Function() fetchPosts;
   final String writeScreenTitle;
-  final Future<void> Function(String title, String content, bool anonymous) onSubmitPost;
+  final Future<void> Function(String title, String content, bool anonymous, String? imageObjectKey) onSubmitPost;
 
   const BoardPostListScreen({
     super.key,

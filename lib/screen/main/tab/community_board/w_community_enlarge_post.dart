@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_inline_badge.dart';
 import 'package:feple/common/widget/w_profile_avatar.dart';
@@ -25,6 +26,7 @@ class EnlargePost extends StatefulWidget {
   final bool certified;
   final String? userRole;
   final String? profileImageUrl;
+  final String? imageUrl;
   final DateTime? createdAt;
 
   const EnlargePost({
@@ -38,6 +40,7 @@ class EnlargePost extends StatefulWidget {
     this.certified = false,
     this.userRole,
     this.profileImageUrl,
+    this.imageUrl,
     this.createdAt,
   });
 
@@ -53,6 +56,7 @@ class EnlargePost extends StatefulWidget {
         certified = post.certified,
         userRole = post.userRole,
         profileImageUrl = post.profileImageUrl,
+        imageUrl = post.imageUrl,
         createdAt = post.createdAt;
 
   @override
@@ -226,6 +230,17 @@ class _EnlargePostState extends State<EnlargePost> {
                   widget.content,
                   style: TextStyle(color: colors.textTitle, fontSize: 15),
                 ),
+                if (widget.imageUrl != null) ...[
+                  const SizedBox(height: 12),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.imageUrl!,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    ),
+                  ),
+                ],
                 Divider(
                     thickness: 1, height: 40, color: colors.listDivider),
                 LikeCommentRow(

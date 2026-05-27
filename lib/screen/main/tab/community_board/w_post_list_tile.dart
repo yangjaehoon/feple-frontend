@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_profile_avatar.dart';
 import 'package:feple/model/post_model.dart';
@@ -50,11 +51,28 @@ class PostListTile extends StatelessWidget {
             ),
         ],
       ),
-      trailing: PostStatRow(
-        likeCount: post.likeCount,
-        commentCount: post.commentCount,
-        scrapCount: post.scrapCount,
-        compact: false,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (post.imageUrl != null) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: CachedNetworkImage(
+                imageUrl: post.imageUrl!,
+                width: 48,
+                height: 48,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(width: 8),
+          ],
+          PostStatRow(
+            likeCount: post.likeCount,
+            commentCount: post.commentCount,
+            scrapCount: post.scrapCount,
+            compact: true,
+          ),
+        ],
       ),
     );
   }

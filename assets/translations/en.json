@@ -374,5 +374,7 @@
   "filter_age_restriction": "Age Restriction",
   "age_12": "12+",
   "age_15": "15+",
-  "age_19": "19+"
+  "age_19": "19+",
+  "sort_latest": "Latest",
+  "sort_popular": "Popular"
 }

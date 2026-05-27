@@ -1,12 +1,17 @@
+import 'dart:typed_data';
+
 import 'package:feple/common/common.dart';
 import 'package:feple/common/exception/banned_word_exception.dart';
+import 'package:feple/common/util/image_upload_helper.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
+import 'package:feple/service/post_service.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class WritePostScreen extends StatefulWidget {
   final String title;
-  final Future<void> Function(String title, String content, bool anonymous) onSubmit;
+  final Future<void> Function(String title, String content, bool anonymous, String? imageObjectKey) onSubmit;
 
   const WritePostScreen({
     super.key,
@@ -26,6 +31,7 @@ class _WritePostScreenState extends State<WritePostScreen> {
   bool _titleHasBannedWord = false;
   bool _contentHasBannedWord = false;
   bool _anonymous = false;
+  Uint8List? _selectedImage;
 
   @override
   void initState() {
@@ -49,13 +55,33 @@ class _WritePostScreenState extends State<WritePostScreen> {
     super.dispose();
   }
 
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1080,
+      imageQuality: 85,
+    );
+    if (picked == null) return;
+    final bytes = await picked.readAsBytes();
+    if (mounted) setState(() => _selectedImage = bytes);
+  }
+
   Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     final title = _titleController.text.trim();
     final content = _contentController.text.trim();
     setState(() => _isSubmitting = true);
     try {
-      await widget.onSubmit(title, content, _anonymous);
+      String? imageObjectKey;
+      if (_selectedImage != null) {
+        final presign = await ImageUploadHelper.compressAndUpload(
+          presignEndpoint: PostService.postImagePresignEndpoint,
+          imageData: _selectedImage!,
+        );
+        imageObjectKey = presign.objectKey;
+      }
+      await widget.onSubmit(title, content, _anonymous, imageObjectKey);
       if (!mounted) return;
       context.showSuccessSnackbar('post_success'.tr());
       Navigator.of(context).pop();
@@ -119,6 +145,37 @@ class _WritePostScreenState extends State<WritePostScreen> {
     );
   }
 
+  Widget _buildImagePicker(AbstractThemeColors colors) {
+    return Row(
+      children: [
+        GestureDetector(
+          onTap: _pickImage,
+          child: Container(
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              border: Border.all(color: colors.listDivider),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: _selectedImage != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.memory(_selectedImage!, fit: BoxFit.cover),
+                  )
+                : Icon(Icons.add_photo_alternate_outlined, color: colors.textSecondary, size: 32),
+          ),
+        ),
+        if (_selectedImage != null) ...[
+          const SizedBox(width: 8),
+          IconButton(
+            icon: Icon(Icons.close_rounded, color: colors.textSecondary, size: 20),
+            onPressed: () => setState(() => _selectedImage = null),
+          ),
+        ],
+      ],
+    );
+  }
+
   Widget _buildForm(AbstractThemeColors colors) {
     return Form(
       key: _formKey,
@@ -149,6 +206,8 @@ class _WritePostScreenState extends State<WritePostScreen> {
             ),
             validator: (v) => (v == null || v.trim().isEmpty) ? 'enter_content'.tr() : null,
           ),
+          const SizedBox(height: 12),
+          _buildImagePicker(colors),
           const SizedBox(height: 4),
           GestureDetector(
             onTap: () => setState(() => _anonymous = !_anonymous),

@@ -41,6 +41,7 @@ class _CommunityPostState extends State<CommunityPost> {
   bool _hasError = false;
   int _page = 0;
   int _loadId = 0;
+  String _sort = 'latest';
 
   String get _serviceBoardType => widget.boardType;
 
@@ -73,7 +74,7 @@ class _CommunityPostState extends State<CommunityPost> {
     setState(() { _loading = true; _hasError = false; _posts.clear(); _page = 0; _hasMore = true; });
     try {
       final items = _isPaginated
-          ? await _postService.fetchPostsPage(_serviceBoardType, page: 0, size: _pageSize)
+          ? await _postService.fetchPostsPage(_serviceBoardType, page: 0, size: _pageSize, sort: _sort)
           : await _postService.fetchPosts(_serviceBoardType);
       if (!mounted || _loadId != myId) return;
       setState(() {
@@ -93,7 +94,7 @@ class _CommunityPostState extends State<CommunityPost> {
     if (!_hasMore || _loadingMore) return;
     setState(() => _loadingMore = true);
     try {
-      final items = await _postService.fetchPostsPage(_serviceBoardType, page: _page, size: _pageSize);
+      final items = await _postService.fetchPostsPage(_serviceBoardType, page: _page, size: _pageSize, sort: _sort);
       if (!mounted) return;
       setState(() {
         _posts.addAll(items);
@@ -233,9 +234,9 @@ class _CommunityPostState extends State<CommunityPost> {
             SlideRoute(
               builder: (_) => WritePostScreen(
                 title: 'write_post'.tr(),
-                onSubmit: (t, c, a) async {
+                onSubmit: (t, c, a, img) async {
                   await _postService.createPost(
-                      boardType: _serviceBoardType, title: t, content: c, anonymous: a);
+                      boardType: _serviceBoardType, title: t, content: c, anonymous: a, imageObjectKey: img);
                   AppEvents.postChanged.value++;
                 },
               ),
@@ -248,6 +249,31 @@ class _CommunityPostState extends State<CommunityPost> {
       body: Column(
         children: [
           SecondaryAppBar(title: widget.boardname),
+          if (_isPaginated)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                children: [
+                  _SortChip(
+                    label: 'sort_latest'.tr(),
+                    selected: _sort == 'latest',
+                    onTap: () {
+                      setState(() => _sort = 'latest');
+                      _load();
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  _SortChip(
+                    label: 'sort_popular'.tr(),
+                    selected: _sort == 'popular',
+                    onTap: () {
+                      setState(() => _sort = 'popular');
+                      _load();
+                    },
+                  ),
+                ],
+              ),
+            ),
           Expanded(
             child: RefreshIndicator(
               color: colors.activate,
@@ -256,6 +282,45 @@ class _CommunityPostState extends State<CommunityPost> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _SortChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _SortChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: AppDimens.animXFast,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected ? colors.activate : colors.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected ? colors.activate : colors.listDivider,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
+            color: selected ? Colors.white : colors.textSecondary,
+          ),
+        ),
       ),
     );
   }

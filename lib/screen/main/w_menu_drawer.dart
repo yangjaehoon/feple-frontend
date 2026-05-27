@@ -240,7 +240,6 @@ class _MenuWidget extends StatelessWidget {
               ],
               Expanded(
                   child: text.text
-                      .textStyle(defaultFontStyle())
                       .color(textColor)
                       .size(15)
                       .make()),

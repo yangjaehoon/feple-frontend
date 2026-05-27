@@ -393,5 +393,6 @@
   "edit_comment": "Edit comment",
   "comment_update_failed": "Failed to update comment",
   "share": "Share",
-  "view_count": "Views {}"
+  "view_count": "Views {}",
+  "edited": "(edited)"
 }

@@ -149,12 +149,23 @@ class _CommentTile extends StatelessWidget {
                     ),
                   ],
                 ),
-                Text(
-                  comment.createdAt.relativeTime,
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: colors.textSecondary.withValues(alpha: 0.6),
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      comment.createdAt.relativeTime,
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: colors.textSecondary.withValues(alpha: 0.6),
+                      ),
+                    ),
+                    if (comment.isEdited) ...[
+                      const SizedBox(width: 4),
+                      Text(
+                        'edited'.tr(),
+                        style: TextStyle(fontSize: 9, color: colors.textSecondary.withValues(alpha: 0.45)),
+                      ),
+                    ],
+                  ],
                 ),
                 const SizedBox(height: 2),
                 Text(

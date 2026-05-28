@@ -52,6 +52,7 @@ class _FollowedArtistsByGenrePageState
       ),
       builder: (_) => ReorderSheet(
         title: 'followed_artists'.tr(),
+        subtitle: 'reorder_followed_artists_hint'.tr(),
         items: items,
         onSave: widget.onSaveOrder!,
       ),

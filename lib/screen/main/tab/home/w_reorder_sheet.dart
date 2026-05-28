@@ -16,12 +16,14 @@ class ReorderItem {
 /// 드래그 앤 드롭으로 순서를 변경할 수 있는 바텀시트
 class ReorderSheet extends StatefulWidget {
   final String title;
+  final String? subtitle;
   final List<ReorderItem> items;
   final void Function(List<int>) onSave;
 
   const ReorderSheet({
     super.key,
     required this.title,
+    this.subtitle,
     required this.items,
     required this.onSave,
   });
@@ -54,13 +56,28 @@ class _ReorderSheetState extends State<ReorderSheet> {
           const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Text(
-              widget.title,
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w800,
-                color: colors.textTitle,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.title,
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                    color: colors.textTitle,
+                  ),
+                ),
+                if (widget.subtitle != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    widget.subtitle!,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: colors.textSecondary,
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
           const SizedBox(height: 8),

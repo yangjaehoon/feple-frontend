@@ -124,7 +124,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
               style: TextStyle(
                   fontSize: 15, fontWeight: FontWeight.w700, color: colors.textTitle)),
           const Spacer(),
-          if (!_notifier.isLoading && _notifier.error == null && _notifier.range.filtered.isNotEmpty)
+          if (!_notifier.isLoading && _notifier.error == null && _notifier.hasEntries)
             GestureDetector(
               onTap: () => Navigator.push(
                 context,
@@ -163,15 +163,15 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
         ),
       );
     }
-    if (_notifier.range.filtered.isEmpty) {
+    if (!_notifier.hasEntries) {
       return EmptyState(icon: Icons.schedule_rounded, title: 'no_timetable'.tr());
     }
     return LayoutBuilder(
       builder: (_, constraints) => TimetableGrid(
-        stages: _notifier.range.stages,
-        filtered: _notifier.range.filtered,
-        startHour: _notifier.range.startHour,
-        endHour: _notifier.range.endHour,
+        stages: _notifier.stages,
+        filtered: _notifier.filteredEntries,
+        startHour: _notifier.startHour,
+        endHour: _notifier.endHour,
         followedNames: _notifier.followedNames,
         availableW: constraints.maxWidth,
         scrollControllers: TimetableScrollControllers(

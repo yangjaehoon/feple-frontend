@@ -371,7 +371,7 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
   @override
   void initState() {
     super.initState();
-    _selectedIds = widget.entry.songs.map((s) => s.id).toSet();
+    _selectedIds = widget.entry.songIds;
     _songsFuture = sl<SongService>().fetchSongs(widget.entry.artistId);
   }
 

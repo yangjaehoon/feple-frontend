@@ -59,14 +59,47 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final _navigatorKey = GlobalKey<NavigatorState>();
+  bool _isBanDialogShowing = false;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       DioClient.onSessionExpired = () => userProvider.logout();
+      DioClient.onUserBanned = () => _showBanDialog(userProvider);
       _tryAutoLogin(userProvider);
     });
+  }
+
+  Future<void> _showBanDialog(UserProvider userProvider) async {
+    if (_isBanDialogShowing) return;
+    _isBanDialogShowing = true;
+    try {
+      final ctx = _navigatorKey.currentContext;
+      if (ctx != null && ctx.mounted) {
+        await showDialog<void>(
+          context: ctx,
+          barrierDismissible: false,
+          builder: (dialogCtx) => AlertDialog(
+            title: Text('account_banned_title'.tr()),
+            content: Text('account_banned_message'.tr()),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogCtx).pop(),
+                child: Text('confirm'.tr()),
+              ),
+            ],
+          ),
+        );
+      }
+    } finally {
+      _isBanDialogShowing = false;
+      if (userProvider.user != null) {
+        await userProvider.logout();
+      }
+    }
   }
 
   Future<void> _tryAutoLogin(UserProvider userProvider) async {
@@ -89,6 +122,7 @@ class _MyAppState extends State<MyApp> {
         builder: (context) {
           return MaterialApp(
             key: ValueKey(context.locale),
+            navigatorKey: _navigatorKey,
             debugShowCheckedModeBanner: false,
             theme: context.themeType.themeData,
             home: Consumer<UserProvider>(

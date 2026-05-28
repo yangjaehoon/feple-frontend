@@ -6,6 +6,8 @@
   "done": "Done",
   "cancel": "Cancel",
   "confirm": "Confirm",
+  "account_banned_title": "Account Suspended",
+  "account_banned_message": "Your account has been suspended.\nPlease contact customer support.",
   "save": "Save",
   "customer_service": "Customer Service",
   "logout": "Log Out",

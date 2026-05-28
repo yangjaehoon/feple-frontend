@@ -49,6 +49,10 @@ class UserService {
   Future<void> updateNickname(int userId, String nickname) =>
       DioClient.dio.put('/users/$userId', data: {'nickname': nickname});
 
+  Future<void> updateBio(int userId, String bio) async {
+    await DioClient.dio.patch('/users/$userId/bio', data: {'bio': bio});
+  }
+
   Future<Set<String>> fetchFollowedArtistNames(int userId) async {
     final raw = await fetchFollowing(userId);
     return raw

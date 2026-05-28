@@ -5,10 +5,13 @@ import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/login/s_login.dart';
+import 'package:feple/model/notification_preference_model.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/my_page/w_edit_profile.dart';
 import 'package:feple/screen/opensource/s_opensource.dart';
+import 'package:feple/service/notification_preference_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get_utils/src/extensions/string_extensions.dart';
@@ -24,6 +27,33 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _clearingCache = false;
+  NotificationPreferenceModel? _prefs;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPrefs();
+  }
+
+  Future<void> _loadPrefs() async {
+    try {
+      final prefs = await sl<NotificationPreferenceService>().getPreferences();
+      if (mounted) setState(() => _prefs = prefs);
+    } catch (e) {
+      debugPrint('[Settings] prefs load failed: $e');
+    }
+  }
+
+  Future<void> _togglePref(NotificationPreferenceModel newPrefs) async {
+    final old = _prefs;
+    setState(() => _prefs = newPrefs);
+    try {
+      final updated = await sl<NotificationPreferenceService>().updatePreferences(newPrefs);
+      if (mounted) setState(() => _prefs = updated);
+    } catch (_) {
+      if (mounted) setState(() => _prefs = old);
+    }
+  }
 
   Future<void> _logout() async {
     final confirmed = await showConfirmDialog(
@@ -142,6 +172,60 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       : null,
                   onTap: _clearingCache ? null : _clearCache,
                 ),
+                _SectionHeader(label: 'notif_settings'.tr(), colors: colors),
+                if (_prefs == null)
+                  Container(
+                    color: colors.surface,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Center(
+                      child: CircularProgressIndicator(color: colors.activate, strokeWidth: 2),
+                    ),
+                  )
+                else ...[
+                  _SettingsItem(
+                    icon: Icons.verified_rounded,
+                    label: 'notif_cert'.tr(),
+                    colors: colors,
+                    trailing: Switch(
+                      value: _prefs!.certEnabled,
+                      onChanged: (_) => _togglePref(_prefs!.copyWith(certEnabled: !_prefs!.certEnabled)),
+                      activeThumbColor: colors.activate,
+                    ),
+                  ),
+                  _ItemDivider(colors: colors),
+                  _SettingsItem(
+                    icon: Icons.chat_bubble_rounded,
+                    label: 'notif_comment'.tr(),
+                    colors: colors,
+                    trailing: Switch(
+                      value: _prefs!.commentEnabled,
+                      onChanged: (_) => _togglePref(_prefs!.copyWith(commentEnabled: !_prefs!.commentEnabled)),
+                      activeThumbColor: colors.activate,
+                    ),
+                  ),
+                  _ItemDivider(colors: colors),
+                  _SettingsItem(
+                    icon: Icons.festival_rounded,
+                    label: 'notif_festival'.tr(),
+                    colors: colors,
+                    trailing: Switch(
+                      value: _prefs!.festivalEnabled,
+                      onChanged: (_) => _togglePref(_prefs!.copyWith(festivalEnabled: !_prefs!.festivalEnabled)),
+                      activeThumbColor: colors.activate,
+                    ),
+                  ),
+                  _ItemDivider(colors: colors),
+                  _SettingsItem(
+                    icon: Icons.music_note_rounded,
+                    label: 'notif_song_request'.tr(),
+                    colors: colors,
+                    trailing: Switch(
+                      value: _prefs!.songRequestEnabled,
+                      onChanged: (_) => _togglePref(_prefs!.copyWith(songRequestEnabled: !_prefs!.songRequestEnabled)),
+                      activeThumbColor: colors.activate,
+                    ),
+                  ),
+                ],
                 _SectionHeader(label: 'settings_support'.tr(), colors: colors),
                 _SettingsItem(
                   icon: Icons.headset_mic_rounded,

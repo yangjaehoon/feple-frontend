@@ -4,12 +4,14 @@ class FestivalArtistItem {
   final String artistName;
   final String? profileImageUrl;
   final String? stageName;
+  final List<String> performanceDates;
 
   FestivalArtistItem({
     required this.artistId,
     required this.artistName,
     this.profileImageUrl,
     this.stageName,
+    this.performanceDates = const [],
   });
 
   String get displayName => artistName;
@@ -20,6 +22,10 @@ class FestivalArtistItem {
       artistName: json['artistName'] as String,
       profileImageUrl: json['profileImageUrl'] as String?,
       stageName: json['stageName'] as String?,
+      performanceDates: (json['performanceDates'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
     );
   }
 }

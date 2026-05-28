@@ -6,6 +6,7 @@ class FestivalActionButton extends StatelessWidget {
   final IconData icon;
   final Color? color;
   final Color? bgColor;
+  final String? label;
 
   const FestivalActionButton({
     super.key,
@@ -13,20 +14,38 @@ class FestivalActionButton extends StatelessWidget {
     required this.icon,
     this.color,
     this.bgColor,
+    this.label,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    final iconWidget = GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(6),
-        decoration: BoxDecoration(
-          color: bgColor ?? Colors.white.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-        ),
-        child: Icon(icon, color: color ?? Colors.white, size: 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: bgColor ?? Colors.white.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+            ),
+            child: Icon(icon, color: color ?? Colors.white, size: 20),
+          ),
+          if (label != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              label!,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w500,
+                color: (color ?? Colors.white).withValues(alpha: 0.85),
+              ),
+            ),
+          ],
+        ],
       ),
     );
+    return iconWidget;
   }
 }

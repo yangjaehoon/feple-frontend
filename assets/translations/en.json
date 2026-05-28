@@ -319,7 +319,7 @@
   "action_weather": "Weather",
   "action_map": "Map",
   "action_cert": "Verify",
-  "attending_count": "@{count} attending",
+  "attending_count": "{} attending",
   "attend_toggle": "Attend",
   "lineup_all": "All",
   "select_festival_required_msg": "Please select a festival.",

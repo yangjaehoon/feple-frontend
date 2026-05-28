@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:feple/common/exception/banned_word_exception.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/followed_artist.dart';
 import 'package:feple/model/user_model.dart';
@@ -50,7 +51,16 @@ class UserService {
       DioClient.dio.put('/users/$userId', data: {'nickname': nickname});
 
   Future<void> updateBio(int userId, String bio) async {
-    await DioClient.dio.patch('/users/$userId/bio', data: {'bio': bio});
+    try {
+      await DioClient.dio.patch('/users/$userId/bio', data: {'bio': bio});
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        final data = e.response?.data;
+        final msg = (data is Map ? data['message'] as String? : null) ?? '';
+        if (msg.contains('금칙어')) throw const BannedWordException('bio');
+      }
+      rethrow;
+    }
   }
 
   Future<Set<String>> fetchFollowedArtistNames(int userId) async {

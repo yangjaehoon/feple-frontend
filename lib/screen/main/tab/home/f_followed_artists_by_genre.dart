@@ -1,12 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/widget/w_animated_list_item.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/followed_artist.dart';
 import 'package:feple/screen/main/tab/home/w_reorder_sheet.dart';
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:flutter/material.dart';
 
-class FollowedArtistsByGenrePage extends StatelessWidget {
+class FollowedArtistsByGenrePage extends StatefulWidget {
   const FollowedArtistsByGenrePage({
     super.key,
     required this.artists,
@@ -16,8 +19,29 @@ class FollowedArtistsByGenrePage extends StatelessWidget {
   final List<FollowedArtist> artists;
   final Future<void> Function(List<int>)? onSaveOrder;
 
-  void _openSettings(BuildContext context) {
-    final items = artists
+  @override
+  State<FollowedArtistsByGenrePage> createState() =>
+      _FollowedArtistsByGenrePageState();
+}
+
+class _FollowedArtistsByGenrePageState
+    extends State<FollowedArtistsByGenrePage> {
+  String? _selectedGenre;
+
+  List<String> get _genres => widget.artists
+      .map((a) => a.genre)
+      .whereType<String>()
+      .where((g) => g.isNotEmpty)
+      .toSet()
+      .toList()
+    ..sort();
+
+  List<FollowedArtist> get _filteredArtists => _selectedGenre == null
+      ? widget.artists
+      : widget.artists.where((a) => a.genre == _selectedGenre).toList();
+
+  void _openSettings() {
+    final items = widget.artists
         .map((a) => ReorderItem(id: a.id, name: a.name, imageUrl: a.profileImageUrl))
         .toList();
     showModalBottomSheet(
@@ -29,30 +53,16 @@ class FollowedArtistsByGenrePage extends StatelessWidget {
       builder: (_) => ReorderSheet(
         title: 'followed_artists'.tr(),
         items: items,
-        onSave: onSaveOrder!,
+        onSave: widget.onSaveOrder!,
       ),
     );
-  }
-
-  List<MapEntry<String, List<FollowedArtist>>> _buildGroups(String fallback) {
-    final map = <String, List<FollowedArtist>>{};
-    for (final artist in artists) {
-      final key = (artist.genre?.isNotEmpty == true) ? artist.genre! : fallback;
-      (map[key] ??= []).add(artist);
-    }
-    return map.entries.toList()
-      ..sort((a, b) {
-        if (a.key == fallback) return 1;
-        if (b.key == fallback) return -1;
-        return a.key.compareTo(b.key);
-      });
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final fallback = 'genre_etc'.tr();
-    final groups = _buildGroups(fallback);
+    final genres = _genres;
+    final artists = _filteredArtists;
 
     return Scaffold(
       backgroundColor: colors.backgroundMain,
@@ -72,89 +82,169 @@ class FollowedArtistsByGenrePage extends StatelessWidget {
           ),
         ),
         actions: [
-          if (onSaveOrder != null)
+          if (widget.onSaveOrder != null)
             IconButton(
               icon: Icon(Icons.settings_rounded, color: colors.textSecondary, size: 20),
-              onPressed: () => _openSettings(context),
+              onPressed: _openSettings,
             ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.only(bottom: 24),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          for (final entry in groups) ...[
-            _buildGenreHeader(entry.key, entry.value.length, colors),
-            for (final artist in entry.value)
-              _buildArtistTile(artist, colors, context),
-          ],
+          if (genres.isNotEmpty) _buildGenreChips(genres),
+          Expanded(child: _buildGrid(artists, colors)),
         ],
       ),
     );
   }
 
-  Widget _buildGenreHeader(String genre, int count, AbstractThemeColors colors) {
+  Widget _buildGenreChips(List<String> genres) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
-      child: Row(
-        children: [
-          Container(
-            width: 3,
-            height: 16,
-            decoration: BoxDecoration(
-              color: colors.sectionBarColor,
-              borderRadius: BorderRadius.circular(2),
+      padding: const EdgeInsets.only(top: 12, bottom: 4),
+      child: SizedBox(
+        height: 36,
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          children: [
+            _GenreChip(
+              label: 'filter_all'.tr(),
+              selected: _selectedGenre == null,
+              onTap: () => setState(() => _selectedGenre = null),
             ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            genre,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: colors.textTitle,
-            ),
-          ),
-          const SizedBox(width: 6),
-          Text(
-            '$count',
-            style: TextStyle(fontSize: 13, color: colors.textSecondary),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildArtistTile(
-      FollowedArtist artist, AbstractThemeColors colors, BuildContext context) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-      leading: CircleAvatar(
-        radius: 24,
-        backgroundColor: colors.backgroundMain,
-        backgroundImage: (artist.profileImageUrl?.isNotEmpty == true)
-            ? CachedNetworkImageProvider(artist.profileImageUrl!, maxWidth: 100)
-            : null,
-        child: (artist.profileImageUrl == null || artist.profileImageUrl!.isEmpty)
-            ? Icon(Icons.person_rounded, size: 22, color: colors.textSecondary)
-            : null,
-      ),
-      title: Text(
-        artist.name,
-        style: TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-          color: colors.textTitle,
+            ...genres.map((genre) => _GenreChip(
+                  label: genre,
+                  selected: _selectedGenre == genre,
+                  onTap: () => setState(() => _selectedGenre = genre),
+                )),
+          ],
         ),
       ),
-      trailing: Icon(Icons.chevron_right_rounded, color: colors.textSecondary),
-      onTap: () => Navigator.push(
-        context,
-        SlideRoute(
-          builder: (_) => ArtistPage(
-            artistId: artist.id,
-            artistName: artist.name,
-            followerCounter: 0,
-            profileImageUrl: artist.profileImageUrl,
+    );
+  }
+
+  Widget _buildGrid(List<FollowedArtist> artists, AbstractThemeColors colors) {
+    return GridView.builder(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+      itemCount: artists.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: 16,
+        crossAxisSpacing: 12,
+        childAspectRatio: 0.75,
+      ),
+      itemBuilder: (context, index) {
+        final artist = artists[index];
+        return AnimatedListItem(
+          index: index,
+          child: TapScale(
+            onTap: () => Navigator.push(
+              context,
+              SlideRoute(
+                builder: (_) => ArtistPage(
+                  artistId: artist.id,
+                  artistName: artist.name,
+                  followerCounter: 0,
+                  profileImageUrl: artist.profileImageUrl,
+                ),
+              ),
+            ),
+            child: _buildArtistCard(artist, colors),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildArtistCard(FollowedArtist artist, AbstractThemeColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        AspectRatio(
+          aspectRatio: 1.0,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.0),
+              boxShadow: [
+                BoxShadow(
+                  color: colors.cardShadow.withValues(alpha: 0.15),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12.0),
+              child: (artist.profileImageUrl?.isNotEmpty == true)
+                  ? CachedNetworkImage(
+                      imageUrl: artist.profileImageUrl!,
+                      memCacheWidth: 200,
+                      fit: BoxFit.cover,
+                      placeholder: (_, __) =>
+                          const SkeletonBox(height: double.infinity),
+                      errorWidget: (_, __, ___) => _buildPlaceholder(colors),
+                    )
+                  : _buildPlaceholder(colors),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          artist.name,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: colors.textTitle,
+          ),
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPlaceholder(AbstractThemeColors colors) {
+    return Container(
+      color: colors.activate.withValues(alpha: 0.1),
+      child: Icon(Icons.person_rounded, color: colors.activate, size: 40),
+    );
+  }
+}
+
+class _GenreChip extends StatelessWidget {
+  const _GenreChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected ? colors.activate : colors.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected ? colors.activate : colors.listDivider,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: selected ? Colors.white : colors.textSecondary,
           ),
         ),
       ),

@@ -9,7 +9,7 @@ import 'package:feple/injection.dart';
 import 'package:feple/model/festival_setlist_entry.dart';
 import 'package:feple/model/song_model.dart';
 import 'package:feple/screen/main/tab/search/festival_information/s_festival_setlist_fullscreen.dart';
-import 'package:feple/service/festival_service.dart';
+import 'package:feple/service/festival_detail_service.dart';
 import 'package:flutter/material.dart';
 
 class FestivalSetlist extends StatefulWidget {
@@ -31,7 +31,7 @@ class _FestivalSetlistState extends State<FestivalSetlist> {
   }
 
   Future<List<FestivalSetlistEntry>> _fetch() =>
-      sl<FestivalService>().fetchSetlist(widget.festivalId);
+      sl<FestivalDetailService>().fetchSetlist(widget.festivalId);
 
   Future<void> _openFullPage() async {
     final changed = await Navigator.push<bool>(

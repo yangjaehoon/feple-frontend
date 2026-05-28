@@ -2,7 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/weather_model.dart';
-import 'package:feple/service/festival_service.dart';
+import 'package:feple/service/festival_detail_service.dart';
 import 'package:flutter/material.dart';
 
 class WeatherBottomSheet extends StatefulWidget {
@@ -42,7 +42,7 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
       _tooEarly = true;
       _future = Future.value(null);
     } else {
-      _future = sl<FestivalService>().fetchWeather(widget.festivalId);
+      _future = sl<FestivalDetailService>().fetchWeather(widget.festivalId);
     }
   }
 
@@ -94,7 +94,7 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
           return _ErrorMessage(
             colors: colors,
             onRetry: () => setState(() {
-              _future = sl<FestivalService>().fetchWeather(widget.festivalId);
+              _future = sl<FestivalDetailService>().fetchWeather(widget.festivalId);
             }),
           );
         }

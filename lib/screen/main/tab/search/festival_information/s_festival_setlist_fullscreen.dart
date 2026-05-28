@@ -8,7 +8,7 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/festival_setlist_entry.dart';
 import 'package:feple/model/song_model.dart';
-import 'package:feple/service/festival_service.dart';
+import 'package:feple/service/festival_detail_service.dart';
 import 'package:feple/service/song_service.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -34,7 +34,7 @@ class _FestivalSetlistFullPageState extends State<FestivalSetlistFullPage> {
   }
 
   Future<List<FestivalSetlistEntry>> _fetch() =>
-      sl<FestivalService>().fetchSetlist(widget.festivalId);
+      sl<FestivalDetailService>().fetchSetlist(widget.festivalId);
 
   Future<void> _openYoutubeMusic(String url) async {
     final uri = Uri.parse(url);
@@ -378,7 +378,7 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
   Future<void> _save() async {
     setState(() => _saving = true);
     try {
-      await sl<FestivalService>().updateSetlist(
+      await sl<FestivalDetailService>().updateSetlist(
         widget.festivalId,
         widget.entry.artistFestivalId,
         _selectedIds.toList(),

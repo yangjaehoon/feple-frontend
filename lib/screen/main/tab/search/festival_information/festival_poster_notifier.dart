@@ -1,14 +1,14 @@
 import 'package:feple/common/app_events.dart';
 import 'package:feple/model/certification_model.dart';
 import 'package:feple/service/certification_service.dart';
-import 'package:feple/service/festival_service.dart';
+import 'package:feple/service/festival_interaction_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FestivalPosterNotifier extends ChangeNotifier {
   final int festivalId;
   final CertificationService certService;
-  final FestivalService festivalService;
+  final FestivalInteractionService festivalService;
 
   bool liked = false;
   bool attending = false;

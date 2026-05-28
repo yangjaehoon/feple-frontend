@@ -1,13 +1,13 @@
 import 'package:feple/model/certification_model.dart';
 import 'package:feple/screen/main/tab/search/festival_information/festival_poster_notifier.dart';
 import 'package:feple/service/certification_service.dart';
-import 'package:feple/service/festival_service.dart';
+import 'package:feple/service/festival_interaction_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MockCertificationService extends Mock implements CertificationService {}
-class MockFestivalService extends Mock implements FestivalService {}
+class MockFestivalInteractionService extends Mock implements FestivalInteractionService {}
 
 CertificationModel _cert(int festivalId, CertStatus status) =>
     CertificationModel(
@@ -18,18 +18,18 @@ CertificationModel _cert(int festivalId, CertStatus status) =>
 
 void main() {
   late MockCertificationService mockCertService;
-  late MockFestivalService mockFestivalService;
+  late MockFestivalInteractionService mockFestivalInteractionService;
 
   setUp(() {
     SharedPreferences.setMockInitialValues({});
     mockCertService = MockCertificationService();
-    mockFestivalService = MockFestivalService();
+    mockFestivalInteractionService = MockFestivalInteractionService();
   });
 
   FestivalPosterNotifier make(int festivalId) => FestivalPosterNotifier(
         festivalId: festivalId,
         certService: mockCertService,
-        festivalService: mockFestivalService,
+        festivalService: mockFestivalInteractionService,
       );
 
   group('loadCertState', () {
@@ -118,7 +118,7 @@ void main() {
 
   group('loadLikeState', () {
     test('서비스가 true 반환 시 liked true', () async {
-      when(() => mockFestivalService.isLiked(5)).thenAnswer((_) async => true);
+      when(() => mockFestivalInteractionService.isLiked(5)).thenAnswer((_) async => true);
 
       final notifier = make(5);
       await notifier.loadLikeState();
@@ -127,7 +127,7 @@ void main() {
     });
 
     test('서비스가 false 반환 시 liked false', () async {
-      when(() => mockFestivalService.isLiked(5)).thenAnswer((_) async => false);
+      when(() => mockFestivalInteractionService.isLiked(5)).thenAnswer((_) async => false);
 
       final notifier = make(5);
       await notifier.loadLikeState();
@@ -136,7 +136,7 @@ void main() {
     });
 
     test('서비스 예외 시 liked 기본값 false 유지', () async {
-      when(() => mockFestivalService.isLiked(5)).thenThrow(Exception('err'));
+      when(() => mockFestivalInteractionService.isLiked(5)).thenThrow(Exception('err'));
 
       final notifier = make(5);
       await expectLater(notifier.loadLikeState(), completes);
@@ -147,7 +147,7 @@ void main() {
 
   group('toggleLike', () {
     test('liked false → true로 전환', () async {
-      when(() => mockFestivalService.toggleLike(5))
+      when(() => mockFestivalInteractionService.toggleLike(5))
           .thenAnswer((_) async => true);
 
       final notifier = make(5);
@@ -158,7 +158,7 @@ void main() {
     });
 
     test('liked true → false로 전환', () async {
-      when(() => mockFestivalService.toggleLike(5))
+      when(() => mockFestivalInteractionService.toggleLike(5))
           .thenAnswer((_) async => false);
 
       final notifier = make(5);
@@ -169,7 +169,7 @@ void main() {
     });
 
     test('서비스 예외 시 liked 상태 변경 없음', () async {
-      when(() => mockFestivalService.toggleLike(5)).thenThrow(Exception('err'));
+      when(() => mockFestivalInteractionService.toggleLike(5)).thenThrow(Exception('err'));
 
       final notifier = make(5);
       notifier.liked = false;

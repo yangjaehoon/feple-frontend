@@ -4,7 +4,7 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/booth_model.dart';
-import 'package:feple/service/festival_service.dart';
+import 'package:feple/service/festival_detail_service.dart';
 import 'package:flutter/foundation.dart' show Factory;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +46,7 @@ class _FestivalBoothMapState extends State<FestivalBoothMap> {
   Future<void> _fetchBooths() async {
     if (mounted) setState(() { _loading = true; _hasError = false; });
     try {
-      final list = await sl<FestivalService>().fetchBooths(widget.festivalId);
+      final list = await sl<FestivalDetailService>().fetchBooths(widget.festivalId);
       debugPrint('[BoothMap] 부스 ${list.length}개 로드됨 (festivalId=${widget.festivalId})');
       if (mounted) {
         setState(() {

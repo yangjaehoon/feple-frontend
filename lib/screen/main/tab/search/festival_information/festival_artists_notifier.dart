@@ -1,12 +1,12 @@
 import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/service/artist_follow_service.dart';
-import 'package:feple/service/festival_service.dart';
+import 'package:feple/service/festival_detail_service.dart';
 import 'package:flutter/foundation.dart';
 
 class FestivalArtistsNotifier extends ChangeNotifier {
   final int festivalId;
   final int? userId;
-  final FestivalService _festivalService;
+  final FestivalDetailService _festivalService;
   final ArtistFollowService _followService;
 
   List<FestivalArtistItem> artists = [];
@@ -21,7 +21,7 @@ class FestivalArtistsNotifier extends ChangeNotifier {
   FestivalArtistsNotifier({
     required this.festivalId,
     this.userId,
-    required FestivalService festivalService,
+    required FestivalDetailService festivalService,
     required ArtistFollowService followService,
   })  : _festivalService = festivalService,
         _followService = followService;

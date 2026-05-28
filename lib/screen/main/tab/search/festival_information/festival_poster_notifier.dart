@@ -5,6 +5,8 @@ import 'package:feple/service/festival_interaction_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum CertState { none, pending, certified }
+
 class FestivalPosterNotifier extends ChangeNotifier {
   final int festivalId;
   final CertificationService certService;
@@ -16,6 +18,12 @@ class FestivalPosterNotifier extends ChangeNotifier {
   bool descExpanded = true;
   bool isCertified = false;
   bool isPending = false;
+
+  CertState get certState {
+    if (isCertified) return CertState.certified;
+    if (isPending) return CertState.pending;
+    return CertState.none;
+  }
 
   String get _descPrefKey => 'festival_desc_expanded_$festivalId';
 

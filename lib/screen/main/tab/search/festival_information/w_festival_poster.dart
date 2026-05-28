@@ -92,30 +92,17 @@ class _FestivalPosterState extends State<FestivalPoster> {
     );
   }
 
-  VoidCallback? _certButtonTap() {
-    if (_notifier.isCertified) {
-      return () => context.showInfoSnackbar(context.tr('cert_already_approved'));
-    }
-    if (_notifier.isPending) {
-      return () => context.showInfoSnackbar(context.tr('cert_pending_notice'));
-    }
-    return _submitCertification;
-  }
+  VoidCallback? _certButtonTap() => switch (_notifier.certState) {
+        CertState.certified => () => context.showInfoSnackbar('cert_already_approved'.tr()),
+        CertState.pending   => () => context.showInfoSnackbar('cert_pending_notice'.tr()),
+        CertState.none      => _submitCertification,
+      };
 
-  IconData _certButtonIcon() =>
-      _notifier.isPending ? Icons.hourglass_top_rounded : Icons.verified_rounded;
+  IconData _certButtonIcon() => _notifier.certState.icon;
 
-  Color _certButtonColor(AbstractThemeColors colors) {
-    if (_notifier.isCertified) return colors.activate.withValues(alpha: 0.7);
-    if (_notifier.isPending) return AppColors.statusPending;
-    return Colors.white;
-  }
+  Color _certButtonColor(AbstractThemeColors colors) => _notifier.certState.color(colors);
 
-  Color? _certButtonBgColor(AbstractThemeColors colors) {
-    if (_notifier.isCertified) return colors.activate.withValues(alpha: 0.35);
-    if (_notifier.isPending) return AppColors.statusPending.withValues(alpha: 0.25);
-    return null;
-  }
+  Color? _certButtonBgColor(AbstractThemeColors colors) => _notifier.certState.bgColor(colors);
 
   Future<void> _submitCertification() async {
     await showModalBottomSheet(

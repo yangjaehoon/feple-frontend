@@ -140,7 +140,7 @@ class _FestivalArtistListScreenState extends State<FestivalArtistListScreen> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              artist.displayName,
+                              artist.artistName,
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,

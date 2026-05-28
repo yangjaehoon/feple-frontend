@@ -70,6 +70,11 @@ class _FestivalPosterState extends State<FestivalPoster> {
     }
   }
 
+  void _withHaptic(VoidCallback fn) {
+    HapticFeedback.lightImpact();
+    fn();
+  }
+
   void _shareFestival() {
     Share.share('${widget.poster.title}\n${widget.poster.location}\n${widget.poster.startDate}');
   }
@@ -343,7 +348,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
           ),
         ),
         GestureDetector(
-          onTap: () { HapticFeedback.lightImpact(); _notifier.toggleAttending(); },
+          onTap: () => _withHaptic(_notifier.toggleAttending),
           child: AnimatedContainer(
             duration: AppDimens.animFast,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
@@ -377,7 +382,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
     return Row(
       children: [
         FestivalActionButton(
-          onTap: () { HapticFeedback.lightImpact(); _notifier.toggleLike(); },
+          onTap: () => _withHaptic(_notifier.toggleLike),
           icon: _notifier.liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
           color: _notifier.liked ? AppColors.kawaiiPink : Colors.white,
           bgColor: _notifier.liked

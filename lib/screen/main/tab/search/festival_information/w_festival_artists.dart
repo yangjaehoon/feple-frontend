@@ -77,37 +77,21 @@ class _FestivalArtistsState extends State<FestivalArtists> {
     );
   }
 
+  Widget _padContent(Widget child) => Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppDimens.paddingHorizontal,
+          vertical: 12,
+        ),
+        child: child,
+      );
+
   Widget _buildArtistListArea(AbstractThemeColors colors) {
     return ListenableBuilder(
       listenable: _notifier,
       builder: (context, _) {
-        if (_notifier.isLoading) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppDimens.paddingHorizontal,
-              vertical: 12,
-            ),
-            child: _buildSkeletonRow(),
-          );
-        }
-        if (_notifier.hasError) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppDimens.paddingHorizontal,
-              vertical: 12,
-            ),
-            child: _buildErrorRow(colors),
-          );
-        }
-        if (_notifier.artists.isEmpty) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppDimens.paddingHorizontal,
-              vertical: 12,
-            ),
-            child: _buildEmptyRow(colors),
-          );
-        }
+        if (_notifier.isLoading) return _padContent(_buildSkeletonRow());
+        if (_notifier.hasError) return _padContent(_buildErrorRow(colors));
+        if (_notifier.artists.isEmpty) return _padContent(_buildEmptyRow(colors));
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -169,7 +153,7 @@ class _FestivalArtistsState extends State<FestivalArtists> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    artist.displayName,
+                    artist.artistName,
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,

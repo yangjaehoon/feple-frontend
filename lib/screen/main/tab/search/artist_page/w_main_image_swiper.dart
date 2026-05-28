@@ -27,6 +27,10 @@ class MainImageSwiper extends StatefulWidget {
 }
 
 class _MainImageSwiperState extends State<MainImageSwiper> {
+  static const double _swiperHeight = 350.0;
+  static const double _pageViewHeight = 250.0;
+  static const double _photoCardSize = 200.0;
+
   List<String> _photoUrls = [];
   bool _loaded = false;
 
@@ -96,7 +100,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 350,
+      height: _swiperHeight,
       child: Stack(
         children: [
           _buildBackground(),
@@ -113,7 +117,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
 
   Widget _buildPhotoPageView() {
     return SizedBox(
-      height: 250,
+      height: _pageViewHeight,
       child: PageView.builder(
         onPageChanged: _onPageChanged,
         controller: _pageController,
@@ -149,8 +153,8 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
       child: Container(
-        height: 200,
-        width: 200,
+        height: _photoCardSize,
+        width: _photoCardSize,
         decoration: BoxDecoration(
           color: Colors.grey[800],
           borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),

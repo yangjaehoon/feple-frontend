@@ -1,6 +1,8 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_date_tab_bar.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
@@ -48,23 +50,8 @@ class _FestivalArtistsState extends State<FestivalArtists> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return Container(
+    return SurfaceCard(
       width: double.infinity,
-      margin: const EdgeInsets.symmetric(
-        horizontal: AppDimens.paddingHorizontal,
-        vertical: AppDimens.paddingVertical,
-      ),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: const BorderRadius.all(Radius.circular(AppDimens.cardRadius)),
-        boxShadow: [
-          BoxShadow(
-            color: colors.cardShadow.withValues(alpha: 0.12),
-            blurRadius: AppDimens.cardRadius,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
       child: Column(
         children: [
           _buildHeader(colors),
@@ -139,30 +126,11 @@ class _FestivalArtistsState extends State<FestivalArtists> {
   }
 
   Widget _buildDateTabs(AbstractThemeColors colors) {
-    final dates = _notifier.allDates;
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
-      child: Row(
-        children: [
-          _DateChip(
-            label: 'lineup_all'.tr(),
-            selected: _notifier.selectedDate == null,
-            colors: colors,
-            onTap: () => _notifier.selectDate(null),
-          ),
-          ...dates.map((d) {
-            final parts = d.split('-');
-            final label = parts.length == 3 ? '${int.parse(parts[1])}/${int.parse(parts[2])}' : d;
-            return _DateChip(
-              label: label,
-              selected: _notifier.selectedDate == d,
-              colors: colors,
-              onTap: () => _notifier.selectDate(d),
-            );
-          }),
-        ],
-      ),
+    return DateTabBar(
+      dates: _notifier.allDates,
+      selectedDate: _notifier.selectedDate,
+      onDateSelected: _notifier.selectDate,
+      allLabel: 'lineup_all'.tr(),
     );
   }
 
@@ -288,43 +256,3 @@ class _FestivalArtistsState extends State<FestivalArtists> {
   }
 }
 
-class _DateChip extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final AbstractThemeColors colors;
-  final VoidCallback onTap;
-
-  const _DateChip({
-    required this.label,
-    required this.selected,
-    required this.colors,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        margin: const EdgeInsets.only(right: 8, bottom: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-        decoration: BoxDecoration(
-          color: selected ? colors.activate : colors.backgroundMain,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: selected ? colors.activate : colors.listDivider,
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: selected ? Colors.white : colors.textTitle,
-          ),
-        ),
-      ),
-    );
-  }
-}

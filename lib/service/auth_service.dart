@@ -156,6 +156,10 @@ class AuthService {
       return _saveTokensAndParseUser(data);
     } on DioException catch (e) {
       debugPrint('[Auth] 카카오 서버 교환 실패: [${e.type.name}] ${e.response?.statusCode}');
+      final respBody = e.response?.data;
+      if (respBody is Map<String, dynamic>) {
+        throw Exception(respBody['message'] ?? 'auth_err_auth_failed'.tr());
+      }
       throw Exception('auth_err_auth_failed'.tr());
     }
   }

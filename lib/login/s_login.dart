@@ -289,8 +289,13 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         setState(() => _authError = msg);
       }
-    } catch (_) {
-      if (mounted) setState(() => _authError = 'login_failed'.tr());
+    } catch (e) {
+      if (mounted) {
+        final msg = e is Exception
+            ? e.toString().replaceFirst('Exception: ', '')
+            : 'login_failed'.tr();
+        setState(() => _authError = msg.isNotEmpty ? msg : 'login_failed'.tr());
+      }
     } finally {
       if (mounted) setState(() => _isEmailLoading = false);
     }
@@ -358,9 +363,14 @@ class _LoginPageState extends State<LoginPage> {
       if (e.code != 'CANCELED' && mounted) {
         setState(() => _authError = e.message ?? 'login_failed'.tr());
       }
-    } catch (_) {
-      debugPrint('=== 카카오 로그인 실패 ===');
-      if (mounted) setState(() => _authError = 'login_failed'.tr());
+    } catch (e) {
+      debugPrint('[Auth] 카카오 로그인 실패: $e');
+      if (mounted) {
+        final msg = e is Exception
+            ? e.toString().replaceFirst('Exception: ', '')
+            : 'login_failed'.tr();
+        setState(() => _authError = msg.isNotEmpty ? msg : 'login_failed'.tr());
+      }
     } finally {
       if (mounted) setState(() => _isKakaoLoading = false);
     }

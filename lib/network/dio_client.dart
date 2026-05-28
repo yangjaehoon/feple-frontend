@@ -9,6 +9,9 @@ class DioClient {
   /// 리프레시 토큰도 만료됐을 때 호출 → 로그인 화면으로 이동
   static void Function()? onSessionExpired;
 
+  /// 계정 정지(403 banned) 시 호출 → 안내 다이얼로그 표시 후 로그아웃
+  static void Function()? onUserBanned;
+
   /// 인터셉터 없이 토큰 갱신/재시도에만 사용하는 내부 Dio
   static final Dio _plainDio = Dio(BaseOptions(baseUrl: app_config.baseUrl));
 
@@ -55,6 +58,14 @@ class DioClient {
         handler.next(options);
       },
       onError: (error, handler) async {
+        if (error.response?.statusCode == 403) {
+          final data = error.response?.data;
+          if (data is Map && data['error'] == 'banned') {
+            onUserBanned?.call();
+          }
+          return handler.next(error);
+        }
+
         if (error.response?.statusCode != 401) {
           return handler.next(error);
         }

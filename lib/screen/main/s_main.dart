@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../common/app_events.dart';
 import '../../common/common.dart';
-import 'w_menu_drawer.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -103,7 +102,6 @@ class MainScreenState extends State<MainScreen>
         },
         child: Scaffold(
           extendBody: extendBody,
-          drawer: const MenuDrawer(),
           body: _buildAnimatedBody(),
           bottomNavigationBar: _buildAnimatedBottomNav(),
         ),

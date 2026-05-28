@@ -75,10 +75,7 @@ class _FepleAppBarState extends State<FepleAppBar> {
         onPressed: () => Navigator.of(context).pop(),
       );
     }
-    return IconButton(
-      icon: const Icon(Icons.menu_rounded, color: Colors.white),
-      onPressed: () => Scaffold.of(context).openDrawer(),
-    );
+    return const SizedBox(width: 16);
   }
 
   Widget _buildTitleLogo(BuildContext context, TextStyle? titleStyle) {

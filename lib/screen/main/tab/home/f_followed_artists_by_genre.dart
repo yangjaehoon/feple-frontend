@@ -2,13 +2,37 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/model/followed_artist.dart';
+import 'package:feple/screen/main/tab/home/w_reorder_sheet.dart';
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:flutter/material.dart';
 
 class FollowedArtistsByGenrePage extends StatelessWidget {
-  const FollowedArtistsByGenrePage({super.key, required this.artists});
+  const FollowedArtistsByGenrePage({
+    super.key,
+    required this.artists,
+    this.onSaveOrder,
+  });
 
   final List<FollowedArtist> artists;
+  final Future<void> Function(List<int>)? onSaveOrder;
+
+  void _openSettings(BuildContext context) {
+    final items = artists
+        .map((a) => ReorderItem(id: a.id, name: a.name, imageUrl: a.profileImageUrl))
+        .toList();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => ReorderSheet(
+        title: 'followed_artists'.tr(),
+        items: items,
+        onSave: onSaveOrder!,
+      ),
+    );
+  }
 
   List<MapEntry<String, List<FollowedArtist>>> _buildGroups(String fallback) {
     final map = <String, List<FollowedArtist>>{};
@@ -47,6 +71,13 @@ class FollowedArtistsByGenrePage extends StatelessWidget {
             color: colors.textTitle,
           ),
         ),
+        actions: [
+          if (onSaveOrder != null)
+            IconButton(
+              icon: Icon(Icons.settings_rounded, color: colors.textSecondary, size: 20),
+              onPressed: () => _openSettings(context),
+            ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 24),

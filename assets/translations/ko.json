@@ -282,6 +282,7 @@
   "offline_banner": "인터넷 연결을 확인해주세요",
   "timetable": "타임테이블",
   "setlist": "셋리스트",
+  "setlist_card_title": "예상 셋리스트",
   "no_setlist": "등록된 셋리스트가 없습니다.",
   "edit_setlist": "셋리스트 수정",
   "setlist_saved": "셋리스트가 저장되었습니다.",

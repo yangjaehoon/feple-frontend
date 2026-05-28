@@ -27,6 +27,9 @@ class FestivalPoster extends StatefulWidget {
 }
 
 class _FestivalPosterState extends State<FestivalPoster> {
+  static const double _posterThumbnailWidth = 120.0;
+  static const double _posterThumbnailHeight = 160.0;
+
   late final FestivalPosterNotifier _notifier;
 
   @override
@@ -187,8 +190,8 @@ class _FestivalPosterState extends State<FestivalPoster> {
           Hero(
             tag: 'festival_poster_${widget.poster.id}',
             child: Container(
-              width: 120,
-              height: 160,
+              width: _posterThumbnailWidth,
+              height: _posterThumbnailHeight,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [

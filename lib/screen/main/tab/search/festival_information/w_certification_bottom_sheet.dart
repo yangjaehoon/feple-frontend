@@ -27,6 +27,9 @@ class CertificationBottomSheet extends StatefulWidget {
 }
 
 class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
+  static const int _maxImageDimension = 1920;
+  static const double _photoAreaHeight = 160.0;
+
   XFile? _pickedFile;
   bool _submitting = false;
 
@@ -34,8 +37,8 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
     final picker = ImagePicker();
     final picked = await picker.pickImage(
       source: ImageSource.gallery,
-      maxWidth: 1920,
-      maxHeight: 1920,
+      maxWidth: _maxImageDimension.toDouble(),
+      maxHeight: _maxImageDimension.toDouble(),
     );
     if (picked != null && mounted) setState(() => _pickedFile = picked);
   }
@@ -85,7 +88,6 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
           const BottomSheetHandle(),
           const SizedBox(height: 20),
 
-          // 타이틀
           Row(
             children: [
               Icon(Icons.verified_rounded, color: colors.activate, size: 22),
@@ -102,7 +104,6 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
           ),
           const SizedBox(height: 8),
 
-          // 안내 문구
           Text(
             'cert_description'.tr(args: [widget.festivalName]),
             style: TextStyle(
@@ -113,12 +114,11 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
           ),
           const SizedBox(height: 24),
 
-          // 사진 첨부 영역
           GestureDetector(
             onTap: _submitting ? null : _pickImage,
             child: Container(
               width: double.infinity,
-              height: 160,
+              height: _photoAreaHeight,
               decoration: BoxDecoration(
                 color: colors.backgroundMain,
                 borderRadius: BorderRadius.circular(16),
@@ -161,7 +161,6 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
           ),
           const SizedBox(height: 20),
 
-          // 제출 버튼
           LoadingButton(
             label: 'cert_submit'.tr(),
             onPressed: _pickedFile == null ? null : _submit,

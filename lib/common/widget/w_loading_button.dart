@@ -82,14 +82,7 @@ class _LoadingButtonState extends State<LoadingButton>
           borderRadius: BorderRadius.circular(widget.borderRadius),
         ),
         child: FilledButton(
-          onPressed: (widget.isLoading || widget.isSuccess)
-              ? null
-              : (widget.onPressed == null
-                  ? null
-                  : () {
-                      HapticFeedback.lightImpact();
-                      widget.onPressed!();
-                    }),
+          onPressed: _resolvedOnPressed,
           style: FilledButton.styleFrom(
             backgroundColor: Colors.transparent,
             disabledBackgroundColor: Colors.transparent,
@@ -103,6 +96,15 @@ class _LoadingButtonState extends State<LoadingButton>
         ),
       ),
     );
+  }
+
+  VoidCallback? get _resolvedOnPressed {
+    if (widget.isLoading || widget.isSuccess) return null;
+    if (widget.onPressed == null) return null;
+    return () {
+      HapticFeedback.lightImpact();
+      widget.onPressed!();
+    };
   }
 
   Widget _buildChild() {

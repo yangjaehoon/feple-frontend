@@ -70,11 +70,10 @@ class FestivalArtistsNotifier extends ChangeNotifier {
         followed = await _followService.getFollowingIds(userId!);
       }
 
-      // 팔로우한 아티스트를 앞으로 정렬
       fetched.sort((a, b) {
-        final aF = followed.contains(a.artistId) ? 0 : 1;
-        final bF = followed.contains(b.artistId) ? 0 : 1;
-        return aF.compareTo(bF);
+        final aRank = followed.contains(a.artistId) ? 0 : 1;
+        final bRank = followed.contains(b.artistId) ? 0 : 1;
+        return aRank.compareTo(bRank);
       });
 
       artists = fetched;

@@ -47,7 +47,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
   List<String> _dates = [];
   String? _selectedDate;
 
-  TimetableRange _range = const TimetableRange(filtered: [], stages: [], startHour: 12, endHour: 13);
+  TimetableRange get _range => computeTimetableRange(_entries, _selectedDate);
 
   @override
   void initState() {
@@ -55,7 +55,6 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
     _vContent.addListener(_syncVerticalScroll);
     _hContent.addListener(_syncHorizontalScroll);
     _buildDates();
-    _range = computeTimetableRange(_entries, _selectedDate);
     _fetch();
   }
 
@@ -93,7 +92,6 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
           _entries = list;
           _followedNames = followed;
           _loading = false;
-          _range = computeTimetableRange(_entries, _selectedDate);
         });
       }
     } catch (e) {
@@ -181,7 +179,6 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                 selectedDate: _selectedDate,
                 onDateSelected: (date) => setState(() {
                   _selectedDate = date;
-                  _range = computeTimetableRange(_entries, _selectedDate);
                 }),
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 labelBuilder: (d) => d,

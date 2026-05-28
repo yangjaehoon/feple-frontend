@@ -437,6 +437,7 @@
   "song_status_rejected": "Rejected",
   "bio": "Bio",
   "bio_hint": "Introduce yourself (max 150 chars)",
+  "bio_banned_word": "Bio contains a word that is not allowed.",
   "notif_settings": "Notifications",
   "notif_cert": "Certification notifications",
   "notif_comment": "Comment notifications",

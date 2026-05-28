@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/exception/banned_word_exception.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_nickname_field.dart';
@@ -27,6 +28,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
 
   final _nicknameKey = GlobalKey<NicknameFieldState>();
   final _bioController = TextEditingController();
+  String? _bioError;
 
   @override
   void initState() {
@@ -111,6 +113,9 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
       if (!mounted) return;
       context.showSuccessSnackbar('profile_updated'.tr());
       Navigator.of(context).pop();
+    } on BannedWordException {
+      if (!mounted) return;
+      setState(() => _bioError = 'bio_banned_word'.tr());
     } catch (e) {
       if (!mounted) return;
       debugPrint('profile save error: $e');
@@ -268,10 +273,20 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
               controller: _bioController,
               maxLength: 150,
               maxLines: 3,
+              onChanged: (_) {
+                if (_bioError != null) setState(() => _bioError = null);
+              },
               decoration: InputDecoration(
                 hintText: 'bio_hint'.tr(),
                 hintStyle: TextStyle(color: colors.textSecondary, fontSize: 13),
                 counterStyle: TextStyle(color: colors.textSecondary, fontSize: 11),
+                errorText: _bioError,
+                errorBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.errorRed, width: 1.5),
+                ),
+                focusedErrorBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.errorRed, width: 2),
+                ),
               ),
               style: TextStyle(color: colors.textTitle, fontSize: 14),
             ),

@@ -8,7 +8,8 @@ enum NotificationType {
   festivalReminder('FESTIVAL_REMINDER'),
   songRequestApproved('SONG_REQUEST_APPROVED'),
   songRequestRejected('SONG_REQUEST_REJECTED'),
-  artistSuggestionProcessed('ARTIST_SUGGESTION_PROCESSED');
+  artistSuggestionProcessed('ARTIST_SUGGESTION_PROCESSED'),
+  adminBroadcast('ADMIN_BROADCAST');
 
   const NotificationType(this.value);
   final String value;
@@ -48,6 +49,7 @@ enum NotificationType {
       case NotificationType.songRequestApproved:     return Icons.music_note_rounded;
       case NotificationType.songRequestRejected:     return Icons.music_off_rounded;
       case NotificationType.artistSuggestionProcessed: return Icons.person_add_rounded;
+      case NotificationType.adminBroadcast:          return Icons.campaign_rounded;
     }
   }
 }

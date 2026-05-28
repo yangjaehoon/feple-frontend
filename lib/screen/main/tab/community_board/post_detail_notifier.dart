@@ -131,6 +131,10 @@ class PostDetailNotifier extends ChangeNotifier {
     notifyListeners();
     try {
       await _commentService.updateComment(commentId, newContent);
+    } on BannedWordException {
+      comments[idx] = prev;
+      commentError = 'comment_banned_word';
+      notifyListeners();
     } catch (e) {
       comments[idx] = prev;
       notifyListeners();

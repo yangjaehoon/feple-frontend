@@ -66,16 +66,6 @@ class _HomeFragmentState extends State<HomeFragment> {
     );
   }
 
-  void _openArtistOrderSettings() {
-    final artists = _notifier.artists;
-    if (artists == null || artists.isEmpty) return;
-    final items = _notifier
-        .applyOrder(artists, _notifier.artistOrder, (a) => a.id)
-        .map((a) => ReorderItem(id: a.id, name: a.name, imageUrl: a.profileImageUrl))
-        .toList();
-    _showReorderSheet('followed_artists'.tr(), items, _notifier.saveArtistOrder);
-  }
-
   void _openFestivalOrderSettings() {
     final festivals = _notifier.festivals;
     if (festivals == null || festivals.isEmpty) return;
@@ -149,14 +139,12 @@ class _HomeFragmentState extends State<HomeFragment> {
                     SlideRoute(
                       builder: (_) => FollowedArtistsByGenrePage(
                         artists: _orderedArtists ?? [],
+                        onSaveOrder: _notifier.saveArtistOrder,
                       ),
                     ),
                   );
                   _notifier.refresh();
                 }
-              : null,
-          onSettings: (_notifier.artists?.isNotEmpty ?? false)
-              ? _openArtistOrderSettings
               : null,
         ),
         HomeArtistsSection(

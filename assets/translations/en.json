@@ -412,7 +412,7 @@
   "dark_mode": "Dark Mode",
   "language": "Language",
   "logout_confirm": "Are you sure you want to log out?",
-  "liked_posts": "Liked Posts",
+  "liked_posts": "Liked",
   "my_liked_posts": "Liked Posts",
   "no_liked_posts": "No liked posts yet",
   "song_request_history": "Song Requests",
@@ -426,5 +426,8 @@
   "notif_comment": "Comment notifications",
   "notif_festival": "Festival notifications",
   "notif_song_request": "Song request notifications",
+  "privacy_policy": "Privacy Policy",
+  "terms_of_service": "Terms of Service",
+  "app_version": "App Version",
   "d_day": "D-DAY"
 }

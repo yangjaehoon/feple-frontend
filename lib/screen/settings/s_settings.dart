@@ -15,6 +15,7 @@ import 'package:feple/service/notification_preference_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get_utils/src/extensions/string_extensions.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -28,11 +29,18 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _clearingCache = false;
   NotificationPreferenceModel? _prefs;
+  String _appVersion = '';
 
   @override
   void initState() {
     super.initState();
     _loadPrefs();
+    _loadVersion();
+  }
+
+  Future<void> _loadVersion() async {
+    final info = await PackageInfo.fromPlatform();
+    if (mounted) setState(() => _appVersion = info.version);
   }
 
   Future<void> _loadPrefs() async {
@@ -238,6 +246,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 _ItemDivider(colors: colors),
                 _SettingsItem(
+                  icon: Icons.privacy_tip_rounded,
+                  label: 'privacy_policy'.tr(),
+                  colors: colors,
+                  onTap: () async {
+                    final uri = Uri.parse('https://yangjae.notion.site/feple-privacy?source=copy_link');
+                    await launchUrl(uri, mode: LaunchMode.externalApplication);
+                  },
+                ),
+                _ItemDivider(colors: colors),
+                _SettingsItem(
                   icon: Icons.code_rounded,
                   label: 'opensource'.tr(),
                   colors: colors,
@@ -246,6 +264,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     SlideRoute(builder: (_) => const OpensourceScreen()),
                   ),
                 ),
+                _ItemDivider(colors: colors),
+                _VersionItem(version: _appVersion, colors: colors),
               ],
             ),
           ),
@@ -410,6 +430,45 @@ class _LanguageItem extends StatelessWidget {
                 await context
                     .setLocale(Language.find(value.toLowerCase()).locale);
               },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _VersionItem extends StatelessWidget {
+  final String version;
+  final AbstractThemeColors colors;
+
+  const _VersionItem({required this.version, required this.colors});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: colors.surface,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline_rounded, size: 20, color: colors.activate),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              'app_version'.tr(),
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                color: colors.textTitle,
+              ),
+            ),
+          ),
+          Text(
+            version.isEmpty ? '-' : 'v$version',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: colors.textSecondary,
             ),
           ),
         ],

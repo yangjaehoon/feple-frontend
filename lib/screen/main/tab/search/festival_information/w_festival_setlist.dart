@@ -80,7 +80,7 @@ class _FestivalSetlistState extends State<FestivalSetlist> {
           Icon(Icons.queue_music_rounded, size: 15, color: colors.activate),
           const SizedBox(width: 8),
           Text(
-            'setlist'.tr(),
+            'setlist_card_title'.tr(),
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w700,

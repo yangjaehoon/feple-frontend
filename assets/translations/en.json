@@ -282,6 +282,7 @@
   "offline_banner": "Check your internet connection",
   "timetable": "Timetable",
   "setlist": "Setlist",
+  "setlist_card_title": "Expected Setlist",
   "no_setlist": "No setlist available.",
   "edit_setlist": "Edit Setlist",
   "setlist_saved": "Setlist saved.",

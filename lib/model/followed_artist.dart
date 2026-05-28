@@ -3,11 +3,13 @@ class FollowedArtist {
   final int id;
   final String name;
   final String? profileImageUrl;
+  final String? genre;
 
   const FollowedArtist({
     required this.id,
     required this.name,
     this.profileImageUrl,
+    this.genre,
   });
 
   factory FollowedArtist.fromJson(Map<String, dynamic> json) {
@@ -15,6 +17,7 @@ class FollowedArtist {
       id: json['id'] as int,
       name: json['name'] as String,
       profileImageUrl: json['profileImageUrl'] as String?,
+      genre: json['genre'] as String?,
     );
   }
 }

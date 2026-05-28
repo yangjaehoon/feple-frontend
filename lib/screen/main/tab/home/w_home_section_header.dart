@@ -3,16 +3,23 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 class HomeSectionHeader extends StatelessWidget {
-  const HomeSectionHeader({super.key, required this.title, this.onSettings});
+  const HomeSectionHeader({
+    super.key,
+    required this.title,
+    this.onSettings,
+    this.onExpand,
+  });
 
   final String title;
   final VoidCallback? onSettings;
+  final VoidCallback? onExpand;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final hasActions = onSettings != null || onExpand != null;
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 16, onSettings != null ? 8 : 20, 8),
+      padding: EdgeInsets.fromLTRB(20, 16, hasActions ? 8 : 20, 8),
       child: Row(
         children: [
           Container(
@@ -32,8 +39,18 @@ class HomeSectionHeader extends StatelessWidget {
               color: colors.textTitle,
             ),
           ),
+          if (hasActions) const Spacer(),
+          if (onExpand != null) ...[
+            GestureDetector(
+              onTap: onExpand,
+              child: Text(
+                'view_all'.tr(),
+                style: TextStyle(fontSize: 13, color: colors.textSecondary),
+              ),
+            ),
+            const SizedBox(width: 4),
+          ],
           if (onSettings != null) ...[
-            const Spacer(),
             IconButton(
               icon: Icon(Icons.settings_rounded,
                   color: colors.textSecondary, size: 20),

@@ -79,72 +79,54 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
     final certCount = snapshot.data?.certificationCount.toString() ?? '-';
     final scrapCount = snapshot.data?.scrapCount.toString() ?? '-';
     final likedCount = snapshot.data?.likedPostCount.toString() ?? '-';
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          _buildStatCard(
+          Expanded(child: _buildStatCard(
             context,
             icon: Icons.verified_rounded,
             label: 'certification_badge'.tr(),
             value: certCount,
             color: context.appColors.activate,
-            onTap: () => Navigator.push(
-                context,
-                SlideRoute(
-                  builder: (_) => const CertificationListScreen(),
-                )),
-          ),
-          const SizedBox(width: 10),
-          _buildStatCard(
+            onTap: () => Navigator.push(context, SlideRoute(builder: (_) => const CertificationListScreen())),
+          )),
+          const SizedBox(width: 6),
+          Expanded(child: _buildStatCard(
             context,
             icon: Icons.article_rounded,
             label: 'posts'.tr(),
             value: postCount,
             color: context.appColors.activate,
-            onTap: () => Navigator.push(
-                context,
-                SlideRoute(
-                  builder: (_) => MyPostsScreen(userId: widget.userId),
-                )),
-          ),
-          const SizedBox(width: 10),
-          _buildStatCard(
+            onTap: () => Navigator.push(context, SlideRoute(builder: (_) => MyPostsScreen(userId: widget.userId))),
+          )),
+          const SizedBox(width: 6),
+          Expanded(child: _buildStatCard(
             context,
             icon: Icons.chat_bubble_rounded,
             label: 'comments'.tr(),
             value: commentCount,
             color: context.appColors.activate,
-            onTap: () => Navigator.push(
-                context,
-                SlideRoute(
-                  builder: (_) => MyCommentsScreen(userId: widget.userId),
-                )),
-          ),
-          const SizedBox(width: 10),
-          _buildStatCard(
+            onTap: () => Navigator.push(context, SlideRoute(builder: (_) => MyCommentsScreen(userId: widget.userId))),
+          )),
+          const SizedBox(width: 6),
+          Expanded(child: _buildStatCard(
             context,
             icon: Icons.star_rounded,
             label: 'scraps'.tr(),
             value: scrapCount,
             color: context.appColors.accentColor,
-            onTap: () => Navigator.push(
-                context,
-                SlideRoute(builder: (_) => const MyScrapsScreen())),
-          ),
-          const SizedBox(width: 10),
-          _buildStatCard(
+            onTap: () => Navigator.push(context, SlideRoute(builder: (_) => const MyScrapsScreen())),
+          )),
+          const SizedBox(width: 6),
+          Expanded(child: _buildStatCard(
             context,
             icon: Icons.favorite_rounded,
             label: 'liked_posts'.tr(),
             value: likedCount,
             color: context.appColors.accentColor,
-            onTap: () => Navigator.push(
-                context,
-                SlideRoute(builder: (_) => MyLikedPostsScreen(userId: widget.userId))),
-          ),
+            onTap: () => Navigator.push(context, SlideRoute(builder: (_) => MyLikedPostsScreen(userId: widget.userId))),
+          )),
         ],
       ),
     );
@@ -163,7 +145,6 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
       onTap: onTap,
       child: Container(
         height: 90,
-        width: 75,
         decoration: BoxDecoration(
           color: colors.statCardBg,
           borderRadius: BorderRadius.circular(16),

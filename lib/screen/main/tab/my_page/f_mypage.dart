@@ -1,7 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
-import 'package:feple/screen/main/tab/my_page/w_follow_artists.dart';
 import 'package:feple/screen/main/tab/my_page/w_festival_certification.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_post_comment.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_song_requests.dart';
@@ -54,7 +53,6 @@ class _MypageFragmentState extends State<MypageFragment> {
                   ProfileWidget(key: ValueKey('profile_$_refreshKey'), userId: userId),
                   MyPostCommentWidget(key: ValueKey('stats_$_refreshKey'), userId: userId),
                   FtvCertificationWidget(key: ValueKey('cert_$_refreshKey')),
-                  FollowArtistsWidget(key: ValueKey('follow_$_refreshKey'), userId: userId),
                   SongRequestHistoryWidget(key: ValueKey('songs_$_refreshKey')),
                 ],
               ),

@@ -21,6 +21,12 @@ class TimetableNotifier extends ChangeNotifier {
 
   TimetableRange get range => computeTimetableRange(entries, selectedDate);
 
+  bool get hasEntries => range.filtered.isNotEmpty;
+  List<String> get stages => range.stages;
+  List<TimetableEntry> get filteredEntries => range.filtered;
+  int get startHour => range.startHour;
+  int get endHour => range.endHour;
+
   TimetableNotifier({
     required this.festivalId,
     this.userId,

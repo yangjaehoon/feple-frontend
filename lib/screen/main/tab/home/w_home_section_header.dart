@@ -41,12 +41,12 @@ class HomeSectionHeader extends StatelessWidget {
           ),
           if (hasActions) const Spacer(),
           if (onExpand != null) ...[
-            GestureDetector(
-              onTap: onExpand,
-              child: Text(
-                'view_all'.tr(),
-                style: TextStyle(fontSize: 13, color: colors.textSecondary),
-              ),
+            IconButton(
+              icon: Icon(Icons.arrow_forward_ios_rounded,
+                  color: colors.textSecondary, size: 16),
+              onPressed: onExpand,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
             ),
             const SizedBox(width: 4),
           ],

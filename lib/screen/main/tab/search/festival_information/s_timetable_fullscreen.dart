@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_date_tab_bar.dart';
 import 'package:feple/common/constant/timetable_colors.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_entry_dialog.dart';
@@ -151,14 +152,18 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
               child: Column(
                 children: [
                   if (widget.dates.length > 1)
-                    _DateTabBar(
+                    DateTabBar(
                       dates: widget.dates,
-                      selected: _selectedDate,
-                      onSelect: (d) => setState(() {
-                        _selectedDate = d;
-                        _range = computeTimetableRange(widget.entries, _selectedDate);
-                      }),
-                      colors: colors,
+                      selectedDate: _selectedDate,
+                      onDateSelected: (d) {
+                        if (d == null) return;
+                        setState(() {
+                          _selectedDate = d;
+                          _range = computeTimetableRange(widget.entries, _selectedDate);
+                        });
+                      },
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      labelBuilder: (d) => d,
                     ),
                   Expanded(child: _buildGridArea(colors)),
                   if (_range.stages.isNotEmpty) _buildHint(colors),
@@ -249,50 +254,3 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
   }
 }
 
-class _DateTabBar extends StatelessWidget {
-  final List<String> dates;
-  final String? selected;
-  final void Function(String) onSelect;
-  final AbstractThemeColors colors;
-
-  const _DateTabBar({
-    required this.dates,
-    required this.selected,
-    required this.onSelect,
-    required this.colors,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      child: Row(
-        children: dates.map((date) {
-          final sel = date == selected;
-          return GestureDetector(
-            onTap: () => onSelect(date),
-            child: AnimatedContainer(
-              duration: AppDimens.animXFast,
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-              decoration: BoxDecoration(
-                color: sel ? colors.activate : colors.backgroundMain,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: sel ? colors.activate : colors.listDivider),
-              ),
-              child: Text(
-                date,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: sel ? Colors.white : colors.textTitle,
-                ),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-}

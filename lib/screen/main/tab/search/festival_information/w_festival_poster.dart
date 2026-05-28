@@ -36,6 +36,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
       festivalId: widget.poster.id,
       certService: sl<CertificationService>(),
       festivalService: sl<FestivalService>(),
+      attendingCount: widget.poster.attendingCount,
     );
     _notifier.init();
   }
@@ -267,7 +268,9 @@ class _FestivalPosterState extends State<FestivalPoster> {
             ],
           ),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 8),
+        _buildAttendingRow(colors),
+        const SizedBox(height: 12),
         _buildActionButtons(colors),
       ],
     );
@@ -316,6 +319,52 @@ class _FestivalPosterState extends State<FestivalPoster> {
         _        => Colors.white,
       };
 
+  Widget _buildAttendingRow(AbstractThemeColors colors) {
+    final count = _notifier.attendingCount;
+    final isAttending = _notifier.attending;
+    return Row(
+      children: [
+        Icon(Icons.people_outline_rounded, color: colors.accentColor, size: 14),
+        const SizedBox(width: 5),
+        Expanded(
+          child: Text(
+            count > 0
+                ? 'attending_count'.tr(args: ['$count'])
+                : 'attend_toggle'.tr(),
+            style: const TextStyle(fontSize: 13, color: Colors.white70),
+          ),
+        ),
+        GestureDetector(
+          onTap: () { HapticFeedback.lightImpact(); _notifier.toggleAttending(); },
+          child: AnimatedContainer(
+            duration: AppDimens.animFast,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+            decoration: BoxDecoration(
+              color: isAttending
+                  ? colors.accentColor.withValues(alpha: 0.85)
+                  : Colors.white.withValues(alpha: 0.18),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isAttending
+                    ? colors.accentColor
+                    : Colors.white.withValues(alpha: 0.45),
+                width: 1,
+              ),
+            ),
+            child: Text(
+              'attend_toggle'.tr(),
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: isAttending ? Colors.white : Colors.white70,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildActionButtons(AbstractThemeColors colors) {
     return Row(
       children: [
@@ -326,19 +375,21 @@ class _FestivalPosterState extends State<FestivalPoster> {
           bgColor: _notifier.liked
               ? AppColors.kawaiiPink.withValues(alpha: 0.35)
               : Colors.white.withValues(alpha: 0.15),
+          label: 'action_like'.tr(),
         ),
         const SizedBox(width: 8),
-        FestivalActionButton(onTap: _shareFestival, icon: Icons.share_outlined),
+        FestivalActionButton(onTap: _shareFestival, icon: Icons.share_outlined, label: 'action_share'.tr()),
         const SizedBox(width: 8),
-        FestivalActionButton(onTap: _showWeather, icon: Icons.cloud_outlined),
+        FestivalActionButton(onTap: _showWeather, icon: Icons.cloud_outlined, label: 'action_weather'.tr()),
         const SizedBox(width: 8),
-        FestivalActionButton(onTap: _openKakaoMap, icon: Icons.location_on_rounded),
+        FestivalActionButton(onTap: _openKakaoMap, icon: Icons.location_on_rounded, label: 'action_map'.tr()),
         const SizedBox(width: 8),
         FestivalActionButton(
           onTap: _certButtonTap(),
           icon: _certButtonIcon(),
           color: _certButtonColor(colors),
           bgColor: _certButtonBgColor(colors),
+          label: 'action_cert'.tr(),
         ),
       ],
     );

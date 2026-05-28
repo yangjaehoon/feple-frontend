@@ -11,6 +11,8 @@ class FestivalPosterNotifier extends ChangeNotifier {
   final FestivalService festivalService;
 
   bool liked = false;
+  bool attending = false;
+  int attendingCount;
   bool descExpanded = true;
   bool isCertified = false;
   bool isPending = false;
@@ -21,10 +23,11 @@ class FestivalPosterNotifier extends ChangeNotifier {
     required this.festivalId,
     required this.certService,
     required this.festivalService,
+    this.attendingCount = 0,
   });
 
   Future<void> init() async {
-    await Future.wait([loadLikeState(), loadDescState(), loadCertState()]);
+    await Future.wait([loadLikeState(), loadAttendingState(), loadDescState(), loadCertState()]);
   }
 
   Future<void> loadLikeState() async {
@@ -33,6 +36,15 @@ class FestivalPosterNotifier extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       debugPrint('loadLikeState error: $e');
+    }
+  }
+
+  Future<void> loadAttendingState() async {
+    try {
+      attending = await festivalService.isAttending(festivalId);
+      notifyListeners();
+    } catch (e) {
+      debugPrint('loadAttendingState error: $e');
     }
   }
 
@@ -73,6 +85,22 @@ class FestivalPosterNotifier extends ChangeNotifier {
       liked = prev;
       notifyListeners();
       debugPrint('toggleLike error: $e');
+    }
+  }
+
+  Future<void> toggleAttending() async {
+    final prevAttending = attending;
+    final prevCount = attendingCount;
+    attending = !attending;
+    attendingCount = attending ? attendingCount + 1 : (attendingCount - 1).clamp(0, 999999);
+    notifyListeners();
+    try {
+      await festivalService.toggleAttending(festivalId);
+    } catch (e) {
+      attending = prevAttending;
+      attendingCount = prevCount;
+      notifyListeners();
+      debugPrint('toggleAttending error: $e');
     }
   }
 

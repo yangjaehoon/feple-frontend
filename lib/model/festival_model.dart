@@ -12,6 +12,7 @@ class FestivalModel with ChangeNotifier {
   final double? longitude;
   final List<String> genres;
   final String? ageRestriction;
+  final int attendingCount;
 
   FestivalModel({
     required this.id,
@@ -25,6 +26,7 @@ class FestivalModel with ChangeNotifier {
     this.longitude,
     this.genres = const [],
     this.ageRestriction,
+    this.attendingCount = 0,
   });
 
   factory FestivalModel.fromJson(Map<String, dynamic> json) {
@@ -40,6 +42,7 @@ class FestivalModel with ChangeNotifier {
       longitude: (json['longitude'] as num?)?.toDouble(),
       genres: (json['genres'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
       ageRestriction: json['ageRestriction'] as String?,
+      attendingCount: (json['attendingCount'] as num?)?.toInt() ?? 0,
     );
   }
 }

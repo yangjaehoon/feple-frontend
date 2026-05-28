@@ -91,32 +91,94 @@ class _FestivalArtistsState extends State<FestivalArtists> {
   }
 
   Widget _buildArtistListArea(AbstractThemeColors colors) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppDimens.paddingHorizontal,
-        vertical: 12,
-      ),
-      child: ListenableBuilder(
-        listenable: _notifier,
-        builder: (context, _) {
-          if (_notifier.isLoading) return _buildSkeletonRow();
-          if (_notifier.hasError) return _buildErrorRow(colors);
-          if (_notifier.artists.isEmpty) return _buildEmptyRow(colors);
-          return _buildArtistRow(colors);
-        },
+    return ListenableBuilder(
+      listenable: _notifier,
+      builder: (context, _) {
+        if (_notifier.isLoading) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppDimens.paddingHorizontal,
+              vertical: 12,
+            ),
+            child: _buildSkeletonRow(),
+          );
+        }
+        if (_notifier.hasError) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppDimens.paddingHorizontal,
+              vertical: 12,
+            ),
+            child: _buildErrorRow(colors),
+          );
+        }
+        if (_notifier.artists.isEmpty) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppDimens.paddingHorizontal,
+              vertical: 12,
+            ),
+            child: _buildEmptyRow(colors),
+          );
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (_notifier.hasDateFilter) _buildDateTabs(colors),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppDimens.paddingHorizontal,
+                vertical: 12,
+              ),
+              child: _buildArtistRow(colors),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildDateTabs(AbstractThemeColors colors) {
+    final dates = _notifier.allDates;
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+      child: Row(
+        children: [
+          _DateChip(
+            label: 'lineup_all'.tr(),
+            selected: _notifier.selectedDate == null,
+            colors: colors,
+            onTap: () => _notifier.selectDate(null),
+          ),
+          ...dates.map((d) {
+            final parts = d.split('-');
+            final label = parts.length == 3 ? '${int.parse(parts[1])}/${int.parse(parts[2])}' : d;
+            return _DateChip(
+              label: label,
+              selected: _notifier.selectedDate == d,
+              colors: colors,
+              onTap: () => _notifier.selectDate(d),
+            );
+          }),
+        ],
       ),
     );
   }
 
   Widget _buildArtistRow(AbstractThemeColors colors) {
+    final displayed = _notifier.displayedArtists;
+    if (displayed.isEmpty) {
+      return _buildEmptyRow(colors);
+    }
     return SizedBox(
       height: 80,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: _notifier.artists.length,
+        itemCount: displayed.length,
         separatorBuilder: (_, __) => const SizedBox(width: 16),
         itemBuilder: (context, index) {
-          final artist = _notifier.artists[index];
+          final artist = displayed[index];
           final isFollowed = _notifier.isFollowed(artist.artistId);
           return GestureDetector(
             onTap: () => Navigator.push(
@@ -221,6 +283,47 @@ class _FestivalArtistsState extends State<FestivalArtists> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _DateChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final AbstractThemeColors colors;
+  final VoidCallback onTap;
+
+  const _DateChip({
+    required this.label,
+    required this.selected,
+    required this.colors,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        margin: const EdgeInsets.only(right: 8, bottom: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+        decoration: BoxDecoration(
+          color: selected ? colors.activate : colors.backgroundMain,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected ? colors.activate : colors.listDivider,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: selected ? Colors.white : colors.textTitle,
+          ),
+        ),
       ),
     );
   }

@@ -3,7 +3,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/weather_model.dart';
-import 'package:feple/service/festival_service.dart';
+import 'package:feple/service/festival_detail_service.dart';
 import 'package:flutter/material.dart';
 
 class FestivalWeather extends StatefulWidget {
@@ -21,7 +21,7 @@ class _FestivalWeatherState extends State<FestivalWeather> {
   @override
   void initState() {
     super.initState();
-    _future = sl<FestivalService>().fetchWeather(widget.festivalId);
+    _future = sl<FestivalDetailService>().fetchWeather(widget.festivalId);
   }
 
   @override

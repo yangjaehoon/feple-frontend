@@ -1,14 +1,14 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/dart/extension/datetime_extension.dart';
 import 'package:feple/model/timetable_entry.dart';
-import 'package:feple/service/festival_service.dart';
+import 'package:feple/service/festival_detail_service.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:flutter/foundation.dart';
 
 class TimetableNotifier extends ChangeNotifier {
   final int festivalId;
   final int? userId;
-  final FestivalService _festivalService;
+  final FestivalDetailService _festivalService;
   final UserService _userService;
 
   List<TimetableEntry> entries = [];
@@ -26,7 +26,7 @@ class TimetableNotifier extends ChangeNotifier {
     this.userId,
     required String startDate,
     required String endDate,
-    required FestivalService festivalService,
+    required FestivalDetailService festivalService,
     required UserService userService,
   })  : _festivalService = festivalService,
         _userService = userService {

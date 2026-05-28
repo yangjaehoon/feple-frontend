@@ -25,6 +25,19 @@ enum NotificationType {
       this == NotificationType.newFestival ||
       this == NotificationType.festivalReminder;
 
+  bool get isCertType =>
+      this == NotificationType.certApproved ||
+      this == NotificationType.certRejected;
+
+  bool get isCommentType => this == NotificationType.newComment;
+
+  bool get isFestivalFilterType =>
+      this == NotificationType.newFestival ||
+      this == NotificationType.festivalReminder ||
+      this == NotificationType.songRequestApproved ||
+      this == NotificationType.songRequestRejected ||
+      this == NotificationType.artistSuggestionProcessed;
+
   IconData get iconData {
     switch (this) {
       case NotificationType.certApproved:            return Icons.verified_rounded;

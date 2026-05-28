@@ -7,7 +7,6 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/notification_model.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
-import 'package:feple/screen/notification/notification_type.dart';
 import 'package:feple/screen/notification/w_notification_card.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/festival_service.dart';
@@ -36,22 +35,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
     if (_filter == _NotifFilter.all) return _items;
     return _items.where((n) {
       final t = n.type;
-      if (t == null) return _filter == _NotifFilter.all;
-      switch (_filter) {
-        case _NotifFilter.cert:
-          return t == NotificationType.certApproved ||
-              t == NotificationType.certRejected;
-        case _NotifFilter.comment:
-          return t == NotificationType.newComment;
-        case _NotifFilter.festival:
-          return t == NotificationType.newFestival ||
-              t == NotificationType.festivalReminder ||
-              t == NotificationType.songRequestApproved ||
-              t == NotificationType.songRequestRejected ||
-              t == NotificationType.artistSuggestionProcessed;
-        case _NotifFilter.all:
-          return true;
-      }
+      if (t == null) return false;
+      return switch (_filter) {
+        _NotifFilter.cert     => t.isCertType,
+        _NotifFilter.comment  => t.isCommentType,
+        _NotifFilter.festival => t.isFestivalFilterType,
+        _NotifFilter.all      => true,
+      };
     }).toList();
   }
 

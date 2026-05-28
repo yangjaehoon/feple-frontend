@@ -7,6 +7,7 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/notification_model.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
+import 'package:feple/screen/notification/notification_type.dart';
 import 'package:feple/screen/notification/w_notification_card.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/festival_service.dart';
@@ -93,6 +94,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     final realIndex = _items.indexWhere((n) => n.id == item.id);
     if (realIndex < 0) return;
     setState(() => _items.removeAt(realIndex));
+    if (item.type == NotificationType.adminBroadcast) return;
     try {
       await _notificationService.markRead(item.id);
     } catch (e) {

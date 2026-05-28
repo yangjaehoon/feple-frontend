@@ -130,6 +130,7 @@ class NotificationCard extends StatelessWidget {
       case NotificationType.songRequestApproved:        return Colors.green;
       case NotificationType.songRequestRejected:        return Colors.redAccent;
       case NotificationType.artistSuggestionProcessed: return colors.activate;
+      case NotificationType.adminBroadcast:             return colors.accentColor;
       default:                                          return colors.certRingColor;
     }
   }

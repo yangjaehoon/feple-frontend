@@ -28,16 +28,37 @@ class FestivalBoardScreen extends StatefulWidget {
 class _FestivalBoardScreenState extends State<FestivalBoardScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
-  late final PostService _svc;
+  late final List<_BoardTab> _tabs;
   late List<Future<List<Post>>> _futures;
-  final List<int> _tabRefreshKeys = [0, 0, 0];
+  late List<int> _tabRefreshKeys;
 
   @override
   void initState() {
     super.initState();
-    _svc = sl<PostService>();
-    _tabController = TabController(length: 3, vsync: this);
+    final svc = sl<PostService>();
+    _tabs = [
+      _BoardTab(
+        name: 'name_board'.tr(args: [widget.festivalName]),
+        fetch: () => svc.fetchFestivalPosts(widget.festivalId),
+        submit: (t, c, a, img) => svc.createFestivalPost(
+            festivalId: widget.festivalId, title: t, content: c, anonymous: a, imageObjectKey: img),
+      ),
+      _BoardTab(
+        name: 'companion_board'.tr(),
+        fetch: () => svc.fetchFestivalCompanionPosts(widget.festivalId),
+        submit: (t, c, a, img) => svc.createFestivalCompanionPost(
+            festivalId: widget.festivalId, title: t, content: c, anonymous: a, imageObjectKey: img),
+      ),
+      _BoardTab(
+        name: 'ticket_board'.tr(),
+        fetch: () => svc.fetchFestivalTicketPosts(widget.festivalId),
+        submit: (t, c, a, img) => svc.createFestivalTicketPost(
+            festivalId: widget.festivalId, title: t, content: c, anonymous: a, imageObjectKey: img),
+      ),
+    ];
+    _tabController = TabController(length: _tabs.length, vsync: this);
     _tabController.addListener(_onTabChanged);
+    _tabRefreshKeys = List.filled(_tabs.length, 0);
     _loadAll();
   }
 
@@ -53,46 +74,24 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
   }
 
   void _loadAll() {
-    _futures = [
-      _svc.fetchFestivalPosts(widget.festivalId),
-      _svc.fetchFestivalCompanionPosts(widget.festivalId),
-      _svc.fetchFestivalTicketPosts(widget.festivalId),
-    ];
+    _futures = _tabs.map((t) => t.fetch()).toList();
   }
 
   void _refreshTab(int index) {
-    final future = switch (index) {
-      0 => _svc.fetchFestivalPosts(widget.festivalId),
-      1 => _svc.fetchFestivalCompanionPosts(widget.festivalId),
-      _ => _svc.fetchFestivalTicketPosts(widget.festivalId),
-    };
     setState(() {
-      _futures[index] = future;
+      _futures[index] = _tabs[index].fetch();
       _tabRefreshKeys[index]++;
     });
   }
 
-  List<String> get _boardNames => [
-    'name_board'.tr(args: [widget.festivalName]),
-    'companion_board'.tr(),
-    'ticket_board'.tr(),
-  ];
-
-  List<Future<void> Function(String, String, bool, String?)> get _submitFns => [
-    (t, c, a, img) => _svc.createFestivalPost(festivalId: widget.festivalId, title: t, content: c, anonymous: a, imageObjectKey: img),
-    (t, c, a, img) => _svc.createFestivalCompanionPost(festivalId: widget.festivalId, title: t, content: c, anonymous: a, imageObjectKey: img),
-    (t, c, a, img) => _svc.createFestivalTicketPost(festivalId: widget.festivalId, title: t, content: c, anonymous: a, imageObjectKey: img),
-  ];
-
   Future<void> _openWrite(int index) async {
-    final names = _boardNames;
-    final fns = _submitFns;
+    final tab = _tabs[index];
     await Navigator.push(
       context,
       SlideRoute(
         builder: (_) => WritePostScreen(
-          title: names[index],
-          onSubmit: fns[index],
+          title: tab.name,
+          onSubmit: tab.submit,
         ),
       ),
     );
@@ -100,7 +99,7 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
   }
 
   Widget _buildTabContent(int index, AbstractThemeColors colors) {
-    final boardname = _boardNames[index];
+    final boardname = _tabs[index].name;
     return RefreshIndicator(
       color: colors.activate,
       onRefresh: () async {
@@ -217,11 +216,25 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: List.generate(3, (i) => _buildTabContent(i, colors)),
+              children: List.generate(_tabs.length, (i) => _buildTabContent(i, colors)),
             ),
           ),
         ],
       ),
     );
   }
+}
+
+typedef _SubmitFn = Future<void> Function(String, String, bool, String?);
+
+class _BoardTab {
+  final String name;
+  final Future<List<Post>> Function() fetch;
+  final _SubmitFn submit;
+
+  const _BoardTab({
+    required this.name,
+    required this.fetch,
+    required this.submit,
+  });
 }

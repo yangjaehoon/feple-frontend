@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../../model/festival_model.dart';
 import 'festival_poster_notifier.dart';
+import 'festival_poster_style.dart';
 import 'w_certification_bottom_sheet.dart';
 import 'w_festival_action_button.dart';
 import 'w_weather_bottom_sheet.dart';
@@ -293,44 +294,22 @@ class _FestivalPosterState extends State<FestivalPoster> {
     final tags = <Widget>[];
 
     for (final genre in widget.poster.genres) {
-      final key = _genreI18nKey(genre);
+      final key = genreI18nKey(genre);
       if (key == null) continue;
       tags.add(_Tag(label: key.tr()));
     }
 
     final age = widget.poster.ageRestriction;
     if (age != null && age != 'NONE') {
-      final key = _ageI18nKey(age);
+      final key = ageI18nKey(age);
       if (key != null) {
-        tags.add(_Tag(label: key.tr(), color: _ageColor(age)));
+        tags.add(_Tag(label: key.tr(), color: ageDisplayColor(age)));
       }
     }
 
     if (tags.isEmpty) return const SizedBox.shrink();
     return Wrap(spacing: 6, runSpacing: 4, children: tags);
   }
-
-  static String? _genreI18nKey(String genre) => switch (genre) {
-        'HIP_HOP' => 'genre_hip_hop',
-        'INDIE'   => 'genre_indie',
-        'BAND'    => 'genre_band',
-        'ETC'     => 'genre_etc',
-        _         => null,
-      };
-
-  static String? _ageI18nKey(String age) => switch (age) {
-        'AGE_12' => 'age_12',
-        'AGE_15' => 'age_15',
-        'AGE_19' => 'age_19',
-        _        => null,
-      };
-
-  static Color _ageColor(String age) => switch (age) {
-        'AGE_12' => AppColors.ageRatingGreen,
-        'AGE_15' => AppColors.ageRatingOrange,
-        'AGE_19' => AppColors.ageRatingRed,
-        _        => Colors.white,
-      };
 
   Widget _buildAttendingRow(AbstractThemeColors colors) {
     final count = _notifier.attendingCount;

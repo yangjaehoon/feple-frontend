@@ -35,7 +35,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
   final _vTime = ScrollController();
   final _hContent = ScrollController();
   final _hHeader = ScrollController();
-  bool _lockV = false, _lockH = false;
+  bool _isVerticalScrollLocked = false, _isHorizontalScrollLocked = false;
 
   List<TimetableEntry> _entries = [];
   Set<String> _followedNames = {};
@@ -50,8 +50,8 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
   @override
   void initState() {
     super.initState();
-    _vContent.addListener(_onV);
-    _hContent.addListener(_onH);
+    _vContent.addListener(_syncVerticalScroll);
+    _hContent.addListener(_syncHorizontalScroll);
     _buildDates();
     _range = computeTimetableRange(_entries, _selectedDate);
     _fetch();
@@ -100,24 +100,24 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
     }
   }
 
-  void _onV() {
-    if (_lockV) return;
-    _lockV = true;
+  void _syncVerticalScroll() {
+    if (_isVerticalScrollLocked) return;
+    _isVerticalScrollLocked = true;
     if (_vTime.hasClients) _vTime.jumpTo(_vContent.offset);
-    _lockV = false;
+    _isVerticalScrollLocked = false;
   }
 
-  void _onH() {
-    if (_lockH) return;
-    _lockH = true;
+  void _syncHorizontalScroll() {
+    if (_isHorizontalScrollLocked) return;
+    _isHorizontalScrollLocked = true;
     if (_hHeader.hasClients) _hHeader.jumpTo(_hContent.offset);
-    _lockH = false;
+    _isHorizontalScrollLocked = false;
   }
 
   @override
   void dispose() {
-    _vContent.removeListener(_onV);
-    _hContent.removeListener(_onH);
+    _vContent.removeListener(_syncVerticalScroll);
+    _hContent.removeListener(_syncHorizontalScroll);
     _vContent.dispose();
     _vTime.dispose();
     _hContent.dispose();
@@ -143,7 +143,6 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 제목
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 14, 12, 10),
               child: Row(
@@ -181,7 +180,6 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
               ),
             ),
 
-            // 날짜 탭
             if (_dates.isNotEmpty)
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,

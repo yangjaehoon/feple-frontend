@@ -68,8 +68,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
   }
 
   void _shareFestival() {
-    final p = widget.poster;
-    Share.share('${p.title}\n${p.location}\n${p.startDate}');
+    Share.share('${widget.poster.title}\n${widget.poster.location}\n${widget.poster.startDate}');
   }
 
   void _showWeather() {
@@ -313,9 +312,9 @@ class _FestivalPosterState extends State<FestivalPoster> {
       };
 
   static Color _ageColor(String age) => switch (age) {
-        'AGE_12' => const Color(0xFF4CAF50),
-        'AGE_15' => const Color(0xFFFF9800),
-        'AGE_19' => const Color(0xFFF44336),
+        'AGE_12' => AppColors.ageRatingGreen,
+        'AGE_15' => AppColors.ageRatingOrange,
+        'AGE_19' => AppColors.ageRatingRed,
         _        => Colors.white,
       };
 

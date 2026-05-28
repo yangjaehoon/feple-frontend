@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -107,30 +108,22 @@ class _FestivalSetlistState extends State<FestivalSetlist> {
   }
 
   Widget _buildContent(AbstractThemeColors colors) {
-    return FutureBuilder<List<FestivalSetlistEntry>>(
+    return AsyncContentBuilder<List<FestivalSetlistEntry>>(
       future: _future,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildSkeleton();
-        }
-        if (snapshot.hasError) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: ErrorState(
-              message: 'err_fetch_data'.tr(args: ['']),
-              onRetry: () => setState(() => _future = _fetch()),
-            ),
-          );
-        }
-        final entries = snapshot.data ?? [];
-        if (entries.isEmpty) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: EmptyState(icon: Icons.queue_music_rounded, title: 'no_setlist'.tr()),
-          );
-        }
-        return _buildList(entries, colors);
-      },
+      loadingBuilder: (_) => _buildSkeleton(),
+      errorBuilder: (_) => Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: ErrorState(
+          message: 'err_fetch_data'.tr(args: ['']),
+          onRetry: () => setState(() => _future = _fetch()),
+        ),
+      ),
+      emptyBuilder: (_) => Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: EmptyState(icon: Icons.queue_music_rounded, title: 'no_setlist'.tr()),
+      ),
+      useListViewForEmptyState: false,
+      builder: (_, entries) => _buildList(entries, colors),
     );
   }
 

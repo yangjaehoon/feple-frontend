@@ -1,18 +1,15 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/language/language.dart';
-import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/theme/theme_util.dart';
 import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
-import 'package:feple/injection.dart';
 import 'package:feple/login/s_login.dart';
-import 'package:feple/model/notification_preference_model.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/my_page/w_edit_profile.dart';
 import 'package:feple/screen/opensource/s_opensource.dart';
-import 'package:feple/service/notification_preference_service.dart';
+import 'package:feple/screen/settings/s_notification_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get_utils/src/extensions/string_extensions.dart';
@@ -29,47 +26,17 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _clearingCache = false;
-  NotificationPreferenceModel? _prefs;
   String _appVersion = '';
 
   @override
   void initState() {
     super.initState();
-    _loadPrefs();
     _loadVersion();
   }
 
   Future<void> _loadVersion() async {
     final info = await PackageInfo.fromPlatform();
     if (mounted) setState(() => _appVersion = info.version);
-  }
-
-  Future<void> _loadPrefs() async {
-    try {
-      final prefs = await sl<NotificationPreferenceService>().getPreferences();
-      if (mounted) setState(() => _prefs = prefs);
-    } catch (e) {
-      debugPrint('[Settings] prefs load failed: $e');
-      if (mounted) {
-        setState(() => _prefs = const NotificationPreferenceModel(
-          certEnabled: true,
-          commentEnabled: true,
-          festivalEnabled: true,
-          songRequestEnabled: true,
-        ));
-      }
-    }
-  }
-
-  Future<void> _togglePref(NotificationPreferenceModel newPrefs) async {
-    final old = _prefs;
-    setState(() => _prefs = newPrefs);
-    try {
-      final updated = await sl<NotificationPreferenceService>().updatePreferences(newPrefs);
-      if (mounted) setState(() => _prefs = updated);
-    } catch (_) {
-      if (mounted) setState(() => _prefs = old);
-    }
   }
 
   Future<void> _logout() async {
@@ -189,54 +156,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       : null,
                   onTap: _clearingCache ? null : _clearCache,
                 ),
-                _SectionHeader(label: 'notif_settings'.tr(), colors: colors),
-                if (_prefs == null)
-                  _NotifPrefSkeleton(colors: colors)
-                else ...[
-                  _SettingsItem(
-                    icon: Icons.verified_rounded,
-                    label: 'notif_cert'.tr(),
-                    colors: colors,
-                    trailing: Switch(
-                      value: _prefs!.certEnabled,
-                      onChanged: (_) => _togglePref(_prefs!.copyWith(certEnabled: !_prefs!.certEnabled)),
-                      activeThumbColor: colors.activate,
-                    ),
+                _ItemDivider(colors: colors),
+                _SettingsItem(
+                  icon: Icons.notifications_rounded,
+                  label: 'notif_settings'.tr(),
+                  colors: colors,
+                  onTap: () => Navigator.push(
+                    context,
+                    SlideRoute(builder: (_) => const NotificationSettingsScreen()),
                   ),
-                  _ItemDivider(colors: colors),
-                  _SettingsItem(
-                    icon: Icons.chat_bubble_rounded,
-                    label: 'notif_comment'.tr(),
-                    colors: colors,
-                    trailing: Switch(
-                      value: _prefs!.commentEnabled,
-                      onChanged: (_) => _togglePref(_prefs!.copyWith(commentEnabled: !_prefs!.commentEnabled)),
-                      activeThumbColor: colors.activate,
-                    ),
-                  ),
-                  _ItemDivider(colors: colors),
-                  _SettingsItem(
-                    icon: Icons.festival_rounded,
-                    label: 'notif_festival'.tr(),
-                    colors: colors,
-                    trailing: Switch(
-                      value: _prefs!.festivalEnabled,
-                      onChanged: (_) => _togglePref(_prefs!.copyWith(festivalEnabled: !_prefs!.festivalEnabled)),
-                      activeThumbColor: colors.activate,
-                    ),
-                  ),
-                  _ItemDivider(colors: colors),
-                  _SettingsItem(
-                    icon: Icons.music_note_rounded,
-                    label: 'notif_song_request'.tr(),
-                    colors: colors,
-                    trailing: Switch(
-                      value: _prefs!.songRequestEnabled,
-                      onChanged: (_) => _togglePref(_prefs!.copyWith(songRequestEnabled: !_prefs!.songRequestEnabled)),
-                      activeThumbColor: colors.activate,
-                    ),
-                  ),
-                ],
+                ),
                 _SectionHeader(label: 'settings_support'.tr(), colors: colors),
                 _SettingsItem(
                   icon: Icons.headset_mic_rounded,
@@ -480,37 +409,4 @@ class _VersionItem extends StatelessWidget {
   }
 }
 
-class _NotifPrefSkeleton extends StatelessWidget {
-  final AbstractThemeColors colors;
 
-  const _NotifPrefSkeleton({required this.colors});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: List.generate(4, _buildRow),
-    );
-  }
-
-  Widget _buildRow(int index) {
-    return Column(
-      children: [
-        Container(
-          color: colors.surface,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-          child: const Row(
-            children: [
-              SkeletonBox(width: 20, height: 20, borderRadius: BorderRadius.all(Radius.circular(4))),
-              SizedBox(width: 14),
-              Expanded(child: SkeletonBox(height: 15)),
-              SizedBox(width: 14),
-              SkeletonBox(width: 44, height: 26, borderRadius: BorderRadius.all(Radius.circular(13))),
-            ],
-          ),
-        ),
-        if (index < 3)
-          Divider(height: 1, indent: 50, color: colors.listDivider),
-      ],
-    );
-  }
-}

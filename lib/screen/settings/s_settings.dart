@@ -49,6 +49,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (mounted) setState(() => _prefs = prefs);
     } catch (e) {
       debugPrint('[Settings] prefs load failed: $e');
+      if (mounted) {
+        setState(() => _prefs = const NotificationPreferenceModel(
+          certEnabled: true,
+          commentEnabled: true,
+          festivalEnabled: true,
+          songRequestEnabled: true,
+        ));
+      }
     }
   }
 

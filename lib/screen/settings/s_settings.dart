@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/language/language.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/theme/theme_util.dart';
 import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/util/app_route.dart';
@@ -190,13 +191,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 _SectionHeader(label: 'notif_settings'.tr(), colors: colors),
                 if (_prefs == null)
-                  Container(
-                    color: colors.surface,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: Center(
-                      child: CircularProgressIndicator(color: colors.activate, strokeWidth: 2),
-                    ),
-                  )
+                  _NotifPrefSkeleton(colors: colors)
                 else ...[
                   _SettingsItem(
                     icon: Icons.verified_rounded,
@@ -481,6 +476,41 @@ class _VersionItem extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _NotifPrefSkeleton extends StatelessWidget {
+  final AbstractThemeColors colors;
+
+  const _NotifPrefSkeleton({required this.colors});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: List.generate(4, _buildRow),
+    );
+  }
+
+  Widget _buildRow(int index) {
+    return Column(
+      children: [
+        Container(
+          color: colors.surface,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          child: const Row(
+            children: [
+              SkeletonBox(width: 20, height: 20, borderRadius: BorderRadius.all(Radius.circular(4))),
+              SizedBox(width: 14),
+              Expanded(child: SkeletonBox(height: 15)),
+              SizedBox(width: 14),
+              SkeletonBox(width: 44, height: 26, borderRadius: BorderRadius.all(Radius.circular(13))),
+            ],
+          ),
+        ),
+        if (index < 3)
+          Divider(height: 1, indent: 50, color: colors.listDivider),
+      ],
     );
   }
 }

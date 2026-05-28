@@ -29,6 +29,7 @@ class EnlargePost extends StatefulWidget {
   final String title;
   final String content;
   final int heart;
+  final int viewCount;
   final bool certified;
   final String? userRole;
   final String? profileImageUrl;
@@ -45,6 +46,7 @@ class EnlargePost extends StatefulWidget {
     required this.title,
     required this.content,
     required this.heart,
+    this.viewCount = 0,
     this.certified = false,
     this.userRole,
     this.profileImageUrl,
@@ -63,6 +65,7 @@ class EnlargePost extends StatefulWidget {
         title = post.title,
         content = post.content,
         heart = post.likeCount,
+        viewCount = post.viewCount,
         certified = post.certified,
         userRole = post.userRole,
         profileImageUrl = post.profileImageUrl,
@@ -111,6 +114,7 @@ class _EnlargePostState extends State<EnlargePost> {
     _notifier = PostDetailNotifier(
       postId: widget.id,
       initialHeartCount: widget.heart,
+      initialViewCount: widget.viewCount,
     );
     _notifier.onCommentPosted = (key) {
       _commentController.clear();

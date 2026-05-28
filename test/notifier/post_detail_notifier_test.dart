@@ -43,7 +43,7 @@ void main() {
     sl.registerSingleton<CommentService>(mockCommentService);
     sl.registerSingleton<ScrapService>(mockScrapService);
 
-    notifier = PostDetailNotifier(postId: 1, initialHeartCount: 10);
+    notifier = PostDetailNotifier(postId: 1, initialHeartCount: 10, initialViewCount: 0);
   });
 
   tearDown(() {

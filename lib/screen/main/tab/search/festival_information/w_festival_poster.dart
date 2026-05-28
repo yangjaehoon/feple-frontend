@@ -234,46 +234,52 @@ class _FestivalPosterState extends State<FestivalPoster> {
         const SizedBox(height: 8),
         _buildTagRow(),
         const SizedBox(height: 8),
-        Row(
-          children: [
-            Icon(Icons.calendar_today_rounded, color: colors.accentColor, size: 15),
-            const SizedBox(width: 6),
-            Expanded(
-              child: Text(
-                widget.poster.endDate.isNotEmpty
-                    ? '${widget.poster.startDate} ~ ${widget.poster.endDate}'
-                    : widget.poster.startDate,
-                style: const TextStyle(fontSize: 14, color: Colors.white70),
-              ),
-            ),
-          ],
+        _buildPosterInfoRow(
+          icon: Icons.calendar_today_rounded,
+          color: colors.accentColor,
+          child: Text(
+            widget.poster.endDate.isNotEmpty
+                ? '${widget.poster.startDate} ~ ${widget.poster.endDate}'
+                : widget.poster.startDate,
+            style: const TextStyle(fontSize: 14, color: Colors.white70),
+          ),
         ),
         const SizedBox(height: 6),
         GestureDetector(
           onTap: _openKakaoMap,
-          child: Row(
-            children: [
-              Icon(Icons.location_on_rounded, color: colors.accentColor, size: 15),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  widget.poster.location,
-                  softWrap: true,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.white70,
-                    decoration: TextDecoration.underline,
-                    decorationColor: Colors.white54,
-                  ),
-                ),
+          child: _buildPosterInfoRow(
+            icon: Icons.location_on_rounded,
+            color: colors.accentColor,
+            child: Text(
+              widget.poster.location,
+              softWrap: true,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.white70,
+                decoration: TextDecoration.underline,
+                decorationColor: Colors.white54,
               ),
-            ],
+            ),
           ),
         ),
         const SizedBox(height: 8),
         _buildAttendingRow(colors),
         const SizedBox(height: 12),
         _buildActionButtons(colors),
+      ],
+    );
+  }
+
+  Widget _buildPosterInfoRow({
+    required IconData icon,
+    required Color color,
+    required Widget child,
+  }) {
+    return Row(
+      children: [
+        Icon(icon, color: color, size: 15),
+        const SizedBox(width: 6),
+        Expanded(child: child),
       ],
     );
   }

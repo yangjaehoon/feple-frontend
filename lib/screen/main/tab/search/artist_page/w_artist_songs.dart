@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -53,24 +54,8 @@ class _ArtistSongsState extends State<ArtistSongs> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return Container(
+    return SurfaceCard(
       width: double.infinity,
-      margin: const EdgeInsets.symmetric(
-        horizontal: AppDimens.paddingHorizontal,
-        vertical: AppDimens.paddingVertical,
-      ),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius:
-            const BorderRadius.all(Radius.circular(AppDimens.cardRadius)),
-        boxShadow: [
-          BoxShadow(
-            color: colors.cardShadow.withValues(alpha: 0.12),
-            blurRadius: AppDimens.cardRadius,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
       child: Column(
         children: [
           BoardCardHeader(

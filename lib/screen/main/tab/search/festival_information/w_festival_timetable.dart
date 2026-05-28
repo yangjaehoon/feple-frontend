@@ -1,7 +1,9 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_date_tab_bar.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/timetable_entry.dart';
@@ -129,20 +131,13 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
 
-    return Container(
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(color: colors.cardShadow.withValues(alpha: 0.1), blurRadius: 16, offset: const Offset(0, 4)),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+    return SurfaceCard(
+      margin: const EdgeInsets.all(AppDimens.paddingHorizontal),
+      shadowAlpha: 0.1,
+      clipContent: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 14, 12, 10),
               child: Row(
@@ -181,40 +176,15 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
             ),
 
             if (_dates.isNotEmpty)
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
+              DateTabBar(
+                dates: _dates,
+                selectedDate: _selectedDate,
+                onDateSelected: (date) => setState(() {
+                  _selectedDate = date;
+                  _range = computeTimetableRange(_entries, _selectedDate);
+                }),
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Row(
-                  children: _dates.map((date) {
-                    final selected = date == _selectedDate;
-                    return GestureDetector(
-                      onTap: () => setState(() {
-                        _selectedDate = date;
-                        _range = computeTimetableRange(_entries, _selectedDate);
-                      }),
-                      child: AnimatedContainer(
-                        duration: AppDimens.animXFast,
-                        margin: const EdgeInsets.only(right: 8, bottom: 10),
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-                        decoration: BoxDecoration(
-                          color: selected ? colors.activate : colors.backgroundMain,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: selected ? colors.activate : colors.listDivider,
-                          ),
-                        ),
-                        child: Text(
-                          date,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: selected ? Colors.white : colors.textTitle,
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
+                labelBuilder: (d) => d,
               ),
 
             if (_loading)
@@ -251,7 +221,6 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                 ),
               ),
           ],
-        ),
       ),
     );
   }

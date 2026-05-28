@@ -1,5 +1,7 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/booth_model.dart';
 import 'package:feple/service/festival_service.dart';
@@ -118,28 +120,16 @@ class _FestivalBoothMapState extends State<FestivalBoothMap> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
 
-    return Container(
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: colors.cardShadow.withValues(alpha: 0.1),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
+    return SurfaceCard(
+      margin: const EdgeInsets.all(AppDimens.paddingHorizontal),
+      shadowAlpha: 0.1,
+      clipContent: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeader(colors),
+          _buildBody(colors),
         ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(colors),
-            _buildBody(colors),
-          ],
-        ),
       ),
     );
   }

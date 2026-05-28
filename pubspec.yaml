@@ -113,6 +113,7 @@ dependencies:
   google_maps_flutter: ^2.9.0
   connectivity_plus: ^7.1.1
   share_plus: ^10.0.0
+  package_info_plus: ^9.0.1
 
 dependency_overrides:
   geolocator_android: ^5.0.2

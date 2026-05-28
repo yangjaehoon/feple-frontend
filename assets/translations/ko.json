@@ -412,7 +412,7 @@
   "dark_mode": "다크 모드",
   "language": "언어",
   "logout_confirm": "정말 로그아웃 하시겠습니까?",
-  "liked_posts": "좋아요한 게시글",
+  "liked_posts": "좋아요",
   "my_liked_posts": "좋아요한 게시글",
   "no_liked_posts": "좋아요한 게시글이 없습니다",
   "song_request_history": "곡 신청 현황",
@@ -426,5 +426,8 @@
   "notif_comment": "댓글 알림",
   "notif_festival": "페스티벌 알림",
   "notif_song_request": "곡 신청 알림",
+  "privacy_policy": "개인정보처리방침",
+  "terms_of_service": "이용약관",
+  "app_version": "앱 버전",
   "d_day": "D-DAY"
 }

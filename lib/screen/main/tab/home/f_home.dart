@@ -3,13 +3,13 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/followed_artist.dart';
 import 'package:feple/screen/main/tab/home/f_followed_artists_by_genre.dart';
+import 'package:feple/screen/main/tab/home/f_liked_festivals_page.dart';
 import 'package:feple/screen/main/tab/home/home_state_notifier.dart';
 import 'package:feple/screen/main/tab/home/w_boards_section_skeleton.dart';
 import 'package:feple/screen/main/tab/home/w_favorite_boards_section.dart';
 import 'package:feple/screen/main/tab/home/w_home_artists_section.dart';
 import 'package:feple/screen/main/tab/home/w_home_festivals_section.dart';
 import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
-import 'package:feple/screen/main/tab/home/w_reorder_sheet.dart';
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
@@ -54,27 +54,6 @@ class _HomeFragmentState extends State<HomeFragment> {
 
   void _onLikeChanged() => _notifier.refresh();
 
-  void _showReorderSheet(
-      String title, List<ReorderItem> items, Future<void> Function(List<int>) onSave) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => ReorderSheet(title: title, items: items, onSave: onSave),
-    );
-  }
-
-  void _openFestivalOrderSettings() {
-    final festivals = _notifier.festivals;
-    if (festivals == null || festivals.isEmpty) return;
-    final items = _notifier
-        .applyOrder(festivals, _notifier.festivalOrder, (f) => f.id)
-        .map((f) => ReorderItem(id: f.id, name: f.title, imageUrl: f.posterUrl))
-        .toList();
-    _showReorderSheet('liked_festivals'.tr(), items, _notifier.saveFestivalOrder);
-  }
 
   List<FollowedArtist>? get _orderedArtists {
     final artists = _notifier.artists;
@@ -168,8 +147,19 @@ class _HomeFragmentState extends State<HomeFragment> {
         const SizedBox(height: 8),
         HomeSectionHeader(
           title: 'liked_festivals'.tr(),
-          onSettings: (_notifier.festivals?.isNotEmpty ?? false)
-              ? _openFestivalOrderSettings
+          onExpand: (_notifier.festivals?.isNotEmpty ?? false)
+              ? () async {
+                  await Navigator.push(
+                    context,
+                    SlideRoute(
+                      builder: (_) => LikedFestivalsPage(
+                        festivals: _orderedFestivals ?? [],
+                        onSaveOrder: _notifier.saveFestivalOrder,
+                      ),
+                    ),
+                  );
+                  _notifier.refresh();
+                }
               : null,
         ),
         HomeFestivalsSection(

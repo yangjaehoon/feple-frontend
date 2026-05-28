@@ -10,6 +10,7 @@ import 'service/certification_service.dart';
 import 'service/comment_service.dart';
 import 'service/fcm_service.dart';
 import 'service/festival_service.dart';
+import 'service/notification_preference_service.dart';
 import 'service/notification_service.dart';
 import 'service/post_service.dart';
 import 'service/report_service.dart';
@@ -36,6 +37,7 @@ void setupDependencies() {
   sl.registerLazySingleton<CertificationService>(() => CertificationService());
   sl.registerLazySingleton<CommentService>(() => CommentService());
   sl.registerLazySingleton<FestivalService>(() => FestivalService());
+  sl.registerLazySingleton<NotificationPreferenceService>(() => NotificationPreferenceService());
   sl.registerLazySingleton<NotificationService>(() => NotificationService());
   sl.registerLazySingleton<PostService>(() => PostService());
   sl.registerLazySingleton<ReportService>(() => ReportService());

@@ -22,4 +22,11 @@ class SongRequestService {
         .map((json) => SongRequestModel.fromJson(json as Map<String, dynamic>))
         .toList();
   }
+
+  Future<List<SongRequestModel>> fetchAllMyRequests(int userId) async {
+    final response = await DioClient.dio.get('/users/$userId/song-requests');
+    return (response.data as List)
+        .map((json) => SongRequestModel.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
 }

@@ -11,6 +11,11 @@ class UserActivityService {
     return response.data as List;
   }
 
+  Future<List<dynamic>> fetchLikedPosts(int userId) async {
+    final response = await DioClient.dio.get('/users/$userId/liked-posts');
+    return response.data as List;
+  }
+
   Future<Map<String, dynamic>> fetchStats(int userId) async {
     final response = await DioClient.dio.get('/users/$userId/stats');
     return response.data as Map<String, dynamic>;

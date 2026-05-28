@@ -26,6 +26,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
   String _originalNickname = '';
 
   final _nicknameKey = GlobalKey<NicknameFieldState>();
+  final _bioController = TextEditingController();
 
   @override
   void initState() {
@@ -33,7 +34,14 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
     final user = context.read<UserProvider>().user;
     if (user != null) {
       _originalNickname = user.nickname;
+      _bioController.text = user.bio ?? '';
     }
+  }
+
+  @override
+  void dispose() {
+    _bioController.dispose();
+    super.dispose();
   }
 
   Future<void> _pickImage() async {
@@ -91,6 +99,11 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
 
       if (newNickname != user.nickname) {
         await userService.updateNickname(user.id, newNickname);
+      }
+
+      final newBio = _bioController.text.trim();
+      if (newBio != (user.bio ?? '')) {
+        await userService.updateBio(user.id, newBio);
       }
 
       await userProvider.fetchUser(user.id);
@@ -235,6 +248,32 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 24),
+
+            // ── 자기소개 ──
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'bio'.tr(),
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: colors.textSecondary,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _bioController,
+              maxLength: 150,
+              maxLines: 3,
+              decoration: InputDecoration(
+                hintText: 'bio_hint'.tr(),
+                hintStyle: TextStyle(color: colors.textSecondary, fontSize: 13),
+                counterStyle: TextStyle(color: colors.textSecondary, fontSize: 11),
+              ),
+              style: TextStyle(color: colors.textTitle, fontSize: 14),
             ),
             const SizedBox(height: 40),
 

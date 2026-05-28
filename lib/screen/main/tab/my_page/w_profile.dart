@@ -78,6 +78,23 @@ class _ProfileWidgetState extends State<ProfileWidget> {
           _buildProfileImage(user, colors),
           const SizedBox(height: 16),
           _buildNicknameText(user, colors),
+          if (user.bio != null && user.bio!.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                user.bio!,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: colors.textSecondary,
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
           const SizedBox(height: 4),
           _buildLevelBadge(user, colors),
           const SizedBox(height: 16),

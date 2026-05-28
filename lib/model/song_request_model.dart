@@ -4,6 +4,8 @@ class SongRequestModel {
   final String? youtubeUrl;
   final String status;
   final String? createdAt;
+  final int? artistId;
+  final String? artistName;
 
   const SongRequestModel({
     required this.id,
@@ -11,6 +13,8 @@ class SongRequestModel {
     this.youtubeUrl,
     required this.status,
     this.createdAt,
+    this.artistId,
+    this.artistName,
   });
 
   bool get isPending => status == 'PENDING';
@@ -24,6 +28,8 @@ class SongRequestModel {
       youtubeUrl: json['youtubeUrl'] as String?,
       status: json['status'] as String,
       createdAt: json['createdAt'] as String?,
+      artistId: json['artistId'] as int?,
+      artistName: json['artistName'] as String?,
     );
   }
 }

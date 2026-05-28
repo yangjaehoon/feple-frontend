@@ -5,6 +5,7 @@ import 'package:feple/service/scrap_service.dart';
 import 'package:feple/service/user_activity_service.dart';
 import 'package:feple/screen/main/tab/my_page/s_certification_list.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_comments.dart';
+import 'package:feple/screen/main/tab/my_page/w_my_liked_posts.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_posts.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_scraps.dart';
 import 'package:feple/common/util/app_route.dart';
@@ -32,6 +33,7 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
     final stats = await sl<UserActivityService>().fetchStats(widget.userId);
     int certCount = 0;
     int scrapCount = 0;
+    int likedCount = 0;
     try {
       final certIds = await sl<CertificationService>().getApprovedFestivalIds();
       certCount = certIds.length;
@@ -44,18 +46,25 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
     } catch (e) {
       debugPrint('[MyPage] scrapCount fetch failed: $e');
     }
+    try {
+      final liked = await sl<UserActivityService>().fetchLikedPosts(widget.userId);
+      likedCount = liked.length;
+    } catch (e) {
+      debugPrint('[MyPage] likedPostCount fetch failed: $e');
+    }
     return _UserStats(
       postCount: stats['postCount'] as int,
       commentCount: stats['commentCount'] as int,
       certificationCount: certCount,
       scrapCount: scrapCount,
+      likedPostCount: likedCount,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: FutureBuilder<_UserStats>(
         future: _statsFuture,
         builder: (context, snapshot) => _buildStatRow(context, snapshot),
@@ -69,56 +78,75 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
     final commentCount = snapshot.data?.commentCount.toString() ?? '-';
     final certCount = snapshot.data?.certificationCount.toString() ?? '-';
     final scrapCount = snapshot.data?.scrapCount.toString() ?? '-';
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        _buildStatCard(
-          context,
-          icon: Icons.verified_rounded,
-          label: 'certification_badge'.tr(),
-          value: certCount,
-          color: context.appColors.activate,
-          onTap: () => Navigator.push(
-              context,
-              SlideRoute(
-                builder: (_) => const CertificationListScreen(),
-              )),
-        ),
-        _buildStatCard(
-          context,
-          icon: Icons.article_rounded,
-          label: 'posts'.tr(),
-          value: postCount,
-          color: context.appColors.activate,
-          onTap: () => Navigator.push(
-              context,
-              SlideRoute(
-                builder: (_) => MyPostsScreen(userId: widget.userId),
-              )),
-        ),
-        _buildStatCard(
-          context,
-          icon: Icons.chat_bubble_rounded,
-          label: 'comments'.tr(),
-          value: commentCount,
-          color: context.appColors.activate,
-          onTap: () => Navigator.push(
-              context,
-              SlideRoute(
-                builder: (_) => MyCommentsScreen(userId: widget.userId),
-              )),
-        ),
-        _buildStatCard(
-          context,
-          icon: Icons.star_rounded,
-          label: 'scraps'.tr(),
-          value: scrapCount,
-          color: context.appColors.accentColor,
-          onTap: () => Navigator.push(
-              context,
-              SlideRoute(builder: (_) => const MyScrapsScreen())),
-        ),
-      ],
+    final likedCount = snapshot.data?.likedPostCount.toString() ?? '-';
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          _buildStatCard(
+            context,
+            icon: Icons.verified_rounded,
+            label: 'certification_badge'.tr(),
+            value: certCount,
+            color: context.appColors.activate,
+            onTap: () => Navigator.push(
+                context,
+                SlideRoute(
+                  builder: (_) => const CertificationListScreen(),
+                )),
+          ),
+          const SizedBox(width: 10),
+          _buildStatCard(
+            context,
+            icon: Icons.article_rounded,
+            label: 'posts'.tr(),
+            value: postCount,
+            color: context.appColors.activate,
+            onTap: () => Navigator.push(
+                context,
+                SlideRoute(
+                  builder: (_) => MyPostsScreen(userId: widget.userId),
+                )),
+          ),
+          const SizedBox(width: 10),
+          _buildStatCard(
+            context,
+            icon: Icons.chat_bubble_rounded,
+            label: 'comments'.tr(),
+            value: commentCount,
+            color: context.appColors.activate,
+            onTap: () => Navigator.push(
+                context,
+                SlideRoute(
+                  builder: (_) => MyCommentsScreen(userId: widget.userId),
+                )),
+          ),
+          const SizedBox(width: 10),
+          _buildStatCard(
+            context,
+            icon: Icons.star_rounded,
+            label: 'scraps'.tr(),
+            value: scrapCount,
+            color: context.appColors.accentColor,
+            onTap: () => Navigator.push(
+                context,
+                SlideRoute(builder: (_) => const MyScrapsScreen())),
+          ),
+          const SizedBox(width: 10),
+          _buildStatCard(
+            context,
+            icon: Icons.favorite_rounded,
+            label: 'liked_posts'.tr(),
+            value: likedCount,
+            color: context.appColors.accentColor,
+            onTap: () => Navigator.push(
+                context,
+                SlideRoute(builder: (_) => MyLikedPostsScreen(userId: widget.userId))),
+          ),
+        ],
+      ),
     );
   }
 
@@ -183,10 +211,12 @@ class _UserStats {
   final int commentCount;
   final int certificationCount;
   final int scrapCount;
+  final int likedPostCount;
   const _UserStats({
     required this.postCount,
     required this.commentCount,
     required this.certificationCount,
     required this.scrapCount,
+    required this.likedPostCount,
   });
 }

@@ -158,12 +158,29 @@ class PostService {
     required String title,
     required String content,
     String? imageObjectKey,
-  }) =>
-      DioClient.dio.put('/posts/$postId', data: {
+  }) async {
+    try {
+      await DioClient.dio.put('/posts/$postId', data: {
         'title': title,
         'content': content,
         'imageUrl': imageObjectKey,
       });
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        final data = e.response?.data;
+        String msg = '';
+        if (data is Map) {
+          msg = (data['message'] as String?) ?? '';
+        } else if (data is String) {
+          msg = data;
+        }
+        if (msg.startsWith('title:')) throw const BannedWordException('title');
+        if (msg.startsWith('content:')) throw const BannedWordException('content');
+        if (msg.contains('금칙어')) throw const BannedWordException('content');
+      }
+      rethrow;
+    }
+  }
 
   Future<void> incrementPostView(int postId) =>
       DioClient.dio.post('/posts/$postId/view');

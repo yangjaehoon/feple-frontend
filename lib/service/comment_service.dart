@@ -51,6 +51,16 @@ class CommentService {
   Future<void> toggleCommentLike(int commentId) =>
       DioClient.dio.post('/comments/$commentId/like');
 
-  Future<void> updateComment(int commentId, String content) =>
-      DioClient.dio.put('/comments/$commentId', data: {'content': content});
+  Future<void> updateComment(int commentId, String content) async {
+    try {
+      await DioClient.dio.put('/comments/$commentId', data: {'content': content});
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        final data = e.response?.data;
+        final msg = (data is Map ? data['message'] as String? : null) ?? '';
+        if (msg.contains('금칙어')) throw const BannedWordException('content');
+      }
+      rethrow;
+    }
+  }
 }

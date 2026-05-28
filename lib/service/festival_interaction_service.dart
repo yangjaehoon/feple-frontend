@@ -14,8 +14,6 @@ class FestivalInteractionService {
     return response.data as bool;
   }
 
-  Future<bool> toggleAttending(int festivalId) async {
-    final response = await DioClient.dio.post('/festivals/$festivalId/attending');
-    return response.data as bool;
-  }
+  Future<void> toggleAttending(int festivalId) =>
+      DioClient.dio.post('/festivals/$festivalId/attending');
 }

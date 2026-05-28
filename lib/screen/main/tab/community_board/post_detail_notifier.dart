@@ -26,8 +26,13 @@ class PostDetailNotifier extends ChangeNotifier {
   void Function(String)? onError;
   void Function()? onPostDeleted;
 
-  PostDetailNotifier({required this.postId, required int initialHeartCount}) {
+  PostDetailNotifier({
+    required this.postId,
+    required int initialHeartCount,
+    required int initialViewCount,
+  }) {
     heartCount = initialHeartCount;
+    viewCount = initialViewCount;
   }
 
   Future<void> init() async {
@@ -35,9 +40,10 @@ class PostDetailNotifier extends ChangeNotifier {
   }
 
   Future<void> _incrementView() async {
+    viewCount++;
+    notifyListeners();
     try {
-      viewCount = await _postService.incrementPostView(postId);
-      notifyListeners();
+      await _postService.incrementPostView(postId);
     } catch (e) {
       debugPrint('incrementView error: $e');
     }

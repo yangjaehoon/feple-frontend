@@ -165,11 +165,8 @@ class PostService {
         'imageUrl': imageObjectKey,
       });
 
-  /// 게시글 조회수 증가 (command + query — 새 viewCount 반환)
-  Future<int> incrementPostView(int postId) async {
-    final res = await DioClient.dio.post('/posts/$postId/view');
-    return (res.data as num).toInt();
-  }
+  Future<void> incrementPostView(int postId) =>
+      DioClient.dio.post('/posts/$postId/view');
 
   /// 게시판 내 키워드 검색
   Future<List<Post>> searchInBoard(String keyword, String boardType) async {

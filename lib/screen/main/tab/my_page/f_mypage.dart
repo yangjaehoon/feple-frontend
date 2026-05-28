@@ -52,10 +52,10 @@ class _MypageFragmentState extends State<MypageFragment> {
               child: Column(
                 children: [
                   ProfileWidget(key: ValueKey('profile_$_refreshKey'), userId: userId),
-                  MyPostCommentWidget(userId: userId),
+                  MyPostCommentWidget(key: ValueKey('stats_$_refreshKey'), userId: userId),
                   FtvCertificationWidget(key: ValueKey('cert_$_refreshKey')),
                   FollowArtistsWidget(key: ValueKey('follow_$_refreshKey'), userId: userId),
-                  const SongRequestHistoryWidget(),
+                  SongRequestHistoryWidget(key: ValueKey('songs_$_refreshKey')),
                 ],
               ),
             ),

@@ -1,3 +1,4 @@
+import 'package:feple/common/exception/banned_word_exception.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/comment_detail.dart';
 import 'package:feple/service/comment_service.dart';
@@ -100,6 +101,9 @@ class PostDetailNotifier extends ChangeNotifier {
       );
       await fetchComments();
       onCommentPosted?.call('comment_posted');
+    } on BannedWordException {
+      commentError = 'comment_banned_word';
+      notifyListeners();
     } catch (e) {
       debugPrint('submitComment error: $e');
       onError?.call('comment_failed');

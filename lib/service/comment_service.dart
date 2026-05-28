@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:feple/common/exception/banned_word_exception.dart';
 import 'package:feple/model/comment_detail.dart';
 import 'package:feple/model/comment_model.dart';
 import 'package:feple/network/dio_client.dart';
@@ -29,12 +31,22 @@ class CommentService {
     required String content,
     required int postId,
     int? parentId,
-  }) =>
-      DioClient.dio.post('/comments', data: {
+  }) async {
+    try {
+      await DioClient.dio.post('/comments', data: {
         'content': content,
         'postId': postId,
         if (parentId != null) 'parentId': parentId,
       });
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        final data = e.response?.data;
+        final msg = (data is Map ? data['message'] as String? : null) ?? '';
+        if (msg.contains('금칙어')) throw const BannedWordException('content');
+      }
+      rethrow;
+    }
+  }
 
   Future<void> toggleCommentLike(int commentId) =>
       DioClient.dio.post('/comments/$commentId/like');

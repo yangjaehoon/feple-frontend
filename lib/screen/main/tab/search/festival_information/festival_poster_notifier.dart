@@ -1,11 +1,10 @@
 import 'package:feple/common/app_events.dart';
+import 'package:feple/model/cert_state.dart';
 import 'package:feple/model/certification_model.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-enum CertState { none, pending, certified }
 
 class FestivalPosterNotifier extends ChangeNotifier {
   final int festivalId;

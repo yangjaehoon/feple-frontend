@@ -11,6 +11,7 @@ import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../../../model/cert_state.dart';
 import '../../../../../model/festival_model.dart';
 import 'festival_poster_notifier.dart';
 import 'festival_poster_style.dart';

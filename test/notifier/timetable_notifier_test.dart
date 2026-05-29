@@ -1,12 +1,12 @@
 import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/screen/main/tab/search/festival_information/timetable_notifier.dart';
+import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/festival_detail_service.dart';
-import 'package:feple/service/user_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockFestivalDetailService extends Mock implements FestivalDetailService {}
-class MockUserService extends Mock implements UserService {}
+class MockArtistFollowService extends Mock implements ArtistFollowService {}
 
 TimetableEntry _entry({
   int id = 1,
@@ -31,11 +31,11 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late MockFestivalDetailService mockDetailService;
-  late MockUserService mockUserService;
+  late MockArtistFollowService mockFollowService;
 
   setUp(() {
     mockDetailService = MockFestivalDetailService();
-    mockUserService = MockUserService();
+    mockFollowService = MockArtistFollowService();
   });
 
   TimetableNotifier make({
@@ -50,7 +50,7 @@ void main() {
         startDate: startDate,
         endDate: endDate,
         festivalService: mockDetailService,
-        userService: mockUserService,
+        followService: mockFollowService,
       );
 
   group('_buildDates (생성자)', () {
@@ -85,7 +85,7 @@ void main() {
     test('성공 시 entries·followedNames 채워지고 isLoading false, error null', () async {
       when(() => mockDetailService.fetchTimetable(1))
           .thenAnswer((_) async => [_entry(id: 1), _entry(id: 2)]);
-      when(() => mockUserService.fetchFollowedArtistNames(42))
+      when(() => mockFollowService.fetchFollowedArtistNames(42))
           .thenAnswer((_) async => {'Artist A', 'Artist B'});
 
       final notifier = make(userId: 42);
@@ -97,14 +97,14 @@ void main() {
       expect(notifier.error, isNull);
     });
 
-    test('userId null이면 userService 미호출, entries 정상 로드', () async {
+    test('userId null이면 followService 미호출, entries 정상 로드', () async {
       when(() => mockDetailService.fetchTimetable(1))
           .thenAnswer((_) async => [_entry()]);
 
       final notifier = make(userId: null);
       await notifier.fetch();
 
-      verifyNever(() => mockUserService.fetchFollowedArtistNames(any()));
+      verifyNever(() => mockFollowService.fetchFollowedArtistNames(any()));
       expect(notifier.entries.length, 1);
       expect(notifier.followedNames, isEmpty);
     });
@@ -112,7 +112,7 @@ void main() {
     test('followedArtistNames 실패해도 entries 정상 로드, error null', () async {
       when(() => mockDetailService.fetchTimetable(1))
           .thenAnswer((_) async => [_entry()]);
-      when(() => mockUserService.fetchFollowedArtistNames(42))
+      when(() => mockFollowService.fetchFollowedArtistNames(42))
           .thenThrow(Exception('network'));
 
       final notifier = make(userId: 42);

@@ -11,8 +11,8 @@ import 'package:feple/screen/main/tab/search/festival_information/s_timetable_fu
 import 'package:feple/screen/main/tab/search/festival_information/timetable_notifier.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_grid.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_skeleton.dart';
+import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/festival_detail_service.dart';
-import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -53,7 +53,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
       startDate: widget.startDate,
       endDate: widget.endDate,
       festivalService: sl<FestivalDetailService>(),
-      userService: sl<UserService>(),
+      followService: sl<ArtistFollowService>(),
     );
     _notifier.fetch();
   }

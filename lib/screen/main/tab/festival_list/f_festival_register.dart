@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
@@ -89,7 +90,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
     } catch (e) {
       if (mounted) {
         debugPrint('festival register error: $e');
-        context.showErrorSnackbar('festival_reg_register_failed'.tr());
+        context.showErrorSnackbar(networkAwareErrorKey(e, 'festival_reg_register_failed').tr());
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);

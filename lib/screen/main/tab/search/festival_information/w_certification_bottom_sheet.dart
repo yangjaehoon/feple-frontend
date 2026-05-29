@@ -58,12 +58,17 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
     } catch (e) {
       if (!mounted) return;
       debugPrint('cert submit error: $e');
-      final backendMsg = dioBackendMessage(e);
-      final isAlready = backendMsg?.contains('이미') == true ||
-          backendMsg?.contains('already') == true;
-      context.showErrorSnackbar(
-        isAlready ? 'cert_already_submitted'.tr() : 'cert_submit_failed'.tr(),
-      );
+      final networkKey = networkAwareErrorKey(e, '');
+      if (networkKey == 'connection_error') {
+        context.showErrorSnackbar('connection_error'.tr());
+      } else {
+        final backendMsg = dioBackendMessage(e);
+        final isAlready = backendMsg?.contains('이미') == true ||
+            backendMsg?.contains('already') == true;
+        context.showErrorSnackbar(
+          isAlready ? 'cert_already_submitted'.tr() : 'cert_submit_failed'.tr(),
+        );
+      }
     } finally {
       if (mounted) setState(() => _submitting = false);
     }

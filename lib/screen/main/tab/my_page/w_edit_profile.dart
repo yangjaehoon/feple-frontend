@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/exception/banned_word_exception.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_nickname_field.dart';
@@ -119,7 +120,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
     } catch (e) {
       if (!mounted) return;
       debugPrint('profile save error: $e');
-      context.showErrorSnackbar('save_failed'.tr());
+      context.showErrorSnackbar(networkAwareErrorKey(e, 'save_failed').tr());
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }

@@ -9,6 +9,7 @@ class ProfileAvatar extends StatelessWidget {
   final bool certified;
   final String? userRole;
   final double radius;
+  final bool anonymous;
 
   const ProfileAvatar({
     super.key,
@@ -17,6 +18,7 @@ class ProfileAvatar extends StatelessWidget {
     this.certified = false,
     this.userRole,
     this.radius = 20,
+    this.anonymous = false,
   });
 
   bool get _hasCustomImage {
@@ -25,6 +27,16 @@ class ProfileAvatar extends StatelessWidget {
   }
 
   Widget _buildAvatar(AbstractThemeColors colors) {
+    if (anonymous) {
+      return CircleAvatar(
+        radius: radius,
+        backgroundColor: Colors.grey[300],
+        child: Padding(
+          padding: EdgeInsets.all(radius * 0.22),
+          child: Image.asset('assets/image/feple_logo.png'),
+        ),
+      );
+    }
     if (_hasCustomImage) {
       return CircleAvatar(
         radius: radius,

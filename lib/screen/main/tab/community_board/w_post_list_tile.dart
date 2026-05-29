@@ -47,6 +47,7 @@ class PostListTile extends StatelessWidget {
         nickname: post.nickname,
         certified: post.certified,
         userRole: post.userRole,
+        anonymous: post.anonymous,
       ),
       title: highlightKeyword != null && highlightKeyword!.isNotEmpty
           ? RichText(

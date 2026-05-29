@@ -37,6 +37,7 @@ class EnlargePost extends StatefulWidget {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final int? postUserId;
+  final bool anonymous;
 
   const EnlargePost({
     super.key,
@@ -54,6 +55,7 @@ class EnlargePost extends StatefulWidget {
     this.createdAt,
     this.updatedAt,
     this.postUserId,
+    this.anonymous = false,
   });
 
   EnlargePost.fromPost({
@@ -72,7 +74,8 @@ class EnlargePost extends StatefulWidget {
         imageUrl = post.imageUrl,
         createdAt = post.createdAt,
         updatedAt = post.updatedAt,
-        postUserId = post.userId;
+        postUserId = post.userId,
+        anonymous = post.anonymous;
 
   @override
   State<EnlargePost> createState() => _EnlargePostState();
@@ -337,6 +340,7 @@ class _EnlargePostState extends State<EnlargePost> {
                       certified: widget.certified,
                       userRole: widget.userRole,
                       radius: 16,
+                      anonymous: widget.anonymous,
                     ),
                     const SizedBox(width: 10),
                     Column(

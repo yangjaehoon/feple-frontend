@@ -52,6 +52,8 @@ class _CommunityPostState extends State<CommunityPost> {
   bool get _isPaginated =>
       _serviceBoardType == BoardTypes.free || _serviceBoardType == BoardTypes.mate;
 
+  bool get _showWriteButton => _serviceBoardType != BoardTypes.hot;
+
   @override
   void initState() {
     super.initState();
@@ -291,7 +293,7 @@ class _CommunityPostState extends State<CommunityPost> {
             ),
             const SizedBox(height: 8),
           ],
-          WritePostFab(
+          if (_showWriteButton) WritePostFab(
             onPressed: () async {
               if (context.read<UserProvider>().currentUserId == null) {
                 context.showInfoSnackbar('no_login_info'.tr());

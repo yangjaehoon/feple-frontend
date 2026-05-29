@@ -14,6 +14,7 @@ class HotBoard extends StatelessWidget {
       headerColorFn: (colors) => colors.hotBoardHeader,
       serviceBoardType: BoardTypes.hot,
       boardname: 'hot_board'.tr(),
+      showWriteButton: false,
     );
   }
 }

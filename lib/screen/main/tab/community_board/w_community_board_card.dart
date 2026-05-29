@@ -21,6 +21,7 @@ class CommunityBoardCard extends StatefulWidget {
   final Color Function(AbstractThemeColors) headerColorFn;
   final String serviceBoardType;
   final String boardname;
+  final bool showWriteButton;
 
   const CommunityBoardCard({
     super.key,
@@ -29,6 +30,7 @@ class CommunityBoardCard extends StatefulWidget {
     required this.headerColorFn,
     required this.serviceBoardType,
     required this.boardname,
+    this.showWriteButton = true,
   });
 
   @override
@@ -87,7 +89,7 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
         ),
       ),
       onRetry: _refresh,
-      onWriteTap: () async {
+      onWriteTap: widget.showWriteButton ? () async {
         if (!context.mounted) return;
         final userId = context.read<UserProvider>().currentUserId;
         if (userId == null) {
@@ -113,7 +115,7 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
           ),
         );
         _refresh();
-      },
+      } : null,
     );
   }
 }

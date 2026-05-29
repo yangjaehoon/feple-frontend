@@ -1,6 +1,8 @@
+enum FavoriteBoardType { artist, festival }
+
 class FavoriteBoard {
   final String boardId;    // "artist_1" or "festival_3"
-  final String type;       // "artist" | "festival"
+  final FavoriteBoardType type;
   final int entityId;
   final String entityName;
   final String? imageUrl;

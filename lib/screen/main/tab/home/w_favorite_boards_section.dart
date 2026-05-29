@@ -192,27 +192,21 @@ class _BoardTile extends StatelessWidget {
   const _BoardTile({required this.board, required this.colors});
 
   void _navigate(BuildContext context) {
-    if (board.type == 'artist') {
-      Navigator.push(
-        context,
-        SlideRoute(
+    final route = switch (board.type) {
+      FavoriteBoardType.artist => SlideRoute(
           builder: (_) => ArtistPostListScreen(
             artistId: board.entityId,
             artistName: board.entityName,
           ),
         ),
-      );
-    } else {
-      Navigator.push(
-        context,
-        SlideRoute(
+      FavoriteBoardType.festival => SlideRoute(
           builder: (_) => FestivalBoardScreen(
             festivalId: board.entityId,
             festivalName: board.entityName,
           ),
         ),
-      );
-    }
+    };
+    Navigator.push(context, route);
   }
 
   @override

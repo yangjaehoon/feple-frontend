@@ -314,7 +314,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
         return ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
           leading: Icon(
-            suggestion.type == 'artist' ? Icons.person_rounded : Icons.festival_rounded,
+            suggestion.type.icon,
             color: colors.textSecondary,
             size: 20,
           ),

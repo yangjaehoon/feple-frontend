@@ -18,11 +18,11 @@ class SearchService {
     final data = response.data as Map<String, dynamic>;
     final artists = (data['artists'] as List? ?? [])
         .map((artist) =>
-            SearchSuggestion(artist['name'] as String? ?? '', 'artist'))
+            SearchSuggestion(artist['name'] as String? ?? '', SearchType.artist))
         .where((item) => item.label.isNotEmpty);
     final festivals = (data['festivals'] as List? ?? [])
         .map((festival) =>
-            SearchSuggestion(festival['title'] as String? ?? '', 'festival'))
+            SearchSuggestion(festival['title'] as String? ?? '', SearchType.festival))
         .where((item) => item.label.isNotEmpty);
     return [...artists, ...festivals];
   }

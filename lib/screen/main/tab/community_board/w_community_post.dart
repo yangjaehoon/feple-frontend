@@ -49,10 +49,9 @@ class _CommunityPostState extends State<CommunityPost> {
 
   String get _serviceBoardType => widget.boardType;
 
-  bool get _isPaginated =>
-      _serviceBoardType == BoardTypes.free || _serviceBoardType == BoardTypes.mate;
+  bool get _isPaginated => BoardTypes.isPaginated(_serviceBoardType);
 
-  bool get _showWriteButton => _serviceBoardType != BoardTypes.hot;
+  bool get _showWriteButton => BoardTypes.showWriteButton(_serviceBoardType);
 
   @override
   void initState() {

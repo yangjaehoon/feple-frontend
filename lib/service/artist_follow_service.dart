@@ -19,4 +19,13 @@ class ArtistFollowService {
         .map((a) => (a['id'] as num).toInt())
         .toSet();
   }
+
+  Future<Set<String>> fetchFollowedArtistNames(int userId) async {
+    final response = await DioClient.dio.get('/users/$userId/following');
+    return (response.data as List)
+        .whereType<Map<String, dynamic>>()
+        .map((a) => a['name'] as String? ?? '')
+        .where((name) => name.isNotEmpty)
+        .toSet();
+  }
 }

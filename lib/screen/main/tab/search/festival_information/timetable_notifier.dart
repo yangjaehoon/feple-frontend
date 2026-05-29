@@ -1,15 +1,15 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/dart/extension/datetime_extension.dart';
 import 'package:feple/model/timetable_entry.dart';
+import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/festival_detail_service.dart';
-import 'package:feple/service/user_service.dart';
 import 'package:flutter/foundation.dart';
 
 class TimetableNotifier extends ChangeNotifier {
   final int festivalId;
   final int? userId;
   final FestivalDetailService _festivalService;
-  final UserService _userService;
+  final ArtistFollowService _followService;
 
   List<TimetableEntry> entries = [];
   Set<String> followedNames = {};
@@ -33,9 +33,9 @@ class TimetableNotifier extends ChangeNotifier {
     required String startDate,
     required String endDate,
     required FestivalDetailService festivalService,
-    required UserService userService,
+    required ArtistFollowService followService,
   })  : _festivalService = festivalService,
-        _userService = userService {
+        _followService = followService {
     _buildDates(startDate, endDate);
   }
 
@@ -60,7 +60,7 @@ class TimetableNotifier extends ChangeNotifier {
       Set<String> followed = {};
       try {
         if (userId != null) {
-          followed = await _userService.fetchFollowedArtistNames(userId!);
+          followed = await _followService.fetchFollowedArtistNames(userId!);
         }
       } catch (e) {
         debugPrint('[Timetable] fetchFollowedArtists failed: $e');

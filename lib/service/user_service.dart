@@ -63,15 +63,6 @@ class UserService {
     }
   }
 
-  Future<Set<String>> fetchFollowedArtistNames(int userId) async {
-    final raw = await fetchFollowing(userId);
-    return raw
-        .whereType<Map<String, dynamic>>()
-        .map((a) => a['name'] as String? ?? '')
-        .where((name) => name.isNotEmpty)
-        .toSet();
-  }
-
   Future<Map<String, dynamic>> checkNicknameAvailability(
     String nickname, {
     int? excludeUserId,

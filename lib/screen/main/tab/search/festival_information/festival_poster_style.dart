@@ -1,5 +1,5 @@
 import 'package:feple/common/theme/color/abs_theme_colors.dart';
-import 'package:feple/screen/main/tab/search/festival_information/festival_poster_notifier.dart';
+import 'package:feple/model/cert_state.dart';
 import 'package:flutter/material.dart';
 
 String? genreI18nKey(String genre) => switch (genre) {

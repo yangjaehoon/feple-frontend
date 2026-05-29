@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/exception/banned_word_exception.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/util/image_upload_helper.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
@@ -109,7 +110,7 @@ class _WritePostScreenState extends State<WritePostScreen> {
     } catch (e) {
       if (!mounted) return;
       debugPrint('post submit error: $e');
-      context.showErrorSnackbar('post_failed'.tr());
+      context.showErrorSnackbar(networkAwareErrorKey(e, 'post_failed').tr());
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }

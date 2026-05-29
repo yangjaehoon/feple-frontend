@@ -1,4 +1,5 @@
 import 'package:feple/common/exception/banned_word_exception.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/comment_detail.dart';
 import 'package:feple/service/comment_service.dart';
@@ -106,7 +107,7 @@ class PostDetailNotifier extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       debugPrint('submitComment error: $e');
-      onError?.call('comment_failed');
+      onError?.call(networkAwareErrorKey(e, 'comment_failed'));
     } finally {
       isSubmitting = false;
       notifyListeners();

@@ -127,14 +127,14 @@ class HomeStateNotifier extends ChangeNotifier {
     return [
       ...artists.map((artist) => FavoriteBoard(
             boardId: 'artist_${artist.id}',
-            type: 'artist',
+            type: FavoriteBoardType.artist,
             entityId: artist.id,
             entityName: artist.name,
             imageUrl: artist.profileImageUrl,
           )),
       ...festivals.map((festival) => FavoriteBoard(
             boardId: 'festival_${festival.id}',
-            type: 'festival',
+            type: FavoriteBoardType.festival,
             entityId: festival.id,
             entityName: festival.title,
             imageUrl: festival.posterUrl,

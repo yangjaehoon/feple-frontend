@@ -4,4 +4,7 @@ abstract final class BoardTypes {
   static const String hot = 'HotBoard';
   static const String free = 'FreeBoard';
   static const String mate = 'MateBoard';
+
+  static bool isPaginated(String type) => type == free || type == mate;
+  static bool showWriteButton(String type) => type != hot;
 }

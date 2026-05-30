@@ -13,9 +13,11 @@ import 'app.dart';
 import 'auth/get_api_key.dart';
 import 'auth/token_store.dart';
 import 'common/data/preference/app_preferences.dart';
+import 'common/data/preference/prefs.dart';
 import 'network/dio_client.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'common/theme/custom_theme_app.dart';
+import 'screen/onboarding/s_onboarding.dart';
 
 void main() async {
   final bindings = WidgetsFlutterBinding.ensureInitialized();
@@ -61,10 +63,16 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final _navigatorKey = GlobalKey<NavigatorState>();
   bool _isBanDialogShowing = false;
+  bool _onboardingCompleted = false;
+
+  void _onOnboardingComplete() {
+    setState(() => _onboardingCompleted = true);
+  }
 
   @override
   void initState() {
     super.initState();
+    _onboardingCompleted = Prefs.onboardingCompleted.get();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       DioClient.onSessionExpired = () => userProvider.logout();
@@ -129,6 +137,8 @@ class _MyAppState extends State<MyApp> {
               builder: (context, userProvider, _) {
                 if (userProvider.user == null) {
                   return const LoginPage();
+                } else if (!_onboardingCompleted) {
+                  return OnboardingScreen(onComplete: _onOnboardingComplete);
                 } else {
                   return const App();
                 }

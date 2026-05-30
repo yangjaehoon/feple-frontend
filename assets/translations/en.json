@@ -447,5 +447,14 @@
   "privacy_policy": "Privacy Policy",
   "terms_of_service": "Terms of Service",
   "app_version": "App Version",
-  "d_day": "D-DAY"
+  "d_day": "D-DAY",
+  "onboarding_skip": "Skip",
+  "onboarding_next": "Next",
+  "onboarding_start": "Get Started",
+  "onboarding_title_1": "Festival Info\nat a Glance",
+  "onboarding_subtitle_1": "Find schedules, artist lineups, and\nbooth maps for major festivals in one place",
+  "onboarding_title_2": "Follow Your\nFavorite Artists",
+  "onboarding_subtitle_2": "Get notified first when artists you follow\nare performing at upcoming festivals",
+  "onboarding_title_3": "Connect with\nFestival Fans",
+  "onboarding_subtitle_3": "Share reviews, find companions, and trade tickets\nwith people who share your taste"
 }

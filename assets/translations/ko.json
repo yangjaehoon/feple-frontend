@@ -1,4 +1,12 @@
 {
+  "back": "뒤로",
+  "home": "홈",
+  "search": "검색",
+  "like": "좋아요",
+  "scrap": "스크랩",
+  "send_comment": "댓글 전송",
+  "cancel_reply": "답글 취소",
+  "see_all": "전체 보기",
   "opensource": "오픈소스",
   "clear_cache": "캐시 지우기",
   "clear_cache_done": "캐시가 삭제되었습니다.",

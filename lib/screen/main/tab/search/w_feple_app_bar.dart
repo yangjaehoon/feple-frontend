@@ -71,6 +71,7 @@ class _FepleAppBarState extends State<FepleAppBar> {
   Widget _buildLeadingButton(BuildContext context) {
     if (widget.showBackButton) {
       return IconButton(
+        tooltip: 'back'.tr(),
         icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
         onPressed: () => Navigator.of(context).pop(),
       );
@@ -79,28 +80,33 @@ class _FepleAppBarState extends State<FepleAppBar> {
   }
 
   Widget _buildTitleLogo(BuildContext context, TextStyle? titleStyle) {
-    return GestureDetector(
-      onTap: () => context.findAncestorStateOfType<MainScreenState>()?.goHome(),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset(
-            'assets/image/feple_clear_960.png',
-            height: 50,
-            width: 50,
-          ),
-          const SizedBox(width: 2),
-          Text(
-            widget.appbarTitle,
-            style: titleStyle?.copyWith(color: Colors.white),
-          ),
-        ],
+    return Semantics(
+      button: true,
+      label: 'home'.tr(),
+      child: GestureDetector(
+        onTap: () => context.findAncestorStateOfType<MainScreenState>()?.goHome(),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              'assets/image/feple_clear_960.png',
+              height: 50,
+              width: 50,
+            ),
+            const SizedBox(width: 2),
+            Text(
+              widget.appbarTitle,
+              style: titleStyle?.copyWith(color: Colors.white),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildSearchButton(BuildContext context) {
     return IconButton(
+      tooltip: 'search'.tr(),
       icon: const Icon(Icons.search_rounded, color: Colors.white),
       onPressed: () => Navigator.push(
         context,
@@ -113,6 +119,7 @@ class _FepleAppBarState extends State<FepleAppBar> {
     return Stack(
       children: [
         IconButton(
+          tooltip: 'notifications'.tr(),
           icon: const Icon(Icons.notifications_rounded, color: Colors.white),
           onPressed: _openNotifications,
         ),

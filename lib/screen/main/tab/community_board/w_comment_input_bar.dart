@@ -53,9 +53,13 @@ class CommentInputBar extends StatelessWidget {
                           fontWeight: FontWeight.w500),
                     ),
                   ),
-                  GestureDetector(
-                    onTap: onCancelReply,
-                    child: Icon(Icons.close, size: 14, color: colors.textSecondary),
+                  Semantics(
+                    button: true,
+                    label: 'cancel_reply'.tr(),
+                    child: GestureDetector(
+                      onTap: onCancelReply,
+                      child: Icon(Icons.close, size: 14, color: colors.textSecondary),
+                    ),
                   ),
                 ],
               ),
@@ -104,6 +108,7 @@ class CommentInputBar extends StatelessWidget {
                           ),
                         )
                       : IconButton(
+                          tooltip: 'send_comment'.tr(),
                           onPressed: () {
                             HapticFeedback.lightImpact();
                             onSubmit();

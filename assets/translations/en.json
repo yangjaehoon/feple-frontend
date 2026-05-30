@@ -456,5 +456,11 @@
   "onboarding_title_2": "Follow Your\nFavorite Artists",
   "onboarding_subtitle_2": "Get notified first when artists you follow\nare performing at upcoming festivals",
   "onboarding_title_3": "Connect with\nFestival Fans",
-  "onboarding_subtitle_3": "Share reviews, find companions, and trade tickets\nwith people who share your taste"
+  "onboarding_subtitle_3": "Share reviews, find companions, and trade tickets\nwith people who share your taste",
+  "onboarding_pick_title": "Pick Your\nFavorite Artists",
+  "onboarding_pick_subtitle": "Follow artists to see their festival schedules\nright on your home screen",
+  "onboarding_pick_selected": "{} selected",
+  "onboarding_pick_skip": "Skip for now",
+  "onboarding_pick_load_failed": "Failed to load artists",
+  "onboarding_pick_retry": "Try again"
 }

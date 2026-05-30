@@ -10,6 +10,9 @@ import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/my_page/w_edit_profile.dart';
 import 'package:feple/screen/opensource/s_opensource.dart';
 import 'package:feple/screen/settings/s_notification_settings.dart';
+import 'package:feple/common/data/preference/prefs.dart';
+import 'package:feple/screen/onboarding/s_onboarding.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get_utils/src/extensions/string_extensions.dart';
@@ -76,6 +79,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (!mounted) return;
     Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
       SlideRoute(builder: (_) => const LoginPage()),
+      (_) => false,
+    );
+  }
+
+  Future<void> _resetOnboarding() async {
+    await Prefs.onboardingCompleted.set(false);
+    if (!mounted) return;
+    Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+      SlideRoute(
+        builder: (_) => OnboardingScreen(
+          onComplete: () {
+            Navigator.of(context, rootNavigator: true).pop();
+          },
+        ),
+      ),
       (_) => false,
     );
   }
@@ -198,6 +216,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 _ItemDivider(colors: colors),
                 _VersionItem(version: _appVersion, colors: colors),
+                if (kDebugMode) ...[
+                  _SectionHeader(label: 'DEV', colors: colors),
+                  _SettingsItem(
+                    icon: Icons.replay_rounded,
+                    label: '온보딩 다시 보기',
+                    colors: colors,
+                    onTap: _resetOnboarding,
+                  ),
+                ],
               ],
             ),
           ),

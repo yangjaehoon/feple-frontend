@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/data/preference/prefs.dart';
+import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_model.dart';
@@ -138,27 +139,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         children: [
           _buildDots(colors),
           const SizedBox(height: 28),
-          SizedBox(
-            width: double.infinity,
-            height: 52,
-            child: ElevatedButton(
-              onPressed: _goNext,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colors.activate,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppDimens.shapeButton),
-                ),
-              ),
-              child: Text(
-                'onboarding_next'.tr(),
-                style: const TextStyle(
-                  fontSize: AppDimens.fontSizeXl,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
+          LoadingButton(
+            label: 'onboarding_next'.tr(),
+            onPressed: _goNext,
+            backgroundColor: colors.activate,
+            borderRadius: AppDimens.shapeButton,
           ),
         ],
       ),
@@ -410,40 +395,14 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
             ),
             const SizedBox(height: 12),
           ],
-          SizedBox(
-            width: double.infinity,
-            height: 52,
-            child: ElevatedButton(
-              onPressed: _isSubmitting ? null : _submit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colors.activate,
-                foregroundColor: Colors.white,
-                disabledBackgroundColor: colors.inActivate,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppDimens.shapeButton),
-                ),
-              ),
-              child: _isSubmitting
-                  ? const SizedBox(
-                      width: 22,
-                      height: 22,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.5,
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
-                    )
-                  : Text(
-                      count == 0
-                          ? 'onboarding_pick_skip'.tr()
-                          : 'onboarding_start'.tr(),
-                      style: const TextStyle(
-                        fontSize: AppDimens.fontSizeXl,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-            ),
+          LoadingButton(
+            label: count == 0
+                ? 'onboarding_pick_skip'.tr()
+                : 'onboarding_start'.tr(),
+            onPressed: _submit,
+            isLoading: _isSubmitting,
+            backgroundColor: colors.activate,
+            borderRadius: AppDimens.shapeButton,
           ),
         ],
       ),

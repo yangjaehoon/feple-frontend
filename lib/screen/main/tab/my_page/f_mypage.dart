@@ -62,6 +62,7 @@ class _MypageFragmentState extends State<MypageFragment> {
             "Feple",
             extraTrailingActions: [
               IconButton(
+                tooltip: 'settings'.tr(),
                 icon: const Icon(Icons.settings_rounded, color: Colors.white),
                 onPressed: () => Navigator.push(
                   context,

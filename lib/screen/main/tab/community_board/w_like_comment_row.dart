@@ -94,53 +94,61 @@ class LikeCommentRow extends StatelessWidget {
     return Row(
       children: [
         // 좋아요
-        GestureDetector(
-          onTap: () {
-            HapticFeedback.lightImpact();
-            onLikeTap();
-          },
-          child: Row(
-            children: [
-              Icon(
-                data.liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                color: AppColors.kawaiiPink,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                data.heartCount.toString(),
-                style: TextStyle(
-                  fontSize: 16,
-                  color: colors.textTitle,
-                  fontWeight: FontWeight.w600,
+        Semantics(
+          button: true,
+          label: 'like'.tr(),
+          child: GestureDetector(
+            onTap: () {
+              HapticFeedback.lightImpact();
+              onLikeTap();
+            },
+            child: Row(
+              children: [
+                Icon(
+                  data.liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                  color: AppColors.kawaiiPink,
                 ),
-              ),
-            ],
+                const SizedBox(width: 4),
+                Text(
+                  data.heartCount.toString(),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: colors.textTitle,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         const SizedBox(width: 16),
         // 스크랩
-        GestureDetector(
-          onTap: () {
-            HapticFeedback.lightImpact();
-            onScrapTap();
-          },
-          child: Row(
-            children: [
-              Icon(
-                data.scraped ? Icons.star_rounded : Icons.star_border_rounded,
-                color: colors.accentColor,
-                size: 24,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                data.scrapCount.toString(),
-                style: TextStyle(
-                  fontSize: 16,
-                  color: colors.textTitle,
-                  fontWeight: FontWeight.w600,
+        Semantics(
+          button: true,
+          label: 'scrap'.tr(),
+          child: GestureDetector(
+            onTap: () {
+              HapticFeedback.lightImpact();
+              onScrapTap();
+            },
+            child: Row(
+              children: [
+                Icon(
+                  data.scraped ? Icons.star_rounded : Icons.star_border_rounded,
+                  color: colors.accentColor,
+                  size: 24,
                 ),
-              ),
-            ],
+                const SizedBox(width: 4),
+                Text(
+                  data.scrapCount.toString(),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: colors.textTitle,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         const SizedBox(width: 16),

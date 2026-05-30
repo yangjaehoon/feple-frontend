@@ -12,6 +12,7 @@ class AppTextField extends StatelessWidget {
   final int? maxLength;
   final String? errorText;
   final ValueChanged<String>? onChanged;
+  final String? semanticsLabel;
 
   const AppTextField({
     super.key,
@@ -23,6 +24,7 @@ class AppTextField extends StatelessWidget {
     this.maxLength,
     this.errorText,
     this.onChanged,
+    this.semanticsLabel,
   });
 
   InputDecoration _buildInputDecoration(AbstractThemeColors colors) {
@@ -57,14 +59,17 @@ class AppTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TextField(
-          controller: controller,
-          obscureText: obscureText,
-          keyboardType: keyboardType,
-          maxLength: maxLength,
-          onChanged: onChanged,
-          style: TextStyle(fontSize: 15, color: colors.text),
-          decoration: _buildInputDecoration(colors),
+        Semantics(
+          label: semanticsLabel ?? hintText,
+          child: TextField(
+            controller: controller,
+            obscureText: obscureText,
+            keyboardType: keyboardType,
+            maxLength: maxLength,
+            onChanged: onChanged,
+            style: TextStyle(fontSize: 15, color: colors.text),
+            decoration: _buildInputDecoration(colors),
+          ),
         ),
         if (errorText != null)
           Padding(

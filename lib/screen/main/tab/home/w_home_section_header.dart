@@ -42,6 +42,7 @@ class HomeSectionHeader extends StatelessWidget {
           if (hasActions) const Spacer(),
           if (onExpand != null) ...[
             IconButton(
+              tooltip: 'see_all'.tr(),
               icon: Icon(Icons.arrow_forward_ios_rounded,
                   color: colors.textSecondary, size: 16),
               onPressed: onExpand,
@@ -52,6 +53,7 @@ class HomeSectionHeader extends StatelessWidget {
           ],
           if (onSettings != null) ...[
             IconButton(
+              tooltip: 'settings'.tr(),
               icon: Icon(Icons.settings_rounded,
                   color: colors.textSecondary, size: 20),
               onPressed: onSettings,

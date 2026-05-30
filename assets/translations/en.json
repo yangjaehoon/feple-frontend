@@ -1,4 +1,12 @@
 {
+  "back": "Back",
+  "home": "Home",
+  "search": "Search",
+  "like": "Like",
+  "scrap": "Bookmark",
+  "send_comment": "Send Comment",
+  "cancel_reply": "Cancel Reply",
+  "see_all": "See All",
   "opensource": "Open Source",
   "clear_cache": "Clear Cache",
   "clear_cache_done": "Cache has been cleared.",

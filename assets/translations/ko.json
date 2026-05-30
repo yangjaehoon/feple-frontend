@@ -447,5 +447,14 @@
   "privacy_policy": "개인정보처리방침",
   "terms_of_service": "이용약관",
   "app_version": "앱 버전",
-  "d_day": "D-DAY"
+  "d_day": "D-DAY",
+  "onboarding_skip": "건너뛰기",
+  "onboarding_next": "다음",
+  "onboarding_start": "시작하기",
+  "onboarding_title_1": "페스티벌 정보를\n한눈에",
+  "onboarding_subtitle_1": "국내 주요 페스티벌의 일정, 아티스트 라인업,\n부스 지도까지 한 곳에서 확인하세요",
+  "onboarding_title_2": "좋아하는 아티스트를\n팔로우하세요",
+  "onboarding_subtitle_2": "팔로우한 아티스트가 출연하는 페스티벌 소식을\n가장 먼저 받아보세요",
+  "onboarding_title_3": "페스티벌 팬들과\n함께해요",
+  "onboarding_subtitle_3": "후기 공유, 동행 모집, 티켓 거래까지\n같은 취향의 사람들과 소통하세요"
 }

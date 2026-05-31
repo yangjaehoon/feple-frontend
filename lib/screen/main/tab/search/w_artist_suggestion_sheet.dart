@@ -49,11 +49,8 @@ class _ArtistSuggestionSheetState extends State<ArtistSuggestionSheet> {
       if (networkKey == 'connection_error') {
         context.showErrorSnackbar('connection_error'.tr());
       } else {
-        final backendMsg = dioBackendMessage(e);
-        final isDuplicate = backendMsg?.contains('이미') == true ||
-            backendMsg?.contains('already') == true;
         context.showErrorSnackbar(
-          isDuplicate
+          isDioConflict(e)
               ? 'artist_suggestion_duplicate'.tr()
               : 'artist_suggestion_failed'.tr(),
         );

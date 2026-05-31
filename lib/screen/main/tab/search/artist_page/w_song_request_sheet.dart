@@ -61,11 +61,8 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
       if (networkKey == 'connection_error') {
         context.showErrorSnackbar('connection_error'.tr());
       } else {
-        final backendMsg = dioBackendMessage(e);
-        final isDuplicate = backendMsg?.contains('이미') == true ||
-            backendMsg?.contains('already') == true;
         context.showErrorSnackbar(
-          isDuplicate ? 'song_request_duplicate'.tr() : 'song_request_failed'.tr(),
+          isDioConflict(e) ? 'song_request_duplicate'.tr() : 'song_request_failed'.tr(),
         );
       }
       if (mounted) setState(() => _submitting = false);

@@ -86,15 +86,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _resetOnboarding() async {
     await Prefs.onboardingCompleted.set(false);
     if (!mounted) return;
-    Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+    Navigator.of(context, rootNavigator: true).push(
       SlideRoute(
         builder: (_) => OnboardingScreen(
           onComplete: () {
-            Navigator.of(context, rootNavigator: true).pop();
+            Navigator.of(context, rootNavigator: true)
+                .popUntil((route) => route.isFirst);
           },
         ),
       ),
-      (_) => false,
     );
   }
 

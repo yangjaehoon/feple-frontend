@@ -87,7 +87,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            _buildSkipRow(colors),
+            _buildTopBar(colors),
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
@@ -103,14 +103,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Widget _buildSkipRow(AbstractThemeColors colors) {
-    return SizedBox(
-      height: 48,
-      child: Align(
-        alignment: Alignment.centerRight,
-        child: Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: TextButton(
+  Widget _buildTopBar(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 24, 16, 0),
+      child: Row(
+        children: [
+          _buildDots(colors),
+          const Spacer(),
+          TextButton(
             onPressed: _finish,
             style: TextButton.styleFrom(
               foregroundColor: colors.textSecondary,
@@ -126,7 +126,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -134,32 +134,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget _buildBottom(AbstractThemeColors colors) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 36),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildDots(colors),
-          const SizedBox(height: 28),
-          LoadingButton(
-            label: 'onboarding_next'.tr(),
-            onPressed: _goNext,
-            backgroundColor: colors.activate,
-            borderRadius: AppDimens.shapeButton,
-          ),
-        ],
+      child: LoadingButton(
+        label: 'onboarding_next'.tr(),
+        onPressed: _goNext,
+        backgroundColor: colors.activate,
+        borderRadius: AppDimens.shapeButton,
       ),
     );
   }
 
   Widget _buildDots(AbstractThemeColors colors) {
-    // 4 dots total: 3 info + 1 artist pick
     final totalDots = _pages.length + 1;
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: List.generate(totalDots, (i) {
         final isActive = i == _currentPage;
         return AnimatedContainer(
           duration: AppDimens.animNormal,
-          margin: const EdgeInsets.symmetric(horizontal: 4),
+          margin: const EdgeInsets.only(right: 8),
           width: isActive ? 24 : 8,
           height: 8,
           decoration: BoxDecoration(

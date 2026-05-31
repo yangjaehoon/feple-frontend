@@ -196,7 +196,12 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
     } catch (e) {
       debugPrint('[Onboarding] artist follow failed: $e');
     }
-    await widget.onComplete();
+    try {
+      await widget.onComplete();
+    } catch (e) {
+      debugPrint('[Onboarding] onComplete failed: $e');
+      if (mounted) setState(() => _isSubmitting = false);
+    }
   }
 
   @override

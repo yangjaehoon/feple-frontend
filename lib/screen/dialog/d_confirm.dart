@@ -64,18 +64,23 @@ class _MessageDialogState extends DialogState<ConfirmDialog> {
             onTap: () {
               widget.hide(SimpleResult.failure());
             },
-            child: Container(
-                height: 50,
-                alignment: Alignment.center,
-                child: Text(
-                  widget.cancelButtonText,
-                  style: TextStyle(
-                    color: context.appColors.confirmText,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    fontStyle: FontStyle.normal,
-                  ),
-                )),
+            child: Semantics(
+              button: true,
+              label: widget.cancelButtonText,
+              child: Container(
+                  constraints: const BoxConstraints(minHeight: 50),
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Text(
+                    widget.cancelButtonText,
+                    style: TextStyle(
+                      color: context.appColors.confirmText,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      fontStyle: FontStyle.normal,
+                    ),
+                  )),
+            ),
           ),
         ),
         Expanded(
@@ -83,18 +88,23 @@ class _MessageDialogState extends DialogState<ConfirmDialog> {
             onTap: () {
               widget.hide(SimpleResult.success());
             },
-            child: Container(
-                height: 50,
-                alignment: Alignment.center,
-                child: Text(
-                  widget.buttonText,
-                  style: TextStyle(
-                    color: context.appColors.confirmText,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    fontStyle: FontStyle.normal,
-                  ),
-                )),
+            child: Semantics(
+              button: true,
+              label: widget.buttonText,
+              child: Container(
+                  constraints: const BoxConstraints(minHeight: 50),
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Text(
+                    widget.buttonText,
+                    style: TextStyle(
+                      color: context.appColors.confirmText,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      fontStyle: FontStyle.normal,
+                    ),
+                  )),
+            ),
           ),
         ),
       ],

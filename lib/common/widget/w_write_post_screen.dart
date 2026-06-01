@@ -192,6 +192,7 @@ class _WritePostScreenState extends State<WritePostScreen> {
         if (_selectedImage != null || _existingImageUrl != null) ...[
           const SizedBox(width: 8),
           IconButton(
+            tooltip: 'remove_image'.tr(),
             icon: Icon(Icons.close_rounded, color: colors.textSecondary, size: 20),
             onPressed: () => setState(() {
               _selectedImage = null;

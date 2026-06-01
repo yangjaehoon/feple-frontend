@@ -147,6 +147,7 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
           ),
           const Spacer(),
           IconButton(
+            tooltip: 'settings'.tr(),
             icon: Icon(Icons.settings_rounded,
                 color: colors.textSecondary, size: 20),
             onPressed: _openSettings,

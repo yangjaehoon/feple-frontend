@@ -1,6 +1,5 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/injection.dart';
-import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/user_activity_service.dart';
 import 'package:feple/screen/main/tab/my_page/s_certification_list.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_comments.dart';
@@ -29,17 +28,10 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
 
   Future<_UserStats> _fetchStats() async {
     final stats = await sl<UserActivityService>().fetchStats(widget.userId);
-    int certCount = 0;
-    try {
-      final certIds = await sl<CertificationService>().getApprovedFestivalIds();
-      certCount = certIds.length;
-    } catch (e) {
-      debugPrint('[MyPage] certCount fetch failed: $e');
-    }
     return _UserStats(
       postCount: stats['postCount'] as int,
       commentCount: stats['commentCount'] as int,
-      certificationCount: certCount,
+      certificationCount: stats['certificationCount'] as int? ?? 0,
       scrapCount: stats['scrapCount'] as int? ?? 0,
       likedPostCount: stats['likedPostCount'] as int? ?? 0,
     );

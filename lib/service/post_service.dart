@@ -28,11 +28,15 @@ class PostService {
 
   static const postImagePresignEndpoint = '/posts/image-upload-url';
 
-  /// 게시글 페이지 조회 (free/mate 전용)
-  Future<List<Post>> fetchPostsPage(String boardType, {int page = 0, int size = 20, String sort = 'latest'}) async {
+  /// 게시글 커서 페이지 조회 (free/mate 전용)
+  Future<PostCursorPage> fetchPostsPage(String boardType, {int? cursor, int size = 20, String sort = 'latest'}) async {
     final endpoint = _endpointFor(boardType);
-    final response = await DioClient.dio.get(endpoint, queryParameters: {'page': page, 'size': size, 'sort': sort});
-    return (response.data as List<dynamic>).map((json) => Post.fromJson(json)).toList();
+    final response = await DioClient.dio.get(endpoint, queryParameters: {
+      if (cursor != null) 'cursor': cursor,
+      'size': size,
+      'sort': sort,
+    });
+    return PostCursorPage.fromJson(response.data as Map<String, dynamic>);
   }
 
   Future<void> _createPost(String endpoint, String title, String content, {bool anonymous = false, String? imageObjectKey}) async {

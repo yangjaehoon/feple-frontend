@@ -40,7 +40,7 @@ class _CommunityPostState extends State<CommunityPost> {
   bool _loadingMore = false;
   bool _hasMore = true;
   bool _hasError = false;
-  int _page = 0;
+  int? _cursor;
   int _loadId = 0;
   String _sort = 'latest';
   bool _isSearching = false;
@@ -79,20 +79,22 @@ class _CommunityPostState extends State<CommunityPost> {
 
   Future<void> _load() async {
     final myId = ++_loadId;
-    setState(() { _loading = true; _hasError = false; _posts.clear(); _page = 0; _hasMore = true; });
+    setState(() { _loading = true; _hasError = false; _posts.clear(); _cursor = null; _hasMore = true; });
     try {
-      final items = _isPaginated
-          ? await _postService.fetchPostsPage(_serviceBoardType, page: 0, size: _pageSize, sort: _sort)
-          : await _postService.fetchPosts(_serviceBoardType);
-      if (!mounted || _loadId != myId) return;
-      setState(() {
-        _posts.addAll(items);
-        _loading = false;
-        if (_isPaginated) {
-          _page = 1;
-          _hasMore = items.length == _pageSize;
-        }
-      });
+      if (_isPaginated) {
+        final page = await _postService.fetchPostsPage(_serviceBoardType, cursor: null, size: _pageSize, sort: _sort);
+        if (!mounted || _loadId != myId) return;
+        setState(() {
+          _posts.addAll(page.content);
+          _cursor = page.nextCursor;
+          _hasMore = page.hasNext;
+          _loading = false;
+        });
+      } else {
+        final items = await _postService.fetchPosts(_serviceBoardType);
+        if (!mounted || _loadId != myId) return;
+        setState(() { _posts.addAll(items); _loading = false; });
+      }
     } catch (_) {
       if (mounted && _loadId == myId) setState(() { _loading = false; _hasError = true; });
     }
@@ -102,12 +104,12 @@ class _CommunityPostState extends State<CommunityPost> {
     if (!_hasMore || _loadingMore) return;
     setState(() => _loadingMore = true);
     try {
-      final items = await _postService.fetchPostsPage(_serviceBoardType, page: _page, size: _pageSize, sort: _sort);
+      final page = await _postService.fetchPostsPage(_serviceBoardType, cursor: _cursor, size: _pageSize, sort: _sort);
       if (!mounted) return;
       setState(() {
-        _posts.addAll(items);
-        _page++;
-        _hasMore = items.length == _pageSize;
+        _posts.addAll(page.content);
+        _cursor = page.nextCursor;
+        _hasMore = page.hasNext;
         _loadingMore = false;
       });
     } catch (_) {

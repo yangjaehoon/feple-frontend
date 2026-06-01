@@ -2,6 +2,16 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import '../auth/token_store.dart';
 import '../config.dart' as app_config;
+import 'api_cache_store.dart';
+
+bool _isNetworkError(DioException e) {
+  return e.response == null &&
+      (e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.sendTimeout ||
+          e.type == DioExceptionType.receiveTimeout ||
+          e.type == DioExceptionType.unknown);
+}
 
 class DioClient {
   DioClient._();
@@ -101,6 +111,33 @@ class DioClient {
         final opts = error.requestOptions;
         opts.headers['Authorization'] = 'Bearer $newToken';
         return handler.resolve(await _plainDio.fetch(opts));
+      },
+    ),
+  )..interceptors.add(
+    InterceptorsWrapper(
+      onResponse: (response, handler) async {
+        if (response.requestOptions.method == 'GET' &&
+            response.statusCode == 200) {
+          final url = response.requestOptions.uri.toString();
+          await ApiCacheStore.put(url, response.data);
+        }
+        handler.next(response);
+      },
+      onError: (error, handler) async {
+        if (_isNetworkError(error) &&
+            error.requestOptions.method == 'GET') {
+          final url = error.requestOptions.uri.toString();
+          final cached = await ApiCacheStore.get(url);
+          if (cached != null) {
+            return handler.resolve(Response(
+              requestOptions: error.requestOptions,
+              data: cached,
+              statusCode: 200,
+              extra: const {'fromCache': true},
+            ));
+          }
+        }
+        handler.next(error);
       },
     ),
   );

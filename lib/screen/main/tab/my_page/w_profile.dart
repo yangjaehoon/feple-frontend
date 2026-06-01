@@ -52,7 +52,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
               Icon(Icons.cloud_off_outlined, size: 36, color: colors.textSecondary),
               const SizedBox(height: 12),
               TextButton(
-                onPressed: () { _fetched = false; didChangeDependencies(); },
+                onPressed: _fetchUser,
                 child: Text('retry'.tr(),
                     style: TextStyle(color: colors.activate, fontWeight: FontWeight.w600)),
               ),

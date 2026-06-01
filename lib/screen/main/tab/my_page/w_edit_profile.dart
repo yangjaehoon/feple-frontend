@@ -282,6 +282,15 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                 hintStyle: TextStyle(color: colors.textSecondary, fontSize: 13),
                 counterStyle: TextStyle(color: colors.textSecondary, fontSize: 11),
                 errorText: _bioError,
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: colors.listDivider),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: colors.listDivider),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: colors.activate, width: 1.5),
+                ),
                 errorBorder: const OutlineInputBorder(
                   borderSide: BorderSide(color: AppColors.errorRed, width: 1.5),
                 ),

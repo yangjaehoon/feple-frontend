@@ -71,14 +71,29 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
             ),
           ),
           const Spacer(),
-          IconButton(
-            icon: Icon(Icons.settings_rounded,
-                color: colors.textSecondary, size: 20),
+          TextButton(
             onPressed: _loading ? null : _openDetail,
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
+            style: TextButton.styleFrom(
+              minimumSize: Size.zero,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'see_all'.tr(),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: colors.activate,
+                  ),
+                ),
+                Icon(Icons.chevron_right_rounded, size: 18, color: colors.activate),
+              ],
+            ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 4),
         ],
       ),
     );

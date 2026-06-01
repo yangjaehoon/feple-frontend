@@ -101,7 +101,7 @@ class _SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'song_request_see_all'.tr(),
+                  'see_all'.tr(),
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -157,7 +157,7 @@ class _SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      'song_request_see_all'.tr(),
+                      'see_all'.tr(),
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,

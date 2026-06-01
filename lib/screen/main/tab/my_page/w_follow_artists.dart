@@ -1,8 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/screen/main/tab/my_page/s_follow_artists_list.dart';
+import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
 
@@ -36,138 +39,189 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
     }
   }
 
+  void _openFullList() async {
+    await Navigator.push(
+      context,
+      SlideRoute(builder: (_) => const FollowArtistsListScreen()),
+    );
+    _load();
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-          child: Row(
-            children: [
-              Container(
-                width: 3,
-                height: 20,
-                decoration: BoxDecoration(
-                  color: colors.sectionBarColor,
-                  borderRadius: BorderRadius.circular(AppDimens.barRadius),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'follow_artists'.tr(),
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: colors.textTitle,
-                ),
-              ),
-            ],
-          ),
-        ),
+        _buildHeader(colors),
         SizedBox(
           height: 160,
           child: _loading
               ? _buildSkeleton()
               : _hasError
-                  ? Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.wifi_off_rounded,
-                              size: 28,
-                              color: colors.textSecondary.withValues(alpha: 0.4)),
-                          const SizedBox(height: 8),
-                          TextButton.icon(
-                            onPressed: _load,
-                            icon: const Icon(Icons.refresh_rounded, size: 16),
-                            label: Text('retry'.tr(),
-                                style: const TextStyle(fontSize: 13)),
-                          ),
-                        ],
-                      ),
-                    )
+                  ? _buildError(colors)
                   : _artists.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.person_search_rounded,
-                                  size: 32,
-                                  color: colors.textSecondary.withValues(alpha: 0.4)),
-                              const SizedBox(height: 8),
-                              Text('no_followed_artists'.tr(),
-                                  style: TextStyle(
-                                      color: colors.textSecondary,
-                                      fontSize: 13)),
-                            ],
-                          ),
-                        )
-                      : ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          itemCount: _artists.length,
-                          itemBuilder: (context, index) {
-                            final artist = _artists[index];
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(3),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: colors.followRingColor,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: colors.cardShadow
-                                              .withValues(alpha: 0.2),
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 2),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Container(
-                                      padding: const EdgeInsets.all(2),
-                                      decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: colors.surface),
-                                      child: CircleAvatar(
-                                        radius: 50,
-                                        backgroundColor: colors.backgroundMain,
-                                        backgroundImage: (artist.profileImageUrl !=
-                                                    null &&
-                                                artist.profileImageUrl!.isNotEmpty)
-                                            ? CachedNetworkImageProvider(
-                                                artist.profileImageUrl!)
-                                            : null,
-                                        child: (artist.profileImageUrl == null ||
-                                                artist.profileImageUrl!.isEmpty)
-                                            ? Icon(Icons.person_rounded,
-                                                size: 40,
-                                                color: colors.textSecondary)
-                                            : null,
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 6.0),
-                                    child: Text(
-                                      artist.name,
-                                      style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w600,
-                                          color: colors.textTitle),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
+                      ? _buildEmpty(colors)
+                      : _buildList(colors),
         ),
       ],
+    );
+  }
+
+  Widget _buildHeader(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 8, 8),
+      child: Row(
+        children: [
+          Container(
+            width: 3,
+            height: 20,
+            decoration: BoxDecoration(
+              color: colors.sectionBarColor,
+              borderRadius: BorderRadius.circular(AppDimens.barRadius),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'follow_artists'.tr(),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: colors.textTitle,
+            ),
+          ),
+          const Spacer(),
+          TextButton(
+            onPressed: _loading ? null : _openFullList,
+            style: TextButton.styleFrom(
+              minimumSize: Size.zero,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'see_all'.tr(),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: colors.activate,
+                  ),
+                ),
+                Icon(Icons.chevron_right_rounded, size: 18, color: colors.activate),
+              ],
+            ),
+          ),
+          const SizedBox(width: 4),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildList(AbstractThemeColors colors) {
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      itemCount: _artists.length,
+      itemBuilder: (context, index) {
+        final artist = _artists[index];
+        return GestureDetector(
+          onTap: () => Navigator.push(
+            context,
+            SlideRoute(
+              builder: (_) => ArtistPage(
+                artistId: artist.id,
+                artistName: artist.name,
+                followerCounter: artist.followerCount,
+                profileImageUrl: artist.profileImageUrl,
+              ),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: colors.followRingColor,
+                    boxShadow: [
+                      BoxShadow(
+                        color: colors.cardShadow.withValues(alpha: 0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle, color: colors.surface),
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundColor: colors.backgroundMain,
+                      backgroundImage: (artist.profileImageUrl != null &&
+                              artist.profileImageUrl!.isNotEmpty)
+                          ? CachedNetworkImageProvider(artist.profileImageUrl!)
+                          : null,
+                      child: (artist.profileImageUrl == null ||
+                              artist.profileImageUrl!.isEmpty)
+                          ? Icon(Icons.person_rounded,
+                              size: 40, color: colors.textSecondary)
+                          : null,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 6.0),
+                  child: Text(
+                    artist.name,
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: colors.textTitle),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildEmpty(AbstractThemeColors colors) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.person_search_rounded,
+              size: 32, color: colors.textSecondary.withValues(alpha: 0.4)),
+          const SizedBox(height: 8),
+          Text('no_followed_artists'.tr(),
+              style: TextStyle(color: colors.textSecondary, fontSize: 13)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildError(AbstractThemeColors colors) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.wifi_off_rounded,
+              size: 28, color: colors.textSecondary.withValues(alpha: 0.4)),
+          const SizedBox(height: 8),
+          TextButton.icon(
+            onPressed: _load,
+            icon: const Icon(Icons.refresh_rounded, size: 16),
+            label: Text('retry'.tr(), style: const TextStyle(fontSize: 13)),
+          ),
+        ],
+      ),
     );
   }
 
@@ -198,15 +252,21 @@ class _FollowedArtist {
   final int id;
   final String name;
   final String? profileImageUrl;
+  final int followerCount;
 
-  const _FollowedArtist(
-      {required this.id, required this.name, this.profileImageUrl});
+  const _FollowedArtist({
+    required this.id,
+    required this.name,
+    this.profileImageUrl,
+    required this.followerCount,
+  });
 
   factory _FollowedArtist.fromJson(Map<String, dynamic> json) {
     return _FollowedArtist(
       id: json['id'] as int,
       name: json['name'] as String,
       profileImageUrl: json['profileImageUrl'] as String?,
+      followerCount: (json['followerCount'] as num?)?.toInt() ?? 0,
     );
   }
 }

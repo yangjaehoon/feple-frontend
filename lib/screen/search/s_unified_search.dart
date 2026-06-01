@@ -168,6 +168,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
         child: Row(
           children: [
             IconButton(
+              tooltip: 'back'.tr(),
               icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
               onPressed: () => Navigator.pop(context),
             ),
@@ -184,6 +185,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
                   filled: false,
                   suffixIcon: _controller.text.isNotEmpty
                       ? IconButton(
+                          tooltip: 'clear'.tr(),
                           icon: const Icon(Icons.clear, color: Colors.white70),
                           onPressed: () {
                             _controller.clear();
@@ -203,6 +205,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
               ),
             ),
             IconButton(
+              tooltip: 'search'.tr(),
               icon: const Icon(Icons.search_rounded, color: Colors.white),
               onPressed: () => _search(_controller.text),
             ),

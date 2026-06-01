@@ -68,18 +68,22 @@ class _MessageDialogState extends DialogState<MessageDialog> {
                   onTap: () {
                     widget.hide(SimpleResult.success());
                   },
-                  child: Container(
-                      height: 50,
-                      alignment: Alignment.center,
-                      child: Text(
-                        widget.buttonText ?? 'close'.tr(),
-                        style: TextStyle(
-                          color: context.appColors.confirmText,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          fontStyle: FontStyle.normal,
-                        ),
-                      )),
+                  child: Semantics(
+                      button: true,
+                      label: widget.buttonText ?? 'close'.tr(),
+                      child: Container(
+                          constraints: const BoxConstraints(minHeight: 50),
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Text(
+                            widget.buttonText ?? 'close'.tr(),
+                            style: TextStyle(
+                              color: context.appColors.confirmText,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              fontStyle: FontStyle.normal,
+                            ),
+                          ))),
                 )
               ],
             )));

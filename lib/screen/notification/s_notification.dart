@@ -172,6 +172,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
               child: Row(
                 children: [
                   IconButton(
+                    tooltip: 'back'.tr(),
                     icon: Icon(Icons.arrow_back_ios_rounded, color: colors.textTitle),
                     onPressed: () => Navigator.pop(context),
                   ),

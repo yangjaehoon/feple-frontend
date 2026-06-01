@@ -41,6 +41,19 @@ class AppState extends State<App> with Nav, WidgetsBindingObserver {
           locale: context.locale,
           title: 'Image Finder',
           theme: context.themeType.themeData,
+          // 텍스트 배율 1.3× 상한: 고정 높이 컨테이너가 텍스트 확대 시 깨지는 것을 방지
+          builder: (ctx, child) {
+            final mq = MediaQuery.of(ctx);
+            return MediaQuery(
+              data: mq.copyWith(
+                textScaler: mq.textScaler.clamp(
+                  minScaleFactor: 1.0,
+                  maxScaleFactor: 1.3,
+                ),
+              ),
+              child: child!,
+            );
+          },
           home: const MainScreen(),
         );
       }),

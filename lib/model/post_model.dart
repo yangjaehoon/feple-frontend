@@ -69,3 +69,17 @@ class Post {
     );
   }
 }
+
+class PostCursorPage {
+  final List<Post> content;
+  final int? nextCursor;
+  final bool hasNext;
+
+  const PostCursorPage({required this.content, this.nextCursor, required this.hasNext});
+
+  factory PostCursorPage.fromJson(Map<String, dynamic> json) => PostCursorPage(
+        content: (json['content'] as List<dynamic>).map((e) => Post.fromJson(e as Map<String, dynamic>)).toList(),
+        nextCursor: (json['nextCursor'] as num?)?.toInt(),
+        hasNext: json['hasNext'] as bool,
+      );
+}

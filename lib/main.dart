@@ -1,16 +1,16 @@
 import 'dart:developer';
+import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/service/user_service.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/login/s_login.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import 'app.dart';
 import 'auth/get_api_key.dart';
 import 'auth/token_store.dart';
@@ -38,38 +38,27 @@ void main() async {
     javaScriptAppKey: await getApiKey("kakao_javaScript_app_key"),
   );
 
-  final sentryDsn = await _tryGetSentryDsn();
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
 
-  await SentryFlutter.init(
-    (options) {
-      options.dsn = sentryDsn;
-      options.environment = kReleaseMode ? 'prod' : 'dev';
-      options.tracesSampleRate = 0.1;
-    },
-    appRunner: () => runApp(
-      EasyLocalization(
-        supportedLocales: const [Locale('ko'), Locale('en')],
-        fallbackLocale: const Locale('ko'),
-        path: 'assets/translations',
-        useOnlyLangCode: true,
-        child: MultiProvider(
-          providers: [
-            ChangeNotifierProvider<UserProvider>(
-                create: (_) => UserProvider(sl<UserService>())),
-          ],
-          child: const MyApp(),
-        ),
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [Locale('ko'), Locale('en')],
+      fallbackLocale: const Locale('ko'),
+      path: 'assets/translations',
+      useOnlyLangCode: true,
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider<UserProvider>(
+              create: (_) => UserProvider(sl<UserService>())),
+        ],
+        child: const MyApp(),
       ),
     ),
   );
-}
-
-Future<String> _tryGetSentryDsn() async {
-  try {
-    return await getApiKey("sentry_dsn");
-  } catch (_) {
-    return '';
-  }
 }
 
 class MyApp extends StatefulWidget {

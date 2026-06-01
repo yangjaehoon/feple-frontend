@@ -4,6 +4,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/model/followed_artist.dart';
 import 'package:feple/screen/main/tab/my_page/s_follow_artists_list.dart';
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:feple/service/user_service.dart';
@@ -18,7 +19,7 @@ class FollowArtistsWidget extends StatefulWidget {
 }
 
 class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
-  List<_FollowedArtist> _artists = [];
+  List<FollowedArtist> _artists = [];
   bool _loading = true;
   bool _hasError = false;
 
@@ -32,7 +33,7 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
     setState(() { _loading = true; _hasError = false; });
     try {
       final data = await sl<UserService>().fetchFollowing(widget.userId);
-      final list = data.map((e) => _FollowedArtist.fromJson(e)).toList();
+      final list = data.map((e) => FollowedArtist.fromJson(e)).toList();
       if (mounted) setState(() { _artists = list; _loading = false; });
     } catch (_) {
       if (mounted) setState(() { _loading = false; _hasError = true; });
@@ -248,25 +249,3 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
   }
 }
 
-class _FollowedArtist {
-  final int id;
-  final String name;
-  final String? profileImageUrl;
-  final int followerCount;
-
-  const _FollowedArtist({
-    required this.id,
-    required this.name,
-    this.profileImageUrl,
-    required this.followerCount,
-  });
-
-  factory _FollowedArtist.fromJson(Map<String, dynamic> json) {
-    return _FollowedArtist(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      profileImageUrl: json['profileImageUrl'] as String?,
-      followerCount: (json['followerCount'] as num?)?.toInt() ?? 0,
-    );
-  }
-}

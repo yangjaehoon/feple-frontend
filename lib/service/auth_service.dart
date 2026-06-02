@@ -164,6 +164,22 @@ class AuthService {
     }
   }
 
+  // ── 로그아웃: Firebase + Kakao 세션 정리 ──
+
+  Future<void> signOut() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+    } catch (e) {
+      debugPrint('[Auth] Firebase signOut 실패: $e');
+    }
+    try {
+      await UserApi.instance.logout();
+    } catch (e) {
+      // Kakao 세션이 없는 경우(이메일 로그인) 예외 무시
+      debugPrint('[Auth] Kakao logout 실패: $e');
+    }
+  }
+
   // ── 내부: 토큰 저장 + User 파싱 ──
 
   Future<app.User> _saveTokensAndParseUser(Map<String, dynamic> json) async {

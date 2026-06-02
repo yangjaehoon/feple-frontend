@@ -19,6 +19,7 @@ abstract final class ImageUploadHelper {
     final compressed = await FlutterImageCompress.compressWithList(
       imageData,
       quality: _compressQuality,
+      format: CompressFormat.jpeg,
     );
 
     final presignResponse = await DioClient.dio.post(

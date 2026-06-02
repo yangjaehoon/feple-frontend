@@ -16,6 +16,7 @@ import 'auth/get_api_key.dart';
 import 'auth/token_store.dart';
 import 'common/data/preference/app_preferences.dart';
 import 'common/data/preference/prefs.dart';
+import 'package:dio/dio.dart' show DioException;
 import 'network/dio_client.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'common/theme/custom_theme_app.dart';
@@ -124,8 +125,13 @@ class _MyAppState extends State<MyApp> {
       if (token != null) {
         await userProvider.fetchUserFromToken(token);
       }
+    } on DioException catch (e) {
+      // 연결 오류(오프라인)는 캐시된 user 유지 — 나머지(4xx 등)는 fetchUserFromToken이 정리
+      log('Auto login failed (network): ${e.type}');
     } catch (e) {
-      log('Auto login failed: $e');
+      // 예상치 못한 오류(응답 파싱 실패 등) — 죽은 토큰 정리
+      log('Auto login failed (unexpected): $e');
+      await userProvider.logout();
     } finally {
       FlutterNativeSplash.remove();
     }

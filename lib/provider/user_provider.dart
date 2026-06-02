@@ -76,12 +76,13 @@ class UserProvider with ChangeNotifier {
       notifyListeners();
     } on DioException catch (e) {
       final status = e.response?.statusCode;
-      if (status == 401 || status == 403) {
+      if (status == 401 || status == 403 || status == 404) {
+        // 401/403: 토큰 만료·무효, 404: 계정 삭제 → 죽은 토큰 정리
         _user = null;
         await TokenStore.clear();
         notifyListeners();
       }
-      // 그 외 오류(404, 네트워크 등)는 기존 user 유지
+      // 그 외(5xx, 네트워크 오류 등)는 오프라인 모드로 기존 user 유지
       rethrow;
     }
   }

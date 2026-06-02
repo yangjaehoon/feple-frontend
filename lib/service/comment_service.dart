@@ -7,8 +7,7 @@ import 'package:feple/network/dio_client.dart';
 class CommentService {
   Future<List<Comment>> fetchComments(int postId) async {
     final response = await DioClient.dio.get('/comments/$postId');
-    final List data = response.data as List;
-    return data.map((e) => Comment.fromJson(e)).toList();
+    return response.toModelList(Comment.fromJson);
   }
 
   Future<void> deleteComment(int commentId) async {
@@ -21,9 +20,7 @@ class CommentService {
   /// 게시글 댓글 목록 조회 (상세 화면용 — liked/likeCount 포함)
   Future<List<CommentDetail>> fetchPostComments(int postId) async {
     final response = await DioClient.dio.get('/comments/post/$postId');
-    return (response.data as List)
-        .map((e) => CommentDetail.fromJson(e as Map<String, dynamic>))
-        .toList();
+    return response.toModelList(CommentDetail.fromJson);
   }
 
   /// 댓글 작성 (command only — CQS)

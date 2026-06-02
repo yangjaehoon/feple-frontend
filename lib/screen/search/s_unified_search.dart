@@ -96,7 +96,9 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     try {
       final results = await _searchService.suggestions(keyword);
       if (mounted) setState(() => _suggestions = results);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[Search] 자동완성 로드 실패: $e');
+    }
   }
 
   Future<void> _search(String keyword) async {

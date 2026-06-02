@@ -11,7 +11,7 @@ class NotificationService {
 
   Future<int> getUnreadCount() async {
     final response = await DioClient.dio.get('/notifications/my/unread-count');
-    return (response.data['count'] as num).toInt();
+    return (response.data['count'] as num?)?.toInt() ?? 0;
   }
 
   Future<void> markRead(int id) async {

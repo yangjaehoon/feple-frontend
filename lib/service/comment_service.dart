@@ -13,7 +13,7 @@ class CommentService {
   Future<void> deleteComment(int commentId) async {
     final response = await DioClient.dio.delete('/comments/$commentId');
     if (response.statusCode != 204) {
-      throw Exception('댓글 삭제 실패: ${response.statusCode}');
+      throw StateError('Unexpected delete response: ${response.statusCode}');
     }
   }
 

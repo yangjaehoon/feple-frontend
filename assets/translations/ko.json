@@ -475,5 +475,6 @@
   "onboarding_pick_selected": "{}명 선택됨",
   "onboarding_pick_skip": "나중에 선택하기",
   "onboarding_pick_load_failed": "아티스트를 불러오지 못했습니다",
-  "onboarding_pick_retry": "다시 시도"
+  "onboarding_pick_retry": "다시 시도",
+  "onboarding_replay": "온보딩 다시 보기"
 }

@@ -220,7 +220,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _SectionHeader(label: 'DEV', colors: colors),
                   _SettingsItem(
                     icon: Icons.replay_rounded,
-                    label: '온보딩 다시 보기',
+                    label: 'onboarding_replay'.tr(),
                     colors: colors,
                     onTap: _resetOnboarding,
                   ),

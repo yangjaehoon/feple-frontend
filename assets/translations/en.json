@@ -475,5 +475,6 @@
   "onboarding_pick_selected": "{} selected",
   "onboarding_pick_skip": "Skip for now",
   "onboarding_pick_load_failed": "Failed to load artists",
-  "onboarding_pick_retry": "Try again"
+  "onboarding_pick_retry": "Try again",
+  "onboarding_replay": "Replay Onboarding"
 }

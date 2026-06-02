@@ -85,9 +85,9 @@ class FestivalPosterNotifier extends ChangeNotifier {
     final prev = liked;
     liked = !liked;
     notifyListeners();
-    AppEvents.likeChanged.value++;
     try {
       await festivalService.toggleLike(festivalId);
+      AppEvents.likeChanged.value++;
     } catch (e) {
       liked = prev;
       notifyListeners();

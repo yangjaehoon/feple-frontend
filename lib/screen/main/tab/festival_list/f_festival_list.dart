@@ -17,6 +17,26 @@ class ConcertListFragment extends StatefulWidget {
 
 class _ConcertListFragmentState extends State<ConcertListFragment> {
   bool _filterExpanded = false;
+  late final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 300) {
+      context.read<FestivalPreviewProvider>().fetchNext();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +56,7 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
             },
             color: colors.activate,
             child: CustomScrollView(
+              controller: _scrollController,
               slivers: [
                 SliverPadding(
                   padding: EdgeInsets.only(
@@ -51,6 +72,7 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
                         activeFilterCount: activeFilterCount,
                       ),
                       const ConcertListWidget(),
+                      _LoadMoreIndicator(colors: colors),
                     ]),
                   ),
                 ),
@@ -258,6 +280,27 @@ class _FilterSection extends StatelessWidget {
           }).toList(),
         ),
       ],
+    );
+  }
+}
+
+class _LoadMoreIndicator extends StatelessWidget {
+  final AbstractThemeColors colors;
+
+  const _LoadMoreIndicator({required this.colors});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<FestivalPreviewProvider>(
+      builder: (_, p, __) {
+        if (p.isLoadingMore) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 20),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+        return const SizedBox.shrink();
+      },
     );
   }
 }

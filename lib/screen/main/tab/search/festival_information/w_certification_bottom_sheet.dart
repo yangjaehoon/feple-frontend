@@ -30,7 +30,7 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
   static const int _maxImageDimension = 1920;
   static const double _photoAreaHeight = 160.0;
 
-  XFile? _pickedFile;
+  Uint8List? _imageBytes;
   bool _submitting = false;
 
   Future<void> _pickImage() async {
@@ -40,14 +40,16 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
       maxWidth: _maxImageDimension.toDouble(),
       maxHeight: _maxImageDimension.toDouble(),
     );
-    if (picked != null && mounted) setState(() => _pickedFile = picked);
+    if (picked == null || !mounted) return;
+    final bytes = await picked.readAsBytes();
+    if (mounted) setState(() => _imageBytes = bytes);
   }
 
   Future<void> _submit() async {
-    if (_pickedFile == null) return;
+    if (_imageBytes == null) return;
     setState(() => _submitting = true);
     try {
-      final imageData = await _pickedFile!.readAsBytes();
+      final imageData = _imageBytes!;
       await widget.certService.submit(
         festivalId: widget.festivalId,
         imageData: imageData,
@@ -125,24 +127,16 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
                 color: colors.backgroundMain,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: _pickedFile != null
+                  color: _imageBytes != null
                       ? colors.activate
                       : colors.textSecondary.withValues(alpha: 0.2),
-                  width: _pickedFile != null ? 2 : 1,
+                  width: _imageBytes != null ? 2 : 1,
                 ),
               ),
-              child: _pickedFile != null
+              child: _imageBytes != null
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(16),
-                      child: FutureBuilder<Uint8List>(
-                        future: _pickedFile!.readAsBytes(),
-                        builder: (ctx, snap) {
-                          if (snap.hasData) {
-                            return Image.memory(snap.data!, fit: BoxFit.cover);
-                          }
-                          return const Center(child: CircularProgressIndicator());
-                        },
-                      ),
+                      child: Image.memory(_imageBytes!, fit: BoxFit.cover),
                     )
                   : Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -165,7 +159,7 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
 
           LoadingButton(
             label: 'cert_submit'.tr(),
-            onPressed: _pickedFile == null ? null : _submit,
+            onPressed: _imageBytes == null ? null : _submit,
             isLoading: _submitting,
             backgroundColor: colors.activate,
             height: 50,

@@ -1,5 +1,4 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/theme/custom_theme_app.dart';
 import 'package:feple/screen/main/s_main.dart';
 import 'package:flutter/material.dart';
 
@@ -31,32 +30,28 @@ class AppState extends State<App> with Nav, WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return CustomThemeApp(
-      child: Builder(builder: (context) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          navigatorKey: App.navigatorKey,
-          localizationsDelegates: context.localizationDelegates,
-          supportedLocales: context.supportedLocales,
-          locale: context.locale,
-          title: 'Image Finder',
-          theme: context.themeType.themeData,
-          // 텍스트 배율 1.3× 상한: 고정 높이 컨테이너가 텍스트 확대 시 깨지는 것을 방지
-          builder: (ctx, child) {
-            final mq = MediaQuery.of(ctx);
-            return MediaQuery(
-              data: mq.copyWith(
-                textScaler: mq.textScaler.clamp(
-                  minScaleFactor: 1.0,
-                  maxScaleFactor: 1.3,
-                ),
-              ),
-              child: child!,
-            );
-          },
-          home: const MainScreen(),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      navigatorKey: App.navigatorKey,
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
+      title: 'Feple',
+      theme: context.themeType.themeData,
+      // 텍스트 배율 1.3× 상한: 고정 높이 컨테이너가 텍스트 확대 시 깨지는 것을 방지
+      builder: (ctx, child) {
+        final mq = MediaQuery.of(ctx);
+        return MediaQuery(
+          data: mq.copyWith(
+            textScaler: mq.textScaler.clamp(
+              minScaleFactor: 1.0,
+              maxScaleFactor: 1.3,
+            ),
+          ),
+          child: child!,
         );
-      }),
+      },
+      home: const MainScreen(),
     );
   }
 

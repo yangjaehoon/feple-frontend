@@ -8,7 +8,8 @@ class ApiCacheStore {
   // 7일이 지난 캐시는 만료로 간주
   static const int _maxAgeMs = 7 * 24 * 60 * 60 * 1000;
 
-  static String _key(String url) => '$_prefix${url.hashCode.abs()}';
+  static String _key(String url) =>
+      '$_prefix${url.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_')}';
 
   static Future<void> put(String url, dynamic data) async {
     try {
@@ -28,7 +29,10 @@ class ApiCacheStore {
       if (raw == null) return null;
       final map = jsonDecode(raw) as Map<String, dynamic>;
       final ts = map['ts'] as int;
-      if (DateTime.now().millisecondsSinceEpoch - ts > _maxAgeMs) return null;
+      if (DateTime.now().millisecondsSinceEpoch - ts > _maxAgeMs) {
+        await prefs.remove(_key(url));
+        return null;
+      }
       return map['data'];
     } catch (_) {
       return null;

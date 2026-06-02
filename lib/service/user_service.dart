@@ -11,7 +11,7 @@ class UserService {
   Future<User> fetchUser(int userId) async {
     final response = await DioClient.dio.get('/users/$userId');
     final raw = response.data is String ? jsonDecode(response.data) : response.data;
-    if (raw is! Map<String, dynamic>) throw Exception('사용자 정보 형식 오류');
+    if (raw is! Map<String, dynamic>) throw FormatException('Unexpected user response type: ${raw.runtimeType}');
     return User.fromJson(raw);
   }
 

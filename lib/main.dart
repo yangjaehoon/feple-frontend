@@ -70,7 +70,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final _navigatorKey = GlobalKey<NavigatorState>();
   bool _isBanDialogShowing = false;
   bool _onboardingCompleted = false;
 
@@ -94,7 +93,7 @@ class _MyAppState extends State<MyApp> {
     if (_isBanDialogShowing) return;
     _isBanDialogShowing = true;
     try {
-      final ctx = _navigatorKey.currentContext;
+      final ctx = App.navigatorKey.currentContext;
       if (ctx != null && ctx.mounted) {
         await showDialog<void>(
           context: ctx,
@@ -144,7 +143,6 @@ class _MyAppState extends State<MyApp> {
         builder: (context) {
           return MaterialApp(
             key: ValueKey(context.locale),
-            navigatorKey: _navigatorKey,
             debugShowCheckedModeBanner: false,
             theme: context.themeType.themeData,
             home: Consumer<UserProvider>(

@@ -43,9 +43,7 @@ class FestivalService {
 
   Future<List<FestivalModel>> fetchAll() async {
     final response = await DioClient.dio.get('/festivals');
-    return (response.data as List)
-        .map((json) => FestivalModel.fromJson(json as Map<String, dynamic>))
-        .toList();
+    return response.toModelList(FestivalModel.fromJson);
   }
 
   Future<void> submitFestival({

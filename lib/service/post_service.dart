@@ -19,7 +19,7 @@ class PostService {
 
   Future<List<Post>> _fetchPostList(String endpoint) async {
     final response = await DioClient.dio.get(endpoint);
-    return (response.data as List<dynamic>).map((json) => Post.fromJson(json)).toList();
+    return response.toModelList(Post.fromJson);
   }
 
   /// 게시글 목록 조회 (hot은 페이지네이션 미지원)

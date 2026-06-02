@@ -4,6 +4,11 @@ import '../auth/token_store.dart';
 import '../config.dart' as app_config;
 import 'api_cache_store.dart';
 
+extension ResponseListExt on Response {
+  List<T> toModelList<T>(T Function(Map<String, dynamic>) fromJson) =>
+      (data as List).map((e) => fromJson(e as Map<String, dynamic>)).toList();
+}
+
 bool _isNetworkError(DioException e) {
   return e.response == null &&
       (e.type == DioExceptionType.connectionError ||

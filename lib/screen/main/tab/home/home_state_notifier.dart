@@ -48,12 +48,15 @@ class HomeStateNotifier extends ChangeNotifier {
         _fetchArtists(id),
         _fetchFestivals(id),
       ]);
+      // 비동기 완료 시점에 userId가 바뀌었으면 다른 init() 호출 중 — 결과 버림
+      if (userId != id) return;
       final fetchedArtists = data[0] as List<FollowedArtist>;
       final fetchedFestivals = data[1] as List<FestivalModel>;
       artists = fetchedArtists;
       festivals = fetchedFestivals;
       boards = _buildBoards(fetchedArtists, fetchedFestivals);
     } catch (e) {
+      if (userId != id) return;
       debugPrint('[Home] 데이터 로드 실패: $e');
       hasError = true;
     }

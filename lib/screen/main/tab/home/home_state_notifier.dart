@@ -53,7 +53,8 @@ class HomeStateNotifier extends ChangeNotifier {
       artists = fetchedArtists;
       festivals = fetchedFestivals;
       boards = _buildBoards(fetchedArtists, fetchedFestivals);
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[Home] 데이터 로드 실패: $e');
       hasError = true;
     }
     notifyListeners();

@@ -95,7 +95,8 @@ class _CommunityPostState extends State<CommunityPost> {
         if (!mounted || _loadId != myId) return;
         setState(() { _posts.addAll(items); _loading = false; });
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[CommunityPost] 게시글 로드 실패: $e');
       if (mounted && _loadId == myId) setState(() { _loading = false; _hasError = true; });
     }
   }
@@ -112,7 +113,8 @@ class _CommunityPostState extends State<CommunityPost> {
         _hasMore = page.hasNext;
         _loadingMore = false;
       });
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[CommunityPost] 추가 로드 실패: $e');
       if (mounted) setState(() => _loadingMore = false);
     }
   }
@@ -130,7 +132,8 @@ class _CommunityPostState extends State<CommunityPost> {
     try {
       final results = await _postService.searchInBoard(keyword.trim(), _serviceBoardType);
       if (mounted) setState(() { _searchResults = results; _isSearching = false; });
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[CommunityPost] 검색 실패: $e');
       if (mounted) setState(() => _isSearching = false);
     }
   }

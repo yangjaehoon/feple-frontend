@@ -41,7 +41,7 @@ class AppNetworkImage extends StatelessWidget {
         width: width,
         height: height,
         memCacheWidth: width != null ? (width! * 2).round() : 400,
-        memCacheHeight: height != null ? (height! * 2).round() : null,
+        memCacheHeight: height != null ? (height! * 2).round() : 600,
         placeholder: (context, url) => const SkeletonBox(
           height: double.infinity,
         ),

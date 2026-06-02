@@ -68,8 +68,8 @@ class PostService {
   Future<({int likeCount, int scrapCount})> fetchCounts(int postId) async {
     final response = await DioClient.dio.get('/posts/$postId');
     return (
-      likeCount: (response.data['likeCount'] as num).toInt(),
-      scrapCount: (response.data['scrapCount'] as num).toInt(),
+      likeCount: (response.data['likeCount'] as num?)?.toInt() ?? 0,
+      scrapCount: (response.data['scrapCount'] as num?)?.toInt() ?? 0,
     );
   }
 

@@ -22,8 +22,14 @@ class FestivalService {
 
     final response = await DioClient.dio.get('/festivals', queryParameters: params);
     final decoded = response.data;
-    final List<dynamic> list =
-        decoded is List ? decoded : (decoded['content'] as List<dynamic>);
+    final List<dynamic> list;
+    if (decoded is List) {
+      list = decoded;
+    } else if (decoded is Map && decoded['content'] is List) {
+      list = decoded['content'] as List<dynamic>;
+    } else {
+      list = const [];
+    }
 
     return list
         .map((e) => FestivalPreview.fromJson(e as Map<String, dynamic>))

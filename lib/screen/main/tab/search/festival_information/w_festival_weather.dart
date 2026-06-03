@@ -3,6 +3,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/weather_model.dart';
+import 'package:feple/screen/main/tab/search/festival_information/weather_style.dart';
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:flutter/material.dart';
 
@@ -164,24 +165,19 @@ class _RainProbBadge extends StatelessWidget {
 
   const _RainProbBadge({required this.prob});
 
-  Color _color() {
-    if (prob >= 70) return const Color(0xFF1565C0);
-    if (prob >= 40) return const Color(0xFF42A5F5);
-    return const Color(0xFF90CAF9);
-  }
-
   @override
   Widget build(BuildContext context) {
+    final color = rainProbColor(prob);
     return Column(
       children: [
-        Icon(Icons.water_drop, color: _color(), size: 20),
+        Icon(Icons.water_drop, color: color, size: 20),
         const SizedBox(height: 2),
         Text(
           '$prob%',
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
-            color: _color(),
+            color: color,
           ),
         ),
       ],

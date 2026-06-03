@@ -27,9 +27,13 @@ class NotificationScreen extends StatefulWidget {
 class _NotificationScreenState extends State<NotificationScreen> {
   final _notificationService = sl<NotificationService>();
   final _festivalService = sl<FestivalService>();
+  final _scrollController = ScrollController();
   List<NotificationModel> _items = [];
   bool _loading = true;
   bool _hasError = false;
+  bool _isLoadingMore = false;
+  bool _hasMore = true;
+  int _page = 0;
   _NotifFilter _filter = _NotifFilter.all;
 
   List<NotificationModel> get _filtered {
@@ -49,16 +53,55 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     _load();
   }
 
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 300) {
+      _loadMore();
+    }
+  }
+
   Future<void> _load() async {
-    setState(() { _loading = true; _hasError = false; });
+    setState(() { _loading = true; _hasError = false; _page = 0; _hasMore = true; _items = []; });
     try {
-      final notifications = await _notificationService.getMyNotifications();
-      if (mounted) setState(() { _items = notifications; _loading = false; });
+      final result = await _notificationService.fetchPage(0);
+      if (mounted) {
+        setState(() {
+          _items = result.items;
+          _hasMore = result.hasMore;
+          _page = 1;
+          _loading = false;
+        });
+      }
     } catch (_) {
       if (mounted) setState(() { _loading = false; _hasError = true; });
+    }
+  }
+
+  Future<void> _loadMore() async {
+    if (_isLoadingMore || !_hasMore || _loading) return;
+    setState(() => _isLoadingMore = true);
+    try {
+      final result = await _notificationService.fetchPage(_page);
+      if (mounted) {
+        setState(() {
+          _items = [..._items, ...result.items];
+          _hasMore = result.hasMore;
+          _page++;
+          _isLoadingMore = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _isLoadingMore = false);
     }
   }
 
@@ -279,11 +322,18 @@ class _NotificationScreenState extends State<NotificationScreen> {
       );
     }
     return ListView.separated(
+      controller: _scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-      itemCount: displayed.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      itemCount: displayed.length + (_isLoadingMore ? 1 : 0),
+      separatorBuilder: (_, i) => i < displayed.length - 1 ? const SizedBox(height: 8) : const SizedBox.shrink(),
       itemBuilder: (_, i) {
+        if (i == displayed.length) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
         final item = displayed[i];
         return AnimatedListItem(
           index: i,

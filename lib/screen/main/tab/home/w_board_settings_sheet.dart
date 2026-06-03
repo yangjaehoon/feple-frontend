@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:collection/collection.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
@@ -37,13 +38,7 @@ class _BoardSettingsSheetState extends State<BoardSettingsSheet> {
 
     // 선택된 보드(저장된 순서) → 미선택 보드 순으로 정렬
     final selectedInOrder = widget.initialOrderedIds
-        .map((id) {
-          try {
-            return widget.allBoards.firstWhere((b) => b.boardId == id);
-          } catch (_) {
-            return null;
-          }
-        })
+        .map((id) => widget.allBoards.firstWhereOrNull((b) => b.boardId == id))
         .whereType<FavoriteBoard>()
         .toList();
 

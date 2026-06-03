@@ -103,12 +103,16 @@ void main() {
           .thenAnswer((_) async => [_comment()]);
 
       String? posted;
-      notifier.onCommentPosted = (key) => posted = key;
-      await notifier.submitComment('내용', 1);
+      final n = PostDetailNotifier(
+        postId: 1, initialHeartCount: 10, initialViewCount: 0,
+        onCommentPosted: (key) => posted = key,
+      );
+      await n.submitComment('내용', 1);
 
       expect(posted, 'comment_posted');
-      expect(notifier.comments.length, 1);
-      expect(notifier.isSubmitting, false);
+      expect(n.comments.length, 1);
+      expect(n.isSubmitting, false);
+      n.dispose();
     });
 
     test('대댓글(parentId 지정) 성공 시 parentId 전달', () async {
@@ -134,11 +138,15 @@ void main() {
           )).thenThrow(Exception('err'));
 
       String? errorKey;
-      notifier.onError = (key) => errorKey = key;
-      await notifier.submitComment('내용', 1);
+      final n = PostDetailNotifier(
+        postId: 1, initialHeartCount: 10, initialViewCount: 0,
+        onError: (key) => errorKey = key,
+      );
+      await n.submitComment('내용', 1);
 
       expect(errorKey, 'comment_failed');
-      expect(notifier.isSubmitting, false);
+      expect(n.isSubmitting, false);
+      n.dispose();
     });
   });
 
@@ -174,17 +182,21 @@ void main() {
 
     test('서비스 예외 시 liked·heartCount 롤백', () async {
       when(() => mockPostService.toggleLike(1)).thenThrow(Exception('err'));
-      notifier.liked = false;
-      notifier.heartCount = 10;
 
       String? errorKey;
-      notifier.onError = (key) => errorKey = key;
-      await notifier.toggleLike(1);
+      final n = PostDetailNotifier(
+        postId: 1, initialHeartCount: 10, initialViewCount: 0,
+        onError: (key) => errorKey = key,
+      );
+      n.liked = false;
 
-      expect(notifier.liked, false);
-      expect(notifier.heartCount, 10);
-      expect(notifier.isToggling, false);
+      await n.toggleLike(1);
+
+      expect(n.liked, false);
+      expect(n.heartCount, 10);
+      expect(n.isToggling, false);
       expect(errorKey, 'like_failed');
+      n.dispose();
     });
   });
 
@@ -219,17 +231,22 @@ void main() {
 
     test('서비스 예외 시 scraped·scrapCount 롤백', () async {
       when(() => mockScrapService.toggleScrap(1)).thenThrow(Exception('err'));
-      notifier.scraped = false;
-      notifier.scrapCount = 5;
 
       String? errorKey;
-      notifier.onError = (key) => errorKey = key;
-      await notifier.toggleScrap(1);
+      final n = PostDetailNotifier(
+        postId: 1, initialHeartCount: 10, initialViewCount: 0,
+        onError: (key) => errorKey = key,
+      );
+      n.scraped = false;
+      n.scrapCount = 5;
 
-      expect(notifier.scraped, false);
-      expect(notifier.scrapCount, 5);
-      expect(notifier.isScrapping, false);
+      await n.toggleScrap(1);
+
+      expect(n.scraped, false);
+      expect(n.scrapCount, 5);
+      expect(n.isScrapping, false);
       expect(errorKey, 'scrap_failed');
+      n.dispose();
     });
   });
 

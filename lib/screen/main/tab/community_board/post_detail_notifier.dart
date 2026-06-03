@@ -25,14 +25,17 @@ class PostDetailNotifier extends ChangeNotifier {
   bool isScrapping = false;
   final Set<int> _togglingCommentIds = {};
 
-  void Function(String)? onCommentPosted;
-  void Function(String)? onError;
-  void Function()? onPostDeleted;
+  final void Function(String)? onCommentPosted;
+  final void Function(String)? onError;
+  final void Function()? onPostDeleted;
 
   PostDetailNotifier({
     required this.postId,
     required int initialHeartCount,
     required int initialViewCount,
+    this.onCommentPosted,
+    this.onError,
+    this.onPostDeleted,
   }) {
     heartCount = initialHeartCount;
     viewCount = initialViewCount;
@@ -54,13 +57,13 @@ class PostDetailNotifier extends ChangeNotifier {
 
   Future<void> loadPostState() async {
     try {
-      // 세 요청을 병렬 실행 (LoD: DioClient를 직접 알지 않음)
-      final countsFuture = _postService.fetchCounts(postId);
-      final likedFuture = _postService.isLiked(postId);
-      final scrapedFuture = _scrapService.isScraped(postId);
-      final counts = await countsFuture;
-      liked = await likedFuture;
-      scraped = await scrapedFuture;
+      final (counts, isLiked, isScraped) = await (
+        _postService.fetchCounts(postId),
+        _postService.isLiked(postId),
+        _scrapService.isScraped(postId),
+      ).wait;
+      liked = isLiked;
+      scraped = isScraped;
       heartCount = counts.likeCount;
       scrapCount = counts.scrapCount;
       notifyListeners();

@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/screen/main/tab/search/festival_information/weather_style.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/weather_model.dart';
 import 'package:feple/service/festival_detail_service.dart';
@@ -137,7 +138,7 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
             _InfoChip(
               icon: Icons.water_drop_rounded,
               label: 'weather_rain_prob'.tr(args: ['${data.rainProb}']),
-              color: _rainColor(data.rainProb),
+              color: rainProbColor(data.rainProb),
             ),
           ],
         ),
@@ -146,11 +147,6 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
     );
   }
 
-  Color _rainColor(int prob) {
-    if (prob >= 70) return const Color(0xFF1565C0);
-    if (prob >= 40) return const Color(0xFF42A5F5);
-    return const Color(0xFF90CAF9);
-  }
 }
 
 class _TooEarlyMessage extends StatelessWidget {

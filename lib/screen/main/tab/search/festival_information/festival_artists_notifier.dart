@@ -13,6 +13,7 @@ class FestivalArtistsNotifier extends ChangeNotifier {
   Set<int> followedIds = {};
   bool isLoading = true;
   bool hasError = false;
+  List<String> allDates = [];
 
   // null = 전체, otherwise ISO date string
   String? selectedDate;
@@ -26,19 +27,6 @@ class FestivalArtistsNotifier extends ChangeNotifier {
         _followService = followService;
 
   bool isFollowed(int artistId) => followedIds.contains(artistId);
-
-  /// 날짜 탭에 표시할 정렬된 날짜 목록 (아티스트들의 performanceDates 합집합)
-  List<String> get allDates {
-    final seen = <String>{};
-    final dates = <String>[];
-    for (final a in artists) {
-      for (final d in a.performanceDates) {
-        if (seen.add(d)) dates.add(d);
-      }
-    }
-    dates.sort();
-    return dates;
-  }
 
   bool get hasDateFilter => allDates.length > 1;
 
@@ -77,6 +65,7 @@ class FestivalArtistsNotifier extends ChangeNotifier {
 
       artists = fetched;
       followedIds = followed;
+      allDates = _computeAllDates(fetched);
       isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -85,5 +74,17 @@ class FestivalArtistsNotifier extends ChangeNotifier {
       notifyListeners();
       debugPrint('festival artists fetch error: $e');
     }
+  }
+
+  static List<String> _computeAllDates(List<FestivalArtistItem> artists) {
+    final seen = <String>{};
+    final dates = <String>[];
+    for (final a in artists) {
+      for (final d in a.performanceDates) {
+        if (seen.add(d)) dates.add(d);
+      }
+    }
+    dates.sort();
+    return dates;
   }
 }

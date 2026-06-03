@@ -101,18 +101,21 @@ class DioClient {
         try {
           newToken = await _refreshAccessToken();
         } catch (_) {
-          await TokenStore.clear();
-          onSessionExpired?.call();
+          // refresh 엔드포인트 오류 — newToken remains null
         } finally {
           _isRefreshing = false;
-          // 대기 중인 요청에 결과 전달
           for (final c in _refreshWaiters) {
             c.complete(newToken);
           }
           _refreshWaiters.clear();
         }
 
-        if (newToken == null) return handler.next(error);
+        // refresh 토큰 없음(null 반환) 또는 refresh 실패(예외) — 두 경우 모두 정리
+        if (newToken == null) {
+          await TokenStore.clear();
+          onSessionExpired?.call();
+          return handler.next(error);
+        }
         final opts = error.requestOptions;
         opts.headers['Authorization'] = 'Bearer $newToken';
         return handler.resolve(await _plainDio.fetch(opts));

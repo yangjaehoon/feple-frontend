@@ -19,7 +19,8 @@ class TimetableNotifier extends ChangeNotifier {
   List<String> dates = [];
   String? selectedDate;
 
-  TimetableRange get range => computeTimetableRange(entries, selectedDate);
+  TimetableRange? _cachedRange;
+  TimetableRange get range => _cachedRange ??= computeTimetableRange(entries, selectedDate);
 
   bool get hasEntries => range.filtered.isNotEmpty;
   List<String> get stages => range.stages;
@@ -69,6 +70,7 @@ class TimetableNotifier extends ChangeNotifier {
       entries = list;
       followedNames = followed;
       isLoading = false;
+      _cachedRange = computeTimetableRange(entries, selectedDate);
       notifyListeners();
     } catch (e) {
       debugPrint('timetable fetch error: $e');
@@ -80,6 +82,7 @@ class TimetableNotifier extends ChangeNotifier {
 
   void selectDate(String? date) {
     selectedDate = date;
+    _cachedRange = computeTimetableRange(entries, selectedDate);
     notifyListeners();
   }
 

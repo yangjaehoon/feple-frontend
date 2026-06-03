@@ -1,4 +1,4 @@
-import 'package:feple/screen/notification/notification_type.dart';
+import 'package:feple/model/notification_type.dart';
 
 class NotificationModel {
   final int id;

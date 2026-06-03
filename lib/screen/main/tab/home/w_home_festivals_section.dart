@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:flutter/material.dart';
@@ -24,24 +25,8 @@ class HomeFestivalsSection extends StatelessWidget {
 
     if (hasError) {
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        child: Row(
-          children: [
-            Icon(Icons.cloud_off_outlined, size: 16, color: colors.textSecondary),
-            const SizedBox(width: 8),
-            Text('err_fetch_data'.tr(),
-                style: TextStyle(fontSize: 13, color: colors.textSecondary)),
-            const SizedBox(width: 12),
-            GestureDetector(
-              onTap: onRetry,
-              child: Text('retry'.tr(),
-                  style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: colors.activate)),
-            ),
-          ],
-        ),
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: ErrorState(message: 'err_fetch_data'.tr(), onRetry: onRetry),
       );
     }
 

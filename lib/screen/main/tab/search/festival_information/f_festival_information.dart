@@ -23,8 +23,10 @@ class FestivalInformationFragment extends StatefulWidget {
 class _FestivalInformationFragmentState
     extends State<FestivalInformationFragment> {
   int _refreshKey = 0;
+  final _mapKey = GlobalKey<FestivalBoothMapState>();
 
   Future<void> _onRefresh() async {
+    _mapKey.currentState?.refresh();
     setState(() => _refreshKey++);
   }
 
@@ -66,7 +68,7 @@ class _FestivalInformationFragmentState
                     endDate: widget.poster.endDate,
                   ),
                   FestivalBoothMap(
-                    key: ValueKey('map_$_refreshKey'),
+                    key: _mapKey,
                     festivalId: widget.poster.id,
                     festivalLat: widget.poster.latitude,
                     festivalLng: widget.poster.longitude,

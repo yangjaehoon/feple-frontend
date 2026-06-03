@@ -25,10 +25,11 @@ class FestivalBoothMap extends StatefulWidget {
   });
 
   @override
-  State<FestivalBoothMap> createState() => _FestivalBoothMapState();
+  State<FestivalBoothMap> createState() => FestivalBoothMapState();
 }
 
-class _FestivalBoothMapState extends State<FestivalBoothMap> {
+class FestivalBoothMapState extends State<FestivalBoothMap> {
+  void refresh() => _fetchBooths();
   List<BoothModel> _booths = [];
   bool _loading = true;
   bool _hasError = false;

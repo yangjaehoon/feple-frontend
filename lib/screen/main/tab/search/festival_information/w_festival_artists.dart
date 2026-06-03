@@ -70,7 +70,7 @@ class _FestivalArtistsState extends State<FestivalArtists> {
         context,
         SlideRoute(
           builder: (_) => FestivalArtistListScreen(
-            festivalId: widget.festivalId,
+            notifier: _notifier,
           ),
         ),
       ),

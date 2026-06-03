@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/model/user_stats_model.dart';
 import 'package:feple/service/user_activity_service.dart';
 import 'package:feple/screen/main/tab/my_page/s_certification_list.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_comments.dart';
@@ -18,7 +19,7 @@ class MyPostCommentWidget extends StatefulWidget {
 }
 
 class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
-  late Future<_UserStats> _statsFuture;
+  late Future<UserStats> _statsFuture;
 
   @override
   void initState() {
@@ -26,22 +27,14 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
     _statsFuture = _fetchStats();
   }
 
-  Future<_UserStats> _fetchStats() async {
-    final stats = await sl<UserActivityService>().fetchStats(widget.userId);
-    return _UserStats(
-      postCount: stats['postCount'] as int,
-      commentCount: stats['commentCount'] as int,
-      certificationCount: stats['certificationCount'] as int? ?? 0,
-      scrapCount: stats['scrapCount'] as int? ?? 0,
-      likedPostCount: stats['likedPostCount'] as int? ?? 0,
-    );
-  }
+  Future<UserStats> _fetchStats() =>
+      sl<UserActivityService>().fetchStats(widget.userId);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: FutureBuilder<_UserStats>(
+      child: FutureBuilder<UserStats>(
         future: _statsFuture,
         builder: (context, snapshot) => _buildStatRow(context, snapshot),
       ),
@@ -49,7 +42,7 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
   }
 
   Widget _buildStatRow(
-      BuildContext context, AsyncSnapshot<_UserStats> snapshot) {
+      BuildContext context, AsyncSnapshot<UserStats> snapshot) {
     final postCount = snapshot.data?.postCount.toString() ?? '-';
     final commentCount = snapshot.data?.commentCount.toString() ?? '-';
     final certCount = snapshot.data?.certificationCount.toString() ?? '-';
@@ -161,19 +154,4 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
       ),
     );
   }
-}
-
-class _UserStats {
-  final int postCount;
-  final int commentCount;
-  final int certificationCount;
-  final int scrapCount;
-  final int likedPostCount;
-  const _UserStats({
-    required this.postCount,
-    required this.commentCount,
-    required this.certificationCount,
-    required this.scrapCount,
-    required this.likedPostCount,
-  });
 }

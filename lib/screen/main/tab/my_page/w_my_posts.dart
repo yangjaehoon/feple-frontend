@@ -16,10 +16,7 @@ class MyPostsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MyPageListScreen<Post>(
       title: 'my_posts'.tr(),
-      loader: () async {
-        final data = await sl<UserActivityService>().fetchPosts(userId);
-        return data.map((e) => Post.fromJson(e)).toList();
-      },
+      loader: () => sl<UserActivityService>().fetchPosts(userId),
       skeletonBuilder: postListSkeleton,
       itemBuilder: (context, post, reload) {
         final colors = context.appColors;

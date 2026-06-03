@@ -1,23 +1,32 @@
+import 'package:feple/model/my_comment_model.dart';
+import 'package:feple/model/post_model.dart';
+import 'package:feple/model/user_stats_model.dart';
 import 'package:feple/network/dio_client.dart';
 
 class UserActivityService {
-  Future<List<dynamic>> fetchPosts(int userId) async {
+  Future<List<Post>> fetchPosts(int userId) async {
     final response = await DioClient.dio.get('/users/$userId/posts');
-    return response.data as List;
+    return (response.data as List)
+        .map((e) => Post.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
-  Future<List<dynamic>> fetchComments(int userId) async {
+  Future<List<MyComment>> fetchComments(int userId) async {
     final response = await DioClient.dio.get('/users/$userId/comments');
-    return response.data as List;
+    return (response.data as List)
+        .map((e) => MyComment.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
-  Future<List<dynamic>> fetchLikedPosts(int userId) async {
+  Future<List<Post>> fetchLikedPosts(int userId) async {
     final response = await DioClient.dio.get('/users/$userId/liked-posts');
-    return response.data as List;
+    return (response.data as List)
+        .map((e) => Post.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
-  Future<Map<String, dynamic>> fetchStats(int userId) async {
+  Future<UserStats> fetchStats(int userId) async {
     final response = await DioClient.dio.get('/users/$userId/stats');
-    return response.data as Map<String, dynamic>;
+    return UserStats.fromJson(response.data as Map<String, dynamic>);
   }
 }

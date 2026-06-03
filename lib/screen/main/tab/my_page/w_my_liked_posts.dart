@@ -16,10 +16,7 @@ class MyLikedPostsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MyPageListScreen<Post>(
       title: 'my_liked_posts'.tr(),
-      loader: () async {
-        final data = await sl<UserActivityService>().fetchLikedPosts(userId);
-        return data.map((e) => Post.fromJson(e)).toList();
-      },
+      loader: () => sl<UserActivityService>().fetchLikedPosts(userId),
       skeletonBuilder: postListSkeleton,
       itemBuilder: (context, post, reload) {
         final colors = context.appColors;

@@ -1,7 +1,5 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/model/festival_model.dart';
-import 'package:feple/model/followed_artist.dart';
 import 'package:feple/screen/main/tab/home/f_followed_artists_by_genre.dart';
 import 'package:feple/screen/main/tab/home/f_liked_festivals_page.dart';
 import 'package:feple/screen/main/tab/home/home_state_notifier.dart';
@@ -58,20 +56,6 @@ class _HomeFragmentState extends State<HomeFragment> {
   void _onArtistFollowChanged() => _notifier.refreshArtists();
 
 
-  List<FollowedArtist>? get _orderedArtists {
-    final artists = _notifier.artists;
-    return artists == null
-        ? null
-        : _notifier.applyOrder(artists, _notifier.artistOrder, (x) => x.id);
-  }
-
-  List<FestivalModel>? get _orderedFestivals {
-    final festivals = _notifier.festivals;
-    return festivals == null
-        ? null
-        : _notifier.applyOrder(festivals, _notifier.festivalOrder, (x) => x.id);
-  }
-
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -120,7 +104,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                     context,
                     SlideRoute(
                       builder: (_) => FollowedArtistsByGenrePage(
-                        artists: _orderedArtists ?? [],
+                        artists: _notifier.orderedArtists ?? [],
                         onSaveOrder: _notifier.saveArtistOrder,
                       ),
                     ),
@@ -130,7 +114,7 @@ class _HomeFragmentState extends State<HomeFragment> {
               : null,
         ),
         HomeArtistsSection(
-          artists: _orderedArtists,
+          artists: _notifier.orderedArtists,
           hasError: _notifier.hasError,
           onRetry: _notifier.retry,
           onTap: (artist) async {
@@ -157,7 +141,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                     context,
                     SlideRoute(
                       builder: (_) => LikedFestivalsPage(
-                        festivals: _orderedFestivals ?? [],
+                        festivals: _notifier.orderedFestivals ?? [],
                         onSaveOrder: _notifier.saveFestivalOrder,
                       ),
                     ),
@@ -167,7 +151,7 @@ class _HomeFragmentState extends State<HomeFragment> {
               : null,
         ),
         HomeFestivalsSection(
-          festivals: _orderedFestivals,
+          festivals: _notifier.orderedFestivals,
           hasError: _notifier.hasError,
           onRetry: _notifier.retry,
           onTap: (festival) async {

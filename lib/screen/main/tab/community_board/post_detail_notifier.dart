@@ -23,6 +23,7 @@ class PostDetailNotifier extends ChangeNotifier {
   String? commentError;
   bool isToggling = false;
   bool isScrapping = false;
+  final Set<int> _togglingCommentIds = {};
 
   void Function(String)? onCommentPosted;
   void Function(String)? onError;
@@ -160,21 +161,37 @@ class PostDetailNotifier extends ChangeNotifier {
 
   Future<void> toggleCommentLike(int commentId, int? userId) async {
     if (userId == null) return;
+    if (_togglingCommentIds.contains(commentId)) return;
     final idx = comments.indexWhere((c) => c.id == commentId);
     if (idx == -1) return;
     final prev = comments[idx];
-    final newLiked = !prev.liked;
+    _togglingCommentIds.add(commentId);
+    // 낙관적 업데이트
     comments[idx] = prev.copyWith(
-      liked: newLiked,
-      likeCount: prev.likeCount + (newLiked ? 1 : -1),
+      liked: !prev.liked,
+      likeCount: prev.likeCount + (!prev.liked ? 1 : -1),
     );
     notifyListeners();
     try {
-      await _commentService.toggleCommentLike(commentId);
+      final result = await _commentService.toggleCommentLike(commentId);
+      // 서버 실제 값으로 동기화 — 빠른 연속 탭 시 불일치 방지
+      final currentIdx = comments.indexWhere((c) => c.id == commentId);
+      if (currentIdx != -1) {
+        comments[currentIdx] = comments[currentIdx].copyWith(
+          liked: result.liked,
+          likeCount: result.likeCount,
+        );
+        notifyListeners();
+      }
     } catch (e) {
-      comments[idx] = prev;
-      notifyListeners();
+      final currentIdx = comments.indexWhere((c) => c.id == commentId);
+      if (currentIdx != -1) {
+        comments[currentIdx] = prev;
+        notifyListeners();
+      }
       debugPrint('toggleCommentLike error: $e');
+    } finally {
+      _togglingCommentIds.remove(commentId);
     }
   }
 

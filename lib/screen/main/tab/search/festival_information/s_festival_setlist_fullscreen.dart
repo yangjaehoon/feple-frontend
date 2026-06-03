@@ -94,7 +94,7 @@ class _FestivalSetlistFullPageState extends State<FestivalSetlistFullPage> {
             }
             if (snapshot.hasError) {
               return ErrorState(
-                message: 'err_fetch_data'.tr(args: ['']),
+                message: 'err_fetch_data'.tr(),
                 onRetry: () => setState(() => _future = _fetch()),
               );
             }

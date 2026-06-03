@@ -158,7 +158,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: ErrorState(
-          message: 'err_fetch_data'.tr(args: ['']),
+          message: 'err_fetch_data'.tr(),
           onRetry: _notifier.retry,
         ),
       );

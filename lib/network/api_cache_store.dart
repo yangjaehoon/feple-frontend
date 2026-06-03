@@ -8,8 +8,7 @@ class ApiCacheStore {
   // 7일이 지난 캐시는 만료로 간주
   static const int _maxAgeMs = 7 * 24 * 60 * 60 * 1000;
 
-  static String _key(String url) =>
-      '$_prefix${url.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_')}';
+  static String _key(String url) => '$_prefix$url';
 
   static Future<void> put(String url, dynamic data) async {
     try {

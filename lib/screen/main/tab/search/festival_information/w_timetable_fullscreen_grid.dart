@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/constant/timetable_colors.dart';
+import 'package:feple/common/dart/extension/time_of_day_extension.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_user_entry.dart';
 import 'package:flutter/material.dart';
@@ -55,8 +56,7 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
     final clampedMins = rawMins.clamp(0, totalMins);
     final hour = widget.range.startHour + (clampedMins ~/ 60);
     final minute = (clampedMins % 60 ~/ 10) * 10;
-    final timeStr =
-        '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+    final timeStr = TimeOfDay(hour: hour, minute: minute).toHHmm;
 
     final si = (pos.dx / stageW).floor().clamp(0, widget.range.stages.length - 1);
     widget.onTapGrid(widget.range.stages[si], timeStr);
@@ -143,7 +143,7 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
             left: 0,
             right: 0,
             child: Text(
-              '${hour.toString().padLeft(2, '0')}:00',
+              TimeOfDay(hour: hour, minute: 0).toHHmm,
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontSize: 10,

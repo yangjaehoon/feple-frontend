@@ -17,6 +17,7 @@ class FestivalPosterNotifier extends ChangeNotifier {
   bool descExpanded = true;
   bool isCertified = false;
   bool isPending = false;
+  bool hasInitError = false;
 
   CertState get certState {
     if (isCertified) return CertState.certified;
@@ -34,8 +35,11 @@ class FestivalPosterNotifier extends ChangeNotifier {
   });
 
   Future<void> init() async {
+    hasInitError = false;
     await Future.wait([loadLikeState(), loadAttendingState(), loadDescState(), loadCertState()]);
   }
+
+  Future<void> retryInit() => init();
 
   Future<void> loadLikeState() async {
     try {
@@ -43,6 +47,8 @@ class FestivalPosterNotifier extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       debugPrint('loadLikeState error: $e');
+      hasInitError = true;
+      notifyListeners();
     }
   }
 
@@ -52,6 +58,8 @@ class FestivalPosterNotifier extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       debugPrint('loadAttendingState error: $e');
+      hasInitError = true;
+      notifyListeners();
     }
   }
 
@@ -78,6 +86,8 @@ class FestivalPosterNotifier extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       debugPrint('[FestivalPoster] 인증 상태 로드 실패: $e');
+      hasInitError = true;
+      notifyListeners();
     }
   }
 

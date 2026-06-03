@@ -45,6 +45,7 @@ class ArtistFollowNotifier extends ChangeNotifier {
       isFollowed = prevFollowed;
       followCount = prevCount;
       debugPrint('[FollowNotifier] toggle error: $e');
+      rethrow;
     } finally {
       isLoading = false;
       notifyListeners();

@@ -38,6 +38,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   int _currentPage = 0;
   final ValueNotifier<double> _scroll = ValueNotifier(0.0);
   Timer? _timer;
+  bool _isUserScrolling = false;
 
   @override
   void initState() {
@@ -47,9 +48,10 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   }
 
   void _onPageScroll() {
-    final currentPage = _pageController.page;
-    if (currentPage == null) return;
-    _scroll.value = currentPage;
+    final page = _pageController.page;
+    if (page == null) return;
+    _scroll.value = page;
+    _isUserScrolling = (page - page.roundToDouble()).abs() > 0.01;
   }
 
   Future<void> _loadPhotos() async {
@@ -72,8 +74,8 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
     if (_photoUrls.isEmpty) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      _timer = Timer.periodic(const Duration(seconds: 2), (_) {
-        if (!mounted || !_pageController.hasClients || _photoUrls.isEmpty) return;
+      _timer = Timer.periodic(const Duration(seconds: 3), (_) {
+        if (!mounted || !_pageController.hasClients || _photoUrls.isEmpty || _isUserScrolling) return;
         final nextPage = (_currentPage + 1) % _photoUrls.length;
         _pageController.animateToPage(
           nextPage,

@@ -141,14 +141,12 @@ void main() {
       verify(() => mockService.fetchPhotos(1)).called(1);
     });
 
-    test('삭제 실패 시 onError 콜백 호출', () async {
+    test('삭제 실패 시 errorKey 설정', () async {
       when(() => mockService.deletePhoto(1, 1)).thenThrow(Exception('err'));
-      String? errorKey;
-      notifier.onError = (key) => errorKey = key;
 
       await notifier.deletePhoto(1);
 
-      expect(errorKey, 'photo_delete_failed');
+      expect(notifier.errorKey, 'photo_delete_failed');
     });
   });
 
@@ -163,15 +161,13 @@ void main() {
       verify(() => mockService.updatePhoto(1, 1, '새 제목', '새 설명')).called(1);
     });
 
-    test('수정 실패 시 onError 콜백 호출', () async {
+    test('수정 실패 시 errorKey 설정', () async {
       when(() => mockService.updatePhoto(any(), any(), any(), any()))
           .thenThrow(Exception('err'));
-      String? errorKey;
-      notifier.onError = (key) => errorKey = key;
 
       await notifier.updatePhoto(1, '제목', '설명');
 
-      expect(errorKey, 'photo_update_failed');
+      expect(notifier.errorKey, 'photo_update_failed');
     });
   });
 }

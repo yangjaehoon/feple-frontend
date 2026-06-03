@@ -137,6 +137,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     final realIndex = _items.indexWhere((n) => n.id == item.id);
     if (realIndex < 0) return;
     setState(() => _items.removeAt(realIndex));
+    // adminBroadcast는 개별 read API 대상이 아님 — 로컬에서만 제거
     if (item.type == NotificationType.adminBroadcast) return;
     try {
       await _notificationService.markRead(item.id);
@@ -249,26 +250,26 @@ class _NotificationScreenState extends State<NotificationScreen> {
           _buildFilterChips(colors),
           Expanded(
             child: RefreshIndicator(
-        onRefresh: _load,
-        color: colors.activate,
-        child: _loading
-            ? _buildSkeleton(colors)
-            : _hasError
-                ? _buildScrollable(
-                    ErrorState(
-                      message: 'err_fetch_data'.tr(args: ['']),
-                      onRetry: _load,
-                    ),
-                  )
-                : _items.isEmpty
-                    ? _buildScrollable(
-                        EmptyState(
-                          icon: Icons.notifications_none_rounded,
-                          title: 'no_notifications'.tr(),
-                        ),
-                      )
-                    : _buildNotificationList(colors),
-      ),
+              onRefresh: _load,
+              color: colors.activate,
+              child: _loading
+                  ? _buildSkeleton(colors)
+                  : _hasError
+                      ? _buildScrollable(
+                          ErrorState(
+                            message: 'err_fetch_data'.tr(),
+                            onRetry: _load,
+                          ),
+                        )
+                      : _items.isEmpty
+                          ? _buildScrollable(
+                              EmptyState(
+                                icon: Icons.notifications_none_rounded,
+                                title: 'no_notifications'.tr(),
+                              ),
+                            )
+                          : _buildNotificationList(colors),
+            ),
           ),
         ],
       ),
@@ -351,7 +352,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
               child: const Icon(Icons.delete_rounded, color: Colors.white, size: 22),
             ),
             child: TapScale(
-              onTap: () => _onTap(item),
               child: NotificationCard(item: item, onTap: () => _onTap(item)),
             ),
           ),

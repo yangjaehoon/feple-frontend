@@ -258,6 +258,10 @@ class _FestivalPosterState extends State<FestivalPoster> {
         ),
         const SizedBox(height: 8),
         _buildAttendingRow(colors),
+        if (_notifier.hasInitError) ...[
+          const SizedBox(height: 4),
+          _buildInitErrorRow(),
+        ],
         const SizedBox(height: 12),
         _buildActionButtons(colors),
       ],
@@ -342,6 +346,28 @@ class _FestivalPosterState extends State<FestivalPoster> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildInitErrorRow() {
+    return GestureDetector(
+      onTap: _notifier.retryInit,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.sync_problem_rounded, size: 13, color: Colors.white54),
+          const SizedBox(width: 4),
+          Text(
+            'retry'.tr(),
+            style: const TextStyle(
+              fontSize: 11,
+              color: Colors.white54,
+              decoration: TextDecoration.underline,
+              decorationColor: Colors.white38,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

@@ -30,6 +30,8 @@ class CommunityPost extends StatefulWidget {
 
 class _CommunityPostState extends State<CommunityPost> {
   static const _pageSize = 20;
+  static const _sortLatest = 'latest';
+  static const _sortPopular = 'popular';
 
   final PostService _postService = sl<PostService>();
   final ScrollController _scrollController = ScrollController();
@@ -42,10 +44,11 @@ class _CommunityPostState extends State<CommunityPost> {
   bool _hasError = false;
   int? _cursor;
   int _loadId = 0;
-  String _sort = 'latest';
+  String _sort = _sortLatest;
   bool _isSearching = false;
   List<Post>? _searchResults;
   bool _showScrollTop = false;
+  Timer? _searchDebounce;
 
   String get _serviceBoardType => widget.boardType;
 
@@ -62,6 +65,7 @@ class _CommunityPostState extends State<CommunityPost> {
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
     _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
@@ -119,8 +123,9 @@ class _CommunityPostState extends State<CommunityPost> {
     }
   }
 
-  Future<void> _refresh() async {
-    await _load();
+  void _scheduleSearch(String keyword) {
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 300), () => _search(keyword));
   }
 
   Future<void> _search(String keyword) async {
@@ -188,7 +193,7 @@ class _CommunityPostState extends State<CommunityPost> {
               await Navigator.of(context, rootNavigator: true).push(
                 SlideRoute(builder: (_) => EnlargePost.fromPost(boardname: widget.boardname, post: post)),
               );
-              _refresh();
+              _load();
             },
           );
         },
@@ -206,7 +211,7 @@ class _CommunityPostState extends State<CommunityPost> {
             Text('err_fetch_data'.tr(args: ['']), style: TextStyle(color: colors.textSecondary)),
             const SizedBox(height: 16),
             FilledButton.icon(
-              onPressed: _refresh,
+              onPressed: _load,
               icon: const Icon(Icons.refresh_rounded, size: 18),
               label: Text('retry'.tr()),
               style: FilledButton.styleFrom(backgroundColor: colors.activate),
@@ -262,7 +267,7 @@ class _CommunityPostState extends State<CommunityPost> {
                   ),
                 ),
               );
-              _refresh();
+              _load();
             },
           ),
         );
@@ -316,7 +321,7 @@ class _CommunityPostState extends State<CommunityPost> {
                   ),
                 ),
               );
-              _refresh();
+              _load();
             },
           ),
         ],
@@ -332,9 +337,12 @@ class _CommunityPostState extends State<CommunityPost> {
                 controller: _searchController,
                 onChanged: (v) {
                   setSearchState(() {});
+                  _scheduleSearch(v);
+                },
+                onSubmitted: (v) {
+                  _searchDebounce?.cancel();
                   _search(v);
                 },
-                onSubmitted: (v) => _search(v),
                 style: TextStyle(color: colors.textTitle, fontSize: 14),
                 decoration: InputDecoration(
                   hintText: 'search_posts_hint'.tr(),
@@ -365,18 +373,18 @@ class _CommunityPostState extends State<CommunityPost> {
                 children: [
                   _SortChip(
                     label: 'sort_latest'.tr(),
-                    selected: _sort == 'latest',
+                    selected: _sort == _sortLatest,
                     onTap: () {
-                      setState(() => _sort = 'latest');
+                      setState(() => _sort = _sortLatest);
                       _load();
                     },
                   ),
                   const SizedBox(width: 8),
                   _SortChip(
                     label: 'sort_popular'.tr(),
-                    selected: _sort == 'popular',
+                    selected: _sort == _sortPopular,
                     onTap: () {
-                      setState(() => _sort = 'popular');
+                      setState(() => _sort = _sortPopular);
                       _load();
                     },
                   ),
@@ -386,7 +394,7 @@ class _CommunityPostState extends State<CommunityPost> {
           Expanded(
             child: RefreshIndicator(
               color: colors.activate,
-              onRefresh: _refresh,
+              onRefresh: _load,
               child: _loading ? _buildSkeletonList() : _buildList(colors),
             ),
           ),

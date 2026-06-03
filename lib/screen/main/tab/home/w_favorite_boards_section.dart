@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/screen/main/tab/home/w_boards_section_skeleton.dart';
@@ -104,13 +105,7 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
     }
 
     final selectedBoards = _orderedSelectedIds
-        .map((id) {
-          try {
-            return widget.allBoards.firstWhere((b) => b.boardId == id);
-          } catch (_) {
-            return null;
-          }
-        })
+        .map((id) => widget.allBoards.firstWhereOrNull((b) => b.boardId == id))
         .whereType<FavoriteBoard>()
         .toList();
 

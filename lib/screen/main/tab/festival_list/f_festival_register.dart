@@ -43,12 +43,12 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
 
   Future<void> _pickStartDate() async {
     final picked = await _showDatePicker();
-    if (picked != null) setState(() => _startDate = picked);
+    if (picked != null && mounted) setState(() => _startDate = picked);
   }
 
   Future<void> _pickEndDate() async {
     final picked = await _showDatePicker();
-    if (picked != null) setState(() => _endDate = picked);
+    if (picked != null && mounted) setState(() => _endDate = picked);
   }
 
   Future<DateTime?> _showDatePicker() => showDatePicker(

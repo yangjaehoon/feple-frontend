@@ -55,12 +55,12 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
 
   Future<void> _pickStartTime() async {
     final picked = await _showTimePicker(_start);
-    if (picked != null) setState(() => _start = picked);
+    if (picked != null && mounted) setState(() => _start = picked);
   }
 
   Future<void> _pickEndTime() async {
     final picked = await _showTimePicker(_end);
-    if (picked != null) setState(() => _end = picked);
+    if (picked != null && mounted) setState(() => _end = picked);
   }
 
   Future<TimeOfDay?> _showTimePicker(TimeOfDay initial) => showTimePicker(

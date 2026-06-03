@@ -153,7 +153,7 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
 }
 
 class _TooEarlyMessage extends StatelessWidget {
-  final dynamic colors;
+  final AbstractThemeColors colors;
   const _TooEarlyMessage({required this.colors});
 
   @override
@@ -187,7 +187,7 @@ class _TooEarlyMessage extends StatelessWidget {
 }
 
 class _ErrorMessage extends StatelessWidget {
-  final dynamic colors;
+  final AbstractThemeColors colors;
   final VoidCallback onRetry;
   const _ErrorMessage({required this.colors, required this.onRetry});
 
@@ -216,7 +216,7 @@ class _ErrorMessage extends StatelessWidget {
 }
 
 class _NoDataMessage extends StatelessWidget {
-  final dynamic colors;
+  final AbstractThemeColors colors;
   const _NoDataMessage({required this.colors});
 
   @override

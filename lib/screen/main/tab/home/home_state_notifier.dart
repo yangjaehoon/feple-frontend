@@ -72,6 +72,40 @@ class HomeStateNotifier extends ChangeNotifier {
     await loadData();
   }
 
+  Future<void> refreshFestivals() async {
+    final id = userId;
+    if (id == null) return;
+    festivals = null;
+    boards = null;
+    notifyListeners();
+    try {
+      final fetched = await _fetchFestivals(id);
+      if (userId != id) return;
+      festivals = fetched;
+      boards = _buildBoards(artists ?? [], fetched);
+    } catch (e) {
+      debugPrint('[Home] 페스티벌 갱신 실패: $e');
+    }
+    if (userId == id) notifyListeners();
+  }
+
+  Future<void> refreshArtists() async {
+    final id = userId;
+    if (id == null) return;
+    artists = null;
+    boards = null;
+    notifyListeners();
+    try {
+      final fetched = await _fetchArtists(id);
+      if (userId != id) return;
+      artists = fetched;
+      boards = _buildBoards(fetched, festivals ?? []);
+    } catch (e) {
+      debugPrint('[Home] 아티스트 갱신 실패: $e');
+    }
+    if (userId == id) notifyListeners();
+  }
+
   Future<void> retry() async {
     artists = null;
     festivals = null;

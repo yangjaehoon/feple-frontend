@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/timetable_colors.dart';
+import 'package:feple/common/dart/extension/time_of_day_extension.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_user_entry.dart';
 import 'package:flutter/material.dart';
 
@@ -50,9 +51,6 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
     );
   }
 
-  String _fmt(TimeOfDay t) =>
-      '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
-
   Future<void> _pickStartTime() async {
     final picked = await _showTimePicker(_start);
     if (picked != null && mounted) setState(() => _start = picked);
@@ -76,8 +74,8 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
         id: widget.initial.id,
         stageName: _stage,
         label: _labelCtrl.text.trim(),
-        startTime: _fmt(_start),
-        endTime: _fmt(_end),
+        startTime: _start.toHHmm,
+        endTime: _end.toHHmm,
         color: _color,
       );
 
@@ -253,7 +251,7 @@ class _TimeBtn extends StatelessWidget {
               border: Border.all(color: colors.listDivider),
             ),
             child: Text(
-              '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}',
+              time.toHHmm,
               style: TextStyle(color: colors.textTitle, fontSize: 14, fontWeight: FontWeight.w600),
             ),
           ),

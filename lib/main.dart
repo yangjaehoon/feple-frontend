@@ -125,10 +125,16 @@ class _MyAppState extends State<MyApp> {
         await userProvider.fetchUserFromToken(token);
       }
     } on DioException catch (e) {
-      // 연결 오류(오프라인)는 캐시된 user 유지 — 나머지(4xx 등)는 fetchUserFromToken이 정리
-      log('Auto login failed (network): ${e.type}');
+      if (e.response == null) {
+        // 오프라인 — 서버 미도달, 토큰 유효성 확인 불가 → 캐시 user 유지
+        log('Auto login failed (offline): ${e.type}');
+      } else {
+        // 서버 도달했으나 오류(5xx 등) — 401/403/404는 fetchUserFromToken이 이미 정리
+        // 5xx는 서버 오류이므로 토큰 유지, 이후 API 호출 시 DioClient가 401 처리
+        log('Auto login failed (server ${e.response?.statusCode})');
+      }
     } catch (e) {
-      // 예상치 못한 오류(응답 파싱 실패 등) — 죽은 토큰 정리
+      // 응답 파싱 실패 등 예상치 못한 오류 — 죽은 토큰 정리
       log('Auto login failed (unexpected): $e');
       await userProvider.logout();
     } finally {

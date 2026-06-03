@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_my_page_list_screen.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/model/my_comment_model.dart';
 import 'package:feple/service/user_activity_service.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
 import 'package:feple/common/util/app_route.dart';
@@ -46,7 +47,7 @@ class MyCommentsScreen extends StatelessWidget {
 
   Widget _buildItem(
     BuildContext context,
-    _MyComment c,
+    MyComment c,
     VoidCallback reload,
     AbstractThemeColors colors,
   ) {
@@ -84,12 +85,9 @@ class MyCommentsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MyPageListScreen<_MyComment>(
+    return MyPageListScreen<MyComment>(
       title: 'my_comments'.tr(),
-      loader: () async {
-        final data = await sl<UserActivityService>().fetchComments(userId);
-        return data.map((e) => _MyComment.fromJson(e)).toList();
-      },
+      loader: () => sl<UserActivityService>().fetchComments(userId),
       skeletonBuilder: _buildSkeleton,
       itemBuilder: (context, c, reload) {
         final colors = context.appColors;
@@ -97,41 +95,6 @@ class MyCommentsScreen extends StatelessWidget {
       },
       emptyIcon: Icons.chat_bubble_outline_rounded,
       emptyTitle: 'no_comments'.tr(),
-    );
-  }
-}
-
-class _MyComment {
-  final int commentId;
-  final String content;
-  final int postId;
-  final String postTitle;
-  final String postContent;
-  final String postNickname;
-  final int postLikeCount;
-  final String boardDisplayName;
-
-  const _MyComment({
-    required this.commentId,
-    required this.content,
-    required this.postId,
-    required this.postTitle,
-    required this.postContent,
-    required this.postNickname,
-    required this.postLikeCount,
-    required this.boardDisplayName,
-  });
-
-  factory _MyComment.fromJson(Map<String, dynamic> json) {
-    return _MyComment(
-      commentId: json['commentId'] as int,
-      content: json['content'] as String,
-      postId: json['postId'] as int,
-      postTitle: json['postTitle'] as String,
-      postContent: json['postContent'] as String,
-      postNickname: json['postNickname'] as String,
-      postLikeCount: json['postLikeCount'] as int,
-      boardDisplayName: json['boardDisplayName'] as String,
     );
   }
 }

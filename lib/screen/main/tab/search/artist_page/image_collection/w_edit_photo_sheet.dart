@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/photo_category.dart';
+import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/service/artist_schedule_service.dart';
 import 'package:flutter/material.dart';
@@ -152,29 +153,21 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
   }
 
   Widget _buildSaveButton(AbstractThemeColors colors) {
-    return SizedBox(
-      width: double.infinity,
+    return LoadingButton(
+      label: 'save'.tr(),
+      isLoading: false,
+      onPressed: () {
+        final newTitle = _titleCtrl.text.trim();
+        if (newTitle.isEmpty) return;
+        final newDesc = _selectedFestival?.id == -1
+            ? ''
+            : (_selectedFestival?.title ?? '');
+        Navigator.pop(context);
+        widget.onSave(newTitle, newDesc);
+      },
+      backgroundColor: colors.activate,
       height: 48,
-      child: ElevatedButton(
-        onPressed: () {
-          final newTitle = _titleCtrl.text.trim();
-          if (newTitle.isEmpty) return;
-          final newDesc = _selectedFestival?.id == -1
-              ? ''
-              : (_selectedFestival?.title ?? '');
-          Navigator.pop(context);
-          widget.onSave(newTitle, newDesc);
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: colors.activate,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12)),
-          elevation: 0,
-        ),
-        child: Text('save'.tr(),
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-      ),
+      borderRadius: 12,
     );
   }
 }

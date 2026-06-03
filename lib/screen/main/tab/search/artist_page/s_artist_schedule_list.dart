@@ -95,7 +95,7 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
     }
     if (snapshot.hasError) {
       return ErrorState(
-        message: 'err_fetch_data'.tr(args: ['']),
+        message: 'err_fetch_data'.tr(),
         onRetry: _refresh,
       );
     }

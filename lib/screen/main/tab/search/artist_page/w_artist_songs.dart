@@ -43,11 +43,7 @@ class _ArtistSongsState extends State<ArtistSongs> {
   Future<void> _openYoutubeMusic(String url) async {
     final uri = Uri.parse(url);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('youtube_open_failed'.tr())),
-        );
-      }
+      if (mounted) context.showErrorSnackbar('youtube_open_failed'.tr());
     }
   }
 

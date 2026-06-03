@@ -131,6 +131,16 @@ class HomeStateNotifier extends ChangeNotifier {
         _festivalOrderKey, order.map((e) => e.toString()).toList());
   }
 
+  List<FollowedArtist>? get orderedArtists {
+    if (artists == null) return null;
+    return applyOrder(artists!, artistOrder, (x) => x.id);
+  }
+
+  List<FestivalModel>? get orderedFestivals {
+    if (festivals == null) return null;
+    return applyOrder(festivals!, festivalOrder, (x) => x.id);
+  }
+
   List<T> applyOrder<T>(List<T> items, List<int> order, int Function(T) getId) {
     if (order.isEmpty) return items;
     final map = {for (final item in items) getId(item): item};

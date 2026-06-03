@@ -31,10 +31,7 @@ class ProfileAvatar extends StatelessWidget {
       return CircleAvatar(
         radius: radius,
         backgroundColor: Colors.grey[300],
-        child: Padding(
-          padding: EdgeInsets.all(radius * 0.22),
-          child: Image.asset('assets/image/feple_logo.png'),
-        ),
+        backgroundImage: const AssetImage('assets/image/feple_logo.png'),
       );
     }
     if (_hasCustomImage) {

@@ -53,11 +53,7 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
   Future<void> _openYoutubeMusic(String url) async {
     final uri = Uri.parse(url);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('youtube_open_failed'.tr())),
-        );
-      }
+      if (mounted) context.showErrorSnackbar('youtube_open_failed'.tr());
     }
   }
 
@@ -119,7 +115,7 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
     }
     if (snapshot.hasError) {
       return ErrorState(
-        message: 'err_fetch_data'.tr(args: ['']),
+        message: 'err_fetch_data'.tr(),
         onRetry: _refresh,
       );
     }

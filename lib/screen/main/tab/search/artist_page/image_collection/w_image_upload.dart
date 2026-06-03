@@ -135,114 +135,113 @@ class _ImgUploadState extends State<ImgUpload> {
           ),
           Expanded(
             child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(18.0),
-          child: Column(
-            children: [
-              ImagePickerBox(
-                imageData: imageData,
-                onTap: _pickImage,
-                label: 'artist_photo_add_label'.tr(),
-              ),
-              if (_imageError != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 6, left: 4),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      _imageError!,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.errorRed,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
-              Form(
-                key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.all(18.0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Text(
-                        widget.artistName,
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          color: colors.textTitle,
-                        ),
-                      ),
+                    ImagePickerBox(
+                      imageData: imageData,
+                      onTap: _pickImage,
+                      label: 'artist_photo_add_label'.tr(),
                     ),
-                    TextFormField(
-                      controller: titleTEC,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide:
-                              BorderSide(color: colors.activate, width: 2),
-                        ),
-                        labelText: 'photo_artwork_label'.tr(),
-                        hintText: 'photo_artwork_hint'.tr(),
-                        labelStyle: TextStyle(color: colors.textSecondary),
-                      ),
-                      validator: (v) =>
-                          (v == null || v.isEmpty) ? 'required_field'.tr() : null,
-                    ),
-                    const SizedBox(height: 12),
-                    FutureBuilder<List<FestivalPreview>>(
-                      future: _festivalsFuture,
-                      builder: (context, snapshot) {
-                        final festivals = snapshot.data ?? [];
-                        return DropdownButtonFormField<FestivalPreview>(
-                          initialValue: _selectedFestival,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                    if (_imageError != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6, left: 4),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            _imageError!,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AppColors.errorRed,
+                              fontWeight: FontWeight.w500,
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide:
-                                  BorderSide(color: colors.activate, width: 2),
-                            ),
-                            labelText: 'festival_label'.tr(),
-                            labelStyle: TextStyle(color: colors.textSecondary),
                           ),
-                          hint: snapshot.connectionState != ConnectionState.done
-                              ? Text('loading'.tr())
-                              : Text('select_festival_hint'.tr()),
-                          items: [
-                            ...festivals.map((f) => DropdownMenuItem(
-                                  value: f,
-                                  child: Text(f.title,
-                                      overflow: TextOverflow.ellipsis),
-                                )),
-                            DropdownMenuItem(
-                                value: photoCategoryDaily, child: Text('photo_category_daily'.tr())),
-                            DropdownMenuItem(
-                                value: photoCategorySns, child: Text('photo_category_sns'.tr())),
-                            DropdownMenuItem(
-                                value: photoCategoryOther, child: Text('photo_category_other'.tr())),
-                          ],
-                          onChanged: (f) =>
-                              setState(() => _selectedFestival = f),
-                          validator: (_) => _selectedFestival == null
-                              ? 'select_festival_required'.tr()
-                              : null,
-                        );
-                      },
+                        ),
+                      ),
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            child: Text(
+                              widget.artistName,
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w700,
+                                color: colors.textTitle,
+                              ),
+                            ),
+                          ),
+                          TextFormField(
+                            controller: titleTEC,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: colors.activate, width: 2),
+                              ),
+                              labelText: 'photo_artwork_label'.tr(),
+                              hintText: 'photo_artwork_hint'.tr(),
+                              labelStyle: TextStyle(color: colors.textSecondary),
+                            ),
+                            validator: (v) =>
+                                (v == null || v.isEmpty) ? 'required_field'.tr() : null,
+                          ),
+                          const SizedBox(height: 12),
+                          FutureBuilder<List<FestivalPreview>>(
+                            future: _festivalsFuture,
+                            builder: (context, snapshot) {
+                              final festivals = snapshot.data ?? [];
+                              return DropdownButtonFormField<FestivalPreview>(
+                                initialValue: _selectedFestival,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(color: colors.activate, width: 2),
+                                  ),
+                                  labelText: 'festival_label'.tr(),
+                                  labelStyle: TextStyle(color: colors.textSecondary),
+                                ),
+                                hint: snapshot.connectionState != ConnectionState.done
+                                    ? Text('loading'.tr())
+                                    : Text('select_festival_hint'.tr()),
+                                items: [
+                                  ...festivals.map((f) => DropdownMenuItem(
+                                        value: f,
+                                        child: Text(f.title, overflow: TextOverflow.ellipsis),
+                                      )),
+                                  DropdownMenuItem(
+                                      value: photoCategoryDaily,
+                                      child: Text('photo_category_daily'.tr())),
+                                  DropdownMenuItem(
+                                      value: photoCategorySns,
+                                      child: Text('photo_category_sns'.tr())),
+                                  DropdownMenuItem(
+                                      value: photoCategoryOther,
+                                      child: Text('photo_category_other'.tr())),
+                                ],
+                                onChanged: (f) => setState(() => _selectedFestival = f),
+                                validator: (_) => _selectedFestival == null
+                                    ? 'select_festival_required'.tr()
+                                    : null,
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
-          ),
+            ),
           ),
         ],
       ),

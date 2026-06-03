@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../../provider/user_provider.dart';
+import '../../../../model/user_model.dart';
 
 class ProfileWidget extends StatefulWidget {
   final int userId;
@@ -109,14 +110,13 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                     builder: (context) => const EditProfileWidget()),
               );
             },
-            isPrimary: true,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildProfileImage(dynamic user, AbstractThemeColors colors) {
+  Widget _buildProfileImage(User user, AbstractThemeColors colors) {
     return Container(
       width: 110,
       height: 110,
@@ -151,7 +151,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
     );
   }
 
-  Widget _buildNicknameText(dynamic user, AbstractThemeColors colors) {
+  Widget _buildNicknameText(User user, AbstractThemeColors colors) {
     return Text(
       user.nickname,
       style: TextStyle(
@@ -163,7 +163,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
     );
   }
 
-  Widget _buildLevelBadge(dynamic user, AbstractThemeColors colors) {
+  Widget _buildLevelBadge(User user, AbstractThemeColors colors) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
@@ -186,24 +186,19 @@ class _ProfileWidgetState extends State<ProfileWidget> {
     required String label,
     required IconData icon,
     required VoidCallback onPressed,
-    bool isPrimary = false,
   }) {
     final colors = context.appColors;
     return Container(
       decoration: BoxDecoration(
-        color:
-            isPrimary ? colors.actionBtnPrimary : colors.actionBtnSecondaryBg,
+        color: colors.actionBtnPrimary,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: colors.cardShadow.withValues(alpha: isPrimary ? 0.3 : 0.04),
+            color: colors.cardShadow.withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
         ],
-        border: isPrimary
-            ? null
-            : Border.all(color: colors.actionBtnSecondaryBorder),
       ),
       child: Material(
         color: Colors.transparent,
@@ -215,16 +210,14 @@ class _ProfileWidgetState extends State<ProfileWidget> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(icon,
-                    size: 16,
-                    color: isPrimary ? Colors.white : colors.textSecondary),
+                Icon(icon, size: 16, color: Colors.white),
                 const SizedBox(width: 6),
                 Text(
                   label,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: isPrimary ? Colors.white : colors.textTitle,
+                    color: Colors.white,
                   ),
                 ),
               ],

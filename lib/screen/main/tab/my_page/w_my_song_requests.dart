@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/song_request_model.dart';
@@ -120,7 +121,7 @@ class _SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
 
   Widget _buildContent(AbstractThemeColors colors) {
     if (_loading) return _buildSkeleton();
-    if (_hasError) return _buildError(colors);
+    if (_hasError) return _buildError();
 
     final items = _requests ?? [];
     if (items.isEmpty) return _buildEmpty(colors);
@@ -285,25 +286,10 @@ class _SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
     );
   }
 
-  Widget _buildError(AbstractThemeColors colors) {
+  Widget _buildError() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.cloud_off_outlined, size: 18, color: colors.textSecondary),
-          const SizedBox(width: 8),
-          Text('err_fetch_data'.tr(args: ['']), style: TextStyle(fontSize: 13, color: colors.textSecondary)),
-          const SizedBox(width: 12),
-          GestureDetector(
-            onTap: _load,
-            child: Text(
-              'retry'.tr(),
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: colors.activate),
-            ),
-          ),
-        ],
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: ErrorState(message: 'err_fetch_data'.tr(), onRetry: _load),
     );
   }
 }

@@ -29,16 +29,18 @@ class _FollowArtistsListScreenState extends State<FollowArtistsListScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _userId = context.read<UserProvider>().currentUserId;
-    _load();
+    final uid = context.read<UserProvider>().currentUserId;
+    if (uid != null && uid != _userId) {
+      _userId = uid;
+      _load();
+    }
   }
 
   Future<void> _load() async {
     if (_userId == null) return;
     setState(() { _loading = true; _hasError = false; });
     try {
-      final data = await sl<UserService>().fetchFollowing(_userId!);
-      final list = data.map((e) => FollowedArtist.fromJson(e)).toList();
+      final list = await sl<UserService>().fetchFollowingArtists(_userId!);
       if (mounted) setState(() { _artists = list; _loading = false; });
     } catch (_) {
       if (mounted) setState(() { _loading = false; _hasError = true; });
@@ -124,7 +126,7 @@ class _FollowArtistsListScreenState extends State<FollowArtistsListScreen> {
           : _hasError
               ? _buildScrollable(
                   ErrorState(
-                    message: 'err_fetch_data'.tr(args: ['']),
+                    message: 'err_fetch_data'.tr(),
                     onRetry: _load,
                   ),
                 )

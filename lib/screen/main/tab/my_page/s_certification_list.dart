@@ -167,7 +167,7 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
           : _hasError
               ? _buildScrollable(
                   ErrorState(
-                    message: 'err_fetch_data'.tr(args: ['']),
+                    message: 'err_fetch_data'.tr(),
                     onRetry: _load,
                   ),
                 )

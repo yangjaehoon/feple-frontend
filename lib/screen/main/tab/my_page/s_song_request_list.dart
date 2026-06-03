@@ -27,8 +27,11 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _userId = context.read<UserProvider>().currentUserId;
-    _load();
+    final uid = context.read<UserProvider>().currentUserId;
+    if (uid != null && uid != _userId) {
+      _userId = uid;
+      _load();
+    }
   }
 
   Future<void> _load() async {
@@ -130,7 +133,7 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
           : _hasError
               ? _buildScrollable(
                   ErrorState(
-                    message: 'err_fetch_data'.tr(args: ['']),
+                    message: 'err_fetch_data'.tr(),
                     onRetry: _load,
                   ),
                 )

@@ -29,15 +29,21 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
   void initState() {
     super.initState();
     _notifier = ArtistPhotoNotifier(artistId: widget.artistId);
-    _notifier.onError = (key) {
-      if (!mounted) return;
-      context.showErrorSnackbar(key.tr());
-    };
+    _notifier.addListener(_onNotifierChange);
     _notifier.loadPhotos();
+  }
+
+  void _onNotifierChange() {
+    final key = _notifier.errorKey;
+    if (key != null && mounted) {
+      context.showErrorSnackbar(key.tr());
+      _notifier.clearError();
+    }
   }
 
   @override
   void dispose() {
+    _notifier.removeListener(_onNotifierChange);
     _notifier.dispose();
     super.dispose();
   }

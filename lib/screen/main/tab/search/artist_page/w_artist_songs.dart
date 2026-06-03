@@ -122,7 +122,7 @@ class _ArtistSongsState extends State<ArtistSongs> {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: ErrorState(
-              message: 'err_fetch_data'.tr(args: ['']),
+              message: 'err_fetch_data'.tr(),
               onRetry: () => setState(() {
                 _songsFuture = _fetchSongs();
               }),
@@ -130,7 +130,7 @@ class _ArtistSongsState extends State<ArtistSongs> {
           );
         }
 
-        final songs = snapshot.data ?? [];
+        final songs = List<SongModel>.from(snapshot.data ?? []);
         if (songs.isEmpty) {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),

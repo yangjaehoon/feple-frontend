@@ -9,8 +9,11 @@ class ArtistPhotoNotifier extends ChangeNotifier {
 
   List<ArtistPhotoResponse> photos = [];
   bool isLoading = true;
+  String? errorKey;
 
-  void Function(String)? onError;
+  void clearError() {
+    errorKey = null;
+  }
 
   ArtistPhotoNotifier({required this.artistId});
 
@@ -58,7 +61,8 @@ class ArtistPhotoNotifier extends ChangeNotifier {
       await loadPhotos();
     } catch (e) {
       debugPrint('delete error: $e');
-      onError?.call('photo_delete_failed');
+      errorKey = 'photo_delete_failed';
+      notifyListeners();
     }
   }
 
@@ -68,7 +72,8 @@ class ArtistPhotoNotifier extends ChangeNotifier {
       await loadPhotos();
     } catch (e) {
       debugPrint('update error: $e');
-      onError?.call('photo_update_failed');
+      errorKey = 'photo_update_failed';
+      notifyListeners();
     }
   }
 }

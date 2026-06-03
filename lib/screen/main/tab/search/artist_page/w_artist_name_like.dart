@@ -68,6 +68,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Positioned(
       left: 0,
       right: 0,
@@ -121,6 +122,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
                 _buildFollowButton(
                   isFollowed: _followNotifier.isFollowed,
                   isLoading: _followNotifier.isLoading,
+                  colors: colors,
                 ),
 
                 const SizedBox(width: 12),
@@ -168,7 +170,10 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
                     Navigator.push(
                       context,
                       SlideRoute(
-                        builder: (context) => const FtvCalender(),
+                        builder: (context) => FestivalCalendar(
+                          artistId: widget.artistId,
+                          artistName: widget.artistName,
+                        ),
                       ),
                     );
                   },
@@ -197,7 +202,11 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
   }
 
   /// Pill-shaped follow/following button with gradient
-  Widget _buildFollowButton({required bool isFollowed, required bool isLoading}) {
+  Widget _buildFollowButton({
+    required bool isFollowed,
+    required bool isLoading,
+    required AbstractThemeColors colors,
+  }) {
     return GestureDetector(
       onTap: isLoading ? null : _toggleFollow,
       child: AnimatedContainer(
@@ -207,8 +216,8 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
         decoration: BoxDecoration(
           gradient: isFollowed
               ? null
-              : const LinearGradient(
-                  colors: [AppColors.skyBlue, AppColors.skyBlueLight],
+              : LinearGradient(
+                  colors: [colors.activate, colors.activate.withValues(alpha: 0.75)],
                 ),
           color: isFollowed ? Colors.white.withValues(alpha: 0.2) : null,
           borderRadius: BorderRadius.circular(AppDimens.cardRadius),
@@ -258,23 +267,26 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
     required String label,
     required VoidCallback onTap,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.15),
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.25),
-            width: 1,
+    return Tooltip(
+      message: label,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.15),
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.25),
+              width: 1,
+            ),
           ),
-        ),
-        child: Icon(
-          icon,
-          color: Colors.white,
-          size: 20,
+          child: Icon(
+            icon,
+            color: Colors.white,
+            size: 20,
+          ),
         ),
       ),
     );

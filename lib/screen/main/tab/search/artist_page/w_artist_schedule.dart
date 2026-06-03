@@ -118,7 +118,7 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: ErrorState(
-              message: 'err_fetch_data'.tr(args: ['']),
+              message: 'err_fetch_data'.tr(),
               onRetry: () => setState(() {
                 _scheduleFuture = _fetchSchedule();
               }),

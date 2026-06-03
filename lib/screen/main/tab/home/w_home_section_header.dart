@@ -6,20 +6,17 @@ class HomeSectionHeader extends StatelessWidget {
   const HomeSectionHeader({
     super.key,
     required this.title,
-    this.onSettings,
     this.onExpand,
   });
 
   final String title;
-  final VoidCallback? onSettings;
   final VoidCallback? onExpand;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final hasActions = onSettings != null || onExpand != null;
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 16, hasActions ? 8 : 20, 8),
+      padding: EdgeInsets.fromLTRB(20, 16, onExpand != null ? 8 : 20, 8),
       child: Row(
         children: [
           Container(
@@ -39,8 +36,8 @@ class HomeSectionHeader extends StatelessWidget {
               color: colors.textTitle,
             ),
           ),
-          if (hasActions) const Spacer(),
           if (onExpand != null) ...[
+            const Spacer(),
             IconButton(
               tooltip: 'see_all'.tr(),
               icon: Icon(Icons.arrow_forward_ios_rounded,
@@ -50,17 +47,6 @@ class HomeSectionHeader extends StatelessWidget {
               constraints: const BoxConstraints(),
             ),
             const SizedBox(width: 4),
-          ],
-          if (onSettings != null) ...[
-            IconButton(
-              tooltip: 'settings'.tr(),
-              icon: Icon(Icons.settings_rounded,
-                  color: colors.textSecondary, size: 20),
-              onPressed: onSettings,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-            ),
-            const SizedBox(width: 12),
           ],
         ],
       ),

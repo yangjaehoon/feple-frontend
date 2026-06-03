@@ -22,9 +22,14 @@ class PostService {
     return response.toModelList(Post.fromJson);
   }
 
-  /// 게시글 목록 조회 (hot은 페이지네이션 미지원)
-  Future<List<Post>> fetchPosts(String boardType) =>
-      _fetchPostList(_endpointFor(boardType));
+  /// 게시글 목록 조회 (hot은 List 직접 반환, free/mate는 CursorPage에서 content 추출)
+  Future<List<Post>> fetchPosts(String boardType) async {
+    if (boardType == BoardTypes.free || boardType == BoardTypes.mate) {
+      final page = await fetchPostsPage(boardType);
+      return page.content;
+    }
+    return _fetchPostList(_endpointFor(boardType));
+  }
 
   static const postImagePresignEndpoint = '/posts/image-upload-url';
 

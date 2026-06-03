@@ -389,7 +389,8 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
         );
         Navigator.pop(context, true);
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[Setlist] 저장 실패: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('setlist_save_failed'.tr())),

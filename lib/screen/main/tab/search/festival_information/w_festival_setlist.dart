@@ -100,7 +100,7 @@ class _FestivalSetlistState extends State<FestivalSetlist> {
       errorBuilder: (_) => Padding(
         padding: const EdgeInsets.only(bottom: 8),
         child: ErrorState(
-          message: 'err_fetch_data'.tr(args: ['']),
+          message: 'err_fetch_data'.tr(),
           onRetry: () => setState(() => _future = _fetch()),
         ),
       ),

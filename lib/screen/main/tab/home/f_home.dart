@@ -33,7 +33,8 @@ class _HomeFragmentState extends State<HomeFragment> {
   @override
   void initState() {
     super.initState();
-    AppEvents.likeChanged.addListener(_onLikeChanged);
+    AppEvents.festivalLikeChanged.addListener(_onFestivalLikeChanged);
+    AppEvents.artistFollowChanged.addListener(_onArtistFollowChanged);
   }
 
   @override
@@ -47,12 +48,14 @@ class _HomeFragmentState extends State<HomeFragment> {
 
   @override
   void dispose() {
-    AppEvents.likeChanged.removeListener(_onLikeChanged);
+    AppEvents.festivalLikeChanged.removeListener(_onFestivalLikeChanged);
+    AppEvents.artistFollowChanged.removeListener(_onArtistFollowChanged);
     _notifier.dispose();
     super.dispose();
   }
 
-  void _onLikeChanged() => _notifier.refresh();
+  void _onFestivalLikeChanged() => _notifier.refreshFestivals();
+  void _onArtistFollowChanged() => _notifier.refreshArtists();
 
 
   List<FollowedArtist>? get _orderedArtists {

@@ -56,7 +56,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
     try {
       await _followNotifier.toggle();
       if (!mounted) return;
-      AppEvents.likeChanged.value++;
+      AppEvents.artistFollowChanged.value++;
       context.showSuccessSnackbar(
         _followNotifier.isFollowed ? 'follow_done'.tr() : 'follow_cancel'.tr(),
       );

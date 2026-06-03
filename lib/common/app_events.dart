@@ -5,9 +5,12 @@ import 'package:flutter/foundation.dart';
 class AppEvents {
   AppEvents._();
 
-  /// 좋아요 상태 변경 시 신호 (값 자체는 무의미, 변경 시 리스너 실행)
-  static final likeChanged = ValueNotifier<int>(0);
+  /// 페스티벌 좋아요 상태 변경 시 신호
+  static final festivalLikeChanged = ValueNotifier<int>(0);
 
-  /// 게시글 작성/수정/삭제 시 신호 (값 자체는 무의미, 변경 시 리스너 실행)
+  /// 아티스트 팔로우 상태 변경 시 신호
+  static final artistFollowChanged = ValueNotifier<int>(0);
+
+  /// 게시글 작성/수정/삭제 시 신호
   static final postChanged = ValueNotifier<int>(0);
 }

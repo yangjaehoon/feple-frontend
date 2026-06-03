@@ -33,6 +33,7 @@ class BoothMarkerFactory {
 
     try {
       final res = await http.get(Uri.parse(booth.imageUrl!));
+      if (res.statusCode != 200) return BitmapDescriptor.defaultMarkerWithHue(hue);
       final bytes = res.bodyBytes;
 
       const w = 80.0, imgH = 60.0, tailH = 12.0;

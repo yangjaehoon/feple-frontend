@@ -13,7 +13,6 @@ class FestivalArtistsNotifier extends ChangeNotifier {
   Set<int> followedIds = {};
   bool isLoading = true;
   bool hasError = false;
-  void Function(String)? onError;
 
   // null = 전체, otherwise ISO date string
   String? selectedDate;
@@ -85,7 +84,6 @@ class FestivalArtistsNotifier extends ChangeNotifier {
       hasError = true;
       notifyListeners();
       debugPrint('festival artists fetch error: $e');
-      onError?.call('err_fetch_data');
     }
   }
 }

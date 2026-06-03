@@ -55,19 +55,16 @@ void main() {
       expect(notifier.followedIds, isEmpty);
     });
 
-    test('fetchFestivalArtists 예외 시 isLoading false, onError 호출', () async {
+    test('fetchFestivalArtists 예외 시 isLoading false, hasError true', () async {
       when(() => mockFestivalDetailService.fetchFestivalArtists(10))
           .thenThrow(Exception('network'));
 
       final notifier = make();
-      String? errorKey;
-      notifier.onError = (k) => errorKey = k;
-
       await notifier.fetch();
 
       expect(notifier.isLoading, false);
+      expect(notifier.hasError, true);
       expect(notifier.artists, isEmpty);
-      expect(errorKey, 'err_fetch_data');
     });
 
     test('팔로우 없는 경우 원래 순서 유지', () async {
@@ -110,21 +107,18 @@ void main() {
       expect(notifier.followedIds, {1, 2, 3});
     });
 
-    test('getFollowingIds 예외 시 아티스트 데이터도 버려지고 onError 호출', () async {
+    test('getFollowingIds 예외 시 아티스트 데이터도 버려지고 hasError true', () async {
       when(() => mockFestivalDetailService.fetchFestivalArtists(10))
           .thenAnswer((_) async => [_artist(1, 'A')]);
       when(() => mockFollowService.getFollowingIds(99))
           .thenThrow(Exception('network'));
 
       final notifier = make(userId: 99);
-      String? errorKey;
-      notifier.onError = (k) => errorKey = k;
-
       await notifier.fetch();
 
       expect(notifier.artists, isEmpty);
       expect(notifier.isLoading, false);
-      expect(errorKey, 'err_fetch_data');
+      expect(notifier.hasError, true);
     });
   });
 }

@@ -32,8 +32,7 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
   Future<void> _load() async {
     setState(() { _loading = true; _hasError = false; });
     try {
-      final data = await sl<UserService>().fetchFollowing(widget.userId);
-      final list = data.map((e) => FollowedArtist.fromJson(e)).toList();
+      final list = await sl<UserService>().fetchFollowingArtists(widget.userId);
       if (mounted) setState(() { _artists = list; _loading = false; });
     } catch (_) {
       if (mounted) setState(() { _loading = false; _hasError = true; });

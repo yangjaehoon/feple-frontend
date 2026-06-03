@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
-
-class FestivalModel with ChangeNotifier {
+class FestivalModel {
   final int id;
   final String title;
   final String description;

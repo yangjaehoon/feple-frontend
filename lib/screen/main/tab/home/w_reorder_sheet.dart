@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
+import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -149,24 +150,14 @@ class _ReorderSheetState extends State<ReorderSheet> {
           Padding(
             padding: EdgeInsets.fromLTRB(
                 20, 12, 20, 12 + MediaQuery.of(context).padding.bottom),
-            child: SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                onPressed: () {
-                  widget.onSave(_items.map((e) => e.id).toList());
-                  Navigator.of(context).pop();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.activate,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                ),
-                child: Text(
-                  'confirm'.tr(),
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-                ),
-              ),
+            child: LoadingButton(
+              label: 'confirm'.tr(),
+              isLoading: false,
+              backgroundColor: colors.activate,
+              onPressed: () {
+                widget.onSave(_items.map((e) => e.id).toList());
+                Navigator.of(context).pop();
+              },
             ),
           ),
         ],

@@ -3,6 +3,9 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/model/artist_model.dart';
+import 'package:feple/model/festival_preview.dart';
+import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/search/w_search_result_tiles.dart';
 import 'package:feple/service/search_service.dart';
 import 'package:flutter/material.dart';
@@ -30,9 +33,9 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
   bool _searched = false;
   bool _hasError = false;
 
-  List<dynamic> _artists = [];
-  List<dynamic> _festivals = [];
-  List<dynamic> _posts = [];
+  List<Artist> _artists = [];
+  List<FestivalPreview> _festivals = [];
+  List<Post> _posts = [];
   List<SearchSuggestion> _suggestions = [];
   List<String> _recentSearches = [];
 
@@ -452,10 +455,10 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     );
   }
 
-  Widget _buildCategoryTab(
+  Widget _buildCategoryTab<T>(
     AbstractThemeColors colors, {
-    required List<dynamic> items,
-    required Widget Function(dynamic) builder,
+    required List<T> items,
+    required Widget Function(T) builder,
     required IconData emptyIcon,
   }) {
     if (items.isEmpty) {

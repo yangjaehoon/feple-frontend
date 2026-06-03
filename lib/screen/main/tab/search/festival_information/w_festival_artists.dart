@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_date_tab_bar.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/injection.dart';
@@ -90,7 +91,7 @@ class _FestivalArtistsState extends State<FestivalArtists> {
       listenable: _notifier,
       builder: (context, _) {
         if (_notifier.isLoading) return _padContent(_buildSkeletonRow());
-        if (_notifier.hasError) return _padContent(_buildErrorRow(colors));
+        if (_notifier.hasError) return ErrorState(message: 'err_fetch_data'.tr(), onRetry: _notifier.retry);
         if (_notifier.artists.isEmpty) return _padContent(_buildEmptyRow(colors));
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -210,33 +211,5 @@ class _FestivalArtistsState extends State<FestivalArtists> {
     );
   }
 
-  Widget _buildErrorRow(AbstractThemeColors colors) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.cloud_off_outlined, size: 18, color: colors.textSecondary),
-          const SizedBox(width: 8),
-          Text(
-            'err_fetch_data'.tr(),
-            style: TextStyle(fontSize: 13, color: colors.textSecondary),
-          ),
-          const SizedBox(width: 12),
-          GestureDetector(
-            onTap: _notifier.retry,
-            child: Text(
-              'retry'.tr(),
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: colors.activate,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 

@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/injection.dart';
@@ -163,7 +164,10 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
       return _buildSkeleton();
     }
     if (_hasError) {
-      return _buildErrorState(colors);
+      return SizedBox(
+        height: 200,
+        child: ErrorState(message: 'load_error'.tr(), onRetry: _fetchBooths),
+      );
     }
     if (_booths.isEmpty) {
       return Padding(
@@ -196,30 +200,6 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
             child: SkeletonBox(width: 32, height: 32, borderRadius: BorderRadius.all(Radius.circular(16))),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildErrorState(AbstractThemeColors colors) {
-    return SizedBox(
-      height: 200,
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.cloud_off_rounded, size: 40,
-                color: colors.textSecondary.withValues(alpha: 0.4)),
-            const SizedBox(height: 8),
-            Text('load_error'.tr(),
-                style: TextStyle(color: colors.textSecondary)),
-            const SizedBox(height: 12),
-            TextButton.icon(
-              onPressed: _fetchBooths,
-              icon: const Icon(Icons.refresh_rounded),
-              label: Text('retry'.tr()),
-            ),
-          ],
-        ),
       ),
     );
   }

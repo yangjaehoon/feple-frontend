@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/weather_model.dart';
 import 'package:feple/service/festival_detail_service.dart';
@@ -91,8 +92,8 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
           );
         }
         if (snapshot.hasError) {
-          return _ErrorMessage(
-            colors: colors,
+          return ErrorState(
+            message: 'err_fetch_data'.tr(),
             onRetry: () => setState(() {
               _future = sl<FestivalDetailService>().fetchWeather(widget.festivalId);
             }),
@@ -179,35 +180,6 @@ class _TooEarlyMessage extends StatelessWidget {
             'weather_too_early_hint'.tr(),
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 12, color: colors.textSecondary),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ErrorMessage extends StatelessWidget {
-  final AbstractThemeColors colors;
-  final VoidCallback onRetry;
-  const _ErrorMessage({required this.colors, required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 28),
-      child: Column(
-        children: [
-          Icon(Icons.cloud_off_outlined, size: 48, color: colors.textSecondary),
-          const SizedBox(height: 12),
-          Text(
-            'err_fetch_data'.tr(),
-            style: TextStyle(fontSize: 14, color: colors.textSecondary),
-          ),
-          const SizedBox(height: 12),
-          TextButton(
-            onPressed: onRetry,
-            child: Text('retry'.tr(),
-                style: TextStyle(color: colors.activate, fontWeight: FontWeight.w600)),
           ),
         ],
       ),

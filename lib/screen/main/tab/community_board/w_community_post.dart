@@ -172,6 +172,9 @@ class _CommunityPostState extends State<CommunityPost> {
   }
 
   Widget _buildList(AbstractThemeColors colors) {
+    if (_isSearching && _searchResults == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
     final displayPosts = _searchResults;
     if (displayPosts != null) {
       if (_isSearching) return const Center(child: CircularProgressIndicator());
@@ -351,9 +354,10 @@ class _CommunityPostState extends State<CommunityPost> {
                       ? IconButton(
                           icon: Icon(Icons.close_rounded, size: 18, color: colors.textSecondary),
                           onPressed: () {
+                            _searchDebounce?.cancel();
                             _searchController.clear();
                             setSearchState(() {});
-                            setState(() => _searchResults = null);
+                            setState(() { _searchResults = null; _isSearching = false; });
                           },
                         )
                       : null,

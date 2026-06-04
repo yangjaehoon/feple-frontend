@@ -64,6 +64,10 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
       context.showInfoSnackbar('festival_reg_start_end_date_req'.tr());
       return;
     }
+    if (_endDate!.isBefore(_startDate!)) {
+      context.showInfoSnackbar('festival_reg_end_before_start'.tr());
+      return;
+    }
     if (_selectedRegion == null) {
       context.showInfoSnackbar('festival_reg_region_req'.tr());
       return;
@@ -97,6 +101,108 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
     }
   }
 
+  Widget _buildDateRow() {
+    return Row(
+      children: [
+        Expanded(
+          child: FestivalDateTile(
+            label: 'label_start_date'.tr(),
+            date: _startDate,
+            onTap: _pickStartDate,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: FestivalDateTile(
+            label: 'label_end_date'.tr(),
+            date: _endDate,
+            onTap: _pickEndDate,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGenreSelector(AbstractThemeColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        FestivalSectionLabel('label_genre'.tr()),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 6,
+          children: kGenreOptions.map((opt) {
+            final (value, label) = opt;
+            final selected = _selectedGenres.contains(value);
+            return GestureDetector(
+              onTap: () => setState(() {
+                selected
+                    ? _selectedGenres.remove(value)
+                    : _selectedGenres.add(value);
+              }),
+              child: AnimatedContainer(
+                duration: AppDimens.animXFast,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                decoration: BoxDecoration(
+                  color: selected ? colors.activate : colors.surface,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: selected ? colors.activate : colors.listDivider,
+                  ),
+                ),
+                child: Text(
+                  label.tr(),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: selected ? Colors.white : colors.textTitle,
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRegionDropdown(AbstractThemeColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        FestivalSectionLabel('label_region'.tr()),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: colors.listDivider),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: _selectedRegion,
+              hint: Text('label_region'.tr(),
+                  style: TextStyle(color: colors.textSecondary)),
+              isExpanded: true,
+              dropdownColor: colors.surface,
+              items: kRegionOptions.map((opt) {
+                final (value, label) = opt;
+                return DropdownMenuItem(
+                  value: value,
+                  child: Text(label.tr(),
+                      style: TextStyle(color: colors.textTitle)),
+                );
+              }).toList(),
+              onChanged: (v) => setState(() => _selectedRegion = v),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -111,129 +217,41 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
               child: ListView(
                 padding: const EdgeInsets.all(20),
                 children: [
-            FestivalTextField(
-              controller: _titleController,
-              label: 'label_festival_name'.tr(),
-              validator: (v) =>
-                  v == null || v.trim().isEmpty ? 'label_input_name_req'.tr() : null,
-            ),
-            const SizedBox(height: 16),
-            FestivalTextField(
-              controller: _descriptionController,
-              label: 'label_desc'.tr(),
-              maxLines: 3,
-            ),
-            const SizedBox(height: 16),
-            FestivalTextField(
-              controller: _locationController,
-              label: 'label_location'.tr(),
-            ),
-            const SizedBox(height: 16),
-            FestivalTextField(
-              controller: _posterUrlController,
-              label: 'label_poster_url'.tr(),
-            ),
-            const SizedBox(height: 16),
-
-            // 날짜 선택
-            Row(
-              children: [
-                Expanded(
-                  child: FestivalDateTile(
-                    label: 'label_start_date'.tr(),
-                    date: _startDate,
-                    onTap: _pickStartDate,
+                  FestivalTextField(
+                    controller: _titleController,
+                    label: 'label_festival_name'.tr(),
+                    validator: (v) =>
+                        v == null || v.trim().isEmpty ? 'label_input_name_req'.tr() : null,
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: FestivalDateTile(
-                    label: 'label_end_date'.tr(),
-                    date: _endDate,
-                    onTap: _pickEndDate,
+                  const SizedBox(height: 16),
+                  FestivalTextField(
+                    controller: _descriptionController,
+                    label: 'label_desc'.tr(),
+                    maxLines: 3,
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-
-            // 장르 선택
-            FestivalSectionLabel('label_genre'.tr()),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 6,
-              children: kGenreOptions.map((opt) {
-                final (value, label) = opt;
-                final selected = _selectedGenres.contains(value);
-                return GestureDetector(
-                  onTap: () => setState(() {
-                    selected
-                        ? _selectedGenres.remove(value)
-                        : _selectedGenres.add(value);
-                  }),
-                  child: AnimatedContainer(
-                    duration: AppDimens.animXFast,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: selected ? colors.activate : colors.surface,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: selected ? colors.activate : colors.listDivider,
-                      ),
-                    ),
-                    child: Text(
-                      label.tr(),
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: selected ? Colors.white : colors.textTitle,
-                      ),
-                    ),
+                  const SizedBox(height: 16),
+                  FestivalTextField(
+                    controller: _locationController,
+                    label: 'label_location'.tr(),
                   ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 20),
-
-            // 지역 선택
-            FestivalSectionLabel('label_region'.tr()),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              decoration: BoxDecoration(
-                color: colors.surface,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: colors.listDivider),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: _selectedRegion,
-                  hint: Text('label_region'.tr(),
-                      style: TextStyle(color: colors.textSecondary)),
-                  isExpanded: true,
-                  dropdownColor: colors.surface,
-                  items: kRegionOptions.map((opt) {
-                    final (value, label) = opt;
-                    return DropdownMenuItem(
-                      value: value,
-                      child: Text(label.tr(),
-                          style: TextStyle(color: colors.textTitle)),
-                    );
-                  }).toList(),
-                  onChanged: (v) => setState(() => _selectedRegion = v),
-                ),
-              ),
-            ),
-            const SizedBox(height: 32),
-
-            LoadingButton(
-              label: 'btn_register'.tr(),
-              onPressed: _submit,
-              isLoading: _isLoading,
-              backgroundColor: colors.activate,
-            ),
+                  const SizedBox(height: 16),
+                  FestivalTextField(
+                    controller: _posterUrlController,
+                    label: 'label_poster_url'.tr(),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildDateRow(),
+                  const SizedBox(height: 20),
+                  _buildGenreSelector(colors),
+                  const SizedBox(height: 20),
+                  _buildRegionDropdown(colors),
+                  const SizedBox(height: 32),
+                  LoadingButton(
+                    label: 'btn_register'.tr(),
+                    onPressed: _submit,
+                    isLoading: _isLoading,
+                    backgroundColor: colors.activate,
+                  ),
                 ],
               ),
             ),

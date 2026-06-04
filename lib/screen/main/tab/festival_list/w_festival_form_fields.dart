@@ -82,9 +82,7 @@ class FestivalDateTile extends StatelessWidget {
                           TextStyle(fontSize: 11, color: colors.textSecondary)),
                   const SizedBox(height: 2),
                   Text(
-                    date != null
-                        ? '${date!.year}.${date!.month.toString().padLeft(2, '0')}.${date!.day.toString().padLeft(2, '0')}'
-                        : 'label_not_selected'.tr(),
+                    date != null ? date!.toDisplayDate : 'label_not_selected'.tr(),
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,

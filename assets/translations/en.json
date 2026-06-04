@@ -200,6 +200,7 @@
   "auth_err_auth_failed_with_code": "Authentication failed. ({})",
   "festival_reg_start_end_date_req": "Please select start and end dates.",
   "festival_reg_region_req": "Please select a region.",
+  "festival_reg_end_before_start": "End date must be after the start date.",
   "festival_reg_register_success": "Festival successfully registered.",
   "festival_reg_register_failed": "Registration failed.",
   "festival_reg_register_title": "Register Festival",

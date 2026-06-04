@@ -1,3 +1,6 @@
+import 'festival_date_utils.dart';
+import 'festival_model.dart';
+
 class FestivalPreview {
   final int id;
   final String title;
@@ -27,29 +30,24 @@ class FestivalPreview {
     this.longitude,
   });
 
-  /// 오늘 기준 D-day. 음수 = 진행중, 0 = 오늘 시작, 양수 = N일 후. null = 날짜 파싱 불가 또는 종료됨
-  int? get dDaysUntil {
-    if (isEnded || startDate.isEmpty) return null;
-    try {
-      final start = DateTime.parse(startDate);
-      final today = DateTime.now();
-      final todayDate = DateTime(today.year, today.month, today.day);
-      final startDay = DateTime(start.year, start.month, start.day);
-      return startDay.difference(todayDate).inDays;
-    } catch (_) {
-      return null;
-    }
-  }
+  bool get isEnded => isFestivalEnded(endDate);
 
-  bool get isEnded {
-    if (endDate == null || endDate!.isEmpty) return false;
-    try {
-      final end = DateTime.parse(endDate!);
-      return end.isBefore(DateTime.now().subtract(const Duration(days: 1)));
-    } catch (_) {
-      return false;
-    }
-  }
+  /// 오늘 기준 D-day. 음수 = 진행중, 0 = 오늘 시작, 양수 = N일 후. null = 날짜 파싱 불가 또는 종료됨
+  int? get dDaysUntil => festivalDDaysUntil(startDate: startDate, isEnded: isEnded);
+
+  FestivalModel toModel() => FestivalModel(
+        id: id,
+        title: title,
+        description: description,
+        location: location,
+        startDate: startDate,
+        endDate: endDate ?? '',
+        posterUrl: posterUrl,
+        latitude: latitude,
+        longitude: longitude,
+        genres: genres,
+        ageRestriction: ageRestriction,
+      );
 
   factory FestivalPreview.fromJson(Map<String, dynamic> json) {
     return FestivalPreview(

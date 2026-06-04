@@ -7,8 +7,11 @@ extension DateTimeExtension on DateTime {
 
   String get formattedDateTime => DateFormat('dd/MM/yyyy HH:mm').format(this);
 
-  /// ISO-8601 날짜 부분만 반환 (yyyy-MM-dd)
+  /// ISO-8601 날짜 부분만 반환 (yyyy-MM-dd) — API 전송용
   String get toYMD => DateFormat('yyyy-MM-dd').format(this);
+
+  /// 화면 표시용 날짜 (yyyy.MM.dd)
+  String get toDisplayDate => DateFormat('yyyy.MM.dd').format(this);
 
   /// 상대 시간 표시 ("방금 전", "3분 전", "2시간 전", "5일 전", 이후엔 날짜)
   String get relativeTime {

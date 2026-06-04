@@ -7,21 +7,48 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// - 3차: SharedPreferences 비동기 (init() 전 fallback)
 class ApiCacheStore {
   static const _prefix = 'api_cache_';
-  static const int _maxAgeMs = 7 * 24 * 60 * 60 * 1000;
 
   static final Map<String, _Entry> _mem = {};
-
-  // 앱 시작 시 init()으로 미리 받아둠 → getSync()에서 동기 조회 가능
   static SharedPreferences? _prefs;
 
   static String _key(String url) => '$_prefix$url';
 
-  static bool _expired(int ts) =>
-      DateTime.now().millisecondsSinceEpoch - ts > _maxAgeMs;
+  /// 엔드포인트 특성에 맞는 TTL 반환 (단위: ms)
+  static int _ttlFor(String url) {
+    // 실시간성 높은 상태값
+    if (url.contains('/notifications')) return 2 * 60 * 1000;           // 2분
+    if (url.contains('/liked') ||
+        url.contains('/follow') ||
+        url.contains('/attending') ||
+        url.contains('/scraped')) {
+      return 10 * 60 * 1000; // 10분
+    }
+    // 게시글·댓글
+    if (url.contains('/posts') ||
+        url.contains('/comments')) {
+      return 30 * 60 * 1000; // 30분
+    }
+    // 날씨
+    if (url.contains('/weather')) return 3 * 60 * 60 * 1000;            // 3시간
+    // 페스티벌 당일 콘텐츠 (타임테이블, 세트리스트, 스케줄)
+    if (url.contains('/timetable') ||
+        url.contains('/setlist') ||
+        url.contains('/schedule')) {
+      return 12 * 60 * 60 * 1000; // 12시간
+    }
+    // 거의 바뀌지 않는 정적 콘텐츠
+    if (url.contains('/songs') ||
+        url.contains('/photos')) {
+      return 30 * 24 * 60 * 60 * 1000; // 30일
+    }
+    // 기본값: 페스티벌 목록/상세, 아티스트, 유저 프로필 등
+    return 7 * 24 * 60 * 60 * 1000;                                      // 7일
+  }
+
+  static bool _expired(String url, int ts) =>
+      DateTime.now().millisecondsSinceEpoch - ts > _ttlFor(url);
 
   /// main()에서 AppPreferences.init() 직후 호출.
-  /// SharedPreferences는 초기화 후 내부가 메모리 맵이므로
-  /// 이후 getString()은 실질적으로 동기 처리됨.
   static Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
   }
@@ -35,13 +62,12 @@ class ApiCacheStore {
     } catch (_) {}
   }
 
-  /// 동기 조회 — _mem → _prefs(SharedPreferences 인스턴스) 순서.
-  /// 앱 재시작 후 오프라인 접근 시에도 즉시 캐시 반환 가능.
+  /// 동기 조회 — _mem → _prefs 순서.
   static dynamic getSync(String url) {
     // 1차: 메모리
     final e = _mem[url];
     if (e != null) {
-      if (_expired(e.ts)) {
+      if (_expired(url, e.ts)) {
         _mem.remove(url);
       } else {
         return e.data;
@@ -56,11 +82,10 @@ class ApiCacheStore {
     try {
       final map = jsonDecode(raw) as Map<String, dynamic>;
       final ts = map['ts'] as int;
-      if (_expired(ts)) {
+      if (_expired(url, ts)) {
         prefs.remove(_key(url));
         return null;
       }
-      // SharedPreferences 데이터를 메모리에 올려 다음 조회는 1차에서 처리
       _mem[url] = _Entry(map['data'], ts);
       return map['data'];
     } catch (_) {
@@ -79,7 +104,7 @@ class ApiCacheStore {
       if (raw == null) return null;
       final map = jsonDecode(raw) as Map<String, dynamic>;
       final ts = map['ts'] as int;
-      if (_expired(ts)) {
+      if (_expired(url, ts)) {
         await prefs.remove(_key(url));
         return null;
       }

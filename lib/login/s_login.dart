@@ -65,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  _buildKakaoLoginButton(context),
+                  _buildKakaoLoginButton(),
                   const SizedBox(height: 28),
                   _buildLinks(context, themeColors),
                 ],
@@ -211,41 +211,18 @@ class _LoginPageState extends State<LoginPage> {
 
   // _buildTextField 제거됨 → AppTextField 공통 위젯 사용
 
-  Widget _buildKakaoLoginButton(BuildContext context) {
+  Widget _buildKakaoLoginButton() {
     return IgnorePointer(
       ignoring: _isEmailLoading || _isKakaoLoading,
       child: Opacity(
         opacity: _isEmailLoading ? 0.5 : 1.0,
-        child: SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: ElevatedButton(
-            onPressed: () => signInWithKakao(context),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.kakaoYellow,
-              foregroundColor: AppColors.kakaoText,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppDimens.shapeButton),
-              ),
-            ),
-            child: _isKakaoLoading
-                ? const SizedBox(
-                    width: 22,
-                    height: 22,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation(Colors.white),
-                    ),
-                  )
-                : Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset('assets/image/login/kakao_login_medium_narrow.png',
-                          height: 24),
-                      const SizedBox(width: 8),
-                    ],
-                  ),
+        child: LoadingButton(
+          isLoading: _isKakaoLoading,
+          backgroundColor: AppColors.kakaoYellow,
+          onPressed: signInWithKakao,
+          child: Image.asset(
+            'assets/image/login/kakao_login_medium_narrow.png',
+            height: 24,
           ),
         ),
       ),
@@ -290,12 +267,8 @@ class _LoginPageState extends State<LoginPage> {
         setState(() => _authError = msg);
       }
     } catch (e) {
-      if (mounted) {
-        final msg = e is Exception
-            ? e.toString().replaceFirst('Exception: ', '')
-            : 'login_failed'.tr();
-        setState(() => _authError = msg.isNotEmpty ? msg : 'login_failed'.tr());
-      }
+      debugPrint('[Auth] 이메일 로그인 실패: $e');
+      if (mounted) setState(() => _authError = 'login_failed'.tr());
     } finally {
       if (mounted) setState(() => _isEmailLoading = false);
     }
@@ -349,7 +322,7 @@ class _LoginPageState extends State<LoginPage> {
     emailCtrl.dispose();
   }
 
-  Future<void> signInWithKakao(BuildContext context) async {
+  Future<void> signInWithKakao() async {
     if (_isEmailLoading || _isKakaoLoading) return;
     // async gap 전에 캡처 — 카카오 OAuth 브라우저/앱 복귀 시 mounted가 false일 수 있음
     final userProvider = context.read<UserProvider>();
@@ -359,18 +332,13 @@ class _LoginPageState extends State<LoginPage> {
       await userProvider.setUser(user);
       FcmService.instance.init().catchError((e) => debugPrint('[FCM] init failed: $e'));
     } on PlatformException catch (e) {
-      debugPrint('=== 카카오 로그인 실패 에러 ===\n$e\n======================');
+      debugPrint('[Auth] 카카오 PlatformException: $e');
       if (e.code != 'CANCELED' && mounted) {
-        setState(() => _authError = e.message ?? 'login_failed'.tr());
+        setState(() => _authError = 'login_failed'.tr());
       }
     } catch (e) {
       debugPrint('[Auth] 카카오 로그인 실패: $e');
-      if (mounted) {
-        final msg = e is Exception
-            ? e.toString().replaceFirst('Exception: ', '')
-            : 'login_failed'.tr();
-        setState(() => _authError = msg.isNotEmpty ? msg : 'login_failed'.tr());
-      }
+      if (mounted) setState(() => _authError = 'login_failed'.tr());
     } finally {
       if (mounted) setState(() => _isKakaoLoading = false);
     }

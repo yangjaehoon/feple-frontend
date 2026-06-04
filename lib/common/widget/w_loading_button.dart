@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 /// [isLoading] true → 스피너, [isSuccess] true → 체크마크 애니메이션
 class LoadingButton extends StatefulWidget {
   final String label;
+  final Widget? child;
   final VoidCallback? onPressed;
   final bool isLoading;
   final bool isSuccess;
@@ -17,7 +18,8 @@ class LoadingButton extends StatefulWidget {
 
   const LoadingButton({
     super.key,
-    required this.label,
+    this.label = '',
+    this.child,
     this.onPressed,
     this.isLoading = false,
     this.isSuccess = false,
@@ -124,6 +126,7 @@ class _LoadingButtonState extends State<LoadingButton>
         ),
       );
     }
+    if (widget.child != null) return widget.child!;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

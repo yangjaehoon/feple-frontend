@@ -144,7 +144,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildDots(AbstractThemeColors colors) {
-    final totalDots = _pages.length + 1;
+    final totalDots = _pages.length + 1; // 마지막 도트 = 아티스트 선택 단계
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(totalDots, (i) {

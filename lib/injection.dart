@@ -1,6 +1,5 @@
 import 'package:get_it/get_it.dart';
 
-import 'auth/auth_api.dart';
 import 'service/artist_follow_service.dart';
 import 'service/artist_photo_service.dart';
 import 'service/artist_schedule_service.dart';
@@ -27,7 +26,6 @@ import 'service/user_service.dart';
 final sl = GetIt.instance;
 
 void setupDependencies() {
-  sl.registerLazySingleton<AuthApi>(() => AuthApi());
   sl.registerLazySingleton<AuthService>(() => AuthService.instance);
   sl.registerLazySingleton<FcmService>(() => FcmService.instance);
 

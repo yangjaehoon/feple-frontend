@@ -32,7 +32,7 @@ class LikedFestivalsPage extends StatelessWidget {
         title: 'liked_festivals'.tr(),
         subtitle: 'reorder_liked_festivals_hint'.tr(),
         items: items,
-        onSave: onSaveOrder!,
+        onSave: onSaveOrder ?? (_) {},
       ),
     );
   }

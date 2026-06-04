@@ -74,7 +74,9 @@ class _HomeFragmentState extends State<HomeFragment> {
             children: [
               RefreshIndicator(
                 color: colors.activate,
-                onRefresh: () async => _notifier.refresh(force: true),
+                onRefresh: () async {
+                  try { await _notifier.refresh(force: true); } catch (_) {}
+                },
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.only(

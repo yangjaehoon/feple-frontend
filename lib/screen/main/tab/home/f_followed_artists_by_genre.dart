@@ -54,7 +54,7 @@ class _FollowedArtistsByGenrePageState
         title: 'followed_artists'.tr(),
         subtitle: 'reorder_followed_artists_hint'.tr(),
         items: items,
-        onSave: widget.onSaveOrder!,
+        onSave: widget.onSaveOrder ?? (_) {},
       ),
     );
   }

@@ -139,169 +139,19 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
         children: [
           SecondaryAppBar(
             title: 'edit_profile'.tr(),
-            actions: [
-              TextButton(
-                onPressed: _isSaving ? null : _save,
-                child: _isSaving
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
-                      )
-                    : Text(
-                        'save'.tr(),
-                        style: const TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.w700),
-                      ),
-              ),
-            ],
+            actions: [_buildSaveAction()],
           ),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 32),
               child: Column(
                 children: [
-                  // ── 프로필 사진 ──
-                  GestureDetector(
-                    onTap: _pickImage,
-                    child: Stack(
-                      children: [
-                        Container(
-                          width: 110,
-                          height: 110,
-                          padding: const EdgeInsets.all(3),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: colors.profileRingColor,
-                            boxShadow: [
-                              BoxShadow(
-                                color: colors.cardShadow.withValues(alpha: 0.2),
-                                blurRadius: 20,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Container(
-                            padding: const EdgeInsets.all(3),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: colors.surface,
-                            ),
-                            child: CircleAvatar(
-                              radius: 48,
-                              backgroundColor: colors.backgroundMain,
-                              backgroundImage: _pickedImage != null
-                                  ? FileImage(File(_pickedImage!.path))
-                                      as ImageProvider
-                                  : (profileImageUrl != null &&
-                                          profileImageUrl.isNotEmpty)
-                                      ? CachedNetworkImageProvider(profileImageUrl)
-                                          as ImageProvider
-                                      : const AssetImage(
-                                          'assets/image/feple_logo.png'),
-                              child: null,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 4,
-                          right: 4,
-                          child: Container(
-                            width: 30,
-                            height: 30,
-                            decoration: BoxDecoration(
-                              color: colors.activate,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: colors.surface, width: 2),
-                            ),
-                            child: const Icon(Icons.camera_alt_rounded,
-                                color: Colors.white, size: 15),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'change_photo'.tr(),
-                    style: TextStyle(fontSize: 13, color: colors.textSecondary),
-                  ),
+                  _buildProfileImage(colors, profileImageUrl),
                   const SizedBox(height: 36),
-
-                  // ── 닉네임 ──
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'nickname'.tr(),
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: colors.textSecondary,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: NicknameField(
-                          key: _nicknameKey,
-                          excludeUserId: userId,
-                          initialValue: _originalNickname,
-                        ),
-                      ),
-                    ],
-                  ),
+                  _buildNicknameSection(colors, userId),
                   const SizedBox(height: 24),
-
-                  // ── 자기소개 ──
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'bio'.tr(),
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: colors.textSecondary,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: _bioController,
-                    maxLength: 150,
-                    maxLines: 3,
-                    onChanged: (_) {
-                      if (_bioError != null) setState(() => _bioError = null);
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'bio_hint'.tr(),
-                      hintStyle: TextStyle(color: colors.textSecondary, fontSize: 13),
-                      counterStyle: TextStyle(color: colors.textSecondary, fontSize: 11),
-                      errorText: _bioError,
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: colors.listDivider),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: colors.listDivider),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: colors.activate, width: 1.5),
-                      ),
-                      errorBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: AppColors.errorRed, width: 1.5),
-                      ),
-                      focusedErrorBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: AppColors.errorRed, width: 2),
-                      ),
-                    ),
-                    style: TextStyle(color: colors.textTitle, fontSize: 14),
-                  ),
+                  _buildBioSection(colors),
                   const SizedBox(height: 40),
-
-                  // ── 저장 버튼 ──
                   LoadingButton(
                     label: 'save'.tr(),
                     onPressed: _save,
@@ -314,6 +164,146 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildSaveAction() {
+    return TextButton(
+      onPressed: _isSaving ? null : _save,
+      child: _isSaving
+          ? const SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+            )
+          : Text(
+              'save'.tr(),
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+            ),
+    );
+  }
+
+  Widget _buildProfileImage(AbstractThemeColors colors, String? profileImageUrl) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: _pickImage,
+          child: Stack(
+            children: [
+              Container(
+                width: 110,
+                height: 110,
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: colors.profileRingColor,
+                  boxShadow: [
+                    BoxShadow(
+                      color: colors.cardShadow.withValues(alpha: 0.2),
+                      blurRadius: 20,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(shape: BoxShape.circle, color: colors.surface),
+                  child: CircleAvatar(
+                    radius: 48,
+                    backgroundColor: colors.backgroundMain,
+                    backgroundImage: _pickedImage != null
+                        ? FileImage(File(_pickedImage!.path)) as ImageProvider
+                        : (profileImageUrl != null && profileImageUrl.isNotEmpty)
+                            ? CachedNetworkImageProvider(profileImageUrl) as ImageProvider
+                            : const AssetImage('assets/image/feple_logo.png'),
+                    child: null,
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 4,
+                right: 4,
+                child: Container(
+                  width: 30,
+                  height: 30,
+                  decoration: BoxDecoration(
+                    color: colors.activate,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: colors.surface, width: 2),
+                  ),
+                  child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 15),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text('change_photo'.tr(), style: TextStyle(fontSize: 13, color: colors.textSecondary)),
+      ],
+    );
+  }
+
+  Widget _buildNicknameSection(AbstractThemeColors colors, int? userId) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'nickname'.tr(),
+          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: colors.textSecondary),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: NicknameField(
+                key: _nicknameKey,
+                excludeUserId: userId,
+                initialValue: _originalNickname,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBioSection(AbstractThemeColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'bio'.tr(),
+          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: colors.textSecondary),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: _bioController,
+          maxLength: 150,
+          maxLines: 3,
+          onChanged: (_) {
+            if (_bioError != null) setState(() => _bioError = null);
+          },
+          decoration: InputDecoration(
+            hintText: 'bio_hint'.tr(),
+            hintStyle: TextStyle(color: colors.textSecondary, fontSize: 13),
+            counterStyle: TextStyle(color: colors.textSecondary, fontSize: 11),
+            errorText: _bioError,
+            border: OutlineInputBorder(borderSide: BorderSide(color: colors.listDivider)),
+            enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: colors.listDivider)),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: colors.activate, width: 1.5),
+            ),
+            errorBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: AppColors.errorRed, width: 1.5),
+            ),
+            focusedErrorBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: AppColors.errorRed, width: 2),
+            ),
+          ),
+          style: TextStyle(color: colors.textTitle, fontSize: 14),
+        ),
+      ],
     );
   }
 }

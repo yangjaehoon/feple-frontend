@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:collection/collection.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/screen/main/tab/home/w_boards_section_skeleton.dart';
@@ -106,8 +105,9 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
       return const BoardsSectionSkeleton();
     }
 
+    final boardMap = {for (final b in widget.allBoards) b.boardId: b};
     final selectedBoards = _orderedSelectedIds
-        .map((id) => widget.allBoards.firstWhereOrNull((b) => b.boardId == id))
+        .map((id) => boardMap[id])
         .whereType<FavoriteBoard>()
         .toList();
 

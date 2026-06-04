@@ -24,8 +24,6 @@ class _MypageFragmentState extends State<MypageFragment> {
 
   Future<void> _onRefresh() async {
     setState(() => _refreshKey++);
-    // 자식 위젯이 재생성되어 데이터를 재로드할 시간을 줌
-    await Future.delayed(AppDimens.animRefresh);
   }
 
   @override

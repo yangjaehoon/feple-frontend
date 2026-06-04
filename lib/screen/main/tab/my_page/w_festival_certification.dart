@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/certification_model.dart';
 import 'package:feple/screen/main/tab/my_page/cert_status_style.dart';
@@ -112,38 +113,12 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
           child: _loading
               ? _buildSkeletonList()
               : _hasError
-                  ? _buildErrorState(colors)
+                  ? ErrorState(message: 'load_error'.tr(), onRetry: _load)
                   : _certifications == null || _certifications!.isEmpty
                       ? _buildEmptyState(colors)
                       : _buildCertList(colors),
         ),
       ],
-    );
-  }
-
-  Widget _buildErrorState(AbstractThemeColors colors) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.cloud_off_rounded, size: 32,
-              color: colors.textSecondary.withValues(alpha: 0.4)),
-          const SizedBox(height: 6),
-          Text('load_error'.tr(),
-              style: TextStyle(fontSize: 12, color: colors.textSecondary)),
-          const SizedBox(height: 6),
-          TextButton.icon(
-            onPressed: _load,
-            icon: const Icon(Icons.refresh_rounded, size: 16),
-            label: Text('retry'.tr(), style: const TextStyle(fontSize: 13)),
-            style: TextButton.styleFrom(
-              minimumSize: Size.zero,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-          ),
-        ],
-      ),
     );
   }
 

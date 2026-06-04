@@ -105,7 +105,7 @@ void main() {
       String? posted;
       final n = PostDetailNotifier(
         postId: 1, initialHeartCount: 10, initialViewCount: 0,
-        onCommentPosted: (key) => posted = key,
+        onSuccess: (key) => posted = key,
       );
       await n.submitComment('내용', 1);
 

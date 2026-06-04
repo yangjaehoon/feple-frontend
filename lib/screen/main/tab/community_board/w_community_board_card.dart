@@ -102,7 +102,7 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
             builder: (_) => WritePostScreen(
               title: 'write_post'.tr(),
               onSubmit: (t, c, a, img) async {
-                await sl<PostService>().createPost(
+                await _postService.createPost(
                   boardType: widget.serviceBoardType,
                   title: t,
                   content: c,
@@ -114,7 +114,6 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
             ),
           ),
         );
-        _refresh();
       } : null,
     );
   }

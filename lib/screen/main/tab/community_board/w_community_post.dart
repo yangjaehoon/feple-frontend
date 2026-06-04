@@ -7,6 +7,7 @@ import 'package:feple/common/constant/board_types.dart';
 import 'package:feple/common/app_events.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
@@ -61,16 +62,20 @@ class _CommunityPostState extends State<CommunityPost> {
     super.initState();
     _load();
     _scrollController.addListener(_onScroll);
+    AppEvents.postChanged.addListener(_onPostChanged);
   }
 
   @override
   void dispose() {
+    AppEvents.postChanged.removeListener(_onPostChanged);
     _searchDebounce?.cancel();
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
   }
+
+  void _onPostChanged() => _load();
 
   void _onScroll() {
     final pos = _scrollController.position;
@@ -193,12 +198,9 @@ class _CommunityPostState extends State<CommunityPost> {
           return PostListTile(
             post: post,
             highlightKeyword: _searchController.text.trim(),
-            onTap: () async {
-              await Navigator.of(context, rootNavigator: true).push(
-                SlideRoute(builder: (_) => EnlargePost.fromPost(boardname: widget.boardname, post: post)),
-              );
-              _load();
-            },
+            onTap: () => Navigator.of(context, rootNavigator: true).push(
+              SlideRoute(builder: (_) => EnlargePost.fromPost(boardname: widget.boardname, post: post)),
+            ),
           );
         },
         separatorBuilder: (_, __) => Divider(thickness: 1, color: colors.listDivider),
@@ -206,22 +208,9 @@ class _CommunityPostState extends State<CommunityPost> {
     }
 
     if (_hasError) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.wifi_off_rounded, size: 48, color: colors.textSecondary.withValues(alpha: 0.4)),
-            const SizedBox(height: 12),
-            Text('err_fetch_data'.tr(args: ['']), style: TextStyle(color: colors.textSecondary)),
-            const SizedBox(height: 16),
-            FilledButton.icon(
-              onPressed: _load,
-              icon: const Icon(Icons.refresh_rounded, size: 18),
-              label: Text('retry'.tr()),
-              style: FilledButton.styleFrom(backgroundColor: colors.activate),
-            ),
-          ],
-        ),
+      return ErrorState(
+        message: 'err_fetch_data'.tr(args: ['']),
+        onRetry: _load,
       );
     }
 
@@ -262,17 +251,14 @@ class _CommunityPostState extends State<CommunityPost> {
           index: index,
           child: PostListTile(
             post: post,
-            onTap: () async {
-              await Navigator.of(context, rootNavigator: true).push(
-                SlideRoute(
-                  builder: (_) => EnlargePost.fromPost(
-                    boardname: widget.boardname,
-                    post: post,
-                  ),
+            onTap: () => Navigator.of(context, rootNavigator: true).push(
+              SlideRoute(
+                builder: (_) => EnlargePost.fromPost(
+                  boardname: widget.boardname,
+                  post: post,
                 ),
-              );
-              _load();
-            },
+              ),
+            ),
           ),
         );
       },
@@ -325,7 +311,6 @@ class _CommunityPostState extends State<CommunityPost> {
                   ),
                 ),
               );
-              _load();
             },
           ),
         ],

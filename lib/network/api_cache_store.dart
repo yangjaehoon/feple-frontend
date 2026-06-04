@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// GET 응답 캐시.
@@ -51,6 +52,13 @@ class ApiCacheStore {
   /// main()에서 AppPreferences.init() 직후 호출.
   static Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
+  }
+
+  /// 테스트 전용 — 메모리 캐시와 _prefs 초기화
+  @visibleForTesting
+  static void clearForTesting() {
+    _mem.clear();
+    _prefs = null;
   }
 
   static Future<void> put(String url, dynamic data) async {

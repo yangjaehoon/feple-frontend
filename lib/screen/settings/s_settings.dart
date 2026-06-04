@@ -5,7 +5,6 @@ import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
-import 'package:feple/login/s_login.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/my_page/w_edit_profile.dart';
 import 'package:feple/screen/opensource/s_opensource.dart';
@@ -50,15 +49,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
       confirmLabel: 'logout'.tr(),
     );
     if (!confirmed || !mounted) return;
+    // rootNavigator를 await 전에 캡처 — logout 후 위젯이 unmount되어 context 사용 불가
+    final rootNav = Navigator.of(context, rootNavigator: true);
     final userProvider = context.read<UserProvider>();
     try {
       await userProvider.logout();
     } catch (_) {}
-    if (!mounted) return;
-    Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-      SlideRoute(builder: (_) => const LoginPage()),
-      (_) => false,
-    );
+    // logout()이 notifyListeners → Consumer가 home을 LoginPage로 교체.
+    // rootNavigator에 남은 extra 라우트(rootNavigator:true로 push된 것들)만 정리.
+    rootNav.popUntil((route) => route.isFirst);
   }
 
   Future<void> _deleteAccount() async {
@@ -69,6 +68,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       confirmLabel: 'delete_account'.tr(),
     );
     if (!confirmed || !mounted) return;
+    final rootNav = Navigator.of(context, rootNavigator: true);
     final userProvider = context.read<UserProvider>();
     try {
       await userProvider.deleteAccount();
@@ -76,11 +76,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (mounted) context.showErrorSnackbar('delete_account_error'.tr());
       return;
     }
-    if (!mounted) return;
-    Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-      SlideRoute(builder: (_) => const LoginPage()),
-      (_) => false,
-    );
+    rootNav.popUntil((route) => route.isFirst);
   }
 
   Future<void> _resetOnboarding() async {

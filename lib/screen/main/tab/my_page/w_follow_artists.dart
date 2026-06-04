@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/followed_artist.dart';
@@ -44,7 +45,7 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
       context,
       SlideRoute(builder: (_) => const FollowArtistsListScreen()),
     );
-    _load();
+    if (mounted) _load();
   }
 
   @override
@@ -208,21 +209,7 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
   }
 
   Widget _buildError(AbstractThemeColors colors) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.wifi_off_rounded,
-              size: 28, color: colors.textSecondary.withValues(alpha: 0.4)),
-          const SizedBox(height: 8),
-          TextButton.icon(
-            onPressed: _load,
-            icon: const Icon(Icons.refresh_rounded, size: 16),
-            label: Text('retry'.tr(), style: const TextStyle(fontSize: 13)),
-          ),
-        ],
-      ),
-    );
+    return ErrorState(message: 'err_fetch_data'.tr(), onRetry: _load);
   }
 
   Widget _buildSkeleton() {

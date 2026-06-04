@@ -96,92 +96,13 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              controller: _labelCtrl,
-              onChanged: (_) => setState(() {}),
-              decoration: InputDecoration(
-                hintText: 'timetable_entry_name_hint'.tr(),
-                hintStyle: TextStyle(color: colors.textSecondary),
-                enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: colors.listDivider)),
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: colors.activate)),
-              ),
-              style: TextStyle(color: colors.textTitle),
-            ),
+            _buildLabelField(colors),
             const SizedBox(height: 16),
-            _Label('timetable_stage'.tr(), colors),
-            const SizedBox(height: 6),
-            DropdownButton<String>(
-              value: _stage,
-              isExpanded: true,
-              dropdownColor: colors.surface,
-              style: TextStyle(color: colors.textTitle, fontSize: 14),
-              underline: Container(height: 1, color: colors.listDivider),
-              items: widget.stages
-                  .map((s) => DropdownMenuItem(value: s, child: Text(s)))
-                  .toList(),
-              onChanged: (s) {
-                if (s != null) setState(() => _stage = s);
-              },
-            ),
+            _buildStageDropdown(colors),
             const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: _TimeBtn(
-                    label: 'timetable_start'.tr(),
-                    time: _start,
-                    onTap: _pickStartTime,
-                    colors: colors,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Text('–',
-                      style: TextStyle(
-                          color: colors.textSecondary,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 16)),
-                ),
-                Expanded(
-                  child: _TimeBtn(
-                    label: 'timetable_end'.tr(),
-                    time: _end,
-                    onTap: _pickEndTime,
-                    colors: colors,
-                  ),
-                ),
-              ],
-            ),
+            _buildTimeRow(colors),
             const SizedBox(height: 16),
-            _Label('timetable_color'.tr(), colors),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: kUserScheduleColors.map((c) {
-                final selected = c.toARGB32() == _color.toARGB32();
-                return GestureDetector(
-                  onTap: () => setState(() => _color = c),
-                  child: Container(
-                    width: 30,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: c,
-                      shape: BoxShape.circle,
-                      border: selected
-                          ? Border.all(color: colors.textTitle, width: 2.5)
-                          : null,
-                    ),
-                    alignment: Alignment.center,
-                    child: selected
-                        ? const Icon(Icons.check_rounded, size: 16, color: Colors.white)
-                        : null,
-                  ),
-                );
-              }).toList(),
-            ),
+            _buildColorPicker(colors),
           ],
         ),
       ),
@@ -203,6 +124,89 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
           child: Text(widget.isEditing ? 'photo_edit_action'.tr() : 'timetable_add'.tr()),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLabelField(AbstractThemeColors colors) {
+    return TextField(
+      controller: _labelCtrl,
+      onChanged: (_) => setState(() {}),
+      decoration: InputDecoration(
+        hintText: 'timetable_entry_name_hint'.tr(),
+        hintStyle: TextStyle(color: colors.textSecondary),
+        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: colors.listDivider)),
+        focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: colors.activate)),
+      ),
+      style: TextStyle(color: colors.textTitle),
+    );
+  }
+
+  Widget _buildStageDropdown(AbstractThemeColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _Label('timetable_stage'.tr(), colors),
+        const SizedBox(height: 6),
+        DropdownButton<String>(
+          value: _stage,
+          isExpanded: true,
+          dropdownColor: colors.surface,
+          style: TextStyle(color: colors.textTitle, fontSize: 14),
+          underline: Container(height: 1, color: colors.listDivider),
+          items: widget.stages.map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+          onChanged: (s) {
+            if (s != null) setState(() => _stage = s);
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTimeRow(AbstractThemeColors colors) {
+    return Row(
+      children: [
+        Expanded(
+          child: _TimeBtn(label: 'timetable_start'.tr(), time: _start, onTap: _pickStartTime, colors: colors),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Text('–', style: TextStyle(color: colors.textSecondary, fontWeight: FontWeight.w700, fontSize: 16)),
+        ),
+        Expanded(
+          child: _TimeBtn(label: 'timetable_end'.tr(), time: _end, onTap: _pickEndTime, colors: colors),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildColorPicker(AbstractThemeColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _Label('timetable_color'.tr(), colors),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: kUserScheduleColors.map((c) {
+            final selected = c.toARGB32() == _color.toARGB32();
+            return GestureDetector(
+              onTap: () => setState(() => _color = c),
+              child: Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  color: c,
+                  shape: BoxShape.circle,
+                  border: selected ? Border.all(color: colors.textTitle, width: 2.5) : null,
+                ),
+                alignment: Alignment.center,
+                child: selected ? const Icon(Icons.check_rounded, size: 16, color: Colors.white) : null,
+              ),
+            );
+          }).toList(),
         ),
       ],
     );

@@ -38,59 +38,61 @@ class _ChangeNicknameState extends State<ChangeNickname> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    UserProvider userProvider = Provider.of<UserProvider>(context);
-    User? user = userProvider.user;
+    final userProvider = Provider.of<UserProvider>(context);
+    final user = userProvider.user;
 
     return Scaffold(
       backgroundColor: colors.backgroundMain,
       body: Column(
         children: [
-          SafeArea(
-            bottom: false,
-            child: Container(
-              height: AppDimens.appBarHeight,
-              color: colors.appBarColor,
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  Expanded(
-                    child: Text(
-                      'change_nickname'.tr(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
+          _buildAppBar(colors),
+          Expanded(child: _buildBody(colors, userProvider, user)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAppBar(AbstractThemeColors colors) {
+    return SafeArea(
+      bottom: false,
+      child: Container(
+        height: AppDimens.appBarHeight,
+        color: colors.appBarColor,
+        child: Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            ),
+            Expanded(
+              child: Text(
+                'change_nickname'.tr(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-          ),
-          Expanded(
-            child: KeyboardDismiss(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
-          child: Column(
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBody(AbstractThemeColors colors, UserProvider userProvider, User? user) {
+    return KeyboardDismiss(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 28),
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.person_outline_rounded,
-              size: 56,
-              color: colors.activate,
-            ),
+            Icon(Icons.person_outline_rounded, size: 56, color: colors.activate),
             const SizedBox(height: 16),
             Text(
               'enter_new_nickname'.tr(),
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: colors.textTitle,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: colors.textTitle),
             ),
             const SizedBox(height: 24),
             TextField(
@@ -99,11 +101,7 @@ class _ChangeNicknameState extends State<ChangeNickname> {
               onChanged: (_) {
                 if (_errorText != null) setState(() => _errorText = null);
               },
-              style: TextStyle(
-                fontSize: 18,
-                color: colors.textTitle,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 18, color: colors.textTitle, fontWeight: FontWeight.w600),
               decoration: InputDecoration(
                 hintText: 'nickname_hint'.tr(),
                 hintStyle: TextStyle(color: colors.textSecondary),
@@ -147,7 +145,7 @@ class _ChangeNicknameState extends State<ChangeNickname> {
                   if (!mounted) return;
                   setState(() { _isSaving = false; _isSuccess = true; });
                   await Future.delayed(AppDimens.animSuccessDelay);
-                  if (!context.mounted) return;
+                  if (!mounted) return;
                   Navigator.pop(context);
                 } catch (e) {
                   if (mounted) {
@@ -162,10 +160,6 @@ class _ChangeNicknameState extends State<ChangeNickname> {
             ),
           ],
         ),
-      ),
-        ),
-          ),
-        ],
       ),
     );
   }

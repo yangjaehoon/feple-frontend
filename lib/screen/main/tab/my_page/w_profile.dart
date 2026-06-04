@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/screen/main/tab/my_page/w_edit_profile.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
@@ -44,23 +45,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
     final colors = context.appColors;
 
     if (_hasError && user == null) {
-      return Padding(
-        padding: const EdgeInsets.all(32),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.cloud_off_outlined, size: 36, color: colors.textSecondary),
-              const SizedBox(height: 12),
-              TextButton(
-                onPressed: _fetchUser,
-                child: Text('retry'.tr(),
-                    style: TextStyle(color: colors.activate, fontWeight: FontWeight.w600)),
-              ),
-            ],
-          ),
-        ),
-      );
+      return ErrorState(message: 'load_error'.tr(), onRetry: _fetchUser);
     }
 
     if (user == null) {

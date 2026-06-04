@@ -41,7 +41,7 @@ class _ImgUploadState extends State<ImgUpload> {
   }
 
   Future<List<FestivalPreview>> _fetchFestivals() =>
-      ArtistScheduleService.fetchFestivals(widget.artistId);
+      sl<ArtistScheduleService>().fetchFestivals(widget.artistId);
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();

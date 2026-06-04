@@ -1,3 +1,4 @@
+import 'package:feple/common/util/info_dialog.dart';
 import 'package:feple/common/util/password_validator.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/common.dart';
@@ -5,6 +6,7 @@ import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/common/widget/w_nickname_field.dart';
 import 'package:feple/login/w_password_checklist.dart';
+import 'package:feple/model/nickname_check_result.dart';
 import 'package:feple/service/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +40,7 @@ class _SignupPageState extends State<SignupPage> {
     super.dispose();
   }
 
-  Future<void> _register() async {
+  bool _validateInput() {
     final email = emailController.text.trim();
     final password = passwordController.text;
     final nicknameState = _nicknameKey.currentState;
@@ -65,7 +67,8 @@ class _SignupPageState extends State<SignupPage> {
     if (nickname.isEmpty) {
       nicknameState?.showError('enter_nickname'.tr());
       hasError = true;
-    } else if (nickname.length < 2 || nickname.length > 8) {
+    } else if (nickname.length < NicknameCheckResult.minLength ||
+        nickname.length > NicknameCheckResult.maxLength) {
       nicknameState?.showError('nickname_length_error'.tr());
       hasError = true;
     } else if (nicknameState?.available == null ||
@@ -83,8 +86,16 @@ class _SignupPageState extends State<SignupPage> {
         _passwordError = passwordError;
         _generalError = null;
       });
-      return;
     }
+    return !hasError;
+  }
+
+  Future<void> _register() async {
+    if (!_validateInput()) return;
+
+    final email = emailController.text.trim();
+    final password = passwordController.text;
+    final nickname = _nicknameKey.currentState?.currentNickname ?? '';
 
     setState(() => _isLoading = true);
     try {
@@ -93,25 +104,10 @@ class _SignupPageState extends State<SignupPage> {
       );
       if (!mounted) return;
 
-      // 인증 이메일 발송 완료 → 안내 다이얼로그 표시 후 로그인 페이지로 이동
-      await showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (ctx) => AlertDialog(
-          title: Text('signup'.tr(),
-              style: const TextStyle(fontWeight: FontWeight.w700)),
-          content: Text('verification_email_sent'.tr()),
-          actions: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: context.appColors.activate,
-                foregroundColor: Colors.white,
-              ),
-              onPressed: () => Navigator.pop(ctx),
-              child: Text('confirm'.tr()),
-            ),
-          ],
-        ),
+      await showInfoDialog(
+        context,
+        title: 'signup'.tr(),
+        content: 'verification_email_sent'.tr(),
       );
       if (mounted) Navigator.pop(context); // 로그인 페이지로 돌아가기
     } on FirebaseAuthException catch (e) {

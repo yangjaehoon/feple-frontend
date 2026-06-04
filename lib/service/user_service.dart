@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:feple/common/exception/banned_word_exception.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/followed_artist.dart';
+import 'package:feple/model/nickname_check_result.dart';
 import 'package:feple/model/user_model.dart';
 import 'package:feple/network/dio_client.dart';
 
@@ -63,7 +64,7 @@ class UserService {
     }
   }
 
-  Future<Map<String, dynamic>> checkNicknameAvailability(
+  Future<NicknameCheckResult> checkNicknameAvailability(
     String nickname, {
     int? excludeUserId,
   }) async {
@@ -74,6 +75,6 @@ class UserService {
         if (excludeUserId != null) 'excludeUserId': excludeUserId,
       },
     );
-    return response.data as Map<String, dynamic>;
+    return NicknameCheckResult.fromJson(response.data as Map<String, dynamic>);
   }
 }

@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/model/nickname_check_result.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
 
@@ -43,12 +44,10 @@ class NicknameFieldState extends State<NicknameField> {
     super.dispose();
   }
 
-  /// 닉네임 중복 확인 결과 getter
   bool? get available => _available;
   String get lastCheckedNickname => _lastChecked;
   String get currentNickname => controller.text.trim();
 
-  /// 외부에서 에러 메시지를 설정할 때 사용
   void showError(String msg) {
     _setResult(false, msg);
   }
@@ -59,36 +58,30 @@ class NicknameFieldState extends State<NicknameField> {
       _setResult(false, 'enter_nickname'.tr());
       return;
     }
-    if (nickname.length < 2 || nickname.length > 8) {
+    if (nickname.length < NicknameCheckResult.minLength ||
+        nickname.length > NicknameCheckResult.maxLength) {
       _setResult(false, 'nickname_length_error'.tr());
       return;
     }
 
     setState(() => _isChecking = true);
     try {
-      final body = await _userService.checkNicknameAvailability(
+      final result = await _userService.checkNicknameAvailability(
         nickname,
         excludeUserId: widget.excludeUserId,
       );
-      final available = body['available'] as bool;
-      String backendMsg = body['message'] as String;
-      String localizedMsg = backendMsg;
-
-      if (available) {
-        localizedMsg = 'nickname_available'.tr();
-      } else if (backendMsg.contains("이미 사용 중인")) {
-        localizedMsg = 'nickname_already_in_use'.tr();
-      } else if (backendMsg.contains("한글, 영문, 숫자")) {
-        localizedMsg = 'nickname_invalid_chars'.tr();
-      } else if (backendMsg.contains("금칙어")) {
-        localizedMsg = 'nickname_bad_word'.tr();
-      } else {
-        localizedMsg = 'nickname_invalid'.tr();
-      }
-
-      _setResult(available, localizedMsg);
+      final localizedMsg = result.available
+          ? 'nickname_available'.tr()
+          : switch (result.code) {
+              'DUPLICATE' => 'nickname_already_in_use'.tr(),
+              'INVALID_FORMAT' => 'nickname_invalid_chars'.tr(),
+              'BAD_WORD' => 'nickname_bad_word'.tr(),
+              _ => 'nickname_invalid'.tr(),
+            };
+      _setResult(result.available, localizedMsg);
       _lastChecked = nickname;
     } catch (e) {
+      debugPrint('[NicknameField] check failed: $e');
       _setResult(false, 'nickname_check_error'.tr());
     } finally {
       if (mounted) setState(() => _isChecking = false);
@@ -114,7 +107,7 @@ class NicknameFieldState extends State<NicknameField> {
   Widget _buildTextField(AbstractThemeColors colors) {
     return TextField(
       controller: controller,
-      maxLength: 8,
+      maxLength: NicknameCheckResult.maxLength,
       onChanged: _onTextChanged,
       style: TextStyle(fontSize: 15, color: colors.text),
       decoration: InputDecoration(
@@ -135,7 +128,7 @@ class NicknameFieldState extends State<NicknameField> {
             color: _available == false
                 ? AppColors.errorRed
                 : _available == true
-                    ? AppColors.successGreen
+                    ? colors.activate
                     : colors.divider,
           ),
         ),
@@ -179,7 +172,7 @@ class NicknameFieldState extends State<NicknameField> {
               _message,
               style: TextStyle(
                 fontSize: 12,
-                color: _available == true ? AppColors.successGreen : AppColors.errorRed,
+                color: _available == true ? colors.activate : AppColors.errorRed,
                 fontWeight: FontWeight.w500,
               ),
             ),

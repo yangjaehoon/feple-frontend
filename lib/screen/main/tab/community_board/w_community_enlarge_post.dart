@@ -167,6 +167,32 @@ class _EnlargePostState extends State<EnlargePost> {
     );
   }
 
+  Future<String?> _showEditCommentDialog(BuildContext context, String currentContent) {
+    final controller = TextEditingController(text: currentContent);
+    return showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('edit_comment'.tr()),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          maxLines: null,
+          decoration: InputDecoration(hintText: 'enter_comment'.tr()),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('cancel'.tr())),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+            child: Text('done'.tr()),
+          ),
+        ],
+      ),
+    ).then((result) {
+      controller.dispose();
+      return result;
+    });
+  }
+
   List<PopupMenuEntry<String>> _buildMenuItems(bool isOwn) {
     if (isOwn) {
       return [
@@ -374,27 +400,7 @@ class _EnlargePostState extends State<EnlargePost> {
             onToggleLike: (commentId) => _notifier.toggleCommentLike(commentId, userId),
             onDeleteComment: (commentId) => _notifier.deleteComment(commentId),
             onEditComment: (commentId, currentContent) async {
-              final controller = TextEditingController(text: currentContent);
-              final result = await showDialog<String>(
-                context: context,
-                builder: (ctx) => AlertDialog(
-                  title: Text('edit_comment'.tr()),
-                  content: TextField(
-                    controller: controller,
-                    autofocus: true,
-                    maxLines: null,
-                    decoration: InputDecoration(hintText: 'enter_comment'.tr()),
-                  ),
-                  actions: [
-                    TextButton(onPressed: () => Navigator.pop(ctx), child: Text('cancel'.tr())),
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-                      child: Text('done'.tr()),
-                    ),
-                  ],
-                ),
-              );
-              controller.dispose();
+              final result = await _showEditCommentDialog(context, currentContent);
               if (result != null && result.isNotEmpty) {
                 await _notifier.updateComment(commentId, result);
               }

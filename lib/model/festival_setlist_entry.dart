@@ -23,7 +23,7 @@ class FestivalSetlistEntry {
       artistId: (json['artistId'] as num).toInt(),
       artistName: json['artistName'] as String,
       profileImageUrl: json['profileImageUrl'] as String?,
-      songs: (json['songs'] as List)
+      songs: ((json['songs'] as List?) ?? [])
           .map((e) => SongModel.fromJson(e as Map<String, dynamic>))
           .toList(),
     );

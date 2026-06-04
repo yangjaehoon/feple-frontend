@@ -55,15 +55,9 @@ class PostService {
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         final data = e.response?.data;
-        String msg = '';
-        if (data is Map) {
-          msg = (data['message'] as String?) ?? '';
-        } else if (data is String) {
-          msg = data;
+        if (data is Map && data['code'] == 'BAD_WORD') {
+          throw BannedWordException(data['field'] as String? ?? 'content');
         }
-        if (msg.startsWith('title:')) throw const BannedWordException('title');
-        if (msg.startsWith('content:')) throw const BannedWordException('content');
-        if (msg.contains('금칙어')) throw const BannedWordException('content');
       }
       rethrow;
     }
@@ -177,15 +171,9 @@ class PostService {
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         final data = e.response?.data;
-        String msg = '';
-        if (data is Map) {
-          msg = (data['message'] as String?) ?? '';
-        } else if (data is String) {
-          msg = data;
+        if (data is Map && data['code'] == 'BAD_WORD') {
+          throw BannedWordException(data['field'] as String? ?? 'content');
         }
-        if (msg.startsWith('title:')) throw const BannedWordException('title');
-        if (msg.startsWith('content:')) throw const BannedWordException('content');
-        if (msg.contains('금칙어')) throw const BannedWordException('content');
       }
       rethrow;
     }

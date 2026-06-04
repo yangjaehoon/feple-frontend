@@ -195,9 +195,9 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
           onPressed: () => Navigator.pop(context),
           child: Text('cancel'.tr(), style: TextStyle(color: colors.textSecondary)),
         ),
-        ElevatedButton(
+        FilledButton(
           onPressed: valid ? () => Navigator.pop(context, _result) : null,
-          style: ElevatedButton.styleFrom(
+          style: FilledButton.styleFrom(
             backgroundColor: colors.activate,
             foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

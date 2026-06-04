@@ -38,8 +38,9 @@ class CommentService {
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         final data = e.response?.data;
-        final msg = (data is Map ? data['message'] as String? : null) ?? '';
-        if (msg.contains('금칙어')) throw const BannedWordException('content');
+        if (data is Map && data['code'] == 'BAD_WORD') {
+          throw BannedWordException(data['field'] as String? ?? 'content');
+        }
       }
       rethrow;
     }
@@ -60,8 +61,9 @@ class CommentService {
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         final data = e.response?.data;
-        final msg = (data is Map ? data['message'] as String? : null) ?? '';
-        if (msg.contains('금칙어')) throw const BannedWordException('content');
+        if (data is Map && data['code'] == 'BAD_WORD') {
+          throw BannedWordException(data['field'] as String? ?? 'content');
+        }
       }
       rethrow;
     }

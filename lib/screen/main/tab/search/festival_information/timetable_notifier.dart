@@ -37,7 +37,7 @@ class TimetableNotifier extends ChangeNotifier {
   }
 
   void _safeNotify() {
-    if (!_disposed) _safeNotify();
+    if (!_disposed) notifyListeners();
   }
 
   TimetableNotifier({

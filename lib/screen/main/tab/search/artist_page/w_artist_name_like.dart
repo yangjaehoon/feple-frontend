@@ -28,13 +28,17 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
   late final ArtistFollowNotifier _followNotifier;
   late AnimationController _heartController;
 
+  void _onFollowChanged() {
+    if (mounted) setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
     _followNotifier = ArtistFollowNotifier(
       artistId: widget.artistId,
       initialFollowerCount: widget.initialFollowerCount ?? 0,
-    )..addListener(() { if (mounted) setState(() {}); })
+    )..addListener(_onFollowChanged)
      ..init();
     _heartController = AnimationController(
       vsync: this,
@@ -46,6 +50,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
 
   @override
   void dispose() {
+    _followNotifier.removeListener(_onFollowChanged);
     _followNotifier.dispose();
     _heartController.dispose();
     super.dispose();

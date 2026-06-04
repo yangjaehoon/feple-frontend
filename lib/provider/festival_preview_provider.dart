@@ -40,7 +40,7 @@ class FestivalPreviewProvider extends ChangeNotifier {
   }
 
   void _safeNotify() {
-    if (!_disposed) _safeNotify();
+    if (!_disposed) notifyListeners();
   }
 
   void toggleGenre(String genre) {

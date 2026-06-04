@@ -33,7 +33,7 @@ class PostDetailNotifier extends ChangeNotifier {
   }
 
   void _safeNotify() {
-    if (!_disposed) _safeNotify();
+    if (!_disposed) notifyListeners();
   }
 
   final void Function(String)? onCommentPosted;

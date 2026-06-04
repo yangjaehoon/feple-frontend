@@ -20,7 +20,7 @@ class HomeStateNotifier extends ChangeNotifier {
   }
 
   void _safeNotify() {
-    if (!_disposed) _safeNotify();
+    if (!_disposed) notifyListeners();
   }
 
   List<int> artistOrder = [];

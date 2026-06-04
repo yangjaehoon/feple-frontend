@@ -19,7 +19,7 @@ class ArtistPhotoNotifier extends ChangeNotifier {
   }
 
   void _safeNotify() {
-    if (!_disposed) _safeNotify();
+    if (!_disposed) notifyListeners();
   }
 
   void clearError() {

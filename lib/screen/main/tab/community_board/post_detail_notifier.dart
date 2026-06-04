@@ -26,6 +26,39 @@ class PostDetailNotifier extends ChangeNotifier {
   final Set<int> _togglingCommentIds = {};
   bool _disposed = false;
 
+  // comments 레퍼런스가 바뀔 때만 재계산되는 캐시
+  List<CommentDetail>? _cachedComments;
+  List<CommentDetail> _cachedRoots = const [];
+  Map<int, List<CommentDetail>> _cachedRepliesMap = const {};
+
+  List<CommentDetail> get rootComments {
+    _recomputeIfNeeded();
+    return _cachedRoots;
+  }
+
+  Map<int, List<CommentDetail>> get repliesMap {
+    _recomputeIfNeeded();
+    return _cachedRepliesMap;
+  }
+
+  void _recomputeIfNeeded() {
+    if (identical(_cachedComments, comments)) return;
+    _cachedRoots = comments.where((c) => c.parentId == null).toList();
+    _cachedRepliesMap = {};
+    for (final c in comments) {
+      if (c.parentId != null) {
+        _cachedRepliesMap.putIfAbsent(c.parentId!, () => []).add(c);
+      }
+    }
+    _cachedComments = comments;
+  }
+
+  void _replaceCommentAt(int idx, CommentDetail updated) {
+    final newList = List<CommentDetail>.from(comments);
+    newList[idx] = updated;
+    comments = newList;
+  }
+
   @override
   void dispose() {
     _disposed = true;
@@ -92,26 +125,19 @@ class PostDetailNotifier extends ChangeNotifier {
     }
   }
 
-  Future<void> submitComment(String comment, int? userId, {int? parentId}) async {
-    if (comment.isEmpty) {
+  Future<void> submitComment(String content, {int? parentId}) async {
+    if (content.isEmpty) {
       commentError = 'enter_comment_please';
       _safeNotify();
       return;
     }
     commentError = null;
-
-    if (userId == null) {
-      commentError = 'no_login_info';
-      _safeNotify();
-      return;
-    }
-
     isSubmitting = true;
     _safeNotify();
 
     try {
       await _commentService.submitComment(
-        content: comment,
+        content: content,
         postId: postId,
         parentId: parentId,
       );
@@ -143,16 +169,16 @@ class PostDetailNotifier extends ChangeNotifier {
     final idx = comments.indexWhere((c) => c.id == commentId);
     if (idx == -1) return;
     final prev = comments[idx];
-    comments[idx] = prev.copyWith(content: newContent, updatedAt: DateTime.now());
+    _replaceCommentAt(idx, prev.copyWith(content: newContent, updatedAt: DateTime.now()));
     _safeNotify();
     try {
       await _commentService.updateComment(commentId, newContent);
     } on BannedWordException {
-      comments[idx] = prev;
+      _replaceCommentAt(idx, prev);
       commentError = 'comment_banned_word';
       _safeNotify();
     } catch (e) {
-      comments[idx] = prev;
+      _replaceCommentAt(idx, prev);
       _safeNotify();
       debugPrint('updateComment error: $e');
       onError?.call('comment_update_failed');
@@ -182,27 +208,26 @@ class PostDetailNotifier extends ChangeNotifier {
     if (idx == -1) return;
     final prev = comments[idx];
     _togglingCommentIds.add(commentId);
-    // 낙관적 업데이트
-    comments[idx] = prev.copyWith(
+    _replaceCommentAt(idx, prev.copyWith(
       liked: !prev.liked,
       likeCount: prev.likeCount + (!prev.liked ? 1 : -1),
-    );
+    ));
     _safeNotify();
     try {
       final result = await _commentService.toggleCommentLike(commentId);
       // 서버 실제 값으로 동기화 — 빠른 연속 탭 시 불일치 방지
       final currentIdx = comments.indexWhere((c) => c.id == commentId);
       if (currentIdx != -1) {
-        comments[currentIdx] = comments[currentIdx].copyWith(
+        _replaceCommentAt(currentIdx, comments[currentIdx].copyWith(
           liked: result.liked,
           likeCount: result.likeCount,
-        );
+        ));
         _safeNotify();
       }
     } catch (e) {
       final currentIdx = comments.indexWhere((c) => c.id == commentId);
       if (currentIdx != -1) {
-        comments[currentIdx] = prev;
+        _replaceCommentAt(currentIdx, prev);
         _safeNotify();
       }
       debugPrint('toggleCommentLike error: $e');

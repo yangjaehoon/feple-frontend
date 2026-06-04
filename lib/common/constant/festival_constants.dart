@@ -1,8 +1,10 @@
 /// 페스티벌 연령 제한 목록 (서버 enum 값, 표시 i18n 키)
 const kAgeRestrictionOptions = [
-  ('AGE_12', 'age_12'),
-  ('AGE_15', 'age_15'),
-  ('AGE_19', 'age_19'),
+  ('ALL_AGES', 'age_all'),
+  ('AGE_8',   'age_8'),
+  ('AGE_12',  'age_12'),
+  ('AGE_15',  'age_15'),
+  ('AGE_19',  'age_19'),
 ];
 
 /// 페스티벌 장르 목록 (서버 enum 값, 표시 이름)

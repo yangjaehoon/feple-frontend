@@ -11,17 +11,21 @@ String? genreI18nKey(String genre) => switch (genre) {
     };
 
 String? ageI18nKey(String age) => switch (age) {
-      'AGE_12' => 'age_12',
-      'AGE_15' => 'age_15',
-      'AGE_19' => 'age_19',
-      _        => null,
+      'ALL_AGES' => 'age_all',
+      'AGE_8'    => 'age_8',
+      'AGE_12'   => 'age_12',
+      'AGE_15'   => 'age_15',
+      'AGE_19'   => 'age_19',
+      _          => null,
     };
 
 Color ageDisplayColor(String age) => switch (age) {
-      'AGE_12' => AppColors.ageRatingGreen,
-      'AGE_15' => AppColors.ageRatingOrange,
-      'AGE_19' => AppColors.ageRatingRed,
-      _        => Colors.white,
+      'ALL_AGES' => AppColors.ageRatingBlue,
+      'AGE_8'    => AppColors.ageRatingLightGreen,
+      'AGE_12'   => AppColors.ageRatingGreen,
+      'AGE_15'   => AppColors.ageRatingOrange,
+      'AGE_19'   => AppColors.ageRatingRed,
+      _          => Colors.white,
     };
 
 extension CertStateStyle on CertState {

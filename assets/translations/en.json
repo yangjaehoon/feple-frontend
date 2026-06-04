@@ -426,6 +426,8 @@
   "weather_too_early": "Weather is available\n3 days before the festival.",
   "weather_too_early_hint": "Check back closer to the date!",
   "filter_age_restriction": "Age Restriction",
+  "age_all": "All Ages",
+  "age_8": "8+",
   "age_12": "12+",
   "age_15": "15+",
   "age_19": "19+",

@@ -53,11 +53,49 @@ class DioClient {
     return newAccessToken;
   }
 
-  static final Dio dio = Dio(
+  /// SWR 백그라운드 갱신 전용 Dio.
+  /// JWT 첨부 + 캐시 저장만 수행, SWR 로직 없음 (무한 재귀 방지).
+  static final Dio _bgDio = Dio(
     BaseOptions(
       baseUrl: app_config.baseUrl,
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 20),
+      contentType: 'application/json',
+    ),
+  )..interceptors.add(
+    InterceptorsWrapper(
+      onRequest: (opts, handler) async {
+        if (!opts.headers.containsKey('Authorization')) {
+          final jwt = await TokenStore.readAccessToken();
+          if (jwt != null && jwt.isNotEmpty) {
+            opts.headers['Authorization'] = 'Bearer $jwt';
+          }
+        }
+        handler.next(opts);
+      },
+      onResponse: (resp, handler) async {
+        if (resp.requestOptions.method == 'GET' && resp.statusCode == 200) {
+          await ApiCacheStore.put(resp.requestOptions.uri.toString(), resp.data);
+        }
+        handler.next(resp);
+      },
+    ),
+  );
+
+  /// 캐시 제공 후 백그라운드에서 실제 요청으로 캐시 갱신
+  static Future<void> _bgRefresh(RequestOptions options) async {
+    try {
+      await _bgDio.get(options.path, queryParameters: options.queryParameters);
+    } catch (_) {}
+  }
+
+  static final Dio dio = Dio(
+    BaseOptions(
+      baseUrl: app_config.baseUrl,
+      // 페스티벌 현장 저신호 대응: 타임아웃 단축 (이전 10s/20s → 5s/12s)
+      // 타임아웃 발생 시 캐시가 더 빨리 반환됨
+      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 12),
       contentType: 'application/json',
     ),
   )..interceptors.add(
@@ -70,6 +108,22 @@ class DioClient {
             options.headers['Authorization'] = 'Bearer $jwt';
           }
         }
+
+        // SWR: GET 요청에 메모리 캐시가 있으면 즉시 반환 + 백그라운드 갱신
+        // 첫 방문(캐시 없음)이나 오프라인 fallback은 아래 캐시 인터셉터가 처리
+        if (options.method == 'GET') {
+          final cached = ApiCacheStore.getSync(options.uri.toString());
+          if (cached != null) {
+            _bgRefresh(options);
+            return handler.resolve(Response(
+              requestOptions: options,
+              data: cached,
+              statusCode: 200,
+              extra: const {'fromCache': true},
+            ));
+          }
+        }
+
         handler.next(options);
       },
       onError: (error, handler) async {
@@ -132,6 +186,7 @@ class DioClient {
         handler.next(response);
       },
       onError: (error, handler) async {
+        // 네트워크 에러 + 메모리 캐시도 없을 때 → SharedPreferences에서 복구
         if (_isNetworkError(error) &&
             error.requestOptions.method == 'GET') {
           final url = error.requestOptions.uri.toString();

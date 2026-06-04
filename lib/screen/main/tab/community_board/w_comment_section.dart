@@ -5,9 +5,11 @@ import 'package:feple/common/widget/w_profile_avatar.dart';
 import 'package:feple/model/comment_detail.dart';
 import 'package:flutter/material.dart';
 
-/// 댓글 목록 위젯
+/// 댓글 목록 위젯.
+/// [rootComments], [repliesMap]은 PostDetailNotifier의 캐시 게터에서 전달받는다.
 class CommentSection extends StatelessWidget {
-  final List<CommentDetail> comments;
+  final List<CommentDetail> rootComments;
+  final Map<int, List<CommentDetail>> repliesMap;
   final int? currentUserId;
   final void Function(int commentId)? onReport;
   final void Function(int commentId, String nickname)? onReply;
@@ -17,7 +19,8 @@ class CommentSection extends StatelessWidget {
 
   const CommentSection({
     super.key,
-    required this.comments,
+    required this.rootComments,
+    required this.repliesMap,
     this.currentUserId,
     this.onReport,
     this.onReply,
@@ -29,7 +32,7 @@ class CommentSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    if (comments.isEmpty) {
+    if (rootComments.isEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: Center(
@@ -41,18 +44,9 @@ class CommentSection extends StatelessWidget {
       );
     }
 
-    // 루트 댓글 / 대댓글 분리
-    final roots = comments.where((c) => c.parentId == null).toList();
-    final repliesMap = <int, List<CommentDetail>>{};
-    for (final c in comments) {
-      if (c.parentId != null) {
-        repliesMap.putIfAbsent(c.parentId!, () => []).add(c);
-      }
-    }
-
     final items = <Widget>[];
-    for (int i = 0; i < roots.length; i++) {
-      final root = roots[i];
+    for (int i = 0; i < rootComments.length; i++) {
+      final root = rootComments[i];
       if (i > 0) items.add(Divider(color: colors.listDivider, height: 1));
       items.add(_CommentTile(
         comment: root,
@@ -66,8 +60,7 @@ class CommentSection extends StatelessWidget {
 
       final replies = repliesMap[root.id] ?? [];
       for (final reply in replies) {
-        items.add(Divider(
-            color: colors.listDivider, height: 1, indent: 48, endIndent: 0));
+        items.add(Divider(color: colors.listDivider, height: 1, indent: 48, endIndent: 0));
         items.add(Padding(
           padding: const EdgeInsets.only(left: 32),
           child: _CommentTile(
@@ -115,7 +108,6 @@ class _CommentTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -129,164 +121,143 @@ class _CommentTile extends StatelessWidget {
             radius: isReply ? 13 : 16,
           ),
           const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      comment.nickname,
-                      style: TextStyle(
-                        color: colors.textSecondary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    InlineBadge(
-                      userRole: comment.userRole,
-                      certified: comment.certified,
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text(
-                      comment.createdAt.relativeTime,
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: colors.textSecondary.withValues(alpha: 0.6),
-                      ),
-                    ),
-                    if (comment.isEdited) ...[
-                      const SizedBox(width: 4),
-                      Text(
-                        'edited'.tr(),
-                        style: TextStyle(fontSize: 9, color: colors.textSecondary.withValues(alpha: 0.45)),
-                      ),
-                    ],
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  comment.content,
-                  style: TextStyle(color: colors.textTitle),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    GestureDetector(
-                      onTap: onToggleLike,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            comment.liked
-                                ? Icons.favorite_rounded
-                                : Icons.favorite_border_rounded,
-                            size: 13,
-                            color: comment.liked
-                                ? AppColors.kawaiiPink
-                                : colors.textSecondary,
-                          ),
-                          if (comment.likeCount > 0) ...[
-                            const SizedBox(width: 3),
-                            Text(
-                              comment.likeCount.toString(),
-                              style: TextStyle(
-                                  fontSize: 11, color: colors.textSecondary),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    if (!isReply && onReply != null) ...[
-                      const SizedBox(width: 12),
-                      GestureDetector(
-                        onTap: onReply,
-                        child: Text(
-                          'reply_comment'.tr(),
-                          style: TextStyle(
-                              fontSize: 11,
-                              color: colors.textSecondary,
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ],
-            ),
-          ),
-          if (isOwn)
-            PopupMenuButton<String>(
-              padding: EdgeInsets.zero,
-              icon: Icon(Icons.more_vert, size: 16, color: colors.textSecondary),
-              onSelected: (value) async {
-                if (value == 'edit') {
-                  onEdit?.call();
-                } else if (value == 'delete') {
-                  final confirmed = await showConfirmDialog(
-                    context,
-                    title: 'delete_comment'.tr(),
-                    content: 'delete_comment_confirm'.tr(),
-                    confirmLabel: 'delete_comment'.tr(),
-                  );
-                  if (confirmed) onDelete?.call();
-                }
-              },
-              itemBuilder: (_) => [
-                PopupMenuItem(
-                  value: 'edit',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.edit_outlined, size: 16),
-                      const SizedBox(width: 8),
-                      Text('edit_comment'.tr(), style: const TextStyle(fontSize: 13)),
-                    ],
-                  ),
-                ),
-                PopupMenuItem(
-                  value: 'delete',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.delete_outline_rounded,
-                          size: 16, color: Colors.red),
-                      const SizedBox(width: 8),
-                      Text('delete_comment'.tr(),
-                          style: const TextStyle(
-                              color: Colors.red, fontSize: 13)),
-                    ],
-                  ),
-                ),
-              ],
-            )
-          else if (!isOwn && onReport != null)
-            PopupMenuButton<String>(
-              padding: EdgeInsets.zero,
-              icon: Icon(Icons.more_vert,
-                  size: 16, color: colors.textSecondary),
-              onSelected: (value) {
-                if (value == 'report') onReport!();
-              },
-              itemBuilder: (_) => [
-                PopupMenuItem(
-                  value: 'report',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.flag_outlined,
-                          size: 16, color: Colors.red),
-                      const SizedBox(width: 8),
-                      Text('report_comment'.tr(),
-                          style: const TextStyle(
-                              color: Colors.red, fontSize: 13)),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+          Expanded(child: _buildBody(colors)),
+          _buildMenu(context, colors),
         ],
       ),
     );
+  }
+
+  Widget _buildBody(AbstractThemeColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              comment.nickname,
+              style: TextStyle(color: colors.textSecondary, fontSize: 12, fontWeight: FontWeight.bold),
+            ),
+            InlineBadge(userRole: comment.userRole, certified: comment.certified),
+          ],
+        ),
+        Row(
+          children: [
+            Text(
+              comment.createdAt.relativeTime,
+              style: TextStyle(fontSize: 10, color: colors.textSecondary.withValues(alpha: 0.6)),
+            ),
+            if (comment.isEdited) ...[
+              const SizedBox(width: 4),
+              Text(
+                'edited'.tr(),
+                style: TextStyle(fontSize: 9, color: colors.textSecondary.withValues(alpha: 0.45)),
+              ),
+            ],
+          ],
+        ),
+        const SizedBox(height: 2),
+        Text(comment.content, style: TextStyle(color: colors.textTitle)),
+        const SizedBox(height: 4),
+        _buildActions(colors),
+      ],
+    );
+  }
+
+  Widget _buildActions(AbstractThemeColors colors) {
+    return Row(
+      children: [
+        GestureDetector(
+          onTap: onToggleLike,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                comment.liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                size: 13,
+                color: comment.liked ? AppColors.kawaiiPink : colors.textSecondary,
+              ),
+              if (comment.likeCount > 0) ...[
+                const SizedBox(width: 3),
+                Text(
+                  comment.likeCount.toString(),
+                  style: TextStyle(fontSize: 11, color: colors.textSecondary),
+                ),
+              ],
+            ],
+          ),
+        ),
+        if (!isReply && onReply != null) ...[
+          const SizedBox(width: 12),
+          GestureDetector(
+            onTap: onReply,
+            child: Text(
+              'reply_comment'.tr(),
+              style: TextStyle(fontSize: 11, color: colors.textSecondary, fontWeight: FontWeight.w500),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildMenu(BuildContext context, AbstractThemeColors colors) {
+    if (isOwn) {
+      return PopupMenuButton<String>(
+        padding: EdgeInsets.zero,
+        icon: Icon(Icons.more_vert, size: 16, color: colors.textSecondary),
+        onSelected: (value) async {
+          if (value == 'edit') {
+            onEdit?.call();
+          } else if (value == 'delete') {
+            final confirmed = await showConfirmDialog(
+              context,
+              title: 'delete_comment'.tr(),
+              content: 'delete_comment_confirm'.tr(),
+              confirmLabel: 'delete_comment'.tr(),
+            );
+            if (confirmed) onDelete?.call();
+          }
+        },
+        itemBuilder: (_) => [
+          PopupMenuItem(
+            value: 'edit',
+            child: Row(children: [
+              const Icon(Icons.edit_outlined, size: 16),
+              const SizedBox(width: 8),
+              Text('edit_comment'.tr(), style: const TextStyle(fontSize: 13)),
+            ]),
+          ),
+          PopupMenuItem(
+            value: 'delete',
+            child: Row(children: [
+              const Icon(Icons.delete_outline_rounded, size: 16, color: Colors.red),
+              const SizedBox(width: 8),
+              Text('delete_comment'.tr(), style: const TextStyle(color: Colors.red, fontSize: 13)),
+            ]),
+          ),
+        ],
+      );
+    }
+    if (onReport != null) {
+      return PopupMenuButton<String>(
+        padding: EdgeInsets.zero,
+        icon: Icon(Icons.more_vert, size: 16, color: colors.textSecondary),
+        onSelected: (value) {
+          if (value == 'report') onReport!();
+        },
+        itemBuilder: (_) => [
+          PopupMenuItem(
+            value: 'report',
+            child: Row(children: [
+              const Icon(Icons.flag_outlined, size: 16, color: Colors.red),
+              const SizedBox(width: 8),
+              Text('report_comment'.tr(), style: const TextStyle(color: Colors.red, fontSize: 13)),
+            ]),
+          ),
+        ],
+      );
+    }
+    return const SizedBox.shrink();
   }
 }

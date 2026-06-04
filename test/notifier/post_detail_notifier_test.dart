@@ -74,7 +74,7 @@ void main() {
 
   group('submitComment', () {
     test('빈 댓글이면 commentError 설정, 서비스 미호출', () async {
-      await notifier.submitComment('', 1);
+      await notifier.submitComment('');
 
       expect(notifier.commentError, 'enter_comment_please');
       verifyNever(() => mockCommentService.submitComment(
@@ -83,17 +83,7 @@ void main() {
           parentId: any(named: 'parentId')));
     });
 
-    test('userId null이면 commentError 설정, 서비스 미호출', () async {
-      await notifier.submitComment('내용', null);
-
-      expect(notifier.commentError, 'no_login_info');
-      verifyNever(() => mockCommentService.submitComment(
-          content: any(named: 'content'),
-          postId: any(named: 'postId'),
-          parentId: any(named: 'parentId')));
-    });
-
-    test('성공 시 comments 갱신, onCommentPosted 호출, isSubmitting false', () async {
+    test('성공 시 comments 갱신, onSuccess 호출, isSubmitting false', () async {
       when(() => mockCommentService.submitComment(
             content: '내용',
             postId: 1,
@@ -107,7 +97,7 @@ void main() {
         postId: 1, initialHeartCount: 10, initialViewCount: 0,
         onSuccess: (key) => posted = key,
       );
-      await n.submitComment('내용', 1);
+      await n.submitComment('내용');
 
       expect(posted, 'comment_posted');
       expect(n.comments.length, 1);
@@ -124,7 +114,7 @@ void main() {
       when(() => mockCommentService.fetchPostComments(1))
           .thenAnswer((_) async => []);
 
-      await notifier.submitComment('대댓글', 1, parentId: 42);
+      await notifier.submitComment('대댓글', parentId: 42);
 
       verify(() => mockCommentService.submitComment(
           content: '대댓글', postId: 1, parentId: 42)).called(1);
@@ -142,7 +132,7 @@ void main() {
         postId: 1, initialHeartCount: 10, initialViewCount: 0,
         onError: (key) => errorKey = key,
       );
-      await n.submitComment('내용', 1);
+      await n.submitComment('내용');
 
       expect(errorKey, 'comment_failed');
       expect(n.isSubmitting, false);

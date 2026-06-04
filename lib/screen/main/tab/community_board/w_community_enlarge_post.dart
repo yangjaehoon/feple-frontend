@@ -384,7 +384,8 @@ class _EnlargePostState extends State<EnlargePost> {
           ),
           const SizedBox(height: 24),
           CommentSection(
-            comments: _notifier.comments,
+            rootComments: _notifier.rootComments,
+            repliesMap: _notifier.repliesMap,
             currentUserId: userId,
             onReport: (commentId) => showReportSheet(
               context,
@@ -422,11 +423,16 @@ class _EnlargePostState extends State<EnlargePost> {
         builder: (_, __) => CommentInputBar(
           controller: _commentController,
           isSubmitting: _notifier.isSubmitting,
-          onSubmit: () => _notifier.submitComment(
-            _commentController.text.trim(),
-            userId,
-            parentId: _replyToCommentId,
-          ),
+          onSubmit: () {
+            if (userId == null) {
+              context.showInfoSnackbar('no_login_info'.tr());
+              return;
+            }
+            _notifier.submitComment(
+              _commentController.text.trim(),
+              parentId: _replyToCommentId,
+            );
+          },
           errorText: _notifier.commentError?.tr(),
           replyToNickname: _replyToNickname,
           onCancelReply: _cancelReply,

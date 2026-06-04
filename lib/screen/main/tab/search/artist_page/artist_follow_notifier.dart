@@ -19,7 +19,7 @@ class ArtistFollowNotifier extends ChangeNotifier {
   }
 
   void _safeNotify() {
-    if (!_disposed) _safeNotify();
+    if (!_disposed) notifyListeners();
   }
 
   ArtistFollowNotifier({required this.artistId, required int initialFollowerCount}) {

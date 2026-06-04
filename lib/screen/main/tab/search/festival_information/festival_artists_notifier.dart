@@ -23,7 +23,7 @@ class FestivalArtistsNotifier extends ChangeNotifier {
   }
 
   void _safeNotify() {
-    if (!_disposed) _safeNotify();
+    if (!_disposed) notifyListeners();
   }
 
   // null = 전체, otherwise ISO date string

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
+import 'package:feple/common/widget/w_date_tab_bar.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
@@ -35,7 +36,35 @@ class FestivalArtistListScreen extends StatelessWidget {
                     ),
                   );
                 }
-                return GridView.builder(
+                return _buildContent(colors);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContent(AbstractThemeColors colors) {
+    final displayed = notifier.displayedArtists;
+    return Column(
+      children: [
+        if (notifier.hasDateFilter)
+          DateTabBar(
+            dates: notifier.allDates,
+            selectedDate: notifier.selectedDate,
+            onDateSelected: notifier.selectDate,
+            allLabel: 'lineup_all'.tr(),
+          ),
+        Expanded(
+          child: displayed.isEmpty
+              ? Center(
+                  child: Text(
+                    'no_participating_artists'.tr(),
+                    style: TextStyle(fontSize: 14, color: colors.textSecondary),
+                  ),
+                )
+              : GridView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
@@ -43,9 +72,9 @@ class FestivalArtistListScreen extends StatelessWidget {
                     crossAxisSpacing: 12,
                     childAspectRatio: 0.75,
                   ),
-                  itemCount: notifier.artists.length,
+                  itemCount: displayed.length,
                   itemBuilder: (context, index) {
-                    final artist = notifier.artists[index];
+                    final artist = displayed[index];
                     final isFollowed = notifier.isFollowed(artist.artistId);
                     return AnimatedListItem(
                       index: index,
@@ -110,12 +139,9 @@ class FestivalArtistListScreen extends StatelessWidget {
                       ),
                     );
                   },
-                );
-              },
-            ),
-          ),
-        ],
-      ),
+                ),
+        ),
+      ],
     );
   }
 

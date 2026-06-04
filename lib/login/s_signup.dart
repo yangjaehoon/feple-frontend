@@ -1,10 +1,11 @@
-import 'package:feple/common/util/info_dialog.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/password_validator.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/common/widget/w_nickname_field.dart';
+import 'package:feple/login/s_verify_email.dart';
 import 'package:feple/login/w_password_checklist.dart';
 import 'package:feple/model/nickname_check_result.dart';
 import 'package:feple/service/auth_service.dart';
@@ -104,12 +105,12 @@ class _SignupPageState extends State<SignupPage> {
       );
       if (!mounted) return;
 
-      await showInfoDialog(
+      await Navigator.push(
         context,
-        title: 'signup'.tr(),
-        content: 'verification_email_sent'.tr(),
+        SlideRoute(
+          builder: (_) => VerifyEmailPage(email: email, deleteOnCancel: true),
+        ),
       );
-      if (mounted) Navigator.pop(context); // 로그인 페이지로 돌아가기
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       final msg = AuthService.instance.firebaseErrorMessage(e.code);

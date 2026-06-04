@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/constant/festival_constants.dart';
 import 'package:feple/common/data/preference/prefs.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -179,6 +180,7 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
   late Future<List<Artist>> _artistsFuture;
   final Set<int> _selectedIds = {};
   bool _isSubmitting = false;
+  String? _selectedGenre;
 
   @override
   void initState() {
@@ -305,32 +307,86 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
           );
         }
         final artists = snapshot.data!;
-        return GridView.builder(
-          padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 12,
-            childAspectRatio: 0.72,
-          ),
-          itemCount: artists.length,
-          itemBuilder: (_, i) {
-            final artist = artists[i];
-            final selected = _selectedIds.contains(artist.id);
-            return _ArtistSelectCard(
-              artist: artist,
-              selected: selected,
-              onTap: () => setState(() {
-                if (selected) {
-                  _selectedIds.remove(artist.id);
-                } else {
-                  _selectedIds.add(artist.id);
-                }
-              }),
-            );
-          },
+        final genres = _extractGenres(artists);
+        final filtered = _selectedGenre == null
+            ? artists
+            : artists.where((a) => a.genre == _selectedGenre).toList();
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (genres.isNotEmpty) _buildGenreChips(genres, colors),
+            Expanded(
+              child: GridView.builder(
+                key: ValueKey(_selectedGenre),
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 12,
+                  childAspectRatio: 0.72,
+                ),
+                itemCount: filtered.length,
+                itemBuilder: (_, i) {
+                  final artist = filtered[i];
+                  final selected = _selectedIds.contains(artist.id);
+                  return _ArtistSelectCard(
+                    artist: artist,
+                    selected: selected,
+                    onTap: () => setState(() {
+                      if (selected) {
+                        _selectedIds.remove(artist.id);
+                      } else {
+                        _selectedIds.add(artist.id);
+                      }
+                    }),
+                  );
+                },
+              ),
+            ),
+          ],
         );
       },
+    );
+  }
+
+  List<String> _extractGenres(List<Artist> artists) {
+    final existing = artists.map((a) => a.genre).toSet();
+    final ordered = kGenreOptions
+        .map((e) => e.$1)
+        .where(existing.contains)
+        .toList();
+    final extras = existing
+        .where((g) => !ordered.contains(g))
+        .toList()
+      ..sort();
+    return [...ordered, ...extras];
+  }
+
+  String _genreLabel(String genre) {
+    final matching = kGenreOptions.where((e) => e.$1 == genre);
+    return matching.isEmpty ? genre : matching.first.$2.tr();
+  }
+
+  Widget _buildGenreChips(List<String> genres, AbstractThemeColors colors) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
+      child: Row(
+        children: [
+          _GenreFilterChip(
+            label: 'genre_all'.tr(),
+            selected: _selectedGenre == null,
+            colors: colors,
+            onTap: () => setState(() => _selectedGenre = null),
+          ),
+          ...genres.map((genre) => _GenreFilterChip(
+                label: _genreLabel(genre),
+                selected: _selectedGenre == genre,
+                colors: colors,
+                onTap: () => setState(() => _selectedGenre = genre),
+              )),
+        ],
+      ),
     );
   }
 
@@ -493,6 +549,49 @@ class _ArtistSelectCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ─── 장르 필터 칩 ────────────────────────────────────────────────────────────
+
+class _GenreFilterChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final AbstractThemeColors colors;
+  final VoidCallback onTap;
+
+  const _GenreFilterChip({
+    required this.label,
+    required this.selected,
+    required this.colors,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: AppDimens.animFast,
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        decoration: BoxDecoration(
+          color: selected ? colors.activate : colors.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected ? colors.activate : colors.listDivider,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeSm,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+            color: selected ? Colors.white : colors.textTitle,
+          ),
+        ),
       ),
     );
   }

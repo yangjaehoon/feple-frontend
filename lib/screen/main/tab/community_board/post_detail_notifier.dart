@@ -36,7 +36,7 @@ class PostDetailNotifier extends ChangeNotifier {
     if (!_disposed) notifyListeners();
   }
 
-  final void Function(String)? onCommentPosted;
+  final void Function(String)? onSuccess;
   final void Function(String)? onError;
   final void Function()? onPostDeleted;
 
@@ -44,7 +44,7 @@ class PostDetailNotifier extends ChangeNotifier {
     required this.postId,
     required int initialHeartCount,
     required int initialViewCount,
-    this.onCommentPosted,
+    this.onSuccess,
     this.onError,
     this.onPostDeleted,
   }) {
@@ -116,7 +116,7 @@ class PostDetailNotifier extends ChangeNotifier {
         parentId: parentId,
       );
       await fetchComments();
-      onCommentPosted?.call('comment_posted');
+      onSuccess?.call('comment_posted');
     } on BannedWordException {
       commentError = 'comment_banned_word';
       _safeNotify();
@@ -161,7 +161,9 @@ class PostDetailNotifier extends ChangeNotifier {
 
   Future<void> deleteComment(int commentId) async {
     final prev = List<CommentDetail>.from(comments);
-    comments = comments.where((c) => c.id != commentId).toList();
+    comments = comments
+        .where((c) => c.id != commentId && c.parentId != commentId)
+        .toList();
     _safeNotify();
     try {
       await _commentService.deleteComment(commentId);
@@ -240,7 +242,7 @@ class PostDetailNotifier extends ChangeNotifier {
     _safeNotify();
     try {
       await _scrapService.toggleScrap(postId);
-      onCommentPosted?.call(scraped ? 'scrap_done' : 'scrap_cancel');
+      onSuccess?.call(scraped ? 'scrap_done' : 'scrap_cancel');
     } catch (e) {
       scraped = wasScraped;
       scrapCount += wasScraped ? 1 : -1;

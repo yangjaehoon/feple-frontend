@@ -118,17 +118,14 @@ class _EnlargePostState extends State<EnlargePost> {
       postId: widget.id,
       initialHeartCount: widget.heart,
       initialViewCount: widget.viewCount,
-      onCommentPosted: (key) {
+      onSuccess: (key) {
         _commentController.clear();
         _cancelReply();
         if (mounted) context.showSuccessSnackbar(key.tr());
       },
-      onError: (msg) {
+      onError: (key) {
         if (!mounted) return;
-        final parts = msg.split(':');
-        final key = parts[0];
-        final arg = parts.length > 1 ? parts.sublist(1).join(':') : '';
-        context.showErrorSnackbar(key.tr(args: [arg]));
+        context.showErrorSnackbar(key.tr());
       },
       onPostDeleted: () {
         AppEvents.postChanged.value++;

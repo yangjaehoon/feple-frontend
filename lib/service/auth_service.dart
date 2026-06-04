@@ -25,10 +25,9 @@ class AuthService {
         .signInWithEmailAndPassword(email: email, password: password);
     final user = credential.user!;
 
-    // 이메일 인증 확인
+    // 이메일 인증 확인 — signOut 없이 세션 유지, VerifyEmailPage에서 처리
     if (!user.emailVerified) {
       await user.sendEmailVerification();
-      await FirebaseAuth.instance.signOut();
       throw EmailNotVerifiedException();
     }
 
@@ -36,7 +35,7 @@ class AuthService {
     return _exchangeFirebaseToken(idToken!);
   }
 
-  // ── 이메일 회원가입 (인증 이메일 발송만, 로그인하지 않음) ──
+  // ── 이메일 회원가입 (인증 이메일 발송, Firebase 세션 유지) ──
 
   Future<void> registerWithEmail(
       String email, String password, String nickname) async {
@@ -48,16 +47,48 @@ class AuthService {
       // 닉네임을 Firebase displayName에 저장 (이메일 인증 후 첫 로그인 시 백엔드에서 사용)
       await firebaseUser.updateDisplayName(nickname);
       await firebaseUser.sendEmailVerification();
-      await FirebaseAuth.instance.signOut();
+      // signOut 제거 — VerifyEmailPage에서 Firebase 세션 사용
     } catch (e) {
       // 실패 시 Firebase 계정 롤백
       try {
         await firebaseUser.delete();
-      } catch (e) {
-        debugPrint('[Auth] 계정 롤백 실패: $e');
+      } catch (deleteError) {
+        debugPrint('[Auth] 계정 롤백 실패: $deleteError');
       }
+      await FirebaseAuth.instance.signOut();
       rethrow;
     }
+  }
+
+  // ── 인증 이메일 재발송 ──
+
+  Future<void> resendVerificationEmail() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) await user.sendEmailVerification();
+  }
+
+  // ── 미인증 신규 계정 삭제 (가입 취소) ──
+
+  Future<void> cancelUnverifiedSignup() async {
+    try {
+      await FirebaseAuth.instance.currentUser?.delete();
+    } catch (e) {
+      debugPrint('[Auth] 미인증 계정 삭제 실패: $e');
+    }
+    await FirebaseAuth.instance.signOut();
+  }
+
+  // ── 이메일 인증 확인 후 앱 JWT 교환 ──
+
+  Future<app.User?> completeVerifiedLogin() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return null;
+    await user.reload();
+    final refreshed = FirebaseAuth.instance.currentUser;
+    if (refreshed?.emailVerified != true) return null;
+    // force: true로 최신 email_verified 클레임이 담긴 토큰 요청
+    final idToken = await refreshed!.getIdToken(true);
+    return _exchangeFirebaseToken(idToken!);
   }
 
   // ── 카카오 로그인 ──

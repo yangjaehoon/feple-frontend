@@ -4,6 +4,7 @@ import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/login/s_signup.dart';
+import 'package:feple/login/s_verify_email.dart';
 import 'package:feple/service/auth_service.dart';
 import 'package:feple/service/fcm_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -257,7 +258,13 @@ class _LoginPageState extends State<LoginPage> {
       final user = await AuthService.instance.loginWithEmail(email, password);
       await _handleLoginSuccess(user);
     } on EmailNotVerifiedException {
-      if (mounted) setState(() => _emailError = 'email_not_verified'.tr());
+      if (!mounted) return;
+      await Navigator.push(
+        context,
+        SlideRoute(
+          builder: (_) => VerifyEmailPage(email: emailController.text.trim()),
+        ),
+      );
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       final msg = AuthService.instance.firebaseErrorMessage(e.code);

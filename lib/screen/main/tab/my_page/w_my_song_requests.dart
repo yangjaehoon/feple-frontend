@@ -56,7 +56,7 @@ class _SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
       context,
       SlideRoute(builder: (_) => const SongRequestListScreen()),
     );
-    _load();
+    if (mounted) _load();
   }
 
   @override

@@ -89,74 +89,10 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const BottomSheetHandle(),
-          const SizedBox(height: 20),
-
-          Row(
-            children: [
-              Icon(Icons.verified_rounded, color: colors.activate, size: 22),
-              const SizedBox(width: 8),
-              Text(
-                'cert_title'.tr(),
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: colors.textTitle,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-
-          Text(
-            'cert_description'.tr(args: [widget.festivalName]),
-            style: TextStyle(
-              fontSize: 14,
-              color: colors.textSecondary,
-              height: 1.5,
-            ),
-          ),
+          _buildHeader(colors),
           const SizedBox(height: 24),
-
-          GestureDetector(
-            onTap: _submitting ? null : _pickImage,
-            child: Container(
-              width: double.infinity,
-              height: _photoAreaHeight,
-              decoration: BoxDecoration(
-                color: colors.backgroundMain,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: _imageBytes != null
-                      ? colors.activate
-                      : colors.textSecondary.withValues(alpha: 0.2),
-                  width: _imageBytes != null ? 2 : 1,
-                ),
-              ),
-              child: _imageBytes != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Image.memory(_imageBytes!, fit: BoxFit.cover),
-                    )
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.add_photo_alternate_outlined,
-                            size: 36, color: colors.textSecondary.withValues(alpha: 0.5)),
-                        const SizedBox(height: 8),
-                        Text(
-                          'cert_photo_hint'.tr(),
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: colors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-            ),
-          ),
+          _buildPhotoArea(colors),
           const SizedBox(height: 20),
-
           LoadingButton(
             label: 'cert_submit'.tr(),
             onPressed: _imageBytes == null ? null : _submit,
@@ -165,6 +101,68 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
             height: 50,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(AbstractThemeColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const BottomSheetHandle(),
+        const SizedBox(height: 20),
+        Row(
+          children: [
+            Icon(Icons.verified_rounded, color: colors.activate, size: 22),
+            const SizedBox(width: 8),
+            Text(
+              'cert_title'.tr(),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: colors.textTitle),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'cert_description'.tr(args: [widget.festivalName]),
+          style: TextStyle(fontSize: 14, color: colors.textSecondary, height: 1.5),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPhotoArea(AbstractThemeColors colors) {
+    return GestureDetector(
+      onTap: _submitting ? null : _pickImage,
+      child: Container(
+        width: double.infinity,
+        height: _photoAreaHeight,
+        decoration: BoxDecoration(
+          color: colors.backgroundMain,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: _imageBytes != null
+                ? colors.activate
+                : colors.textSecondary.withValues(alpha: 0.2),
+            width: _imageBytes != null ? 2 : 1,
+          ),
+        ),
+        child: _imageBytes != null
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.memory(_imageBytes!, fit: BoxFit.cover),
+              )
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add_photo_alternate_outlined,
+                      size: 36, color: colors.textSecondary.withValues(alpha: 0.5)),
+                  const SizedBox(height: 8),
+                  Text(
+                    'cert_photo_hint'.tr(),
+                    style: TextStyle(fontSize: 13, color: colors.textSecondary),
+                  ),
+                ],
+              ),
       ),
     );
   }

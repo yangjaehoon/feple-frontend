@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/photo_category.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/service/artist_schedule_service.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +49,7 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
   Future<void> _loadFestivals() async {
     try {
       final festivals =
-          await ArtistScheduleService.fetchFestivals(widget.artistId);
+          await sl<ArtistScheduleService>().fetchFestivals(widget.artistId);
 
       // 현재 description 기준으로 초기 선택값 결정
       final desc = widget.photo.description;

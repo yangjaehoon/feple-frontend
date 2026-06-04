@@ -1,3 +1,4 @@
+import 'package:feple/common/util/password_validator.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
@@ -37,18 +38,6 @@ class _SignupPageState extends State<SignupPage> {
     super.dispose();
   }
 
-  String? _validatePassword(String password) {
-    final missing = <String>[];
-    if (password.length < 8) missing.add('password_min_length'.tr());
-    if (password.length > 4096) missing.add('password_max_length'.tr());
-    if (!password.contains(RegExp(r'[A-Z]'))) missing.add('password_uppercase'.tr());
-    if (!password.contains(RegExp(r'[a-z]'))) missing.add('password_lowercase'.tr());
-    if (!password.contains(RegExp(r'[0-9]'))) missing.add('password_digit'.tr());
-    if (!password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) missing.add('password_special'.tr());
-    if (missing.isEmpty) return null;
-    return missing.join(', ');
-  }
-
   Future<void> _register() async {
     final email = emailController.text.trim();
     final password = passwordController.text;
@@ -67,7 +56,7 @@ class _SignupPageState extends State<SignupPage> {
       passwordError = 'enter_password'.tr();
       hasError = true;
     } else {
-      final pwError = _validatePassword(password);
+      final pwError = PasswordValidator.validate(password);
       if (pwError != null) {
         passwordError = pwError;
         hasError = true;
@@ -163,150 +152,137 @@ class _SignupPageState extends State<SignupPage> {
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 28),
               child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // ── 아이콘 ──
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: themeColors.activate.withValues(alpha: 0.12),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.person_add_rounded,
-                    size: 40,
-                    color: themeColors.activate,
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // ── 환영 텍스트 ──
-                Text(
-                  'signup'.tr(),
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w800,
-                    color: themeColors.textTitle,
-                    letterSpacing: -0.5,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'signup_subtitle'.tr(),
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: themeColors.textSecondary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 36),
-
-                // ── 이메일 입력 ──
-                AppTextField(
-                  controller: emailController,
-                  hintText: 'email'.tr(),
-                  icon: Icons.mail_outline_rounded,
-                  keyboardType: TextInputType.emailAddress,
-                  errorText: _emailError,
-                  onChanged: (_) {
-                    if (_emailError != null || _generalError != null) {
-                      setState(() {
-                        _emailError = null;
-                        _generalError = null;
-                      });
-                    }
-                  },
-                ),
-                const SizedBox(height: 14),
-
-                // ── 닉네임 입력 + 중복 확인 ──
-                NicknameField(
-                  key: _nicknameKey,
-                ),
-                const SizedBox(height: 14),
-
-                // ── 비밀번호 입력 ──
-                AppTextField(
-                  controller: passwordController,
-                  hintText: 'password'.tr(),
-                  icon: Icons.lock_outline_rounded,
-                  obscureText: true,
-                  errorText: _passwordError,
-                  onChanged: (v) {
-                    setState(() {
-                      _password = v;
-                      if (_passwordError != null || _generalError != null) {
-                        _passwordError = null;
-                        _generalError = null;
-                      }
-                    });
-                  },
-                ),
-                if (_password.isNotEmpty) ...[
-                  const SizedBox(height: 10),
-                  PasswordChecklist(password: _password),
-                ],
-                const SizedBox(height: 28),
-
-                // ── 일반 에러 메시지 ──
-                if (_generalError != null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Text(
-                      _generalError!,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColors.errorRed,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-
-                LoadingButton(
-                  label: 'register'.tr(),
-                  onPressed: _register,
-                  isLoading: _isLoading,
-                  backgroundColor: themeColors.activate,
-                ),
-                const SizedBox(height: 24),
-
-                // ── 로그인 페이지 링크 ──
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'already_have_account'.tr(),
-                      style: TextStyle(
-                        color: themeColors.textSecondary,
-                        fontSize: 14,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: TextButton.styleFrom(
-                        foregroundColor: themeColors.activate,
-                        padding: EdgeInsets.zero,
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildHeader(themeColors),
+                  _buildForm(themeColors),
+                  const SizedBox(height: 28),
+                  if (_generalError != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
                       child: Text(
-                        'login'.tr(),
+                        _generalError!,
                         style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
+                          fontSize: 13,
+                          color: AppColors.errorRed,
+                          fontWeight: FontWeight.w500,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                  ],
-                ),
-              ],
+                  LoadingButton(
+                    label: 'register'.tr(),
+                    onPressed: _register,
+                    isLoading: _isLoading,
+                    backgroundColor: themeColors.activate,
+                  ),
+                  const SizedBox(height: 24),
+                  _buildLoginLink(themeColors),
+                ],
+              ),
             ),
           ),
         ),
       ),
-      ),
+    );
+  }
+
+  Widget _buildHeader(AbstractThemeColors themeColors) {
+    return Column(
+      children: [
+        Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(
+            color: themeColors.activate.withValues(alpha: 0.12),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(Icons.person_add_rounded, size: 40, color: themeColors.activate),
+        ),
+        const SizedBox(height: 24),
+        Text(
+          'signup'.tr(),
+          style: TextStyle(
+            fontSize: 26,
+            fontWeight: FontWeight.w800,
+            color: themeColors.textTitle,
+            letterSpacing: -0.5,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'signup_subtitle'.tr(),
+          style: TextStyle(fontSize: 14, color: themeColors.textSecondary, fontWeight: FontWeight.w500),
+        ),
+        const SizedBox(height: 36),
+      ],
+    );
+  }
+
+  Widget _buildForm(AbstractThemeColors themeColors) {
+    return Column(
+      children: [
+        AppTextField(
+          controller: emailController,
+          hintText: 'email'.tr(),
+          icon: Icons.mail_outline_rounded,
+          keyboardType: TextInputType.emailAddress,
+          errorText: _emailError,
+          onChanged: (_) {
+            if (_emailError != null || _generalError != null) {
+              setState(() { _emailError = null; _generalError = null; });
+            }
+          },
+        ),
+        const SizedBox(height: 14),
+        NicknameField(key: _nicknameKey),
+        const SizedBox(height: 14),
+        AppTextField(
+          controller: passwordController,
+          hintText: 'password'.tr(),
+          icon: Icons.lock_outline_rounded,
+          obscureText: true,
+          errorText: _passwordError,
+          onChanged: (v) {
+            setState(() {
+              _password = v;
+              if (_passwordError != null || _generalError != null) {
+                _passwordError = null;
+                _generalError = null;
+              }
+            });
+          },
+        ),
+        if (_password.isNotEmpty) ...[
+          const SizedBox(height: 10),
+          PasswordChecklist(password: _password),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildLoginLink(AbstractThemeColors themeColors) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'already_have_account'.tr(),
+          style: TextStyle(color: themeColors.textSecondary, fontSize: 14),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          style: TextButton.styleFrom(
+            foregroundColor: themeColors.activate,
+            padding: EdgeInsets.zero,
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          child: Text(
+            'login'.tr(),
+            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+          ),
+        ),
+      ],
     );
   }
 }

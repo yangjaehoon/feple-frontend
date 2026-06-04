@@ -69,7 +69,7 @@ class AuthService {
     try {
       talkInstalled = await isKakaoTalkInstalled();
     } catch (_) {
-      // 시뮬레이터 또는 플랫폼 채널 미연결 환경에서 실패 → 웹 로그인으로 폴백
+      debugPrint('[Auth] KakaoTalk 설치 확인 실패: 웹 로그인으로 폴백');
     }
 
     if (talkInstalled) {

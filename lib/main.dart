@@ -17,6 +17,7 @@ import 'auth/token_store.dart';
 import 'common/data/preference/app_preferences.dart';
 import 'common/data/preference/prefs.dart';
 import 'package:dio/dio.dart' show DioException;
+import 'network/api_cache_store.dart';
 import 'network/dio_client.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'common/theme/custom_theme_app.dart';
@@ -33,6 +34,7 @@ void main() async {
   }
   await EasyLocalization.ensureInitialized();
   await AppPreferences.init();
+  await ApiCacheStore.init();
 
   KakaoSdk.init(
     nativeAppKey: await getApiKey("kakao_native_app_key"),

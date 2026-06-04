@@ -33,6 +33,11 @@ class FestivalPreviewProvider extends ChangeNotifier {
   bool get hasMore => _hasMore;
   bool _disposed = false;
 
+  DateTime? _loadedAt;
+  static const _staleAfter = Duration(minutes: 5);
+  bool get _isStale =>
+      _loadedAt == null || DateTime.now().difference(_loadedAt!) > _staleAfter;
+
   @override
   void dispose() {
     _disposed = true;
@@ -49,7 +54,7 @@ class FestivalPreviewProvider extends ChangeNotifier {
     } else {
       _selectedGenres.add(genre);
     }
-    refresh();
+    _clearAndFetch();
   }
 
   void toggleRegion(String region) {
@@ -58,7 +63,7 @@ class FestivalPreviewProvider extends ChangeNotifier {
     } else {
       _selectedRegions.add(region);
     }
-    refresh();
+    _clearAndFetch();
   }
 
   void toggleAgeRestriction(String ageRestriction) {
@@ -67,22 +72,34 @@ class FestivalPreviewProvider extends ChangeNotifier {
     } else {
       _selectedAgeRestrictions.add(ageRestriction);
     }
-    refresh();
+    _clearAndFetch();
   }
 
   void clearFilters() {
     _selectedGenres = {};
     _selectedRegions = {};
     _selectedAgeRestrictions = {};
-    refresh();
+    _clearAndFetch();
   }
 
-  Future<void> refresh() async {
+  // 필터 변경 시: 즉시 목록 비우고 재요청
+  void _clearAndFetch() {
     _items.clear();
     _page = 0;
     _hasMore = true;
     _error = null;
     _safeNotify();
+    fetchNext();
+  }
+
+  /// [force] true면 항상 재요청. false면 5분 이내 데이터가 있으면 skip.
+  /// 당겨서 새로고침은 force: true, 화면 복귀 후 자동 호출은 force: false.
+  Future<void> refresh({bool force = false}) async {
+    if (!force && _items.isNotEmpty && !_isStale) return;
+    _page = 0;
+    _hasMore = true;
+    _error = null;
+    // 기존 items 유지 — fetchNext에서 page 0 성공 시 교체
     await fetchNext();
   }
 
@@ -90,7 +107,12 @@ class FestivalPreviewProvider extends ChangeNotifier {
     if (_isLoading || _isLoadingMore) return;
     if (!_hasMore) return;
 
-    _page == 0 ? _isLoading = true : _isLoadingMore = true;
+    // 아이템이 없을 때만 전체 로딩 스피너 표시 (items가 있으면 기존 데이터 유지)
+    if (_page == 0) {
+      _isLoading = _items.isEmpty;
+    } else {
+      _isLoadingMore = true;
+    }
     _error = null;
     _safeNotify();
 
@@ -104,12 +126,16 @@ class FestivalPreviewProvider extends ChangeNotifier {
         ageRestrictions: _selectedAgeRestrictions.toList(),
       );
 
+      // page 0이면 기존 데이터를 새 데이터로 교체
+      if (_page == 0) _items.clear();
       _items.addAll(newItems);
       if (newItems.length < _size) _hasMore = false;
       _page += 1;
+      if (_page == 1) _loadedAt = DateTime.now();
     } catch (e) {
       debugPrint('festival preview error: $e');
-      _error = 'err_fetch_data'.tr();
+      // 기존 데이터가 있으면 에러 미표시 — 조용히 실패
+      if (_items.isEmpty) _error = 'err_fetch_data'.tr();
     } finally {
       _isLoading = false;
       _isLoadingMore = false;

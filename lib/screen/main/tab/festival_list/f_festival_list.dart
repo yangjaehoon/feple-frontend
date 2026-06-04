@@ -53,7 +53,7 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
         children: [
           RefreshIndicator(
             onRefresh: () async {
-              await context.read<FestivalPreviewProvider>().refresh();
+              await context.read<FestivalPreviewProvider>().refresh(force: true);
             },
             color: colors.activate,
             child: CustomScrollView(

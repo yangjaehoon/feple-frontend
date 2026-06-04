@@ -13,6 +13,11 @@ class HomeStateNotifier extends ChangeNotifier {
   bool hasError = false;
   bool _disposed = false;
 
+  DateTime? _loadedAt;
+  static const _staleAfter = Duration(minutes: 5);
+  bool get _isStale =>
+      _loadedAt == null || DateTime.now().difference(_loadedAt!) > _staleAfter;
+
   @override
   void dispose() {
     _disposed = true;
@@ -66,29 +71,27 @@ class HomeStateNotifier extends ChangeNotifier {
       artists = fetchedArtists;
       festivals = fetchedFestivals;
       boards = _buildBoards(fetchedArtists, fetchedFestivals);
+      _loadedAt = DateTime.now();
     } catch (e) {
       if (userId != id) return;
       debugPrint('[Home] 데이터 로드 실패: $e');
-      hasError = true;
+      // 기존 데이터가 있으면 유지, 없을 때만 에러 상태 표시
+      if (artists == null) hasError = true;
     }
     _safeNotify();
   }
 
-  Future<void> refresh() async {
-    artists = null;
-    festivals = null;
-    boards = null;
+  /// [force] true면 항상 재요청. false면 5분 이내 로드된 데이터가 있으면 skip.
+  Future<void> refresh({bool force = false}) async {
+    if (!force && !_isStale && artists != null) return;
     hasError = false;
-    _safeNotify();
     await loadData();
   }
 
   Future<void> refreshFestivals() async {
     final id = userId;
     if (id == null) return;
-    festivals = null;
-    boards = null;
-    _safeNotify();
+    // 기존 festivals 유지 — 네트워크 응답이 올 때 교체
     try {
       final fetched = await _fetchFestivals(id);
       if (userId != id) return;
@@ -103,9 +106,7 @@ class HomeStateNotifier extends ChangeNotifier {
   Future<void> refreshArtists() async {
     final id = userId;
     if (id == null) return;
-    artists = null;
-    boards = null;
-    _safeNotify();
+    // 기존 artists 유지 — 네트워크 응답이 올 때 교체
     try {
       final fetched = await _fetchArtists(id);
       if (userId != id) return;

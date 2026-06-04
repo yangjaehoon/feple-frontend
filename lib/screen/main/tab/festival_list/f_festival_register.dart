@@ -83,7 +83,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
       );
 
       if (mounted) {
-        context.read<FestivalPreviewProvider>().refresh();
+        context.read<FestivalPreviewProvider>().refresh(force: true);
         context.showSuccessSnackbar('festival_reg_register_success'.tr());
         Navigator.pop(context);
       }

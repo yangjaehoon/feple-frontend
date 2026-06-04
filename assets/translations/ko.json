@@ -426,6 +426,8 @@
   "weather_too_early": "페스티벌 시작 3일 전부터\n날씨를 확인할 수 있습니다.",
   "weather_too_early_hint": "조금만 기다려 주세요!",
   "filter_age_restriction": "연령 제한",
+  "age_all": "전 연령",
+  "age_8": "만 8세 이상",
   "age_12": "만 12세 이상",
   "age_15": "만 15세 이상",
   "age_19": "만 19세 이상",

@@ -79,7 +79,9 @@ class AppColors {
   static const Color infoBlue = Color(0xFF4A90E2);             // info snackbar
 
   // === Age Restriction Colors ===
-  static const Color ageRatingGreen = Color(0xFF4CAF50);    // AGE_12
-  static const Color ageRatingOrange = statusPending;        // AGE_15
-  static const Color ageRatingRed = Color(0xFFF44336);      // AGE_19
+  static const Color ageRatingBlue = Color(0xFF5CC0EB);       // ALL_AGES
+  static const Color ageRatingLightGreen = Color(0xFF81C784); // AGE_8
+  static const Color ageRatingGreen = Color(0xFF4CAF50);      // AGE_12
+  static const Color ageRatingOrange = statusPending;         // AGE_15
+  static const Color ageRatingRed = Color(0xFFF44336);        // AGE_19
 }

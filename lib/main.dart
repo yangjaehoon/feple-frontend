@@ -71,16 +71,14 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool _isBanDialogShowing = false;
-  bool _onboardingCompleted = false;
 
   void _onOnboardingComplete() {
-    setState(() => _onboardingCompleted = true);
+    setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
-    _onboardingCompleted = Prefs.onboardingCompleted.get();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       DioClient.onSessionExpired = () => userProvider.logout();
@@ -155,7 +153,7 @@ class _MyAppState extends State<MyApp> {
               builder: (context, userProvider, _) {
                 if (userProvider.user == null) {
                   return const LoginPage();
-                } else if (!_onboardingCompleted) {
+                } else if (!Prefs.onboardingCompleted.get()) {
                   return OnboardingScreen(onComplete: _onOnboardingComplete);
                 } else {
                   return const App();

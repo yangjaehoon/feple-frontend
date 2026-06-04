@@ -74,9 +74,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       if (user == null) return;
       _pollTimer?.cancel();
       if (!mounted) return;
-      await context.read<UserProvider>().setUser(user);
-      FcmService.instance.init().catchError((e) => debugPrint('[FCM] init failed: $e'));
-      // Consumer<UserProvider>가 home을 App()으로 교체 — 명시적 navigate 불필요
+      await _navigateToApp(user);
     } catch (e) {
       debugPrint('[VerifyEmail] completeVerifiedLogin 실패: $e');
       if (!silent && mounted) {
@@ -94,8 +92,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         setState(() => _errorMessage = 'verify_email_not_yet'.tr());
       } else {
         _pollTimer?.cancel();
-        await context.read<UserProvider>().setUser(user);
-        FcmService.instance.init().catchError((e) => debugPrint('[FCM] init failed: $e'));
+        await _navigateToApp(user);
       }
     } catch (e) {
       debugPrint('[VerifyEmail] 인증 확인 실패: $e');
@@ -103,6 +100,15 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     } finally {
       if (mounted) setState(() => _isVerifying = false);
     }
+  }
+
+  Future<void> _navigateToApp(dynamic user) async {
+    // setUser 전에 스택 정리 — LoginPage→SignupPage→VerifyEmailPage가 쌓인 상태에서
+    // setUser만 호출하면 Consumer가 home을 교체해도 위 라우트들이 남아 화면이 안 바뀜
+    final userProvider = context.read<UserProvider>();
+    Navigator.of(context).popUntil((route) => route.isFirst);
+    await userProvider.setUser(user);
+    FcmService.instance.init().catchError((e) => debugPrint('[FCM] init failed: $e'));
   }
 
   Future<void> _onResendTapped() async {

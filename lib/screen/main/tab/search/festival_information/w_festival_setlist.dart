@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_async_content_builder.dart';
@@ -199,12 +200,12 @@ class _ArtistCompactRow extends StatelessWidget {
                               padding: const EdgeInsets.only(right: 6),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(3),
-                                child: Image.network(
-                                  topSong.thumbnailUrl!,
+                                child: CachedNetworkImage(
+                                  imageUrl: topSong.thumbnailUrl!,
                                   width: 20,
                                   height: 20,
                                   fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                                  errorWidget: (_, __, ___) => const SizedBox.shrink(),
                                 ),
                               ),
                             ),
@@ -245,12 +246,12 @@ class _ArtistCompactRow extends StatelessWidget {
     if (entry.profileImageUrl != null && entry.profileImageUrl!.isNotEmpty) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(size / 2),
-        child: Image.network(
-          entry.profileImageUrl!,
+        child: CachedNetworkImage(
+          imageUrl: entry.profileImageUrl!,
           width: size,
           height: size,
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => _placeholder(size),
+          errorWidget: (_, __, ___) => _placeholder(size),
         ),
       );
     }

@@ -97,11 +97,25 @@ class FcmService {
     }
   }
 
+  // 로그아웃 시 호출 — 서버에서 토큰 삭제 후 구독 해제
+  // JWT가 아직 유효한 시점에 호출해야 함 (TokenStore.clear() 전)
   Future<void> stop() async {
+    await _unregisterFromServer();
     await _messageSubscription?.cancel();
     await _tokenSubscription?.cancel();
     _messageSubscription = null;
     _tokenSubscription = null;
+  }
+
+  Future<void> _unregisterFromServer() async {
+    try {
+      final token = await _messaging.getToken();
+      if (token == null) return;
+      await DioClient.dio.delete('/users/device-token', data: {'token': token});
+      debugPrint('[FCM] 토큰 서버 삭제 완료');
+    } catch (e) {
+      debugPrint('[FCM] 토큰 서버 삭제 실패: $e');
+    }
   }
 
   void _handleForegroundMessage(RemoteMessage message) {

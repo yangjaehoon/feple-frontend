@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 
 import 'service/artist_follow_service.dart';
+import 'service/cache_prefetch_service.dart';
 import 'service/artist_photo_service.dart';
 import 'service/artist_schedule_service.dart';
 import 'service/artist_service.dart';
@@ -37,6 +38,7 @@ void setupDependencies() {
   sl.registerLazySingleton<CertificationService>(() => CertificationService());
   sl.registerLazySingleton<CommentService>(() => CommentService());
   sl.registerLazySingleton<FestivalService>(() => FestivalService());
+  sl.registerLazySingleton<CachePrefetchService>(() => CachePrefetchService(sl<FestivalDetailService>()));
   sl.registerLazySingleton<FestivalDetailService>(() => FestivalDetailService());
   sl.registerLazySingleton<FestivalInteractionService>(() => FestivalInteractionService());
   sl.registerLazySingleton<NotificationPreferenceService>(() => NotificationPreferenceService());

@@ -66,6 +66,7 @@ class _CommunityPostState extends State<CommunityPost> {
   @override
   void dispose() {
     _searchDebounce?.cancel();
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _searchController.dispose();
     super.dispose();

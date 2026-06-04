@@ -97,6 +97,13 @@ class FcmService {
     }
   }
 
+  Future<void> stop() async {
+    await _messageSubscription?.cancel();
+    await _tokenSubscription?.cancel();
+    _messageSubscription = null;
+    _tokenSubscription = null;
+  }
+
   void _handleForegroundMessage(RemoteMessage message) {
     final notification = message.notification;
     if (notification == null) return;

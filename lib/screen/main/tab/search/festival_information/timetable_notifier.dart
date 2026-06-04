@@ -28,6 +28,18 @@ class TimetableNotifier extends ChangeNotifier {
   int get startHour => range.startHour;
   int get endHour => range.endHour;
 
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  void _safeNotify() {
+    if (!_disposed) _safeNotify();
+  }
+
   TimetableNotifier({
     required this.festivalId,
     this.userId,
@@ -71,25 +83,25 @@ class TimetableNotifier extends ChangeNotifier {
       followedNames = followed;
       isLoading = false;
       _cachedRange = computeTimetableRange(entries, selectedDate);
-      notifyListeners();
+      _safeNotify();
     } catch (e) {
       debugPrint('timetable fetch error: $e');
       error = 'err_fetch_data'.tr();
       isLoading = false;
-      notifyListeners();
+      _safeNotify();
     }
   }
 
   void selectDate(String? date) {
     selectedDate = date;
     _cachedRange = computeTimetableRange(entries, selectedDate);
-    notifyListeners();
+    _safeNotify();
   }
 
   Future<void> retry() async {
     error = null;
     isLoading = true;
-    notifyListeners();
+    _safeNotify();
     await fetch();
   }
 }

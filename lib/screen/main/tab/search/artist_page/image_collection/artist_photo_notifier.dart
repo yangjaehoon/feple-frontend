@@ -10,6 +10,17 @@ class ArtistPhotoNotifier extends ChangeNotifier {
   List<ArtistPhotoResponse> photos = [];
   bool isLoading = true;
   String? errorKey;
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  void _safeNotify() {
+    if (!_disposed) _safeNotify();
+  }
 
   void clearError() {
     errorKey = null;
@@ -19,14 +30,14 @@ class ArtistPhotoNotifier extends ChangeNotifier {
 
   Future<void> loadPhotos() async {
     isLoading = true;
-    notifyListeners();
+    _safeNotify();
     try {
       photos = await _photoService.fetchPhotos(artistId);
     } catch (e) {
       debugPrint('load photos error: $e');
     } finally {
       isLoading = false;
-      notifyListeners();
+      _safeNotify();
     }
   }
 
@@ -47,7 +58,7 @@ class ArtistPhotoNotifier extends ChangeNotifier {
           isLiked: !photo.isLiked,
         );
         photos.sort((a, b) => b.likeCount.compareTo(a.likeCount));
-        notifyListeners();
+        _safeNotify();
       }
     } catch (e) {
       debugPrint('toggle like error: $e');
@@ -62,7 +73,7 @@ class ArtistPhotoNotifier extends ChangeNotifier {
     } catch (e) {
       debugPrint('delete error: $e');
       errorKey = 'photo_delete_failed';
-      notifyListeners();
+      _safeNotify();
     }
   }
 
@@ -73,7 +84,7 @@ class ArtistPhotoNotifier extends ChangeNotifier {
     } catch (e) {
       debugPrint('update error: $e');
       errorKey = 'photo_update_failed';
-      notifyListeners();
+      _safeNotify();
     }
   }
 }

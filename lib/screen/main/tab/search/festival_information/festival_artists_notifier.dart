@@ -14,6 +14,17 @@ class FestivalArtistsNotifier extends ChangeNotifier {
   bool isLoading = true;
   bool hasError = false;
   List<String> allDates = [];
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  void _safeNotify() {
+    if (!_disposed) _safeNotify();
+  }
 
   // null = 전체, otherwise ISO date string
   String? selectedDate;
@@ -38,13 +49,13 @@ class FestivalArtistsNotifier extends ChangeNotifier {
   void selectDate(String? date) {
     if (selectedDate == date) return;
     selectedDate = date;
-    notifyListeners();
+    _safeNotify();
   }
 
   Future<void> retry() async {
     hasError = false;
     isLoading = true;
-    notifyListeners();
+    _safeNotify();
     await fetch();
   }
 
@@ -67,11 +78,11 @@ class FestivalArtistsNotifier extends ChangeNotifier {
       followedIds = followed;
       allDates = _computeAllDates(fetched);
       isLoading = false;
-      notifyListeners();
+      _safeNotify();
     } catch (e) {
       isLoading = false;
       hasError = true;
-      notifyListeners();
+      _safeNotify();
       debugPrint('festival artists fetch error: $e');
     }
   }

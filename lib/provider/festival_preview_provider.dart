@@ -31,6 +31,17 @@ class FestivalPreviewProvider extends ChangeNotifier {
   final int _size = 20;
   bool _hasMore = true;
   bool get hasMore => _hasMore;
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  void _safeNotify() {
+    if (!_disposed) _safeNotify();
+  }
 
   void toggleGenre(String genre) {
     if (_selectedGenres.contains(genre)) {
@@ -71,7 +82,7 @@ class FestivalPreviewProvider extends ChangeNotifier {
     _page = 0;
     _hasMore = true;
     _error = null;
-    notifyListeners();
+    _safeNotify();
     await fetchNext();
   }
 
@@ -81,7 +92,7 @@ class FestivalPreviewProvider extends ChangeNotifier {
 
     _page == 0 ? _isLoading = true : _isLoadingMore = true;
     _error = null;
-    notifyListeners();
+    _safeNotify();
 
     try {
       final newItems = await _service.fetchPreviews(
@@ -102,7 +113,7 @@ class FestivalPreviewProvider extends ChangeNotifier {
     } finally {
       _isLoading = false;
       _isLoadingMore = false;
-      notifyListeners();
+      _safeNotify();
     }
   }
 }

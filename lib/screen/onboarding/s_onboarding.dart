@@ -25,21 +25,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   int _currentPage = 0;
   bool _showArtistPick = false;
 
-  static const _pages = [
+  static const _pageCount = 3;
+  bool get _isLastInfoPage => _currentPage == _pageCount - 1;
+
+  List<_PageData> _buildPages(AbstractThemeColors colors) => [
     _PageData(
       titleKey: 'onboarding_title_1',
       subtitleKey: 'onboarding_subtitle_1',
       icon: Icons.festival_rounded,
-      primaryColor: AppColors.skyBlue,
+      primaryColor: colors.activate,
       bgColor: AppColors.skyBlueLight,
-      accentColor: AppColors.sunnyYellow,
+      accentColor: colors.accentColor,
     ),
     _PageData(
       titleKey: 'onboarding_title_2',
       subtitleKey: 'onboarding_subtitle_2',
       icon: Icons.favorite_rounded,
       primaryColor: AppColors.kawaiiPink,
-      bgColor: Color(0xFFFFE4EF),
+      bgColor: const Color(0xFFFFE4EF),
       accentColor: AppColors.kawaiiPurple,
     ),
     _PageData(
@@ -47,12 +50,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       subtitleKey: 'onboarding_subtitle_3',
       icon: Icons.forum_rounded,
       primaryColor: AppColors.kawaiiMint,
-      bgColor: Color(0xFFD4F5EC),
-      accentColor: AppColors.sunnyYellow,
+      bgColor: const Color(0xFFD4F5EC),
+      accentColor: colors.accentColor,
     ),
   ];
-
-  bool get _isLastInfoPage => _currentPage == _pages.length - 1;
 
   @override
   void dispose() {
@@ -83,6 +84,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
 
     final colors = context.appColors;
+    final pages = _buildPages(colors);
     return Scaffold(
       backgroundColor: colors.backgroundMain,
       body: SafeArea(
@@ -92,9 +94,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
-                itemCount: _pages.length,
+                itemCount: pages.length,
                 onPageChanged: (i) => setState(() => _currentPage = i),
-                itemBuilder: (_, i) => _PageContent(page: _pages[i]),
+                itemBuilder: (_, i) => _PageContent(page: pages[i]),
               ),
             ),
             _buildBottom(colors),
@@ -145,7 +147,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildDots(AbstractThemeColors colors) {
-    final totalDots = _pages.length + 1; // 마지막 도트 = 아티스트 선택 단계
+    final totalDots = _pageCount + 1; // 마지막 도트 = 아티스트 선택 단계
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(totalDots, (i) {

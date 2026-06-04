@@ -53,22 +53,20 @@ class HomeStateNotifier extends ChangeNotifier {
 
     hasError = false;
 
-    final orders = await Future.wait([
+    final (artistOrd, festivalOrd) = await (
       _loadArtistOrder(),
       _loadFestivalOrder(),
-    ]);
-    if (orders[0] != null) artistOrder = orders[0]!;
-    if (orders[1] != null) festivalOrder = orders[1]!;
+    ).wait;
+    if (artistOrd != null) artistOrder = artistOrd;
+    if (festivalOrd != null) festivalOrder = festivalOrd;
 
     try {
-      final data = await Future.wait([
+      final (fetchedArtists, fetchedFestivals) = await (
         _fetchArtists(id),
         _fetchFestivals(id),
-      ]);
+      ).wait;
       // 비동기 완료 시점에 userId가 바뀌었으면 다른 init() 호출 중 — 결과 버림
       if (userId != id) return;
-      final fetchedArtists = data[0] as List<FollowedArtist>;
-      final fetchedFestivals = data[1] as List<FestivalModel>;
       artists = fetchedArtists;
       festivals = fetchedFestivals;
       boards = _buildBoards(fetchedArtists, fetchedFestivals);

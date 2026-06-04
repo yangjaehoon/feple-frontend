@@ -55,9 +55,11 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
           _booths = list;
           _loading = false;
         });
-        _buildMarkers().catchError((e) {
+        try {
+          await _buildMarkers();
+        } catch (e) {
           debugPrint('[BoothMap] 마커 생성 오류: $e');
-        });
+        }
       }
     } catch (e) {
       debugPrint('[BoothMap] API 오류: $e');

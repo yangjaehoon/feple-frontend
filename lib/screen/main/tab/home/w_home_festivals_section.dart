@@ -102,52 +102,58 @@ class _FestivalItem extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              CachedNetworkImage(
-                imageUrl: festival.posterUrl,
-                memCacheWidth: 260,
-                fit: BoxFit.cover,
-                errorWidget: (_, __, ___) => Container(
-                  color: colors.surface,
-                  child: Icon(Icons.image_not_supported_rounded,
-                      color: colors.textSecondary),
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: ClipRect(
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 6),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                          colors: [
-                            Colors.black.withValues(alpha: 0.75),
-                            Colors.black.withValues(alpha: 0.3),
-                          ],
-                        ),
-                      ),
-                      child: Text(
-                        festival.title,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              _buildImage(colors),
+              _buildTitleOverlay(),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImage(AbstractThemeColors colors) {
+    return CachedNetworkImage(
+      imageUrl: festival.posterUrl,
+      memCacheWidth: 260,
+      fit: BoxFit.cover,
+      errorWidget: (_, __, ___) => Container(
+        color: colors.surface,
+        child: Icon(Icons.image_not_supported_rounded, color: colors.textSecondary),
+      ),
+    );
+  }
+
+  Widget _buildTitleOverlay() {
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                colors: [
+                  Colors.black.withValues(alpha: 0.75),
+                  Colors.black.withValues(alpha: 0.3),
+                ],
+              ),
+            ),
+            child: Text(
+              festival.title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+            ),
           ),
         ),
       ),

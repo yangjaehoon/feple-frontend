@@ -2,6 +2,7 @@ import 'package:feple/injection.dart';
 import 'package:feple/model/favorite_board.dart';
 import 'package:feple/model/followed_artist.dart';
 import 'package:feple/model/festival_model.dart';
+import 'package:feple/service/cache_prefetch_service.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -72,6 +73,8 @@ class HomeStateNotifier extends ChangeNotifier {
       festivals = fetchedFestivals;
       boards = _buildBoards(fetchedArtists, fetchedFestivals);
       _loadedAt = DateTime.now();
+      // ignore: unawaited_futures
+      sl<CachePrefetchService>().prefetchForFestivals(fetchedFestivals);
     } catch (e) {
       if (userId != id) return;
       debugPrint('[Home] 데이터 로드 실패: $e');

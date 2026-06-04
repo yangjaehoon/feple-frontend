@@ -22,7 +22,8 @@ Future<List<Map<String,String>>> fetchMostViewedNewsThumbnail(String artistName)
     final data = json.decode(response.body);
     if (data['items'] != null) {
       for (final item in data['items']) {
-        final videoId = item['id']['videoId'];
+        final videoId = (item['id'] as Map<String, dynamic>?)?['videoId'] as String?;
+        if (videoId == null) continue;
         final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/0.jpg';
         youtubeInfo.add({'thumbnailUrl': thumbnailUrl});
       }

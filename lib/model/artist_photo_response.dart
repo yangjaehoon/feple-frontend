@@ -22,14 +22,14 @@ class ArtistPhotoResponse {
 
   factory ArtistPhotoResponse.fromJson(Map<String, dynamic> json) {
     return ArtistPhotoResponse(
-      photoId: json['photoId'],
-      url: json['url'],
-      uploaderUserId: json['uploaderUserId'],
-      createdAt: DateTime.parse(json['createdAt']),
-      title: json['title'] ?? '',
-      description: json['description'] ?? '',
-      likeCount: json['likeCount'] ?? 0,
-      isLiked: json['isLiked'] ?? false,
+      photoId: (json['photoId'] as num).toInt(),
+      url: json['url'] as String,
+      uploaderUserId: (json['uploaderUserId'] as num).toInt(),
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      title: json['title'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      likeCount: (json['likeCount'] as num?)?.toInt() ?? 0,
+      isLiked: json['isLiked'] as bool? ?? false,
     );
   }
 }

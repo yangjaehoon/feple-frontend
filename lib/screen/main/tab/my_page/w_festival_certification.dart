@@ -114,7 +114,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
               : _hasError
                   ? _buildErrorState(colors)
                   : _certifications == null || _certifications!.isEmpty
-                      ? _buildEmptyList(colors)
+                      ? _buildEmptyState(colors)
                       : _buildCertList(colors),
         ),
       ],
@@ -172,12 +172,52 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
     );
   }
 
-  Widget _buildEmptyList(AbstractThemeColors colors) {
-    return ListView.builder(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      itemCount: 3,
-      itemBuilder: (_, __) => _buildPlaceholderItem(colors),
+  Widget _buildEmptyState(AbstractThemeColors colors) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.workspace_premium_outlined,
+            size: 32,
+            color: colors.activate.withValues(alpha: 0.5),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'cert_no_history'.tr(),
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: colors.textTitle,
+            ),
+          ),
+          const SizedBox(height: 3),
+          Text(
+            'cert_no_history_hint'.tr(),
+            style: TextStyle(
+              fontSize: 11,
+              color: colors.textSecondary,
+              height: 1.4,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 10),
+          FilledButton.icon(
+            onPressed: _openDetail,
+            icon: const Icon(Icons.add_rounded, size: 14),
+            label: Text(
+              'cert_submit'.tr(),
+              style: const TextStyle(fontSize: 12),
+            ),
+            style: FilledButton.styleFrom(
+              backgroundColor: colors.activate,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -272,55 +312,4 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
     );
   }
 
-  Widget _buildPlaceholderItem(AbstractThemeColors colors) {
-    return GestureDetector(
-      onTap: _openDetail,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(3),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: colors.certRingColor.withValues(alpha: 0.3),
-                boxShadow: [
-                  BoxShadow(
-                    color: colors.cardShadow.withValues(alpha: 0.08),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Container(
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle, color: colors.surface),
-                child: CircleAvatar(
-                  radius: 44,
-                  backgroundColor:
-                      colors.certRingColor.withValues(alpha: 0.15),
-                  child: Icon(
-                    Icons.add_photo_alternate_outlined,
-                    size: 28,
-                    color: colors.textTitle.withValues(alpha: 0.3),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'no_certification'.tr(),
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: colors.textTitle.withValues(alpha: 0.35),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

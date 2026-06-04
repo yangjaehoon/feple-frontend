@@ -93,6 +93,88 @@ class ApiCacheStore {
     }
   }
 
+  /// 뮤테이션(POST/PUT/PATCH/DELETE) 성공 시 관련 캐시 무효화.
+  /// DioClient의 onResponse에서 GET이 아닌 성공 응답에 호출됨.
+  static Future<void> invalidateFor(String requestUrl) async {
+    final patterns = _invalidationPatterns(requestUrl);
+    for (final p in patterns) {
+      _mem.removeWhere((url, _) => url.contains(p));
+      try {
+        final prefs = _prefs ?? await SharedPreferences.getInstance();
+        final keys = prefs
+            .getKeys()
+            .where((k) => k.startsWith(_prefix) && k.contains(p))
+            .toList();
+        for (final k in keys) {
+          await prefs.remove(k);
+        }
+      } catch (_) {}
+    }
+  }
+
+  static List<String> _invalidationPatterns(String url) {
+    RegExpMatch? m;
+
+    // 페스티벌 좋아요
+    m = RegExp(r'/festivals/(\d+)/like').firstMatch(url);
+    if (m != null) return ['/festivals/${m.group(1)!}/liked', '/liked-festivals'];
+
+    // 페스티벌 참석
+    m = RegExp(r'/festivals/(\d+)/attending').firstMatch(url);
+    if (m != null) return ['/festivals/${m.group(1)!}/attending'];
+
+    // 세트리스트 수정
+    m = RegExp(r'/festivals/(\d+)/artists/').firstMatch(url);
+    if (m != null) return ['/festivals/${m.group(1)!}/setlist'];
+
+    // 페스티벌 제출
+    if (RegExp(r'/festivals$').hasMatch(url)) return ['/festivals'];
+
+    // 아티스트 팔로우
+    m = RegExp(r'/artists/(\d+)/follow').firstMatch(url);
+    if (m != null) return ['/artists/${m.group(1)!}/follow', '/following'];
+
+    // 아티스트 사진 삭제
+    m = RegExp(r'/artists/(\d+)/photos').firstMatch(url);
+    if (m != null) return ['/artists/${m.group(1)!}/photos'];
+
+    // 곡 신청
+    if (url.contains('/song-requests')) return ['/song-requests'];
+
+    // 게시글 좋아요
+    m = RegExp(r'/posts/(\d+)/like').firstMatch(url);
+    if (m != null) return ['/posts/${m.group(1)!}/liked', '/liked-posts'];
+
+    // 게시글 스크랩
+    m = RegExp(r'/posts/(\d+)/scrap').firstMatch(url);
+    if (m != null) return ['/posts/${m.group(1)!}/scraped', '/scrapped'];
+
+    // 게시글 조회수 (캐시 무효화 불필요)
+    if (url.contains('/view')) return [];
+
+    // 게시글 수정/삭제
+    if (url.contains('/posts')) return ['/posts'];
+
+    // 댓글 좋아요
+    m = RegExp(r'/comments/(\d+)/like').firstMatch(url);
+    if (m != null) return ['/comments/${m.group(1)!}'];
+
+    // 댓글 작성/삭제
+    if (url.contains('/comments')) return ['/comments'];
+
+    // 알림 읽음 처리
+    if (url.contains('/notifications')) return ['/notifications/my'];
+
+    // 인증
+    if (url.contains('/certifications')) return ['/certifications/my'];
+
+    // 유저 프로필 수정
+    m = RegExp(r'/users/(me|\d+)').firstMatch(url);
+    if (m != null) return ['/users/${m.group(1)!}'];
+
+    return [];
+  }
+
   /// 비동기 조회 — getSync() 실패 시 SharedPreferences를 직접 읽는 fallback
   static Future<dynamic> get(String url) async {
     final sync = getSync(url);

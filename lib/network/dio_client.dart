@@ -178,10 +178,12 @@ class DioClient {
   )..interceptors.add(
     InterceptorsWrapper(
       onResponse: (response, handler) async {
-        if (response.requestOptions.method == 'GET' &&
-            response.statusCode == 200) {
-          final url = response.requestOptions.uri.toString();
+        final method = response.requestOptions.method;
+        final url = response.requestOptions.uri.toString();
+        if (method == 'GET' && response.statusCode == 200) {
           await ApiCacheStore.put(url, response.data);
+        } else if (method != 'GET') {
+          await ApiCacheStore.invalidateFor(url);
         }
         handler.next(response);
       },

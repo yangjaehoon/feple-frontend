@@ -29,111 +29,115 @@ class FestivalPreviewCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
-            height: 120,
-            margin: const EdgeInsets.all(10),
-            child: Hero(
-              tag: 'festival_poster_${festival.id}',
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: AspectRatio(
-                  aspectRatio: 2 / 3,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      AppNetworkImage(
-                        imageUrl: festival.posterUrl,
-                        fit: BoxFit.fill,
-                      ),
-                      if (festival.isEnded) ...[
-                        Container(color: Colors.black.withValues(alpha: 0.5)),
-                        Center(
-                          child: Text(
-                            'status_ended'.tr(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 1,
-                            ),
-                          ),
-                        ),
-                      ],
-                      if (!festival.isEnded && festival.dDaysUntil != null)
-                        Positioned(
-                          top: 6,
-                          left: 6,
-                          child: _DayBadge(dDays: festival.dDaysUntil!),
-                        ),
-                    ],
-                  ),
+          _buildPoster(colors),
+          Expanded(child: _buildInfo(colors)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPoster(AbstractThemeColors colors) {
+    return Container(
+      height: 120,
+      margin: const EdgeInsets.all(10),
+      child: Hero(
+        tag: 'festival_poster_${festival.id}',
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: AspectRatio(
+            aspectRatio: 2 / 3,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                AppNetworkImage(
+                  imageUrl: festival.posterUrl,
+                  fit: BoxFit.fill,
                 ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          festival.title,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 16,
-                            color: colors.textTitle,
-                            letterSpacing: -0.3,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                if (festival.isEnded) ...[
+                  Container(color: Colors.black.withValues(alpha: 0.5)),
+                  Center(
+                    child: Text(
+                      'status_ended'.tr(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      Icon(Icons.location_on_rounded,
-                          color: colors.activate, size: 14),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          festival.location,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: colors.textSecondary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(Icons.calendar_today_rounded,
-                          color: colors.activate, size: 14),
-                      const SizedBox(width: 4),
-                      Text(
-                        festival.startDate,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: colors.textSecondary,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ],
-              ),
+                if (!festival.isEnded && festival.dDaysUntil != null)
+                  Positioned(
+                    top: 6,
+                    left: 6,
+                    child: _DayBadge(dDays: festival.dDaysUntil!),
+                  ),
+              ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfo(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  festival.title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 16,
+                    color: colors.textTitle,
+                    letterSpacing: -0.3,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              Icon(Icons.location_on_rounded, color: colors.activate, size: 14),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  festival.location,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: colors.textSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Icon(Icons.calendar_today_rounded, color: colors.activate, size: 14),
+              const SizedBox(width: 4),
+              Text(
+                festival.startDate,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: colors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
         ],
       ),

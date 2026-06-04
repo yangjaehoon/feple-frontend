@@ -200,6 +200,7 @@
   "auth_err_auth_failed_with_code": "인증에 실패했습니다. ({})",
   "festival_reg_start_end_date_req": "시작일과 종료일을 선택해주세요.",
   "festival_reg_region_req": "지역을 선택해주세요.",
+  "festival_reg_end_before_start": "종료일은 시작일 이후여야 합니다.",
   "festival_reg_register_success": "페스티벌이 등록되었습니다.",
   "festival_reg_register_failed": "등록에 실패했습니다.",
   "festival_reg_register_title": "페스티벌 등록",

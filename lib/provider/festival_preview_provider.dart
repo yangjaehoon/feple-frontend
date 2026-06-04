@@ -48,32 +48,18 @@ class FestivalPreviewProvider extends ChangeNotifier {
     if (!_disposed) notifyListeners();
   }
 
-  void toggleGenre(String genre) {
-    if (_selectedGenres.contains(genre)) {
-      _selectedGenres.remove(genre);
+  void _toggleInSet(Set<String> set, String value) {
+    if (set.contains(value)) {
+      set.remove(value);
     } else {
-      _selectedGenres.add(genre);
+      set.add(value);
     }
     _clearAndFetch();
   }
 
-  void toggleRegion(String region) {
-    if (_selectedRegions.contains(region)) {
-      _selectedRegions.remove(region);
-    } else {
-      _selectedRegions.add(region);
-    }
-    _clearAndFetch();
-  }
-
-  void toggleAgeRestriction(String ageRestriction) {
-    if (_selectedAgeRestrictions.contains(ageRestriction)) {
-      _selectedAgeRestrictions.remove(ageRestriction);
-    } else {
-      _selectedAgeRestrictions.add(ageRestriction);
-    }
-    _clearAndFetch();
-  }
+  void toggleGenre(String genre) => _toggleInSet(_selectedGenres, genre);
+  void toggleRegion(String region) => _toggleInSet(_selectedRegions, region);
+  void toggleAgeRestriction(String ageRestriction) => _toggleInSet(_selectedAgeRestrictions, ageRestriction);
 
   void clearFilters() {
     _selectedGenres = {};
@@ -107,8 +93,10 @@ class FestivalPreviewProvider extends ChangeNotifier {
     if (_isLoading || _isLoadingMore) return;
     if (!_hasMore) return;
 
+    final wasFirstPage = _page == 0;
+
     // 아이템이 없을 때만 전체 로딩 스피너 표시 (items가 있으면 기존 데이터 유지)
-    if (_page == 0) {
+    if (wasFirstPage) {
       _isLoading = _items.isEmpty;
     } else {
       _isLoadingMore = true;
@@ -127,11 +115,11 @@ class FestivalPreviewProvider extends ChangeNotifier {
       );
 
       // page 0이면 기존 데이터를 새 데이터로 교체
-      if (_page == 0) _items.clear();
+      if (wasFirstPage) _items.clear();
       _items.addAll(newItems);
       if (newItems.length < _size) _hasMore = false;
       _page += 1;
-      if (_page == 1) _loadedAt = DateTime.now();
+      if (wasFirstPage) _loadedAt = DateTime.now();
     } catch (e) {
       debugPrint('festival preview error: $e');
       // 기존 데이터가 있으면 에러 미표시 — 조용히 실패

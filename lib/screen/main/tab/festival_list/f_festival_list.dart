@@ -33,9 +33,11 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 300) {
-      context.read<FestivalPreviewProvider>().fetchNext();
+    if (!mounted) return;
+    final provider = context.read<FestivalPreviewProvider>();
+    if (!provider.hasMore || provider.isLoadingMore || provider.isLoading) return;
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 300) {
+      provider.fetchNext();
     }
   }
 
@@ -119,98 +121,98 @@ class _FilterPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          InkWell(
-            onTap: onToggle,
-            borderRadius: BorderRadius.circular(16),
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                children: [
-                  Icon(Icons.tune_rounded,
-                      size: 18, color: colors.activate),
-                  const SizedBox(width: 8),
-                  Text(
-                    'btn_filter'.tr(),
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: colors.textTitle,
-                    ),
-                  ),
-                  if (activeFilterCount > 0) ...[
-                    const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 7, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: colors.activate,
-                        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-                      ),
-                      child: Text(
-                        '$activeFilterCount',
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                  ],
-                  const Spacer(),
-                  if (activeFilterCount > 0)
-                    GestureDetector(
-                      onTap: provider.clearFilters,
-                      child: Text(
-                        'btn_reset'.tr(),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: colors.textSecondary,
-                        ),
-                      ),
-                    ),
-                  const SizedBox(width: 8),
-                  Icon(
-                    expanded
-                        ? Icons.keyboard_arrow_up_rounded
-                        : Icons.keyboard_arrow_down_rounded,
-                    color: colors.textSecondary,
-                    size: 20,
-                  ),
-                ],
-              ),
-            ),
-          ),
+          _buildHeader(colors, provider),
           if (expanded) ...[
             Divider(height: 1, color: colors.listDivider),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _FilterSection(
-                    label: 'filter_genre'.tr(),
-                    items: kGenreOptions,
-                    selected: provider.selectedGenres,
-                    onToggle: provider.toggleGenre,
-                  ),
-                  const SizedBox(height: 12),
-                  _FilterSection(
-                    label: 'filter_region'.tr(),
-                    items: kRegionOptions,
-                    selected: provider.selectedRegions,
-                    onToggle: provider.toggleRegion,
-                  ),
-                  const SizedBox(height: 12),
-                  _FilterSection(
-                    label: 'filter_age_restriction'.tr(),
-                    items: kAgeRestrictionOptions,
-                    selected: provider.selectedAgeRestrictions,
-                    onToggle: provider.toggleAgeRestriction,
-                  ),
-                ],
+            _buildBody(colors, provider),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(AbstractThemeColors colors, FestivalPreviewProvider provider) {
+    return InkWell(
+      onTap: onToggle,
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Icon(Icons.tune_rounded, size: 18, color: colors.activate),
+            const SizedBox(width: 8),
+            Text(
+              'btn_filter'.tr(),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: colors.textTitle,
               ),
             ),
+            if (activeFilterCount > 0) ...[
+              const SizedBox(width: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                decoration: BoxDecoration(
+                  color: colors.activate,
+                  borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+                ),
+                child: Text(
+                  '$activeFilterCount',
+                  style: const TextStyle(
+                      color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
+                ),
+              ),
+            ],
+            const Spacer(),
+            if (activeFilterCount > 0)
+              GestureDetector(
+                onTap: provider.clearFilters,
+                child: Text(
+                  'btn_reset'.tr(),
+                  style: TextStyle(fontSize: 12, color: colors.textSecondary),
+                ),
+              ),
+            const SizedBox(width: 8),
+            Icon(
+              expanded
+                  ? Icons.keyboard_arrow_up_rounded
+                  : Icons.keyboard_arrow_down_rounded,
+              color: colors.textSecondary,
+              size: 20,
+            ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBody(AbstractThemeColors colors, FestivalPreviewProvider provider) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _FilterSection(
+            label: 'filter_genre'.tr(),
+            items: kGenreOptions,
+            selected: provider.selectedGenres,
+            onToggle: provider.toggleGenre,
+          ),
+          const SizedBox(height: 12),
+          _FilterSection(
+            label: 'filter_region'.tr(),
+            items: kRegionOptions,
+            selected: provider.selectedRegions,
+            onToggle: provider.toggleRegion,
+          ),
+          const SizedBox(height: 12),
+          _FilterSection(
+            label: 'filter_age_restriction'.tr(),
+            items: kAgeRestrictionOptions,
+            selected: provider.selectedAgeRestrictions,
+            onToggle: provider.toggleAgeRestriction,
+          ),
         ],
       ),
     );

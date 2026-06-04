@@ -18,6 +18,17 @@ class FestivalPosterNotifier extends ChangeNotifier {
   bool isCertified = false;
   bool isPending = false;
   bool hasInitError = false;
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  void _safeNotify() {
+    if (!_disposed) _safeNotify();
+  }
 
   CertState get certState {
     if (isCertified) return CertState.certified;
@@ -44,22 +55,22 @@ class FestivalPosterNotifier extends ChangeNotifier {
   Future<void> loadLikeState() async {
     try {
       liked = await festivalService.isLiked(festivalId);
-      notifyListeners();
+      _safeNotify();
     } catch (e) {
       debugPrint('loadLikeState error: $e');
       hasInitError = true;
-      notifyListeners();
+      _safeNotify();
     }
   }
 
   Future<void> loadAttendingState() async {
     try {
       attending = await festivalService.isAttending(festivalId);
-      notifyListeners();
+      _safeNotify();
     } catch (e) {
       debugPrint('loadAttendingState error: $e');
       hasInitError = true;
-      notifyListeners();
+      _safeNotify();
     }
   }
 
@@ -68,7 +79,7 @@ class FestivalPosterNotifier extends ChangeNotifier {
     final saved = prefs.getBool(_descPrefKey);
     if (saved != null) {
       descExpanded = saved;
-      notifyListeners();
+      _safeNotify();
     }
   }
 
@@ -83,24 +94,24 @@ class FestivalPosterNotifier extends ChangeNotifier {
       final mine = certs.where((c) => c.festivalId == festivalId).toList();
       isCertified = mine.any((c) => c.status == CertStatus.approved);
       isPending = !isCertified && mine.any((c) => c.status == CertStatus.pending);
-      notifyListeners();
+      _safeNotify();
     } catch (e) {
       debugPrint('[FestivalPoster] 인증 상태 로드 실패: $e');
       hasInitError = true;
-      notifyListeners();
+      _safeNotify();
     }
   }
 
   Future<void> toggleLike() async {
     final prev = liked;
     liked = !liked;
-    notifyListeners();
+    _safeNotify();
     try {
       await festivalService.toggleLike(festivalId);
       AppEvents.festivalLikeChanged.value++;
     } catch (e) {
       liked = prev;
-      notifyListeners();
+      _safeNotify();
       debugPrint('toggleLike error: $e');
     }
   }
@@ -110,20 +121,20 @@ class FestivalPosterNotifier extends ChangeNotifier {
     final prevCount = attendingCount;
     attending = !attending;
     attendingCount = attending ? attendingCount + 1 : (attendingCount - 1).clamp(0, 999999);
-    notifyListeners();
+    _safeNotify();
     try {
       await festivalService.toggleAttending(festivalId);
     } catch (e) {
       attending = prevAttending;
       attendingCount = prevCount;
-      notifyListeners();
+      _safeNotify();
       debugPrint('toggleAttending error: $e');
     }
   }
 
   void toggleDesc() {
     descExpanded = !descExpanded;
-    notifyListeners();
+    _safeNotify();
     saveDescState(descExpanded);
   }
 }

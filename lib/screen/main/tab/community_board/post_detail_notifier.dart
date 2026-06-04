@@ -24,6 +24,17 @@ class PostDetailNotifier extends ChangeNotifier {
   bool isToggling = false;
   bool isScrapping = false;
   final Set<int> _togglingCommentIds = {};
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  void _safeNotify() {
+    if (!_disposed) _safeNotify();
+  }
 
   final void Function(String)? onCommentPosted;
   final void Function(String)? onError;
@@ -47,7 +58,7 @@ class PostDetailNotifier extends ChangeNotifier {
 
   Future<void> _incrementView() async {
     viewCount++;
-    notifyListeners();
+    _safeNotify();
     try {
       await _postService.incrementPostView(postId);
     } catch (e) {
@@ -66,7 +77,7 @@ class PostDetailNotifier extends ChangeNotifier {
       scraped = isScraped;
       heartCount = counts.likeCount;
       scrapCount = counts.scrapCount;
-      notifyListeners();
+      _safeNotify();
     } catch (e) {
       debugPrint('loadPostState error: $e');
     }
@@ -75,7 +86,7 @@ class PostDetailNotifier extends ChangeNotifier {
   Future<void> fetchComments() async {
     try {
       comments = await _commentService.fetchPostComments(postId);
-      notifyListeners();
+      _safeNotify();
     } catch (e) {
       debugPrint('fetchComments error: $e');
     }
@@ -84,19 +95,19 @@ class PostDetailNotifier extends ChangeNotifier {
   Future<void> submitComment(String comment, int? userId, {int? parentId}) async {
     if (comment.isEmpty) {
       commentError = 'enter_comment_please';
-      notifyListeners();
+      _safeNotify();
       return;
     }
     commentError = null;
 
     if (userId == null) {
       commentError = 'no_login_info';
-      notifyListeners();
+      _safeNotify();
       return;
     }
 
     isSubmitting = true;
-    notifyListeners();
+    _safeNotify();
 
     try {
       await _commentService.submitComment(
@@ -108,13 +119,13 @@ class PostDetailNotifier extends ChangeNotifier {
       onCommentPosted?.call('comment_posted');
     } on BannedWordException {
       commentError = 'comment_banned_word';
-      notifyListeners();
+      _safeNotify();
     } catch (e) {
       debugPrint('submitComment error: $e');
       onError?.call(networkAwareErrorKey(e, 'comment_failed'));
     } finally {
       isSubmitting = false;
-      notifyListeners();
+      _safeNotify();
     }
   }
 
@@ -133,16 +144,16 @@ class PostDetailNotifier extends ChangeNotifier {
     if (idx == -1) return;
     final prev = comments[idx];
     comments[idx] = prev.copyWith(content: newContent, updatedAt: DateTime.now());
-    notifyListeners();
+    _safeNotify();
     try {
       await _commentService.updateComment(commentId, newContent);
     } on BannedWordException {
       comments[idx] = prev;
       commentError = 'comment_banned_word';
-      notifyListeners();
+      _safeNotify();
     } catch (e) {
       comments[idx] = prev;
-      notifyListeners();
+      _safeNotify();
       debugPrint('updateComment error: $e');
       onError?.call('comment_update_failed');
     }
@@ -151,12 +162,12 @@ class PostDetailNotifier extends ChangeNotifier {
   Future<void> deleteComment(int commentId) async {
     final prev = List<CommentDetail>.from(comments);
     comments = comments.where((c) => c.id != commentId).toList();
-    notifyListeners();
+    _safeNotify();
     try {
       await _commentService.deleteComment(commentId);
     } catch (e) {
       comments = prev;
-      notifyListeners();
+      _safeNotify();
       debugPrint('deleteComment error: $e');
       onError?.call('comment_delete_failed');
     }
@@ -174,7 +185,7 @@ class PostDetailNotifier extends ChangeNotifier {
       liked: !prev.liked,
       likeCount: prev.likeCount + (!prev.liked ? 1 : -1),
     );
-    notifyListeners();
+    _safeNotify();
     try {
       final result = await _commentService.toggleCommentLike(commentId);
       // 서버 실제 값으로 동기화 — 빠른 연속 탭 시 불일치 방지
@@ -184,13 +195,13 @@ class PostDetailNotifier extends ChangeNotifier {
           liked: result.liked,
           likeCount: result.likeCount,
         );
-        notifyListeners();
+        _safeNotify();
       }
     } catch (e) {
       final currentIdx = comments.indexWhere((c) => c.id == commentId);
       if (currentIdx != -1) {
         comments[currentIdx] = prev;
-        notifyListeners();
+        _safeNotify();
       }
       debugPrint('toggleCommentLike error: $e');
     } finally {
@@ -205,7 +216,7 @@ class PostDetailNotifier extends ChangeNotifier {
     final wasLiked = liked;
     liked = !liked;
     heartCount += liked ? 1 : -1;
-    notifyListeners();
+    _safeNotify();
     try {
       await _postService.toggleLike(postId);
     } catch (e) {
@@ -215,7 +226,7 @@ class PostDetailNotifier extends ChangeNotifier {
       onError?.call('like_failed');
     } finally {
       isToggling = false;
-      notifyListeners();
+      _safeNotify();
     }
   }
 
@@ -226,7 +237,7 @@ class PostDetailNotifier extends ChangeNotifier {
     final wasScraped = scraped;
     scraped = !scraped;
     scrapCount += scraped ? 1 : -1;
-    notifyListeners();
+    _safeNotify();
     try {
       await _scrapService.toggleScrap(postId);
       onCommentPosted?.call(scraped ? 'scrap_done' : 'scrap_cancel');
@@ -237,7 +248,7 @@ class PostDetailNotifier extends ChangeNotifier {
       onError?.call('scrap_failed');
     } finally {
       isScrapping = false;
-      notifyListeners();
+      _safeNotify();
     }
   }
 }

@@ -11,6 +11,17 @@ class HomeStateNotifier extends ChangeNotifier {
   List<FestivalModel>? festivals;
   List<FavoriteBoard>? boards;
   bool hasError = false;
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  void _safeNotify() {
+    if (!_disposed) _safeNotify();
+  }
 
   List<int> artistOrder = [];
   List<int> festivalOrder = [];
@@ -26,7 +37,7 @@ class HomeStateNotifier extends ChangeNotifier {
     festivals = null;
     boards = null;
     hasError = false;
-    notifyListeners();
+    _safeNotify();
     await loadData();
   }
 
@@ -60,7 +71,7 @@ class HomeStateNotifier extends ChangeNotifier {
       debugPrint('[Home] 데이터 로드 실패: $e');
       hasError = true;
     }
-    notifyListeners();
+    _safeNotify();
   }
 
   Future<void> refresh() async {
@@ -68,7 +79,7 @@ class HomeStateNotifier extends ChangeNotifier {
     festivals = null;
     boards = null;
     hasError = false;
-    notifyListeners();
+    _safeNotify();
     await loadData();
   }
 
@@ -77,7 +88,7 @@ class HomeStateNotifier extends ChangeNotifier {
     if (id == null) return;
     festivals = null;
     boards = null;
-    notifyListeners();
+    _safeNotify();
     try {
       final fetched = await _fetchFestivals(id);
       if (userId != id) return;
@@ -86,7 +97,7 @@ class HomeStateNotifier extends ChangeNotifier {
     } catch (e) {
       debugPrint('[Home] 페스티벌 갱신 실패: $e');
     }
-    if (userId == id) notifyListeners();
+    if (userId == id) _safeNotify();
   }
 
   Future<void> refreshArtists() async {
@@ -94,7 +105,7 @@ class HomeStateNotifier extends ChangeNotifier {
     if (id == null) return;
     artists = null;
     boards = null;
-    notifyListeners();
+    _safeNotify();
     try {
       final fetched = await _fetchArtists(id);
       if (userId != id) return;
@@ -103,7 +114,7 @@ class HomeStateNotifier extends ChangeNotifier {
     } catch (e) {
       debugPrint('[Home] 아티스트 갱신 실패: $e');
     }
-    if (userId == id) notifyListeners();
+    if (userId == id) _safeNotify();
   }
 
   Future<void> retry() async {
@@ -111,13 +122,13 @@ class HomeStateNotifier extends ChangeNotifier {
     festivals = null;
     boards = null;
     hasError = false;
-    notifyListeners();
+    _safeNotify();
     await loadData();
   }
 
   Future<void> saveArtistOrder(List<int> order) async {
     artistOrder = order;
-    notifyListeners();
+    _safeNotify();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(
         _artistOrderKey, order.map((e) => e.toString()).toList());
@@ -125,7 +136,7 @@ class HomeStateNotifier extends ChangeNotifier {
 
   Future<void> saveFestivalOrder(List<int> order) async {
     festivalOrder = order;
-    notifyListeners();
+    _safeNotify();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(
         _festivalOrderKey, order.map((e) => e.toString()).toList());

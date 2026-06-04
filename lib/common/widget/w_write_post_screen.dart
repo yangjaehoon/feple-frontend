@@ -55,15 +55,19 @@ class _WritePostScreenState extends State<WritePostScreen> {
   }
 
   void _clearTitleBannedWord() {
+    if (!mounted) return;
     if (_titleHasBannedWord) setState(() => _titleHasBannedWord = false);
   }
 
   void _clearContentBannedWord() {
+    if (!mounted) return;
     if (_contentHasBannedWord) setState(() => _contentHasBannedWord = false);
   }
 
   @override
   void dispose() {
+    _titleController.removeListener(_clearTitleBannedWord);
+    _contentController.removeListener(_clearContentBannedWord);
     _titleController.dispose();
     _contentController.dispose();
     super.dispose();

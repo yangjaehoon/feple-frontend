@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:feple/service/auth_service.dart';
+import 'package:feple/service/fcm_service.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -43,6 +44,7 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> logout() async {
+    await FcmService.instance.stop();
     await AuthService.instance.signOut();
     await TokenStore.clear();
     await _storage.delete(key: _kUserJson);

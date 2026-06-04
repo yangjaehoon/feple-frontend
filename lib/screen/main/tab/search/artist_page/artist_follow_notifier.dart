@@ -10,6 +10,17 @@ class ArtistFollowNotifier extends ChangeNotifier {
   bool isFollowed = false;
   int followCount = 0;
   bool isLoading = false;
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  void _safeNotify() {
+    if (!_disposed) _safeNotify();
+  }
 
   ArtistFollowNotifier({required this.artistId, required int initialFollowerCount}) {
     followCount = initialFollowerCount;
@@ -20,7 +31,7 @@ class ArtistFollowNotifier extends ChangeNotifier {
       final status = await _followService.getFollowStatus(artistId);
       isFollowed = status.followed;
       followCount = status.followerCount;
-      notifyListeners();
+      _safeNotify();
     } catch (e) {
       debugPrint('[FollowNotifier] init failed: $e');
     }
@@ -33,7 +44,7 @@ class ArtistFollowNotifier extends ChangeNotifier {
     final prevCount = followCount;
     isFollowed = !isFollowed;
     followCount += isFollowed ? 1 : -1;
-    notifyListeners();
+    _safeNotify();
     HapticFeedback.mediumImpact();
     try {
       if (prevFollowed) {
@@ -48,7 +59,7 @@ class ArtistFollowNotifier extends ChangeNotifier {
       rethrow;
     } finally {
       isLoading = false;
-      notifyListeners();
+      _safeNotify();
     }
   }
 }

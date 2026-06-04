@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:feple/common/data/preference/prefs.dart';
 import 'package:feple/service/auth_service.dart';
 import 'package:feple/service/fcm_service.dart';
 import 'package:feple/service/user_service.dart';
@@ -48,6 +49,7 @@ class UserProvider with ChangeNotifier {
     await AuthService.instance.signOut();
     await TokenStore.clear();
     await _storage.delete(key: _kUserJson);
+    await Prefs.onboardingCompleted.set(false);
     _user = null;
     notifyListeners();
   }

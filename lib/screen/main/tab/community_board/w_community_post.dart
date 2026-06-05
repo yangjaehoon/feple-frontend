@@ -79,8 +79,8 @@ class _CommunityPostState extends State<CommunityPost> {
 
   void _onScroll() {
     final pos = _scrollController.position;
-    final showTop = pos.pixels > 300;
-    if (showTop != _showScrollTop) setState(() => _showScrollTop = showTop);
+    final showScrollTop = pos.pixels > 300;
+    if (showScrollTop != _showScrollTop) setState(() => _showScrollTop = showScrollTop);
     if (_loadingMore || !_hasMore || !_isPaginated) return;
     if (pos.pixels >= pos.maxScrollExtent - 200) {
       _loadMore();

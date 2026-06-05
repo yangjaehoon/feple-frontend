@@ -53,9 +53,9 @@ class PostDetailNotifier extends SafeChangeNotifier {
     _cachedComments = comments;
   }
 
-  void _replaceCommentAt(int idx, CommentDetail updated) {
+  void _replaceCommentAt(int index, CommentDetail updated) {
     final newList = List<CommentDetail>.from(comments);
-    newList[idx] = updated;
+    newList[index] = updated;
     comments = newList;
   }
 
@@ -156,19 +156,19 @@ class PostDetailNotifier extends SafeChangeNotifier {
   }
 
   Future<void> updateComment(int commentId, String newContent) async {
-    final idx = comments.indexWhere((c) => c.id == commentId);
-    if (idx == -1) return;
-    final prev = comments[idx];
-    _replaceCommentAt(idx, prev.copyWith(content: newContent, updatedAt: DateTime.now()));
+    final index = comments.indexWhere((c) => c.id == commentId);
+    if (index == -1) return;
+    final originalComment = comments[index];
+    _replaceCommentAt(index, originalComment.copyWith(content: newContent, updatedAt: DateTime.now()));
     safeNotify();
     try {
       await _commentService.updateComment(commentId, newContent);
     } on BannedWordException {
-      _replaceCommentAt(idx, prev);
+      _replaceCommentAt(index, originalComment);
       commentError = 'comment_banned_word';
       safeNotify();
     } catch (e) {
-      _replaceCommentAt(idx, prev);
+      _replaceCommentAt(index, originalComment);
       safeNotify();
       debugPrint('updateComment error: $e');
       onError?.call('comment_update_failed');
@@ -176,7 +176,7 @@ class PostDetailNotifier extends SafeChangeNotifier {
   }
 
   Future<void> deleteComment(int commentId) async {
-    final prev = List<CommentDetail>.from(comments);
+    final originalComments = List<CommentDetail>.from(comments);
     comments = comments
         .where((c) => c.id != commentId && c.parentId != commentId)
         .toList();
@@ -184,7 +184,7 @@ class PostDetailNotifier extends SafeChangeNotifier {
     try {
       await _commentService.deleteComment(commentId);
     } catch (e) {
-      comments = prev;
+      comments = originalComments;
       safeNotify();
       debugPrint('deleteComment error: $e');
       onError?.call('comment_delete_failed');
@@ -194,30 +194,30 @@ class PostDetailNotifier extends SafeChangeNotifier {
   Future<void> toggleCommentLike(int commentId, int? userId) async {
     if (userId == null) return;
     if (_togglingCommentIds.contains(commentId)) return;
-    final idx = comments.indexWhere((c) => c.id == commentId);
-    if (idx == -1) return;
-    final prev = comments[idx];
+    final index = comments.indexWhere((c) => c.id == commentId);
+    if (index == -1) return;
+    final originalComment = comments[index];
     _togglingCommentIds.add(commentId);
-    _replaceCommentAt(idx, prev.copyWith(
-      liked: !prev.liked,
-      likeCount: prev.likeCount + (!prev.liked ? 1 : -1),
+    _replaceCommentAt(index, originalComment.copyWith(
+      liked: !originalComment.liked,
+      likeCount: originalComment.likeCount + (!originalComment.liked ? 1 : -1),
     ));
     safeNotify();
     try {
       final result = await _commentService.toggleCommentLike(commentId);
       // 서버 실제 값으로 동기화 — 빠른 연속 탭 시 불일치 방지
-      final currentIdx = comments.indexWhere((c) => c.id == commentId);
-      if (currentIdx != -1) {
-        _replaceCommentAt(currentIdx, comments[currentIdx].copyWith(
+      final commentIndex = comments.indexWhere((c) => c.id == commentId);
+      if (commentIndex != -1) {
+        _replaceCommentAt(commentIndex, comments[commentIndex].copyWith(
           liked: result.liked,
           likeCount: result.likeCount,
         ));
         safeNotify();
       }
     } catch (e) {
-      final currentIdx = comments.indexWhere((c) => c.id == commentId);
-      if (currentIdx != -1) {
-        _replaceCommentAt(currentIdx, prev);
+      final commentIndex = comments.indexWhere((c) => c.id == commentId);
+      if (commentIndex != -1) {
+        _replaceCommentAt(commentIndex, originalComment);
         safeNotify();
       }
       debugPrint('toggleCommentLike error: $e');

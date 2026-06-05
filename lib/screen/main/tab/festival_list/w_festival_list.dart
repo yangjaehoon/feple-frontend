@@ -38,7 +38,7 @@ class ConcertListWidget extends StatelessWidget {
     final previewPoster = context.watch<FestivalPreviewProvider>();
 
     if (previewPoster.isLoading && previewPoster.items.isEmpty) {
-      return _FestivalListSkeleton(colors: context.appColors);
+      return const _FestivalListSkeleton();
     }
 
     if (previewPoster.error != null && previewPoster.items.isEmpty) {
@@ -66,12 +66,11 @@ class ConcertListWidget extends StatelessWidget {
 }
 
 class _FestivalListSkeleton extends StatelessWidget {
-  final AbstractThemeColors colors;
-
-  const _FestivalListSkeleton({required this.colors});
+  const _FestivalListSkeleton();
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Column(
       children: List.generate(4, (_) {
         return Container(

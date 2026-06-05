@@ -102,7 +102,7 @@ class _MyPageListScreenState<T> extends State<MyPageListScreen<T>> {
                   : _hasError
                       ? _buildScrollable(
                           ErrorState(
-                            message: 'err_fetch_data'.tr(args: ['']),
+                            message: 'err_fetch_data'.tr(),
                             onRetry: _load,
                           ),
                         )

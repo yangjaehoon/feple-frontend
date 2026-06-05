@@ -34,7 +34,6 @@ class DateTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.appColors;
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: padding,
@@ -44,14 +43,12 @@ class DateTabBar extends StatelessWidget {
             _DateChip(
               label: allLabel!,
               selected: selectedDate == null,
-              colors: colors,
               onTap: () => onDateSelected(null),
             ),
           ...dates.map(
             (date) => _DateChip(
               label: _label(date),
               selected: selectedDate == date,
-              colors: colors,
               onTap: () => onDateSelected(date),
             ),
           ),
@@ -64,18 +61,17 @@ class DateTabBar extends StatelessWidget {
 class _DateChip extends StatelessWidget {
   final String label;
   final bool selected;
-  final AbstractThemeColors colors;
   final VoidCallback onTap;
 
   const _DateChip({
     required this.label,
     required this.selected,
-    required this.colors,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(

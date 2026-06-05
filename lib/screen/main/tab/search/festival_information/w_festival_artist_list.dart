@@ -7,6 +7,7 @@ import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
+import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/screen/main/tab/search/festival_information/festival_artists_notifier.dart';
 import 'package:flutter/material.dart';
 
@@ -76,72 +77,74 @@ class FestivalArtistListScreen extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final artist = displayed[index];
                     final isFollowed = notifier.isFollowed(artist.artistId);
-                    return AnimatedListItem(
-                      index: index,
-                      child: TapScale(
-                        onTap: () => Navigator.push(
-                          context,
-                          SlideRoute(
-                            builder: (_) => ArtistPage(
-                              artistId: artist.artistId,
-                              artistName: artist.artistName,
-                              followerCounter: 0,
-                            ),
-                          ),
-                        ),
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  border: isFollowed
-                                      ? Border.all(color: colors.activate, width: 2.5)
-                                      : null,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: colors.cardShadow.withValues(alpha: 0.15),
-                                      blurRadius: 12,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(isFollowed ? 17.5 : 20.0),
-                                  child: artist.profileImageUrl != null &&
-                                          artist.profileImageUrl!.isNotEmpty
-                                      ? CachedNetworkImage(
-                                          imageUrl: artist.profileImageUrl!,
-                                          memCacheWidth: 200,
-                                          fit: BoxFit.cover,
-                                          placeholder: (_, __) =>
-                                              const SkeletonBox(height: double.infinity),
-                                          errorWidget: (_, __, ___) => _placeholderBox(colors),
-                                        )
-                                      : _placeholderBox(colors),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              artist.artistName,
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: isFollowed ? colors.activate : colors.textTitle,
-                              ),
-                              textAlign: TextAlign.center,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
+                    return _buildArtistCard(context, index, artist, isFollowed, colors);
                   },
                 ),
         ),
       ],
+    );
+  }
+
+  Widget _buildArtistCard(BuildContext context, int index, FestivalArtistItem artist, bool isFollowed, AbstractThemeColors colors) {
+    return AnimatedListItem(
+      index: index,
+      child: TapScale(
+        onTap: () => Navigator.push(
+          context,
+          SlideRoute(
+            builder: (_) => ArtistPage(
+              artistId: artist.artistId,
+              artistName: artist.artistName,
+              followerCounter: 0,
+            ),
+          ),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20.0),
+                  border: isFollowed
+                      ? Border.all(color: colors.activate, width: 2.5)
+                      : null,
+                  boxShadow: [
+                    BoxShadow(
+                      color: colors.cardShadow.withValues(alpha: 0.15),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(isFollowed ? 17.5 : 20.0),
+                  child: artist.profileImageUrl != null && artist.profileImageUrl!.isNotEmpty
+                      ? CachedNetworkImage(
+                          imageUrl: artist.profileImageUrl!,
+                          memCacheWidth: 200,
+                          fit: BoxFit.cover,
+                          placeholder: (_, __) => const SkeletonBox(height: double.infinity),
+                          errorWidget: (_, __, ___) => _placeholderBox(colors),
+                        )
+                      : _placeholderBox(colors),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              artist.artistName,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: isFollowed ? colors.activate : colors.textTitle,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
     );
   }
 

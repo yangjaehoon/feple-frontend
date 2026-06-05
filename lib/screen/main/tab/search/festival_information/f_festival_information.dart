@@ -37,52 +37,54 @@ class _FestivalInformationFragmentState
       color: colors.backgroundMain,
       child: Stack(
         children: [
-          RefreshIndicator(
-            color: colors.activate,
-            onRefresh: _onRefresh,
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: EdgeInsets.only(
-                bottom: AppDimens.scrollPaddingBottom,
-              ),
-              child: Column(
-                children: [
-                  FestivalPoster(
-                    key: ValueKey('poster_$_refreshKey'),
-                    poster: widget.poster,
-                  ),
-                  const SizedBox(height: 16),
-                  FestivalArtists(
-                    key: ValueKey('artists_$_refreshKey'),
-                    festivalId: widget.poster.id,
-                  ),
-                  FestivalBoard(
-                    key: ValueKey('board_$_refreshKey'),
-                    festivalId: widget.poster.id,
-                    festivalName: widget.poster.title,
-                  ),
-                  FestivalTimetable(
-                    key: ValueKey('timetable_$_refreshKey'),
-                    festivalId: widget.poster.id,
-                    startDate: widget.poster.startDate,
-                    endDate: widget.poster.endDate,
-                  ),
-                  FestivalBoothMap(
-                    key: _mapKey,
-                    festivalId: widget.poster.id,
-                    festivalLat: widget.poster.latitude,
-                    festivalLng: widget.poster.longitude,
-                  ),
-                  FestivalSetlist(
-                    key: ValueKey('setlist_$_refreshKey'),
-                    festivalId: widget.poster.id,
-                  ),
-                ],
-              ),
-            ),
-          ),
+          _buildScrollBody(colors),
           FepleAppBar('festival_detail'.tr(), showBackButton: true),
         ],
+      ),
+    );
+  }
+
+  Widget _buildScrollBody(AbstractThemeColors colors) {
+    return RefreshIndicator(
+      color: colors.activate,
+      onRefresh: _onRefresh,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
+        child: Column(
+          children: [
+            FestivalPoster(
+              key: ValueKey('poster_$_refreshKey'),
+              poster: widget.poster,
+            ),
+            const SizedBox(height: 16),
+            FestivalArtists(
+              key: ValueKey('artists_$_refreshKey'),
+              festivalId: widget.poster.id,
+            ),
+            FestivalBoard(
+              key: ValueKey('board_$_refreshKey'),
+              festivalId: widget.poster.id,
+              festivalName: widget.poster.title,
+            ),
+            FestivalTimetable(
+              key: ValueKey('timetable_$_refreshKey'),
+              festivalId: widget.poster.id,
+              startDate: widget.poster.startDate,
+              endDate: widget.poster.endDate,
+            ),
+            FestivalBoothMap(
+              key: _mapKey,
+              festivalId: widget.poster.id,
+              festivalLat: widget.poster.latitude,
+              festivalLng: widget.poster.longitude,
+            ),
+            FestivalSetlist(
+              key: ValueKey('setlist_$_refreshKey'),
+              festivalId: widget.poster.id,
+            ),
+          ],
+        ),
       ),
     );
   }

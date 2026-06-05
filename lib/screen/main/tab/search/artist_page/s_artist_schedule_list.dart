@@ -173,106 +173,31 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
           InkWell(
             onTap: () => _navigateToFestival(item.festivalId),
             child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppDimens.paddingHorizontal,
-              vertical: 12,
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-                  child: hasPoster
-                      ? CachedNetworkImage(
-                          imageUrl: item.posterUrl!,
-                          width: 42,
-                          height: 42,
-                          fit: BoxFit.cover,
-                          errorWidget: (_, __, ___) => EventTypeIcon(config: typeConfig),
-                        )
-                      : EventTypeIcon(config: typeConfig),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.title,
-                        style: TextStyle(
-                          fontSize: AppDimens.fontSizeMd,
-                          fontWeight: FontWeight.w700,
-                          color: colors.textTitle,
-                        ),
-                      ),
-                      if (item.location != null && item.location!.isNotEmpty) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          item.location!,
-                          style: TextStyle(
-                            fontSize: AppDimens.fontSizeXs,
-                            color: colors.textSecondary,
-                          ),
-                        ),
-                      ],
-                      if (item.startDate != null) ...[
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Icon(Icons.calendar_today_rounded,
-                                size: 11, color: colors.textSecondary),
-                            const SizedBox(width: 4),
-                            Text(
-                              item.endDate != null && item.endDate != item.startDate
-                                  ? '${item.startDate} ~ ${item.endDate}'
-                                  : item.startDate!,
-                              style: TextStyle(
-                                fontSize: AppDimens.fontSizeXs,
-                                color: colors.textSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                      if (item.coArtists.isNotEmpty) ...[
-                        const SizedBox(height: 6),
-                        SizedBox(
-                          height: 28,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: item.coArtists.length,
-                            itemBuilder: (_, i) {
-                              final co = item.coArtists[i];
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 4),
-                                child: Tooltip(
-                                  message: co.artistName,
-                                  child: CircleAvatar(
-                                    radius: 13,
-                                    backgroundColor: colors.backgroundMain,
-                                    backgroundImage: (co.profileImageUrl != null &&
-                                            co.profileImageUrl!.isNotEmpty)
-                                        ? CachedNetworkImageProvider(co.profileImageUrl!)
-                                        : null,
-                                    child: (co.profileImageUrl == null ||
-                                            co.profileImageUrl!.isEmpty)
-                                        ? Icon(Icons.person_rounded,
-                                            size: 12, color: colors.textSecondary)
-                                        : null,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ],
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppDimens.paddingHorizontal,
+                vertical: 12,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+                    child: hasPoster
+                        ? CachedNetworkImage(
+                            imageUrl: item.posterUrl!,
+                            width: 42,
+                            height: 42,
+                            fit: BoxFit.cover,
+                            errorWidget: (_, __, ___) => EventTypeIcon(config: typeConfig),
+                          )
+                        : EventTypeIcon(config: typeConfig),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 12),
+                  Expanded(child: _buildItemContent(item, colors)),
+                ],
+              ),
             ),
           ),
-          ),  // InkWell
           Divider(
             height: 1,
             thickness: 1,
@@ -281,6 +206,74 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
             endIndent: AppDimens.paddingHorizontal,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildItemContent(ArtistScheduleModel item, AbstractThemeColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          item.title,
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeMd,
+            fontWeight: FontWeight.w700,
+            color: colors.textTitle,
+          ),
+        ),
+        if (item.location != null && item.location!.isNotEmpty) ...[
+          const SizedBox(height: 2),
+          Text(item.location!, style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary)),
+        ],
+        if (item.startDate != null) ...[
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Icon(Icons.calendar_today_rounded, size: 11, color: colors.textSecondary),
+              const SizedBox(width: 4),
+              Text(
+                item.endDate != null && item.endDate != item.startDate
+                    ? '${item.startDate} ~ ${item.endDate}'
+                    : item.startDate!,
+                style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
+              ),
+            ],
+          ),
+        ],
+        if (item.coArtists.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          _buildCoArtists(item, colors),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildCoArtists(ArtistScheduleModel item, AbstractThemeColors colors) {
+    return SizedBox(
+      height: 28,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: item.coArtists.length,
+        itemBuilder: (_, i) {
+          final co = item.coArtists[i];
+          return Padding(
+            padding: const EdgeInsets.only(right: 4),
+            child: Tooltip(
+              message: co.artistName,
+              child: CircleAvatar(
+                radius: 13,
+                backgroundColor: colors.backgroundMain,
+                backgroundImage: (co.profileImageUrl != null && co.profileImageUrl!.isNotEmpty)
+                    ? CachedNetworkImageProvider(co.profileImageUrl!)
+                    : null,
+                child: (co.profileImageUrl == null || co.profileImageUrl!.isEmpty)
+                    ? Icon(Icons.person_rounded, size: 12, color: colors.textSecondary)
+                    : null,
+              ),
+            ),
+          );
+        },
       ),
     );
   }

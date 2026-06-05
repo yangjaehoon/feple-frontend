@@ -221,26 +221,7 @@ class _ArtistFullTile extends StatelessWidget {
                 children: [
                   _buildAvatar(),
                   const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          entry.artistName,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: colors.textTitle,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'total_songs'.tr(args: ['${entry.songs.length}']),
-                          style: TextStyle(fontSize: 11, color: colors.textSecondary),
-                        ),
-                      ],
-                    ),
-                  ),
+                  Expanded(child: _buildArtistInfo()),
                   AnimatedRotation(
                     turns: isExpanded ? 0.5 : 0,
                     duration: AppDimens.animXFast,
@@ -257,6 +238,27 @@ class _ArtistFullTile extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Icon(Icons.edit_rounded, size: 16, color: colors.activate),
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildArtistInfo() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          entry.artistName,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: colors.textTitle,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          'total_songs'.tr(args: ['${entry.songs.length}']),
+          style: TextStyle(fontSize: 11, color: colors.textSecondary),
         ),
       ],
     );
@@ -302,52 +304,53 @@ class _ArtistFullTile extends StatelessWidget {
       );
     }
     return Column(
-      children: entry.songs.asMap().entries.map((e) {
-        final song = e.value;
-        return InkWell(
-          onTap: () => onSongTap(song.youtubeUrl),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 22,
-                  child: Text(
-                    '${e.key + 1}',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 12, color: colors.textSecondary, fontWeight: FontWeight.w500),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                if (song.thumbnailUrl != null)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-                    child: CachedNetworkImage(
-                      imageUrl: song.thumbnailUrl!,
-                      width: 38,
-                      height: 38,
-                      fit: BoxFit.cover,
-                      errorWidget: (_, __, ___) => _thumbPlaceholder(),
-                    ),
-                  )
-                else
-                  _thumbPlaceholder(),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    song.title,
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: colors.textTitle),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                const SizedBox(width: 6),
-                Icon(Icons.open_in_new_rounded, size: 13, color: colors.textSecondary),
-              ],
+      children: entry.songs.asMap().entries.map((e) => _buildSongRow(e.value, e.key)).toList(),
+    );
+  }
+
+  Widget _buildSongRow(SongModel song, int index) {
+    return InkWell(
+      onTap: () => onSongTap(song.youtubeUrl),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 22,
+              child: Text(
+                '${index + 1}',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 12, color: colors.textSecondary, fontWeight: FontWeight.w500),
+              ),
             ),
-          ),
-        );
-      }).toList(),
+            const SizedBox(width: 10),
+            if (song.thumbnailUrl != null)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+                child: CachedNetworkImage(
+                  imageUrl: song.thumbnailUrl!,
+                  width: 38,
+                  height: 38,
+                  fit: BoxFit.cover,
+                  errorWidget: (_, __, ___) => _thumbPlaceholder(),
+                ),
+              )
+            else
+              _thumbPlaceholder(),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                song.title,
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: colors.textTitle),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Icon(Icons.open_in_new_rounded, size: 13, color: colors.textSecondary),
+          ],
+        ),
+      ),
     );
   }
 

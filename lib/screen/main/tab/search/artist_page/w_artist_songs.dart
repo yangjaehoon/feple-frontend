@@ -197,46 +197,48 @@ class _ArtistSongsState extends State<ArtistSongs> {
             else
               _thumbnailPlaceholder(colors),
             const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    song.title,
-                    style: TextStyle(
-                      fontSize: AppDimens.fontSizeMd,
-                      fontWeight: FontWeight.w500,
-                      color: colors.textTitle,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  if (song.festivalCount > 0) ...[
-                    const SizedBox(height: 3),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: colors.activate.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        'festival_performed_count'.tr(args: [song.festivalCount.toString()]),
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: colors.activate,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
+            Expanded(child: _buildSongInfo(song, colors)),
             const SizedBox(width: 8),
             Icon(Icons.open_in_new_rounded, size: 14, color: colors.textSecondary),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSongInfo(SongModel song, AbstractThemeColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          song.title,
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeMd,
+            fontWeight: FontWeight.w500,
+            color: colors.textTitle,
+          ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+        if (song.festivalCount > 0) ...[
+          const SizedBox(height: 3),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: colors.activate.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              'festival_performed_count'.tr(args: [song.festivalCount.toString()]),
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: colors.activate,
+              ),
+            ),
+          ),
+        ],
+      ],
     );
   }
 

@@ -35,6 +35,7 @@ class ArtistPhotoNotifier extends ChangeNotifier {
       photos = await _photoService.fetchPhotos(artistId);
     } catch (e) {
       debugPrint('load photos error: $e');
+      errorKey = 'err_fetch_data';
     } finally {
       isLoading = false;
       _safeNotify();

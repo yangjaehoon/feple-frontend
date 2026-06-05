@@ -97,153 +97,156 @@ class _ImgUploadState extends State<ImgUpload> {
       backgroundColor: colors.backgroundMain,
       body: Column(
         children: [
-          SafeArea(
-            bottom: false,
-            child: Container(
-              height: AppDimens.appBarHeight,
-              color: colors.appBarColor,
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  Expanded(
-                    child: Text(
-                      'photo_upload_title'.tr(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: isUploading ? null : _submit,
-                    icon: isUploading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                                strokeWidth: 2, color: Colors.white))
-                        : const Icon(Icons.send_rounded, color: Colors.white),
-                  ),
-                ],
+          _buildCustomAppBar(colors),
+          _buildScrollContent(colors),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCustomAppBar(AbstractThemeColors colors) {
+    return SafeArea(
+      bottom: false,
+      child: Container(
+        height: AppDimens.appBarHeight,
+        color: colors.appBarColor,
+        child: Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            ),
+            Expanded(
+              child: Text(
+                'photo_upload_title'.tr(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(18.0),
-                child: Column(
-                  children: [
-                    ImagePickerBox(
-                      imageData: imageData,
-                      onTap: _pickImage,
-                      label: 'artist_photo_add_label'.tr(),
+            IconButton(
+              onPressed: isUploading ? null : _submit,
+              icon: isUploading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                  : const Icon(Icons.send_rounded, color: Colors.white),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildScrollContent(AbstractThemeColors colors) {
+    return Expanded(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(18.0),
+          child: Column(
+            children: [
+              ImagePickerBox(
+                imageData: imageData,
+                onTap: _pickImage,
+                label: 'artist_photo_add_label'.tr(),
+              ),
+              if (_imageError != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6, left: 4),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      _imageError!,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.errorRed,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                    if (_imageError != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 6, left: 4),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            _imageError!,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.errorRed,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
+                  ),
+                ),
+              Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Text(
+                        widget.artistName,
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                          color: colors.textTitle,
                         ),
                       ),
-                    Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16.0),
-                            child: Text(
-                              widget.artistName,
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w700,
-                                color: colors.textTitle,
-                              ),
-                            ),
-                          ),
-                          TextFormField(
-                            controller: titleTEC,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: colors.activate, width: 2),
-                              ),
-                              labelText: 'photo_artwork_label'.tr(),
-                              hintText: 'photo_artwork_hint'.tr(),
-                              labelStyle: TextStyle(color: colors.textSecondary),
-                            ),
-                            validator: (v) =>
-                                (v == null || v.isEmpty) ? 'required_field'.tr() : null,
-                          ),
-                          const SizedBox(height: 12),
-                          FutureBuilder<List<FestivalPreview>>(
-                            future: _festivalsFuture,
-                            builder: (context, snapshot) {
-                              final festivals = snapshot.data ?? [];
-                              return DropdownButtonFormField<FestivalPreview>(
-                                initialValue: _selectedFestival,
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: colors.activate, width: 2),
-                                  ),
-                                  labelText: 'festival_label'.tr(),
-                                  labelStyle: TextStyle(color: colors.textSecondary),
-                                ),
-                                hint: snapshot.connectionState != ConnectionState.done
-                                    ? Text('loading'.tr())
-                                    : Text('select_festival_hint'.tr()),
-                                items: [
-                                  ...festivals.map((f) => DropdownMenuItem(
-                                        value: f,
-                                        child: Text(f.title, overflow: TextOverflow.ellipsis),
-                                      )),
-                                  DropdownMenuItem(
-                                      value: photoCategoryDaily,
-                                      child: Text('photo_category_daily'.tr())),
-                                  DropdownMenuItem(
-                                      value: photoCategorySns,
-                                      child: Text('photo_category_sns'.tr())),
-                                  DropdownMenuItem(
-                                      value: photoCategoryOther,
-                                      child: Text('photo_category_other'.tr())),
-                                ],
-                                onChanged: (f) => setState(() => _selectedFestival = f),
-                                validator: (_) => _selectedFestival == null
-                                    ? 'select_festival_required'.tr()
-                                    : null,
-                              );
-                            },
-                          ),
-                        ],
+                    ),
+                    TextFormField(
+                      controller: titleTEC,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: colors.activate, width: 2),
+                        ),
+                        labelText: 'photo_artwork_label'.tr(),
+                        hintText: 'photo_artwork_hint'.tr(),
+                        labelStyle: TextStyle(color: colors.textSecondary),
                       ),
+                      validator: (v) =>
+                          (v == null || v.isEmpty) ? 'required_field'.tr() : null,
+                    ),
+                    const SizedBox(height: 12),
+                    FutureBuilder<List<FestivalPreview>>(
+                      future: _festivalsFuture,
+                      builder: (context, snapshot) {
+                        final festivals = snapshot.data ?? [];
+                        return DropdownButtonFormField<FestivalPreview>(
+                          initialValue: _selectedFestival,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: colors.activate, width: 2),
+                            ),
+                            labelText: 'festival_label'.tr(),
+                            labelStyle: TextStyle(color: colors.textSecondary),
+                          ),
+                          hint: snapshot.connectionState != ConnectionState.done
+                              ? Text('loading'.tr())
+                              : Text('select_festival_hint'.tr()),
+                          items: [
+                            ...festivals.map((f) => DropdownMenuItem(
+                                  value: f,
+                                  child: Text(f.title, overflow: TextOverflow.ellipsis),
+                                )),
+                            DropdownMenuItem(
+                                value: photoCategoryDaily,
+                                child: Text('photo_category_daily'.tr())),
+                            DropdownMenuItem(
+                                value: photoCategorySns,
+                                child: Text('photo_category_sns'.tr())),
+                            DropdownMenuItem(
+                                value: photoCategoryOther,
+                                child: Text('photo_category_other'.tr())),
+                          ],
+                          onChanged: (f) => setState(() => _selectedFestival = f),
+                          validator: (_) => _selectedFestival == null
+                              ? 'select_festival_required'.tr()
+                              : null,
+                        );
+                      },
                     ),
                   ],
                 ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

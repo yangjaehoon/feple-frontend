@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dio/dio.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/exception/banned_word_exception.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
@@ -90,13 +89,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
 
       final pickedImage = _pickedImage;
       if (pickedImage != null) {
-        final formData = FormData.fromMap({
-          'file': await MultipartFile.fromFile(
-            pickedImage.path,
-            filename: pickedImage.name,
-          ),
-        });
-        await userService.updateProfileImage(user.id, formData);
+        await userService.updateProfileImage(user.id, pickedImage);
       }
 
       if (newNickname != user.nickname) {

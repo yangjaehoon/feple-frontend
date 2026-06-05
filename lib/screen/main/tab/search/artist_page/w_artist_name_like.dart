@@ -71,6 +71,79 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
     }
   }
 
+  Widget _buildNameRow() {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            widget.artistName,
+            style: const TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+              letterSpacing: -0.5,
+              shadows: [Shadow(offset: Offset(0, 1), blurRadius: 6, color: Colors.black26)],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInteractionRow(AbstractThemeColors colors) {
+    return Row(
+      children: [
+        _buildFollowButton(
+          isFollowed: _followNotifier.isFollowed,
+          isLoading: _followNotifier.isLoading,
+          colors: colors,
+        ),
+        const SizedBox(width: 12),
+        ScaleTransition(
+          scale: _heartController,
+          child: const Icon(Icons.favorite_rounded, color: AppColors.kawaiiPink, size: 18),
+        ),
+        const SizedBox(width: 4),
+        AnimatedSwitcher(
+          duration: AppDimens.animNormal,
+          transitionBuilder: (child, animation) => SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0, 0.5),
+              end: Offset.zero,
+            ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
+            child: FadeTransition(opacity: animation, child: child),
+          ),
+          child: Text(
+            _formatCount(_followNotifier.followCount),
+            key: ValueKey(_followNotifier.followCount),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white70),
+          ),
+        ),
+        const Spacer(),
+        _buildActionIcon(
+          icon: Icons.calendar_month_rounded,
+          label: 'action_schedule'.tr(),
+          onTap: () => Navigator.push(
+            context,
+            SlideRoute(
+              builder: (context) => FestivalCalendar(artistId: widget.artistId, artistName: widget.artistName),
+            ),
+          ),
+        ),
+        const SizedBox(width: 4),
+        _buildActionIcon(
+          icon: Icons.photo_library_rounded,
+          label: 'action_gallery'.tr(),
+          onTap: () => Navigator.of(context, rootNavigator: true).push(
+            SlideRoute(
+              builder: (context) => ImgCollection(artistName: widget.artistName, artistId: widget.artistId),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -94,112 +167,9 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            // ── Artist name + follower count ──
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    widget.artistName,
-                    style: const TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                      letterSpacing: -0.5,
-                      shadows: [
-                        Shadow(
-                          offset: Offset(0, 1),
-                          blurRadius: 6,
-                          color: Colors.black26,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
+            _buildNameRow(),
             const SizedBox(height: 10),
-
-            // ── Follow button + follower count + action icons ──
-            Row(
-              children: [
-                // Follow button
-                _buildFollowButton(
-                  isFollowed: _followNotifier.isFollowed,
-                  isLoading: _followNotifier.isLoading,
-                  colors: colors,
-                ),
-
-                const SizedBox(width: 12),
-
-                // Follower count with heart icon
-                ScaleTransition(
-                  scale: _heartController,
-                  child: const Icon(
-                    Icons.favorite_rounded,
-                    color: AppColors.kawaiiPink,
-                    size: 18,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                AnimatedSwitcher(
-                  duration: AppDimens.animNormal,
-                  transitionBuilder: (child, animation) => SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0, 0.5),
-                      end: Offset.zero,
-                    ).animate(CurvedAnimation(
-                      parent: animation,
-                      curve: Curves.easeOutCubic,
-                    )),
-                    child: FadeTransition(opacity: animation, child: child),
-                  ),
-                  child: Text(
-                    _formatCount(_followNotifier.followCount),
-                    key: ValueKey(_followNotifier.followCount),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white70,
-                    ),
-                  ),
-                ),
-
-                const Spacer(),
-
-                // Action icons
-                _buildActionIcon(
-                  icon: Icons.calendar_month_rounded,
-                  label: 'action_schedule'.tr(),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      SlideRoute(
-                        builder: (context) => FestivalCalendar(
-                          artistId: widget.artistId,
-                          artistName: widget.artistName,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(width: 4),
-                _buildActionIcon(
-                  icon: Icons.photo_library_rounded,
-                  label: 'action_gallery'.tr(),
-                  onTap: () {
-                    Navigator.of(context, rootNavigator: true).push(
-                      SlideRoute(
-                        builder: (context) => ImgCollection(
-                          artistName: widget.artistName,
-                          artistId: widget.artistId,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
+            _buildInteractionRow(colors),
           ],
         ),
       ),

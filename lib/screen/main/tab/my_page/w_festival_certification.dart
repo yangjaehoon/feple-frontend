@@ -41,7 +41,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
     }
   }
 
-  void _openDetail() async {
+  Future<void> _openDetail() async {
     await Navigator.push(
       context,
       SlideRoute(builder: (_) => const CertificationListScreen()),

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:feple/common/exception/banned_word_exception.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/followed_artist.dart';
 import 'package:feple/model/nickname_check_result.dart';
@@ -45,8 +46,12 @@ class UserService {
         .toList();
   }
 
-  Future<void> updateProfileImage(int userId, FormData formData) =>
-      DioClient.dio.post('/users/$userId/profile-image', data: formData);
+  Future<void> updateProfileImage(int userId, XFile image) async {
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(image.path, filename: image.name),
+    });
+    await DioClient.dio.post('/users/$userId/profile-image', data: formData);
+  }
 
   Future<void> updateNickname(int userId, String nickname) =>
       DioClient.dio.put('/users/$userId', data: {'nickname': nickname});

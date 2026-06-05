@@ -181,7 +181,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
       height: 160,
       child: Center(
         child: ErrorState(
-          message: 'err_fetch_data'.tr(args: ['']),
+          message: 'err_fetch_data'.tr(),
           onRetry: () => provider.refresh(),
         ),
       ),

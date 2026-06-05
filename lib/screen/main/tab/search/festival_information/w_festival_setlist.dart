@@ -117,13 +117,12 @@ class _FestivalSetlistState extends State<FestivalSetlist> {
   Widget _buildList(List<FestivalSetlistEntry> entries, AbstractThemeColors colors) {
     return Column(
       children: entries.asMap().entries.map((e) {
-        final idx = e.key;
+        final index = e.key;
         final entry = e.value;
-        final isLast = idx == entries.length - 1;
+        final isLast = index == entries.length - 1;
         return _ArtistCompactRow(
           entry: entry,
           isLast: isLast,
-          colors: colors,
         );
       }).toList(),
     );
@@ -159,16 +158,15 @@ class _FestivalSetlistState extends State<FestivalSetlist> {
 class _ArtistCompactRow extends StatelessWidget {
   final FestivalSetlistEntry entry;
   final bool isLast;
-  final AbstractThemeColors colors;
 
   const _ArtistCompactRow({
     required this.entry,
     required this.isLast,
-    required this.colors,
   });
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     final topSong = entry.songs.isNotEmpty ? entry.songs.first : null;
     return Column(
       children: [

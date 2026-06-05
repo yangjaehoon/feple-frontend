@@ -248,10 +248,7 @@ class _LegendDot extends StatelessWidget {
         Text(label,
             style: TextStyle(
                 fontSize: 11,
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.6))),
+                color: context.appColors.textSecondary)),
       ],
     );
   }

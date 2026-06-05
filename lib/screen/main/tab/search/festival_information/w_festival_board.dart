@@ -16,11 +16,11 @@ class FestivalBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final svc = sl<PostService>();
+    final postService = sl<PostService>();
     return NamedBoard(
       name: festivalName,
       headerIcon: Icons.local_fire_department_rounded,
-      fetchPosts: () => svc.fetchFestivalPopularPosts(festivalId),
+      fetchPosts: () => postService.fetchFestivalPopularPosts(festivalId),
       postListScreenFactory: () => FestivalBoardScreen(
         festivalId: festivalId,
         festivalName: festivalName,

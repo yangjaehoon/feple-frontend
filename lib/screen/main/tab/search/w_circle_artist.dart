@@ -215,7 +215,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
             },
           ),
           const SizedBox(height: 20),
-          _ArtistSuggestionBanner(colors: colors),
+          const _ArtistSuggestionBanner(),
           const SizedBox(height: 8),
         ],
       ),
@@ -309,9 +309,7 @@ String _genreLabel(String genre) {
 }
 
 class _ArtistSuggestionBanner extends StatelessWidget {
-  final AbstractThemeColors colors;
-
-  const _ArtistSuggestionBanner({required this.colors});
+  const _ArtistSuggestionBanner();
 
   void _openSheet(BuildContext context) {
     final userId = context.read<UserProvider>().currentUserId;
@@ -329,6 +327,7 @@ class _ArtistSuggestionBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return GestureDetector(
       onTap: () => _openSheet(context),
       child: Container(

@@ -20,10 +20,10 @@ import 'package:provider/provider.dart';
 import '../../../../provider/user_provider.dart';
 
 class CommunityPost extends StatefulWidget {
-  final String boardname;
+  final String boardName;
   final String boardType;
 
-  const CommunityPost({super.key, required this.boardname, required this.boardType});
+  const CommunityPost({super.key, required this.boardName, required this.boardType});
 
   @override
   State<CommunityPost> createState() => _CommunityPostState();
@@ -199,7 +199,7 @@ class _CommunityPostState extends State<CommunityPost> {
             post: post,
             highlightKeyword: _searchController.text.trim(),
             onTap: () => Navigator.of(context, rootNavigator: true).push(
-              SlideRoute(builder: (_) => EnlargePost.fromPost(boardname: widget.boardname, post: post)),
+              SlideRoute(builder: (_) => EnlargePost.fromPost(boardName: widget.boardName, post: post)),
             ),
           );
         },
@@ -209,7 +209,7 @@ class _CommunityPostState extends State<CommunityPost> {
 
     if (_hasError) {
       return ErrorState(
-        message: 'err_fetch_data'.tr(args: ['']),
+        message: 'err_fetch_data'.tr(),
         onRetry: _load,
       );
     }
@@ -224,7 +224,7 @@ class _CommunityPostState extends State<CommunityPost> {
               Icon(Icons.chat_bubble_outline_rounded, size: 48, color: colors.textSecondary.withValues(alpha: 0.3)),
               const SizedBox(height: 12),
               Text(
-                'be_first_to_discuss'.tr(args: [widget.boardname]),
+                'be_first_to_discuss'.tr(args: [widget.boardName]),
                 style: TextStyle(fontSize: 14, color: colors.textSecondary),
                 textAlign: TextAlign.center,
               ),
@@ -254,7 +254,7 @@ class _CommunityPostState extends State<CommunityPost> {
             onTap: () => Navigator.of(context, rootNavigator: true).push(
               SlideRoute(
                 builder: (_) => EnlargePost.fromPost(
-                  boardname: widget.boardname,
+                  boardName: widget.boardName,
                   post: post,
                 ),
               ),
@@ -389,7 +389,7 @@ class _CommunityPostState extends State<CommunityPost> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Column(
         children: [
-          SecondaryAppBar(title: widget.boardname),
+          SecondaryAppBar(title: widget.boardName),
           _buildSearchBar(colors),
           if (_isPaginated) _buildSortChips(),
           Expanded(

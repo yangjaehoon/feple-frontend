@@ -13,7 +13,7 @@ class HotBoard extends StatelessWidget {
       icon: Icons.local_fire_department_rounded,
       headerColorFn: (colors) => colors.hotBoardHeader,
       serviceBoardType: BoardTypes.hot,
-      boardname: 'hot_board'.tr(),
+      boardName: 'hot_board'.tr(),
       showWriteButton: false,
     );
   }

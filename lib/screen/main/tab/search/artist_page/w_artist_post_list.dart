@@ -18,7 +18,7 @@ class ArtistPostListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final postService = sl<PostService>();
     return BoardPostListScreen(
-      boardname: 'name_board'.tr(args: [artistName]),
+      boardName: 'name_board'.tr(args: [artistName]),
       writeScreenTitle: 'name_board_write'.tr(args: [artistName]),
       fetchPosts: () => postService.fetchArtistPosts(artistId),
       onSubmitPost: (t, c, a, img) =>

@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 /// 전체 목록 화면으로 이동합니다.
 class NamedBoard extends StatefulWidget {
   final String name;
-  final String? boardname;
+  final String? boardName;
   final IconData headerIcon;
   final Future<List<Post>> Function() fetchPosts;
   final Widget Function() postListScreenFactory;
@@ -20,7 +20,7 @@ class NamedBoard extends StatefulWidget {
   const NamedBoard({
     super.key,
     required this.name,
-    this.boardname,
+    this.boardName,
     required this.headerIcon,
     required this.fetchPosts,
     required this.postListScreenFactory,
@@ -45,11 +45,11 @@ class _NamedBoardState extends State<NamedBoard> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final boardname = widget.boardname ?? 'name_board'.tr(args: [widget.name]);
+    final boardName = widget.boardName ?? 'name_board'.tr(args: [widget.name]);
     return BoardPreviewCard(
       future: _postsFuture,
       headerIcon: widget.headerIcon,
-      headerTitle: boardname,
+      headerTitle: boardName,
       headerColor: colors.activate,
       emptyHint: 'be_first_to_discuss'.tr(args: [widget.name]),
       onHeaderTap: () => Navigator.push(
@@ -59,7 +59,7 @@ class _NamedBoardState extends State<NamedBoard> {
       onPostTap: (context, post) =>
           Navigator.of(context, rootNavigator: true).push(
         SlideRoute(
-          builder: (_) => EnlargePost.fromPost(boardname: boardname, post: post),
+          builder: (_) => EnlargePost.fromPost(boardName: boardName, post: post),
         ),
       ),
       onRetry: _refresh,

@@ -56,12 +56,12 @@ class MyCommentsScreen extends StatelessWidget {
         await Navigator.of(context, rootNavigator: true).push(
           SlideRoute(
             builder: (_) => EnlargePost(
-              boardname: c.boardDisplayName,
+              boardName: c.boardDisplayName,
               id: c.postId,
               nickname: c.postNickname,
               title: c.postTitle,
               content: c.postContent,
-              heart: c.postLikeCount,
+              heartCount: c.postLikeCount,
             ),
           ),
         );

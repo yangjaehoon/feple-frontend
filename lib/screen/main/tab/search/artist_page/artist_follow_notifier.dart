@@ -1,26 +1,17 @@
+import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/artist_follow_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-class ArtistFollowNotifier extends ChangeNotifier {
+class ArtistFollowNotifier extends SafeChangeNotifier {
   final int artistId;
   final _followService = sl<ArtistFollowService>();
 
   bool isFollowed = false;
   int followCount = 0;
   bool isLoading = false;
-  bool _disposed = false;
-
-  @override
-  void dispose() {
-    _disposed = true;
-    super.dispose();
-  }
-
-  void _safeNotify() {
-    if (!_disposed) notifyListeners();
-  }
+  bool initFailed = false;
 
   ArtistFollowNotifier({required this.artistId, required int initialFollowerCount}) {
     followCount = initialFollowerCount;
@@ -31,9 +22,11 @@ class ArtistFollowNotifier extends ChangeNotifier {
       final status = await _followService.getFollowStatus(artistId);
       isFollowed = status.followed;
       followCount = status.followerCount;
-      _safeNotify();
+      safeNotify();
     } catch (e) {
       debugPrint('[FollowNotifier] init failed: $e');
+      initFailed = true;
+      safeNotify();
     }
   }
 
@@ -44,7 +37,7 @@ class ArtistFollowNotifier extends ChangeNotifier {
     final prevCount = followCount;
     isFollowed = !isFollowed;
     followCount += isFollowed ? 1 : -1;
-    _safeNotify();
+    safeNotify();
     HapticFeedback.mediumImpact();
     try {
       if (prevFollowed) {
@@ -59,7 +52,7 @@ class ArtistFollowNotifier extends ChangeNotifier {
       rethrow;
     } finally {
       isLoading = false;
-      _safeNotify();
+      safeNotify();
     }
   }
 }

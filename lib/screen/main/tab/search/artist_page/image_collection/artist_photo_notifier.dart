@@ -1,26 +1,16 @@
+import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_photo_response.dart';
 import 'package:feple/service/artist_photo_service.dart';
 import 'package:flutter/foundation.dart';
 
-class ArtistPhotoNotifier extends ChangeNotifier {
+class ArtistPhotoNotifier extends SafeChangeNotifier {
   final int artistId;
   final _photoService = sl<ArtistPhotoService>();
 
   List<ArtistPhotoResponse> photos = [];
   bool isLoading = true;
   String? errorKey;
-  bool _disposed = false;
-
-  @override
-  void dispose() {
-    _disposed = true;
-    super.dispose();
-  }
-
-  void _safeNotify() {
-    if (!_disposed) notifyListeners();
-  }
 
   void clearError() {
     errorKey = null;
@@ -30,7 +20,8 @@ class ArtistPhotoNotifier extends ChangeNotifier {
 
   Future<void> loadPhotos() async {
     isLoading = true;
-    _safeNotify();
+    errorKey = null;
+    safeNotify();
     try {
       photos = await _photoService.fetchPhotos(artistId);
     } catch (e) {
@@ -38,7 +29,7 @@ class ArtistPhotoNotifier extends ChangeNotifier {
       errorKey = 'err_fetch_data';
     } finally {
       isLoading = false;
-      _safeNotify();
+      safeNotify();
     }
   }
 
@@ -59,10 +50,11 @@ class ArtistPhotoNotifier extends ChangeNotifier {
           isLiked: !photo.isLiked,
         );
         photos.sort((a, b) => b.likeCount.compareTo(a.likeCount));
-        _safeNotify();
+        safeNotify();
       }
     } catch (e) {
       debugPrint('toggle like error: $e');
+      errorKey = 'like_failed';
       await loadPhotos();
     }
   }
@@ -74,7 +66,7 @@ class ArtistPhotoNotifier extends ChangeNotifier {
     } catch (e) {
       debugPrint('delete error: $e');
       errorKey = 'photo_delete_failed';
-      _safeNotify();
+      safeNotify();
     }
   }
 
@@ -85,7 +77,7 @@ class ArtistPhotoNotifier extends ChangeNotifier {
     } catch (e) {
       debugPrint('update error: $e');
       errorKey = 'photo_update_failed';
-      _safeNotify();
+      safeNotify();
     }
   }
 }

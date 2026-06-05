@@ -103,7 +103,6 @@ class _WeatherCard extends StatelessWidget {
     final colors = context.appColors;
     final minT = data.minTemp.toStringAsFixed(0);
     final maxT = data.maxTemp.toStringAsFixed(0);
-
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.symmetric(
@@ -113,8 +112,7 @@ class _WeatherCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius:
-            const BorderRadius.all(Radius.circular(AppDimens.cardRadius)),
+        borderRadius: const BorderRadius.all(Radius.circular(AppDimens.cardRadius)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -127,35 +125,29 @@ class _WeatherCard extends StatelessWidget {
         children: [
           Text(data.conditionIcon, style: const TextStyle(fontSize: 40)),
           const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'weather_title'.tr(),
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: colors.text,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  data.conditionKey.tr(),
-                  style: TextStyle(fontSize: 14, color: colors.text),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'weather_temp_range'.tr(args: [minT, maxT]),
-                  style:
-                      TextStyle(fontSize: 13, color: colors.textSecondary),
-                ),
-              ],
-            ),
-          ),
+          Expanded(child: _buildConditionColumn(colors, minT, maxT)),
           _RainProbBadge(prob: data.rainProb),
         ],
       ),
+    );
+  }
+
+  Widget _buildConditionColumn(AbstractThemeColors colors, String minT, String maxT) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'weather_title'.tr(),
+          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: colors.text),
+        ),
+        const SizedBox(height: 4),
+        Text(data.conditionKey.tr(), style: TextStyle(fontSize: 14, color: colors.text)),
+        const SizedBox(height: 2),
+        Text(
+          'weather_temp_range'.tr(args: [minT, maxT]),
+          style: TextStyle(fontSize: 13, color: colors.textSecondary),
+        ),
+      ],
     );
   }
 }

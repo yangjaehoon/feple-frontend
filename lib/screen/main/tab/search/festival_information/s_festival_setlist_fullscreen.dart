@@ -73,60 +73,68 @@ class _FestivalSetlistFullPageState extends State<FestivalSetlistFullPage> {
       },
       child: Scaffold(
         backgroundColor: colors.backgroundMain,
-        appBar: AppBar(
-          backgroundColor: colors.surface,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: colors.textTitle),
-            onPressed: () => Navigator.pop(context, _changed),
-          ),
-          title: Text(
-            'setlist'.tr(),
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: colors.textTitle),
-          ),
-          centerTitle: true,
-        ),
-        body: FutureBuilder<List<FestivalSetlistEntry>>(
-          future: _future,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return _buildSkeleton(colors);
-            }
-            if (snapshot.hasError) {
-              return ErrorState(
-                message: 'err_fetch_data'.tr(),
-                onRetry: () => setState(() => _future = _fetch()),
-              );
-            }
-            final entries = snapshot.data ?? [];
-            if (entries.isEmpty) {
-              return Center(
-                child: Text('no_setlist'.tr(), style: TextStyle(color: colors.textSecondary)),
-              );
-            }
-            return ListView.separated(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              itemCount: entries.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 8),
-              itemBuilder: (_, i) => _ArtistFullTile(
-                entry: entries[i],
-                isExpanded: _expanded.contains(entries[i].artistId),
-                colors: colors,
-                onToggle: () => setState(() {
-                  final id = entries[i].artistId;
-                  if (_expanded.contains(id)) {
-                    _expanded.remove(id);
-                  } else {
-                    _expanded.add(id);
-                  }
-                }),
-                onSongTap: _openYoutubeMusic,
-                onEdit: () => _openEditSheet(entries[i]),
-              ),
-            );
-          },
-        ),
+        appBar: _buildAppBar(colors),
+        body: _buildBody(colors),
       ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar(AbstractThemeColors colors) {
+    return AppBar(
+      backgroundColor: colors.surface,
+      elevation: 0,
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: colors.textTitle),
+        onPressed: () => Navigator.pop(context, _changed),
+      ),
+      title: Text(
+        'setlist'.tr(),
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: colors.textTitle),
+      ),
+      centerTitle: true,
+    );
+  }
+
+  Widget _buildBody(AbstractThemeColors colors) {
+    return FutureBuilder<List<FestivalSetlistEntry>>(
+      future: _future,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildSkeleton(colors);
+        }
+        if (snapshot.hasError) {
+          return ErrorState(
+            message: 'err_fetch_data'.tr(),
+            onRetry: () => setState(() => _future = _fetch()),
+          );
+        }
+        final entries = snapshot.data ?? [];
+        if (entries.isEmpty) {
+          return Center(
+            child: Text('no_setlist'.tr(), style: TextStyle(color: colors.textSecondary)),
+          );
+        }
+        return ListView.separated(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          itemCount: entries.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 8),
+          itemBuilder: (_, i) => _ArtistFullTile(
+            entry: entries[i],
+            isExpanded: _expanded.contains(entries[i].artistId),
+            colors: colors,
+            onToggle: () => setState(() {
+              final id = entries[i].artistId;
+              if (_expanded.contains(id)) {
+                _expanded.remove(id);
+              } else {
+                _expanded.add(id);
+              }
+            }),
+            onSongTap: _openYoutubeMusic,
+            onEdit: () => _openEditSheet(entries[i]),
+          ),
+        );
+      },
     );
   }
 
@@ -187,66 +195,70 @@ class _ArtistFullTile extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: InkWell(
-                  onTap: onToggle,
-                  borderRadius: BorderRadius.vertical(
-                    top: const Radius.circular(AppDimens.cardRadius),
-                    bottom: isExpanded ? Radius.zero : const Radius.circular(AppDimens.cardRadius),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 14, 0, 14),
-                    child: Row(
-                      children: [
-                        _buildAvatar(),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                entry.artistName,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: colors.textTitle,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                'total_songs'.tr(args: ['${entry.songs.length}']),
-                                style: TextStyle(fontSize: 11, color: colors.textSecondary),
-                              ),
-                            ],
-                          ),
-                        ),
-                        AnimatedRotation(
-                          turns: isExpanded ? 0.5 : 0,
-                          duration: AppDimens.animXFast,
-                          child: Icon(Icons.keyboard_arrow_down_rounded, size: 20, color: colors.textSecondary),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: onEdit,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  child: Icon(Icons.edit_rounded, size: 16, color: colors.activate),
-                ),
-              ),
-            ],
-          ),
+          _buildHeaderRow(),
           if (isExpanded) ...[
             Divider(height: 1, color: colors.listDivider),
             _buildSongList(),
           ],
         ],
       ),
+    );
+  }
+
+  Widget _buildHeaderRow() {
+    return Row(
+      children: [
+        Expanded(
+          child: InkWell(
+            onTap: onToggle,
+            borderRadius: BorderRadius.vertical(
+              top: const Radius.circular(AppDimens.cardRadius),
+              bottom: isExpanded ? Radius.zero : const Radius.circular(AppDimens.cardRadius),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 0, 14),
+              child: Row(
+                children: [
+                  _buildAvatar(),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          entry.artistName,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: colors.textTitle,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'total_songs'.tr(args: ['${entry.songs.length}']),
+                          style: TextStyle(fontSize: 11, color: colors.textSecondary),
+                        ),
+                      ],
+                    ),
+                  ),
+                  AnimatedRotation(
+                    turns: isExpanded ? 0.5 : 0,
+                    duration: AppDimens.animXFast,
+                    child: Icon(Icons.keyboard_arrow_down_rounded, size: 20, color: colors.textSecondary),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: onEdit,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Icon(Icons.edit_rounded, size: 16, color: colors.activate),
+          ),
+        ),
+      ],
     );
   }
 

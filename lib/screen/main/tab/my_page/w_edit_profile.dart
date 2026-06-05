@@ -110,6 +110,8 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
       if (!mounted) return;
       setState(() => _bioError = 'bio_banned_word'.tr());
     } catch (e) {
+      // 일부 항목이 이미 저장됐을 수 있으므로 서버 상태와 동기화
+      try { await userProvider.fetchUser(user.id); } catch (_) {}
       if (!mounted) return;
       debugPrint('profile save error: $e');
       context.showErrorSnackbar(networkAwareErrorKey(e, 'save_failed').tr());
@@ -245,17 +247,10 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
           style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: colors.textSecondary),
         ),
         const SizedBox(height: 8),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: NicknameField(
-                key: _nicknameKey,
-                excludeUserId: userId,
-                initialValue: _originalNickname,
-              ),
-            ),
-          ],
+        NicknameField(
+          key: _nicknameKey,
+          excludeUserId: userId,
+          initialValue: _originalNickname,
         ),
       ],
     );

@@ -12,14 +12,12 @@ import 'package:feple/model/artist_photo_response.dart';
 class EditPhotoSheet extends StatefulWidget {
   final int artistId;
   final ArtistPhotoResponse photo;
-  final AbstractThemeColors colors;
   final void Function(String title, String description) onSave;
 
   const EditPhotoSheet({
     super.key,
     required this.artistId,
     required this.photo,
-    required this.colors,
     required this.onSave,
   });
 
@@ -54,9 +52,9 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
       // 현재 description 기준으로 초기 선택값 결정
       final desc = widget.photo.description;
       FestivalPreview? preSelected;
-      if (desc == '일상 사진') {
+      if (desc == photoCategoryDaily.title) {
         preSelected = photoCategoryDaily;
-      } else if (desc == 'SNS 사진') {
+      } else if (desc == photoCategorySns.title) {
         preSelected = photoCategorySns;
       } else if (desc.isEmpty) {
         preSelected = photoCategoryOther;
@@ -84,7 +82,7 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = widget.colors;
+    final colors = context.appColors;
     return Padding(
       padding: EdgeInsets.fromLTRB(
           20, 20, 20, 20 + MediaQuery.of(context).viewInsets.bottom),

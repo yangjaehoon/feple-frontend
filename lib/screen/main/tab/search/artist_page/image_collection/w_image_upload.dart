@@ -60,14 +60,15 @@ class _ImgUploadState extends State<ImgUpload> {
     setState(() => _imageError = null);
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
+    final festival = _selectedFestival;
+    if (festival == null) return;
     setState(() => isUploading = true);
     try {
       await _photoService.uploadPhoto(
         artistId: widget.artistId,
         imageData: imageData!,
         title: titleTEC.text,
-        description:
-            _selectedFestival!.id == -1 ? '' : _selectedFestival!.title,
+        description: festival.id == photoCategoryOther.id ? '' : festival.title,
       );
       if (!mounted) return;
       Navigator.pop(context, true);

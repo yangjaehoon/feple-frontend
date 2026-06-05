@@ -8,7 +8,8 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
   final int artistId;
   final _photoService = sl<ArtistPhotoService>();
 
-  List<ArtistPhotoResponse> photos = [];
+  List<ArtistPhotoResponse> _photos = [];
+  List<ArtistPhotoResponse> get photos => List.unmodifiable(_photos);
   bool isLoading = true;
   String? errorKey;
 
@@ -23,7 +24,7 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
     errorKey = null;
     safeNotify();
     try {
-      photos = await _photoService.fetchPhotos(artistId);
+      _photos = await _photoService.fetchPhotos(artistId);
     } catch (e) {
       debugPrint('load photos error: $e');
       errorKey = 'err_fetch_data';
@@ -36,10 +37,10 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
   Future<void> toggleLike(int photoId) async {
     try {
       await _photoService.toggleLike(artistId, photoId);
-      final idx = photos.indexWhere((photo) => photo.photoId == photoId);
+      final idx = _photos.indexWhere((photo) => photo.photoId == photoId);
       if (idx != -1) {
-        final photo = photos[idx];
-        photos[idx] = ArtistPhotoResponse(
+        final photo = _photos[idx];
+        _photos[idx] = ArtistPhotoResponse(
           photoId: photo.photoId,
           url: photo.url,
           uploaderUserId: photo.uploaderUserId,
@@ -49,7 +50,7 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
           likeCount: photo.isLiked ? photo.likeCount - 1 : photo.likeCount + 1,
           isLiked: !photo.isLiked,
         );
-        photos.sort((a, b) => b.likeCount.compareTo(a.likeCount));
+        _photos.sort((a, b) => b.likeCount.compareTo(a.likeCount));
         safeNotify();
       }
     } catch (e) {

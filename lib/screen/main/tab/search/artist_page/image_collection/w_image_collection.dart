@@ -75,7 +75,6 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
   }
 
   void _showEditBottomSheet(ArtistPhotoResponse photo) {
-    final colors = context.appColors;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -84,7 +83,6 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (_) => EditPhotoSheet(
-        colors: colors,
         artistId: widget.artistId,
         photo: photo,
         onSave: (newTitle, newDesc) =>

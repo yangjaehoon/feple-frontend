@@ -240,49 +240,45 @@ class _FilterSection extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            color: colors.textSecondary,
-          ),
+          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: colors.textSecondary),
         ),
         const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 6,
-          children: items.map((item) {
-            final (value, displayName) = item;
-            final isSelected = selected.contains(value);
-            return GestureDetector(
-              onTap: () => onToggle(value),
-              child: AnimatedContainer(
-                duration: AppDimens.animXFast,
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? colors.activate
-                      : colors.backgroundMain,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: isSelected
-                        ? colors.activate
-                        : colors.listDivider,
-                  ),
-                ),
-                child: Text(
-                  displayName.tr(),
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: isSelected ? Colors.white : colors.textTitle,
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
+        _buildChips(colors),
       ],
+    );
+  }
+
+  Widget _buildChips(AbstractThemeColors colors) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 6,
+      children: items.map((item) {
+        final (value, displayName) = item;
+        return _buildChip(colors, value, displayName, selected.contains(value));
+      }).toList(),
+    );
+  }
+
+  Widget _buildChip(AbstractThemeColors colors, String value, String displayName, bool isSelected) {
+    return GestureDetector(
+      onTap: () => onToggle(value),
+      child: AnimatedContainer(
+        duration: AppDimens.animXFast,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: isSelected ? colors.activate : colors.backgroundMain,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: isSelected ? colors.activate : colors.listDivider),
+        ),
+        child: Text(
+          displayName.tr(),
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: isSelected ? Colors.white : colors.textTitle,
+          ),
+        ),
+      ),
     );
   }
 }

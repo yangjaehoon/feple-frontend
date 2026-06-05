@@ -197,55 +197,51 @@ class _SongRequestItem extends StatelessWidget {
         children: [
           Icon(Icons.music_note_rounded, size: 20, color: colors.activate),
           const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  req.songTitle,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: colors.textTitle,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                if (req.artistName != null)
-                  Text(
-                    req.artistName!,
-                    style: TextStyle(fontSize: 12, color: colors.textSecondary),
-                  ),
-                if (req.createdAt != null)
-                  Text(
-                    _formatDate(req.createdAt!),
-                    style: TextStyle(fontSize: 11, color: colors.textSecondary),
-                  ),
-              ],
-            ),
-          ),
+          Expanded(child: _buildInfoColumn()),
           const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-            decoration: BoxDecoration(
-              color: statusColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.circle, size: 7, color: statusColor),
-                const SizedBox(width: 4),
-                Text(
-                  statusLabel,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: statusColor,
-                  ),
-                ),
-              ],
-            ),
+          _buildStatusBadge(statusColor, statusLabel),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoColumn() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          req.songTitle,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: colors.textTitle,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        if (req.artistName != null)
+          Text(req.artistName!, style: TextStyle(fontSize: 12, color: colors.textSecondary)),
+        if (req.createdAt != null)
+          Text(_formatDate(req.createdAt!), style: TextStyle(fontSize: 11, color: colors.textSecondary)),
+      ],
+    );
+  }
+
+  Widget _buildStatusBadge(Color statusColor, String statusLabel) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      decoration: BoxDecoration(
+        color: statusColor.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.circle, size: 7, color: statusColor),
+          const SizedBox(width: 4),
+          Text(
+            statusLabel,
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: statusColor),
           ),
         ],
       ),

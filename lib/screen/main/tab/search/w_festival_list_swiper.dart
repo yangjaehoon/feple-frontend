@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/common/util/app_route.dart';
@@ -11,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../provider/festival_preview_provider.dart';
-import '../../../../model/festival_model.dart';
+import '../../../../model/festival_preview.dart';
 
 class ConcertListSwiperWidget extends StatefulWidget {
   const ConcertListSwiperWidget({super.key});
@@ -28,6 +29,97 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
     setState(() => _currentPage = newPage);
   }
 
+  Widget _buildBlurBackground(AbstractThemeColors colors, String posterUrl) {
+    return ClipRect(
+      child: Container(
+        height: 300,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: ResizeImage(CachedNetworkImageProvider(posterUrl), width: 100),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+          child: Container(color: colors.swiperOverlay.withValues(alpha: 0.5)),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSwiperContent(AbstractThemeColors colors, List<FestivalPreview> items) {
+    return SizedBox(
+      height: 300,
+      child: Swiper(
+        onIndexChanged: _onPageChanged,
+        viewportFraction: 0.8,
+        scale: 0.6,
+        autoplay: true,
+        duration: 300,
+        itemCount: items.length,
+        pagination: const SwiperPagination(
+          margin: EdgeInsets.only(bottom: 0),
+          builder: FractionPaginationBuilder(
+            color: Colors.white54,
+            activeColor: Colors.white,
+            fontSize: 13,
+            activeFontSize: 15,
+          ),
+        ),
+        itemBuilder: (BuildContext context, int index) {
+          final item = items[index];
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                SlideRoute(builder: (context) => FestivalInformationFragment(poster: item.toModel())),
+              );
+            },
+            child: Hero(
+              tag: 'festival_poster_${item.id}',
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: colors.cardShadow.withValues(alpha: 0.2),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: CachedNetworkImage(
+                    imageUrl: item.posterUrl,
+                    memCacheWidth: 360,
+                    fit: BoxFit.fill,
+                    placeholder: (context, url) => const SkeletonBox(height: double.infinity),
+                    errorWidget: (context, url, error) => Container(
+                      color: Colors.grey.withValues(alpha: 0.12),
+                      child: Icon(Icons.broken_image_rounded,
+                          size: 36, color: Colors.grey.withValues(alpha: 0.45)),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+        layout: SwiperLayout.CUSTOM,
+        customLayoutOption: CustomLayoutOption(startIndex: -1, stateCount: 3)
+          ..addRotate([-45.0 / 180, 0.0, 45.0 / 180])
+          ..addTranslate([
+            const Offset(-370.0, -20.0),
+            const Offset(0.0, 0.0),
+            const Offset(370.0, -20.0),
+          ]),
+        itemWidth: 180,
+        itemHeight: 254.5,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final previewProvider = Provider.of<FestivalPreviewProvider>(context);
@@ -36,132 +128,20 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
     if (previewProvider.isLoading && previewProvider.items.isEmpty) {
       return _buildSkeleton();
     }
-
     if (previewProvider.error != null && previewProvider.items.isEmpty) {
-      return _buildError(colors, previewProvider);
+      return _buildError(previewProvider);
     }
 
     final items = previewProvider.items.where((f) => !f.isEnded).toList();
-
-    if (items.isEmpty) {
-      return _buildEmpty(colors);
-    }
+    if (items.isEmpty) return _buildEmpty(colors);
 
     final safeCurrentPage = _currentPage.clamp(0, items.length - 1);
 
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        ClipRect(
-          child: Container(
-            height: 300,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: ResizeImage(
-                  CachedNetworkImageProvider(
-                    items[safeCurrentPage].posterUrl,
-                  ),
-                  width: 100,
-                ),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-              child: Container(
-                color: colors.swiperOverlay.withValues(alpha: 0.5),
-              ),
-            ),
-          ),
-        ),
-        SizedBox(
-          height: 300,
-          child: Swiper(
-            onIndexChanged: _onPageChanged,
-            viewportFraction: 0.8,
-            scale: 0.6,
-            autoplay: true,
-            duration: 300,
-            itemCount: items.length,
-            pagination: const SwiperPagination(
-              margin: EdgeInsets.only(bottom: 0),
-              builder: FractionPaginationBuilder(
-                color: Colors.white54,
-                activeColor: Colors.white,
-                fontSize: 13,
-                activeFontSize: 15,
-              ),
-            ),
-            itemBuilder: (BuildContext context, int index) {
-              final item = items[index];
-              return GestureDetector(
-                onTap: () {
-                  final poster = FestivalModel(
-                    id: item.id,
-                    title: item.title,
-                    description: item.description,
-                    location: item.location,
-                    startDate: item.startDate,
-                    endDate: item.endDate ?? '',
-                    posterUrl: item.posterUrl,
-                    latitude: item.latitude,
-                    longitude: item.longitude,
-                  );
-                  Navigator.push(
-                    context,
-                    SlideRoute(
-                        builder: (context) =>
-                            FestivalInformationFragment(poster: poster)),
-                  );
-                },
-                child: Hero(
-                  tag: 'festival_poster_${item.id}',
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: colors.cardShadow.withValues(alpha: 0.2),
-                          blurRadius: 20,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: CachedNetworkImage(
-                        imageUrl: item.posterUrl,
-                        memCacheWidth: 360,
-                        fit: BoxFit.fill,
-                        placeholder: (context, url) =>
-                            const SkeletonBox(height: double.infinity),
-                        errorWidget: (context, url, error) => Container(
-                          color: Colors.grey.withValues(alpha: 0.12),
-                          child: Icon(Icons.broken_image_rounded,
-                              size: 36,
-                              color: Colors.grey.withValues(alpha: 0.45)),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
-            layout: SwiperLayout.CUSTOM,
-            customLayoutOption: CustomLayoutOption(
-              startIndex: -1,
-              stateCount: 3,
-            )
-              ..addRotate([-45.0 / 180, 0.0, 45.0 / 180])
-              ..addTranslate([
-                const Offset(-370.0, -20.0),
-                const Offset(0.0, 0.0),
-                const Offset(370.0, -20.0)
-              ]),
-            itemWidth: 180,
-            itemHeight: 254.5,
-          ),
-        ),
+        _buildBlurBackground(colors, items[safeCurrentPage].posterUrl),
+        _buildSwiperContent(colors, items),
       ],
     );
   }
@@ -196,31 +176,14 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
     );
   }
 
-  Widget _buildError(AbstractThemeColors colors, FestivalPreviewProvider provider) {
-    return Container(
+  Widget _buildError(FestivalPreviewProvider provider) {
+    return SizedBox(
       height: 160,
-      alignment: Alignment.center,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.wifi_off_rounded,
-              size: 36, color: colors.textSecondary.withValues(alpha: 0.4)),
-          const SizedBox(height: 8),
-          Text(
-            'err_fetch_data'.tr(args: ['']),
-            style: TextStyle(fontSize: 13, color: colors.textSecondary),
-          ),
-          const SizedBox(height: 10),
-          FilledButton.icon(
-            onPressed: provider.refresh,
-            icon: const Icon(Icons.refresh_rounded, size: 16),
-            label: Text('retry'.tr(), style: const TextStyle(fontSize: 13)),
-            style: FilledButton.styleFrom(
-              backgroundColor: colors.activate,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            ),
-          ),
-        ],
+      child: Center(
+        child: ErrorState(
+          message: 'err_fetch_data'.tr(args: ['']),
+          onRetry: () => provider.refresh(),
+        ),
       ),
     );
   }

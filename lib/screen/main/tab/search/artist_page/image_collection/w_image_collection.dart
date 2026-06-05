@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_report_sheet.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/provider/user_provider.dart';
@@ -117,7 +118,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
     }
 
     if (_notifier.photos.isEmpty) {
-      return _buildEmptyState(colors);
+      return _buildEmptyState();
     }
 
     return SliverList.builder(
@@ -135,23 +136,11 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
     );
   }
 
-  Widget _buildEmptyState(AbstractThemeColors colors) {
+  Widget _buildEmptyState() {
     return SliverToBoxAdapter(
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 80),
-          child: Column(
-            children: [
-              Icon(Icons.photo_library_outlined,
-                  size: 48, color: colors.textSecondary),
-              const SizedBox(height: 12),
-              Text(
-                'photo_no_photos'.tr(),
-                style: TextStyle(color: colors.textSecondary, fontSize: 15),
-              ),
-            ],
-          ),
-        ),
+      child: EmptyState(
+        icon: Icons.photo_library_outlined,
+        title: 'photo_no_photos'.tr(),
       ),
     );
   }

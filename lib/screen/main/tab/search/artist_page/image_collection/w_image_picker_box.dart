@@ -43,28 +43,31 @@ class ImagePickerBox extends StatelessWidget {
             ],
           ),
           child: imageData == null
-              ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.add_photo_alternate_rounded,
-                        color: colors.activate, size: 40),
-                    const SizedBox(height: 8),
-                    Text(
-                      label ?? 'photo_add'.tr(),
-                      style: TextStyle(
-                        color: colors.textSecondary,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                )
+              ? _buildPlaceholder(colors)
               : ClipRRect(
                   borderRadius: BorderRadius.circular(15),
                   child: Image.memory(imageData!, fit: BoxFit.cover),
                 ),
         ),
       ),
+    );
+  }
+
+  Widget _buildPlaceholder(AbstractThemeColors colors) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.add_photo_alternate_rounded, color: colors.activate, size: 40),
+        const SizedBox(height: 8),
+        Text(
+          label ?? 'photo_add'.tr(),
+          style: TextStyle(
+            color: colors.textSecondary,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
     );
   }
 }

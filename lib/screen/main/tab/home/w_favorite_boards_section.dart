@@ -176,7 +176,7 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
         itemCount: selectedBoards.length,
         itemBuilder: (context, index) {
           final board = selectedBoards[index];
-          return _BoardTile(board: board, colors: colors);
+          return _BoardTile(board: board);
         },
       ),
     );
@@ -185,9 +185,8 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
 
 class _BoardTile extends StatelessWidget {
   final FavoriteBoard board;
-  final AbstractThemeColors colors;
 
-  const _BoardTile({required this.board, required this.colors});
+  const _BoardTile({required this.board});
 
   void _navigate(BuildContext context) {
     final route = switch (board.type) {
@@ -209,6 +208,7 @@ class _BoardTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return GestureDetector(
       onTap: () => _navigate(context),
       child: Container(
@@ -230,7 +230,7 @@ class _BoardTile extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              ..._buildImageLayers(),
+              ..._buildImageLayers(colors),
               _buildNameOverlay(),
             ],
           ),
@@ -239,16 +239,16 @@ class _BoardTile extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildImageLayers() => [
+  List<Widget> _buildImageLayers(AbstractThemeColors colors) => [
         if (board.imageUrl != null && board.imageUrl!.isNotEmpty)
           CachedNetworkImage(
             imageUrl: board.imageUrl!,
             fit: BoxFit.cover,
             memCacheWidth: 220,
-            errorWidget: (_, __, ___) => _buildPlaceholder(),
+            errorWidget: (_, __, ___) => _buildPlaceholder(colors),
           )
         else
-          _buildPlaceholder(),
+          _buildPlaceholder(colors),
       ];
 
   Widget _buildNameOverlay() {
@@ -288,7 +288,7 @@ class _BoardTile extends StatelessWidget {
     );
   }
 
-  Widget _buildPlaceholder() {
+  Widget _buildPlaceholder(AbstractThemeColors colors) {
     return Container(
       color: colors.surface,
       child: Icon(Icons.forum_rounded, color: colors.textSecondary, size: 36),

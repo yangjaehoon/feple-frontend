@@ -174,9 +174,9 @@ class _ArtistCompactRow extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             children: [
-              _buildAvatar(),
+              _buildAvatar(colors),
               const SizedBox(width: 12),
-              Expanded(child: _buildTextColumn(topSong)),
+              Expanded(child: _buildTextColumn(topSong, colors)),
             ],
           ),
         ),
@@ -186,7 +186,7 @@ class _ArtistCompactRow extends StatelessWidget {
     );
   }
 
-  Widget _buildTextColumn(SongModel? topSong) {
+  Widget _buildTextColumn(SongModel? topSong, AbstractThemeColors colors) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -200,7 +200,7 @@ class _ArtistCompactRow extends StatelessWidget {
         ),
         const SizedBox(height: 3),
         if (topSong != null)
-          _buildTopSongRow(topSong)
+          _buildTopSongRow(topSong, colors)
         else
           Text(
             'no_setlist'.tr(),
@@ -210,7 +210,7 @@ class _ArtistCompactRow extends StatelessWidget {
     );
   }
 
-  Widget _buildTopSongRow(SongModel topSong) {
+  Widget _buildTopSongRow(SongModel topSong, AbstractThemeColors colors) {
     return Row(
       children: [
         if (topSong.thumbnailUrl != null)
@@ -244,7 +244,7 @@ class _ArtistCompactRow extends StatelessWidget {
     );
   }
 
-  Widget _buildAvatar() {
+  Widget _buildAvatar(AbstractThemeColors colors) {
     const size = 36.0;
     if (entry.profileImageUrl != null && entry.profileImageUrl!.isNotEmpty) {
       return ClipRRect(
@@ -254,14 +254,14 @@ class _ArtistCompactRow extends StatelessWidget {
           width: size,
           height: size,
           fit: BoxFit.cover,
-          errorWidget: (_, __, ___) => _placeholder(size),
+          errorWidget: (_, __, ___) => _placeholder(size, colors),
         ),
       );
     }
-    return _placeholder(size);
+    return _placeholder(size, colors);
   }
 
-  Widget _placeholder(double size) {
+  Widget _placeholder(double size, AbstractThemeColors colors) {
     return Container(
       width: size,
       height: size,

@@ -40,7 +40,7 @@ class _FollowArtistsWidgetState extends State<FollowArtistsWidget> {
     }
   }
 
-  void _openFullList() async {
+  Future<void> _openFullList() async {
     await Navigator.push(
       context,
       SlideRoute(builder: (_) => const FollowArtistsListScreen()),

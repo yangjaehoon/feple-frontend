@@ -85,8 +85,7 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
     } catch (e) {
       if (!mounted) return;
       debugPrint('cert submit error: $e');
-      final networkKey = networkAwareErrorKey(e, '');
-      if (networkKey == 'connection_error') {
+      if (networkAwareErrorKey(e, 'cert_submit_failed') == 'connection_error') {
         context.showErrorSnackbar('connection_error'.tr());
       } else {
         context.showErrorSnackbar(
@@ -298,8 +297,8 @@ class _FestivalSearchSheetState extends State<_FestivalSearchSheet> {
     return ListView.builder(
       controller: scrollCtrl,
       itemCount: _filtered.length,
-      itemBuilder: (_, i) {
-        final festival = _filtered[i];
+      itemBuilder: (_, index) {
+        final festival = _filtered[index];
         return ListTile(
           title: Text(
             festival.title,

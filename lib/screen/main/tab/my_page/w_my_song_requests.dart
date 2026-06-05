@@ -252,7 +252,7 @@ class _SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
       child: Column(
         children: List.generate(
           _previewCount,
-          (i) => Padding(
+          (index) => Padding(
             padding: const EdgeInsets.symmetric(vertical: 12),
             child: Row(
               children: const [

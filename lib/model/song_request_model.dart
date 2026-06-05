@@ -21,6 +21,16 @@ class SongRequestModel {
   bool get isApproved => status == 'APPROVED';
   bool get isRejected => status == 'REJECTED';
 
+  String? get formattedDate {
+    if (createdAt == null) return null;
+    try {
+      final dt = DateTime.parse(createdAt!);
+      return '${dt.year}.${dt.month.toString().padLeft(2, '0')}.${dt.day.toString().padLeft(2, '0')}';
+    } catch (_) {
+      return createdAt;
+    }
+  }
+
   factory SongRequestModel.fromJson(Map<String, dynamic> json) {
     return SongRequestModel(
       id: (json['id'] as num).toInt(),

@@ -29,20 +29,22 @@ class CommentSection extends StatelessWidget {
     this.onEditComment,
   });
 
+  Widget _buildEmpty(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Center(
+        child: Text(
+          'be_first_to_comment'.tr(),
+          style: TextStyle(fontSize: 13, color: colors.textSecondary),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    if (rootComments.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Center(
-          child: Text(
-            'be_first_to_comment'.tr(),
-            style: TextStyle(fontSize: 13, color: colors.textSecondary),
-          ),
-        ),
-      );
-    }
+    if (rootComments.isEmpty) return _buildEmpty(colors);
 
     final items = <Widget>[];
     for (int i = 0; i < rootComments.length; i++) {

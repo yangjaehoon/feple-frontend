@@ -131,7 +131,7 @@ class _CommunityPostState extends State<CommunityPost> {
 
   void _scheduleSearch(String keyword) {
     _searchDebounce?.cancel();
-    _searchDebounce = Timer(const Duration(milliseconds: 300), () => _search(keyword));
+    _searchDebounce = Timer(AppDimens.animNormal, () => _search(keyword));
   }
 
   Future<void> _search(String keyword) async {
@@ -269,118 +269,129 @@ class _CommunityPostState extends State<CommunityPost> {
     );
   }
 
+  Widget _buildFab(AbstractThemeColors colors) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (_showScrollTop) ...[
+          FloatingActionButton.small(
+            heroTag: 'scrollTop',
+            onPressed: () => _scrollController.animateTo(
+              0,
+              duration: AppDimens.animNormal,
+              curve: Curves.easeOut,
+            ),
+            backgroundColor: colors.surface,
+            foregroundColor: colors.textTitle,
+            elevation: 2,
+            child: const Icon(Icons.arrow_upward_rounded, size: 20),
+          ),
+          const SizedBox(height: 8),
+        ],
+        if (_showWriteButton) WritePostFab(
+          onPressed: () async {
+            if (context.read<UserProvider>().currentUserId == null) {
+              context.showInfoSnackbar('no_login_info'.tr());
+              return;
+            }
+            await Navigator.push(
+              context,
+              SlideRoute(
+                builder: (_) => WritePostScreen(
+                  title: 'write_post'.tr(),
+                  onSubmit: (t, c, a, img) async {
+                    await _postService.createPost(
+                        boardType: _serviceBoardType, title: t, content: c, anonymous: a, imageObjectKey: img);
+                    AppEvents.postChanged.value++;
+                  },
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSearchBar(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      child: StatefulBuilder(
+        builder: (context, setSearchState) => TextField(
+          controller: _searchController,
+          onChanged: (v) {
+            setSearchState(() {});
+            _scheduleSearch(v);
+          },
+          onSubmitted: (v) {
+            _searchDebounce?.cancel();
+            _search(v);
+          },
+          style: TextStyle(color: colors.textTitle, fontSize: 14),
+          decoration: InputDecoration(
+            hintText: 'search_posts_hint'.tr(),
+            prefixIcon: Icon(Icons.search_rounded, color: colors.textSecondary, size: 20),
+            suffixIcon: _searchController.text.isNotEmpty
+                ? IconButton(
+                    icon: Icon(Icons.close_rounded, size: 18, color: colors.textSecondary),
+                    onPressed: () {
+                      _searchDebounce?.cancel();
+                      _searchController.clear();
+                      setSearchState(() {});
+                      setState(() { _searchResults = null; _isSearching = false; });
+                    },
+                  )
+                : null,
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            filled: true,
+            fillColor: colors.surface,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSortChips() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        children: [
+          _SortChip(
+            label: 'sort_latest'.tr(),
+            selected: _sort == _sortLatest,
+            onTap: () {
+              setState(() => _sort = _sortLatest);
+              _load();
+            },
+          ),
+          const SizedBox(width: 8),
+          _SortChip(
+            label: 'sort_popular'.tr(),
+            selected: _sort == _sortPopular,
+            onTap: () {
+              setState(() => _sort = _sortPopular);
+              _load();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return Scaffold(
       backgroundColor: colors.backgroundMain,
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (_showScrollTop) ...[
-            FloatingActionButton.small(
-              heroTag: 'scrollTop',
-              onPressed: () => _scrollController.animateTo(
-                0,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOut,
-              ),
-              backgroundColor: colors.surface,
-              foregroundColor: colors.textTitle,
-              elevation: 2,
-              child: const Icon(Icons.arrow_upward_rounded, size: 20),
-            ),
-            const SizedBox(height: 8),
-          ],
-          if (_showWriteButton) WritePostFab(
-            onPressed: () async {
-              if (context.read<UserProvider>().currentUserId == null) {
-                context.showInfoSnackbar('no_login_info'.tr());
-                return;
-              }
-              await Navigator.push(
-                context,
-                SlideRoute(
-                  builder: (_) => WritePostScreen(
-                    title: 'write_post'.tr(),
-                    onSubmit: (t, c, a, img) async {
-                      await _postService.createPost(
-                          boardType: _serviceBoardType, title: t, content: c, anonymous: a, imageObjectKey: img);
-                      AppEvents.postChanged.value++;
-                    },
-                  ),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
+      floatingActionButton: _buildFab(colors),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Column(
         children: [
           SecondaryAppBar(title: widget.boardname),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: StatefulBuilder(
-              builder: (context, setSearchState) => TextField(
-                controller: _searchController,
-                onChanged: (v) {
-                  setSearchState(() {});
-                  _scheduleSearch(v);
-                },
-                onSubmitted: (v) {
-                  _searchDebounce?.cancel();
-                  _search(v);
-                },
-                style: TextStyle(color: colors.textTitle, fontSize: 14),
-                decoration: InputDecoration(
-                  hintText: 'search_posts_hint'.tr(),
-                  prefixIcon: Icon(Icons.search_rounded, color: colors.textSecondary, size: 20),
-                  suffixIcon: _searchController.text.isNotEmpty
-                      ? IconButton(
-                          icon: Icon(Icons.close_rounded, size: 18, color: colors.textSecondary),
-                          onPressed: () {
-                            _searchDebounce?.cancel();
-                            _searchController.clear();
-                            setSearchState(() {});
-                            setState(() { _searchResults = null; _isSearching = false; });
-                          },
-                        )
-                      : null,
-                  isDense: true,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  filled: true,
-                  fillColor: colors.surface,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
-                ),
-              ),
-            ),
-          ),
-          if (_isPaginated)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                children: [
-                  _SortChip(
-                    label: 'sort_latest'.tr(),
-                    selected: _sort == _sortLatest,
-                    onTap: () {
-                      setState(() => _sort = _sortLatest);
-                      _load();
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  _SortChip(
-                    label: 'sort_popular'.tr(),
-                    selected: _sort == _sortPopular,
-                    onTap: () {
-                      setState(() => _sort = _sortPopular);
-                      _load();
-                    },
-                  ),
-                ],
-              ),
-            ),
+          _buildSearchBar(colors),
+          if (_isPaginated) _buildSortChips(),
           Expanded(
             child: RefreshIndicator(
               color: colors.activate,

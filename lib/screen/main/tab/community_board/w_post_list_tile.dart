@@ -37,6 +37,71 @@ class PostListTile extends StatelessWidget {
     return spans;
   }
 
+  Widget _buildTitle(AbstractThemeColors colors) {
+    if (highlightKeyword != null && highlightKeyword!.isNotEmpty) {
+      return RichText(
+        text: TextSpan(
+          children: _buildHighlightedSpans(
+            post.title,
+            highlightKeyword!,
+            TextStyle(color: colors.textTitle, fontWeight: FontWeight.w600),
+            colors.activate,
+          ),
+        ),
+      );
+    }
+    return Text(
+      post.title,
+      style: TextStyle(color: colors.textTitle, fontWeight: FontWeight.w600),
+    );
+  }
+
+  Widget _buildSubtitle(AbstractThemeColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          post.content,
+          style: TextStyle(color: colors.textSecondary),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        if (post.createdAt != null)
+          Text(
+            post.createdAt!.relativeTime,
+            style: TextStyle(fontSize: 11, color: colors.textSecondary.withValues(alpha: 0.6)),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildTrailing() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (post.imageUrl != null) ...[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: CachedNetworkImage(
+              imageUrl: post.imageUrl!,
+              width: 48,
+              height: 48,
+              fit: BoxFit.cover,
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
+        PostStatRow(
+          likeCount: post.likeCount,
+          commentCount: post.commentCount,
+          scrapCount: post.scrapCount,
+          compact: true,
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -49,64 +114,9 @@ class PostListTile extends StatelessWidget {
         userRole: post.userRole,
         anonymous: post.anonymous,
       ),
-      title: highlightKeyword != null && highlightKeyword!.isNotEmpty
-          ? RichText(
-              text: TextSpan(
-                children: _buildHighlightedSpans(
-                  post.title,
-                  highlightKeyword!,
-                  TextStyle(color: colors.textTitle, fontWeight: FontWeight.w600),
-                  colors.activate,
-                ),
-              ),
-            )
-          : Text(
-              post.title,
-              style: TextStyle(
-                color: colors.textTitle,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            post.content,
-            style: TextStyle(color: colors.textSecondary),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          if (post.createdAt != null)
-            Text(
-              post.createdAt!.relativeTime,
-              style: TextStyle(fontSize: 11, color: colors.textSecondary.withValues(alpha: 0.6)),
-            ),
-        ],
-      ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (post.imageUrl != null) ...[
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: CachedNetworkImage(
-                imageUrl: post.imageUrl!,
-                width: 48,
-                height: 48,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(width: 8),
-          ],
-          PostStatRow(
-            likeCount: post.likeCount,
-            commentCount: post.commentCount,
-            scrapCount: post.scrapCount,
-            compact: true,
-          ),
-        ],
-      ),
+      title: _buildTitle(colors),
+      subtitle: _buildSubtitle(colors),
+      trailing: _buildTrailing(),
     );
   }
 }

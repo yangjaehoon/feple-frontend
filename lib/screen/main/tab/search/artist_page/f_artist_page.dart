@@ -1,5 +1,5 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_schedule.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_songs.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_main_image_swiper.dart';
@@ -39,7 +39,7 @@ class _ArtistPageState extends State<ArtistPage> {
       backgroundColor: colors.backgroundMain,
       body: Column(
         children: [
-          _buildAppBar(context, colors),
+          SecondaryAppBar(title: widget.artistName),
           Expanded(
             child: SafeArea(
               top: false,
@@ -51,35 +51,6 @@ class _ArtistPageState extends State<ArtistPage> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildAppBar(BuildContext context, AbstractThemeColors colors) {
-    return SafeArea(
-      bottom: false,
-      child: Container(
-        height: AppDimens.appBarHeight,
-        color: colors.appBarColor,
-        child: Row(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
-              onPressed: () => Navigator.pop(context),
-            ),
-            Expanded(
-              child: Text(
-                widget.artistName,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

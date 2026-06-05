@@ -19,11 +19,11 @@ class ArtistCircleImage extends StatelessWidget {
     return _buildFollowedImage(colors);
   }
 
-  Widget _buildAvatarContent(AbstractThemeColors colors, {double size = 26}) {
+  Widget _buildAvatarContent(AbstractThemeColors colors) {
     final icon = Icon(
       Icons.person_rounded,
       color: colors.activate.withValues(alpha: 0.5),
-      size: size,
+      size: 26,
     );
     if (imageUrl != null && imageUrl!.isNotEmpty) {
       return CachedNetworkImage(

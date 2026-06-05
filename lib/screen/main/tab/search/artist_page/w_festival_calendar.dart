@@ -1,6 +1,6 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_schedule_model.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_event_type_config.dart';
@@ -63,38 +63,9 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
       backgroundColor: colors.backgroundMain,
       body: Column(
         children: [
-          _buildAppBar(colors),
+          SecondaryAppBar(title: widget.artistName),
           Expanded(child: _buildBody(colors)),
         ],
-      ),
-    );
-  }
-
-  Widget _buildAppBar(AbstractThemeColors colors) {
-    return SafeArea(
-      bottom: false,
-      child: Container(
-        height: AppDimens.appBarHeight,
-        color: colors.appBarColor,
-        child: Row(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
-              onPressed: () => Navigator.pop(context),
-            ),
-            Expanded(
-              child: Text(
-                widget.artistName,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

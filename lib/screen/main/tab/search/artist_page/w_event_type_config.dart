@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/model/artist_schedule_model.dart';
 import 'package:flutter/material.dart';
 
 class EventTypeConfig {
@@ -8,14 +9,13 @@ class EventTypeConfig {
   const EventTypeConfig({required this.icon, required this.color});
 }
 
-EventTypeConfig getEventTypeConfig(String eventType) {
+EventTypeConfig getEventTypeConfig(EventType eventType) {
   switch (eventType) {
-    case 'FAN_MEETING':
+    case EventType.fanMeeting:
       return EventTypeConfig(icon: Icons.favorite_rounded, color: AppColors.kawaiiPink);
-    case 'TV_SHOW':
+    case EventType.tvShow:
       return EventTypeConfig(icon: Icons.tv_rounded, color: AppColors.kawaiiPurple);
-    case 'FESTIVAL':
-    default:
+    case EventType.festival:
       return EventTypeConfig(icon: Icons.music_note_rounded, color: AppColors.skyBlue);
   }
 }

@@ -28,18 +28,13 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
   late final ArtistFollowNotifier _followNotifier;
   late AnimationController _heartController;
 
-  void _onFollowChanged() {
-    if (mounted) setState(() {});
-  }
-
   @override
   void initState() {
     super.initState();
     _followNotifier = ArtistFollowNotifier(
       artistId: widget.artistId,
       initialFollowerCount: widget.initialFollowerCount ?? 0,
-    )..addListener(_onFollowChanged)
-     ..init();
+    )..init();
     _heartController = AnimationController(
       vsync: this,
       duration: AppDimens.animNormal,
@@ -50,7 +45,6 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
 
   @override
   void dispose() {
-    _followNotifier.removeListener(_onFollowChanged);
     _followNotifier.dispose();
     _heartController.dispose();
     super.dispose();
@@ -147,36 +141,38 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return Positioned(
-      left: 0,
-      right: 0,
-      bottom: 0,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 14),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-            colors: [
-              Colors.black.withValues(alpha: 0.65),
-              Colors.black.withValues(alpha: 0.0),
+    return ListenableBuilder(
+      listenable: _followNotifier,
+      builder: (context, _) => Positioned(
+        left: 0,
+        right: 0,
+        bottom: 0,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 14),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
+              colors: [
+                Colors.black.withValues(alpha: 0.65),
+                Colors.black.withValues(alpha: 0.0),
+              ],
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildNameRow(),
+              const SizedBox(height: 10),
+              _buildInteractionRow(colors),
             ],
           ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildNameRow(),
-            const SizedBox(height: 10),
-            _buildInteractionRow(colors),
-          ],
         ),
       ),
     );
   }
 
-  /// Pill-shaped follow/following button with gradient
   Widget _buildFollowButton({
     required bool isFollowed,
     required bool isLoading,
@@ -203,43 +199,42 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
                 : null,
           ),
           child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                isLoading
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation(Colors.white),
-                        ),
-                      )
-                    : Icon(
-                        isFollowed ? Icons.check_rounded : Icons.favorite_rounded,
-                        color: Colors.white,
-                        size: 16,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              isLoading
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation(Colors.white),
                       ),
-                const SizedBox(width: 6),
-                Opacity(
-                  opacity: isLoading ? 0 : 1,
-                  child: Text(
-                    isFollowed ? 'following'.tr() : 'follow'.tr(),
-                    style: const TextStyle(
+                    )
+                  : Icon(
+                      isFollowed ? Icons.check_rounded : Icons.favorite_rounded,
                       color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 13,
-                      letterSpacing: 0.3,
+                      size: 16,
                     ),
+              const SizedBox(width: 6),
+              Opacity(
+                opacity: isLoading ? 0 : 1,
+                child: Text(
+                  isFollowed ? 'following'.tr() : 'follow'.tr(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                    letterSpacing: 0.3,
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  /// Glassmorphic circular action icon button
   Widget _buildActionIcon({
     required IconData icon,
     required String label,
@@ -260,11 +255,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
               width: 1,
             ),
           ),
-          child: Icon(
-            icon,
-            color: Colors.white,
-            size: 20,
-          ),
+          child: Icon(icon, color: Colors.white, size: 20),
         ),
       ),
     );

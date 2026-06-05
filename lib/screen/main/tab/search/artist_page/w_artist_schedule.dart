@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
@@ -10,7 +9,7 @@ import 'package:feple/model/artist_schedule_model.dart';
 import 'package:feple/service/artist_schedule_service.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
 import 'package:feple/screen/main/tab/search/artist_page/s_artist_schedule_list.dart';
-import 'package:feple/screen/main/tab/search/artist_page/w_event_type_config.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_schedule_list_tile.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
@@ -75,19 +74,19 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
             Padding(
               padding: const EdgeInsets.symmetric(
                   horizontal: AppDimens.paddingHorizontal, vertical: 12),
-              child: Row(
+              child: const Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SkeletonBox(
+                  SkeletonBox(
                     width: 42,
                     height: 42,
                     borderRadius: BorderRadius.all(Radius.circular(21)),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         SkeletonBox(height: 14),
                         SizedBox(height: 6),
                         SkeletonBox(width: 100, height: 11),
@@ -142,7 +141,7 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: upcoming.length,
-          itemBuilder: (_, index) => _buildScheduleItem(upcoming[index], colors),
+          itemBuilder: (_, index) => ScheduleListTile(item: upcoming[index]),
           separatorBuilder: (_, __) => Divider(
             thickness: 1,
             color: colors.listDivider,
@@ -153,106 +152,4 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
       },
     );
   }
-
-  Widget _buildScheduleItem(ArtistScheduleModel item, AbstractThemeColors colors) {
-    final typeConfig = getEventTypeConfig(item.eventType);
-    final hasPoster = item.posterUrl != null && item.posterUrl!.isNotEmpty;
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppDimens.paddingHorizontal,
-        vertical: 12,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-            child: hasPoster
-                ? CachedNetworkImage(
-                    imageUrl: item.posterUrl!,
-                    width: 42,
-                    height: 42,
-                    fit: BoxFit.cover,
-                    errorWidget: (_, __, ___) => EventTypeIcon(config: typeConfig),
-                  )
-                : EventTypeIcon(config: typeConfig),
-          ),
-          const SizedBox(width: 12),
-          Expanded(child: _buildScheduleContent(item, colors)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildScheduleContent(ArtistScheduleModel item, AbstractThemeColors colors) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          item.title,
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeMd,
-            fontWeight: FontWeight.w700,
-            color: colors.textTitle,
-          ),
-        ),
-        if (item.location != null && item.location!.isNotEmpty) ...[
-          const SizedBox(height: 2),
-          Text(
-            item.location!,
-            style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
-          ),
-        ],
-        if (item.startDate != null) ...[
-          const SizedBox(height: 4),
-          Row(
-            children: [
-              Icon(Icons.calendar_today_rounded, size: 11, color: colors.textSecondary),
-              const SizedBox(width: 4),
-              Text(
-                item.endDate != null && item.endDate != item.startDate
-                    ? '${item.startDate} ~ ${item.endDate}'
-                    : item.startDate!,
-                style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
-              ),
-            ],
-          ),
-        ],
-        if (item.coArtists.isNotEmpty) ...[
-          const SizedBox(height: 6),
-          _buildCoArtists(item, colors),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildCoArtists(ArtistScheduleModel item, AbstractThemeColors colors) {
-    return SizedBox(
-      height: 28,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: item.coArtists.length,
-        itemBuilder: (_, i) {
-          final co = item.coArtists[i];
-          return Padding(
-            padding: const EdgeInsets.only(right: 4),
-            child: Tooltip(
-              message: co.artistName,
-              child: CircleAvatar(
-                radius: 13,
-                backgroundColor: colors.backgroundMain,
-                backgroundImage: (co.profileImageUrl != null && co.profileImageUrl!.isNotEmpty)
-                    ? CachedNetworkImageProvider(co.profileImageUrl!)
-                    : null,
-                child: (co.profileImageUrl == null || co.profileImageUrl!.isEmpty)
-                    ? Icon(Icons.person_rounded, size: 12, color: colors.textSecondary)
-                    : null,
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
 }

@@ -28,7 +28,7 @@ class _ImgUploadState extends State<ImgUpload> {
   final _photoService = sl<ArtistPhotoService>();
 
   Uint8List? imageData;
-  TextEditingController titleTEC = TextEditingController();
+  final TextEditingController _titleCtrl = TextEditingController();
   FestivalPreview? _selectedFestival;
   late final Future<List<FestivalPreview>> _festivalsFuture;
   bool isUploading = false;
@@ -67,7 +67,7 @@ class _ImgUploadState extends State<ImgUpload> {
       await _photoService.uploadPhoto(
         artistId: widget.artistId,
         imageData: imageData!,
-        title: titleTEC.text,
+        title: _titleCtrl.text,
         description: festival.id == photoCategoryOther.id ? '' : festival.title,
       );
       if (!mounted) return;
@@ -87,7 +87,7 @@ class _ImgUploadState extends State<ImgUpload> {
 
   @override
   void dispose() {
-    titleTEC.dispose();
+    _titleCtrl.dispose();
     super.dispose();
   }
 
@@ -143,6 +143,58 @@ class _ImgUploadState extends State<ImgUpload> {
     );
   }
 
+  Widget _buildTitleField(AbstractThemeColors colors) {
+    return TextFormField(
+      controller: _titleCtrl,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colors.activate, width: 2),
+        ),
+        labelText: 'photo_artwork_label'.tr(),
+        hintText: 'photo_artwork_hint'.tr(),
+        labelStyle: TextStyle(color: colors.textSecondary),
+      ),
+      validator: (v) => (v == null || v.isEmpty) ? 'required_field'.tr() : null,
+    );
+  }
+
+  Widget _buildFestivalDropdown(AbstractThemeColors colors) {
+    return FutureBuilder<List<FestivalPreview>>(
+      future: _festivalsFuture,
+      builder: (context, snapshot) {
+        final festivals = snapshot.data ?? [];
+        return DropdownButtonFormField<FestivalPreview>(
+          initialValue: _selectedFestival,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: colors.activate, width: 2),
+            ),
+            labelText: 'festival_label'.tr(),
+            labelStyle: TextStyle(color: colors.textSecondary),
+          ),
+          hint: snapshot.connectionState != ConnectionState.done
+              ? Text('loading'.tr())
+              : Text('select_festival_hint'.tr()),
+          items: [
+            ...festivals.map((f) => DropdownMenuItem(
+                  value: f,
+                  child: Text(f.title, overflow: TextOverflow.ellipsis),
+                )),
+            DropdownMenuItem(value: photoCategoryDaily, child: Text('photo_category_daily'.tr())),
+            DropdownMenuItem(value: photoCategorySns, child: Text('photo_category_sns'.tr())),
+            DropdownMenuItem(value: photoCategoryOther, child: Text('photo_category_other'.tr())),
+          ],
+          onChanged: (f) => setState(() => _selectedFestival = f),
+          validator: (_) => _selectedFestival == null ? 'select_festival_required'.tr() : null,
+        );
+      },
+    );
+  }
+
   Widget _buildScrollContent(AbstractThemeColors colors) {
     return Expanded(
       child: SingleChildScrollView(
@@ -186,62 +238,9 @@ class _ImgUploadState extends State<ImgUpload> {
                         ),
                       ),
                     ),
-                    TextFormField(
-                      controller: titleTEC,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: colors.activate, width: 2),
-                        ),
-                        labelText: 'photo_artwork_label'.tr(),
-                        hintText: 'photo_artwork_hint'.tr(),
-                        labelStyle: TextStyle(color: colors.textSecondary),
-                      ),
-                      validator: (v) =>
-                          (v == null || v.isEmpty) ? 'required_field'.tr() : null,
-                    ),
+                    _buildTitleField(colors),
                     const SizedBox(height: 12),
-                    FutureBuilder<List<FestivalPreview>>(
-                      future: _festivalsFuture,
-                      builder: (context, snapshot) {
-                        final festivals = snapshot.data ?? [];
-                        return DropdownButtonFormField<FestivalPreview>(
-                          initialValue: _selectedFestival,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: colors.activate, width: 2),
-                            ),
-                            labelText: 'festival_label'.tr(),
-                            labelStyle: TextStyle(color: colors.textSecondary),
-                          ),
-                          hint: snapshot.connectionState != ConnectionState.done
-                              ? Text('loading'.tr())
-                              : Text('select_festival_hint'.tr()),
-                          items: [
-                            ...festivals.map((f) => DropdownMenuItem(
-                                  value: f,
-                                  child: Text(f.title, overflow: TextOverflow.ellipsis),
-                                )),
-                            DropdownMenuItem(
-                                value: photoCategoryDaily,
-                                child: Text('photo_category_daily'.tr())),
-                            DropdownMenuItem(
-                                value: photoCategorySns,
-                                child: Text('photo_category_sns'.tr())),
-                            DropdownMenuItem(
-                                value: photoCategoryOther,
-                                child: Text('photo_category_other'.tr())),
-                          ],
-                          onChanged: (f) => setState(() => _selectedFestival = f),
-                          validator: (_) => _selectedFestival == null
-                              ? 'select_festival_required'.tr()
-                              : null,
-                        );
-                      },
-                    ),
+                    _buildFestivalDropdown(colors),
                   ],
                 ),
               ),

@@ -75,7 +75,7 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
                         activeFilterCount: activeFilterCount,
                       ),
                       const ConcertListWidget(),
-                      _LoadMoreIndicator(colors: colors),
+                      const _LoadMoreIndicator(),
                     ]),
                   ),
                 ),
@@ -284,9 +284,7 @@ class _FilterSection extends StatelessWidget {
 }
 
 class _LoadMoreIndicator extends StatelessWidget {
-  final AbstractThemeColors colors;
-
-  const _LoadMoreIndicator({required this.colors});
+  const _LoadMoreIndicator();
 
   @override
   Widget build(BuildContext context) {

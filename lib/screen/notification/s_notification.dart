@@ -204,50 +204,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-
     return Scaffold(
       backgroundColor: colors.backgroundMain,
       body: Column(
         children: [
-          SafeArea(
-            bottom: false,
-            child: Container(
-              height: AppDimens.appBarHeight,
-              color: colors.backgroundMain,
-              child: Row(
-                children: [
-                  IconButton(
-                    tooltip: 'back'.tr(),
-                    icon: Icon(Icons.arrow_back_ios_rounded, color: colors.textTitle),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  Expanded(
-                    child: Text(
-                      'notifications'.tr(),
-                      style: TextStyle(
-                        color: colors.textTitle,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  if (_items.any((n) => !n.read))
-                    TextButton(
-                      onPressed: _markAllRead,
-                      child: Text(
-                        'mark_all_read'.tr(),
-                        style: TextStyle(
-                          color: colors.activate,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
+          _buildAppBar(colors),
           _buildFilterChips(colors),
           Expanded(
             child: RefreshIndicator(
@@ -256,23 +217,55 @@ class _NotificationScreenState extends State<NotificationScreen> {
               child: _loading
                   ? _buildSkeleton(colors)
                   : _hasError
-                      ? _buildScrollable(
-                          ErrorState(
-                            message: 'err_fetch_data'.tr(),
-                            onRetry: _load,
-                          ),
-                        )
+                      ? _buildScrollable(ErrorState(message: 'err_fetch_data'.tr(), onRetry: _load))
                       : _items.isEmpty
-                          ? _buildScrollable(
-                              EmptyState(
-                                icon: Icons.notifications_none_rounded,
-                                title: 'no_notifications'.tr(),
-                              ),
-                            )
+                          ? _buildScrollable(EmptyState(icon: Icons.notifications_none_rounded, title: 'no_notifications'.tr()))
                           : _buildNotificationList(colors),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAppBar(AbstractThemeColors colors) {
+    return SafeArea(
+      bottom: false,
+      child: Container(
+        height: AppDimens.appBarHeight,
+        color: colors.backgroundMain,
+        child: Row(
+          children: [
+            IconButton(
+              tooltip: 'back'.tr(),
+              icon: Icon(Icons.arrow_back_ios_rounded, color: colors.textTitle),
+              onPressed: () => Navigator.pop(context),
+            ),
+            Expanded(
+              child: Text(
+                'notifications'.tr(),
+                style: TextStyle(
+                  color: colors.textTitle,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (_items.any((n) => !n.read))
+              TextButton(
+                onPressed: _markAllRead,
+                child: Text(
+                  'mark_all_read'.tr(),
+                  style: TextStyle(
+                    color: colors.activate,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

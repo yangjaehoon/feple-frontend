@@ -188,22 +188,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
                   hintStyle: const TextStyle(color: Colors.white54),
                   border: InputBorder.none,
                   filled: false,
-                  suffixIcon: _controller.text.isNotEmpty
-                      ? IconButton(
-                          tooltip: 'clear'.tr(),
-                          icon: const Icon(Icons.clear, color: Colors.white70),
-                          onPressed: () {
-                            _controller.clear();
-                            setState(() {
-                              _searched = false;
-                              _artists = [];
-                              _festivals = [];
-                              _posts = [];
-                              _suggestions = [];
-                            });
-                          },
-                        )
-                      : null,
+                  suffixIcon: _buildClearSuffix(),
                 ),
                 textInputAction: TextInputAction.search,
                 onSubmitted: _search,
@@ -220,6 +205,24 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     );
   }
 
+  Widget? _buildClearSuffix() {
+    if (_controller.text.isEmpty) return null;
+    return IconButton(
+      tooltip: 'clear'.tr(),
+      icon: const Icon(Icons.clear, color: Colors.white70),
+      onPressed: () {
+        _controller.clear();
+        setState(() {
+          _searched = false;
+          _artists = [];
+          _festivals = [];
+          _posts = [];
+          _suggestions = [];
+        });
+      },
+    );
+  }
+
   Widget _buildContent(AbstractThemeColors colors) {
     if (_loading) {
       return Center(child: CircularProgressIndicator(color: colors.loadingIndicator));
@@ -233,35 +236,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 8, 4),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'recent_searches'.tr(),
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: colors.textSecondary,
-                ),
-              ),
-              if (_recentSearches.isNotEmpty)
-                TextButton(
-                  onPressed: _clearRecentSearches,
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  child: Text(
-                    'clear_all'.tr(),
-                    style: TextStyle(fontSize: 12, color: colors.textSecondary),
-                  ),
-                ),
-            ],
-          ),
-        ),
+        _buildRecentHeader(colors),
         if (_recentSearches.isEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -281,10 +256,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                   dense: true,
                   leading: Icon(Icons.history_rounded, size: 18, color: colors.textSecondary),
-                  title: Text(
-                    keyword,
-                    style: TextStyle(fontSize: 14, color: colors.textTitle),
-                  ),
+                  title: Text(keyword, style: TextStyle(fontSize: 14, color: colors.textTitle)),
                   trailing: IconButton(
                     icon: Icon(Icons.close_rounded, size: 16, color: colors.textSecondary),
                     onPressed: () => _removeRecentSearch(keyword),
@@ -293,8 +265,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
                   ),
                   onTap: () {
                     _controller.text = keyword;
-                    _controller.selection =
-                        TextSelection.collapsed(offset: keyword.length);
+                    _controller.selection = TextSelection.collapsed(offset: keyword.length);
                     _search(keyword);
                   },
                 );
@@ -302,6 +273,34 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
             ),
           ),
       ],
+    );
+  }
+
+  Widget _buildRecentHeader(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 8, 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'recent_searches'.tr(),
+            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: colors.textSecondary),
+          ),
+          if (_recentSearches.isNotEmpty)
+            TextButton(
+              onPressed: _clearRecentSearches,
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: Text(
+                'clear_all'.tr(),
+                style: TextStyle(fontSize: 12, color: colors.textSecondary),
+              ),
+            ),
+        ],
+      ),
     );
   }
 

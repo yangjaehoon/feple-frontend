@@ -103,8 +103,8 @@ class ScheduleListTile extends StatelessWidget {
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: item.coArtists.length,
-        itemBuilder: (_, i) {
-          final coArtist = item.coArtists[i];
+        itemBuilder: (_, index) {
+          final coArtist = item.coArtists[index];
           return Padding(
             padding: const EdgeInsets.only(right: 4),
             child: Tooltip(

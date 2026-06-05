@@ -68,7 +68,7 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
 
   Widget _buildScheduleSkeleton() {
     return Column(
-      children: List.generate(3, (i) {
+      children: List.generate(3, (index) {
         return Column(
           children: [
             Padding(
@@ -98,7 +98,7 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
                 ],
               ),
             ),
-            if (i < 2)
+            if (index < 2)
               const Divider(height: 1, thickness: 1, indent: 16, endIndent: 16),
           ],
         );

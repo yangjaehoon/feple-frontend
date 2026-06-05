@@ -168,67 +168,75 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
   Widget _buildPhotoImageArea(ArtistPhotoResponse photo, AbstractThemeColors colors) {
     return Stack(
       children: [
-        GestureDetector(
-          onDoubleTap: () => _notifier.toggleLike(photo.photoId),
-          child: ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(16),
-              bottomLeft: Radius.circular(16),
-            ),
-            child: CachedNetworkImage(
-              imageUrl: photo.url,
-              width: 195,
-              height: 195,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Container(
-                width: 195,
-                height: 195,
-                color: colors.listDivider,
-                child: Center(
-                  child: CircularProgressIndicator(
-                      color: colors.loadingIndicator, strokeWidth: 2),
-                ),
-              ),
-              errorWidget: (context, url, error) => Container(
-                width: 195,
-                height: 195,
-                color: colors.listDivider,
-                child: Icon(Icons.broken_image_rounded, color: colors.textSecondary),
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          left: 6,
-          bottom: 6,
-          child: GestureDetector(
-            onTap: () => _notifier.toggleLike(photo.photoId),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.45),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    photo.isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                    color: photo.isLiked ? AppColors.kawaiiPink : Colors.white,
-                    size: 18,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '${photo.likeCount}',
-                    style: const TextStyle(
-                        fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+        _buildPhoto(photo, colors),
+        _buildLikeOverlay(photo),
       ],
+    );
+  }
+
+  Widget _buildPhoto(ArtistPhotoResponse photo, AbstractThemeColors colors) {
+    return GestureDetector(
+      onDoubleTap: () => _notifier.toggleLike(photo.photoId),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(16),
+          bottomLeft: Radius.circular(16),
+        ),
+        child: CachedNetworkImage(
+          imageUrl: photo.url,
+          width: 195,
+          height: 195,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => Container(
+            width: 195,
+            height: 195,
+            color: colors.listDivider,
+            child: Center(
+              child: CircularProgressIndicator(
+                  color: colors.loadingIndicator, strokeWidth: 2),
+            ),
+          ),
+          errorWidget: (context, url, error) => Container(
+            width: 195,
+            height: 195,
+            color: colors.listDivider,
+            child: Icon(Icons.broken_image_rounded, color: colors.textSecondary),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLikeOverlay(ArtistPhotoResponse photo) {
+    return Positioned(
+      left: 6,
+      bottom: 6,
+      child: GestureDetector(
+        onTap: () => _notifier.toggleLike(photo.photoId),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.45),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                photo.isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                color: photo.isLiked ? AppColors.kawaiiPink : Colors.white,
+                size: 18,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                '${photo.likeCount}',
+                style: const TextStyle(
+                    fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -256,59 +264,63 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                PopupMenuButton<String>(
-                  padding: EdgeInsets.zero,
-                  icon: Icon(Icons.more_vert_rounded,
-                      color: colors.textSecondary, size: 20),
-                  onSelected: (value) {
-                    if (value == 'edit') {
-                      _showEditBottomSheet(photo);
-                    } else if (value == 'delete') {
-                      _confirmAndDelete(photo.photoId);
-                    } else if (value == 'report') {
-                      showReportSheet(
-                        context,
-                        titleKey: 'report_photo',
-                        onSubmit: (reason, detail) =>
-                            sl<ReportService>().submitPhotoReport(
-                          widget.artistId,
-                          photo.photoId,
-                          reason,
-                          detail: detail,
-                        ),
-                        duplicateErrorKey: 'report_photo_duplicate',
-                      );
-                    }
-                  },
-                  itemBuilder: (_) => [
-                    if (isUploader) ...[
-                      _menuItem('edit', Icons.edit_rounded, 'photo_edit_action'.tr(), colors),
-                      _menuItem('delete', Icons.delete_rounded, 'msg_delete'.tr(), colors, color: AppColors.errorRed),
-                    ] else
-                      _menuItem('report', Icons.flag_rounded, 'report_photo'.tr(), colors, color: AppColors.errorRed),
-                  ],
-                ),
+                _buildPhotoMenu(photo, isUploader, colors),
               ],
             ),
             if (photo.description.isNotEmpty)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: colors.activate.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  photo.description,
-                  style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: colors.activate),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
+              _buildDescriptionBadge(photo, colors),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildPhotoMenu(
+      ArtistPhotoResponse photo, bool isUploader, AbstractThemeColors colors) {
+    return PopupMenuButton<String>(
+      padding: EdgeInsets.zero,
+      icon: Icon(Icons.more_vert_rounded, color: colors.textSecondary, size: 20),
+      onSelected: (value) {
+        if (value == 'edit') {
+          _showEditBottomSheet(photo);
+        } else if (value == 'delete') {
+          _confirmAndDelete(photo.photoId);
+        } else if (value == 'report') {
+          showReportSheet(
+            context,
+            titleKey: 'report_photo',
+            onSubmit: (reason, detail) => sl<ReportService>().submitPhotoReport(
+              widget.artistId,
+              photo.photoId,
+              reason,
+              detail: detail,
+            ),
+            duplicateErrorKey: 'report_photo_duplicate',
+          );
+        }
+      },
+      itemBuilder: (_) => [
+        if (isUploader) ...[
+          _menuItem('edit', Icons.edit_rounded, 'photo_edit_action'.tr(), colors),
+          _menuItem('delete', Icons.delete_rounded, 'msg_delete'.tr(), colors, color: AppColors.errorRed),
+        ] else
+          _menuItem('report', Icons.flag_rounded, 'report_photo'.tr(), colors, color: AppColors.errorRed),
+      ],
+    );
+  }
+
+  Widget _buildDescriptionBadge(ArtistPhotoResponse photo, AbstractThemeColors colors) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: colors.activate.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        photo.description,
+        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: colors.activate),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }

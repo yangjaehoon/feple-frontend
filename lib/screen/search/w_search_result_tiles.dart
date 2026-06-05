@@ -75,7 +75,7 @@ class SearchArtistTile extends StatelessWidget {
         builder: (_) => ArtistPage(
           artistName: data.name,
           artistId: data.id,
-          followerCounter: data.followerCount,
+          followerCount: data.followerCount,
         ),
       )),
     );

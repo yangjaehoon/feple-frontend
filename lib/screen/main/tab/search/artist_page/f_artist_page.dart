@@ -12,13 +12,13 @@ class ArtistPage extends StatefulWidget {
     super.key,
     required this.artistName,
     required this.artistId,
-    required this.followerCounter,
+    required this.followerCount,
     this.profileImageUrl,
   });
 
   final String artistName;
   final int artistId;
-  final int followerCounter;
+  final int followerCount;
   final String? profileImageUrl;
 
   @override
@@ -64,7 +64,7 @@ class _ArtistPageState extends State<ArtistPage> {
             key: ValueKey('swiper_$_refreshKey'),
             artistName: widget.artistName,
             artistId: widget.artistId,
-            followerCount: widget.followerCounter,
+            followerCount: widget.followerCount,
             profileImageUrl: widget.profileImageUrl,
           ),
           ArtistSchedule(

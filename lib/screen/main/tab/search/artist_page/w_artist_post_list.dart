@@ -16,13 +16,13 @@ class ArtistPostListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final svc = sl<PostService>();
+    final postService = sl<PostService>();
     return BoardPostListScreen(
       boardname: 'name_board'.tr(args: [artistName]),
       writeScreenTitle: 'name_board_write'.tr(args: [artistName]),
-      fetchPosts: () => svc.fetchArtistPosts(artistId),
+      fetchPosts: () => postService.fetchArtistPosts(artistId),
       onSubmitPost: (t, c, a, img) =>
-          svc.createArtistPost(artistId: artistId, title: t, content: c, anonymous: a, imageObjectKey: img),
+          postService.createArtistPost(artistId: artistId, title: t, content: c, anonymous: a, imageObjectKey: img),
     );
   }
 }

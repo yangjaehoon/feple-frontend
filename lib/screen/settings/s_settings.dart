@@ -106,7 +106,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     final isDark = context.themeType == CustomTheme.dark;
-
     return Scaffold(
       backgroundColor: colors.backgroundMain,
       body: Column(
@@ -116,117 +115,138 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: ListView(
               padding: const EdgeInsets.only(bottom: 40),
               children: [
-                _SectionHeader(label: 'settings_account'.tr(), colors: colors),
-                _SettingsItem(
-                  icon: Icons.edit_rounded,
-                  label: 'edit_profile'.tr(),
-                  colors: colors,
-                  onTap: () => Navigator.push(
-                    context,
-                    SlideRoute(builder: (_) => const EditProfileWidget()),
-                  ),
-                ),
-                _ItemDivider(colors: colors),
-                _SettingsItem(
-                  icon: Icons.logout_rounded,
-                  label: 'logout'.tr(),
-                  colors: colors,
-                  onTap: _logout,
-                  isDestructive: true,
-                ),
-                _ItemDivider(colors: colors),
-                _SettingsItem(
-                  icon: Icons.person_remove_rounded,
-                  label: 'delete_account'.tr(),
-                  colors: colors,
-                  onTap: _deleteAccount,
-                  isDestructive: true,
-                ),
-                _SectionHeader(label: 'settings_app'.tr(), colors: colors),
-                _SettingsItem(
-                  icon: isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
-                  label: 'dark_mode'.tr(),
-                  colors: colors,
-                  trailing: Switch(
-                    value: isDark,
-                    onChanged: (_) => ThemeUtil.toggleTheme(context),
-                    activeThumbColor: colors.activate,
-                  ),
-                ),
-                _ItemDivider(colors: colors),
-                _LanguageItem(colors: colors),
-                _ItemDivider(colors: colors),
-                _SettingsItem(
-                  icon: Icons.cleaning_services_rounded,
-                  label: 'clear_cache'.tr(),
-                  colors: colors,
-                  trailing: _clearingCache
-                      ? SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                              strokeWidth: 2, color: colors.activate),
-                        )
-                      : null,
-                  onTap: _clearingCache ? null : _clearCache,
-                ),
-                _ItemDivider(colors: colors),
-                _SettingsItem(
-                  icon: Icons.notifications_rounded,
-                  label: 'notif_settings'.tr(),
-                  colors: colors,
-                  onTap: () => Navigator.push(
-                    context,
-                    SlideRoute(builder: (_) => const NotificationSettingsScreen()),
-                  ),
-                ),
-                _SectionHeader(label: 'settings_support'.tr(), colors: colors),
-                _SettingsItem(
-                  icon: Icons.headset_mic_rounded,
-                  label: 'customer_service'.tr(),
-                  colors: colors,
-                  onTap: () async {
-                    final uri = Uri.parse('https://open.kakao.com/o/guLhbJki');
-                    await launchUrl(uri, mode: LaunchMode.externalApplication);
-                  },
-                ),
-                _ItemDivider(colors: colors),
-                _SettingsItem(
-                  icon: Icons.privacy_tip_rounded,
-                  label: 'privacy_policy'.tr(),
-                  colors: colors,
-                  onTap: () async {
-                    final uri = Uri.parse('https://yangjae.notion.site/feple-privacy?source=copy_link');
-                    await launchUrl(uri, mode: LaunchMode.externalApplication);
-                  },
-                ),
-                _ItemDivider(colors: colors),
-                _SettingsItem(
-                  icon: Icons.code_rounded,
-                  label: 'opensource'.tr(),
-                  colors: colors,
-                  onTap: () => Navigator.push(
-                    context,
-                    SlideRoute(builder: (_) => const OpensourceScreen()),
-                  ),
-                ),
-                _ItemDivider(colors: colors),
-                _VersionItem(version: _appVersion, colors: colors),
-                if (kDebugMode) ...[
-                  _SectionHeader(label: 'DEV', colors: colors),
-                  _SettingsItem(
-                    icon: Icons.replay_rounded,
-                    label: 'onboarding_replay'.tr(),
-                    colors: colors,
-                    onTap: _resetOnboarding,
-                  ),
-                ],
+                ..._buildAccountSection(colors),
+                ..._buildAppSection(colors, isDark),
+                ..._buildSupportSection(colors),
+                if (kDebugMode) ..._buildDevSection(colors),
               ],
             ),
           ),
         ],
       ),
     );
+  }
+
+  List<Widget> _buildAccountSection(AbstractThemeColors colors) {
+    return [
+      _SectionHeader(label: 'settings_account'.tr(), colors: colors),
+      _SettingsItem(
+        icon: Icons.edit_rounded,
+        label: 'edit_profile'.tr(),
+        colors: colors,
+        onTap: () => Navigator.push(
+          context,
+          SlideRoute(builder: (_) => const EditProfileWidget()),
+        ),
+      ),
+      _ItemDivider(colors: colors),
+      _SettingsItem(
+        icon: Icons.logout_rounded,
+        label: 'logout'.tr(),
+        colors: colors,
+        onTap: _logout,
+        isDestructive: true,
+      ),
+      _ItemDivider(colors: colors),
+      _SettingsItem(
+        icon: Icons.person_remove_rounded,
+        label: 'delete_account'.tr(),
+        colors: colors,
+        onTap: _deleteAccount,
+        isDestructive: true,
+      ),
+    ];
+  }
+
+  List<Widget> _buildAppSection(AbstractThemeColors colors, bool isDark) {
+    return [
+      _SectionHeader(label: 'settings_app'.tr(), colors: colors),
+      _SettingsItem(
+        icon: isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+        label: 'dark_mode'.tr(),
+        colors: colors,
+        trailing: Switch(
+          value: isDark,
+          onChanged: (_) => ThemeUtil.toggleTheme(context),
+          activeThumbColor: colors.activate,
+        ),
+      ),
+      _ItemDivider(colors: colors),
+      _LanguageItem(colors: colors),
+      _ItemDivider(colors: colors),
+      _SettingsItem(
+        icon: Icons.cleaning_services_rounded,
+        label: 'clear_cache'.tr(),
+        colors: colors,
+        trailing: _clearingCache
+            ? SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2, color: colors.activate),
+              )
+            : null,
+        onTap: _clearingCache ? null : _clearCache,
+      ),
+      _ItemDivider(colors: colors),
+      _SettingsItem(
+        icon: Icons.notifications_rounded,
+        label: 'notif_settings'.tr(),
+        colors: colors,
+        onTap: () => Navigator.push(
+          context,
+          SlideRoute(builder: (_) => const NotificationSettingsScreen()),
+        ),
+      ),
+    ];
+  }
+
+  List<Widget> _buildSupportSection(AbstractThemeColors colors) {
+    return [
+      _SectionHeader(label: 'settings_support'.tr(), colors: colors),
+      _SettingsItem(
+        icon: Icons.headset_mic_rounded,
+        label: 'customer_service'.tr(),
+        colors: colors,
+        onTap: () async {
+          final uri = Uri.parse('https://open.kakao.com/o/guLhbJki');
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        },
+      ),
+      _ItemDivider(colors: colors),
+      _SettingsItem(
+        icon: Icons.privacy_tip_rounded,
+        label: 'privacy_policy'.tr(),
+        colors: colors,
+        onTap: () async {
+          final uri = Uri.parse('https://yangjae.notion.site/feple-privacy?source=copy_link');
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        },
+      ),
+      _ItemDivider(colors: colors),
+      _SettingsItem(
+        icon: Icons.code_rounded,
+        label: 'opensource'.tr(),
+        colors: colors,
+        onTap: () => Navigator.push(
+          context,
+          SlideRoute(builder: (_) => const OpensourceScreen()),
+        ),
+      ),
+      _ItemDivider(colors: colors),
+      _VersionItem(version: _appVersion, colors: colors),
+    ];
+  }
+
+  List<Widget> _buildDevSection(AbstractThemeColors colors) {
+    return [
+      _SectionHeader(label: 'DEV', colors: colors),
+      _SettingsItem(
+        icon: Icons.replay_rounded,
+        label: 'onboarding_replay'.tr(),
+        colors: colors,
+        onTap: _resetOnboarding,
+      ),
+    ];
   }
 }
 

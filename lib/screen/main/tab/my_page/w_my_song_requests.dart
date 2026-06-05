@@ -51,7 +51,7 @@ class _SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
     }
   }
 
-  void _openFullList() async {
+  Future<void> _openFullList() async {
     await Navigator.push(
       context,
       SlideRoute(builder: (_) => const SongRequestListScreen()),

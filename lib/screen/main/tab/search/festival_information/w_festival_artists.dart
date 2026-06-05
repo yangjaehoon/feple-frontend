@@ -9,6 +9,7 @@ import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_circle_image.dart';
+import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/screen/main/tab/search/festival_information/festival_artists_notifier.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_artist_list.dart';
 import 'package:feple/service/artist_follow_service.dart';
@@ -133,42 +134,46 @@ class _FestivalArtistsState extends State<FestivalArtists> {
         itemBuilder: (context, index) {
           final artist = displayed[index];
           final isFollowed = _notifier.isFollowed(artist.artistId);
-          return GestureDetector(
-            onTap: () => Navigator.push(
-              context,
-              SlideRoute(
-                builder: (_) => ArtistPage(
-                  artistId: artist.artistId,
-                  artistName: artist.artistName,
-                  followerCounter: 0,
-                ),
-              ),
-            ),
-            child: SizedBox(
-              width: 64,
-              child: Column(
-                children: [
-                  ArtistCircleImage(
-                    imageUrl: artist.profileImageUrl,
-                    isFollowed: isFollowed,
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    artist.artistName,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: isFollowed ? colors.activate : colors.textTitle,
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-          );
+          return _buildArtistItem(context, artist, isFollowed, colors);
         },
+      ),
+    );
+  }
+
+  Widget _buildArtistItem(BuildContext context, FestivalArtistItem artist, bool isFollowed, AbstractThemeColors colors) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        SlideRoute(
+          builder: (_) => ArtistPage(
+            artistId: artist.artistId,
+            artistName: artist.artistName,
+            followerCounter: 0,
+          ),
+        ),
+      ),
+      child: SizedBox(
+        width: 64,
+        child: Column(
+          children: [
+            ArtistCircleImage(
+              imageUrl: artist.profileImageUrl,
+              isFollowed: isFollowed,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              artist.artistName,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: isFollowed ? colors.activate : colors.textTitle,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }

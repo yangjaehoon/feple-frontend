@@ -103,32 +103,36 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
             ),
           ),
           const SizedBox(height: 12),
-          GridView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 6,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 12,
-              childAspectRatio: 0.75,
-            ),
-            itemBuilder: (_, __) => Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: const [
-                AspectRatio(
-                  aspectRatio: 1.0,
-                  child: SkeletonBox(
-                    height: double.infinity,
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                  ),
-                ),
-                SizedBox(height: 8),
-                SkeletonBox(width: 60, height: 13),
-              ],
+          _buildSkeletonGrid(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSkeletonGrid() {
+    return GridView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 6,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: 16,
+        crossAxisSpacing: 12,
+        childAspectRatio: 0.75,
+      ),
+      itemBuilder: (_, __) => Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: const [
+          AspectRatio(
+            aspectRatio: 1.0,
+            child: SkeletonBox(
+              height: double.infinity,
+              borderRadius: BorderRadius.all(Radius.circular(12)),
             ),
           ),
+          SizedBox(height: 8),
+          SkeletonBox(width: 60, height: 13),
         ],
       ),
     );

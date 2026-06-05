@@ -202,41 +202,45 @@ class _ArtistCompactRow extends StatelessWidget {
         ),
         const SizedBox(height: 3),
         if (topSong != null)
-          Row(
-            children: [
-              if (topSong.thumbnailUrl != null)
-                Padding(
-                  padding: const EdgeInsets.only(right: 6),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(3),
-                    child: CachedNetworkImage(
-                      imageUrl: topSong.thumbnailUrl!,
-                      width: 20,
-                      height: 20,
-                      fit: BoxFit.cover,
-                      errorWidget: (_, __, ___) => const SizedBox.shrink(),
-                    ),
-                  ),
-                ),
-              Expanded(
-                child: Text(
-                  topSong.title,
-                  style: TextStyle(fontSize: 11, color: colors.textSecondary),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              if (entry.songs.length > 1)
-                Text(
-                  ' +${entry.songs.length - 1}',
-                  style: TextStyle(fontSize: 11, color: colors.activate),
-                ),
-            ],
-          )
+          _buildTopSongRow(topSong)
         else
           Text(
             'no_setlist'.tr(),
             style: TextStyle(fontSize: 11, color: colors.textSecondary),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildTopSongRow(SongModel topSong) {
+    return Row(
+      children: [
+        if (topSong.thumbnailUrl != null)
+          Padding(
+            padding: const EdgeInsets.only(right: 6),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(3),
+              child: CachedNetworkImage(
+                imageUrl: topSong.thumbnailUrl!,
+                width: 20,
+                height: 20,
+                fit: BoxFit.cover,
+                errorWidget: (_, __, ___) => const SizedBox.shrink(),
+              ),
+            ),
+          ),
+        Expanded(
+          child: Text(
+            topSong.title,
+            style: TextStyle(fontSize: 11, color: colors.textSecondary),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        if (entry.songs.length > 1)
+          Text(
+            ' +${entry.songs.length - 1}',
+            style: TextStyle(fontSize: 11, color: colors.activate),
           ),
       ],
     );

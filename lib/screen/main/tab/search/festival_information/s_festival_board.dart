@@ -151,68 +151,11 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
     final tabIndex = _tabController.index;
     return Scaffold(
       backgroundColor: colors.backgroundMain,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 80),
-        child: FloatingActionButton.extended(
-          backgroundColor: colors.activate,
-          onPressed: () => _openWrite(tabIndex),
-          label: Text(
-            'write_post'.tr(),
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
-          ),
-          icon: const Icon(Icons.edit_rounded, color: Colors.white),
-        ),
-      ),
+      floatingActionButton: _buildFab(colors, tabIndex),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Column(
         children: [
-          SafeArea(
-            bottom: false,
-            child: Container(
-              color: colors.appBarColor,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    height: AppDimens.appBarHeight,
-                    child: Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                        Expanded(
-                          child: Text(
-                            widget.festivalName,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  TabBar(
-                    controller: _tabController,
-                    labelColor: Colors.white,
-                    unselectedLabelColor: Colors.white54,
-                    indicatorColor: Colors.white,
-                    indicatorWeight: 2.5,
-                    labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
-                    unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
-                    tabs: [
-                      Tab(text: 'free_board'.tr()),
-                      Tab(text: 'companion_tab'.tr()),
-                      Tab(text: 'ticket_tab'.tr()),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
+          _buildAppBarSection(colors),
           Expanded(
             child: TabBarView(
               controller: _tabController,
@@ -220,6 +163,71 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildFab(AbstractThemeColors colors, int tabIndex) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 80),
+      child: FloatingActionButton.extended(
+        backgroundColor: colors.activate,
+        onPressed: () => _openWrite(tabIndex),
+        label: Text(
+          'write_post'.tr(),
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+        ),
+        icon: const Icon(Icons.edit_rounded, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _buildAppBarSection(AbstractThemeColors colors) {
+    return SafeArea(
+      bottom: false,
+      child: Container(
+        color: colors.appBarColor,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: AppDimens.appBarHeight,
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  Expanded(
+                    child: Text(
+                      widget.festivalName,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            TabBar(
+              controller: _tabController,
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.white54,
+              indicatorColor: Colors.white,
+              indicatorWeight: 2.5,
+              labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+              tabs: [
+                Tab(text: 'free_board'.tr()),
+                Tab(text: 'companion_tab'.tr()),
+                Tab(text: 'ticket_tab'.tr()),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

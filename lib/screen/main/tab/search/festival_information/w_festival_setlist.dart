@@ -169,8 +169,7 @@ class _ArtistCompactRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final SongModel? topSong = entry.songs.isNotEmpty ? entry.songs.first : null;
-
+    final topSong = entry.songs.isNotEmpty ? entry.songs.first : null;
     return Column(
       children: [
         Padding(
@@ -179,64 +178,66 @@ class _ArtistCompactRow extends StatelessWidget {
             children: [
               _buildAvatar(),
               const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      entry.artistName,
-                      style: TextStyle(
-                        fontSize: AppDimens.fontSizeMd,
-                        fontWeight: FontWeight.w600,
-                        color: colors.textTitle,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    if (topSong != null)
-                      Row(
-                        children: [
-                          if (topSong.thumbnailUrl != null)
-                            Padding(
-                              padding: const EdgeInsets.only(right: 6),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(3),
-                                child: CachedNetworkImage(
-                                  imageUrl: topSong.thumbnailUrl!,
-                                  width: 20,
-                                  height: 20,
-                                  fit: BoxFit.cover,
-                                  errorWidget: (_, __, ___) => const SizedBox.shrink(),
-                                ),
-                              ),
-                            ),
-                          Expanded(
-                            child: Text(
-                              topSong.title,
-                              style: TextStyle(fontSize: 11, color: colors.textSecondary),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          if (entry.songs.length > 1)
-                            Text(
-                              ' +${entry.songs.length - 1}',
-                              style: TextStyle(fontSize: 11, color: colors.activate),
-                            ),
-                        ],
-                      )
-                    else
-                      Text(
-                        'no_setlist'.tr(),
-                        style: TextStyle(fontSize: 11, color: colors.textSecondary),
-                      ),
-                  ],
-                ),
-              ),
+              Expanded(child: _buildTextColumn(topSong)),
             ],
           ),
         ),
         if (!isLast)
           Divider(thickness: 1, color: colors.listDivider, indent: 16, endIndent: 16, height: 1),
+      ],
+    );
+  }
+
+  Widget _buildTextColumn(SongModel? topSong) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          entry.artistName,
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeMd,
+            fontWeight: FontWeight.w600,
+            color: colors.textTitle,
+          ),
+        ),
+        const SizedBox(height: 3),
+        if (topSong != null)
+          Row(
+            children: [
+              if (topSong.thumbnailUrl != null)
+                Padding(
+                  padding: const EdgeInsets.only(right: 6),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(3),
+                    child: CachedNetworkImage(
+                      imageUrl: topSong.thumbnailUrl!,
+                      width: 20,
+                      height: 20,
+                      fit: BoxFit.cover,
+                      errorWidget: (_, __, ___) => const SizedBox.shrink(),
+                    ),
+                  ),
+                ),
+              Expanded(
+                child: Text(
+                  topSong.title,
+                  style: TextStyle(fontSize: 11, color: colors.textSecondary),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              if (entry.songs.length > 1)
+                Text(
+                  ' +${entry.songs.length - 1}',
+                  style: TextStyle(fontSize: 11, color: colors.activate),
+                ),
+            ],
+          )
+        else
+          Text(
+            'no_setlist'.tr(),
+            style: TextStyle(fontSize: 11, color: colors.textSecondary),
+          ),
       ],
     );
   }

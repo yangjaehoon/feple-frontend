@@ -66,11 +66,7 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
     await _storage.write(
       key: _kUserJson,
-      value: jsonEncode({
-        'id': me.id,
-        'nickname': me.nickname,
-        'profileImageUrl': me.profileImageUrl,
-      }),
+      value: jsonEncode(me.toJson()),
     );
   }
 

@@ -46,7 +46,10 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
       final updated = await sl<NotificationPreferenceService>().updatePreferences(newPrefs);
       if (mounted) setState(() => _prefs = updated);
     } catch (_) {
-      if (mounted) setState(() => _prefs = old);
+      if (mounted) {
+        setState(() => _prefs = old);
+        context.showErrorSnackbar('save_failed'.tr());
+      }
     }
   }
 

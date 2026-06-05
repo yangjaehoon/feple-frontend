@@ -31,9 +31,17 @@ class User {
     return User(
       id: json['id'] as int,
       nickname: json['nickname'] as String?,
-      //uid: json['uid'],
       profileImageUrl: json['profileImageUrl'] as String?,
       bio: json['bio'] as String?,
+      level: json['level'] as int? ?? 0,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'nickname': nickname,
+    'profileImageUrl': profileImageUrl,
+    'bio': bio,
+    'level': level,
+  };
 }

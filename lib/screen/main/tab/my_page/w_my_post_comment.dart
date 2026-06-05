@@ -1,4 +1,6 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/user_stats_model.dart';
 import 'package:feple/service/user_activity_service.dart';
@@ -30,6 +32,8 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
   Future<UserStats> _fetchStats() =>
       sl<UserActivityService>().fetchStats(widget.userId);
 
+  void _refresh() => setState(() { _statsFuture = _fetchStats(); });
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -43,11 +47,14 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
 
   Widget _buildStatRow(
       BuildContext context, AsyncSnapshot<UserStats> snapshot) {
-    final postCount = snapshot.data?.postCount.toString() ?? '-';
-    final commentCount = snapshot.data?.commentCount.toString() ?? '-';
-    final certCount = snapshot.data?.certificationCount.toString() ?? '-';
-    final scrapCount = snapshot.data?.scrapCount.toString() ?? '-';
-    final likedCount = snapshot.data?.likedPostCount.toString() ?? '-';
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return _buildSkeleton();
+    }
+    if (snapshot.hasError) {
+      return ErrorState(message: 'err_fetch_data'.tr(), onRetry: _refresh);
+    }
+    final stats = snapshot.data!;
+    final colors = context.appColors;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
@@ -56,8 +63,8 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
             context,
             icon: Icons.verified_rounded,
             label: 'certification_badge'.tr(),
-            value: certCount,
-            color: context.appColors.activate,
+            value: stats.certificationCount.toString(),
+            color: colors.activate,
             onTap: () => Navigator.push(context, SlideRoute(builder: (_) => const CertificationListScreen())),
           )),
           const SizedBox(width: 6),
@@ -65,8 +72,8 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
             context,
             icon: Icons.article_rounded,
             label: 'posts'.tr(),
-            value: postCount,
-            color: context.appColors.activate,
+            value: stats.postCount.toString(),
+            color: colors.activate,
             onTap: () => Navigator.push(context, SlideRoute(builder: (_) => MyPostsScreen(userId: widget.userId))),
           )),
           const SizedBox(width: 6),
@@ -74,8 +81,8 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
             context,
             icon: Icons.chat_bubble_rounded,
             label: 'comments'.tr(),
-            value: commentCount,
-            color: context.appColors.activate,
+            value: stats.commentCount.toString(),
+            color: colors.activate,
             onTap: () => Navigator.push(context, SlideRoute(builder: (_) => MyCommentsScreen(userId: widget.userId))),
           )),
           const SizedBox(width: 6),
@@ -83,8 +90,8 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
             context,
             icon: Icons.star_rounded,
             label: 'scraps'.tr(),
-            value: scrapCount,
-            color: context.appColors.accentColor,
+            value: stats.scrapCount.toString(),
+            color: colors.accentColor,
             onTap: () => Navigator.push(context, SlideRoute(builder: (_) => const MyScrapsScreen())),
           )),
           const SizedBox(width: 6),
@@ -92,10 +99,29 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
             context,
             icon: Icons.favorite_rounded,
             label: 'liked_posts'.tr(),
-            value: likedCount,
-            color: context.appColors.accentColor,
+            value: stats.likedPostCount.toString(),
+            color: colors.accentColor,
             onTap: () => Navigator.push(context, SlideRoute(builder: (_) => MyLikedPostsScreen(userId: widget.userId))),
           )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSkeleton() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: const Row(
+        children: [
+          Expanded(child: SkeletonBox(height: 90, borderRadius: BorderRadius.all(Radius.circular(16)))),
+          SizedBox(width: 6),
+          Expanded(child: SkeletonBox(height: 90, borderRadius: BorderRadius.all(Radius.circular(16)))),
+          SizedBox(width: 6),
+          Expanded(child: SkeletonBox(height: 90, borderRadius: BorderRadius.all(Radius.circular(16)))),
+          SizedBox(width: 6),
+          Expanded(child: SkeletonBox(height: 90, borderRadius: BorderRadius.all(Radius.circular(16)))),
+          SizedBox(width: 6),
+          Expanded(child: SkeletonBox(height: 90, borderRadius: BorderRadius.all(Radius.circular(16)))),
         ],
       ),
     );

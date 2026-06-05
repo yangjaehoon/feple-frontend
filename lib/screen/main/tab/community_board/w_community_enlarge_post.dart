@@ -82,6 +82,8 @@ class EnlargePost extends StatefulWidget {
 }
 
 class _EnlargePostState extends State<EnlargePost> {
+  final _postService = sl<PostService>();
+  final _reportService = sl<ReportService>();
   final _commentController = TextEditingController();
   late final PostDetailNotifier _notifier;
   int? _replyToCommentId;
@@ -252,7 +254,7 @@ class _EnlargePostState extends State<EnlargePost> {
             initialImageUrl: _imageUrl,
             showAnonymous: false,
             onSubmit: (t, c, _, img) async {
-              await sl<PostService>().updatePost(
+              await _postService.updatePost(
                 postId: widget.id,
                 title: t,
                 content: c,
@@ -285,7 +287,7 @@ class _EnlargePostState extends State<EnlargePost> {
         context,
         titleKey: 'report_post',
         onSubmit: (reason, detail) =>
-            sl<ReportService>().submitReport(widget.id, reason, detail: detail),
+            _reportService.submitReport(widget.id, reason, detail: detail),
         duplicateErrorKey: 'report_duplicate',
       );
     } else if (value == 'share') {
@@ -390,7 +392,7 @@ class _EnlargePostState extends State<EnlargePost> {
             onReport: (commentId) => showReportSheet(
               context,
               titleKey: 'report_comment',
-              onSubmit: (reason, detail) => sl<ReportService>()
+              onSubmit: (reason, detail) => _reportService
                   .submitCommentReport(commentId, reason, detail: detail),
               duplicateErrorKey: 'report_comment_duplicate',
             ),
@@ -410,6 +412,29 @@ class _EnlargePostState extends State<EnlargePost> {
     );
   }
 
+  Widget _buildBottomBar(int? userId) {
+    return ListenableBuilder(
+      listenable: _notifier,
+      builder: (_, __) => CommentInputBar(
+        controller: _commentController,
+        isSubmitting: _notifier.isSubmitting,
+        onSubmit: () {
+          if (userId == null) {
+            context.showInfoSnackbar('no_login_info'.tr());
+            return;
+          }
+          _notifier.submitComment(
+            _commentController.text.trim(),
+            parentId: _replyToCommentId,
+          );
+        },
+        errorText: _notifier.commentError?.tr(),
+        replyToNickname: _replyToNickname,
+        onCancelReply: _cancelReply,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -418,26 +443,7 @@ class _EnlargePostState extends State<EnlargePost> {
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      bottomNavigationBar: ListenableBuilder(
-        listenable: _notifier,
-        builder: (_, __) => CommentInputBar(
-          controller: _commentController,
-          isSubmitting: _notifier.isSubmitting,
-          onSubmit: () {
-            if (userId == null) {
-              context.showInfoSnackbar('no_login_info'.tr());
-              return;
-            }
-            _notifier.submitComment(
-              _commentController.text.trim(),
-              parentId: _replyToCommentId,
-            );
-          },
-          errorText: _notifier.commentError?.tr(),
-          replyToNickname: _replyToNickname,
-          onCancelReply: _cancelReply,
-        ),
-      ),
+      bottomNavigationBar: _buildBottomBar(userId),
       body: Column(
         children: [
           SecondaryAppBar(

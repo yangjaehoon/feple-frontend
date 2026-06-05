@@ -62,6 +62,33 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
     super.dispose();
   }
 
+  Future<void> _handleWriteTap() async {
+    if (!mounted) return;
+    final userId = context.read<UserProvider>().currentUserId;
+    if (userId == null) {
+      context.showInfoSnackbar('no_login_info'.tr());
+      return;
+    }
+    await Navigator.push(
+      context,
+      SlideRoute(
+        builder: (_) => WritePostScreen(
+          title: 'write_post'.tr(),
+          onSubmit: (t, c, a, img) async {
+            await _postService.createPost(
+              boardType: widget.serviceBoardType,
+              title: t,
+              content: c,
+              anonymous: a,
+              imageObjectKey: img,
+            );
+            AppEvents.postChanged.value++;
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -89,32 +116,7 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
         ),
       ),
       onRetry: _refresh,
-      onWriteTap: widget.showWriteButton ? () async {
-        if (!context.mounted) return;
-        final userId = context.read<UserProvider>().currentUserId;
-        if (userId == null) {
-          context.showInfoSnackbar('no_login_info'.tr());
-          return;
-        }
-        await Navigator.push(
-          context,
-          SlideRoute(
-            builder: (_) => WritePostScreen(
-              title: 'write_post'.tr(),
-              onSubmit: (t, c, a, img) async {
-                await _postService.createPost(
-                  boardType: widget.serviceBoardType,
-                  title: t,
-                  content: c,
-                  anonymous: a,
-                  imageObjectKey: img,
-                );
-                AppEvents.postChanged.value++;
-              },
-            ),
-          ),
-        );
-      } : null,
+      onWriteTap: widget.showWriteButton ? _handleWriteTap : null,
     );
   }
 }

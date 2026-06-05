@@ -17,6 +17,42 @@ class BoardCardHeader extends StatelessWidget {
     required this.onTap,
   });
 
+  Widget _buildLeading(AbstractThemeColors colors) {
+    return Row(
+      children: [
+        Icon(icon, color: headerColor, size: 22),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 17,
+            color: colors.textTitle,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.3,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMore(AbstractThemeColors colors) {
+    return Row(
+      children: [
+        Text(
+          'see_more'.tr(),
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeSm,
+            color: colors.textSecondary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(width: 2),
+        Icon(Icons.arrow_forward_ios_rounded,
+            color: colors.textSecondary, size: AppDimens.iconSizeSm),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -34,36 +70,8 @@ class BoardCardHeader extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Icon(icon, color: headerColor, size: 22),
-                    const SizedBox(width: 8),
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 17,
-                        color: colors.textTitle,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: -0.3,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text(
-                      'see_more'.tr(),
-                      style: TextStyle(
-                        fontSize: AppDimens.fontSizeSm,
-                        color: colors.textSecondary,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(width: 2),
-                    Icon(Icons.arrow_forward_ios_rounded,
-                        color: colors.textSecondary, size: AppDimens.iconSizeSm),
-                  ],
-                ),
+                _buildLeading(colors),
+                _buildMore(colors),
               ],
             ),
           ),

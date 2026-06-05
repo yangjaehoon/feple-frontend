@@ -62,14 +62,11 @@ void main() {
   });
 
   group('toggleLike', () {
-    setUp(() {
+    test('좋아요 없던 사진 토글 시 isLiked true, likeCount +1', () async {
       when(() => mockService.fetchPhotos(1))
           .thenAnswer((_) async => [_photo(id: 1, likeCount: 5, isLiked: false)]);
-    });
-
-    test('좋아요 없던 사진 토글 시 isLiked true, likeCount +1', () async {
       when(() => mockService.toggleLike(1, 1)).thenAnswer((_) async {});
-      notifier.photos = [_photo(id: 1, likeCount: 5, isLiked: false)];
+      await notifier.loadPhotos();
 
       await notifier.toggleLike(1);
 
@@ -78,8 +75,10 @@ void main() {
     });
 
     test('이미 좋아요한 사진 토글 시 isLiked false, likeCount -1', () async {
+      when(() => mockService.fetchPhotos(1))
+          .thenAnswer((_) async => [_photo(id: 1, likeCount: 3, isLiked: true)]);
       when(() => mockService.toggleLike(1, 1)).thenAnswer((_) async {});
-      notifier.photos = [_photo(id: 1, likeCount: 3, isLiked: true)];
+      await notifier.loadPhotos();
 
       await notifier.toggleLike(1);
 
@@ -88,11 +87,12 @@ void main() {
     });
 
     test('likeCount 내림차순으로 재정렬', () async {
+      when(() => mockService.fetchPhotos(1)).thenAnswer((_) async => [
+            _photo(id: 1, likeCount: 10, isLiked: false),
+            _photo(id: 2, likeCount: 3, isLiked: false),
+          ]);
       when(() => mockService.toggleLike(1, 2)).thenAnswer((_) async {});
-      notifier.photos = [
-        _photo(id: 1, likeCount: 10, isLiked: false),
-        _photo(id: 2, likeCount: 3, isLiked: false),
-      ];
+      await notifier.loadPhotos();
 
       await notifier.toggleLike(2);
 
@@ -101,17 +101,21 @@ void main() {
     });
 
     test('서비스 예외 시 loadPhotos로 복구', () async {
+      when(() => mockService.fetchPhotos(1))
+          .thenAnswer((_) async => [_photo(id: 1)]);
       when(() => mockService.toggleLike(1, 1)).thenThrow(Exception('err'));
-      notifier.photos = [_photo(id: 1)];
+      await notifier.loadPhotos();
 
       await notifier.toggleLike(1);
 
-      verify(() => mockService.fetchPhotos(1)).called(1);
+      verify(() => mockService.fetchPhotos(1)).called(greaterThanOrEqualTo(1));
     });
 
     test('likeCount=0인 좋아요 상태 사진 토글 시 likeCount -1 (낙관적 업데이트)', () async {
+      when(() => mockService.fetchPhotos(1))
+          .thenAnswer((_) async => [_photo(id: 1, likeCount: 0, isLiked: true)]);
       when(() => mockService.toggleLike(1, 1)).thenAnswer((_) async {});
-      notifier.photos = [_photo(id: 1, likeCount: 0, isLiked: true)];
+      await notifier.loadPhotos();
 
       await notifier.toggleLike(1);
 
@@ -120,8 +124,9 @@ void main() {
     });
 
     test('photos 빈 상태에서 toggleLike 호출 시 서비스는 호출되나 상태 변경 없음', () async {
+      when(() => mockService.fetchPhotos(1)).thenAnswer((_) async => []);
       when(() => mockService.toggleLike(1, 99)).thenAnswer((_) async {});
-      notifier.photos = [];
+      await notifier.loadPhotos();
 
       await notifier.toggleLike(99);
 

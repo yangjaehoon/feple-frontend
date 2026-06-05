@@ -1,10 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
+import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/service/festival_service.dart';
+import 'package:flutter/material.dart';
 
 import '../model/festival_preview.dart';
 
-class FestivalPreviewProvider extends ChangeNotifier {
+class FestivalPreviewProvider extends SafeChangeNotifier {
   FestivalPreviewProvider(this._service) {
     refresh();
   }
@@ -31,22 +32,11 @@ class FestivalPreviewProvider extends ChangeNotifier {
   final int _size = 20;
   bool _hasMore = true;
   bool get hasMore => _hasMore;
-  bool _disposed = false;
 
   DateTime? _loadedAt;
   static const _staleAfter = Duration(minutes: 5);
   bool get _isStale =>
       _loadedAt == null || DateTime.now().difference(_loadedAt!) > _staleAfter;
-
-  @override
-  void dispose() {
-    _disposed = true;
-    super.dispose();
-  }
-
-  void _safeNotify() {
-    if (!_disposed) notifyListeners();
-  }
 
   void _toggleInSet(Set<String> set, String value) {
     if (set.contains(value)) {
@@ -74,7 +64,7 @@ class FestivalPreviewProvider extends ChangeNotifier {
     _page = 0;
     _hasMore = true;
     _error = null;
-    _safeNotify();
+    safeNotify();
     fetchNext();
   }
 
@@ -102,7 +92,7 @@ class FestivalPreviewProvider extends ChangeNotifier {
       _isLoadingMore = true;
     }
     _error = null;
-    _safeNotify();
+    safeNotify();
 
     try {
       final newItems = await _service.fetchPreviews(
@@ -127,7 +117,7 @@ class FestivalPreviewProvider extends ChangeNotifier {
     } finally {
       _isLoading = false;
       _isLoadingMore = false;
-      _safeNotify();
+      safeNotify();
     }
   }
 }

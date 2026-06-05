@@ -182,56 +182,59 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
     required bool isLoading,
     required AbstractThemeColors colors,
   }) {
-    return GestureDetector(
-      onTap: isLoading ? null : _toggleFollow,
-      child: AnimatedContainer(
-        duration: AppDimens.animNormal,
-        curve: Curves.easeInOut,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        decoration: BoxDecoration(
-          gradient: isFollowed
-              ? null
-              : LinearGradient(
-                  colors: [colors.activate, colors.activate.withValues(alpha: 0.75)],
-                ),
-          color: isFollowed ? Colors.white.withValues(alpha: 0.2) : null,
-          borderRadius: BorderRadius.circular(AppDimens.cardRadius),
-          border: isFollowed
-              ? Border.all(color: Colors.white.withValues(alpha: 0.4), width: 1)
-              : null,
-        ),
-        child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              isLoading
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation(Colors.white),
+    return Opacity(
+      opacity: _followNotifier.initFailed ? 0.4 : 1.0,
+      child: GestureDetector(
+        onTap: (isLoading || _followNotifier.initFailed) ? null : _toggleFollow,
+        child: AnimatedContainer(
+          duration: AppDimens.animNormal,
+          curve: Curves.easeInOut,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          decoration: BoxDecoration(
+            gradient: isFollowed
+                ? null
+                : LinearGradient(
+                    colors: [colors.activate, colors.activate.withValues(alpha: 0.75)],
+                  ),
+            color: isFollowed ? Colors.white.withValues(alpha: 0.2) : null,
+            borderRadius: BorderRadius.circular(AppDimens.cardRadius),
+            border: isFollowed
+                ? Border.all(color: Colors.white.withValues(alpha: 0.4), width: 1)
+                : null,
+          ),
+          child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                isLoading
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation(Colors.white),
+                        ),
+                      )
+                    : Icon(
+                        isFollowed ? Icons.check_rounded : Icons.favorite_rounded,
+                        color: Colors.white,
+                        size: 16,
                       ),
-                    )
-                  : Icon(
-                      isFollowed ? Icons.check_rounded : Icons.favorite_rounded,
+                const SizedBox(width: 6),
+                Opacity(
+                  opacity: isLoading ? 0 : 1,
+                  child: Text(
+                    isFollowed ? 'following'.tr() : 'follow'.tr(),
+                    style: const TextStyle(
                       color: Colors.white,
-                      size: 16,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                      letterSpacing: 0.3,
                     ),
-              const SizedBox(width: 6),
-              Opacity(
-                opacity: isLoading ? 0 : 1,
-                child: Text(
-                  isFollowed ? 'following'.tr() : 'follow'.tr(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 13,
-                    letterSpacing: 0.3,
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+        ),
       ),
     );
   }

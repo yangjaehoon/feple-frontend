@@ -1,11 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/dart/extension/datetime_extension.dart';
+import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:flutter/foundation.dart';
 
-class TimetableNotifier extends ChangeNotifier {
+class TimetableNotifier extends SafeChangeNotifier {
   final int festivalId;
   final int? userId;
   final FestivalDetailService _festivalService;
@@ -27,18 +28,6 @@ class TimetableNotifier extends ChangeNotifier {
   List<TimetableEntry> get filteredEntries => range.filtered;
   int get startHour => range.startHour;
   int get endHour => range.endHour;
-
-  bool _disposed = false;
-
-  @override
-  void dispose() {
-    _disposed = true;
-    super.dispose();
-  }
-
-  void _safeNotify() {
-    if (!_disposed) notifyListeners();
-  }
 
   TimetableNotifier({
     required this.festivalId,
@@ -83,25 +72,25 @@ class TimetableNotifier extends ChangeNotifier {
       followedNames = followed;
       isLoading = false;
       _cachedRange = computeTimetableRange(entries, selectedDate);
-      _safeNotify();
+      safeNotify();
     } catch (e) {
       debugPrint('timetable fetch error: $e');
       error = 'err_fetch_data'.tr();
       isLoading = false;
-      _safeNotify();
+      safeNotify();
     }
   }
 
   void selectDate(String? date) {
     selectedDate = date;
     _cachedRange = computeTimetableRange(entries, selectedDate);
-    _safeNotify();
+    safeNotify();
   }
 
   Future<void> retry() async {
     error = null;
     isLoading = true;
-    _safeNotify();
+    safeNotify();
     await fetch();
   }
 }

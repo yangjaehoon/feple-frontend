@@ -1,4 +1,5 @@
 import 'package:feple/common/exception/banned_word_exception.dart';
+import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/comment_detail.dart';
@@ -7,7 +8,7 @@ import 'package:feple/service/post_service.dart';
 import 'package:feple/service/scrap_service.dart';
 import 'package:flutter/foundation.dart';
 
-class PostDetailNotifier extends ChangeNotifier {
+class PostDetailNotifier extends SafeChangeNotifier {
   final int postId;
   final _postService = sl<PostService>();
   final _commentService = sl<CommentService>();
@@ -24,7 +25,6 @@ class PostDetailNotifier extends ChangeNotifier {
   bool isToggling = false;
   bool isScrapping = false;
   final Set<int> _togglingCommentIds = {};
-  bool _disposed = false;
 
   // comments 레퍼런스가 바뀔 때만 재계산되는 캐시
   List<CommentDetail>? _cachedComments;
@@ -59,16 +59,6 @@ class PostDetailNotifier extends ChangeNotifier {
     comments = newList;
   }
 
-  @override
-  void dispose() {
-    _disposed = true;
-    super.dispose();
-  }
-
-  void _safeNotify() {
-    if (!_disposed) notifyListeners();
-  }
-
   final void Function(String)? onSuccess;
   final void Function(String)? onError;
   final void Function()? onPostDeleted;
@@ -91,7 +81,7 @@ class PostDetailNotifier extends ChangeNotifier {
 
   Future<void> _incrementView() async {
     viewCount++;
-    _safeNotify();
+    safeNotify();
     try {
       await _postService.incrementPostView(postId);
     } catch (e) {
@@ -110,7 +100,7 @@ class PostDetailNotifier extends ChangeNotifier {
       scraped = isScraped;
       heartCount = counts.likeCount;
       scrapCount = counts.scrapCount;
-      _safeNotify();
+      safeNotify();
     } catch (e) {
       debugPrint('loadPostState error: $e');
     }
@@ -119,7 +109,7 @@ class PostDetailNotifier extends ChangeNotifier {
   Future<void> fetchComments() async {
     try {
       comments = await _commentService.fetchPostComments(postId);
-      _safeNotify();
+      safeNotify();
     } catch (e) {
       debugPrint('fetchComments error: $e');
     }
@@ -128,12 +118,12 @@ class PostDetailNotifier extends ChangeNotifier {
   Future<void> submitComment(String content, {int? parentId}) async {
     if (content.isEmpty) {
       commentError = 'enter_comment_please';
-      _safeNotify();
+      safeNotify();
       return;
     }
     commentError = null;
     isSubmitting = true;
-    _safeNotify();
+    safeNotify();
 
     try {
       await _commentService.submitComment(
@@ -145,13 +135,13 @@ class PostDetailNotifier extends ChangeNotifier {
       onSuccess?.call('comment_posted');
     } on BannedWordException {
       commentError = 'comment_banned_word';
-      _safeNotify();
+      safeNotify();
     } catch (e) {
       debugPrint('submitComment error: $e');
       onError?.call(networkAwareErrorKey(e, 'comment_failed'));
     } finally {
       isSubmitting = false;
-      _safeNotify();
+      safeNotify();
     }
   }
 
@@ -170,16 +160,16 @@ class PostDetailNotifier extends ChangeNotifier {
     if (idx == -1) return;
     final prev = comments[idx];
     _replaceCommentAt(idx, prev.copyWith(content: newContent, updatedAt: DateTime.now()));
-    _safeNotify();
+    safeNotify();
     try {
       await _commentService.updateComment(commentId, newContent);
     } on BannedWordException {
       _replaceCommentAt(idx, prev);
       commentError = 'comment_banned_word';
-      _safeNotify();
+      safeNotify();
     } catch (e) {
       _replaceCommentAt(idx, prev);
-      _safeNotify();
+      safeNotify();
       debugPrint('updateComment error: $e');
       onError?.call('comment_update_failed');
     }
@@ -190,12 +180,12 @@ class PostDetailNotifier extends ChangeNotifier {
     comments = comments
         .where((c) => c.id != commentId && c.parentId != commentId)
         .toList();
-    _safeNotify();
+    safeNotify();
     try {
       await _commentService.deleteComment(commentId);
     } catch (e) {
       comments = prev;
-      _safeNotify();
+      safeNotify();
       debugPrint('deleteComment error: $e');
       onError?.call('comment_delete_failed');
     }
@@ -212,7 +202,7 @@ class PostDetailNotifier extends ChangeNotifier {
       liked: !prev.liked,
       likeCount: prev.likeCount + (!prev.liked ? 1 : -1),
     ));
-    _safeNotify();
+    safeNotify();
     try {
       final result = await _commentService.toggleCommentLike(commentId);
       // 서버 실제 값으로 동기화 — 빠른 연속 탭 시 불일치 방지
@@ -222,13 +212,13 @@ class PostDetailNotifier extends ChangeNotifier {
           liked: result.liked,
           likeCount: result.likeCount,
         ));
-        _safeNotify();
+        safeNotify();
       }
     } catch (e) {
       final currentIdx = comments.indexWhere((c) => c.id == commentId);
       if (currentIdx != -1) {
         _replaceCommentAt(currentIdx, prev);
-        _safeNotify();
+        safeNotify();
       }
       debugPrint('toggleCommentLike error: $e');
     } finally {
@@ -243,7 +233,7 @@ class PostDetailNotifier extends ChangeNotifier {
     final wasLiked = liked;
     liked = !liked;
     heartCount += liked ? 1 : -1;
-    _safeNotify();
+    safeNotify();
     try {
       await _postService.toggleLike(postId);
     } catch (e) {
@@ -253,7 +243,7 @@ class PostDetailNotifier extends ChangeNotifier {
       onError?.call('like_failed');
     } finally {
       isToggling = false;
-      _safeNotify();
+      safeNotify();
     }
   }
 
@@ -264,7 +254,7 @@ class PostDetailNotifier extends ChangeNotifier {
     final wasScraped = scraped;
     scraped = !scraped;
     scrapCount += scraped ? 1 : -1;
-    _safeNotify();
+    safeNotify();
     try {
       await _scrapService.toggleScrap(postId);
       onSuccess?.call(scraped ? 'scrap_done' : 'scrap_cancel');
@@ -275,7 +265,7 @@ class PostDetailNotifier extends ChangeNotifier {
       onError?.call('scrap_failed');
     } finally {
       isScrapping = false;
-      _safeNotify();
+      safeNotify();
     }
   }
 }

@@ -1,9 +1,10 @@
+import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:flutter/foundation.dart';
 
-class FestivalArtistsNotifier extends ChangeNotifier {
+class FestivalArtistsNotifier extends SafeChangeNotifier {
   final int festivalId;
   final int? userId;
   final FestivalDetailService _festivalService;
@@ -14,17 +15,6 @@ class FestivalArtistsNotifier extends ChangeNotifier {
   bool isLoading = true;
   bool hasError = false;
   List<String> allDates = [];
-  bool _disposed = false;
-
-  @override
-  void dispose() {
-    _disposed = true;
-    super.dispose();
-  }
-
-  void _safeNotify() {
-    if (!_disposed) notifyListeners();
-  }
 
   // null = 전체, otherwise ISO date string
   String? selectedDate;
@@ -49,13 +39,13 @@ class FestivalArtistsNotifier extends ChangeNotifier {
   void selectDate(String? date) {
     if (selectedDate == date) return;
     selectedDate = date;
-    _safeNotify();
+    safeNotify();
   }
 
   Future<void> retry() async {
     hasError = false;
     isLoading = true;
-    _safeNotify();
+    safeNotify();
     await fetch();
   }
 
@@ -78,11 +68,11 @@ class FestivalArtistsNotifier extends ChangeNotifier {
       followedIds = followed;
       allDates = _computeAllDates(fetched);
       isLoading = false;
-      _safeNotify();
+      safeNotify();
     } catch (e) {
       isLoading = false;
       hasError = true;
-      _safeNotify();
+      safeNotify();
       debugPrint('festival artists fetch error: $e');
     }
   }

@@ -1,3 +1,4 @@
+import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/favorite_board.dart';
 import 'package:feple/model/followed_artist.dart';
@@ -7,27 +8,16 @@ import 'package:feple/service/user_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class HomeStateNotifier extends ChangeNotifier {
+class HomeStateNotifier extends SafeChangeNotifier {
   List<FollowedArtist>? artists;
   List<FestivalModel>? festivals;
   List<FavoriteBoard>? boards;
   bool hasError = false;
-  bool _disposed = false;
 
   DateTime? _loadedAt;
   static const _staleAfter = Duration(minutes: 5);
   bool get _isStale =>
       _loadedAt == null || DateTime.now().difference(_loadedAt!) > _staleAfter;
-
-  @override
-  void dispose() {
-    _disposed = true;
-    super.dispose();
-  }
-
-  void _safeNotify() {
-    if (!_disposed) notifyListeners();
-  }
 
   List<int> artistOrder = [];
   List<int> festivalOrder = [];
@@ -43,7 +33,7 @@ class HomeStateNotifier extends ChangeNotifier {
     festivals = null;
     boards = null;
     hasError = false;
-    _safeNotify();
+    safeNotify();
     await loadData();
   }
 
@@ -79,7 +69,7 @@ class HomeStateNotifier extends ChangeNotifier {
       // 기존 데이터가 있으면 유지, 없을 때만 에러 상태 표시
       if (artists == null) hasError = true;
     }
-    _safeNotify();
+    safeNotify();
   }
 
   /// [force] true면 항상 재요청. false면 5분 이내 로드된 데이터가 있으면 skip.
@@ -101,7 +91,7 @@ class HomeStateNotifier extends ChangeNotifier {
     } catch (e) {
       debugPrint('[Home] 페스티벌 갱신 실패: $e');
     }
-    if (userId == id) _safeNotify();
+    if (userId == id) safeNotify();
   }
 
   Future<void> refreshArtists() async {
@@ -116,7 +106,7 @@ class HomeStateNotifier extends ChangeNotifier {
     } catch (e) {
       debugPrint('[Home] 아티스트 갱신 실패: $e');
     }
-    if (userId == id) _safeNotify();
+    if (userId == id) safeNotify();
   }
 
   Future<void> retry() async {
@@ -124,13 +114,13 @@ class HomeStateNotifier extends ChangeNotifier {
     festivals = null;
     boards = null;
     hasError = false;
-    _safeNotify();
+    safeNotify();
     await loadData();
   }
 
   Future<void> saveArtistOrder(List<int> order) async {
     artistOrder = order;
-    _safeNotify();
+    safeNotify();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(
         _artistOrderKey, order.map((e) => e.toString()).toList());
@@ -138,7 +128,7 @@ class HomeStateNotifier extends ChangeNotifier {
 
   Future<void> saveFestivalOrder(List<int> order) async {
     festivalOrder = order;
-    _safeNotify();
+    safeNotify();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(
         _festivalOrderKey, order.map((e) => e.toString()).toList());

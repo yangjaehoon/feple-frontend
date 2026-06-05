@@ -126,7 +126,7 @@ class _ArtistSongsState extends State<ArtistSongs> {
           );
         }
 
-        final songs = List<SongModel>.from(snapshot.data ?? []);
+        final songs = snapshot.data ?? [];
         if (songs.isEmpty) {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
@@ -137,10 +137,6 @@ class _ArtistSongsState extends State<ArtistSongs> {
           );
         }
 
-        songs.sort((a, b) {
-          final c = b.festivalCount.compareTo(a.festivalCount);
-          return c != 0 ? c : a.title.compareTo(b.title);
-        });
         final preview = songs.take(5).toList();
 
         return Column(

@@ -87,7 +87,6 @@ class _BoardSettingsSheetState extends State<BoardSettingsSheet> {
             board: board,
             checked: checked,
             index: index,
-            colors: colors,
             onChanged: (val) {
               setState(() {
                 if (val == true) {
@@ -147,7 +146,6 @@ class _BoardSettingsItem extends StatelessWidget {
   final FavoriteBoard board;
   final bool checked;
   final int index;
-  final AbstractThemeColors colors;
   final ValueChanged<bool?> onChanged;
 
   const _BoardSettingsItem({
@@ -155,12 +153,12 @@ class _BoardSettingsItem extends StatelessWidget {
     required this.board,
     required this.checked,
     required this.index,
-    required this.colors,
     required this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Container(
       decoration: BoxDecoration(
         border: Border(
@@ -173,7 +171,7 @@ class _BoardSettingsItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ReorderableDragStartListener(
-               index: index,
+              index: index,
               child: Icon(Icons.drag_handle_rounded,
                   color: colors.textSecondary, size: 22),
             ),
@@ -187,9 +185,9 @@ class _BoardSettingsItem extends StatelessWidget {
                       height: 40,
                       fit: BoxFit.cover,
                       memCacheWidth: 80,
-                      errorWidget: (_, __, ___) => _placeholder(),
+                      errorWidget: (_, __, ___) => _placeholder(colors),
                     )
-                  : _placeholder(),
+                  : _placeholder(colors),
             ),
           ],
         ),
@@ -210,7 +208,7 @@ class _BoardSettingsItem extends StatelessWidget {
     );
   }
 
-  Widget _placeholder() {
+  Widget _placeholder(AbstractThemeColors colors) {
     return Container(
       width: 40,
       height: 40,

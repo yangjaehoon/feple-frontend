@@ -1,3 +1,21 @@
+enum EventType {
+  festival,
+  fanMeeting,
+  tvShow;
+
+  static EventType fromString(String? value) {
+    switch (value) {
+      case 'FAN_MEETING':
+        return EventType.fanMeeting;
+      case 'TV_SHOW':
+        return EventType.tvShow;
+      case 'FESTIVAL':
+      default:
+        return EventType.festival;
+    }
+  }
+}
+
 class ArtistScheduleModel {
   final int festivalId;
   final String title;
@@ -6,7 +24,7 @@ class ArtistScheduleModel {
   final String? startDate;
   final String? endDate;
   final String? posterUrl;
-  final String eventType; // FESTIVAL, FAN_MEETING, TV_SHOW
+  final EventType eventType;
   final List<CoArtistInfo> coArtists;
 
   const ArtistScheduleModel({
@@ -30,6 +48,13 @@ class ArtistScheduleModel {
     return date.isBefore(DateTime(today.year, today.month, today.day));
   }
 
+  String get dateRange {
+    final start = startDate;
+    if (start == null) return '';
+    final end = endDate;
+    return (end != null && end != start) ? '$start ~ $end' : start;
+  }
+
   factory ArtistScheduleModel.fromJson(Map<String, dynamic> json) {
     return ArtistScheduleModel(
       festivalId: json['festivalId'] as int,
@@ -39,7 +64,7 @@ class ArtistScheduleModel {
       startDate: json['startDate'] as String?,
       endDate: json['endDate'] as String?,
       posterUrl: json['posterUrl'] as String?,
-      eventType: json['eventType'] as String? ?? 'FESTIVAL',
+      eventType: EventType.fromString(json['eventType'] as String?),
       coArtists: (json['coArtists'] as List<dynamic>?)
               ?.map((e) => CoArtistInfo.fromJson(e as Map<String, dynamic>))
               .toList() ??

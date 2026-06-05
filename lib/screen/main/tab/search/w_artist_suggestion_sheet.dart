@@ -83,7 +83,7 @@ class _ArtistSuggestionSheetState extends State<ArtistSuggestionSheet> {
             ..._buildHeader(colors),
             ..._buildFormFields(colors),
             const SizedBox(height: 20),
-            _buildSubmitButton(context),
+            _buildSubmitButton(colors),
           ],
         ),
       ),
@@ -144,7 +144,7 @@ class _ArtistSuggestionSheetState extends State<ArtistSuggestionSheet> {
     ),
   ];
 
-  Widget _buildSubmitButton(BuildContext context) {
+  Widget _buildSubmitButton(AbstractThemeColors colors) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: LoadingButton(
@@ -152,7 +152,7 @@ class _ArtistSuggestionSheetState extends State<ArtistSuggestionSheet> {
         icon: Icons.send_rounded,
         isLoading: _submitting,
         onPressed: _submit,
-        backgroundColor: context.appColors.activate,
+        backgroundColor: colors.activate,
         height: 50,
         borderRadius: 12,
       ),

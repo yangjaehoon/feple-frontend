@@ -216,43 +216,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
               key: _formKey,
               child: ListView(
                 padding: const EdgeInsets.all(20),
-                children: [
-                  FestivalTextField(
-                    controller: _titleController,
-                    label: 'label_festival_name'.tr(),
-                    validator: (v) =>
-                        v == null || v.trim().isEmpty ? 'label_input_name_req'.tr() : null,
-                  ),
-                  const SizedBox(height: 16),
-                  FestivalTextField(
-                    controller: _descriptionController,
-                    label: 'label_desc'.tr(),
-                    maxLines: 3,
-                  ),
-                  const SizedBox(height: 16),
-                  FestivalTextField(
-                    controller: _locationController,
-                    label: 'label_location'.tr(),
-                  ),
-                  const SizedBox(height: 16),
-                  FestivalTextField(
-                    controller: _posterUrlController,
-                    label: 'label_poster_url'.tr(),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildDateRow(),
-                  const SizedBox(height: 20),
-                  _buildGenreSelector(colors),
-                  const SizedBox(height: 20),
-                  _buildRegionDropdown(colors),
-                  const SizedBox(height: 32),
-                  LoadingButton(
-                    label: 'btn_register'.tr(),
-                    onPressed: _submit,
-                    isLoading: _isLoading,
-                    backgroundColor: colors.activate,
-                  ),
-                ],
+                children: _buildFormContent(colors),
               ),
             ),
           ),
@@ -260,4 +224,31 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
       ),
     );
   }
+
+  List<Widget> _buildFormContent(AbstractThemeColors colors) => [
+    FestivalTextField(
+      controller: _titleController,
+      label: 'label_festival_name'.tr(),
+      validator: (v) => v == null || v.trim().isEmpty ? 'label_input_name_req'.tr() : null,
+    ),
+    const SizedBox(height: 16),
+    FestivalTextField(controller: _descriptionController, label: 'label_desc'.tr(), maxLines: 3),
+    const SizedBox(height: 16),
+    FestivalTextField(controller: _locationController, label: 'label_location'.tr()),
+    const SizedBox(height: 16),
+    FestivalTextField(controller: _posterUrlController, label: 'label_poster_url'.tr()),
+    const SizedBox(height: 16),
+    _buildDateRow(),
+    const SizedBox(height: 20),
+    _buildGenreSelector(colors),
+    const SizedBox(height: 20),
+    _buildRegionDropdown(colors),
+    const SizedBox(height: 32),
+    LoadingButton(
+      label: 'btn_register'.tr(),
+      onPressed: _submit,
+      isLoading: _isLoading,
+      backgroundColor: colors.activate,
+    ),
+  ];
 }

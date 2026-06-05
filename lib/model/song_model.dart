@@ -16,14 +16,17 @@ class SongModel {
   });
 
   factory SongModel.fromJson(Map<String, dynamic> json) {
+    final videoId = json['youtubeVideoId'] as String;
     return SongModel(
       id: (json['id'] as num).toInt(),
       title: json['title'] as String,
-      youtubeVideoId: json['youtubeVideoId'] as String,
+      youtubeVideoId: videoId,
       thumbnailUrl: json['thumbnailUrl'] as String?,
-      youtubeUrl: json['youtubeUrl'] as String? ??
-          'https://music.youtube.com/watch?v=${json['youtubeVideoId']}',
+      youtubeUrl: json['youtubeUrl'] as String? ?? _urlFromVideoId(videoId),
       festivalCount: (json['festivalCount'] as num?)?.toInt() ?? 0,
     );
   }
+
+  static String _urlFromVideoId(String videoId) =>
+      'https://music.youtube.com/watch?v=$videoId';
 }

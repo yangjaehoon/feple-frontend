@@ -208,6 +208,34 @@ class _WritePostScreenState extends State<WritePostScreen> {
     );
   }
 
+  Widget _buildAnonymousToggle(AbstractThemeColors colors) {
+    return Column(
+      children: [
+        const SizedBox(height: 4),
+        GestureDetector(
+          onTap: () => setState(() => _anonymous = !_anonymous),
+          behavior: HitTestBehavior.opaque,
+          child: Row(
+            children: [
+              Switch(
+                value: _anonymous,
+                onChanged: (v) => setState(() => _anonymous = v),
+                activeThumbColor: colors.activate,
+                activeTrackColor: colors.activate.withValues(alpha: 0.5),
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                'post_anonymous'.tr(),
+                style: TextStyle(fontSize: 14, color: colors.textTitle),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildForm(AbstractThemeColors colors) {
     return Form(
       key: _formKey,
@@ -240,29 +268,7 @@ class _WritePostScreenState extends State<WritePostScreen> {
           ),
           const SizedBox(height: 12),
           _buildImagePicker(colors),
-          if (widget.showAnonymous) ...[
-            const SizedBox(height: 4),
-            GestureDetector(
-              onTap: () => setState(() => _anonymous = !_anonymous),
-              behavior: HitTestBehavior.opaque,
-              child: Row(
-                children: [
-                  Switch(
-                    value: _anonymous,
-                    onChanged: (v) => setState(() => _anonymous = v),
-                    activeThumbColor: colors.activate,
-                    activeTrackColor: colors.activate.withValues(alpha: 0.5),
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    'post_anonymous'.tr(),
-                    style: TextStyle(fontSize: 14, color: colors.textTitle),
-                  ),
-                ],
-              ),
-            ),
-          ],
+          if (widget.showAnonymous) _buildAnonymousToggle(colors),
         ],
       ),
     );

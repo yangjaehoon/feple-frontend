@@ -14,7 +14,6 @@ Future<void> showReportSheet(
   required Future<void> Function(ReportReason reason, String detail) onSubmit,
   String duplicateErrorKey = 'report_duplicate',
 }) async {
-  final colors = context.appColors;
   ReportReason? selected;
   final detailController = TextEditingController();
 
@@ -25,7 +24,8 @@ Future<void> showReportSheet(
       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
     ),
     builder: (ctx) {
-      return StatefulBuilder(builder: (ctx, setS) {
+      return StatefulBuilder(builder: (ctx, setModalState) {
+        final colors = ctx.appColors;
         return Padding(
           padding: EdgeInsets.only(
             left: 20,
@@ -50,7 +50,7 @@ Future<void> showReportSheet(
               const SizedBox(height: 12),
               RadioGroup<ReportReason>(
                 groupValue: selected,
-                onChanged: (v) => setS(() => selected = v),
+                onChanged: (v) => setModalState(() => selected = v),
                 child: Column(
                   children: ReportReason.values.map((r) {
                     final label = switch (r) {

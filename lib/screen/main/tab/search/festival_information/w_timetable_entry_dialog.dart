@@ -147,7 +147,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _Label('timetable_stage'.tr(), colors),
+        _Label('timetable_stage'.tr()),
         const SizedBox(height: 6),
         DropdownButton<String>(
           value: _stage,
@@ -155,9 +155,9 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
           dropdownColor: colors.surface,
           style: TextStyle(color: colors.textTitle, fontSize: 14),
           underline: Container(height: 1, color: colors.listDivider),
-          items: widget.stages.map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
-          onChanged: (s) {
-            if (s != null) setState(() => _stage = s);
+          items: widget.stages.map((stage) => DropdownMenuItem(value: stage, child: Text(stage))).toList(),
+          onChanged: (stage) {
+            if (stage != null) setState(() => _stage = stage);
           },
         ),
       ],
@@ -168,14 +168,14 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
     return Row(
       children: [
         Expanded(
-          child: _TimeBtn(label: 'timetable_start'.tr(), time: _start, onTap: _pickStartTime, colors: colors),
+          child: _TimeBtn(label: 'timetable_start'.tr(), time: _start, onTap: _pickStartTime),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Text('–', style: TextStyle(color: colors.textSecondary, fontWeight: FontWeight.w700, fontSize: 16)),
         ),
         Expanded(
-          child: _TimeBtn(label: 'timetable_end'.tr(), time: _end, onTap: _pickEndTime, colors: colors),
+          child: _TimeBtn(label: 'timetable_end'.tr(), time: _end, onTap: _pickEndTime),
         ),
       ],
     );
@@ -185,7 +185,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _Label('timetable_color'.tr(), colors),
+        _Label('timetable_color'.tr()),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -215,35 +215,36 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
 
 class _Label extends StatelessWidget {
   final String text;
-  final AbstractThemeColors colors;
-  const _Label(this.text, this.colors);
+  const _Label(this.text);
 
   @override
-  Widget build(BuildContext context) => Text(
-        text,
-        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: colors.textSecondary),
-      );
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    return Text(
+      text,
+      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: colors.textSecondary),
+    );
+  }
 }
 
 class _TimeBtn extends StatelessWidget {
   final String label;
   final TimeOfDay time;
   final VoidCallback onTap;
-  final AbstractThemeColors colors;
 
   const _TimeBtn({
     required this.label,
     required this.time,
     required this.onTap,
-    required this.colors,
   });
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _Label(label, colors),
+        _Label(label),
         const SizedBox(height: 4),
         GestureDetector(
           onTap: onTap,

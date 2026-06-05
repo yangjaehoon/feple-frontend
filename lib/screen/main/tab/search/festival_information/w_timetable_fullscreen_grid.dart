@@ -42,8 +42,8 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
   }
 
   Color _stageColor(String stage) {
-    final idx = widget.range.stages.indexOf(stage) % kStageColors.length;
-    return kStageColors[idx < 0 ? 0 : idx];
+    final colorIndex = widget.range.stages.indexOf(stage) % kStageColors.length;
+    return kStageColors[colorIndex < 0 ? 0 : colorIndex];
   }
 
   void _handleTap(double pxPerMin, double stageW) {
@@ -58,8 +58,8 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
     final minute = (clampedMins % 60 ~/ 10) * 10;
     final timeStr = TimeOfDay(hour: hour, minute: minute).toHHmm;
 
-    final si = (pos.dx / stageW).floor().clamp(0, widget.range.stages.length - 1);
-    widget.onTapGrid(widget.range.stages[si], timeStr);
+    final stageIndex = (pos.dx / stageW).floor().clamp(0, widget.range.stages.length - 1);
+    widget.onTapGrid(widget.range.stages[stageIndex], timeStr);
   }
 
   @override
@@ -199,12 +199,12 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
               },
             ),
             ...widget.range.filtered.map((entry) {
-              final si = widget.range.stages.indexOf(entry.stageName);
-              if (si < 0) return const SizedBox.shrink();
+              final stageIndex = widget.range.stages.indexOf(entry.stageName);
+              if (stageIndex < 0) return const SizedBox.shrink();
               final rawTop = _toY(entry.startTime, pxPerMin);
               final cardH = _toY(entry.endTime, pxPerMin) - rawTop;
               return Positioned(
-                left: si * stageW + 3,
+                left: stageIndex * stageW + 3,
                 top: _topPad + rawTop + 2,
                 width: stageW - 6,
                 height: (cardH - 4).clamp(4.0, double.infinity),
@@ -217,12 +217,12 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
               );
             }),
             ...widget.userEntries.map((entry) {
-              final si = widget.range.stages.indexOf(entry.stageName);
-              if (si < 0) return const SizedBox.shrink();
+              final stageIndex = widget.range.stages.indexOf(entry.stageName);
+              if (stageIndex < 0) return const SizedBox.shrink();
               final rawTop = _toY(entry.startTime, pxPerMin);
               final cardH = _toY(entry.endTime, pxPerMin) - rawTop;
               return Positioned(
-                left: si * stageW + 3,
+                left: stageIndex * stageW + 3,
                 top: _topPad + rawTop + 2,
                 width: stageW - 6,
                 height: (cardH - 4).clamp(4.0, double.infinity),

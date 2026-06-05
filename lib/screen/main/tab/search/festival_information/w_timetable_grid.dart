@@ -54,8 +54,8 @@ class TimetableGrid extends StatelessWidget {
   }
 
   Color _colorFor(String stage) {
-    final idx = stages.indexOf(stage) % kStageColors.length;
-    return kStageColors[idx < 0 ? 0 : idx];
+    final colorIndex = stages.indexOf(stage) % kStageColors.length;
+    return kStageColors[colorIndex < 0 ? 0 : colorIndex];
   }
 
   @override
@@ -219,12 +219,12 @@ class TimetableGrid extends StatelessWidget {
 
   List<Widget> _buildPerformanceCards(double stageW) {
     return filtered.map((entry) {
-      final si = stages.indexOf(entry.stageName);
-      if (si < 0) return const SizedBox.shrink();
+      final stageIndex = stages.indexOf(entry.stageName);
+      if (stageIndex < 0) return const SizedBox.shrink();
       final rawTop = _toY(entry.startTime);
       final cardH = _toY(entry.endTime) - rawTop;
       return Positioned(
-        left: si * stageW + 3,
+        left: stageIndex * stageW + 3,
         top: _topPad + rawTop + 2,
         width: stageW - 6,
         height: cardH - 4,

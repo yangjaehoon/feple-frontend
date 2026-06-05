@@ -74,7 +74,7 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
           ),
           const SizedBox(height: 20),
           if (_tooEarly)
-            _TooEarlyMessage(colors: colors)
+            const _TooEarlyMessage()
           else
             _buildWeatherFuture(colors),
         ],
@@ -102,7 +102,7 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
         }
         final data = snapshot.data;
         if (data == null) {
-          return _NoDataMessage(colors: colors);
+          return const _NoDataMessage();
         }
         return _buildWeatherData(data, colors);
       },
@@ -150,11 +150,11 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
 }
 
 class _TooEarlyMessage extends StatelessWidget {
-  final AbstractThemeColors colors;
-  const _TooEarlyMessage({required this.colors});
+  const _TooEarlyMessage();
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 28),
       child: Column(
@@ -184,11 +184,11 @@ class _TooEarlyMessage extends StatelessWidget {
 }
 
 class _NoDataMessage extends StatelessWidget {
-  final AbstractThemeColors colors;
-  const _NoDataMessage({required this.colors});
+  const _NoDataMessage();
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 32),
       child: Column(

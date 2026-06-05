@@ -121,7 +121,6 @@ class _FestivalSetlistFullPageState extends State<FestivalSetlistFullPage> {
           itemBuilder: (_, i) => _ArtistFullTile(
             entry: entries[i],
             isExpanded: _expanded.contains(entries[i].artistId),
-            colors: colors,
             onToggle: () => setState(() {
               final id = entries[i].artistId;
               if (_expanded.contains(id)) {
@@ -164,7 +163,6 @@ class _FestivalSetlistFullPageState extends State<FestivalSetlistFullPage> {
 class _ArtistFullTile extends StatelessWidget {
   final FestivalSetlistEntry entry;
   final bool isExpanded;
-  final AbstractThemeColors colors;
   final VoidCallback onToggle;
   final void Function(String url) onSongTap;
   final VoidCallback onEdit;
@@ -172,7 +170,6 @@ class _ArtistFullTile extends StatelessWidget {
   const _ArtistFullTile({
     required this.entry,
     required this.isExpanded,
-    required this.colors,
     required this.onToggle,
     required this.onSongTap,
     required this.onEdit,
@@ -180,6 +177,7 @@ class _ArtistFullTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
@@ -195,17 +193,17 @@ class _ArtistFullTile extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _buildHeaderRow(),
+          _buildHeaderRow(colors),
           if (isExpanded) ...[
             Divider(height: 1, color: colors.listDivider),
-            _buildSongList(),
+            _buildSongList(colors),
           ],
         ],
       ),
     );
   }
 
-  Widget _buildHeaderRow() {
+  Widget _buildHeaderRow(AbstractThemeColors colors) {
     return Row(
       children: [
         Expanded(
@@ -219,9 +217,9 @@ class _ArtistFullTile extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 14, 0, 14),
               child: Row(
                 children: [
-                  _buildAvatar(),
+                  _buildAvatar(colors),
                   const SizedBox(width: 12),
-                  Expanded(child: _buildArtistInfo()),
+                  Expanded(child: _buildArtistInfo(colors)),
                   AnimatedRotation(
                     turns: isExpanded ? 0.5 : 0,
                     duration: AppDimens.animXFast,
@@ -243,7 +241,7 @@ class _ArtistFullTile extends StatelessWidget {
     );
   }
 
-  Widget _buildArtistInfo() {
+  Widget _buildArtistInfo(AbstractThemeColors colors) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -264,7 +262,7 @@ class _ArtistFullTile extends StatelessWidget {
     );
   }
 
-  Widget _buildAvatar() {
+  Widget _buildAvatar(AbstractThemeColors colors) {
     const size = 40.0;
     if (entry.profileImageUrl != null && entry.profileImageUrl!.isNotEmpty) {
       return ClipRRect(
@@ -274,14 +272,14 @@ class _ArtistFullTile extends StatelessWidget {
           width: size,
           height: size,
           fit: BoxFit.cover,
-          errorWidget: (_, __, ___) => _avatarPlaceholder(size),
+          errorWidget: (_, __, ___) => _avatarPlaceholder(size, colors),
         ),
       );
     }
-    return _avatarPlaceholder(size);
+    return _avatarPlaceholder(size, colors);
   }
 
-  Widget _avatarPlaceholder(double size) {
+  Widget _avatarPlaceholder(double size, AbstractThemeColors colors) {
     return Container(
       width: size,
       height: size,
@@ -293,7 +291,7 @@ class _ArtistFullTile extends StatelessWidget {
     );
   }
 
-  Widget _buildSongList() {
+  Widget _buildSongList(AbstractThemeColors colors) {
     if (entry.songs.isEmpty) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
@@ -304,11 +302,11 @@ class _ArtistFullTile extends StatelessWidget {
       );
     }
     return Column(
-      children: entry.songs.asMap().entries.map((e) => _buildSongRow(e.value, e.key)).toList(),
+      children: entry.songs.asMap().entries.map((e) => _buildSongRow(e.value, e.key, colors)).toList(),
     );
   }
 
-  Widget _buildSongRow(SongModel song, int index) {
+  Widget _buildSongRow(SongModel song, int index, AbstractThemeColors colors) {
     return InkWell(
       onTap: () => onSongTap(song.youtubeUrl),
       child: Padding(
@@ -332,11 +330,11 @@ class _ArtistFullTile extends StatelessWidget {
                   width: 38,
                   height: 38,
                   fit: BoxFit.cover,
-                  errorWidget: (_, __, ___) => _thumbPlaceholder(),
+                  errorWidget: (_, __, ___) => _thumbPlaceholder(colors),
                 ),
               )
             else
-              _thumbPlaceholder(),
+              _thumbPlaceholder(colors),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
@@ -354,7 +352,7 @@ class _ArtistFullTile extends StatelessWidget {
     );
   }
 
-  Widget _thumbPlaceholder() {
+  Widget _thumbPlaceholder(AbstractThemeColors colors) {
     return Container(
       width: 38,
       height: 38,

@@ -42,6 +42,95 @@ class _ReorderSheetState extends State<ReorderSheet> {
     _items = List.from(widget.items);
   }
 
+  Widget _buildHeader(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            widget.title,
+            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: colors.textTitle),
+          ),
+          if (widget.subtitle != null) ...[
+            const SizedBox(height: 4),
+            Text(widget.subtitle!, style: TextStyle(fontSize: 13, color: colors.textSecondary)),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildList(AbstractThemeColors colors) {
+    return Flexible(
+      child: ReorderableListView.builder(
+        shrinkWrap: true,
+        itemCount: _items.length,
+        onReorder: (oldIndex, newIndex) {
+          setState(() {
+            if (newIndex > oldIndex) newIndex--;
+            final item = _items.removeAt(oldIndex);
+            _items.insert(newIndex, item);
+          });
+        },
+        itemBuilder: (context, index) {
+          final item = _items[index];
+          return Container(
+            key: ValueKey(item.id),
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: colors.listDivider, width: 0.5)),
+            ),
+            child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              leading: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ReorderableDragStartListener(
+                    index: index,
+                    child: Icon(Icons.drag_handle_rounded, color: colors.textSecondary, size: 22),
+                  ),
+                  const SizedBox(width: 12),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+                    child: item.imageUrl != null && item.imageUrl!.isNotEmpty
+                        ? CachedNetworkImage(
+                            imageUrl: item.imageUrl!,
+                            width: 40,
+                            height: 40,
+                            fit: BoxFit.cover,
+                            memCacheWidth: 80,
+                            errorWidget: (_, __, ___) => _placeholder(colors),
+                          )
+                        : _placeholder(colors),
+                  ),
+                ],
+              ),
+              title: Text(
+                item.name,
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.textTitle),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildConfirmButton(AbstractThemeColors colors) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(20, 12, 20, 12 + MediaQuery.of(context).padding.bottom),
+      child: LoadingButton(
+        label: 'confirm'.tr(),
+        isLoading: false,
+        backgroundColor: colors.activate,
+        onPressed: () {
+          widget.onSave(_items.map((e) => e.id).toList());
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -55,111 +144,12 @@ class _ReorderSheetState extends State<ReorderSheet> {
           const SizedBox(height: 12),
           const BottomSheetHandle(),
           const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.title,
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w800,
-                    color: colors.textTitle,
-                  ),
-                ),
-                if (widget.subtitle != null) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    widget.subtitle!,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: colors.textSecondary,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
+          _buildHeader(colors),
           const SizedBox(height: 8),
           Divider(color: colors.listDivider, height: 1),
-          Flexible(
-            child: ReorderableListView.builder(
-              shrinkWrap: true,
-              itemCount: _items.length,
-              onReorder: (oldIndex, newIndex) {
-                setState(() {
-                  if (newIndex > oldIndex) newIndex--;
-                  final item = _items.removeAt(oldIndex);
-                  _items.insert(newIndex, item);
-                });
-              },
-              itemBuilder: (context, index) {
-                final item = _items[index];
-                return Container(
-                  key: ValueKey(item.id),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom:
-                          BorderSide(color: colors.listDivider, width: 0.5),
-                    ),
-                  ),
-                  child: ListTile(
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16),
-                    leading: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ReorderableDragStartListener(
-                          index: index,
-                          child: Icon(Icons.drag_handle_rounded,
-                              color: colors.textSecondary, size: 22),
-                        ),
-                        const SizedBox(width: 12),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-                          child: item.imageUrl != null &&
-                                  item.imageUrl!.isNotEmpty
-                              ? CachedNetworkImage(
-                                  imageUrl: item.imageUrl!,
-                                  width: 40,
-                                  height: 40,
-                                  fit: BoxFit.cover,
-                                  memCacheWidth: 80,
-                                  errorWidget: (_, __, ___) =>
-                                      _placeholder(colors),
-                                )
-                              : _placeholder(colors),
-                        ),
-                      ],
-                    ),
-                    title: Text(
-                      item.name,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: colors.textTitle,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
+          _buildList(colors),
           Divider(color: colors.listDivider, height: 1),
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-                20, 12, 20, 12 + MediaQuery.of(context).padding.bottom),
-            child: LoadingButton(
-              label: 'confirm'.tr(),
-              isLoading: false,
-              backgroundColor: colors.activate,
-              onPressed: () {
-                widget.onSave(_items.map((e) => e.id).toList());
-                Navigator.of(context).pop();
-              },
-            ),
-          ),
+          _buildConfirmButton(colors),
         ],
       ),
     );

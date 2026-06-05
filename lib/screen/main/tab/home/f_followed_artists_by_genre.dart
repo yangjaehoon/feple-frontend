@@ -146,7 +146,7 @@ class _FollowedArtistsByGenrePageState
                 builder: (_) => ArtistPage(
                   artistId: artist.id,
                   artistName: artist.name,
-                  followerCounter: 0,
+                  followerCounter: artist.followerCount,
                   profileImageUrl: artist.profileImageUrl,
                 ),
               ),

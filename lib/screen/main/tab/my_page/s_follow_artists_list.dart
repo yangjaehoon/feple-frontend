@@ -98,7 +98,7 @@ class _FollowArtistsListScreenState extends State<FollowArtistsListScreen> {
             SkeletonBox(
               width: 48,
               height: 48,
-              borderRadius: BorderRadius.all(Radius.circular(24)),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
             SizedBox(width: 14),
             Expanded(
@@ -188,18 +188,25 @@ class _ArtistRow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 24,
-              backgroundColor: colors.backgroundMain,
-              backgroundImage: (artist.profileImageUrl != null &&
-                      artist.profileImageUrl!.isNotEmpty)
-                  ? CachedNetworkImageProvider(artist.profileImageUrl!)
-                  : null,
-              child: (artist.profileImageUrl == null ||
-                      artist.profileImageUrl!.isEmpty)
-                  ? Icon(Icons.person_rounded,
-                      size: 26, color: colors.textSecondary)
-                  : null,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: SizedBox(
+                width: 48,
+                height: 48,
+                child: (artist.profileImageUrl != null &&
+                        artist.profileImageUrl!.isNotEmpty)
+                    ? CachedNetworkImage(
+                        imageUrl: artist.profileImageUrl!,
+                        width: 48,
+                        height: 48,
+                        fit: BoxFit.cover,
+                      )
+                    : Container(
+                        color: colors.backgroundMain,
+                        child: Icon(Icons.person_rounded,
+                            size: 26, color: colors.textSecondary),
+                      ),
+              ),
             ),
             const SizedBox(width: 14),
             Expanded(

@@ -13,7 +13,7 @@ class GetUserBoard extends StatelessWidget {
       icon: Icons.people_rounded,
       headerColorFn: (colors) => colors.getUserBoardHeader,
       serviceBoardType: BoardTypes.mate,
-      boardname: 'companion_board'.tr(),
+      boardName: 'companion_board'.tr(),
     );
   }
 }

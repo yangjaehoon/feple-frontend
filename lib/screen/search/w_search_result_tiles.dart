@@ -197,7 +197,7 @@ class SearchPostTile extends StatelessWidget {
       ),
       onTap: () => Navigator.of(context, rootNavigator: true).push(SlideRoute(
         builder: (_) => EnlargePost.fromPost(
-          boardname: data.boardDisplayName,
+          boardName: data.boardDisplayName,
           post: data,
         ),
       )),

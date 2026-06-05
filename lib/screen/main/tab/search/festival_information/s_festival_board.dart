@@ -99,7 +99,7 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
   }
 
   Widget _buildTabContent(int index, AbstractThemeColors colors) {
-    final boardname = _tabs[index].name;
+    final boardName = _tabs[index].name;
     return RefreshIndicator(
       color: colors.activate,
       onRefresh: () async {
@@ -131,7 +131,7 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
               onTap: () async {
                 await Navigator.of(ctx, rootNavigator: true).push(
                   SlideRoute(
-                    builder: (_) => EnlargePost.fromPost(boardname: boardname, post: post),
+                    builder: (_) => EnlargePost.fromPost(boardName: boardName, post: post),
                   ),
                 );
                 _refreshTab(index);

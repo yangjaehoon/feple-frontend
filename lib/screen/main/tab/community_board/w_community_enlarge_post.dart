@@ -23,12 +23,12 @@ import 'w_comment_section.dart';
 import 'w_like_comment_row.dart';
 
 class EnlargePost extends StatefulWidget {
-  final String boardname;
+  final String boardName;
   final int id;
   final String nickname;
   final String title;
   final String content;
-  final int heart;
+  final int heartCount;
   final int viewCount;
   final bool certified;
   final String? userRole;
@@ -41,12 +41,12 @@ class EnlargePost extends StatefulWidget {
 
   const EnlargePost({
     super.key,
-    required this.boardname,
+    required this.boardName,
     required this.id,
     required this.nickname,
     required this.title,
     required this.content,
-    required this.heart,
+    required this.heartCount,
     this.viewCount = 0,
     this.certified = false,
     this.userRole,
@@ -60,13 +60,13 @@ class EnlargePost extends StatefulWidget {
 
   EnlargePost.fromPost({
     super.key,
-    required this.boardname,
+    required this.boardName,
     required Post post,
   })  : id = post.id,
         nickname = post.nickname,
         title = post.title,
         content = post.content,
-        heart = post.likeCount,
+        heartCount = post.likeCount,
         viewCount = post.viewCount,
         certified = post.certified,
         userRole = post.userRole,
@@ -118,7 +118,7 @@ class _EnlargePostState extends State<EnlargePost> {
     _updatedAt = widget.updatedAt;
     _notifier = PostDetailNotifier(
       postId: widget.id,
-      initialHeartCount: widget.heart,
+      initialHeartCount: widget.heartCount,
       initialViewCount: widget.viewCount,
       onSuccess: (key) {
         _commentController.clear();
@@ -447,7 +447,7 @@ class _EnlargePostState extends State<EnlargePost> {
       body: Column(
         children: [
           SecondaryAppBar(
-            title: widget.boardname,
+            title: widget.boardName,
             actions: [
               PopupMenuButton<String>(
                 icon: const Icon(Icons.more_vert),

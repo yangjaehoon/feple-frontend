@@ -20,7 +20,7 @@ class CommunityBoardCard extends StatefulWidget {
   final IconData icon;
   final Color Function(AbstractThemeColors) headerColorFn;
   final String serviceBoardType;
-  final String boardname;
+  final String boardName;
   final bool showWriteButton;
 
   const CommunityBoardCard({
@@ -29,7 +29,7 @@ class CommunityBoardCard extends StatefulWidget {
     required this.icon,
     required this.headerColorFn,
     required this.serviceBoardType,
-    required this.boardname,
+    required this.boardName,
     this.showWriteButton = true,
   });
 
@@ -92,25 +92,25 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final rs = ResponsiveSize(context);
+    final responsiveSize = ResponsiveSize(context);
     return BoardPreviewCard(
       future: _postsFuture,
       headerIcon: widget.icon,
       headerTitle: widget.title,
       headerColor: widget.headerColorFn(colors),
-      height: rs.h(AppDimens.boardCardHeight),
+      height: responsiveSize.h(AppDimens.boardCardHeight),
       emptyHint: 'be_first_to_discuss'.tr(args: [widget.title]),
       maxItems: 5,
       onHeaderTap: () => Navigator.push(
         context,
         SlideRoute(
-          builder: (_) => CommunityPost(boardname: widget.boardname, boardType: widget.serviceBoardType),
+          builder: (_) => CommunityPost(boardName: widget.boardName, boardType: widget.serviceBoardType),
         ),
       ),
       onPostTap: (context, post) => Navigator.of(context, rootNavigator: true).push(
         SlideRoute(
           builder: (_) => EnlargePost.fromPost(
-            boardname: widget.boardname,
+            boardName: widget.boardName,
             post: post,
           ),
         ),

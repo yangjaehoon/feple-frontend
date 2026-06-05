@@ -12,14 +12,14 @@ import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
 import 'package:flutter/material.dart';
 
 class BoardPostListScreen extends StatefulWidget {
-  final String boardname;
+  final String boardName;
   final Future<List<Post>> Function() fetchPosts;
   final String writeScreenTitle;
   final Future<void> Function(String title, String content, bool anonymous, String? imageObjectKey) onSubmitPost;
 
   const BoardPostListScreen({
     super.key,
-    required this.boardname,
+    required this.boardName,
     required this.fetchPosts,
     required this.writeScreenTitle,
     required this.onSubmitPost,
@@ -77,7 +77,7 @@ class _BoardPostListScreenState extends State<BoardPostListScreen> {
               await Navigator.of(context, rootNavigator: true).push(
                 SlideRoute(
                   builder: (_) => EnlargePost.fromPost(
-                    boardname: widget.boardname,
+                    boardName: widget.boardName,
                     post: post,
                   ),
                 ),
@@ -95,7 +95,7 @@ class _BoardPostListScreenState extends State<BoardPostListScreen> {
   Widget _buildBody(AbstractThemeColors colors) {
     return Column(
       children: [
-        SecondaryAppBar(title: widget.boardname),
+        SecondaryAppBar(title: widget.boardName),
         Expanded(
           child: RefreshIndicator(
             color: colors.activate,

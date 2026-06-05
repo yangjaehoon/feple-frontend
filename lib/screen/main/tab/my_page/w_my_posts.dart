@@ -25,7 +25,7 @@ class MyPostsScreen extends StatelessWidget {
             await Navigator.of(context, rootNavigator: true).push(
               SlideRoute(
                 builder: (_) => EnlargePost.fromPost(
-                  boardname: post.boardDisplayName,
+                  boardName: post.boardDisplayName,
                   post: post,
                 ),
               ),

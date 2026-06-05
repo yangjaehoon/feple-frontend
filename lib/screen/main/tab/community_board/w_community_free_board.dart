@@ -13,7 +13,7 @@ class FreeBoard extends StatelessWidget {
       icon: Icons.edit_note_rounded,
       headerColorFn: (colors) => colors.freeBoardHeader,
       serviceBoardType: BoardTypes.free,
-      boardname: 'free_board'.tr(),
+      boardName: 'free_board'.tr(),
     );
   }
 }

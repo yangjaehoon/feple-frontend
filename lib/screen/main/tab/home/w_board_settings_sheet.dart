@@ -48,6 +48,61 @@ class _BoardSettingsSheetState extends State<BoardSettingsSheet> {
     _orderedBoards = [...selectedInOrder, ...unselected];
   }
 
+  Widget _buildTitleRow(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        children: [
+          Text(
+            'select_boards'.tr(),
+            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: colors.textTitle),
+          ),
+          const Spacer(),
+          Text(
+            '${_checked.length}/${_orderedBoards.length}',
+            style: TextStyle(fontSize: 13, color: colors.textSecondary),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBoardList(AbstractThemeColors colors) {
+    return Flexible(
+      child: ReorderableListView.builder(
+        shrinkWrap: true,
+        itemCount: _orderedBoards.length,
+        onReorder: (oldIndex, newIndex) {
+          setState(() {
+            if (newIndex > oldIndex) newIndex--;
+            final item = _orderedBoards.removeAt(oldIndex);
+            _orderedBoards.insert(newIndex, item);
+          });
+        },
+        itemBuilder: (context, index) {
+          final board = _orderedBoards[index];
+          final checked = _checked.contains(board.boardId);
+          return _BoardSettingsItem(
+            key: ValueKey(board.boardId),
+            board: board,
+            checked: checked,
+            index: index,
+            colors: colors,
+            onChanged: (val) {
+              setState(() {
+                if (val == true) {
+                  _checked.add(board.boardId);
+                } else {
+                  _checked.remove(board.boardId);
+                }
+              });
+            },
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -61,71 +116,13 @@ class _BoardSettingsSheetState extends State<BoardSettingsSheet> {
           const SizedBox(height: 12),
           const BottomSheetHandle(),
           const SizedBox(height: 16),
-
-          // 타이틀
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              children: [
-                Text(
-                  'select_boards'.tr(),
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w800,
-                    color: colors.textTitle,
-                  ),
-                ),
-                const Spacer(),
-                Text(
-                  '${_checked.length}/${_orderedBoards.length}',
-                  style: TextStyle(fontSize: 13, color: colors.textSecondary),
-                ),
-              ],
-            ),
-          ),
+          _buildTitleRow(colors),
           const SizedBox(height: 8),
           Divider(color: colors.listDivider, height: 1),
-
-          // 드래그 가능한 목록
-          Flexible(
-            child: ReorderableListView.builder(
-              shrinkWrap: true,
-              itemCount: _orderedBoards.length,
-              onReorder: (oldIndex, newIndex) {
-                setState(() {
-                  if (newIndex > oldIndex) newIndex--;
-                  final item = _orderedBoards.removeAt(oldIndex);
-                  _orderedBoards.insert(newIndex, item);
-                });
-              },
-              itemBuilder: (context, index) {
-                final board = _orderedBoards[index];
-                final checked = _checked.contains(board.boardId);
-                return _BoardSettingsItem(
-                  key: ValueKey(board.boardId),
-                  board: board,
-                  checked: checked,
-                  index: index,
-                  colors: colors,
-                  onChanged: (val) {
-                    setState(() {
-                      if (val == true) {
-                        _checked.add(board.boardId);
-                      } else {
-                        _checked.remove(board.boardId);
-                      }
-                    });
-                  },
-                );
-              },
-            ),
-          ),
-
-          // 확인 버튼
+          _buildBoardList(colors),
           Divider(color: colors.listDivider, height: 1),
           Padding(
-            padding: EdgeInsets.fromLTRB(
-                20, 12, 20, 12 + MediaQuery.of(context).padding.bottom),
+            padding: EdgeInsets.fromLTRB(20, 12, 20, 12 + MediaQuery.of(context).padding.bottom),
             child: LoadingButton(
               label: 'confirm'.tr(),
               isLoading: false,

@@ -3,6 +3,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/constant/festival_constants.dart';
 import 'package:feple/common/data/preference/prefs.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
@@ -200,6 +201,7 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
     } catch (e) {
       debugPrint('[Onboarding] artist follow failed: $e');
     }
+    if (!mounted) return;
     try {
       await widget.onComplete();
     } catch (e) {
@@ -287,24 +289,11 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
         }
         if (snapshot.hasError || snapshot.data == null) {
           return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.wifi_off_rounded,
-                    color: colors.inActivate, size: 48),
-                const SizedBox(height: 12),
-                Text(
-                  'onboarding_pick_load_failed'.tr(),
-                  style: TextStyle(color: colors.textSecondary),
-                ),
-                const SizedBox(height: 16),
-                TextButton(
-                  onPressed: () => setState(() {
-                    _artistsFuture = sl<ArtistService>().fetchArtists();
-                  }),
-                  child: Text('onboarding_pick_retry'.tr()),
-                ),
-              ],
+            child: ErrorState(
+              message: 'onboarding_pick_load_failed'.tr(),
+              onRetry: () => setState(() {
+                _artistsFuture = sl<ArtistService>().fetchArtists();
+              }),
             ),
           );
         }
@@ -478,6 +467,52 @@ class _ArtistSelectCard extends StatelessWidget {
     required this.onTap,
   });
 
+  Widget _buildCardImage(AbstractThemeColors colors) {
+    return AspectRatio(
+      aspectRatio: 1.0,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: AnimatedContainer(
+              duration: AppDimens.animFast,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: selected ? colors.activate : Colors.transparent,
+                  width: 2.5,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: CachedNetworkImage(
+                  imageUrl: artist.profileImageUrl,
+                  fit: BoxFit.cover,
+                  memCacheWidth: 200,
+                  placeholder: (_, __) => const SkeletonBox(height: double.infinity),
+                  errorWidget: (_, __, ___) => Container(
+                    color: colors.activate.withValues(alpha: 0.08),
+                    child: Icon(Icons.person_rounded, color: colors.activate, size: 36),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          if (selected)
+            Positioned(
+              top: 6,
+              right: 6,
+              child: Container(
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(color: colors.activate, shape: BoxShape.circle),
+                child: const Icon(Icons.check_rounded, color: Colors.white, size: 14),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -485,65 +520,13 @@ class _ArtistSelectCard extends StatelessWidget {
       onTap: onTap,
       child: Column(
         children: [
-          AspectRatio(
-            aspectRatio: 1.0,
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: AnimatedContainer(
-                    duration: AppDimens.animFast,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: selected
-                            ? colors.activate
-                            : Colors.transparent,
-                        width: 2.5,
-                      ),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: CachedNetworkImage(
-                        imageUrl: artist.profileImageUrl,
-                        fit: BoxFit.cover,
-                        memCacheWidth: 200,
-                        placeholder: (_, __) => const SkeletonBox(
-                          height: double.infinity,
-                        ),
-                        errorWidget: (_, __, ___) => Container(
-                          color: colors.activate.withValues(alpha: 0.08),
-                          child: Icon(Icons.person_rounded,
-                              color: colors.activate, size: 36),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                if (selected)
-                  Positioned(
-                    top: 6,
-                    right: 6,
-                    child: Container(
-                      width: 22,
-                      height: 22,
-                      decoration: BoxDecoration(
-                        color: colors.activate,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.check_rounded,
-                          color: Colors.white, size: 14),
-                    ),
-                  ),
-              ],
-            ),
-          ),
+          _buildCardImage(colors),
           const SizedBox(height: 6),
           Text(
             artist.name,
             style: TextStyle(
               fontSize: AppDimens.fontSizeSm,
-              fontWeight:
-                  selected ? FontWeight.w700 : FontWeight.w500,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
               color: selected ? colors.activate : colors.textTitle,
             ),
             textAlign: TextAlign.center,

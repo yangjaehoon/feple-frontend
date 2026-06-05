@@ -200,7 +200,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
                       builder: (context) => ArtistPage(
                         artistName: artist.name,
                         artistId: artist.id,
-                        followerCounter: artist.followerCount,
+                        followerCount: artist.followerCount,
                         profileImageUrl: artist.profileImageUrl,
                       ),
                     ),

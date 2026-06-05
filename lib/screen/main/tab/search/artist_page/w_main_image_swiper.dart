@@ -32,11 +32,11 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   static const double _photoCardSize = 200.0;
 
   List<String> _photoUrls = [];
-  bool _loaded = false;
+  bool _photosLoaded = false;
 
   final PageController _pageController = PageController(viewportFraction: 0.55);
   int _currentPage = 0;
-  final ValueNotifier<double> _scroll = ValueNotifier(0.0);
+  final ValueNotifier<double> _pageOffset = ValueNotifier(0.0);
   Timer? _timer;
   bool _isUserScrolling = false;
 
@@ -50,7 +50,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   void _onPageScroll() {
     final page = _pageController.page;
     if (page == null) return;
-    _scroll.value = page;
+    _pageOffset.value = page;
     _isUserScrolling = (page - page.roundToDouble()).abs() > 0.01;
   }
 
@@ -61,12 +61,12 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
       if (!mounted) return;
       setState(() {
         _photoUrls = urls;
-        _loaded = true;
+        _photosLoaded = true;
       });
       _startTimer();
     } catch (e) {
       debugPrint('[ImageSwiper] 사진 로드 실패: $e');
-      if (mounted) setState(() => _loaded = true);
+      if (mounted) setState(() => _photosLoaded = true);
     }
   }
 
@@ -94,7 +94,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   void dispose() {
     _timer?.cancel();
     _pageController.removeListener(_onPageScroll);
-    _scroll.dispose();
+    _pageOffset.dispose();
     _pageController.dispose();
     super.dispose();
   }
@@ -136,9 +136,9 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ValueListenableBuilder<double>(
-            valueListenable: _scroll,
-            builder: (context, scroll, child) {
-              final difference = (scroll - index).abs();
+            valueListenable: _pageOffset,
+            builder: (context, pageOffset, child) {
+              final difference = (pageOffset - index).abs();
               final scale = 1 - (difference * 0.2);
               return Transform.scale(
                 scale: scale,
@@ -179,7 +179,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   }
 
   Widget _buildBackground() {
-    if (!_loaded || _photoUrls.isEmpty) {
+    if (!_photosLoaded || _photoUrls.isEmpty) {
       if (widget.profileImageUrl != null) {
         return Hero(
           tag: 'artist_image_${widget.artistId}',

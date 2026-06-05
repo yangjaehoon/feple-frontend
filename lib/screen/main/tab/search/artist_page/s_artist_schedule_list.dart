@@ -90,8 +90,8 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
     if (snapshot.hasError) {
       return ErrorState(message: 'err_fetch_data'.tr(), onRetry: _refresh);
     }
-    final all = snapshot.data ?? [];
-    if (all.isEmpty) {
+    final schedules = snapshot.data ?? [];
+    if (schedules.isEmpty) {
       return ListView(
         children: [
           const SizedBox(height: 80),
@@ -99,21 +99,21 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
         ],
       );
     }
-    return _buildScheduleList(all, colors);
+    return _buildScheduleList(schedules, colors);
   }
 
-  Widget _buildScheduleList(List<ArtistScheduleModel> all, AbstractThemeColors colors) {
-    final upcoming = all.where((e) => !e.isPast).toList();
-    final past = all.where((e) => e.isPast).toList();
+  Widget _buildScheduleList(List<ArtistScheduleModel> schedules, AbstractThemeColors colors) {
+    final upcoming = schedules.where((e) => !e.isPast).toList();
+    final past = schedules.where((e) => e.isPast).toList();
 
-    final rows = <_Row>[];
+    final rows = <_ScheduleRow>[];
     if (upcoming.isNotEmpty) {
-      rows.add(_Row.header('schedule_upcoming'.tr()));
-      for (final item in upcoming) { rows.add(_Row.item(item, isPast: false)); }
+      rows.add(_ScheduleRow.header('schedule_upcoming'.tr()));
+      for (final item in upcoming) { rows.add(_ScheduleRow.item(item, isPast: false)); }
     }
     if (past.isNotEmpty) {
-      rows.add(_Row.header('schedule_past'.tr()));
-      for (final item in past) { rows.add(_Row.item(item, isPast: true)); }
+      rows.add(_ScheduleRow.header('schedule_past'.tr()));
+      for (final item in past) { rows.add(_ScheduleRow.item(item, isPast: true)); }
     }
 
     return ListView.builder(
@@ -170,16 +170,16 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
   }
 }
 
-class _Row {
+class _ScheduleRow {
   final String? label;
   final ArtistScheduleModel? item;
   final bool isPast;
 
-  const _Row._({this.label, this.item, required this.isPast});
+  const _ScheduleRow._({this.label, this.item, required this.isPast});
 
-  factory _Row.header(String label) => _Row._(label: label, isPast: false);
-  factory _Row.item(ArtistScheduleModel item, {required bool isPast}) =>
-      _Row._(item: item, isPast: isPast);
+  factory _ScheduleRow.header(String label) => _ScheduleRow._(label: label, isPast: false);
+  factory _ScheduleRow.item(ArtistScheduleModel item, {required bool isPast}) =>
+      _ScheduleRow._(item: item, isPast: isPast);
 
   bool get isHeader => label != null;
 }

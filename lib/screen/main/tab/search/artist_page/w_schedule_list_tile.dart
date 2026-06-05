@@ -104,18 +104,18 @@ class ScheduleListTile extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         itemCount: item.coArtists.length,
         itemBuilder: (_, i) {
-          final co = item.coArtists[i];
+          final coArtist = item.coArtists[i];
           return Padding(
             padding: const EdgeInsets.only(right: 4),
             child: Tooltip(
-              message: co.artistName,
+              message: coArtist.artistName,
               child: CircleAvatar(
                 radius: 13,
                 backgroundColor: colors.backgroundMain,
-                backgroundImage: (co.profileImageUrl != null && co.profileImageUrl!.isNotEmpty)
-                    ? CachedNetworkImageProvider(co.profileImageUrl!)
+                backgroundImage: (coArtist.profileImageUrl != null && coArtist.profileImageUrl!.isNotEmpty)
+                    ? CachedNetworkImageProvider(coArtist.profileImageUrl!)
                     : null,
-                child: (co.profileImageUrl == null || co.profileImageUrl!.isEmpty)
+                child: (coArtist.profileImageUrl == null || coArtist.profileImageUrl!.isEmpty)
                     ? Icon(Icons.person_rounded, size: 12, color: colors.textSecondary)
                     : null,
               ),

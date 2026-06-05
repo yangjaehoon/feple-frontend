@@ -37,10 +37,10 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
   Future<void> toggleLike(int photoId) async {
     try {
       await _photoService.toggleLike(artistId, photoId);
-      final idx = _photos.indexWhere((photo) => photo.photoId == photoId);
-      if (idx != -1) {
-        final photo = _photos[idx];
-        _photos[idx] = ArtistPhotoResponse(
+      final index = _photos.indexWhere((photo) => photo.photoId == photoId);
+      if (index != -1) {
+        final photo = _photos[index];
+        _photos[index] = ArtistPhotoResponse(
           photoId: photo.photoId,
           url: photo.url,
           uploaderUserId: photo.uploaderUserId,

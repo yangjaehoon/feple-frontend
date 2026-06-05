@@ -16,11 +16,11 @@ class ArtistBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final svc = sl<PostService>();
+    final postService = sl<PostService>();
     return NamedBoard(
       name: artistName,
       headerIcon: Icons.forum_rounded,
-      fetchPosts: () => svc.fetchArtistPosts(artistId),
+      fetchPosts: () => postService.fetchArtistPosts(artistId),
       postListScreenFactory: () => ArtistPostListScreen(
         artistId: artistId,
         artistName: artistName,

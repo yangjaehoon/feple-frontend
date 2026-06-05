@@ -126,7 +126,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                 builder: (_) => ArtistPage(
                   artistId: artist.id,
                   artistName: artist.name,
-                  followerCounter: artist.followerCount,
+                  followerCount: artist.followerCount,
                   profileImageUrl: artist.profileImageUrl,
                 ),
               ),

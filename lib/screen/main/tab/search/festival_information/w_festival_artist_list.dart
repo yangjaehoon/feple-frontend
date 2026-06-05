@@ -95,7 +95,7 @@ class FestivalArtistListScreen extends StatelessWidget {
             builder: (_) => ArtistPage(
               artistId: artist.artistId,
               artistName: artist.artistName,
-              followerCounter: 0,
+              followerCount: 0,
             ),
           ),
         ),

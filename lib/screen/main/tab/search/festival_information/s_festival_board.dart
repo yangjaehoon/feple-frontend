@@ -35,24 +35,24 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
   @override
   void initState() {
     super.initState();
-    final svc = sl<PostService>();
+    final postService = sl<PostService>();
     _tabs = [
       _BoardTab(
         name: 'name_board'.tr(args: [widget.festivalName]),
-        fetch: () => svc.fetchFestivalPosts(widget.festivalId),
-        submit: (t, c, a, img) => svc.createFestivalPost(
+        fetch: () => postService.fetchFestivalPosts(widget.festivalId),
+        submit: (t, c, a, img) => postService.createFestivalPost(
             festivalId: widget.festivalId, title: t, content: c, anonymous: a, imageObjectKey: img),
       ),
       _BoardTab(
         name: 'companion_board'.tr(),
-        fetch: () => svc.fetchFestivalCompanionPosts(widget.festivalId),
-        submit: (t, c, a, img) => svc.createFestivalCompanionPost(
+        fetch: () => postService.fetchFestivalCompanionPosts(widget.festivalId),
+        submit: (t, c, a, img) => postService.createFestivalCompanionPost(
             festivalId: widget.festivalId, title: t, content: c, anonymous: a, imageObjectKey: img),
       ),
       _BoardTab(
         name: 'ticket_board'.tr(),
-        fetch: () => svc.fetchFestivalTicketPosts(widget.festivalId),
-        submit: (t, c, a, img) => svc.createFestivalTicketPost(
+        fetch: () => postService.fetchFestivalTicketPosts(widget.festivalId),
+        submit: (t, c, a, img) => postService.createFestivalTicketPost(
             festivalId: widget.festivalId, title: t, content: c, anonymous: a, imageObjectKey: img),
       ),
     ];

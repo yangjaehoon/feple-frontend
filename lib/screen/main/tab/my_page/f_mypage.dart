@@ -7,10 +7,10 @@ import 'package:feple/screen/main/tab/my_page/w_my_post_comment.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_song_requests.dart';
 import 'package:feple/screen/main/tab/my_page/w_profile.dart';
 import 'package:feple/screen/settings/s_settings.dart';
+import 'package:feple/provider/user_provider.dart';
+import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../provider/user_provider.dart';
-import '../search/w_feple_app_bar.dart';
 
 class MypageFragment extends StatefulWidget {
   const MypageFragment({super.key});

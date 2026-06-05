@@ -85,7 +85,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
           _buildLevelBadge(user, colors),
           const SizedBox(height: 16),
           _buildActionButton(
-            context,
+            colors,
             label: 'edit_profile'.tr(),
             icon: Icons.edit_rounded,
             onPressed: () {
@@ -167,12 +167,11 @@ class _ProfileWidgetState extends State<ProfileWidget> {
   }
 
   Widget _buildActionButton(
-    BuildContext context, {
+    AbstractThemeColors colors, {
     required String label,
     required IconData icon,
     required VoidCallback onPressed,
   }) {
-    final colors = context.appColors;
     return Container(
       decoration: BoxDecoration(
         color: colors.actionBtnPrimary,

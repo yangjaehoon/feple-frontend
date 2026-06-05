@@ -93,7 +93,7 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
             ..._buildHeader(colors),
             ..._buildFormFields(),
             const SizedBox(height: 20),
-            _buildSubmitButton(context),
+            _buildSubmitButton(colors),
           ],
         ),
       ),
@@ -152,7 +152,7 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
     ),
   ];
 
-  Widget _buildSubmitButton(BuildContext context) {
+  Widget _buildSubmitButton(AbstractThemeColors colors) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: LoadingButton(
@@ -161,7 +161,7 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
         isLoading: _submitting,
         isSuccess: _submitSuccess,
         onPressed: _submit,
-        backgroundColor: context.appColors.activate,
+        backgroundColor: colors.activate,
         height: 50,
         borderRadius: 12,
       ),

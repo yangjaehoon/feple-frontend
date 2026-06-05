@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
@@ -11,8 +10,8 @@ import 'package:feple/model/song_model.dart';
 import 'package:feple/service/song_service.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_songs.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_song_list_tile.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ArtistSongs extends StatefulWidget {
   final int artistId;
@@ -39,13 +38,6 @@ class _ArtistSongsState extends State<ArtistSongs> {
 
   Future<List<SongModel>> _fetchSongs() =>
       sl<SongService>().fetchSongs(widget.artistId);
-
-  Future<void> _openYoutubeMusic(String url) async {
-    final uri = Uri.parse(url);
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      if (mounted) context.showErrorSnackbar('youtube_open_failed'.tr());
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,11 +74,11 @@ class _ArtistSongsState extends State<ArtistSongs> {
             Padding(
               padding: const EdgeInsets.symmetric(
                   horizontal: AppDimens.paddingHorizontal, vertical: 12),
-              child: Row(
+              child: const Row(
                 children: [
-                  const SkeletonBox(width: 52, height: 52, borderRadius: BorderRadius.all(Radius.circular(4))),
-                  const SizedBox(width: 12),
-                  const Expanded(
+                  SkeletonBox(width: 52, height: 52, borderRadius: BorderRadius.all(Radius.circular(4))),
+                  SizedBox(width: 12),
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -139,114 +131,19 @@ class _ArtistSongsState extends State<ArtistSongs> {
 
         final preview = songs.take(5).toList();
 
-        return Column(
-          children: [
-            ListView.separated(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: preview.length,
-              itemBuilder: (_, index) =>
-                  _buildSongItem(preview[index], index, colors),
-              separatorBuilder: (_, __) => Divider(
-                thickness: 1,
-                color: colors.listDivider,
-                indent: AppDimens.paddingHorizontal,
-                endIndent: AppDimens.paddingHorizontal,
-              ),
-            ),
-          ],
+        return ListView.separated(
+          physics: const NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: preview.length,
+          itemBuilder: (_, index) => SongListTile(song: preview[index], index: index),
+          separatorBuilder: (_, __) => Divider(
+            thickness: 1,
+            color: colors.listDivider,
+            indent: AppDimens.paddingHorizontal,
+            endIndent: AppDimens.paddingHorizontal,
+          ),
         );
       },
-    );
-  }
-
-  Widget _buildSongItem(SongModel song, int index, AbstractThemeColors colors) {
-    return InkWell(
-      onTap: () => _openYoutubeMusic(song.youtubeUrl),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppDimens.paddingHorizontal,
-          vertical: 12,
-        ),
-        child: Row(
-          children: [
-            Text(
-              '${index + 1}',
-              style: TextStyle(
-                fontSize: AppDimens.fontSizeXs,
-                color: colors.textSecondary,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(width: 12),
-            if (song.thumbnailUrl != null)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-                child: CachedNetworkImage(
-                  imageUrl: song.thumbnailUrl!,
-                  width: 52,
-                  height: 52,
-                  fit: BoxFit.cover,
-                  errorWidget: (_, __, ___) => _thumbnailPlaceholder(colors),
-                ),
-              )
-            else
-              _thumbnailPlaceholder(colors),
-            const SizedBox(width: 12),
-            Expanded(child: _buildSongInfo(song, colors)),
-            const SizedBox(width: 8),
-            Icon(Icons.open_in_new_rounded, size: 14, color: colors.textSecondary),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSongInfo(SongModel song, AbstractThemeColors colors) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          song.title,
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeMd,
-            fontWeight: FontWeight.w500,
-            color: colors.textTitle,
-          ),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
-        if (song.festivalCount > 0) ...[
-          const SizedBox(height: 3),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(
-              color: colors.activate.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              'festival_performed_count'.tr(args: [song.festivalCount.toString()]),
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: colors.activate,
-              ),
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _thumbnailPlaceholder(AbstractThemeColors colors) {
-    return Container(
-      width: 52,
-      height: 52,
-      decoration: BoxDecoration(
-        color: colors.backgroundMain,
-        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-      ),
-      child: Icon(Icons.music_note_rounded, size: 18, color: colors.textSecondary),
     );
   }
 }

@@ -151,8 +151,8 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
                       itemCount: _requests.length,
                       separatorBuilder: (_, __) =>
                           Divider(height: 1, color: colors.listDivider),
-                      itemBuilder: (_, i) =>
-                          _SongRequestItem(req: _requests[i], colors: colors),
+                      itemBuilder: (_, index) =>
+                          _SongRequestItem(req: _requests[index]),
                     ),
     );
   }
@@ -174,12 +174,12 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
 
 class _SongRequestItem extends StatelessWidget {
   final SongRequestModel req;
-  final AbstractThemeColors colors;
 
-  const _SongRequestItem({required this.req, required this.colors});
+  const _SongRequestItem({required this.req});
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     final statusColor = req.isPending
         ? colors.textSecondary
         : req.isApproved
@@ -197,7 +197,7 @@ class _SongRequestItem extends StatelessWidget {
         children: [
           Icon(Icons.music_note_rounded, size: 20, color: colors.activate),
           const SizedBox(width: 12),
-          Expanded(child: _buildInfoColumn()),
+          Expanded(child: _buildInfoColumn(colors)),
           const SizedBox(width: 8),
           _buildStatusBadge(statusColor, statusLabel),
         ],
@@ -205,7 +205,7 @@ class _SongRequestItem extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoColumn() {
+  Widget _buildInfoColumn(AbstractThemeColors colors) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -221,8 +221,8 @@ class _SongRequestItem extends StatelessWidget {
         ),
         if (req.artistName != null)
           Text(req.artistName!, style: TextStyle(fontSize: 12, color: colors.textSecondary)),
-        if (req.createdAt != null)
-          Text(_formatDate(req.createdAt!), style: TextStyle(fontSize: 11, color: colors.textSecondary)),
+        if (req.formattedDate != null)
+          Text(req.formattedDate!, style: TextStyle(fontSize: 11, color: colors.textSecondary)),
       ],
     );
   }
@@ -246,14 +246,5 @@ class _SongRequestItem extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  String _formatDate(String raw) {
-    try {
-      final dt = DateTime.parse(raw);
-      return '${dt.year}.${dt.month.toString().padLeft(2, '0')}.${dt.day.toString().padLeft(2, '0')}';
-    } catch (_) {
-      return raw;
-    }
   }
 }

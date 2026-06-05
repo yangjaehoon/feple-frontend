@@ -186,7 +186,7 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
                       separatorBuilder: (_, __) => const SizedBox(height: 10),
                       itemBuilder: (context, index) {
                         final cert = _certifications[index];
-                        return _CertCard(cert: cert, colors: colors);
+                        return _CertCard(cert: cert);
                       },
                     ),
     );
@@ -210,11 +210,10 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
 
 class _CertCard extends StatelessWidget {
   final CertificationModel cert;
-  final AbstractThemeColors colors;
 
-  const _CertCard({required this.cert, required this.colors});
+  const _CertCard({required this.cert});
 
-  Widget _buildPosterImage(String? posterUrl) {
+  Widget _buildPosterImage(String? posterUrl, AbstractThemeColors colors) {
     return ClipRRect(
       borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
       child: SizedBox(
@@ -225,9 +224,9 @@ class _CertCard extends StatelessWidget {
                 imageUrl: posterUrl,
                 fit: BoxFit.cover,
                 placeholder: (_, __) => const SkeletonBox(height: double.infinity),
-                errorWidget: (_, __, ___) => _buildPhotoPlaceholder(),
+                errorWidget: (_, __, ___) => _buildPhotoPlaceholder(colors),
               )
-            : _buildPhotoPlaceholder(),
+            : _buildPhotoPlaceholder(colors),
       ),
     );
   }
@@ -313,6 +312,7 @@ class _CertCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     final isApproved = cert.status == CertStatus.approved;
     final isPending = cert.status == CertStatus.pending;
     final statusColor = cert.status.displayColor(colors);
@@ -332,14 +332,14 @@ class _CertCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          _buildPosterImage(cert.posterUrl),
+          _buildPosterImage(cert.posterUrl, colors),
           _buildCardContent(colors, statusColor, statusLabel, isApproved, isPending),
         ],
       ),
     );
   }
 
-  Widget _buildPhotoPlaceholder() {
+  Widget _buildPhotoPlaceholder(AbstractThemeColors colors) {
     return Container(
       color: colors.certRingColor.withValues(alpha: 0.1),
       child: Icon(Icons.photo_rounded,

@@ -56,12 +56,14 @@ class _NamedBoardState extends State<NamedBoard> {
         context,
         SlideRoute(builder: (_) => widget.postListScreenFactory()),
       ),
-      onPostTap: (context, post) =>
-          Navigator.of(context, rootNavigator: true).push(
-        SlideRoute(
-          builder: (_) => EnlargePost.fromPost(boardName: boardName, post: post),
-        ),
-      ),
+      onPostTap: (context, post) async {
+        await Navigator.of(context, rootNavigator: true).push(
+          SlideRoute(
+            builder: (_) => EnlargePost.fromPost(boardName: boardName, post: post),
+          ),
+        );
+        _refresh();
+      },
       onRetry: _refresh,
       onWriteTap: widget.onWriteTap,
     );

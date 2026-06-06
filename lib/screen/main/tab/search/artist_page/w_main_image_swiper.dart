@@ -1,10 +1,11 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/injection.dart';
-import 'package:feple/service/artist_photo_service.dart';
+import 'package:feple/screen/main/tab/search/artist_page/artist_follow_notifier.dart';
+import 'package:feple/screen/main/tab/search/artist_page/artist_swiper_photos_notifier.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_name_like.dart';
 import 'package:flutter/material.dart';
 
@@ -13,13 +14,13 @@ class MainImageSwiper extends StatefulWidget {
     super.key,
     required this.artistName,
     required this.artistId,
-    required this.followerCount,
+    required this.followNotifier,
     this.profileImageUrl,
   });
 
-  final int followerCount;
   final String artistName;
   final int artistId;
+  final ArtistFollowNotifier followNotifier;
   final String? profileImageUrl;
 
   @override
@@ -31,8 +32,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   static const double _pageViewHeight = 250.0;
   static const double _photoCardSize = 200.0;
 
-  List<String> _photoUrls = [];
-  bool _photosLoaded = false;
+  late final ArtistSwiperPhotosNotifier _photosNotifier;
 
   final PageController _pageController = PageController(viewportFraction: 0.55);
   int _currentPage = 0;
@@ -43,8 +43,16 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   @override
   void initState() {
     super.initState();
-    _loadPhotos();
+    _photosNotifier = ArtistSwiperPhotosNotifier(artistId: widget.artistId)..load();
+    _photosNotifier.addListener(_onPhotosLoaded);
     _pageController.addListener(_onPageScroll);
+  }
+
+  void _onPhotosLoaded() {
+    if (_photosNotifier.loaded && mounted) {
+      setState(() {});
+      if (_photosNotifier.photoUrls.isNotEmpty) _startTimer();
+    }
   }
 
   void _onPageScroll() {
@@ -54,29 +62,12 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
     _isUserScrolling = (page - page.roundToDouble()).abs() > 0.01;
   }
 
-  Future<void> _loadPhotos() async {
-    try {
-      final photos = await sl<ArtistPhotoService>().fetchPhotos(widget.artistId);
-      final urls = photos.map((photo) => photo.url).take(10).toList();
-      if (!mounted) return;
-      setState(() {
-        _photoUrls = urls;
-        _photosLoaded = true;
-      });
-      _startTimer();
-    } catch (e) {
-      debugPrint('[ImageSwiper] 사진 로드 실패: $e');
-      if (mounted) setState(() => _photosLoaded = true);
-    }
-  }
-
   void _startTimer() {
-    if (_photoUrls.isEmpty) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _timer = Timer.periodic(const Duration(seconds: 3), (_) {
-        if (!mounted || !_pageController.hasClients || _photoUrls.isEmpty || _isUserScrolling) return;
-        final nextPage = (_currentPage + 1) % _photoUrls.length;
+        if (!mounted || !_pageController.hasClients || _photosNotifier.photoUrls.isEmpty || _isUserScrolling) return;
+        final nextPage = (_currentPage + 1) % _photosNotifier.photoUrls.length;
         _pageController.animateToPage(
           nextPage,
           duration: AppDimens.animSlow,
@@ -93,6 +84,8 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   @override
   void dispose() {
     _timer?.cancel();
+    _photosNotifier.removeListener(_onPhotosLoaded);
+    _photosNotifier.dispose();
     _pageController.removeListener(_onPageScroll);
     _pageOffset.dispose();
     _pageController.dispose();
@@ -106,11 +99,11 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
       child: Stack(
         children: [
           _buildBackground(),
-          if (_photoUrls.isNotEmpty) _buildPhotoPageView(),
+          if (_photosNotifier.photoUrls.isNotEmpty) _buildPhotoPageView(),
           ArtistNameLike(
             artistName: widget.artistName,
             artistId: widget.artistId,
-            initialFollowerCount: widget.followerCount,
+            followNotifier: widget.followNotifier,
           ),
         ],
       ),
@@ -123,7 +116,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
       child: PageView.builder(
         onPageChanged: _onPageChanged,
         controller: _pageController,
-        itemCount: _photoUrls.length,
+        itemCount: _photosNotifier.photoUrls.length,
         itemBuilder: (context, index) => _buildPhotoItem(index),
       ),
     );
@@ -170,7 +163,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
           ],
         ),
         child: CachedNetworkImage(
-          imageUrl: _photoUrls[index],
+          imageUrl: _photosNotifier.photoUrls[index],
           fit: BoxFit.cover,
           memCacheWidth: 300,
         ),
@@ -179,7 +172,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   }
 
   Widget _buildBackground() {
-    if (!_photosLoaded || _photoUrls.isEmpty) {
+    if (!_photosNotifier.loaded || _photosNotifier.photoUrls.isEmpty) {
       if (widget.profileImageUrl != null) {
         return Hero(
           tag: 'artist_image_${widget.artistId}',
@@ -200,7 +193,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
         key: ValueKey(_currentPage),
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: CachedNetworkImageProvider(_photoUrls[_currentPage]),
+            image: CachedNetworkImageProvider(_photosNotifier.photoUrls[_currentPage]),
             fit: BoxFit.cover,
           ),
         ),

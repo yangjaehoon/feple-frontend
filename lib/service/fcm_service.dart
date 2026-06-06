@@ -1,6 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+import 'package:feple/app.dart';
+import 'package:feple/common/util/app_route.dart';
+import 'package:feple/injection.dart';
+import 'package:feple/model/notification_type.dart';
 import 'package:feple/network/dio_client.dart';
+import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
+import 'package:feple/screen/notification/s_notification.dart';
+import 'package:feple/service/festival_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -20,6 +28,7 @@ class FcmService {
   final _localNotifications = FlutterLocalNotificationsPlugin();
   StreamSubscription? _messageSubscription;
   StreamSubscription? _tokenSubscription;
+  StreamSubscription? _openedAppSubscription;
 
   static const _androidChannel = AndroidNotificationChannel(
     'feple_high_importance',
@@ -46,20 +55,35 @@ class FcmService {
             AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(_androidChannel);
 
-    // local_notifications 초기화
+    // local_notifications 초기화 — 포그라운드 알림 탭 핸들러 등록
     const initSettings = InitializationSettings(
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
       iOS: DarwinInitializationSettings(),
     );
-    await _localNotifications.initialize(initSettings);
+    await _localNotifications.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: _onForegroundNotificationTap,
+    );
 
     // 중복 등록 방지
     _messageSubscription?.cancel();
     _tokenSubscription?.cancel();
+    _openedAppSubscription?.cancel();
 
-    // 포그라운드 메시지 처리
+    // 포그라운드 메시지 수신 → 로컬 알림으로 표시
     _messageSubscription =
         FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
+
+    // 백그라운드 상태에서 알림 탭 → 앱 포그라운드 전환 시 내비게이션
+    _openedAppSubscription = FirebaseMessaging.onMessageOpenedApp.listen(
+      (msg) => _navigateFromData(Map<String, dynamic>.from(msg.data)),
+    );
+
+    // 앱 종료 상태에서 알림 탭으로 콜드 스타트된 경우 내비게이션
+    final initialMessage = await _messaging.getInitialMessage();
+    if (initialMessage != null) {
+      await _navigateFromData(Map<String, dynamic>.from(initialMessage.data));
+    }
 
     // 토큰 등록
     await _registerToken();
@@ -103,8 +127,10 @@ class FcmService {
     await _unregisterFromServer();
     await _messageSubscription?.cancel();
     await _tokenSubscription?.cancel();
+    await _openedAppSubscription?.cancel();
     _messageSubscription = null;
     _tokenSubscription = null;
+    _openedAppSubscription = null;
   }
 
   Future<void> _unregisterFromServer() async {
@@ -122,6 +148,7 @@ class FcmService {
     final notification = message.notification;
     if (notification == null) return;
 
+    // data를 payload로 저장해두어 탭 시 내비게이션에 사용
     _localNotifications.show(
       notification.hashCode,
       notification.title,
@@ -137,6 +164,46 @@ class FcmService {
         ),
         iOS: const DarwinNotificationDetails(),
       ),
+      payload: jsonEncode(message.data),
     );
+  }
+
+  void _onForegroundNotificationTap(NotificationResponse response) {
+    final payload = response.payload;
+    if (payload == null) return;
+    try {
+      final data = jsonDecode(payload) as Map<String, dynamic>;
+      _navigateFromData(data);
+    } catch (_) {}
+  }
+
+  Future<void> _navigateFromData(Map<String, dynamic> data) async {
+    final nav = App.navigatorKey.currentState;
+    if (nav == null) return;
+
+    final type = NotificationType.fromValue(data['type'] as String?);
+    final festivalIdStr = data['festivalId'] as String?;
+    final festivalId = (festivalIdStr?.isNotEmpty == true)
+        ? int.tryParse(festivalIdStr!)
+        : null;
+
+    if (festivalId != null && _isFestivalLinked(type)) {
+      try {
+        final festival = await sl<FestivalService>().fetchById(festivalId);
+        nav.push(SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)));
+        return;
+      } catch (e) {
+        debugPrint('[FCM Nav] 페스티벌 이동 실패: $e');
+      }
+    }
+    nav.push(SlideRoute(builder: (_) => const NotificationScreen()));
+  }
+
+  /// 페스티벌 ID로 직접 이동하는 알림 타입
+  bool _isFestivalLinked(NotificationType? type) {
+    return type == NotificationType.newFestival ||
+        type == NotificationType.festivalReminder ||
+        type == NotificationType.certApproved ||
+        type == NotificationType.certRejected;
   }
 }

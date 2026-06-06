@@ -8,7 +8,9 @@ class ArtistBoard extends StatelessWidget {
   final int artistId;
   final String artistName;
 
-  const ArtistBoard({
+  final _postService = sl<PostService>();
+
+  ArtistBoard({
     super.key,
     required this.artistId,
     required this.artistName,
@@ -16,11 +18,10 @@ class ArtistBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final postService = sl<PostService>();
     return NamedBoard(
       name: artistName,
       headerIcon: Icons.forum_rounded,
-      fetchPosts: () => postService.fetchArtistPosts(artistId),
+      fetchPosts: () => _postService.fetchArtistPosts(artistId),
       postListScreenFactory: () => ArtistPostListScreen(
         artistId: artistId,
         artistName: artistName,

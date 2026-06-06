@@ -157,10 +157,10 @@ class _DayBadge extends StatelessWidget {
 
     if (dDays < 0) {
       label = 'festival_ongoing'.tr();
-      color = Colors.green.shade600;
+      color = colors.statusOngoingColor;
     } else if (dDays == 0) {
       label = 'd_day'.tr();
-      color = Colors.redAccent;
+      color = AppColors.errorRed;
     } else if (dDays <= 7) {
       label = 'D-$dDays';
       color = colors.activate;

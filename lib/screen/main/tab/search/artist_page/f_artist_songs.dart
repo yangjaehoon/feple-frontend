@@ -47,46 +47,36 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
     final colors = context.appColors;
     return Scaffold(
       backgroundColor: colors.backgroundMain,
-      body: Column(
-        children: [
-          _buildAppBar(colors),
-          Expanded(
-            child: RefreshIndicator(
-              color: colors.activate,
-              onRefresh: _refresh,
-              child: FutureBuilder<List<SongModel>>(
-                future: _future,
-                builder: (context, snapshot) => _buildBody(snapshot, colors),
+      appBar: SecondaryAppBar(
+        title: 'artist_songs_title'.tr(args: [widget.artistName]),
+        actions: [
+          TextButton.icon(
+            onPressed: () => showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (_) => SongRequestSheet(
+                artistId: widget.artistId,
+                artistName: widget.artistName,
               ),
+            ),
+            icon: const Icon(Icons.add_rounded, size: 16),
+            label: Text('song_request_button'.tr()),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.white,
+              textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
             ),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildAppBar(AbstractThemeColors colors) {
-    return SecondaryAppBar(
-      title: 'artist_songs_title'.tr(args: [widget.artistName]),
-      actions: [
-        TextButton.icon(
-          onPressed: () => showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            builder: (_) => SongRequestSheet(
-              artistId: widget.artistId,
-              artistName: widget.artistName,
-            ),
-          ),
-          icon: const Icon(Icons.add_rounded, size: 16),
-          label: Text('song_request_button'.tr()),
-          style: TextButton.styleFrom(
-            foregroundColor: Colors.white,
-            textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-          ),
+      body: RefreshIndicator(
+        color: colors.activate,
+        onRefresh: _refresh,
+        child: FutureBuilder<List<SongModel>>(
+          future: _future,
+          builder: (context, snapshot) => _buildBody(snapshot, colors),
         ),
-      ],
+      ),
     );
   }
 

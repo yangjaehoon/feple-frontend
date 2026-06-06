@@ -233,9 +233,9 @@ class _CommentTile extends StatelessWidget {
           PopupMenuItem(
             value: 'delete',
             child: Row(children: [
-              const Icon(Icons.delete_outline_rounded, size: 16, color: Colors.red),
+              const Icon(Icons.delete_outline_rounded, size: 16, color: AppColors.errorRed),
               const SizedBox(width: 8),
-              Text('delete_comment'.tr(), style: const TextStyle(color: Colors.red, fontSize: 13)),
+              Text('delete_comment'.tr(), style: const TextStyle(color: AppColors.errorRed, fontSize: 13)),
             ]),
           ),
         ],
@@ -252,9 +252,9 @@ class _CommentTile extends StatelessWidget {
           PopupMenuItem(
             value: 'report',
             child: Row(children: [
-              const Icon(Icons.flag_outlined, size: 16, color: Colors.red),
+              const Icon(Icons.flag_outlined, size: 16, color: AppColors.errorRed),
               const SizedBox(width: 8),
-              Text('report_comment'.tr(), style: const TextStyle(color: Colors.red, fontSize: 13)),
+              Text('report_comment'.tr(), style: const TextStyle(color: AppColors.errorRed, fontSize: 13)),
             ]),
           ),
         ],

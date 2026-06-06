@@ -88,6 +88,20 @@ class _NotificationScreenState extends State<NotificationScreen> {
     }
   }
 
+  Future<void> _refresh() async {
+    try {
+      final result = await _notificationService.fetchPage(0);
+      if (mounted) {
+        setState(() {
+          _items = result.items;
+          _hasMore = result.hasMore;
+          _page = 1;
+          _hasError = false;
+        });
+      }
+    } catch (_) {}
+  }
+
   Future<void> _loadMore() async {
     if (_isLoadingMore || !_hasMore || _loading) return;
     setState(() => _isLoadingMore = true);
@@ -212,7 +226,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           _buildFilterChips(colors),
           Expanded(
             child: RefreshIndicator(
-              onRefresh: _load,
+              onRefresh: _refresh,
               color: colors.activate,
               child: _loading
                   ? _buildSkeleton(colors)

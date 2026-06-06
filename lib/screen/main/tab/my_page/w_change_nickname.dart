@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
+import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/user_service.dart';
@@ -43,41 +44,8 @@ class _ChangeNicknameState extends State<ChangeNickname> {
 
     return Scaffold(
       backgroundColor: colors.backgroundMain,
-      body: Column(
-        children: [
-          _buildAppBar(colors),
-          Expanded(child: _buildBody(colors, userProvider, user)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAppBar(AbstractThemeColors colors) {
-    return SafeArea(
-      bottom: false,
-      child: Container(
-        height: AppDimens.appBarHeight,
-        color: colors.appBarColor,
-        child: Row(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
-              onPressed: () => Navigator.pop(context),
-            ),
-            Expanded(
-              child: Text(
-                'change_nickname'.tr(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      ),
+      appBar: SecondaryAppBar(title: 'change_nickname'.tr()),
+      body: _buildBody(colors, userProvider, user),
     );
   }
 

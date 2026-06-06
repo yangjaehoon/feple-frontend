@@ -293,10 +293,10 @@ class _SettingsItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     final iconColor = isDestructive
-        ? Theme.of(context).colorScheme.error
+        ? AppColors.errorRed
         : colors.activate;
     final textColor = isDestructive
-        ? Theme.of(context).colorScheme.error
+        ? AppColors.errorRed
         : colors.textTitle;
 
     return InkWell(

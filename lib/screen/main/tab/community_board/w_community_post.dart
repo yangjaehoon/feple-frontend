@@ -111,6 +111,26 @@ class _CommunityPostState extends State<CommunityPost> {
     }
   }
 
+  Future<void> _refresh() async {
+    final myId = ++_loadId;
+    try {
+      if (_isPaginated) {
+        final page = await _postService.fetchPostsPage(_serviceBoardType, cursor: null, size: _pageSize, sort: _sort);
+        if (!mounted || _loadId != myId) return;
+        setState(() {
+          _posts..clear()..addAll(page.content);
+          _cursor = page.nextCursor;
+          _hasMore = page.hasNext;
+          _hasError = false;
+        });
+      } else {
+        final items = await _postService.fetchPosts(_serviceBoardType);
+        if (!mounted || _loadId != myId) return;
+        setState(() { _posts..clear()..addAll(items); _hasError = false; });
+      }
+    } catch (_) {}
+  }
+
   Future<void> _loadMore() async {
     if (!_hasMore || _loadingMore) return;
     setState(() => _loadingMore = true);
@@ -395,7 +415,7 @@ class _CommunityPostState extends State<CommunityPost> {
           Expanded(
             child: RefreshIndicator(
               color: colors.activate,
-              onRefresh: _load,
+              onRefresh: _refresh,
               child: _loading ? _buildSkeletonList() : _buildList(colors),
             ),
           ),

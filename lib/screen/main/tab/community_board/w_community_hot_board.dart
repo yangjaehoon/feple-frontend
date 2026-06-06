@@ -15,6 +15,7 @@ class HotBoard extends StatelessWidget {
       serviceBoardType: BoardTypes.hot,
       boardName: 'hot_board'.tr(),
       showWriteButton: false,
+      emptyHint: 'hot_board_empty'.tr(),
     );
   }
 }

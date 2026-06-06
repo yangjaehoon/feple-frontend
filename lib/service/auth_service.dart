@@ -195,6 +195,16 @@ class AuthService {
     }
   }
 
+  // ── 서버 리프레시 토큰 취소 ──
+
+  Future<void> revokeRefreshToken(String refreshToken) async {
+    try {
+      await DioClient.dio.post('/auth/logout', data: {'refreshToken': refreshToken});
+    } catch (e) {
+      debugPrint('[Auth] 리프레시 토큰 서버 취소 실패: $e');
+    }
+  }
+
   // ── 로그아웃: Firebase + Kakao 세션 정리 ──
 
   Future<void> signOut() async {

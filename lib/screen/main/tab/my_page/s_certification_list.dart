@@ -263,10 +263,6 @@ class _CertCard extends StatelessWidget {
     bool isApproved,
     bool isPending,
   ) {
-    final festivalTitle = cert.festivalTitle;
-    final rejectionMessage = cert.rejectionMessage;
-    final createdAt = cert.formattedDate;
-
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -274,39 +270,38 @@ class _CertCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              festivalTitle,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: colors.textTitle,
-              ),
+              cert.festivalTitle,
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: colors.textTitle),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 6),
             _buildStatusBadge(statusColor, statusLabel),
-            if (!isPending &&
-                !isApproved &&
-                rejectionMessage != null &&
-                rejectionMessage.isNotEmpty) ...[
-              const SizedBox(height: 4),
-              Text(
-                'cert_rejection_reason'.tr(args: [rejectionMessage]),
-                style: TextStyle(fontSize: 11, color: colors.textSecondary),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-            if (createdAt != null) ...[
-              const SizedBox(height: 4),
-              Text(
-                createdAt,
-                style: TextStyle(fontSize: 11, color: colors.textSecondary),
-              ),
-            ],
+            _buildMeta(isPending, isApproved, cert.rejectionMessage, cert.formattedDate, colors),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildMeta(bool isPending, bool isApproved, String? rejectionMessage, String? createdAt, AbstractThemeColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (!isPending && !isApproved && rejectionMessage != null && rejectionMessage.isNotEmpty) ...[
+          const SizedBox(height: 4),
+          Text(
+            'cert_rejection_reason'.tr(args: [rejectionMessage]),
+            style: TextStyle(fontSize: 11, color: colors.textSecondary),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+        if (createdAt != null) ...[
+          const SizedBox(height: 4),
+          Text(createdAt, style: TextStyle(fontSize: 11, color: colors.textSecondary)),
+        ],
+      ],
     );
   }
 

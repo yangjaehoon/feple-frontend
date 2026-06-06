@@ -25,6 +25,7 @@ class ArtistSongsScreen extends StatefulWidget {
 }
 
 class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
+  final _songService = sl<SongService>();
   late Future<List<SongModel>> _future;
 
   @override
@@ -33,7 +34,7 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
     _future = _fetch();
   }
 
-  Future<List<SongModel>> _fetch() => sl<SongService>().fetchSongs(widget.artistId);
+  Future<List<SongModel>> _fetch() => _songService.fetchSongs(widget.artistId);
 
   Future<void> _refresh() async {
     setState(() { _future = _fetch(); });

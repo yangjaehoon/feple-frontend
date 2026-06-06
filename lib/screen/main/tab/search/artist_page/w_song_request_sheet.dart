@@ -4,8 +4,10 @@ import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/provider/user_provider.dart';
 import 'package:feple/service/song_request_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SongRequestSheet extends StatefulWidget {
   final int artistId;
@@ -22,6 +24,7 @@ class SongRequestSheet extends StatefulWidget {
 }
 
 class _SongRequestSheetState extends State<SongRequestSheet> {
+  final _songRequestService = sl<SongRequestService>();
   final _titleCtrl = TextEditingController();
   final _urlCtrl = TextEditingController();
   bool _submitting = false;
@@ -36,6 +39,11 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
   }
 
   Future<void> _submit() async {
+    final userId = context.read<UserProvider>().currentUserId;
+    if (userId == null) {
+      context.showInfoSnackbar('no_login_info'.tr());
+      return;
+    }
     final title = _titleCtrl.text.trim();
     if (title.isEmpty) {
       setState(() => _titleError = 'song_request_title_required'.tr());
@@ -44,7 +52,7 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
     setState(() { _titleError = null; _submitting = true; });
 
     try {
-      await sl<SongRequestService>().submit(
+      await _songRequestService.submit(
         artistId: widget.artistId,
         songTitle: title,
         youtubeUrl: _urlCtrl.text.trim().isEmpty ? null : _urlCtrl.text.trim(),

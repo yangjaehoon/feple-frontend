@@ -67,37 +67,33 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
               padding: const EdgeInsets.only(top: 16, bottom: 40),
               children: [
                 if (_prefs == null)
-                  _NotifSkeleton(colors: colors)
+                  const _NotifSkeleton()
                 else ...[
                   _NotifItem(
                     icon: Icons.verified_rounded,
                     label: 'notif_cert'.tr(),
                     value: _prefs!.certEnabled,
-                    colors: colors,
                     onChanged: (_) => _togglePref(_prefs!.copyWith(certEnabled: !_prefs!.certEnabled)),
                   ),
-                  _Divider(colors: colors),
+                  const _Divider(),
                   _NotifItem(
                     icon: Icons.chat_bubble_rounded,
                     label: 'notif_comment'.tr(),
                     value: _prefs!.commentEnabled,
-                    colors: colors,
                     onChanged: (_) => _togglePref(_prefs!.copyWith(commentEnabled: !_prefs!.commentEnabled)),
                   ),
-                  _Divider(colors: colors),
+                  const _Divider(),
                   _NotifItem(
                     icon: Icons.festival_rounded,
                     label: 'notif_festival'.tr(),
                     value: _prefs!.festivalEnabled,
-                    colors: colors,
                     onChanged: (_) => _togglePref(_prefs!.copyWith(festivalEnabled: !_prefs!.festivalEnabled)),
                   ),
-                  _Divider(colors: colors),
+                  const _Divider(),
                   _NotifItem(
                     icon: Icons.music_note_rounded,
                     label: 'notif_song_request'.tr(),
                     value: _prefs!.songRequestEnabled,
-                    colors: colors,
                     onChanged: (_) => _togglePref(_prefs!.copyWith(songRequestEnabled: !_prefs!.songRequestEnabled)),
                   ),
                 ],
@@ -114,19 +110,18 @@ class _NotifItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool value;
-  final AbstractThemeColors colors;
   final ValueChanged<bool> onChanged;
 
   const _NotifItem({
     required this.icon,
     required this.label,
     required this.value,
-    required this.colors,
     required this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Container(
       color: colors.surface,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
@@ -156,27 +151,24 @@ class _NotifItem extends StatelessWidget {
 }
 
 class _Divider extends StatelessWidget {
-  final AbstractThemeColors colors;
-
-  const _Divider({required this.colors});
+  const _Divider();
 
   @override
   Widget build(BuildContext context) {
-    return Divider(height: 1, indent: 50, color: colors.listDivider);
+    return Divider(height: 1, indent: 50, color: context.appColors.listDivider);
   }
 }
 
 class _NotifSkeleton extends StatelessWidget {
-  final AbstractThemeColors colors;
-
-  const _NotifSkeleton({required this.colors});
+  const _NotifSkeleton();
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: List.generate(4, _buildRow));
+    final colors = context.appColors;
+    return Column(children: List.generate(4, (index) => _buildRow(index, colors)));
   }
 
-  Widget _buildRow(int index) {
+  Widget _buildRow(int index, AbstractThemeColors colors) {
     return Column(
       children: [
         Container(

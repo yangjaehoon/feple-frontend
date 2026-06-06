@@ -151,8 +151,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final totalDots = _pageCount + 1; // 마지막 도트 = 아티스트 선택 단계
     return Row(
       mainAxisSize: MainAxisSize.min,
-      children: List.generate(totalDots, (i) {
-        final isActive = i == _currentPage;
+      children: List.generate(totalDots, (index) {
+        final isActive = index == _currentPage;
         return AnimatedContainer(
           duration: AppDimens.animNormal,
           margin: const EdgeInsets.only(right: 8),
@@ -264,8 +264,8 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
   Widget _buildDots(AbstractThemeColors colors) {
     // 4번째(인덱스 3) 도트가 활성
     return Row(
-      children: List.generate(4, (i) {
-        final isActive = i == 3;
+      children: List.generate(4, (index) {
+        final isActive = index == 3;
         return AnimatedContainer(
           duration: AppDimens.animNormal,
           margin: const EdgeInsets.only(right: 8),
@@ -317,8 +317,8 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
                   childAspectRatio: 0.72,
                 ),
                 itemCount: filtered.length,
-                itemBuilder: (_, i) {
-                  final artist = filtered[i];
+                itemBuilder: (_, index) {
+                  final artist = filtered[index];
                   final selected = _selectedIds.contains(artist.id);
                   return _ArtistSelectCard(
                     artist: artist,

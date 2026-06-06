@@ -1,10 +1,10 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/song_request_model.dart';
 import 'package:feple/provider/user_provider.dart';
+import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
 import 'package:feple/screen/main/tab/my_page/s_song_request_list.dart';
 import 'package:feple/service/song_request_service.dart';
 import 'package:feple/common/util/app_route.dart';
@@ -66,32 +66,9 @@ class _SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildHeader(colors),
-        _buildContent(colors),
-      ],
-    );
-  }
-
-  Widget _buildHeader(AbstractThemeColors colors) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 8, 8),
-      child: Row(
-        children: [
-          Container(
-            width: 3,
-            height: 20,
-            decoration: BoxDecoration(
-              color: colors.sectionBarColor,
-              borderRadius: BorderRadius.circular(AppDimens.barRadius),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            'song_request_history'.tr(),
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: colors.textTitle),
-          ),
-          const Spacer(),
-          TextButton(
+        HomeSectionHeader(
+          title: 'song_request_history'.tr(),
+          trailing: TextButton(
             onPressed: _loading ? null : _openFullList,
             style: TextButton.styleFrom(
               minimumSize: Size.zero,
@@ -103,19 +80,15 @@ class _SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
               children: [
                 Text(
                   'see_all'.tr(),
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: colors.activate,
-                  ),
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: colors.activate),
                 ),
                 Icon(Icons.chevron_right_rounded, size: 18, color: colors.activate),
               ],
             ),
           ),
-          const SizedBox(width: 4),
-        ],
-      ),
+        ),
+        _buildContent(colors),
+      ],
     );
   }
 
@@ -135,7 +108,7 @@ class _SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           itemCount: preview.length,
           separatorBuilder: (_, __) => Divider(height: 1, color: colors.listDivider),
-          itemBuilder: (_, index) => _buildItem(preview[index], colors),
+          itemBuilder: (_, index) => SongRequestItem(req: preview[index], verticalPadding: 12),
         ),
         if (items.length > _previewCount)
           Padding(
@@ -171,58 +144,6 @@ class _SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
             ),
           ),
       ],
-    );
-  }
-
-  Widget _buildItem(SongRequestModel req, AbstractThemeColors colors) {
-    final statusColor = req.isPending
-        ? colors.textSecondary
-        : req.isApproved
-            ? colors.activate
-            : Theme.of(context).colorScheme.error;
-    final statusLabel = req.isPending
-        ? 'song_status_pending'.tr()
-        : req.isApproved
-            ? 'song_status_approved'.tr()
-            : 'song_status_rejected'.tr();
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(
-        children: [
-          Icon(Icons.music_note_rounded, size: 20, color: colors.activate),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  req.songTitle,
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.textTitle),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                if (req.artistName != null)
-                  Text(
-                    req.artistName!,
-                    style: TextStyle(fontSize: 12, color: colors.textSecondary),
-                  ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(
-              color: statusColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              statusLabel,
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: statusColor),
-            ),
-          ),
-        ],
-      ),
     );
   }
 

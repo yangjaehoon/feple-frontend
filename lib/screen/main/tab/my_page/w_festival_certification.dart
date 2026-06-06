@@ -1,6 +1,6 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/certification_model.dart';
 import 'package:feple/screen/main/tab/my_page/cert_status_style.dart';
@@ -41,16 +41,6 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
     }
   }
 
-  // RefreshIndicator용 — 기존 데이터 유지, 스켈레톤 전환 없음
-  Future<void> _refresh() async {
-    try {
-      final list = await _certService.getMyCertifications();
-      if (mounted) setState(() { _certifications = list; _hasError = false; });
-    } catch (e) {
-      debugPrint('[Certification] 인증 목록 갱신 실패: $e');
-    }
-  }
-
   Future<void> _openDetail() async {
     await Navigator.push(
       context,
@@ -59,30 +49,16 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
     _load(); // 돌아왔을 때 목록 새로고침
   }
 
-  Widget _buildHeader(AbstractThemeColors colors) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 8, 8),
-      child: Row(
-        children: [
-          Container(
-            width: 3,
-            height: 20,
-            decoration: BoxDecoration(
-              color: colors.sectionBarColor,
-              borderRadius: BorderRadius.circular(AppDimens.barRadius),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            'festival_certification'.tr(),
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: colors.textTitle,
-            ),
-          ),
-          const Spacer(),
-          TextButton(
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        HomeSectionHeader(
+          title: 'festival_certification'.tr(),
+          trailing: TextButton(
             onPressed: _loading ? null : _openDetail,
             style: TextButton.styleFrom(
               minimumSize: Size.zero,
@@ -94,30 +70,13 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
               children: [
                 Text(
                   'see_all'.tr(),
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: colors.activate,
-                  ),
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: colors.activate),
                 ),
                 Icon(Icons.chevron_right_rounded, size: 18, color: colors.activate),
               ],
             ),
           ),
-          const SizedBox(width: 4),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildHeader(colors),
+        ),
         SizedBox(
           height: 150,
           child: _loading

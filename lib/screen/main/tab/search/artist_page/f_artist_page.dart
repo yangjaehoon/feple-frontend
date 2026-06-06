@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/screen/main/tab/search/artist_page/artist_follow_notifier.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_board.dart';
@@ -46,6 +47,7 @@ class _ArtistPageState extends State<ArtistPage> {
 
   Future<void> _onRefresh() async {
     setState(() => _refreshKey++);
+    await Future.delayed(AppDimens.animVerySlow);
   }
 
   @override

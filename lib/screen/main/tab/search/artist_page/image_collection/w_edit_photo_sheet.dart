@@ -27,6 +27,7 @@ class EditPhotoSheet extends StatefulWidget {
 }
 
 class _EditPhotoSheetState extends State<EditPhotoSheet> {
+  final _scheduleService = sl<ArtistScheduleService>();
   late final TextEditingController _titleCtrl;
   List<FestivalPreview> _festivals = [];
   FestivalPreview? _selectedFestival;
@@ -47,8 +48,7 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
 
   Future<void> _loadFestivals() async {
     try {
-      final festivals =
-          await sl<ArtistScheduleService>().fetchFestivals(widget.artistId);
+      final festivals = await _scheduleService.fetchFestivals(widget.artistId);
 
       // 현재 description 기준으로 초기 선택값 결정
       final desc = widget.photo.description;
@@ -161,7 +161,7 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
       onPressed: () {
         final newTitle = _titleCtrl.text.trim();
         if (newTitle.isEmpty) return;
-        final newDesc = _selectedFestival?.id == -1
+        final newDesc = _selectedFestival?.id == photoCategoryOther.id
             ? ''
             : (_selectedFestival?.title ?? '');
         Navigator.pop(context);

@@ -25,6 +25,7 @@ class ImgCollectionWidget extends StatefulWidget {
 
 class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
   late final ArtistPhotoNotifier _notifier;
+  final _reportService = sl<ReportService>();
 
   @override
   void initState() {
@@ -289,7 +290,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
           showReportSheet(
             context,
             titleKey: 'report_photo',
-            onSubmit: (reason, detail) => sl<ReportService>().submitPhotoReport(
+            onSubmit: (reason, detail) => _reportService.submitPhotoReport(
               widget.artistId,
               photo.photoId,
               reason,

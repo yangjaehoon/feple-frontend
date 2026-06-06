@@ -7,16 +7,20 @@ class HomeSectionHeader extends StatelessWidget {
     super.key,
     required this.title,
     this.onExpand,
+    this.trailing,
   });
 
   final String title;
   final VoidCallback? onExpand;
+  /// [onExpand]이 없을 때 헤더 우측에 표시할 임의 위젯 (설정 아이콘 등)
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final hasTrailing = onExpand != null || trailing != null;
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 16, onExpand != null ? 8 : 20, 8),
+      padding: EdgeInsets.fromLTRB(20, 16, hasTrailing ? 8 : 20, 8),
       child: Row(
         children: [
           Container(
@@ -47,6 +51,10 @@ class HomeSectionHeader extends StatelessWidget {
               constraints: const BoxConstraints(),
             ),
             const SizedBox(width: 4),
+          ] else if (trailing != null) ...[
+            const Spacer(),
+            trailing!,
+            const SizedBox(width: 12),
           ],
         ],
       ),

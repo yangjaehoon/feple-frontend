@@ -44,8 +44,8 @@ class HomeStateNotifier extends SafeChangeNotifier {
     hasError = false;
 
     final (artistOrd, festivalOrd) = await (
-      _loadArtistOrder(),
-      _loadFestivalOrder(),
+      _loadOrder(_artistOrderKey),
+      _loadOrder(_festivalOrderKey),
     ).wait;
     if (artistOrd != null) artistOrder = artistOrd;
     if (festivalOrd != null) festivalOrder = festivalOrd;
@@ -136,15 +136,15 @@ class HomeStateNotifier extends SafeChangeNotifier {
 
   List<FollowedArtist>? get orderedArtists {
     if (artists == null) return null;
-    return applyOrder(artists!, artistOrder, (x) => x.id);
+    return _applyOrder(artists!, artistOrder, (x) => x.id);
   }
 
   List<FestivalModel>? get orderedFestivals {
     if (festivals == null) return null;
-    return applyOrder(festivals!, festivalOrder, (x) => x.id);
+    return _applyOrder(festivals!, festivalOrder, (x) => x.id);
   }
 
-  List<T> applyOrder<T>(List<T> items, List<int> order, int Function(T) getId) {
+  List<T> _applyOrder<T>(List<T> items, List<int> order, int Function(T) getId) {
     if (order.isEmpty) return items;
     final map = {for (final item in items) getId(item): item};
     final ordered =
@@ -155,16 +155,9 @@ class HomeStateNotifier extends SafeChangeNotifier {
     return [...ordered, ...rest];
   }
 
-  Future<List<int>?> _loadArtistOrder() async {
+  Future<List<int>?> _loadOrder(String key) async {
     final prefs = await SharedPreferences.getInstance();
-    final saved = prefs.getStringList(_artistOrderKey);
-    return saved?.map(int.parse).toList();
-  }
-
-  Future<List<int>?> _loadFestivalOrder() async {
-    final prefs = await SharedPreferences.getInstance();
-    final saved = prefs.getStringList(_festivalOrderKey);
-    return saved?.map(int.parse).toList();
+    return prefs.getStringList(key)?.map(int.parse).toList();
   }
 
   Future<List<FollowedArtist>> _fetchArtists(int userId) =>

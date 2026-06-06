@@ -107,4 +107,7 @@ abstract class AbstractThemeColors {
 
   /// Sub/accent color
   Color get accentColor => AppColors.sunnyYellow;
+
+  /// Festival "ongoing" status badge background
+  Color get statusOngoingColor => const Color(0xFF43A047);
 }

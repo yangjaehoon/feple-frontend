@@ -14,16 +14,15 @@ class SearchService {
 
   Future<List<SearchSuggestion>> suggestions(String keyword) async {
     final response = await DioClient.dio
-        .get('/search', queryParameters: {'keyword': keyword});
-    final data = response.data as Map<String, dynamic>;
-    final artists = (data['artists'] as List? ?? [])
-        .map((artist) =>
-            SearchSuggestion(artist['name'] as String? ?? '', SearchType.artist))
-        .where((item) => item.label.isNotEmpty);
-    final festivals = (data['festivals'] as List? ?? [])
-        .map((festival) =>
-            SearchSuggestion(festival['title'] as String? ?? '', SearchType.festival))
-        .where((item) => item.label.isNotEmpty);
-    return [...artists, ...festivals];
+        .get('/search/suggestions', queryParameters: {'keyword': keyword});
+    final list = response.data as List? ?? [];
+    return list
+        .map((item) {
+          final label = item['label'] as String? ?? '';
+          final type = item['type'] as String? ?? '';
+          return SearchSuggestion(label, type == 'artist' ? SearchType.artist : SearchType.festival);
+        })
+        .where((item) => item.label.isNotEmpty)
+        .toList();
   }
 }

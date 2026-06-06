@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
-import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/certification_model.dart';
@@ -40,6 +40,14 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
     } catch (_) {
       if (mounted) setState(() { _certifications = []; _loading = false; _hasError = true; });
     }
+  }
+
+  // RefreshIndicator용 — 기존 목록 유지, 스켈레톤 전환 없음
+  Future<void> _refresh() async {
+    try {
+      final list = await _certService.getMyCertifications();
+      if (mounted) setState(() { _certifications = list; _hasError = false; });
+    } catch (_) {}
   }
 
   /// 에러·빈 상태를 RefreshIndicator가 감지할 수 있도록 스크롤 가능하게 감쌉니다.
@@ -115,52 +123,9 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
     if (result == true) _load();
   }
 
-  Widget _buildAppBar(AbstractThemeColors colors) {
-    return SafeArea(
-      bottom: false,
-      child: Container(
-        height: AppDimens.appBarHeight,
-        color: colors.backgroundMain,
-        child: Row(
-          children: [
-            IconButton(
-              icon: Icon(Icons.arrow_back_ios_rounded, color: colors.textTitle),
-              onPressed: () => Navigator.pop(context),
-            ),
-            Expanded(
-              child: Text(
-                'festival_certification'.tr(),
-                style: TextStyle(
-                  color: colors.textTitle,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            TextButton.icon(
-              onPressed: _openSubmitSheet,
-              icon: Icon(Icons.add_photo_alternate_rounded,
-                  color: colors.certRingColor, size: 20),
-              label: Text(
-                'cert_submit'.tr(),
-                style: TextStyle(
-                  color: colors.certRingColor,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 13,
-                ),
-              ),
-            ),
-            const SizedBox(width: 4),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildBody(AbstractThemeColors colors) {
     return RefreshIndicator(
-      onRefresh: _load,
+      onRefresh: _refresh,
       color: colors.activate,
       child: _loading
           ? _buildSkeleton(colors)
@@ -198,12 +163,20 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
 
     return Scaffold(
       backgroundColor: colors.backgroundMain,
-      body: Column(
-        children: [
-          _buildAppBar(colors),
-          Expanded(child: _buildBody(colors)),
+      appBar: SecondaryAppBar(
+        title: 'festival_certification'.tr(),
+        actions: [
+          TextButton.icon(
+            onPressed: _openSubmitSheet,
+            icon: Icon(Icons.add_photo_alternate_rounded, color: colors.certRingColor, size: 20),
+            label: Text(
+              'cert_submit'.tr(),
+              style: TextStyle(color: colors.certRingColor, fontWeight: FontWeight.w700, fontSize: 13),
+            ),
+          ),
         ],
       ),
+      body: _buildBody(colors),
     );
   }
 }

@@ -41,6 +41,16 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
     }
   }
 
+  // RefreshIndicator용 — 기존 데이터 유지, 스켈레톤 전환 없음
+  Future<void> _refresh() async {
+    try {
+      final list = await _certService.getMyCertifications();
+      if (mounted) setState(() { _certifications = list; _hasError = false; });
+    } catch (e) {
+      debugPrint('[Certification] 인증 목록 갱신 실패: $e');
+    }
+  }
+
   Future<void> _openDetail() async {
     await Navigator.push(
       context,

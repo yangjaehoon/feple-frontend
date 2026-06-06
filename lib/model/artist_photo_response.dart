@@ -20,6 +20,28 @@ class ArtistPhotoResponse {
     required this.isLiked,
   });
 
+  ArtistPhotoResponse copyWith({
+    int? photoId,
+    String? url,
+    int? uploaderUserId,
+    DateTime? createdAt,
+    String? title,
+    String? description,
+    int? likeCount,
+    bool? isLiked,
+  }) {
+    return ArtistPhotoResponse(
+      photoId: photoId ?? this.photoId,
+      url: url ?? this.url,
+      uploaderUserId: uploaderUserId ?? this.uploaderUserId,
+      createdAt: createdAt ?? this.createdAt,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      likeCount: likeCount ?? this.likeCount,
+      isLiked: isLiked ?? this.isLiked,
+    );
+  }
+
   factory ArtistPhotoResponse.fromJson(Map<String, dynamic> json) {
     return ArtistPhotoResponse(
       photoId: (json['photoId'] as num).toInt(),

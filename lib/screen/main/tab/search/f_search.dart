@@ -18,7 +18,9 @@ class _SearchFragmentState extends State<SearchFragment> {
   int _artistRefreshKey = 0;
 
   Future<void> _onRefresh() async {
-    context.read<FestivalPreviewProvider>().refresh();
+    try {
+      await context.read<FestivalPreviewProvider>().refresh();
+    } catch (_) {}
     setState(() => _artistRefreshKey++);
   }
 

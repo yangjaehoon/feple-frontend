@@ -85,6 +85,13 @@ class _MyPageListScreenState<T> extends State<MyPageListScreen<T>> {
     }
   }
 
+  Future<void> _refresh() async {
+    try {
+      final data = await widget.loader();
+      if (mounted) setState(() { _items = data; _hasError = false; });
+    } catch (_) {}
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -96,7 +103,7 @@ class _MyPageListScreenState<T> extends State<MyPageListScreen<T>> {
           Expanded(
             child: RefreshIndicator(
               color: colors.activate,
-              onRefresh: _load,
+              onRefresh: _refresh,
               child: _loading
                   ? widget.skeletonBuilder(colors)
                   : _hasError

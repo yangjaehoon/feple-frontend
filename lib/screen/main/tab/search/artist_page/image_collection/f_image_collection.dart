@@ -1,5 +1,5 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/screen/main/tab/search/artist_page/image_collection/w_image_upload.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
@@ -26,21 +26,15 @@ class _ImgCollectionState extends State<ImgCollection> {
     return Scaffold(
       backgroundColor: colors.backgroundMain,
       floatingActionButton: _buildFab(colors),
-      body: Column(
-        children: [
-          _buildAppBar(colors),
-          Expanded(
-            child: CustomScrollView(
-              slivers: [
-                SliverPadding(
-                  padding: const EdgeInsets.all(16),
-                  sliver: ImgCollectionWidget(
-                    key: _imgCollectionKey,
-                    artistName: widget.artistName,
-                    artistId: widget.artistId,
-                  ),
-                ),
-              ],
+      appBar: SecondaryAppBar(title: 'photo_collection_title'.tr()),
+      body: CustomScrollView(
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.all(16),
+            sliver: ImgCollectionWidget(
+              key: _imgCollectionKey,
+              artistName: widget.artistName,
+              artistId: widget.artistId,
             ),
           ),
         ],
@@ -69,29 +63,4 @@ class _ImgCollectionState extends State<ImgCollection> {
     );
   }
 
-  Widget _buildAppBar(AbstractThemeColors colors) {
-    return SafeArea(
-      bottom: false,
-      child: Container(
-        height: AppDimens.appBarHeight,
-        color: colors.appBarColor,
-        child: Row(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
-              onPressed: () => Navigator.pop(context),
-            ),
-            Text(
-              'photo_collection_title'.tr(),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

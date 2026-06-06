@@ -206,9 +206,9 @@ class _EnlargePostState extends State<EnlargePost> {
         PopupMenuItem(
           value: 'delete',
           child: Row(children: [
-            const Icon(Icons.delete_outline_rounded, size: 18, color: Colors.red),
+            const Icon(Icons.delete_outline_rounded, size: 18, color: AppColors.errorRed),
             const SizedBox(width: 8),
-            Text('delete_post'.tr(), style: const TextStyle(color: Colors.red)),
+            Text('delete_post'.tr(), style: const TextStyle(color: AppColors.errorRed)),
           ]),
         ),
         PopupMenuItem(
@@ -225,9 +225,9 @@ class _EnlargePostState extends State<EnlargePost> {
         PopupMenuItem(
           value: 'report',
           child: Row(children: [
-            const Icon(Icons.flag_outlined, size: 18, color: Colors.red),
+            const Icon(Icons.flag_outlined, size: 18, color: AppColors.errorRed),
             const SizedBox(width: 8),
-            Text('report_post'.tr(), style: const TextStyle(color: Colors.red)),
+            Text('report_post'.tr(), style: const TextStyle(color: AppColors.errorRed)),
           ]),
         ),
         PopupMenuItem(

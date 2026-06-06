@@ -80,10 +80,9 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
 
   Future<void> loadCertState() async {
     try {
-      final certs = await certService.getMyCertifications();
-      final mine = certs.where((c) => c.festivalId == festivalId).toList();
-      isCertified = mine.any((c) => c.status == CertStatus.approved);
-      isPending = !isCertified && mine.any((c) => c.status == CertStatus.pending);
+      final status = await certService.getCertState(festivalId);
+      isCertified = status == CertStatus.approved;
+      isPending = status == CertStatus.pending;
       safeNotify();
     } catch (e) {
       debugPrint('[FestivalPoster] 인증 상태 로드 실패: $e');

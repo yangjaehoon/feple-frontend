@@ -36,4 +36,15 @@ class CertificationService {
     final response = await DioClient.dio.get('/certifications/my/approved-festivals');
     return (response.data as List).cast<int>();
   }
+
+  /// 특정 페스티벌의 인증 상태 단건 조회 (NONE / PENDING / APPROVED / REJECTED)
+  Future<CertStatus?> getCertState(int festivalId) async {
+    final response = await DioClient.dio.get(
+      '/certifications/my/cert-state',
+      queryParameters: {'festivalId': festivalId},
+    );
+    final state = (response.data as Map<String, dynamic>)['certState'] as String?;
+    if (state == null || state == 'NONE') return null;
+    return CertStatus.fromValue(state);
+  }
 }

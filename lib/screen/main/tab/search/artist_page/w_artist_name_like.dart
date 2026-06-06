@@ -1,9 +1,11 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/artist_page/artist_follow_notifier.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_festival_calendar.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../../../common/app_events.dart';
 import 'image_collection/f_image_collection.dart';
 
@@ -12,12 +14,12 @@ class ArtistNameLike extends StatefulWidget {
     super.key,
     required this.artistName,
     required this.artistId,
-    this.initialFollowerCount,
+    required this.followNotifier,
   });
 
   final String artistName;
   final int artistId;
-  final int? initialFollowerCount;
+  final ArtistFollowNotifier followNotifier;
 
   @override
   State<ArtistNameLike> createState() => _ArtistNameLikeState();
@@ -25,16 +27,11 @@ class ArtistNameLike extends StatefulWidget {
 
 class _ArtistNameLikeState extends State<ArtistNameLike>
     with SingleTickerProviderStateMixin {
-  late final ArtistFollowNotifier _followNotifier;
   late AnimationController _heartController;
 
   @override
   void initState() {
     super.initState();
-    _followNotifier = ArtistFollowNotifier(
-      artistId: widget.artistId,
-      initialFollowerCount: widget.initialFollowerCount ?? 0,
-    )..init();
     _heartController = AnimationController(
       vsync: this,
       duration: AppDimens.animNormal,
@@ -45,19 +42,23 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
 
   @override
   void dispose() {
-    _followNotifier.dispose();
     _heartController.dispose();
     super.dispose();
   }
 
   Future<void> _toggleFollow() async {
+    final userId = context.read<UserProvider>().currentUserId;
+    if (userId == null) {
+      context.showInfoSnackbar('no_login_info'.tr());
+      return;
+    }
     _heartController.forward().whenComplete(_heartController.reverse);
     try {
-      await _followNotifier.toggle();
+      await widget.followNotifier.toggle();
       if (!mounted) return;
       AppEvents.artistFollowChanged.value++;
       context.showSuccessSnackbar(
-        _followNotifier.isFollowed ? 'follow_done'.tr() : 'follow_cancel'.tr(),
+        widget.followNotifier.isFollowed ? 'follow_done'.tr() : 'follow_cancel'.tr(),
       );
     } catch (_) {
       if (!mounted) return;
@@ -84,12 +85,12 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
     );
   }
 
-  Widget _buildInteractionRow(AbstractThemeColors colors) {
+  Widget _buildInteractionRow(AbstractThemeColors colors, String lang) {
     return Row(
       children: [
         _buildFollowButton(
-          isFollowed: _followNotifier.isFollowed,
-          isLoading: _followNotifier.isLoading,
+          isFollowed: widget.followNotifier.isFollowed,
+          isLoading: widget.followNotifier.isLoading,
           colors: colors,
         ),
         const SizedBox(width: 12),
@@ -108,8 +109,8 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
             child: FadeTransition(opacity: animation, child: child),
           ),
           child: Text(
-            _formatCount(_followNotifier.followCount),
-            key: ValueKey(_followNotifier.followCount),
+            _formatCount(widget.followNotifier.followCount, lang),
+            key: ValueKey(widget.followNotifier.followCount),
             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white70),
           ),
         ),
@@ -141,8 +142,9 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final lang = context.locale.languageCode;
     return ListenableBuilder(
-      listenable: _followNotifier,
+      listenable: widget.followNotifier,
       builder: (context, _) => Positioned(
         left: 0,
         right: 0,
@@ -165,7 +167,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
             children: [
               _buildNameRow(),
               const SizedBox(height: 10),
-              _buildInteractionRow(colors),
+              _buildInteractionRow(colors, lang),
             ],
           ),
         ),
@@ -179,9 +181,9 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
     required AbstractThemeColors colors,
   }) {
     return Opacity(
-      opacity: _followNotifier.initFailed ? 0.4 : 1.0,
+      opacity: widget.followNotifier.initFailed ? 0.4 : 1.0,
       child: GestureDetector(
-        onTap: (isLoading || _followNotifier.initFailed) ? null : _toggleFollow,
+        onTap: (isLoading || widget.followNotifier.initFailed) ? null : _toggleFollow,
         child: AnimatedContainer(
           duration: AppDimens.animNormal,
           curve: Curves.easeInOut,
@@ -261,12 +263,14 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
     );
   }
 
-  String _formatCount(int count) {
-    if (count >= 10000) {
-      return '${(count / 10000).toStringAsFixed(1)}만';
-    } else if (count >= 1000) {
-      return '${(count / 1000).toStringAsFixed(1)}천';
+  String _formatCount(int count, String lang) {
+    if (lang == 'en') {
+      if (count >= 1000000) return '${(count / 1000000).toStringAsFixed(1)}M';
+      if (count >= 1000) return '${(count / 1000).toStringAsFixed(1)}K';
+      return count.toString();
     }
+    if (count >= 10000) return '${(count / 10000).toStringAsFixed(1)}만';
+    if (count >= 1000) return '${(count / 1000).toStringAsFixed(1)}천';
     return count.toString();
   }
 }

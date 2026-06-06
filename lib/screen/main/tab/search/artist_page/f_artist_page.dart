@@ -1,10 +1,10 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
+import 'package:feple/screen/main/tab/search/artist_page/artist_follow_notifier.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_artist_board.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_schedule.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_songs.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_main_image_swiper.dart';
-import 'package:feple/screen/main/tab/search/artist_page/w_artist_board.dart';
-
 import 'package:flutter/material.dart';
 
 class ArtistPage extends StatefulWidget {
@@ -27,6 +27,22 @@ class ArtistPage extends StatefulWidget {
 
 class _ArtistPageState extends State<ArtistPage> {
   int _refreshKey = 0;
+  late final ArtistFollowNotifier _followNotifier;
+
+  @override
+  void initState() {
+    super.initState();
+    _followNotifier = ArtistFollowNotifier(
+      artistId: widget.artistId,
+      initialFollowerCount: widget.followerCount,
+    )..init();
+  }
+
+  @override
+  void dispose() {
+    _followNotifier.dispose();
+    super.dispose();
+  }
 
   Future<void> _onRefresh() async {
     setState(() => _refreshKey++);
@@ -64,7 +80,7 @@ class _ArtistPageState extends State<ArtistPage> {
             key: ValueKey('swiper_$_refreshKey'),
             artistName: widget.artistName,
             artistId: widget.artistId,
-            followerCount: widget.followerCount,
+            followNotifier: _followNotifier,
             profileImageUrl: widget.profileImageUrl,
           ),
           ArtistSchedule(

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/screen/main/tab/home/w_boards_section_skeleton.dart';
+import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
 import 'package:feple/model/favorite_board.dart';
 import 'package:feple/screen/main/tab/home/favorite_boards_prefs_manager.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_post_list.dart';
@@ -114,46 +115,18 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader(colors),
-        _buildBoardList(selectedBoards, colors),
-      ],
-    );
-  }
-
-  Widget _buildSectionHeader(AbstractThemeColors colors) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 8, 8),
-      child: Row(
-        children: [
-          Container(
-            width: 3,
-            height: 20,
-            decoration: BoxDecoration(
-              color: colors.sectionBarColor,
-              borderRadius: BorderRadius.circular(AppDimens.barRadius),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            'favorite_boards'.tr(),
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: colors.textTitle,
-            ),
-          ),
-          const Spacer(),
-          IconButton(
+        HomeSectionHeader(
+          title: 'favorite_boards'.tr(),
+          trailing: IconButton(
             tooltip: 'settings'.tr(),
-            icon: Icon(Icons.settings_rounded,
-                color: colors.textSecondary, size: 20),
+            icon: Icon(Icons.settings_rounded, color: colors.textSecondary, size: 20),
             onPressed: _openSettings,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
           ),
-          const SizedBox(width: 12),
-        ],
-      ),
+        ),
+        _buildBoardList(selectedBoards, colors),
+      ],
     );
   }
 

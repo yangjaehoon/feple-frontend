@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -6,6 +5,7 @@ import 'package:feple/common/constant/photo_category.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/service/artist_schedule_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/artist_photo_service.dart';
@@ -26,6 +26,7 @@ class ImgUpload extends StatefulWidget {
 class _ImgUploadState extends State<ImgUpload> {
   final _formKey = GlobalKey<FormState>();
   final _photoService = sl<ArtistPhotoService>();
+  final _scheduleService = sl<ArtistScheduleService>();
 
   Uint8List? imageData;
   final TextEditingController _titleCtrl = TextEditingController();
@@ -41,14 +42,19 @@ class _ImgUploadState extends State<ImgUpload> {
   }
 
   Future<List<FestivalPreview>> _fetchFestivals() =>
-      sl<ArtistScheduleService>().fetchFestivals(widget.artistId);
+      _scheduleService.fetchFestivals(widget.artistId);
 
   Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final image = await picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      imageData = await image.readAsBytes();
-      if (mounted) setState(() => _imageError = null);
+    try {
+      final picker = ImagePicker();
+      final image = await picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        imageData = await image.readAsBytes();
+        if (mounted) setState(() => _imageError = null);
+      }
+    } on PlatformException catch (e) {
+      debugPrint('image pick error: $e');
+      if (mounted) context.showErrorSnackbar('photo_pick_failed'.tr());
     }
   }
 

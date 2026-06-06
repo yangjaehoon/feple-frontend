@@ -291,7 +291,7 @@ class _EnlargePostState extends State<EnlargePost> {
         duplicateErrorKey: 'report_duplicate',
       );
     } else if (value == 'share') {
-      Share.share('${widget.title}\n\n${widget.content}');
+      Share.share('$_title\n\n$_content');
     }
   }
 

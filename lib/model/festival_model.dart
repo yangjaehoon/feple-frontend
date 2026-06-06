@@ -35,13 +35,13 @@ class FestivalModel {
 
   factory FestivalModel.fromJson(Map<String, dynamic> json) {
     return FestivalModel(
-      id: json['id'],
-      title: json['title'],
-      description: json['description'],
-      location: json['location'],
-      startDate: json['startDate'],
-      endDate: json['endDate'],
-      posterUrl: json['posterUrl'],
+      id: json['id'] as int,
+      title: json['title'] as String,
+      description: json['description'] as String? ?? '',
+      location: json['location'] as String? ?? '',
+      startDate: json['startDate'] as String? ?? '',
+      endDate: json['endDate'] as String? ?? '',
+      posterUrl: json['posterUrl'] as String? ?? '',
       latitude: (json['latitude'] as num?)?.toDouble(),
       longitude: (json['longitude'] as num?)?.toDouble(),
       genres: (json['genres'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],

@@ -144,7 +144,7 @@ class AuthService {
       case 'unknown':
         return 'auth_err_network_error'.tr();
       default:
-        return 'auth_err_auth_failed_with_code'.tr(args: [code]);
+        return 'auth_err_auth_failed'.tr();
     }
   }
 

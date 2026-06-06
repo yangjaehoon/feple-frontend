@@ -127,29 +127,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   List<Widget> _buildAccountSection(AbstractThemeColors colors) {
     return [
-      _SectionHeader(label: 'settings_account'.tr(), colors: colors),
+      _SectionHeader(label: 'settings_account'.tr()),
       _SettingsItem(
         icon: Icons.edit_rounded,
         label: 'edit_profile'.tr(),
-        colors: colors,
         onTap: () => Navigator.push(
           context,
           SlideRoute(builder: (_) => const EditProfileWidget()),
         ),
       ),
-      _ItemDivider(colors: colors),
+      const _ItemDivider(),
       _SettingsItem(
         icon: Icons.logout_rounded,
         label: 'logout'.tr(),
-        colors: colors,
         onTap: _logout,
         isDestructive: true,
       ),
-      _ItemDivider(colors: colors),
+      const _ItemDivider(),
       _SettingsItem(
         icon: Icons.person_remove_rounded,
         label: 'delete_account'.tr(),
-        colors: colors,
         onTap: _deleteAccount,
         isDestructive: true,
       ),
@@ -158,24 +155,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   List<Widget> _buildAppSection(AbstractThemeColors colors, bool isDark) {
     return [
-      _SectionHeader(label: 'settings_app'.tr(), colors: colors),
+      _SectionHeader(label: 'settings_app'.tr()),
       _SettingsItem(
         icon: isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
         label: 'dark_mode'.tr(),
-        colors: colors,
         trailing: Switch(
           value: isDark,
           onChanged: (_) => ThemeUtil.toggleTheme(context),
           activeThumbColor: colors.activate,
         ),
       ),
-      _ItemDivider(colors: colors),
-      _LanguageItem(colors: colors),
-      _ItemDivider(colors: colors),
+      const _ItemDivider(),
+      const _LanguageItem(),
+      const _ItemDivider(),
       _SettingsItem(
         icon: Icons.cleaning_services_rounded,
         label: 'clear_cache'.tr(),
-        colors: colors,
         trailing: _clearingCache
             ? SizedBox(
                 width: 20,
@@ -185,11 +180,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             : null,
         onTap: _clearingCache ? null : _clearCache,
       ),
-      _ItemDivider(colors: colors),
+      const _ItemDivider(),
       _SettingsItem(
         icon: Icons.notifications_rounded,
         label: 'notif_settings'.tr(),
-        colors: colors,
         onTap: () => Navigator.push(
           context,
           SlideRoute(builder: (_) => const NotificationSettingsScreen()),
@@ -200,48 +194,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   List<Widget> _buildSupportSection(AbstractThemeColors colors) {
     return [
-      _SectionHeader(label: 'settings_support'.tr(), colors: colors),
+      _SectionHeader(label: 'settings_support'.tr()),
       _SettingsItem(
         icon: Icons.headset_mic_rounded,
         label: 'customer_service'.tr(),
-        colors: colors,
         onTap: () async {
           final uri = Uri.parse('https://open.kakao.com/o/guLhbJki');
           await launchUrl(uri, mode: LaunchMode.externalApplication);
         },
       ),
-      _ItemDivider(colors: colors),
+      const _ItemDivider(),
       _SettingsItem(
         icon: Icons.privacy_tip_rounded,
         label: 'privacy_policy'.tr(),
-        colors: colors,
         onTap: () async {
           final uri = Uri.parse('https://yangjae.notion.site/feple-privacy?source=copy_link');
           await launchUrl(uri, mode: LaunchMode.externalApplication);
         },
       ),
-      _ItemDivider(colors: colors),
+      const _ItemDivider(),
       _SettingsItem(
         icon: Icons.code_rounded,
         label: 'opensource'.tr(),
-        colors: colors,
         onTap: () => Navigator.push(
           context,
           SlideRoute(builder: (_) => const OpensourceScreen()),
         ),
       ),
-      _ItemDivider(colors: colors),
-      _VersionItem(version: _appVersion, colors: colors),
+      const _ItemDivider(),
+      _VersionItem(version: _appVersion),
     ];
   }
 
   List<Widget> _buildDevSection(AbstractThemeColors colors) {
     return [
-      _SectionHeader(label: 'DEV', colors: colors),
+      const _SectionHeader(label: 'DEV'),
       _SettingsItem(
         icon: Icons.replay_rounded,
         label: 'onboarding_replay'.tr(),
-        colors: colors,
         onTap: _resetOnboarding,
       ),
     ];
@@ -250,12 +240,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
 class _SectionHeader extends StatelessWidget {
   final String label;
-  final AbstractThemeColors colors;
 
-  const _SectionHeader({required this.label, required this.colors});
+  const _SectionHeader({required this.label});
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
       child: Text(
@@ -272,16 +262,14 @@ class _SectionHeader extends StatelessWidget {
 }
 
 class _ItemDivider extends StatelessWidget {
-  final AbstractThemeColors colors;
-
-  const _ItemDivider({required this.colors});
+  const _ItemDivider();
 
   @override
   Widget build(BuildContext context) {
     return Divider(
       height: 1,
       indent: 50,
-      color: colors.listDivider,
+      color: context.appColors.listDivider,
     );
   }
 }
@@ -289,7 +277,6 @@ class _ItemDivider extends StatelessWidget {
 class _SettingsItem extends StatelessWidget {
   final IconData icon;
   final String label;
-  final AbstractThemeColors colors;
   final VoidCallback? onTap;
   final Widget? trailing;
   final bool isDestructive;
@@ -297,7 +284,6 @@ class _SettingsItem extends StatelessWidget {
   const _SettingsItem({
     required this.icon,
     required this.label,
-    required this.colors,
     this.onTap,
     this.trailing,
     this.isDestructive = false,
@@ -305,6 +291,7 @@ class _SettingsItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     final iconColor = isDestructive
         ? Theme.of(context).colorScheme.error
         : colors.activate;
@@ -344,12 +331,11 @@ class _SettingsItem extends StatelessWidget {
 }
 
 class _LanguageItem extends StatelessWidget {
-  final AbstractThemeColors colors;
-
-  const _LanguageItem({required this.colors});
+  const _LanguageItem();
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     final lang = currentLanguage;
     return Container(
       color: colors.surface,
@@ -368,44 +354,47 @@ class _LanguageItem extends StatelessWidget {
               ),
             ),
           ),
-          DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: lang.name.capitalizeFirst,
-              dropdownColor: colors.surface,
-              borderRadius: BorderRadius.circular(12),
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: colors.textTitle,
-              ),
-              items: Language.values.map((l) {
-                return DropdownMenuItem(
-                  value: l.name.capitalizeFirst,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(l.flagPath, width: 20),
-                      const SizedBox(width: 8),
-                      Text(
-                        l.name.capitalizeFirst!,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: colors.textTitle,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
-              onChanged: (value) async {
-                if (value == null) return;
-                await context
-                    .setLocale(Language.find(value.toLowerCase()).locale);
-              },
-            ),
-          ),
+          _buildLanguageDropdown(context, lang, colors),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLanguageDropdown(BuildContext context, Language lang, AbstractThemeColors colors) {
+    return DropdownButtonHideUnderline(
+      child: DropdownButton<String>(
+        value: lang.name.capitalizeFirst,
+        dropdownColor: colors.surface,
+        borderRadius: BorderRadius.circular(12),
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: colors.textTitle,
+        ),
+        items: Language.values.map((l) {
+          return DropdownMenuItem(
+            value: l.name.capitalizeFirst,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(l.flagPath, width: 20),
+                const SizedBox(width: 8),
+                Text(
+                  l.name.capitalizeFirst!,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: colors.textTitle,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+        onChanged: (value) async {
+          if (value == null) return;
+          await context.setLocale(Language.find(value.toLowerCase()).locale);
+        },
       ),
     );
   }
@@ -413,12 +402,12 @@ class _LanguageItem extends StatelessWidget {
 
 class _VersionItem extends StatelessWidget {
   final String version;
-  final AbstractThemeColors colors;
 
-  const _VersionItem({required this.version, required this.colors});
+  const _VersionItem({required this.version});
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return Container(
       color: colors.surface,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),

@@ -281,25 +281,21 @@ class _NotificationScreenState extends State<NotificationScreen> {
             label: 'filter_all'.tr(),
             selected: _filter == _NotifFilter.all,
             onTap: () => setState(() => _filter = _NotifFilter.all),
-            colors: colors,
           ),
           _FilterChip(
             label: 'notif_filter_cert'.tr(),
             selected: _filter == _NotifFilter.cert,
             onTap: () => setState(() => _filter = _NotifFilter.cert),
-            colors: colors,
           ),
           _FilterChip(
             label: 'notif_filter_comment'.tr(),
             selected: _filter == _NotifFilter.comment,
             onTap: () => setState(() => _filter = _NotifFilter.comment),
-            colors: colors,
           ),
           _FilterChip(
             label: 'notif_filter_festival'.tr(),
             selected: _filter == _NotifFilter.festival,
             onTap: () => setState(() => _filter = _NotifFilter.festival),
-            colors: colors,
           ),
         ],
       ),
@@ -321,17 +317,17 @@ class _NotificationScreenState extends State<NotificationScreen> {
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       itemCount: displayed.length + (_isLoadingMore ? 1 : 0),
-      separatorBuilder: (_, i) => i < displayed.length - 1 ? const SizedBox(height: 8) : const SizedBox.shrink(),
-      itemBuilder: (_, i) {
-        if (i == displayed.length) {
+      separatorBuilder: (_, index) => index < displayed.length - 1 ? const SizedBox(height: 8) : const SizedBox.shrink(),
+      itemBuilder: (_, index) {
+        if (index == displayed.length) {
           return const Padding(
             padding: EdgeInsets.symmetric(vertical: 16),
             child: Center(child: CircularProgressIndicator()),
           );
         }
-        final item = displayed[i];
+        final item = displayed[index];
         return AnimatedListItem(
-          index: i,
+          index: index,
           child: Dismissible(
             key: ValueKey(item.id),
             direction: DismissDirection.endToStart,
@@ -371,17 +367,16 @@ class _FilterChip extends StatelessWidget {
   final String label;
   final bool selected;
   final VoidCallback onTap;
-  final AbstractThemeColors colors;
 
   const _FilterChip({
     required this.label,
     required this.selected,
     required this.onTap,
-    required this.colors,
   });
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(

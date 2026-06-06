@@ -40,17 +40,10 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
       final index = _photos.indexWhere((photo) => photo.photoId == photoId);
       if (index != -1) {
         final photo = _photos[index];
-        _photos[index] = ArtistPhotoResponse(
-          photoId: photo.photoId,
-          url: photo.url,
-          uploaderUserId: photo.uploaderUserId,
-          createdAt: photo.createdAt,
-          title: photo.title,
-          description: photo.description,
+        _photos[index] = photo.copyWith(
           likeCount: photo.isLiked ? photo.likeCount - 1 : photo.likeCount + 1,
           isLiked: !photo.isLiked,
         );
-        _photos.sort((a, b) => b.likeCount.compareTo(a.likeCount));
         safeNotify();
       }
     } catch (e) {

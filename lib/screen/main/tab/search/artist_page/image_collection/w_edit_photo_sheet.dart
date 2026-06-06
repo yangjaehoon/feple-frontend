@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/photo_category.dart';
+import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/festival_preview.dart';
@@ -85,11 +86,13 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
     final colors = context.appColors;
     return Padding(
       padding: EdgeInsets.fromLTRB(
-          20, 20, 20, 20 + MediaQuery.of(context).viewInsets.bottom),
+          20, 12, 20, 20 + MediaQuery.of(context).viewInsets.bottom),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const Center(child: BottomSheetHandle()),
+          const SizedBox(height: 12),
           Text(
             'photo_edit_title'.tr(),
             style: TextStyle(

@@ -22,6 +22,7 @@ class CommunityBoardCard extends StatefulWidget {
   final String serviceBoardType;
   final String boardName;
   final bool showWriteButton;
+  final String? emptyHint;
 
   const CommunityBoardCard({
     super.key,
@@ -31,6 +32,7 @@ class CommunityBoardCard extends StatefulWidget {
     required this.serviceBoardType,
     required this.boardName,
     this.showWriteButton = true,
+    this.emptyHint,
   });
 
   @override
@@ -99,7 +101,7 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
       headerTitle: widget.title,
       headerColor: widget.headerColorFn(colors),
       height: responsiveSize.h(AppDimens.boardCardHeight),
-      emptyHint: 'be_first_to_discuss'.tr(args: [widget.title]),
+      emptyHint: widget.emptyHint ?? 'be_first_to_discuss'.tr(args: [widget.title]),
       maxItems: 5,
       onHeaderTap: () => Navigator.push(
         context,

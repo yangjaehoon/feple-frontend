@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 /// 서브 페이지용 공통 앱바.
 /// SafeArea + Container 방식으로 상태 표시줄 영역을 투명하게 유지합니다.
-class SecondaryAppBar extends StatelessWidget {
+class SecondaryAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
 
@@ -14,6 +14,9 @@ class SecondaryAppBar extends StatelessWidget {
     this.actions,
     double? elevation, // API 호환성 유지용, 미사용
   });
+
+  @override
+  Size get preferredSize => const Size.fromHeight(AppDimens.appBarHeight);
 
   @override
   Widget build(BuildContext context) {

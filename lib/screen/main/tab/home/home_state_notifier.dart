@@ -136,15 +136,16 @@ class HomeStateNotifier extends SafeChangeNotifier {
 
   List<FollowedArtist>? get orderedArtists {
     if (artists == null) return null;
-    return _applyOrder(artists!, artistOrder, (x) => x.id);
+    return applyOrder(artists!, artistOrder, (x) => x.id);
   }
 
   List<FestivalModel>? get orderedFestivals {
     if (festivals == null) return null;
-    return _applyOrder(festivals!, festivalOrder, (x) => x.id);
+    return applyOrder(festivals!, festivalOrder, (x) => x.id);
   }
 
-  List<T> _applyOrder<T>(List<T> items, List<int> order, int Function(T) getId) {
+  @visibleForTesting
+  List<T> applyOrder<T>(List<T> items, List<int> order, int Function(T) getId) {
     if (order.isEmpty) return items;
     final map = {for (final item in items) getId(item): item};
     final ordered =

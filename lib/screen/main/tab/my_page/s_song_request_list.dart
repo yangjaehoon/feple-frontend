@@ -1,7 +1,7 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/song_request_model.dart';
@@ -43,6 +43,15 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
     } catch (_) {
       if (mounted) setState(() { _loading = false; _hasError = true; });
     }
+  }
+
+  // RefreshIndicator용 — 기존 목록 유지, 스켈레톤 전환 없음
+  Future<void> _refresh() async {
+    if (_userId == null) return;
+    try {
+      final list = await _service.fetchAllMyRequests(_userId!);
+      if (mounted) setState(() { _requests = list; _hasError = false; });
+    } catch (_) {}
   }
 
   Widget _buildScrollable(Widget child) {
@@ -94,39 +103,9 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
     );
   }
 
-  Widget _buildAppBar(AbstractThemeColors colors) {
-    return SafeArea(
-      bottom: false,
-      child: Container(
-        height: AppDimens.appBarHeight,
-        color: colors.backgroundMain,
-        child: Row(
-          children: [
-            IconButton(
-              icon: Icon(Icons.arrow_back_ios_rounded, color: colors.textTitle),
-              onPressed: () => Navigator.pop(context),
-            ),
-            Expanded(
-              child: Text(
-                'song_request_history'.tr(),
-                style: TextStyle(
-                  color: colors.textTitle,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            const SizedBox(width: 16),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildBody(AbstractThemeColors colors) {
     return RefreshIndicator(
-      onRefresh: _load,
+      onRefresh: _refresh,
       color: colors.activate,
       child: _loading
           ? _buildSkeleton(colors)
@@ -152,7 +131,7 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
                       separatorBuilder: (_, __) =>
                           Divider(height: 1, color: colors.listDivider),
                       itemBuilder: (_, index) =>
-                          _SongRequestItem(req: _requests[index]),
+                          SongRequestItem(req: _requests[index]),
                     ),
     );
   }
@@ -162,20 +141,17 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
     final colors = context.appColors;
     return Scaffold(
       backgroundColor: colors.backgroundMain,
-      body: Column(
-        children: [
-          _buildAppBar(colors),
-          Expanded(child: _buildBody(colors)),
-        ],
-      ),
+      appBar: SecondaryAppBar(title: 'song_request_history'.tr()),
+      body: _buildBody(colors),
     );
   }
 }
 
-class _SongRequestItem extends StatelessWidget {
+class SongRequestItem extends StatelessWidget {
   final SongRequestModel req;
+  final double verticalPadding;
 
-  const _SongRequestItem({required this.req});
+  const SongRequestItem({required this.req, this.verticalPadding = 14, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -184,7 +160,7 @@ class _SongRequestItem extends StatelessWidget {
         ? colors.textSecondary
         : req.isApproved
             ? colors.activate
-            : Theme.of(context).colorScheme.error;
+            : AppColors.errorRed;
     final statusLabel = req.isPending
         ? 'song_status_pending'.tr()
         : req.isApproved
@@ -192,7 +168,7 @@ class _SongRequestItem extends StatelessWidget {
             : 'song_status_rejected'.tr();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 14),
+      padding: EdgeInsets.symmetric(vertical: verticalPadding),
       child: Row(
         children: [
           Icon(Icons.music_note_rounded, size: 20, color: colors.activate),

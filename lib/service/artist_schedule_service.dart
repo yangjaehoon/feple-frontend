@@ -11,17 +11,16 @@ class ArtistScheduleService {
   }
 
   Future<List<FestivalPreview>> fetchFestivals(int artistId) async {
-    final response = await DioClient.dio.get('/artists/$artistId/schedule');
-    final list = response.data as List<dynamic>;
-    return list.map((e) {
-      final scheduleJson = e as Map<String, dynamic>;
-      return FestivalPreview(
-        id: (scheduleJson['festivalId'] as num).toInt(),
-        title: (scheduleJson['title'] ?? '') as String,
-        location: (scheduleJson['location'] ?? '') as String,
-        posterUrl: (scheduleJson['posterUrl'] ?? '') as String,
-        startDate: scheduleJson['startDate']?.toString() ?? '',
-      );
-    }).toList();
+    final schedules = await fetchSchedule(artistId);
+    return schedules
+        .map((s) => FestivalPreview(
+              id: s.festivalId,
+              title: s.title,
+              location: s.location ?? '',
+              posterUrl: s.posterUrl ?? '',
+              startDate: s.startDate ?? '',
+              endDate: s.endDate,
+            ))
+        .toList();
   }
 }

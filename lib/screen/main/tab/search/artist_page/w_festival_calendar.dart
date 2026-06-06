@@ -23,6 +23,7 @@ class FestivalCalendar extends StatefulWidget {
 }
 
 class _FestivalCalendarState extends State<FestivalCalendar> {
+  final _scheduleService = sl<ArtistScheduleService>();
   List<ArtistScheduleModel> _schedules = [];
   bool _isLoading = true;
   bool _hasError = false;
@@ -39,8 +40,7 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
       _hasError = false;
     });
     try {
-      final data =
-          await sl<ArtistScheduleService>().fetchSchedule(widget.artistId);
+      final data = await _scheduleService.fetchSchedule(widget.artistId);
       if (!mounted) return;
       setState(() {
         _schedules = data;

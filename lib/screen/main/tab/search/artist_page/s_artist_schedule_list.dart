@@ -57,6 +57,8 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
       );
     } catch (e) {
       debugPrint('[ScheduleList] 페스티벌 이동 실패: $e');
+      if (!mounted) return;
+      context.showErrorSnackbar('err_fetch_data'.tr());
     }
   }
 
@@ -104,7 +106,7 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
 
   Widget _buildScheduleList(List<ArtistScheduleModel> schedules, AbstractThemeColors colors) {
     final upcoming = schedules.where((e) => !e.isPast).toList();
-    final past = schedules.where((e) => e.isPast).toList();
+    final past = schedules.where((e) => e.isPast).toList().reversed.toList();
 
     final rows = <_ScheduleRow>[];
     if (upcoming.isNotEmpty) {

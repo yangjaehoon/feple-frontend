@@ -127,8 +127,8 @@ class NotificationCard extends StatelessWidget {
       case NotificationType.certRejected:               return colors.textSecondary;
       case NotificationType.newComment:                 return colors.activate;
       case NotificationType.festivalReminder:           return AppColors.notificationReminder;
-      case NotificationType.songRequestApproved:        return Colors.green;
-      case NotificationType.songRequestRejected:        return Colors.redAccent;
+      case NotificationType.songRequestApproved:        return colors.certRingColor;
+      case NotificationType.songRequestRejected:        return AppColors.errorRed;
       case NotificationType.artistSuggestionProcessed: return colors.activate;
       case NotificationType.adminBroadcast:             return colors.accentColor;
       default:                                          return colors.certRingColor;

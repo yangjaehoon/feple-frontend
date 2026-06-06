@@ -135,7 +135,7 @@ class _SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           itemCount: preview.length,
           separatorBuilder: (_, __) => Divider(height: 1, color: colors.listDivider),
-          itemBuilder: (_, i) => _buildItem(preview[i], colors),
+          itemBuilder: (_, index) => _buildItem(preview[index], colors),
         ),
         if (items.length > _previewCount)
           Padding(

@@ -185,56 +185,60 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
           onTap: _pickImage,
           child: Stack(
             children: [
-              Container(
-                width: 110,
-                height: 110,
-                padding: const EdgeInsets.all(3),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: colors.profileRingColor,
-                  boxShadow: [
-                    BoxShadow(
-                      color: colors.cardShadow.withValues(alpha: 0.2),
-                      blurRadius: 20,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Container(
-                  padding: const EdgeInsets.all(3),
-                  decoration: BoxDecoration(shape: BoxShape.circle, color: colors.surface),
-                  child: CircleAvatar(
-                    radius: 48,
-                    backgroundColor: colors.backgroundMain,
-                    backgroundImage: _pickedImage != null
-                        ? FileImage(File(_pickedImage!.path)) as ImageProvider
-                        : (profileImageUrl != null && profileImageUrl.isNotEmpty)
-                            ? CachedNetworkImageProvider(profileImageUrl) as ImageProvider
-                            : const AssetImage('assets/image/feple_logo.png'),
-                    child: null,
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 4,
-                right: 4,
-                child: Container(
-                  width: 30,
-                  height: 30,
-                  decoration: BoxDecoration(
-                    color: colors.activate,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: colors.surface, width: 2),
-                  ),
-                  child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 15),
-                ),
-              ),
+              _buildAvatarRing(profileImageUrl, colors),
+              Positioned(bottom: 4, right: 4, child: _buildCameraOverlay(colors)),
             ],
           ),
         ),
         const SizedBox(height: 8),
         Text('change_photo'.tr(), style: TextStyle(fontSize: 13, color: colors.textSecondary)),
       ],
+    );
+  }
+
+  Widget _buildAvatarRing(String? profileImageUrl, AbstractThemeColors colors) {
+    return Container(
+      width: 110,
+      height: 110,
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: colors.profileRingColor,
+        boxShadow: [
+          BoxShadow(
+            color: colors.cardShadow.withValues(alpha: 0.2),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(3),
+        decoration: BoxDecoration(shape: BoxShape.circle, color: colors.surface),
+        child: CircleAvatar(
+          radius: 48,
+          backgroundColor: colors.backgroundMain,
+          backgroundImage: _pickedImage != null
+              ? FileImage(File(_pickedImage!.path)) as ImageProvider
+              : (profileImageUrl != null && profileImageUrl.isNotEmpty)
+                  ? CachedNetworkImageProvider(profileImageUrl) as ImageProvider
+                  : const AssetImage('assets/image/feple_logo.png'),
+          child: null,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCameraOverlay(AbstractThemeColors colors) {
+    return Container(
+      width: 30,
+      height: 30,
+      decoration: BoxDecoration(
+        color: colors.activate,
+        shape: BoxShape.circle,
+        border: Border.all(color: colors.surface, width: 2),
+      ),
+      child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 15),
     );
   }
 

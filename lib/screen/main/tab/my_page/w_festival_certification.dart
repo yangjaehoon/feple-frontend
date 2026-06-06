@@ -209,8 +209,6 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
   }
 
   Widget _buildCertItem(CertificationModel cert, AbstractThemeColors colors) {
-    final festivalTitle = cert.festivalTitle;
-    final imageUrl = cert.posterUrl;
     final isApproved = cert.status == CertStatus.approved;
     final ringColor = cert.status.displayColor(colors);
 
@@ -221,46 +219,13 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              padding: const EdgeInsets.all(3),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: ringColor.withValues(alpha: isApproved ? 0.6 : 0.3),
-                boxShadow: [
-                  BoxShadow(
-                    color: colors.cardShadow.withValues(alpha: 0.08),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Container(
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle, color: colors.surface),
-                child: CircleAvatar(
-                  radius: 44,
-                  backgroundColor: ringColor.withValues(alpha: 0.15),
-                  backgroundImage: imageUrl != null
-                      ? CachedNetworkImageProvider(imageUrl)
-                      : null,
-                  child: imageUrl == null
-                      ? Icon(Icons.photo, size: 26,
-                          color: colors.textTitle.withValues(alpha: 0.3))
-                      : null,
-                ),
-              ),
-            ),
+            _buildCertRing(cert.posterUrl, ringColor, isApproved, colors),
             const SizedBox(height: 4),
             SizedBox(
               width: 106,
               child: Text(
-                festivalTitle,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: colors.textTitle,
-                ),
+                cert.festivalTitle,
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textTitle),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
@@ -274,14 +239,39 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
               ),
               child: Text(
                 cert.status.labelKey.tr(),
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  color: ringColor,
-                ),
+                style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: ringColor),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCertRing(String? imageUrl, Color ringColor, bool isApproved, AbstractThemeColors colors) {
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: ringColor.withValues(alpha: isApproved ? 0.6 : 0.3),
+        boxShadow: [
+          BoxShadow(
+            color: colors.cardShadow.withValues(alpha: 0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(2),
+        decoration: BoxDecoration(shape: BoxShape.circle, color: colors.surface),
+        child: CircleAvatar(
+          radius: 44,
+          backgroundColor: ringColor.withValues(alpha: 0.15),
+          backgroundImage: imageUrl != null ? CachedNetworkImageProvider(imageUrl) : null,
+          child: imageUrl == null
+              ? Icon(Icons.photo, size: 26, color: colors.textTitle.withValues(alpha: 0.3))
+              : null,
         ),
       ),
     );

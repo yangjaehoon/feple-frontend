@@ -95,72 +95,66 @@ class _ChangeNicknameState extends State<ChangeNickname> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: colors.textTitle),
             ),
             const SizedBox(height: 24),
-            TextField(
-              controller: nicknameController,
-              textAlign: TextAlign.center,
-              onChanged: (_) {
-                if (_errorText != null) setState(() => _errorText = null);
-              },
-              style: TextStyle(fontSize: 18, color: colors.textTitle, fontWeight: FontWeight.w600),
-              decoration: InputDecoration(
-                hintText: 'nickname_hint'.tr(),
-                hintStyle: TextStyle(color: colors.textSecondary),
-                errorText: _errorText,
-                filled: true,
-                fillColor: colors.surface,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppDimens.shapeInput),
-                  borderSide: BorderSide(color: colors.divider),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppDimens.shapeInput),
-                  borderSide: BorderSide(color: colors.divider),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppDimens.shapeInput),
-                  borderSide: const BorderSide(color: AppColors.errorRed, width: 1.5),
-                ),
-                focusedErrorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppDimens.shapeInput),
-                  borderSide: const BorderSide(color: AppColors.errorRed, width: 2),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppDimens.shapeInput),
-                  borderSide: BorderSide(color: colors.focusedBorder, width: 2),
-                ),
-              ),
-            ),
+            _buildNicknameField(colors),
             const SizedBox(height: 24),
-            LoadingButton(
-              label: 'confirm'.tr(),
-              isLoading: _isSaving,
-              isSuccess: _isSuccess,
-              backgroundColor: colors.activate,
-              onPressed: () async {
-                if (nicknameController.text.trim().isEmpty) return;
-                setState(() => _isSaving = true);
-                try {
-                  if (user == null) return;
-                  await _updateNickname(userProvider, user.id);
-                  if (!mounted) return;
-                  setState(() { _isSaving = false; _isSuccess = true; });
-                  await Future.delayed(AppDimens.animSuccessDelay);
-                  if (!mounted) return;
-                  Navigator.pop(context);
-                } catch (e) {
-                  if (mounted) {
-                    setState(() {
-                      _isSaving = false;
-                      debugPrint('nickname change error: $e');
-                      _errorText = 'nickname_change_failed'.tr();
-                    });
-                  }
-                }
-              },
-            ),
+            _buildConfirmButton(colors, userProvider, user),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildNicknameField(AbstractThemeColors colors) {
+    final radius = BorderRadius.circular(AppDimens.shapeInput);
+    return TextField(
+      controller: nicknameController,
+      textAlign: TextAlign.center,
+      onChanged: (_) {
+        if (_errorText != null) setState(() => _errorText = null);
+      },
+      style: TextStyle(fontSize: 18, color: colors.textTitle, fontWeight: FontWeight.w600),
+      decoration: InputDecoration(
+        hintText: 'nickname_hint'.tr(),
+        hintStyle: TextStyle(color: colors.textSecondary),
+        errorText: _errorText,
+        filled: true,
+        fillColor: colors.surface,
+        border: OutlineInputBorder(borderRadius: radius, borderSide: BorderSide(color: colors.divider)),
+        enabledBorder: OutlineInputBorder(borderRadius: radius, borderSide: BorderSide(color: colors.divider)),
+        errorBorder: OutlineInputBorder(borderRadius: radius, borderSide: const BorderSide(color: AppColors.errorRed, width: 1.5)),
+        focusedErrorBorder: OutlineInputBorder(borderRadius: radius, borderSide: const BorderSide(color: AppColors.errorRed, width: 2)),
+        focusedBorder: OutlineInputBorder(borderRadius: radius, borderSide: BorderSide(color: colors.focusedBorder, width: 2)),
+      ),
+    );
+  }
+
+  Widget _buildConfirmButton(AbstractThemeColors colors, UserProvider userProvider, User? user) {
+    return LoadingButton(
+      label: 'confirm'.tr(),
+      isLoading: _isSaving,
+      isSuccess: _isSuccess,
+      backgroundColor: colors.activate,
+      onPressed: () async {
+        if (nicknameController.text.trim().isEmpty) return;
+        setState(() => _isSaving = true);
+        try {
+          if (user == null) return;
+          await _updateNickname(userProvider, user.id);
+          if (!mounted) return;
+          setState(() { _isSaving = false; _isSuccess = true; });
+          await Future.delayed(AppDimens.animSuccessDelay);
+          if (!mounted) return;
+          Navigator.pop(context);
+        } catch (e) {
+          if (mounted) {
+            setState(() {
+              _isSaving = false;
+              debugPrint('nickname change error: $e');
+              _errorText = 'nickname_change_failed'.tr();
+            });
+          }
+        }
+      },
     );
   }
 }

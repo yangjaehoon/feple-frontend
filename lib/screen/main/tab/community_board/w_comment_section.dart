@@ -47,9 +47,9 @@ class CommentSection extends StatelessWidget {
     if (rootComments.isEmpty) return _buildEmpty(colors);
 
     final items = <Widget>[];
-    for (int i = 0; i < rootComments.length; i++) {
-      final root = rootComments[i];
-      if (i > 0) items.add(Divider(color: colors.listDivider, height: 1));
+    for (int commentIndex = 0; commentIndex < rootComments.length; commentIndex++) {
+      final root = rootComments[commentIndex];
+      if (commentIndex > 0) items.add(Divider(color: colors.listDivider, height: 1));
       items.add(_CommentTile(
         comment: root,
         isOwn: currentUserId != null && root.userId == currentUserId,

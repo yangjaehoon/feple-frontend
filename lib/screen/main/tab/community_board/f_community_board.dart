@@ -22,6 +22,7 @@ class CommunityBoardFragment extends StatelessWidget {
             color: context.appColors.activate,
             onRefresh: () async {
               AppEvents.postChanged.value++;
+              await Future.delayed(AppDimens.animRefresh);
             },
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),

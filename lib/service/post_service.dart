@@ -50,7 +50,7 @@ class PostService {
         'title': title,
         'content': content,
         'anonymous': anonymous,
-        if (imageObjectKey != null) 'imageObjectKey': imageObjectKey,
+        if (imageObjectKey != null) 'imageUrl': imageObjectKey,
       });
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {

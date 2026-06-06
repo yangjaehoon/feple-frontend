@@ -28,6 +28,7 @@ class ArtistSongs extends StatefulWidget {
 }
 
 class _ArtistSongsState extends State<ArtistSongs> {
+  final _songService = sl<SongService>();
   late Future<List<SongModel>> _songsFuture;
 
   @override
@@ -37,7 +38,7 @@ class _ArtistSongsState extends State<ArtistSongs> {
   }
 
   Future<List<SongModel>> _fetchSongs() =>
-      sl<SongService>().fetchSongs(widget.artistId);
+      _songService.fetchSongs(widget.artistId);
 
   @override
   Widget build(BuildContext context) {

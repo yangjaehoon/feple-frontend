@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/screen/main/tab/home/f_all_favorite_boards.dart';
 import 'package:feple/screen/main/tab/home/w_boards_section_skeleton.dart';
 import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
 import 'package:feple/model/favorite_board.dart';
@@ -11,7 +12,6 @@ import 'package:feple/screen/main/tab/search/festival_information/s_festival_boa
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:feple/screen/main/tab/home/w_board_settings_sheet.dart';
 
 class FavoriteBoardsSection extends StatefulWidget {
   final List<FavoriteBoard> allBoards;
@@ -75,23 +75,18 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
     await _prefs.save(orderedSelected, allIds);
   }
 
-  void _openSettings() {
-    // 현재 표시 중인 ID 셋 (체크된 것들)
-    final selectedSet = _orderedSelectedIds.toSet();
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => BoardSettingsSheet(
-        allBoards: widget.allBoards,
-        initialOrderedIds: List.from(_orderedSelectedIds),
-        initialCheckedIds: selectedSet,
-        onSave: (newOrderedIds) {
-          setState(() => _orderedSelectedIds = newOrderedIds);
-          _savePrefs(newOrderedIds);
-        },
+  void _openAllBoards() {
+    Navigator.push(
+      context,
+      SlideRoute(
+        builder: (_) => AllFavoriteBoardsPage(
+          allBoards: widget.allBoards,
+          orderedSelectedIds: _orderedSelectedIds,
+          onSave: (newIds) {
+            setState(() => _orderedSelectedIds = newIds);
+            _savePrefs(newIds);
+          },
+        ),
       ),
     );
   }
@@ -115,13 +110,7 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
       children: [
         HomeSectionHeader(
           title: 'favorite_boards'.tr(),
-          trailing: IconButton(
-            tooltip: 'settings'.tr(),
-            icon: Icon(Icons.settings_rounded, color: colors.textSecondary, size: 20),
-            onPressed: _openSettings,
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
-          ),
+          onExpand: widget.allBoards.isNotEmpty ? _openAllBoards : null,
         ),
         _buildBoardList(selectedBoards, colors),
       ],

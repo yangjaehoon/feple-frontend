@@ -141,7 +141,11 @@ class HomeStateNotifier extends SafeChangeNotifier {
 
   List<FestivalModel>? get orderedFestivals {
     if (festivals == null) return null;
-    return applyOrder(festivals!, festivalOrder, (x) => x.id);
+    final ordered = applyOrder(festivals!, festivalOrder, (x) => x.id);
+    return [
+      ...ordered.where((f) => !f.isEnded),
+      ...ordered.where((f) => f.isEnded),
+    ];
   }
 
   @visibleForTesting

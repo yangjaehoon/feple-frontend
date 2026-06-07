@@ -46,17 +46,15 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
 
     final oldIds = oldWidget.allBoards.map((b) => b.boardId).toSet();
     final newIds = widget.allBoards.map((b) => b.boardId).toSet();
-    if (oldIds == newIds) return; // 변화 없으면 무시
+    // Dart Set은 == 연산자가 identity 비교 → 직접 집합 동등 비교
+    if (oldIds.length == newIds.length && oldIds.containsAll(newIds)) return;
 
-    final validIds = newIds;
     // 기존 선택 목록 중 유효한 것만 유지
-    final stillSelected =
-        _orderedSelectedIds.where(validIds.contains).toList();
-    // 새로 추가된 게시판은 끝에 자동 추가
-    final knownIds = _orderedSelectedIds.toSet();
+    final stillSelected = _orderedSelectedIds.where(newIds.contains).toList();
+    // oldIds에 없는 ID만 "진짜 신규" 게시판 — 이전에 비활성화된 게시판은 제외
     final addedIds = widget.allBoards
         .map((b) => b.boardId)
-        .where((id) => !knownIds.contains(id))
+        .where((id) => !oldIds.contains(id))
         .toList();
 
     setState(() => _orderedSelectedIds = [...stillSelected, ...addedIds]);

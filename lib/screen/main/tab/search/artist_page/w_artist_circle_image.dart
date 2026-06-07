@@ -19,7 +19,7 @@ class ArtistCircleImage extends StatelessWidget {
     return _buildFollowedImage(colors);
   }
 
-  Widget _buildAvatarContent(AbstractThemeColors colors) {
+  Widget _buildAvatarContent(AbstractThemeColors colors, double size) {
     final icon = Icon(
       Icons.person_rounded,
       color: colors.activate.withValues(alpha: 0.5),
@@ -29,8 +29,9 @@ class ArtistCircleImage extends StatelessWidget {
       return CachedNetworkImage(
         imageUrl: imageUrl!,
         fit: BoxFit.cover,
-        width: 52,
-        height: 52,
+        width: size,
+        height: size,
+        memCacheWidth: 110,
         errorWidget: (context, url, error) => icon,
       );
     }
@@ -39,8 +40,8 @@ class ArtistCircleImage extends StatelessWidget {
 
   Widget _buildPlainImage(AbstractThemeColors colors) {
     return Container(
-      width: 52,
-      height: 52,
+      width: 56,
+      height: 56,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: colors.activate.withValues(alpha: 0.08),
@@ -52,7 +53,7 @@ class ArtistCircleImage extends StatelessWidget {
           ),
         ],
       ),
-      child: ClipOval(child: _buildAvatarContent(colors)),
+      child: ClipOval(child: _buildAvatarContent(colors, 56)),
     );
   }
 
@@ -70,12 +71,12 @@ class ArtistCircleImage extends StatelessWidget {
       ),
       padding: const EdgeInsets.all(2.5),
       child: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.white,
+          color: colors.backgroundMain,
         ),
         padding: const EdgeInsets.all(1.5),
-        child: ClipOval(child: _buildAvatarContent(colors)),
+        child: ClipOval(child: _buildAvatarContent(colors, 48)),
       ),
     );
   }

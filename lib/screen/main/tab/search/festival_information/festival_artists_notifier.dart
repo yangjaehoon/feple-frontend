@@ -51,12 +51,12 @@ class FestivalArtistsNotifier extends SafeChangeNotifier {
 
   Future<void> fetch() async {
     try {
-      final fetched = await _festivalService.fetchFestivalArtists(festivalId);
-
-      Set<int> followed = {};
-      if (userId != null) {
-        followed = await _followService.getFollowingIds(userId!);
-      }
+      final (fetched, followed) = await (
+        _festivalService.fetchFestivalArtists(festivalId),
+        userId != null
+            ? _followService.getFollowingIds(userId!)
+            : Future<Set<int>>.value({}),
+      ).wait;
 
       fetched.sort((a, b) {
         final aRank = followed.contains(a.artistId) ? 0 : 1;

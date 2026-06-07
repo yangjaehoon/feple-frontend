@@ -29,7 +29,7 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   late final List<_BoardTab> _tabs;
-  late List<Future<List<Post>>> _futures;
+  late List<Future<List<Post>>?> _futures;
   late List<int> _tabRefreshKeys;
 
   @override
@@ -59,7 +59,8 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
     _tabController = TabController(length: _tabs.length, vsync: this);
     _tabController.addListener(_onTabChanged);
     _tabRefreshKeys = List.filled(_tabs.length, 0);
-    _loadAll();
+    _futures = List.filled(_tabs.length, null);
+    _futures[0] = _tabs[0].fetch();
   }
 
   @override
@@ -70,11 +71,11 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
   }
 
   void _onTabChanged() {
-    if (!_tabController.indexIsChanging) setState(() {});
-  }
-
-  void _loadAll() {
-    _futures = _tabs.map((t) => t.fetch()).toList();
+    if (!_tabController.indexIsChanging) {
+      setState(() {
+        _futures[_tabController.index] ??= _tabs[_tabController.index].fetch();
+      });
+    }
   }
 
   void _refreshTab(int index) {
@@ -95,20 +96,25 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
         ),
       ),
     );
+    if (!mounted) return;
     _refreshTab(index);
   }
 
   Widget _buildTabContent(int index, AbstractThemeColors colors) {
+    final future = _futures[index];
+    if (future == null) {
+      return const Center(child: CircularProgressIndicator.adaptive());
+    }
     final boardName = _tabs[index].name;
     return RefreshIndicator(
       color: colors.activate,
       onRefresh: () async {
         _refreshTab(index);
-        try { await _futures[index]; } catch (_) {}
+        try { await _futures[index]!; } catch (_) {}
       },
       child: AsyncContentBuilder<List<Post>>(
         key: ValueKey(_tabRefreshKeys[index]),
-        future: _futures[index],
+        future: future,
         onRetry: () => _refreshTab(index),
         emptyBuilder: (_) => ListView(
           children: [
@@ -134,6 +140,7 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
                     builder: (_) => EnlargePost.fromPost(boardName: boardName, post: post),
                   ),
                 );
+                if (!mounted) return;
                 _refreshTab(index);
               },
             );
@@ -169,7 +176,7 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
 
   Widget _buildFab(AbstractThemeColors colors, int tabIndex) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 80),
+      padding: const EdgeInsets.only(bottom: AppDimens.fabBottomPadding),
       child: FloatingActionButton.extended(
         backgroundColor: colors.activate,
         onPressed: () => _openWrite(tabIndex),

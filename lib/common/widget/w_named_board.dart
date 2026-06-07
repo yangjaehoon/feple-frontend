@@ -62,7 +62,7 @@ class _NamedBoardState extends State<NamedBoard> {
             builder: (_) => EnlargePost.fromPost(boardName: boardName, post: post),
           ),
         );
-        _refresh();
+        if (mounted) _refresh();
       },
       onRetry: _refresh,
       onWriteTap: widget.onWriteTap,

@@ -84,7 +84,7 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
     return color;
   }
 
-  void _upsert(UserEntry entry) {
+  Future<void> _upsert(UserEntry entry) async {
     setState(() {
       final key = _selectedDate ?? '';
       final list = List<UserEntry>.from(_userEntriesMap[key] ?? []);
@@ -96,16 +96,16 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
       }
       _userEntriesMap[key] = list;
     });
-    _saveEntries();
+    await _saveEntries();
   }
 
-  void _remove(String id) {
+  Future<void> _remove(String id) async {
     setState(() {
       final key = _selectedDate ?? '';
       _userEntriesMap[key] =
           (_userEntriesMap[key] ?? []).where((e) => e.id != id).toList();
     });
-    _saveEntries();
+    await _saveEntries();
   }
 
   Future<void> _openAdd({String? stage, String? startTime}) async {
@@ -122,7 +122,7 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
       context: context,
       builder: (_) => TimetableEntryDialog(stages: _range.stages, initial: blank, isEditing: false),
     );
-    if (result != null) _upsert(result);
+    if (result != null && mounted) await _upsert(result);
   }
 
   Future<void> _openEdit(UserEntry entry) async {
@@ -130,10 +130,11 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
       context: context,
       builder: (_) => TimetableEntryDialog(stages: _range.stages, initial: entry, isEditing: true),
     );
+    if (!mounted) return;
     if (result is UserEntry) {
-      _upsert(result);
+      await _upsert(result);
     } else if (result == 'delete') {
-      _remove(entry.id);
+      await _remove(entry.id);
     }
   }
 

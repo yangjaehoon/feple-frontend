@@ -110,4 +110,7 @@ abstract class AbstractThemeColors {
 
   /// Festival "ongoing" status badge background
   Color get statusOngoingColor => const Color(0xFF43A047);
+
+  /// Like button active color (heart icon)
+  Color get likeActiveColor => AppColors.kawaiiPink;
 }

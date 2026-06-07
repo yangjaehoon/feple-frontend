@@ -437,9 +437,13 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
-                  Text(
-                    widget.entry.artistName,
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: colors.textTitle),
+                  Flexible(
+                    child: Text(
+                      widget.entry.artistName,
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: colors.textTitle),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   const SizedBox(width: 6),
                   Text(
@@ -471,7 +475,7 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
       future: _songsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator.adaptive());
         }
         if (snapshot.hasError) {
           return Center(

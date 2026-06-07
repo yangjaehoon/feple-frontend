@@ -32,67 +32,79 @@ class BoothMarkerFactory {
     }
 
     try {
-      final res = await http.get(Uri.parse(booth.imageUrl!));
+      final res = await http
+          .get(Uri.parse(booth.imageUrl!))
+          .timeout(const Duration(seconds: 5));
       if (res.statusCode != 200) return BitmapDescriptor.defaultMarkerWithHue(hue);
       final bytes = res.bodyBytes;
 
       const w = 80.0, imgH = 60.0, tailH = 12.0;
       const totalH = imgH + tailH;
-      final color =
-          _boothColorValues[booth.boothType] ?? const Color(0xFF555555);
+      final color = _boothColorValues[booth.boothType] ?? const Color(0xFF555555);
 
-      final codec = await ui.instantiateImageCodec(
-        bytes,
-        targetWidth: w.toInt(),
-        targetHeight: imgH.toInt(),
-      );
-      final frame = await codec.getNextFrame();
-      final img = frame.image;
+      ui.Codec? codec;
+      ui.Image? img;
+      ui.Picture? picture;
+      ui.Image? markerImg;
+      try {
+        codec = await ui.instantiateImageCodec(
+          bytes,
+          targetWidth: w.toInt(),
+          targetHeight: imgH.toInt(),
+        );
+        final frame = await codec.getNextFrame();
+        img = frame.image;
 
-      final recorder = ui.PictureRecorder();
-      final canvas = Canvas(recorder);
-      final bgPaint = Paint()..color = color;
+        final recorder = ui.PictureRecorder();
+        final canvas = Canvas(recorder);
+        final bgPaint = Paint()..color = color;
 
-      final rrect = RRect.fromRectAndRadius(
-        Rect.fromLTWH(0, 0, w, imgH),
-        const Radius.circular(8),
-      );
-      canvas.drawRRect(rrect, bgPaint);
-      canvas.drawRRect(
-        rrect,
-        Paint()
-          ..color = Colors.white.withValues(alpha: 0.75)
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 2,
-      );
+        final rrect = RRect.fromRectAndRadius(
+          Rect.fromLTWH(0, 0, w, imgH),
+          const Radius.circular(8),
+        );
+        canvas.drawRRect(rrect, bgPaint);
+        canvas.drawRRect(
+          rrect,
+          Paint()
+            ..color = Colors.white.withValues(alpha: 0.75)
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 2,
+        );
 
-      canvas.save();
-      canvas.clipRRect(RRect.fromRectAndRadius(
-        Rect.fromLTWH(2, 2, w - 4, imgH - 4),
-        const Radius.circular(6),
-      ));
-      canvas.drawImageRect(
-        img,
-        Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble()),
-        Rect.fromLTWH(2, 2, w - 4, imgH - 4),
-        Paint(),
-      );
-      canvas.restore();
+        canvas.save();
+        canvas.clipRRect(RRect.fromRectAndRadius(
+          Rect.fromLTWH(2, 2, w - 4, imgH - 4),
+          const Radius.circular(6),
+        ));
+        canvas.drawImageRect(
+          img,
+          Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble()),
+          Rect.fromLTWH(2, 2, w - 4, imgH - 4),
+          Paint(),
+        );
+        canvas.restore();
 
-      canvas.drawPath(
-        Path()
-          ..moveTo(w / 2 - 8, imgH)
-          ..lineTo(w / 2 + 8, imgH)
-          ..lineTo(w / 2, totalH)
-          ..close(),
-        bgPaint,
-      );
+        canvas.drawPath(
+          Path()
+            ..moveTo(w / 2 - 8, imgH)
+            ..lineTo(w / 2 + 8, imgH)
+            ..lineTo(w / 2, totalH)
+            ..close(),
+          bgPaint,
+        );
 
-      final picture = recorder.endRecording();
-      final markerImg = await picture.toImage(w.toInt(), totalH.toInt());
-      final byteData =
-          await markerImg.toByteData(format: ui.ImageByteFormat.png);
-      return BitmapDescriptor.bytes(byteData!.buffer.asUint8List());
+        picture = recorder.endRecording();
+        markerImg = await picture.toImage(w.toInt(), totalH.toInt());
+        final byteData = await markerImg.toByteData(format: ui.ImageByteFormat.png);
+        if (byteData == null) return BitmapDescriptor.defaultMarkerWithHue(hue);
+        return BitmapDescriptor.bytes(byteData.buffer.asUint8List());
+      } finally {
+        codec?.dispose();
+        img?.dispose();
+        picture?.dispose();
+        markerImg?.dispose();
+      }
     } catch (_) {
       return BitmapDescriptor.defaultMarkerWithHue(hue);
     }

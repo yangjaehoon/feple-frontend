@@ -38,6 +38,8 @@
   "favorite_boards": "즐겨찾는 게시판",
   "select_boards_prompt": "표시할 게시판을 선택해주세요.",
   "select_boards": "게시판 선택",
+  "artist_boards_section": "아티스트 게시판",
+  "festival_boards_section": "페스티벌 게시판",
   "edit_profile": "프로필 수정",
   "change_photo": "사진 변경",
   "nickname": "닉네임",

@@ -38,6 +38,8 @@
   "favorite_boards": "Favorite Boards",
   "select_boards_prompt": "Please select boards to display.",
   "select_boards": "Select Boards",
+  "artist_boards_section": "Artist Boards",
+  "festival_boards_section": "Festival Boards",
   "edit_profile": "Edit Profile",
   "change_photo": "Change Photo",
   "nickname": "Nickname",

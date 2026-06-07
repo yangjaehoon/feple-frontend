@@ -222,16 +222,16 @@ class TimetableGrid extends StatelessWidget {
       final stageIndex = stages.indexOf(entry.stageName);
       if (stageIndex < 0) return const SizedBox.shrink();
       final rawTop = _toY(entry.startTime);
-      final cardH = _toY(entry.endTime) - rawTop;
+      final clampedH = (_toY(entry.endTime) - rawTop - 4).clamp(4.0, double.infinity);
       return Positioned(
         left: stageIndex * stageW + 3,
         top: _topPad + rawTop + 2,
         width: stageW - 6,
-        height: cardH - 4,
+        height: clampedH,
         child: _PerformanceCard(
           entry: entry,
           color: _colorFor(entry.stageName),
-          cardHeight: cardH - 4,
+          cardHeight: clampedH,
           isFollowed: followedNames.contains(entry.artistName),
         ),
       );

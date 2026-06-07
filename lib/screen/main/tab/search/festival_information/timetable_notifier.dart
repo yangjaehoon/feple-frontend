@@ -57,16 +57,10 @@ class TimetableNotifier extends SafeChangeNotifier {
 
   Future<void> fetch() async {
     try {
-      final list = await _festivalService.fetchTimetable(festivalId);
-
-      Set<String> followed = {};
-      try {
-        if (userId != null) {
-          followed = await _followService.fetchFollowedArtistNames(userId!);
-        }
-      } catch (e) {
-        debugPrint('[Timetable] fetchFollowedArtists failed: $e');
-      }
+      final (list, followed) = await (
+        _festivalService.fetchTimetable(festivalId),
+        _safeFollowedNames(),
+      ).wait;
 
       entries = list;
       followedNames = followed;
@@ -78,6 +72,16 @@ class TimetableNotifier extends SafeChangeNotifier {
       error = 'err_fetch_data'.tr();
       isLoading = false;
       safeNotify();
+    }
+  }
+
+  Future<Set<String>> _safeFollowedNames() async {
+    if (userId == null) return {};
+    try {
+      return await _followService.fetchFollowedArtistNames(userId!);
+    } catch (e) {
+      debugPrint('[Timetable] fetchFollowedArtists failed: $e');
+      return {};
     }
   }
 

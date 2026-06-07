@@ -39,8 +39,28 @@ class UserProvider with ChangeNotifier {
     final jsonString = await _storage.read(key: _kUserJson);
     if (jsonString != null) {
       final data = jsonDecode(jsonString);
-      _user = User.fromJson(data);
+      final cached = User.fromJson(data);
+      // JWT sub와 캐시 userId 불일치 → 다른 계정의 캐시 데이터 폐기
+      final jwtUserId = _parseJwtSub(token);
+      if (jwtUserId != null && jwtUserId != cached.id) {
+        await _storage.delete(key: _kUserJson);
+        return;
+      }
+      _user = cached;
       notifyListeners();
+    }
+  }
+
+  static int? _parseJwtSub(String token) {
+    try {
+      final parts = token.split('.');
+      if (parts.length != 3) return null;
+      final payload = base64Url.normalize(parts[1]);
+      final decoded = jsonDecode(utf8.decode(base64Url.decode(payload)));
+      final sub = (decoded as Map<String, dynamic>)['sub'];
+      return sub is String ? int.tryParse(sub) : (sub is int ? sub : null);
+    } catch (_) {
+      return null;
     }
   }
 

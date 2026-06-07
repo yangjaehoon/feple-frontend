@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_date_tab_bar.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
@@ -29,6 +30,7 @@ class FestivalArtistListScreen extends StatelessWidget {
               listenable: notifier,
               builder: (context, _) {
                 if (notifier.isLoading) return _buildSkeleton();
+                if (notifier.hasError) return ErrorState(message: 'err_fetch_data'.tr(), onRetry: notifier.retry);
                 if (notifier.artists.isEmpty) {
                   return Center(
                     child: Text(
@@ -161,8 +163,6 @@ class FestivalArtistListScreen extends StatelessWidget {
   Widget _buildSkeleton() {
     return GridView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
       itemCount: 9,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,

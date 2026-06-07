@@ -39,6 +39,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   final ValueNotifier<double> _pageOffset = ValueNotifier(0.0);
   Timer? _timer;
   bool _isUserScrolling = false;
+  bool _isAutoScrolling = false;
 
   @override
   void initState() {
@@ -59,7 +60,9 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
     final page = _pageController.page;
     if (page == null) return;
     _pageOffset.value = page;
-    _isUserScrolling = (page - page.roundToDouble()).abs() > 0.01;
+    if (!_isAutoScrolling) {
+      _isUserScrolling = (page - page.roundToDouble()).abs() > 0.01;
+    }
   }
 
   void _startTimer() {
@@ -68,11 +71,14 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
       _timer = Timer.periodic(const Duration(seconds: 3), (_) {
         if (!mounted || !_pageController.hasClients || _photosNotifier.photoUrls.isEmpty || _isUserScrolling) return;
         final nextPage = (_currentPage + 1) % _photosNotifier.photoUrls.length;
+        _isAutoScrolling = true;
         _pageController.animateToPage(
           nextPage,
           duration: AppDimens.animSlow,
           curve: Curves.easeIn,
-        );
+        ).whenComplete(() {
+          if (mounted) _isAutoScrolling = false;
+        });
       });
     });
   }

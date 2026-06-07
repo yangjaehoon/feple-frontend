@@ -52,7 +52,9 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
       context.showInfoSnackbar('no_login_info'.tr());
       return;
     }
-    _heartController.forward().whenComplete(_heartController.reverse);
+    _heartController.forward().whenComplete(() {
+      if (mounted) _heartController.reverse();
+    });
     try {
       await widget.followNotifier.toggle();
       if (!mounted) return;
@@ -67,21 +69,17 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
   }
 
   Widget _buildNameRow() {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            widget.artistName,
-            style: const TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-              letterSpacing: -0.5,
-              shadows: [Shadow(offset: Offset(0, 1), blurRadius: 6, color: Colors.black26)],
-            ),
-          ),
-        ),
-      ],
+    return Text(
+      widget.artistName,
+      style: const TextStyle(
+        fontSize: 30,
+        fontWeight: FontWeight.w800,
+        color: Colors.white,
+        letterSpacing: -0.5,
+        shadows: [Shadow(offset: Offset(0, 1), blurRadius: 6, color: Colors.black26)],
+      ),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
     );
   }
 
@@ -96,7 +94,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
         const SizedBox(width: 12),
         ScaleTransition(
           scale: _heartController,
-          child: const Icon(Icons.favorite_rounded, color: AppColors.kawaiiPink, size: 18),
+          child: Icon(Icons.favorite_rounded, color: colors.likeActiveColor, size: 18),
         ),
         const SizedBox(width: 4),
         AnimatedSwitcher(

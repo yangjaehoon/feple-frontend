@@ -291,6 +291,7 @@
   "photo_upload_failed": "An error occurred while uploading.",
   "photo_upload_failed_detail": "Failed to upload photo.",
   "photo_pick_failed": "Could not access the gallery. Please check your permissions.",
+  "map_open_failed": "Could not open the map.",
   "photo_upload_title": "Upload Photo",
   "artist_photo_add_label": "Add Artist Photo",
   "photo_artwork_label": "Artwork Title",

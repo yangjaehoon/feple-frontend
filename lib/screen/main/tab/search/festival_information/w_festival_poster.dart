@@ -56,19 +56,22 @@ class _FestivalPosterState extends State<FestivalPoster> {
     final lat = widget.poster.latitude;
     final lng = widget.poster.longitude;
     final name = Uri.encodeComponent(widget.poster.location);
-
-    if (lat != null && lng != null) {
-      final appUri = Uri.parse('kakaomap://look?p=$lat,$lng');
-      final webUri =
-          Uri.parse('https://map.kakao.com/link/map/$name,$lat,$lng');
-      if (await canLaunchUrl(appUri)) {
-        await launchUrl(appUri);
+    try {
+      if (lat != null && lng != null) {
+        final appUri = Uri.parse('kakaomap://look?p=$lat,$lng');
+        final webUri = Uri.parse('https://map.kakao.com/link/map/$name,$lat,$lng');
+        if (await canLaunchUrl(appUri)) {
+          await launchUrl(appUri);
+        } else {
+          await launchUrl(webUri, mode: LaunchMode.externalApplication);
+        }
       } else {
+        final webUri = Uri.parse('https://map.kakao.com/link/search/$name');
         await launchUrl(webUri, mode: LaunchMode.externalApplication);
       }
-    } else {
-      final webUri = Uri.parse('https://map.kakao.com/link/search/$name');
-      await launchUrl(webUri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      debugPrint('map launch error: $e');
+      if (mounted) context.showErrorSnackbar('map_open_failed'.tr());
     }
   }
 
@@ -201,7 +204,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
                 child: CachedNetworkImage(
                   imageUrl: widget.poster.posterUrl,
                   memCacheWidth: 300,
-                  fit: BoxFit.fill,
+                  fit: BoxFit.cover,
                   placeholder: (context, url) => const SkeletonBox(height: double.infinity),
                   errorWidget: (context, url, error) => const Icon(Icons.broken_image),
                 ),
@@ -377,9 +380,9 @@ class _FestivalPosterState extends State<FestivalPoster> {
         FestivalActionButton(
           onTap: () => _withHaptic(_notifier.toggleLike),
           icon: _notifier.liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-          color: _notifier.liked ? AppColors.kawaiiPink : Colors.white,
+          color: _notifier.liked ? colors.likeActiveColor : Colors.white,
           bgColor: _notifier.liked
-              ? AppColors.kawaiiPink.withValues(alpha: 0.35)
+              ? colors.likeActiveColor.withValues(alpha: 0.35)
               : Colors.white.withValues(alpha: 0.15),
           label: 'action_like'.tr(),
         ),

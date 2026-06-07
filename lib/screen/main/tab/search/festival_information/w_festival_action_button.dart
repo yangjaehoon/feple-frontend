@@ -25,7 +25,7 @@ class FestivalActionButton extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.all(6),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: bgColor ?? Colors.white.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:feple/common/app_events.dart';
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/model/cert_state.dart';
@@ -109,7 +111,7 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
     final prevAttending = attending;
     final prevCount = attendingCount;
     attending = !attending;
-    attendingCount = attending ? attendingCount + 1 : (attendingCount - 1).clamp(0, 999999);
+    attendingCount = attending ? attendingCount + 1 : max(0, attendingCount - 1);
     safeNotify();
     try {
       await festivalService.toggleAttending(festivalId);

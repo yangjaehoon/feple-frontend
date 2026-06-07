@@ -87,7 +87,7 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
 
   Widget _buildBody(AsyncSnapshot<List<ArtistScheduleModel>> snapshot, AbstractThemeColors colors) {
     if (snapshot.connectionState == ConnectionState.waiting) {
-      return Center(child: CircularProgressIndicator(color: colors.loadingIndicator));
+      return const Center(child: CircularProgressIndicator.adaptive());
     }
     if (snapshot.hasError) {
       return ErrorState(message: 'err_fetch_data'.tr(), onRetry: _refresh);
@@ -125,7 +125,8 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
       itemBuilder: (_, index) {
         final row = rows[index];
         if (row.isHeader) return _buildSectionHeader(row.label!, colors);
-        return _buildItem(row.item!, row.isPast, colors);
+        final showDivider = index < rows.length - 1 && !rows[index + 1].isHeader;
+        return _buildItem(row.item!, row.isPast, showDivider, colors);
       },
     );
   }
@@ -152,7 +153,7 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
     );
   }
 
-  Widget _buildItem(ArtistScheduleModel item, bool isPast, AbstractThemeColors colors) {
+  Widget _buildItem(ArtistScheduleModel item, bool isPast, bool showDivider, AbstractThemeColors colors) {
     return Column(
       children: [
         ScheduleListTile(
@@ -160,13 +161,14 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
           isPast: isPast,
           onTap: () => _navigateToFestival(item.festivalId),
         ),
-        Divider(
-          height: 1,
-          thickness: 1,
-          color: colors.listDivider,
-          indent: AppDimens.paddingHorizontal,
-          endIndent: AppDimens.paddingHorizontal,
-        ),
+        if (showDivider)
+          Divider(
+            height: 1,
+            thickness: 1,
+            color: colors.listDivider,
+            indent: AppDimens.paddingHorizontal,
+            endIndent: AppDimens.paddingHorizontal,
+          ),
       ],
     );
   }

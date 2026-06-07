@@ -30,7 +30,7 @@ class ScheduleListTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildPoster(),
+            _buildPoster(colors),
             const SizedBox(width: 12),
             Expanded(child: _buildContent(colors)),
           ],
@@ -40,8 +40,8 @@ class ScheduleListTile extends StatelessWidget {
     return isPast ? Opacity(opacity: 0.55, child: row) : row;
   }
 
-  Widget _buildPoster() {
-    final typeConfig = getEventTypeConfig(item.eventType);
+  Widget _buildPoster(AbstractThemeColors colors) {
+    final typeConfig = getEventTypeConfig(item.eventType, colors);
     final hasPoster = item.posterUrl != null && item.posterUrl!.isNotEmpty;
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
@@ -50,6 +50,7 @@ class ScheduleListTile extends StatelessWidget {
               imageUrl: item.posterUrl!,
               width: 42,
               height: 42,
+              memCacheWidth: 84,
               fit: BoxFit.cover,
               errorWidget: (_, __, ___) => EventTypeIcon(config: typeConfig),
             )
@@ -113,7 +114,7 @@ class ScheduleListTile extends StatelessWidget {
                 radius: 13,
                 backgroundColor: colors.backgroundMain,
                 backgroundImage: (coArtist.profileImageUrl != null && coArtist.profileImageUrl!.isNotEmpty)
-                    ? CachedNetworkImageProvider(coArtist.profileImageUrl!)
+                    ? CachedNetworkImageProvider(coArtist.profileImageUrl!, maxWidth: 52)
                     : null,
                 child: (coArtist.profileImageUrl == null || coArtist.profileImageUrl!.isEmpty)
                     ? Icon(Icons.person_rounded, size: 12, color: colors.textSecondary)

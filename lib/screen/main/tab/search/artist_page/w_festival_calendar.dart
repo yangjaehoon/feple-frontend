@@ -72,9 +72,7 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
 
   Widget _buildBody(AbstractThemeColors colors) {
     if (_isLoading) {
-      return Center(
-        child: CircularProgressIndicator(color: colors.loadingIndicator),
-      );
+      return const Center(child: CircularProgressIndicator.adaptive());
     }
     if (_hasError) {
       return Center(
@@ -83,7 +81,7 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
     }
     return SfCalendar(
       view: CalendarView.month,
-      dataSource: _ScheduleDataSource(_buildAppointments()),
+      dataSource: _ScheduleDataSource(_buildAppointments(colors)),
       monthViewSettings: const MonthViewSettings(
         appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
       ),
@@ -103,7 +101,7 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
     );
   }
 
-  List<Appointment> _buildAppointments() {
+  List<Appointment> _buildAppointments(AbstractThemeColors colors) {
     final result = <Appointment>[];
     for (final s in _schedules) {
       if (s.startDate == null) continue;
@@ -112,7 +110,7 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
       final end = s.endDate != null
           ? (DateTime.tryParse(s.endDate!) ?? start).add(const Duration(days: 1))
           : start.add(const Duration(days: 1));
-      final config = getEventTypeConfig(s.eventType);
+      final config = getEventTypeConfig(s.eventType, colors);
       result.add(Appointment(
         startTime: start,
         endTime: end,

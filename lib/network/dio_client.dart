@@ -147,7 +147,11 @@ class DioClient {
           if (newToken == null) return handler.next(error);
           final opts = error.requestOptions;
           opts.headers['Authorization'] = 'Bearer $newToken';
-          return handler.resolve(await _plainDio.fetch(opts));
+          try {
+            return handler.resolve(await _plainDio.fetch(opts));
+          } on DioException catch (retryErr) {
+            return handler.next(retryErr);
+          }
         }
 
         _isRefreshing = true;
@@ -172,7 +176,11 @@ class DioClient {
         }
         final opts = error.requestOptions;
         opts.headers['Authorization'] = 'Bearer $newToken';
-        return handler.resolve(await _plainDio.fetch(opts));
+        try {
+          return handler.resolve(await _plainDio.fetch(opts));
+        } on DioException catch (retryErr) {
+          return handler.next(retryErr);
+        }
       },
     ),
   )..interceptors.add(

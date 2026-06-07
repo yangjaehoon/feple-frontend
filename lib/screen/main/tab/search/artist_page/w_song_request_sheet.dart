@@ -65,14 +65,10 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
     } catch (e) {
       if (!mounted) return;
       debugPrint('song request submit error: $e');
-      final networkKey = networkAwareErrorKey(e, '');
-      if (networkKey == 'connection_error') {
-        context.showErrorSnackbar('connection_error'.tr());
-      } else {
-        context.showErrorSnackbar(
-          isDioConflict(e) ? 'song_request_duplicate'.tr() : 'song_request_failed'.tr(),
-        );
-      }
+      context.showErrorSnackbar(networkAwareErrorKey(
+        e,
+        isDioConflict(e) ? 'song_request_duplicate' : 'song_request_failed',
+      ).tr());
       if (mounted) setState(() => _submitting = false);
     }
   }

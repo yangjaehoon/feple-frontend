@@ -62,6 +62,7 @@ class SongListTile extends StatelessWidget {
         imageUrl: url,
         width: 52,
         height: 52,
+        memCacheWidth: 104,
         fit: BoxFit.cover,
         errorWidget: (_, __, ___) => _placeholder(colors),
       ),

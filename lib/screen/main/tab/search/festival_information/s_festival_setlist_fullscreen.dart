@@ -271,6 +271,7 @@ class _ArtistFullTile extends StatelessWidget {
           imageUrl: entry.profileImageUrl!,
           width: size,
           height: size,
+          memCacheWidth: 80,
           fit: BoxFit.cover,
           errorWidget: (_, __, ___) => _avatarPlaceholder(size, colors),
         ),
@@ -329,6 +330,7 @@ class _ArtistFullTile extends StatelessWidget {
                   imageUrl: song.thumbnailUrl!,
                   width: 38,
                   height: 38,
+                  memCacheWidth: 76,
                   fit: BoxFit.cover,
                   errorWidget: (_, __, ___) => _thumbPlaceholder(colors),
                 ),
@@ -471,12 +473,17 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (snapshot.hasError || snapshot.data == null || snapshot.data!.isEmpty) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('err_fetch_data'.tr(), style: TextStyle(color: colors.textSecondary)),
+          );
+        }
+        final songs = snapshot.data ?? [];
+        if (songs.isEmpty) {
           return Center(
             child: Text('no_setlist'.tr(), style: TextStyle(color: colors.textSecondary)),
           );
         }
-        final songs = snapshot.data!;
         return ListView.separated(
           controller: controller,
           itemCount: songs.length,
@@ -506,6 +513,7 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
                         imageUrl: song.thumbnailUrl!,
                         width: 40,
                         height: 40,
+                        memCacheWidth: 80,
                         fit: BoxFit.cover,
                         errorWidget: (_, __, ___) => _thumbPlaceholder(colors),
                       ),

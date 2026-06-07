@@ -104,23 +104,76 @@ class _AllFavoriteBoardsPageState extends State<AllFavoriteBoardsPage> {
                 title: 'select_boards_prompt'.tr(),
               ),
             )
-          : _buildGrid(selectedBoards, colors),
+          : _buildContent(selectedBoards, colors),
     );
   }
 
-  Widget _buildGrid(List<FavoriteBoard> boards, AbstractThemeColors colors) {
-    return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-      itemCount: boards.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
-        childAspectRatio: 1.0,
+  Widget _buildContent(List<FavoriteBoard> boards, AbstractThemeColors colors) {
+    final artistBoards =
+        boards.where((b) => b.type == FavoriteBoardType.artist).toList();
+    final festivalBoards =
+        boards.where((b) => b.type == FavoriteBoardType.festival).toList();
+
+    return CustomScrollView(
+      slivers: [
+        if (artistBoards.isNotEmpty) ...[
+          SliverToBoxAdapter(
+            child: _buildSectionHeader(
+                'artist_boards_section'.tr(), colors, isFirst: true),
+          ),
+          _buildSliverGrid(artistBoards),
+        ],
+        if (festivalBoards.isNotEmpty) ...[
+          SliverToBoxAdapter(
+            child: _buildSectionHeader(
+                'festival_boards_section'.tr(), colors, isFirst: artistBoards.isEmpty),
+          ),
+          _buildSliverGrid(festivalBoards),
+        ],
+        const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
+      ],
+    );
+  }
+
+  Widget _buildSectionHeader(
+      String title, AbstractThemeColors colors, {required bool isFirst}) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(16, isFirst ? 16 : 24, 16, 8),
+      child: Row(
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: colors.textSecondary,
+              letterSpacing: 0.3,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(child: Divider(thickness: 1, color: colors.listDivider)),
+        ],
       ),
-      itemBuilder: (_, index) => _GridBoardTile(
-        board: boards[index],
-        onTap: () => _navigateToBoard(context, boards[index]),
+    );
+  }
+
+  Widget _buildSliverGrid(List<FavoriteBoard> boards) {
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      sliver: SliverGrid(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: 1.0,
+        ),
+        delegate: SliverChildBuilderDelegate(
+          (_, index) => _GridBoardTile(
+            board: boards[index],
+            onTap: () => _navigateToBoard(context, boards[index]),
+          ),
+          childCount: boards.length,
+        ),
       ),
     );
   }

@@ -19,7 +19,7 @@ class FestivalActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final iconWidget = GestureDetector(
+    return GestureDetector(
       onTap: onTap,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -46,6 +46,5 @@ class FestivalActionButton extends StatelessWidget {
         ],
       ),
     );
-    return iconWidget;
   }
 }

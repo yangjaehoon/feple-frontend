@@ -160,6 +160,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
               imageUrl: widget.poster.posterUrl,
               memCacheWidth: 100,
               fit: BoxFit.cover,
+              errorWidget: (_, __, ___) => const ColoredBox(color: Colors.black26),
             ),
           ),
         ),
@@ -173,7 +174,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
           top: 0,
           left: 0,
           right: 0,
-          bottom: -5,
+          bottom: -5, // Stack 하단 경계의 1px 틈 방지
           child: ColoredBox(color: colors.swiperOverlay.withValues(alpha: 0.55)),
         ),
       ];

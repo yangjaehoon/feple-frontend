@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 class UserEntry {
   final String id;
-  String stageName;
-  String label;
-  String startTime;
-  String endTime;
-  Color color;
+  final String stageName;
+  final String label;
+  final String startTime;
+  final String endTime;
+  final Color color;
 
   UserEntry({
     required this.id,

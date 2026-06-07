@@ -211,7 +211,6 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
                 child: _OfficialCard(
                   entry: entry,
                   color: _stageColor(entry.stageName),
-                  cardH: cardH - 4,
                   followed: widget.followedNames.contains(entry.artistName),
                 ),
               );
@@ -243,13 +242,11 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
 class _OfficialCard extends StatelessWidget {
   final TimetableEntry entry;
   final Color color;
-  final double cardH;
   final bool followed;
 
   const _OfficialCard({
     required this.entry,
     required this.color,
-    required this.cardH,
     required this.followed,
   });
 

@@ -70,6 +70,8 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
         ),
       );
 
+  int _toMins(TimeOfDay t) => t.hour * 60 + t.minute;
+
   UserEntry get _result => UserEntry(
         id: widget.initial.id,
         stageName: _stage,
@@ -82,7 +84,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final valid = _labelCtrl.text.trim().isNotEmpty;
+    final valid = _labelCtrl.text.trim().isNotEmpty && _toMins(_end) > _toMins(_start);
 
     return AlertDialog(
       backgroundColor: colors.surface,

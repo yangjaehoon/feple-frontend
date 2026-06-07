@@ -83,7 +83,7 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
 
   Widget _buildBody(AsyncSnapshot<List<SongModel>> snapshot, AbstractThemeColors colors) {
     if (snapshot.connectionState == ConnectionState.waiting) {
-      return Center(child: CircularProgressIndicator(color: colors.loadingIndicator));
+      return const Center(child: CircularProgressIndicator.adaptive());
     }
     if (snapshot.hasError) {
       return ErrorState(message: 'err_fetch_data'.tr(), onRetry: _refresh);

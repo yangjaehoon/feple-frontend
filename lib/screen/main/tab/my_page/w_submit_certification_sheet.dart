@@ -85,13 +85,10 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
     } catch (e) {
       if (!mounted) return;
       debugPrint('cert submit error: $e');
-      if (networkAwareErrorKey(e, 'cert_submit_failed') == 'connection_error') {
-        context.showErrorSnackbar('connection_error'.tr());
-      } else {
-        context.showErrorSnackbar(
-          isDioConflict(e) ? 'cert_already_submitted'.tr() : 'cert_submit_failed'.tr(),
-        );
-      }
+      context.showErrorSnackbar(networkAwareErrorKey(
+        e,
+        isDioConflict(e) ? 'cert_already_submitted' : 'cert_submit_failed',
+      ).tr());
       if (mounted) setState(() => _submitting = false);
     }
   }
@@ -157,7 +154,7 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
     if (_loadingFestivals) {
       return const Padding(
         padding: EdgeInsets.all(20),
-        child: Center(child: CircularProgressIndicator()),
+        child: Center(child: CircularProgressIndicator.adaptive()),
       );
     }
     return Padding(

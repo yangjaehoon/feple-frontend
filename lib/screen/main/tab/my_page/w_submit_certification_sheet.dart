@@ -26,6 +26,7 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
   List<FestivalModel> _festivals = [];
   FestivalModel? _selectedFestival;
   bool _loadingFestivals = true;
+  bool _festivalLoadError = false;
   bool _submitting = false;
   bool _submitSuccess = false;
 
@@ -36,11 +37,12 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
   }
 
   Future<void> _loadFestivals() async {
+    if (mounted) setState(() { _loadingFestivals = true; _festivalLoadError = false; });
     try {
       final festivals = await sl<FestivalService>().fetchAll();
       if (mounted) setState(() { _festivals = festivals; _loadingFestivals = false; });
     } catch (_) {
-      if (mounted) setState(() { _loadingFestivals = false; });
+      if (mounted) setState(() { _loadingFestivals = false; _festivalLoadError = true; });
     }
   }
 
@@ -51,6 +53,7 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
       backgroundColor: Colors.transparent,
       builder: (_) => _FestivalSearchSheet(festivals: _festivals),
     );
+    if (!mounted) return;
     if (result != null) {
       setState(() => _selectedFestival = result);
     }
@@ -155,6 +158,27 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
       return const Padding(
         padding: EdgeInsets.all(20),
         child: Center(child: CircularProgressIndicator.adaptive()),
+      );
+    }
+    if (_festivalLoadError) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        child: Row(
+          children: [
+            Icon(Icons.error_outline, color: AppColors.errorRed, size: 18),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'err_fetch_data'.tr(),
+                style: TextStyle(fontSize: 13, color: colors.textSecondary),
+              ),
+            ),
+            TextButton(
+              onPressed: _loadFestivals,
+              child: Text('retry'.tr(), style: TextStyle(color: colors.activate, fontSize: 13)),
+            ),
+          ],
+        ),
       );
     }
     return Padding(

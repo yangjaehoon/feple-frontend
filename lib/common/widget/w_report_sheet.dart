@@ -107,11 +107,11 @@ Future<void> showReportSheet(
                                       'report_success'.tr());
                                 }
                               } on DioException catch (e) {
+                                debugPrint('[Report] submit failed: $e');
                                 if (!context.mounted) return;
-                                final msg =
-                                    e.response?.data?['message'] as String?;
+                                final isConflict = e.response?.statusCode == 409;
                                 context.showErrorSnackbar(
-                                    msg ?? duplicateErrorKey.tr());
+                                    isConflict ? duplicateErrorKey.tr() : 'report_failed'.tr());
                               }
                             },
                       child: Text('report_submit'.tr()),

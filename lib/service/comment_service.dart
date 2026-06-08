@@ -1,15 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:feple/common/exception/banned_word_exception.dart';
 import 'package:feple/model/comment_detail.dart';
-import 'package:feple/model/comment_model.dart';
 import 'package:feple/network/dio_client.dart';
 
 class CommentService {
-  Future<List<Comment>> fetchComments(int postId) async {
-    final response = await DioClient.dio.get('/comments/$postId');
-    return response.toModelList(Comment.fromJson);
-  }
-
   Future<void> deleteComment(int commentId) async {
     final response = await DioClient.dio.delete('/comments/$commentId');
     if (response.statusCode != 204) {

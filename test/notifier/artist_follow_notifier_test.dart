@@ -1,5 +1,4 @@
 import 'package:feple/injection.dart';
-import 'package:feple/model/follow_response.dart';
 import 'package:feple/model/follow_status.dart';
 import 'package:feple/screen/main/tab/search/artist_page/artist_follow_notifier.dart';
 import 'package:feple/service/artist_follow_service.dart';
@@ -50,8 +49,7 @@ void main() {
   group('toggle', () {
     test('팔로우 중이 아닐 때 follow() 호출, 상태 반영', () async {
       notifier.isFollowed = false;
-      when(() => mockService.follow(42))
-          .thenAnswer((_) async => FollowResponse(followed: true, followerCount: 101));
+      when(() => mockService.follow(42)).thenAnswer((_) async {});
 
       await notifier.toggle();
 
@@ -63,8 +61,7 @@ void main() {
     test('팔로우 중일 때 unfollow() 호출, 상태 반영', () async {
       notifier.isFollowed = true;
       notifier.followCount = 100;
-      when(() => mockService.unfollow(42))
-          .thenAnswer((_) async => FollowResponse(followed: false, followerCount: 99));
+      when(() => mockService.unfollow(42)).thenAnswer((_) async {});
 
       await notifier.toggle();
 
@@ -76,8 +73,7 @@ void main() {
     test('isLoading 중 toggle 재호출 시 무시', () async {
       notifier.isFollowed = false;
       // toggle 첫 호출은 시작만 하고 완료 안 된 상태 시뮬레이션
-      when(() => mockService.follow(42))
-          .thenAnswer((_) async => FollowResponse(followed: true, followerCount: 101));
+      when(() => mockService.follow(42)).thenAnswer((_) async {});
 
       // 동시 호출 — 두 번째는 isLoading이 true라 무시되어야 함
       final f1 = notifier.toggle();

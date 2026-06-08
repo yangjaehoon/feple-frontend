@@ -128,7 +128,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
           backgroundImage: (user.profileImageUrl != null &&
                   user.profileImageUrl!.isNotEmpty)
               ? CachedNetworkImageProvider(user.profileImageUrl!,
-                  maxWidth: 150) as ImageProvider
+                  maxWidth: 200) as ImageProvider
               : const AssetImage('assets/image/feple_logo.png'),
           backgroundColor: colors.backgroundMain,
         ),

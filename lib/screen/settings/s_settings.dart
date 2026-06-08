@@ -200,7 +200,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
         label: 'customer_service'.tr(),
         onTap: () async {
           final uri = Uri.parse('https://open.kakao.com/o/guLhbJki');
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
+          try {
+            final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+            if (!launched && mounted) context.showErrorSnackbar('link_open_failed'.tr());
+          } catch (_) {
+            if (mounted) context.showErrorSnackbar('link_open_failed'.tr());
+          }
         },
       ),
       const _ItemDivider(),
@@ -209,7 +214,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
         label: 'privacy_policy'.tr(),
         onTap: () async {
           final uri = Uri.parse('https://yangjae.notion.site/feple-privacy?source=copy_link');
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
+          try {
+            final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+            if (!launched && mounted) context.showErrorSnackbar('link_open_failed'.tr());
+          } catch (_) {
+            if (mounted) context.showErrorSnackbar('link_open_failed'.tr());
+          }
         },
       ),
       const _ItemDivider(),

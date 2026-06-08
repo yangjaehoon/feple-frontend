@@ -1,6 +1,6 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/local_json.dart';
+import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/model/vo_package.dart';
 import 'package:flutter/material.dart';
 
@@ -20,8 +20,8 @@ class _OpensourceScreenState extends State<OpensourceScreen> {
 
   @override
   void initState() {
-    initData();
     super.initState();
+    initData();
   }
 
   Future<void> initData() async {
@@ -36,41 +36,18 @@ class _OpensourceScreenState extends State<OpensourceScreen> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return Scaffold(
+      backgroundColor: colors.backgroundMain,
       body: Column(
         children: [
-          SafeArea(
-            bottom: false,
-            child: Container(
-              height: AppDimens.appBarHeight,
-              color: colors.appBarColor,
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  Expanded(
-                    child: Text(
-                      'opensource'.tr(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          SecondaryAppBar(title: 'opensource'.tr()),
           Expanded(
             child: ListView.separated(
               itemBuilder: (context, index) => OpensourceItem(packageList[index]),
               itemCount: packageList.length,
-              separatorBuilder: (BuildContext context, int index) {
-                return const Line().pSymmetric(h: 20);
-              },
+              separatorBuilder: (context, index) => const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Line(),
+              ),
             ),
           ),
         ],

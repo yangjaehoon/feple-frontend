@@ -9,13 +9,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class MockCertificationService extends Mock implements CertificationService {}
 class MockFestivalInteractionService extends Mock implements FestivalInteractionService {}
 
-CertificationModel _cert(int festivalId, CertStatus status) =>
-    CertificationModel(
-      festivalId: festivalId,
-      status: status,
-      festivalTitle: '록페스티벌',
-    );
-
 void main() {
   late MockCertificationService mockCertService;
   late MockFestivalInteractionService mockFestivalInteractionService;
@@ -34,10 +27,7 @@ void main() {
 
   group('loadCertState', () {
     test('해당 페스티벌에 APPROVED 인증 있으면 isCertified true', () async {
-      when(() => mockCertService.getMyCertifications()).thenAnswer((_) async => [
-            _cert(5, CertStatus.approved),
-            _cert(99, CertStatus.approved),
-          ]);
+      when(() => mockCertService.getCertState(5)).thenAnswer((_) async => CertStatus.approved);
 
       final notifier = make(5);
       await notifier.loadCertState();
@@ -47,9 +37,7 @@ void main() {
     });
 
     test('해당 페스티벌에 PENDING 인증 있으면 isPending true', () async {
-      when(() => mockCertService.getMyCertifications()).thenAnswer((_) async => [
-            _cert(5, CertStatus.pending),
-          ]);
+      when(() => mockCertService.getCertState(5)).thenAnswer((_) async => CertStatus.pending);
 
       final notifier = make(5);
       await notifier.loadCertState();
@@ -58,10 +46,8 @@ void main() {
       expect(notifier.isPending, true);
     });
 
-    test('다른 페스티벌 인증만 있으면 둘 다 false', () async {
-      when(() => mockCertService.getMyCertifications()).thenAnswer((_) async => [
-            _cert(99, CertStatus.approved),
-          ]);
+    test('인증 없으면 둘 다 false', () async {
+      when(() => mockCertService.getCertState(5)).thenAnswer((_) async => null);
 
       final notifier = make(5);
       await notifier.loadCertState();
@@ -70,10 +56,8 @@ void main() {
       expect(notifier.isPending, false);
     });
 
-    test('REJECTED 인증만 있으면 둘 다 false', () async {
-      when(() => mockCertService.getMyCertifications()).thenAnswer((_) async => [
-            _cert(5, CertStatus.rejected),
-          ]);
+    test('REJECTED 인증이면 둘 다 false', () async {
+      when(() => mockCertService.getCertState(5)).thenAnswer((_) async => CertStatus.rejected);
 
       final notifier = make(5);
       await notifier.loadCertState();
@@ -83,7 +67,7 @@ void main() {
     });
 
     test('서비스 예외 시 크래시 없이 기본값 유지', () async {
-      when(() => mockCertService.getMyCertifications()).thenThrow(Exception('err'));
+      when(() => mockCertService.getCertState(5)).thenThrow(Exception('err'));
 
       final notifier = make(5);
       await expectLater(notifier.loadCertState(), completes);
@@ -92,8 +76,8 @@ void main() {
       expect(notifier.isPending, false);
     });
 
-    test('인증 목록 비어있으면 둘 다 false', () async {
-      when(() => mockCertService.getMyCertifications()).thenAnswer((_) async => []);
+    test('인증 없는 경우 isCertified false, isPending false', () async {
+      when(() => mockCertService.getCertState(5)).thenAnswer((_) async => null);
 
       final notifier = make(5);
       await notifier.loadCertState();
@@ -102,17 +86,15 @@ void main() {
       expect(notifier.isPending, false);
     });
 
-    test('동일 페스티벌에 APPROVED와 PENDING 둘 다 있으면 isCertified 우선', () async {
-      when(() => mockCertService.getMyCertifications()).thenAnswer((_) async => [
-            _cert(5, CertStatus.approved),
-            _cert(5, CertStatus.pending),
-          ]);
+    test('APPROVED 상태에서 isCertified true, isPending false 동시 검증', () async {
+      when(() => mockCertService.getCertState(5)).thenAnswer((_) async => CertStatus.approved);
 
       final notifier = make(5);
       await notifier.loadCertState();
 
       expect(notifier.isCertified, true);
       expect(notifier.isPending, false);
+      verify(() => mockCertService.getCertState(5)).called(1);
     });
   });
 
@@ -147,8 +129,7 @@ void main() {
 
   group('toggleLike', () {
     test('liked false → true로 전환', () async {
-      when(() => mockFestivalInteractionService.toggleLike(5))
-          .thenAnswer((_) async => true);
+      when(() => mockFestivalInteractionService.toggleLike(5)).thenAnswer((_) async {});
 
       final notifier = make(5);
       notifier.liked = false;
@@ -158,8 +139,7 @@ void main() {
     });
 
     test('liked true → false로 전환', () async {
-      when(() => mockFestivalInteractionService.toggleLike(5))
-          .thenAnswer((_) async => false);
+      when(() => mockFestivalInteractionService.toggleLike(5)).thenAnswer((_) async {});
 
       final notifier = make(5);
       notifier.liked = true;

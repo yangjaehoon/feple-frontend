@@ -57,7 +57,7 @@ class _BoardPostListScreenState extends State<BoardPostListScreen> {
             ),
           ),
         );
-        _refresh();
+        if (mounted) _refresh();
       },
     );
   }
@@ -82,7 +82,7 @@ class _BoardPostListScreenState extends State<BoardPostListScreen> {
                   ),
                 ),
               );
-              _refresh();
+              if (mounted) _refresh();
             },
           ),
         );

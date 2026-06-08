@@ -14,8 +14,8 @@ class UserStats {
   });
 
   factory UserStats.fromJson(Map<String, dynamic> json) => UserStats(
-        postCount: json['postCount'] as int,
-        commentCount: json['commentCount'] as int,
+        postCount: json['postCount'] as int? ?? 0,
+        commentCount: json['commentCount'] as int? ?? 0,
         certificationCount: json['certificationCount'] as int? ?? 0,
         scrapCount: json['scrapCount'] as int? ?? 0,
         likedPostCount: json['likedPostCount'] as int? ?? 0,

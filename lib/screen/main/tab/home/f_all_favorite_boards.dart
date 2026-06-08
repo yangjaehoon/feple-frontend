@@ -30,6 +30,21 @@ class AllFavoriteBoardsPage extends StatefulWidget {
 
 class _AllFavoriteBoardsPageState extends State<AllFavoriteBoardsPage> {
   late List<String> _orderedSelectedIds;
+  FavoriteBoardType? _selectedType;
+
+  List<FavoriteBoard> get _selectedBoards {
+    final boardMap = {for (final b in widget.allBoards) b.boardId: b};
+    return _orderedSelectedIds
+        .map((id) => boardMap[id])
+        .whereType<FavoriteBoard>()
+        .toList();
+  }
+
+  List<FavoriteBoard> get _filteredBoards {
+    final boards = _selectedBoards;
+    if (_selectedType == null) return boards;
+    return boards.where((b) => b.type == _selectedType).toList();
+  }
 
   @override
   void initState() {
@@ -58,7 +73,7 @@ class _AllFavoriteBoardsPageState extends State<AllFavoriteBoardsPage> {
     );
   }
 
-  void _navigateToBoard(BuildContext context, FavoriteBoard board) {
+  void _navigateToBoard(FavoriteBoard board) {
     final route = switch (board.type) {
       FavoriteBoardType.artist => SlideRoute(
           builder: (_) => ArtistPostListScreen(
@@ -79,11 +94,10 @@ class _AllFavoriteBoardsPageState extends State<AllFavoriteBoardsPage> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final boardMap = {for (final b in widget.allBoards) b.boardId: b};
-    final selectedBoards = _orderedSelectedIds
-        .map((id) => boardMap[id])
-        .whereType<FavoriteBoard>()
-        .toList();
+    final boards = _selectedBoards;
+    final hasArtist = boards.any((b) => b.type == FavoriteBoardType.artist);
+    final hasFestival = boards.any((b) => b.type == FavoriteBoardType.festival);
+    final showChips = hasArtist && hasFestival;
 
     return Scaffold(
       backgroundColor: colors.backgroundMain,
@@ -97,82 +111,114 @@ class _AllFavoriteBoardsPageState extends State<AllFavoriteBoardsPage> {
           ),
         ],
       ),
-      body: selectedBoards.isEmpty
+      body: boards.isEmpty
           ? Center(
               child: EmptyState(
                 icon: Icons.forum_rounded,
                 title: 'select_boards_prompt'.tr(),
               ),
             )
-          : _buildContent(selectedBoards, colors),
-    );
-  }
-
-  Widget _buildContent(List<FavoriteBoard> boards, AbstractThemeColors colors) {
-    final artistBoards =
-        boards.where((b) => b.type == FavoriteBoardType.artist).toList();
-    final festivalBoards =
-        boards.where((b) => b.type == FavoriteBoardType.festival).toList();
-
-    return CustomScrollView(
-      slivers: [
-        if (artistBoards.isNotEmpty) ...[
-          SliverToBoxAdapter(
-            child: _buildSectionHeader(
-                'artist_boards_section'.tr(), colors, isFirst: true),
-          ),
-          _buildSliverGrid(artistBoards),
-        ],
-        if (festivalBoards.isNotEmpty) ...[
-          SliverToBoxAdapter(
-            child: _buildSectionHeader(
-                'festival_boards_section'.tr(), colors, isFirst: artistBoards.isEmpty),
-          ),
-          _buildSliverGrid(festivalBoards),
-        ],
-        const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
-      ],
-    );
-  }
-
-  Widget _buildSectionHeader(
-      String title, AbstractThemeColors colors, {required bool isFirst}) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(16, isFirst ? 16 : 24, 16, 8),
-      child: Row(
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: colors.textSecondary,
-              letterSpacing: 0.3,
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (showChips) _buildTypeChips(colors),
+                Expanded(child: _buildGrid(colors)),
+              ],
             ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(child: Divider(thickness: 1, color: colors.listDivider)),
-        ],
+    );
+  }
+
+  Widget _buildTypeChips(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 12, bottom: 4),
+      child: SizedBox(
+        height: 36,
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          children: [
+            _TypeChip(
+              label: 'filter_all'.tr(),
+              selected: _selectedType == null,
+              onTap: () => setState(() => _selectedType = null),
+              colors: colors,
+            ),
+            _TypeChip(
+              label: 'artist_boards_section'.tr(),
+              selected: _selectedType == FavoriteBoardType.artist,
+              onTap: () => setState(() => _selectedType = FavoriteBoardType.artist),
+              colors: colors,
+            ),
+            _TypeChip(
+              label: 'festival_boards_section'.tr(),
+              selected: _selectedType == FavoriteBoardType.festival,
+              onTap: () => setState(() => _selectedType = FavoriteBoardType.festival),
+              colors: colors,
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildSliverGrid(List<FavoriteBoard> boards) {
-    return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      sliver: SliverGrid(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 1.0,
-        ),
-        delegate: SliverChildBuilderDelegate(
-          (_, index) => _GridBoardTile(
-            board: boards[index],
-            onTap: () => _navigateToBoard(context, boards[index]),
+  Widget _buildGrid(AbstractThemeColors colors) {
+    final boards = _filteredBoards;
+    if (boards.isEmpty) {
+      return Center(
+        child: EmptyState(icon: Icons.forum_rounded, title: 'select_boards_prompt'.tr()),
+      );
+    }
+    return GridView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+      itemCount: boards.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childAspectRatio: 1.0,
+      ),
+      itemBuilder: (_, index) => _GridBoardTile(
+        board: boards[index],
+        onTap: () => _navigateToBoard(boards[index]),
+      ),
+    );
+  }
+}
+
+class _TypeChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+  final AbstractThemeColors colors;
+
+  const _TypeChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+    required this.colors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected ? colors.activate : colors.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected ? colors.activate : colors.listDivider,
           ),
-          childCount: boards.length,
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: selected ? Colors.white : colors.textSecondary,
+          ),
         ),
       ),
     );

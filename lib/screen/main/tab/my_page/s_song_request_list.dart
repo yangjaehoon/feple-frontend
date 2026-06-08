@@ -6,6 +6,7 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/song_request_model.dart';
 import 'package:feple/provider/user_provider.dart';
+import 'package:feple/screen/main/tab/my_page/song_request_status_style.dart';
 import 'package:feple/service/song_request_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -156,16 +157,8 @@ class SongRequestItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final statusColor = req.isPending
-        ? colors.textSecondary
-        : req.isApproved
-            ? colors.activate
-            : AppColors.errorRed;
-    final statusLabel = req.isPending
-        ? 'song_status_pending'.tr()
-        : req.isApproved
-            ? 'song_status_approved'.tr()
-            : 'song_status_rejected'.tr();
+    final statusColor = req.status.displayColor(colors);
+    final statusLabel = req.status.labelKey.tr();
 
     return Padding(
       padding: EdgeInsets.symmetric(vertical: verticalPadding),

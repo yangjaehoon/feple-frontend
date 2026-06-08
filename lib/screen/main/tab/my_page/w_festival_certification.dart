@@ -237,7 +237,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
         child: CircleAvatar(
           radius: 44,
           backgroundColor: ringColor.withValues(alpha: 0.15),
-          backgroundImage: imageUrl != null ? CachedNetworkImageProvider(imageUrl) : null,
+          backgroundImage: imageUrl != null ? CachedNetworkImageProvider(imageUrl, maxWidth: 180) : null,
           child: imageUrl == null
               ? Icon(Icons.photo, size: 26, color: colors.textTitle.withValues(alpha: 0.3))
               : null,

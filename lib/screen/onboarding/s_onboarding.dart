@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_selectable_chip.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/constant/festival_constants.dart';
 import 'package:feple/common/data/preference/prefs.dart';
@@ -364,16 +365,16 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
       child: Row(
         children: [
-          _GenreFilterChip(
+          SelectableChip(
             label: 'genre_all'.tr(),
             selected: _selectedGenre == null,
-            colors: colors,
+            unselectedTextColor: colors.textTitle,
             onTap: () => setState(() => _selectedGenre = null),
           ),
-          ...genres.map((genre) => _GenreFilterChip(
+          ...genres.map((genre) => SelectableChip(
                 label: _genreLabel(genre),
                 selected: _selectedGenre == genre,
-                colors: colors,
+                unselectedTextColor: colors.textTitle,
                 onTap: () => setState(() => _selectedGenre = genre),
               )),
         ],
@@ -541,46 +542,6 @@ class _ArtistSelectCard extends StatelessWidget {
 
 // ─── 장르 필터 칩 ────────────────────────────────────────────────────────────
 
-class _GenreFilterChip extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final AbstractThemeColors colors;
-  final VoidCallback onTap;
-
-  const _GenreFilterChip({
-    required this.label,
-    required this.selected,
-    required this.colors,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: AppDimens.animFast,
-        margin: const EdgeInsets.only(right: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-        decoration: BoxDecoration(
-          color: selected ? colors.activate : colors.surface,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: selected ? colors.activate : colors.listDivider,
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeSm,
-            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-            color: selected ? Colors.white : colors.textTitle,
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 // ─── 인포 페이지 데이터 & 위젯 ────────────────────────────────────────────────
 

@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_selectable_chip.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
@@ -291,22 +292,26 @@ class _NotificationScreenState extends State<NotificationScreen> {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children: [
-          _FilterChip(
+          SelectableChip(
+            margin: const EdgeInsets.only(right: 8, bottom: 4),
             label: 'filter_all'.tr(),
             selected: _filter == _NotifFilter.all,
             onTap: () => setState(() => _filter = _NotifFilter.all),
           ),
-          _FilterChip(
+          SelectableChip(
+            margin: const EdgeInsets.only(right: 8, bottom: 4),
             label: 'notif_filter_cert'.tr(),
             selected: _filter == _NotifFilter.cert,
             onTap: () => setState(() => _filter = _NotifFilter.cert),
           ),
-          _FilterChip(
+          SelectableChip(
+            margin: const EdgeInsets.only(right: 8, bottom: 4),
             label: 'notif_filter_comment'.tr(),
             selected: _filter == _NotifFilter.comment,
             onTap: () => setState(() => _filter = _NotifFilter.comment),
           ),
-          _FilterChip(
+          SelectableChip(
+            margin: const EdgeInsets.only(right: 8, bottom: 4),
             label: 'notif_filter_festival'.tr(),
             selected: _filter == _NotifFilter.festival,
             onTap: () => setState(() => _filter = _NotifFilter.festival),
@@ -377,42 +382,3 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 }
 
-class _FilterChip extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _FilterChip({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: AppDimens.animXFast,
-        margin: const EdgeInsets.only(right: 8, bottom: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-        decoration: BoxDecoration(
-          color: selected ? colors.activate : colors.surface,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: selected ? colors.activate : colors.listDivider,
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: selected ? Colors.white : colors.textSecondary,
-          ),
-        ),
-      ),
-    );
-  }
-}

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_error_state.dart';
@@ -48,10 +49,8 @@ class _FestivalSetlistFullPageState extends State<FestivalSetlistFullPage> {
   }
 
   Future<void> _openEditSheet(FestivalSetlistEntry entry) async {
-    final result = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+    final result = await showAppBottomSheet<bool>(
+      context,
       builder: (_) => SetlistEditSheet(
         festivalId: widget.festivalId,
         entry: entry,

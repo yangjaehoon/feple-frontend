@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
@@ -47,10 +48,8 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
   }
 
   Future<void> _showFestivalSearchSheet() async {
-    final result = await showModalBottomSheet<FestivalModel>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+    final result = await showAppBottomSheet<FestivalModel>(
+      context,
       builder: (_) => _FestivalSearchSheet(festivals: _festivals),
     );
     if (!mounted) return;

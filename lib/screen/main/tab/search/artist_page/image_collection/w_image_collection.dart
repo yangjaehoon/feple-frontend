@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_report_sheet.dart';
 import 'package:feple/injection.dart';
@@ -76,13 +77,9 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
   }
 
   void _showEditBottomSheet(ArtistPhotoResponse photo) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
+    showAppBottomSheet(
+      context,
       useRootNavigator: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
       builder: (_) => EditPhotoSheet(
         artistId: widget.artistId,
         photo: photo,

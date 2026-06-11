@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
@@ -114,10 +115,8 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
   }
 
   Future<void> _openSubmitSheet() async {
-    final result = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+    final result = await showAppBottomSheet<bool>(
+      context,
       builder: (_) => SubmitCertificationSheet(certService: _certService),
     );
     if (result == true) _load();

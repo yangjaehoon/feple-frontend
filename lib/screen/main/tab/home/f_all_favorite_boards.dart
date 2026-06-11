@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
@@ -54,13 +55,8 @@ class _AllFavoriteBoardsPageState extends State<AllFavoriteBoardsPage> {
 
   void _openSettings() {
     final selectedSet = _orderedSelectedIds.toSet();
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+    showAppBottomSheet(
+      context,
       builder: (_) => BoardSettingsSheet(
         allBoards: widget.allBoards,
         initialOrderedIds: List.from(_orderedSelectedIds),

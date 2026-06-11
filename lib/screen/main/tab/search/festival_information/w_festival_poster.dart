@@ -5,6 +5,7 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
@@ -85,9 +86,9 @@ class _FestivalPosterState extends State<FestivalPoster> {
   }
 
   void _showWeather() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
+    showAppBottomSheet(
+      context,
+      isScrollControlled: false,
       builder: (_) => WeatherBottomSheet(
         festivalId: widget.poster.id,
         startDate: widget.poster.startDate,
@@ -109,10 +110,8 @@ class _FestivalPosterState extends State<FestivalPoster> {
   Color? _certButtonBgColor(AbstractThemeColors colors) => _notifier.certState.bgColor(colors);
 
   Future<void> _submitCertification() async {
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+    await showAppBottomSheet(
+      context,
       builder: (ctx) => CertificationBottomSheet(
         festivalName: widget.poster.title,
         festivalId: widget.poster.id,

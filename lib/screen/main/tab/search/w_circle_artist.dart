@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -317,10 +318,8 @@ class _ArtistSuggestionBanner extends StatelessWidget {
       context.showInfoSnackbar('no_login_info'.tr());
       return;
     }
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+    showAppBottomSheet(
+      context,
       builder: (_) => const ArtistSuggestionSheet(),
     );
   }

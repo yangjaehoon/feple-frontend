@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
@@ -52,10 +53,8 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
         title: 'artist_songs_title'.tr(args: [widget.artistName]),
         actions: [
           TextButton.icon(
-            onPressed: () => showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              backgroundColor: Colors.transparent,
+            onPressed: () => showAppBottomSheet(
+              context,
               builder: (_) => SongRequestSheet(
                 artistId: widget.artistId,
                 artistName: widget.artistName,

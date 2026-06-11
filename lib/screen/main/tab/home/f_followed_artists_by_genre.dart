@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -44,12 +45,8 @@ class _FollowedArtistsByGenrePageState
     final items = widget.artists
         .map((a) => ReorderItem(id: a.id, name: a.name, imageUrl: a.profileImageUrl))
         .toList();
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+    showAppBottomSheet(
+      context,
       builder: (_) => ReorderSheet(
         title: 'followed_artists'.tr(),
         subtitle: 'reorder_followed_artists_hint'.tr(),

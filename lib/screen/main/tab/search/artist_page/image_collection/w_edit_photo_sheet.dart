@@ -84,10 +84,15 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-          20, 12, 20, 20 + MediaQuery.of(context).viewInsets.bottom),
-      child: Column(
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+            20, 12, 20, 20 + MediaQuery.of(context).viewInsets.bottom),
+        child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -108,6 +113,7 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
           const SizedBox(height: 16),
           _buildSaveButton(colors),
         ],
+        ),
       ),
     );
   }

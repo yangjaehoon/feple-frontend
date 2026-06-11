@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_app_network_image.dart';
@@ -22,12 +23,8 @@ class LikedFestivalsPage extends StatelessWidget {
     final items = festivals
         .map((f) => ReorderItem(id: f.id, name: f.title, imageUrl: f.posterUrl))
         .toList();
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+    showAppBottomSheet(
+      context,
       builder: (_) => ReorderSheet(
         title: 'liked_festivals'.tr(),
         subtitle: 'reorder_liked_festivals_hint'.tr(),

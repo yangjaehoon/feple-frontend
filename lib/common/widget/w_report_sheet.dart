@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/service/report_service.dart';
 import 'package:flutter/material.dart';
 
@@ -17,16 +18,17 @@ Future<void> showReportSheet(
   ReportReason? selected;
   final detailController = TextEditingController();
 
-  await showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-    ),
+  await showAppBottomSheet<void>(
+    context,
     builder: (ctx) {
       return StatefulBuilder(builder: (ctx, setModalState) {
         final colors = ctx.appColors;
-        return Padding(
+        return Container(
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Padding(
           padding: EdgeInsets.only(
             left: 20,
             right: 20,
@@ -120,6 +122,7 @@ Future<void> showReportSheet(
                 ],
               ),
             ],
+          ),
           ),
         );
       });

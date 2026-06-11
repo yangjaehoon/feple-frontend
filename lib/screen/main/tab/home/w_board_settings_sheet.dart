@@ -107,13 +107,19 @@ class _BoardSettingsSheetState extends State<BoardSettingsSheet> {
     final colors = context.appColors;
     final maxHeight = MediaQuery.of(context).size.height * 0.75;
 
-    return ConstrainedBox(
-      constraints: BoxConstraints(maxHeight: maxHeight),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 12),
-          const BottomSheetHandle(),
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      clipBehavior: Clip.hardEdge,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: maxHeight),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 12),
+            const BottomSheetHandle(),
           const SizedBox(height: 16),
           _buildTitleRow(colors),
           const SizedBox(height: 8),
@@ -137,6 +143,7 @@ class _BoardSettingsSheetState extends State<BoardSettingsSheet> {
             ),
           ),
         ],
+      ),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
+import 'package:feple/common/widget/w_selectable_chip.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -165,12 +166,12 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 20),
               children: [
-                _GenreChip(
+                SelectableChip(
                   label: 'filter_all'.tr(),
                   selected: _selectedGenre == null,
                   onTap: () => setState(() => _selectedGenre = null),
                 ),
-                ...genres.map((genre) => _GenreChip(
+                ...genres.map((genre) => SelectableChip(
                       label: _genreLabel(genre),
                       selected: _selectedGenre == genre,
                       onTap: () => setState(() => _selectedGenre = genre),
@@ -370,38 +371,3 @@ class _ArtistSuggestionBanner extends StatelessWidget {
   }
 }
 
-class _GenreChip extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _GenreChip(
-      {required this.label, required this.selected, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(right: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-        decoration: BoxDecoration(
-          color: selected ? colors.activate : colors.surface,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: selected ? colors.activate : colors.listDivider,
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: selected ? Colors.white : colors.textSecondary,
-          ),
-        ),
-      ),
-    );
-  }
-}

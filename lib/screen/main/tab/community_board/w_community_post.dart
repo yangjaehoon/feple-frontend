@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_selectable_chip.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_write_post_fab.dart';
@@ -378,18 +379,20 @@ class _CommunityPostState extends State<CommunityPost> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          _SortChip(
+          SelectableChip(
             label: 'sort_latest'.tr(),
             selected: _sort == _sortLatest,
+            margin: EdgeInsets.zero,
             onTap: () {
               setState(() => _sort = _sortLatest);
               _load();
             },
           ),
           const SizedBox(width: 8),
-          _SortChip(
+          SelectableChip(
             label: 'sort_popular'.tr(),
             selected: _sort == _sortPopular,
+            margin: EdgeInsets.zero,
             onTap: () {
               setState(() => _sort = _sortPopular);
               _load();
@@ -425,41 +428,3 @@ class _CommunityPostState extends State<CommunityPost> {
   }
 }
 
-class _SortChip extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _SortChip({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: AppDimens.animXFast,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-        decoration: BoxDecoration(
-          color: selected ? colors.activate : colors.surface,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: selected ? colors.activate : colors.listDivider,
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
-            color: selected ? Colors.white : colors.textSecondary,
-          ),
-        ),
-      ),
-    );
-  }
-}

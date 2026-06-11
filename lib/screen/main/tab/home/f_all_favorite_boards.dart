@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
+import 'package:feple/common/widget/w_selectable_chip.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
@@ -133,23 +134,20 @@ class _AllFavoriteBoardsPageState extends State<AllFavoriteBoardsPage> {
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 20),
           children: [
-            _TypeChip(
+            SelectableChip(
               label: 'filter_all'.tr(),
               selected: _selectedType == null,
               onTap: () => setState(() => _selectedType = null),
-              colors: colors,
             ),
-            _TypeChip(
+            SelectableChip(
               label: 'artist_boards_section'.tr(),
               selected: _selectedType == FavoriteBoardType.artist,
               onTap: () => setState(() => _selectedType = FavoriteBoardType.artist),
-              colors: colors,
             ),
-            _TypeChip(
+            SelectableChip(
               label: 'festival_boards_section'.tr(),
               selected: _selectedType == FavoriteBoardType.festival,
               onTap: () => setState(() => _selectedType = FavoriteBoardType.festival),
-              colors: colors,
             ),
           ],
         ),
@@ -181,45 +179,6 @@ class _AllFavoriteBoardsPageState extends State<AllFavoriteBoardsPage> {
   }
 }
 
-class _TypeChip extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-  final AbstractThemeColors colors;
-
-  const _TypeChip({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-    required this.colors,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(right: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-        decoration: BoxDecoration(
-          color: selected ? colors.activate : colors.surface,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: selected ? colors.activate : colors.listDivider,
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: selected ? Colors.white : colors.textSecondary,
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class _GridBoardTile extends StatelessWidget {
   final FavoriteBoard board;

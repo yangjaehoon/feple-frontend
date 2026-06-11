@@ -107,7 +107,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
             child: FadeTransition(opacity: animation, child: child),
           ),
           child: Text(
-            _formatCount(widget.followNotifier.followCount, lang),
+            widget.followNotifier.followCount.toDisplayCount(lang),
             key: ValueKey(widget.followNotifier.followCount),
             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white70),
           ),
@@ -261,14 +261,4 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
     );
   }
 
-  String _formatCount(int count, String lang) {
-    if (lang == 'en') {
-      if (count >= 1000000) return '${(count / 1000000).toStringAsFixed(1)}M';
-      if (count >= 1000) return '${(count / 1000).toStringAsFixed(1)}K';
-      return count.toString();
-    }
-    if (count >= 10000) return '${(count / 10000).toStringAsFixed(1)}만';
-    if (count >= 1000) return '${(count / 1000).toStringAsFixed(1)}천';
-    return count.toString();
-  }
 }

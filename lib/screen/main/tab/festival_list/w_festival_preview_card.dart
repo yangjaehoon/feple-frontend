@@ -30,7 +30,7 @@ class FestivalPreviewCard extends StatelessWidget {
       child: Row(
         children: [
           _buildPoster(colors),
-          Expanded(child: _buildInfo(colors)),
+          Expanded(child: _buildInfo(colors, context.locale.languageCode == 'en')),
         ],
       ),
     );
@@ -81,7 +81,7 @@ class FestivalPreviewCard extends StatelessWidget {
     );
   }
 
-  Widget _buildInfo(AbstractThemeColors colors) {
+  Widget _buildInfo(AbstractThemeColors colors, bool isEnglish) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
       child: Column(
@@ -92,7 +92,7 @@ class FestivalPreviewCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  festival.title,
+                  festival.displayTitle(isEnglish),
                   style: TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 16,

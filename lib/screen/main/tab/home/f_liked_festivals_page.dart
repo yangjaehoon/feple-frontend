@@ -20,8 +20,9 @@ class LikedFestivalsPage extends StatelessWidget {
   final Future<void> Function(List<int>)? onSaveOrder;
 
   void _openSettings(BuildContext context) {
+    final isEnglish = context.locale.languageCode == 'en';
     final items = festivals
-        .map((f) => ReorderItem(id: f.id, name: f.title, imageUrl: f.posterUrl))
+        .map((f) => ReorderItem(id: f.id, name: f.displayTitle(isEnglish), imageUrl: f.posterUrl))
         .toList();
     showAppBottomSheet(
       context,
@@ -130,7 +131,7 @@ class _FestivalCard extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoSection(AbstractThemeColors colors) {
+  Widget _buildInfoSection(AbstractThemeColors colors, bool isEnglish) {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
@@ -138,7 +139,7 @@ class _FestivalCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              festival.title,
+              festival.displayTitle(isEnglish),
               style: TextStyle(
                 fontWeight: FontWeight.w800,
                 fontSize: 16,
@@ -200,7 +201,7 @@ class _FestivalCard extends StatelessWidget {
       child: Row(
         children: [
           _buildPosterSection(colors),
-          _buildInfoSection(colors),
+          _buildInfoSection(colors, context.locale.languageCode == 'en'),
         ],
       ),
     );

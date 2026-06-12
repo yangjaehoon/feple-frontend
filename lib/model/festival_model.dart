@@ -3,6 +3,7 @@ import 'festival_date_utils.dart';
 class FestivalModel {
   final int id;
   final String title;
+  final String titleEn;
   final String description;
   final String location;
   final String startDate;
@@ -17,6 +18,7 @@ class FestivalModel {
   FestivalModel({
     required this.id,
     required this.title,
+    this.titleEn = '',
     required this.description,
     required this.location,
     required this.startDate,
@@ -29,6 +31,9 @@ class FestivalModel {
     this.attendingCount = 0,
   });
 
+  String displayTitle(bool isEnglish) =>
+      isEnglish && titleEn.isNotEmpty ? titleEn : title;
+
   bool get isEnded => isFestivalEnded(endDate);
 
   int? get dDaysUntil => festivalDDaysUntil(startDate: startDate, isEnded: isEnded);
@@ -37,6 +42,7 @@ class FestivalModel {
     return FestivalModel(
       id: json['id'] as int,
       title: json['title'] as String,
+      titleEn: (json['titleEn'] as String?) ?? '',
       description: json['description'] as String? ?? '',
       location: json['location'] as String? ?? '',
       startDate: json['startDate'] as String? ?? '',

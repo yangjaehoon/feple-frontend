@@ -103,7 +103,7 @@ class _FestivalItem extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               _buildImage(colors),
-              _buildTitleOverlay(),
+              _buildTitleOverlay(context.locale.languageCode == 'en'),
             ],
           ),
         ),
@@ -123,7 +123,7 @@ class _FestivalItem extends StatelessWidget {
     );
   }
 
-  Widget _buildTitleOverlay() {
+  Widget _buildTitleOverlay(bool isEnglish) {
     return Positioned(
       bottom: 0,
       left: 0,
@@ -144,7 +144,7 @@ class _FestivalItem extends StatelessWidget {
               ),
             ),
             child: Text(
-              festival.title,
+              festival.displayTitle(isEnglish),
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 11,

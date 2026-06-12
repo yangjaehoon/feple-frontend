@@ -61,7 +61,7 @@ class SearchArtistTile extends StatelessWidget {
         child: hasImage ? null : Icon(Icons.person, color: colors.textSecondary),
       ),
       title: _buildHighlightedText(
-        data.name,
+        data.displayName(context.locale.languageCode == 'en'),
         highlightKeyword,
         TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle),
         colors.activate,

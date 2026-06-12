@@ -211,6 +211,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
                     artist,
                     colors,
                     isFollowed: _followedIds.contains(artist.id),
+                    isEnglish: context.locale.languageCode == 'en',
                   ),
                 ),
               );
@@ -228,6 +229,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
     Artist artist,
     AbstractThemeColors colors, {
     required bool isFollowed,
+    required bool isEnglish,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -278,7 +280,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
         ),
         const SizedBox(height: 8),
         Text(
-          artist.name,
+          artist.displayName(isEnglish),
           style: TextStyle(
             fontSize: 13,
             fontWeight: isFollowed ? FontWeight.w700 : FontWeight.w600,

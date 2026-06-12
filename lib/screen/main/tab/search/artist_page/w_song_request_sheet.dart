@@ -30,12 +30,18 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
   bool _submitting = false;
   bool _submitSuccess = false;
   String? _titleError;
+  String? _urlError;
 
   @override
   void dispose() {
     _titleCtrl.dispose();
     _urlCtrl.dispose();
     super.dispose();
+  }
+
+  bool _isValidYoutubeUrl(String url) {
+    if (!url.startsWith('http://') && !url.startsWith('https://')) return false;
+    return url.contains('youtube.com') || url.contains('youtu.be');
   }
 
   Future<void> _submit() async {
@@ -49,7 +55,12 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
       setState(() => _titleError = 'song_request_title_required'.tr());
       return;
     }
-    setState(() { _titleError = null; _submitting = true; });
+    final rawUrl = _urlCtrl.text.trim();
+    if (rawUrl.isNotEmpty && !_isValidYoutubeUrl(rawUrl)) {
+      setState(() => _urlError = 'song_request_invalid_url'.tr());
+      return;
+    }
+    setState(() { _titleError = null; _urlError = null; _submitting = true; });
 
     try {
       await _songRequestService.submit(
@@ -146,11 +157,13 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
       child: TextField(
         controller: _urlCtrl,
         keyboardType: TextInputType.url,
+        onChanged: (_) { if (_urlError != null) setState(() => _urlError = null); },
         decoration: InputDecoration(
           labelText: 'song_request_youtube_url'.tr(),
           hintText: 'song_request_youtube_url_hint'.tr(),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          errorText: _urlError,
         ),
       ),
     ),

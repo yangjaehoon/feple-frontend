@@ -403,6 +403,7 @@
   "song_request_youtube_url_hint": "https://youtu.be/...",
   "song_request_submit": "Send Request",
   "song_request_title_required": "Please enter a song title.",
+  "song_request_invalid_url": "Please enter a valid YouTube URL.",
   "song_request_duplicate": "You have already requested this song.",
   "song_request_failed": "Failed to send request. Please try again.",
   "artist_suggestion_banner": "Can't find the artist you're looking for?",

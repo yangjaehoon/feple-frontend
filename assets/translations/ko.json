@@ -403,6 +403,7 @@
   "song_request_youtube_url_hint": "https://youtu.be/...",
   "song_request_submit": "요청 보내기",
   "song_request_title_required": "노래 제목을 입력해주세요.",
+  "song_request_invalid_url": "올바른 YouTube URL이 아닙니다.",
   "song_request_duplicate": "이미 요청한 노래입니다.",
   "song_request_failed": "요청 전송에 실패했습니다. 다시 시도해주세요.",
   "artist_suggestion_banner": "찾는 아티스트가 없으신가요?",

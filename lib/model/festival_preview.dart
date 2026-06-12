@@ -4,6 +4,7 @@ import 'festival_model.dart';
 class FestivalPreview {
   final int id;
   final String title;
+  final String titleEn;
   final String description;
   final String location;
   final String posterUrl;
@@ -18,6 +19,7 @@ class FestivalPreview {
   const FestivalPreview({
     required this.id,
     required this.title,
+    this.titleEn = '',
     this.description = '',
     required this.location,
     required this.posterUrl,
@@ -30,6 +32,9 @@ class FestivalPreview {
     this.longitude,
   });
 
+  String displayTitle(bool isEnglish) =>
+      isEnglish && titleEn.isNotEmpty ? titleEn : title;
+
   bool get isEnded => isFestivalEnded(endDate);
 
   /// 오늘 기준 D-day. 음수 = 진행중, 0 = 오늘 시작, 양수 = N일 후. null = 날짜 파싱 불가 또는 종료됨
@@ -38,6 +43,7 @@ class FestivalPreview {
   FestivalModel toModel() => FestivalModel(
         id: id,
         title: title,
+        titleEn: titleEn,
         description: description,
         location: location,
         startDate: startDate,
@@ -53,6 +59,7 @@ class FestivalPreview {
     return FestivalPreview(
       id: (json['id'] as num).toInt(),
       title: (json['title'] ?? '') as String,
+      titleEn: (json['titleEn'] as String?) ?? '',
       description: (json['description'] ?? '') as String,
       location: (json['location'] ?? '') as String,
       posterUrl: (json['posterUrl'] ?? '') as String,

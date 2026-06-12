@@ -82,7 +82,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
   }
 
   void _shareFestival() {
-    Share.share('${widget.poster.title}\n${widget.poster.location}\n${widget.poster.startDate}');
+    Share.share('${widget.poster.displayTitle(context.locale.languageCode == 'en')}\n${widget.poster.location}\n${widget.poster.startDate}');
   }
 
   void _showWeather() {
@@ -113,7 +113,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
     await showAppBottomSheet(
       context,
       builder: (ctx) => CertificationBottomSheet(
-        festivalName: widget.poster.title,
+        festivalName: widget.poster.displayTitle(context.locale.languageCode == 'en'),
         festivalId: widget.poster.id,
         certService: sl<CertificationService>(),
       ),
@@ -224,7 +224,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
       children: [
         const SizedBox(height: 4),
         Text(
-          widget.poster.title,
+          widget.poster.displayTitle(context.locale.languageCode == 'en'),
           softWrap: true,
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white),
         ),

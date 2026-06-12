@@ -108,7 +108,7 @@ class SearchFestivalTile extends StatelessWidget {
         ),
       ),
       title: _buildHighlightedText(
-        data.title,
+        data.displayTitle(context.locale.languageCode == 'en'),
         highlightKeyword,
         TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle),
         colors.activate,

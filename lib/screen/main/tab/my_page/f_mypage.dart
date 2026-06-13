@@ -1,13 +1,10 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/common/util/app_route.dart';
 import 'package:feple/screen/main/tab/my_page/w_festival_certification.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_post_comment.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_song_requests.dart';
 import 'package:feple/screen/main/tab/my_page/w_profile.dart';
-import 'package:feple/screen/settings/s_settings.dart';
 import 'package:feple/provider/user_provider.dart';
-import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -35,41 +32,23 @@ class _MypageFragmentState extends State<MypageFragment> {
     }
     return Container(
       color: context.appColors.backgroundMain,
-      child: Stack(
-        children: [
-          RefreshIndicator(
-            color: context.appColors.activate,
-            onRefresh: _onRefresh,
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: EdgeInsets.only(
-                top: AppDimens.scrollPaddingTop,
-                bottom: AppDimens.scrollPaddingBottom,
-              ),
-              child: Column(
-                children: [
-                  ProfileWidget(key: ValueKey('profile_$_refreshKey'), userId: userId),
-                  MyPostCommentWidget(key: ValueKey('stats_$_refreshKey'), userId: userId),
-                  FtvCertificationWidget(key: ValueKey('cert_$_refreshKey')),
-                  SongRequestHistoryWidget(key: ValueKey('songs_$_refreshKey')),
-                ],
-              ),
-            ),
+      child: RefreshIndicator(
+        color: context.appColors.activate,
+        onRefresh: _onRefresh,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: EdgeInsets.only(
+            bottom: AppDimens.scrollPaddingBottom,
           ),
-          FepleAppBar(
-            "Feple",
-            extraTrailingActions: [
-              IconButton(
-                tooltip: 'settings'.tr(),
-                icon: const Icon(Icons.settings_rounded, color: Colors.white),
-                onPressed: () => Navigator.push(
-                  context,
-                  SlideRoute(builder: (_) => const SettingsScreen()),
-                ),
-              ),
+          child: Column(
+            children: [
+              ProfileWidget(key: ValueKey('profile_$_refreshKey'), userId: userId),
+              MyPostCommentWidget(key: ValueKey('stats_$_refreshKey'), userId: userId),
+              FtvCertificationWidget(key: ValueKey('cert_$_refreshKey')),
+              SongRequestHistoryWidget(key: ValueKey('songs_$_refreshKey')),
             ],
           ),
-        ],
+        ),
       ),
     );
   }

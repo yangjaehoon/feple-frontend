@@ -1,7 +1,10 @@
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_offline_banner.dart';
+import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:feple/screen/main/tab/tab_item.dart';
 import 'package:feple/screen/main/tab/tab_navigator.dart';
+import 'package:feple/screen/settings/s_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../common/app_events.dart';
@@ -109,6 +112,22 @@ class MainScreenState extends State<MainScreen>
     );
   }
 
+  List<Widget> get _currentExtraActions {
+    if (_currentTab == TabItem.favorite) {
+      return [
+        IconButton(
+          tooltip: 'settings'.tr(),
+          icon: const Icon(Icons.settings_rounded, color: Colors.white),
+          onPressed: () => Navigator.push(
+            context,
+            SlideRoute(builder: (_) => const SettingsScreen()),
+          ),
+        ),
+      ];
+    }
+    return const [];
+  }
+
   // ValueListenableBuilder: 스크롤 이벤트 시 body 패딩만 재빌드.
   // child를 분리해 ValueNotifier 변경과 무관하게 탭 페이지는 한 번만 빌드.
   Widget _buildAnimatedBody() {
@@ -126,9 +145,19 @@ class MainScreenState extends State<MainScreen>
       },
       child: SafeArea(
         bottom: !extendBody,
-        child: NotificationListener<ScrollNotification>(
-          onNotification: _handleScrollNotification,
-          child: pages,
+        child: Column(
+          children: [
+            FepleAppBar(
+              _currentTab.appbarTitle,
+              extraTrailingActions: _currentExtraActions,
+            ),
+            Expanded(
+              child: NotificationListener<ScrollNotification>(
+                onNotification: _handleScrollNotification,
+                child: pages,
+              ),
+            ),
+          ],
         ),
       ),
     );

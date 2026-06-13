@@ -29,6 +29,12 @@ enum TabItem {
 
   String get tabName => tabNameKey.tr();
 
+  String get appbarTitle => switch (this) {
+    TabItem.communityBoard => 'board'.tr(),
+    TabItem.concertList    => 'festival_schedule'.tr(),
+    _                      => 'Feple',
+  };
+
   NavigationDestination toNavigationDestination() {
     return NavigationDestination(
       icon: Icon(inActiveIcon, size: 24),

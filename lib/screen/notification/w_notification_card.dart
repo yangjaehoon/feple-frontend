@@ -29,7 +29,7 @@ class NotificationCard extends StatelessWidget {
           children: [
             _buildIconBadge(colors),
             const SizedBox(width: 12),
-            Expanded(child: _buildTextContent(colors)),
+            Expanded(child: _buildTextContent(context, colors)),
             if (!item.read) _buildUnreadDot(colors),
           ],
         ),
@@ -73,12 +73,13 @@ class NotificationCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTextContent(AbstractThemeColors colors) {
+  Widget _buildTextContent(BuildContext context, AbstractThemeColors colors) {
+    final isEnglish = context.locale.languageCode == 'en';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          item.title,
+          item.displayTitle(isEnglish),
           style: TextStyle(
             fontSize: 14,
             fontWeight: item.read ? FontWeight.w500 : FontWeight.w700,
@@ -87,7 +88,7 @@ class NotificationCard extends StatelessWidget {
         ),
         const SizedBox(height: 3),
         Text(
-          item.body,
+          item.displayBody(isEnglish),
           style: TextStyle(
             fontSize: 13,
             color: colors.textSecondary,

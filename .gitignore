@@ -99,7 +99,9 @@ android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
 ios/firebase_app_id_file.json
 lib/firebase_options.dart
-lib/auth/
+lib/auth/keys.dart
+lib/auth/get_api_key.dart
+lib/auth/secrets.json
 lib/config.dart
 lib/config/app_config.dart
 

@@ -135,7 +135,9 @@ class FcmService {
 
   Future<void> _unregisterFromServer() async {
     try {
-      final token = await _messaging.getToken();
+      // getToken()은 네트워크/APNs 상태에 따라 무기한 대기할 수 있으므로 타임아웃 필수
+      final token = await _messaging.getToken()
+          .timeout(const Duration(seconds: 5));
       if (token == null) return;
       await DioClient.dio.delete('/users/device-token', data: {'token': token});
       debugPrint('[FCM] 토큰 서버 삭제 완료');

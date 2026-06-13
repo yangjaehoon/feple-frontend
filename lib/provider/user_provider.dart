@@ -10,7 +10,9 @@ import '../model/user_model.dart';
 import 'package:dio/dio.dart';
 
 class UserProvider with ChangeNotifier {
-  static const _storage = FlutterSecureStorage();
+  static const _storage = FlutterSecureStorage(
+    aOptions: AndroidOptions(resetOnError: true),
+  );
   static const _kUserJson = 'userJson';
 
   final UserService _userService;
@@ -30,24 +32,33 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> _loadFromSecureStorage() async {
-    final token = await TokenStore.readAccessToken();
-    if (token == null) {
-      await _storage.delete(key: _kUserJson);
-      return;
-    }
-
-    final jsonString = await _storage.read(key: _kUserJson);
-    if (jsonString != null) {
-      final data = jsonDecode(jsonString);
-      final cached = User.fromJson(data);
-      // JWT sub와 캐시 userId 불일치 → 다른 계정의 캐시 데이터 폐기
-      final jwtUserId = _parseJwtSub(token);
-      if (jwtUserId != null && jwtUserId != cached.id) {
+    try {
+      final token = await TokenStore.readAccessToken();
+      if (token == null) {
         await _storage.delete(key: _kUserJson);
         return;
       }
-      _user = cached;
-      notifyListeners();
+
+      final jsonString = await _storage.read(key: _kUserJson);
+      if (jsonString != null) {
+        final data = jsonDecode(jsonString);
+        final cached = User.fromJson(data);
+        // JWT sub와 캐시 userId 불일치 → 다른 계정의 캐시 데이터 폐기
+        final jwtUserId = _parseJwtSub(token);
+        if (jwtUserId != null && jwtUserId != cached.id) {
+          await _storage.delete(key: _kUserJson);
+          return;
+        }
+        _user = cached;
+        notifyListeners();
+      }
+    } catch (e) {
+      // 재설치 후 Keystore 키 소실 등 복구 불가 오류 — 보안 스토리지 전체 초기화
+      debugPrint('[UserProvider] 보안 스토리지 로드 실패, 초기화: $e');
+      try {
+        await TokenStore.clear();
+        await _storage.delete(key: _kUserJson);
+      } catch (_) {}
     }
   }
 

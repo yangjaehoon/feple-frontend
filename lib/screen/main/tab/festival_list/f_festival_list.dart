@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../provider/festival_preview_provider.dart';
-import '../search/w_feple_app_bar.dart';
 
 class ConcertListFragment extends StatefulWidget {
   const ConcertListFragment({super.key});
@@ -51,41 +50,35 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
 
     return Container(
       color: colors.backgroundMain,
-      child: Stack(
-        children: [
-          RefreshIndicator(
-            onRefresh: () async {
-              try {
-                await context.read<FestivalPreviewProvider>().refresh(force: true);
-              } catch (_) {}
-            },
-            color: colors.activate,
-            child: CustomScrollView(
-              controller: _scrollController,
-              slivers: [
-                SliverPadding(
-                  padding: EdgeInsets.only(
-                    top: AppDimens.scrollPaddingTop,
-                    bottom: AppDimens.scrollPaddingBottom,
+      child: RefreshIndicator(
+        onRefresh: () async {
+          try {
+            await context.read<FestivalPreviewProvider>().refresh(force: true);
+          } catch (_) {}
+        },
+        color: colors.activate,
+        child: CustomScrollView(
+          controller: _scrollController,
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.only(
+                bottom: AppDimens.scrollPaddingBottom,
+              ),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  _FilterPanel(
+                    expanded: _filterExpanded,
+                    onToggle: () =>
+                        setState(() => _filterExpanded = !_filterExpanded),
+                    activeFilterCount: activeFilterCount,
                   ),
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate([
-                      _FilterPanel(
-                        expanded: _filterExpanded,
-                        onToggle: () =>
-                            setState(() => _filterExpanded = !_filterExpanded),
-                        activeFilterCount: activeFilterCount,
-                      ),
-                      const ConcertListWidget(),
-                      const _LoadMoreIndicator(),
-                    ]),
-                  ),
-                ),
-              ],
+                  const ConcertListWidget(),
+                  const _LoadMoreIndicator(),
+                ]),
+              ),
             ),
-          ),
-          FepleAppBar('festival_schedule'.tr()),
-        ],
+          ],
+        ),
       ),
     );
   }

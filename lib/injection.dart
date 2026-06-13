@@ -12,6 +12,7 @@ import 'service/fcm_service.dart';
 import 'service/festival_detail_service.dart';
 import 'service/festival_interaction_service.dart';
 import 'service/festival_service.dart';
+import 'screen/notification/notification_count_notifier.dart';
 import 'service/notification_preference_service.dart';
 import 'service/notification_service.dart';
 import 'service/post_service.dart';
@@ -41,6 +42,7 @@ void setupDependencies() {
   sl.registerLazySingleton<CachePrefetchService>(() => CachePrefetchService(sl<FestivalDetailService>()));
   sl.registerLazySingleton<FestivalDetailService>(() => FestivalDetailService());
   sl.registerLazySingleton<FestivalInteractionService>(() => FestivalInteractionService());
+  sl.registerLazySingleton<NotificationCountNotifier>(() => NotificationCountNotifier());
   sl.registerLazySingleton<NotificationPreferenceService>(() => NotificationPreferenceService());
   sl.registerLazySingleton<NotificationService>(() => NotificationService());
   sl.registerLazySingleton<PostService>(() => PostService());

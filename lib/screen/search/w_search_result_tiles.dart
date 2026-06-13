@@ -30,7 +30,7 @@ class SearchArtistTile extends StatelessWidget {
         backgroundImage: hasImage ? CachedNetworkImageProvider(data.profileImageUrl) : null,
         child: hasImage ? null : Icon(Icons.person, color: colors.textSecondary),
       ),
-      title: _buildHighlightedText(
+      title: buildHighlightedText(
         data.displayName(context.locale.languageCode == 'en'),
         highlightKeyword,
         TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle),
@@ -77,7 +77,7 @@ class SearchFestivalTile extends StatelessWidget {
               : _placeholder(colors),
         ),
       ),
-      title: _buildHighlightedText(
+      title: buildHighlightedText(
         data.displayTitle(context.locale.languageCode == 'en'),
         highlightKeyword,
         TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle),
@@ -133,7 +133,7 @@ class SearchPostTile extends StatelessWidget {
         ),
         child: Icon(Icons.article_rounded, color: colors.activate, size: 22),
       ),
-      title: _buildHighlightedText(
+      title: buildHighlightedText(
         data.title,
         highlightKeyword,
         TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle),

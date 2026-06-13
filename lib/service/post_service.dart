@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:feple/common/constant/board_types.dart';
-import 'package:feple/common/exception/banned_word_exception.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/network/dio_client.dart';
 
@@ -53,12 +53,7 @@ class PostService {
         if (imageObjectKey != null) 'imageUrl': imageObjectKey,
       });
     } on DioException catch (e) {
-      if (e.response?.statusCode == 400) {
-        final data = e.response?.data;
-        if (data is Map && data['code'] == 'BAD_WORD') {
-          throw BannedWordException(data['field'] as String? ?? 'content');
-        }
-      }
+      throwIfBannedWord(e);
       rethrow;
     }
   }
@@ -169,12 +164,7 @@ class PostService {
         'imageUrl': imageObjectKey,
       });
     } on DioException catch (e) {
-      if (e.response?.statusCode == 400) {
-        final data = e.response?.data;
-        if (data is Map && data['code'] == 'BAD_WORD') {
-          throw BannedWordException(data['field'] as String? ?? 'content');
-        }
-      }
+      throwIfBannedWord(e);
       rethrow;
     }
   }

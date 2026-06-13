@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 /// 이미지 선택/미리보기 박스
@@ -28,7 +29,7 @@ class ImagePickerBox extends StatelessWidget {
           width: 240,
           decoration: BoxDecoration(
             color: colors.surface,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
             border: Border.all(
               color: colors.activate.withValues(alpha: 0.4),
               width: 1.5,

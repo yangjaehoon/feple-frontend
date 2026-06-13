@@ -10,6 +10,7 @@ import 'package:feple/screen/main/tab/my_page/w_my_liked_posts.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_posts.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_scraps.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 class MyPostCommentWidget extends StatefulWidget {
@@ -142,7 +143,7 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
         height: 90,
         decoration: BoxDecoration(
           color: colors.statCardBg,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
           border: Border.all(color: colors.listDivider),
           boxShadow: [
             BoxShadow(

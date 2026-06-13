@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/service/certification_service.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -138,7 +139,7 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
         height: _photoAreaHeight,
         decoration: BoxDecoration(
           color: colors.backgroundMain,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
           border: Border.all(
             color: _imageBytes != null
                 ? colors.activate
@@ -148,7 +149,7 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
         ),
         child: _imageBytes != null
             ? ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
                 child: Image.memory(_imageBytes!, fit: BoxFit.cover),
               )
             : Column(

@@ -190,7 +190,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
               width: _posterThumbnailWidth,
               height: _posterThumbnailHeight,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
                 boxShadow: [
                   BoxShadow(
                     color: colors.cardShadow.withValues(alpha: 0.3),
@@ -200,7 +200,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
                 ],
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
                 child: CachedNetworkImage(
                   imageUrl: widget.poster.posterUrl,
                   memCacheWidth: 300,
@@ -330,7 +330,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
               color: isAttending
                   ? colors.accentColor.withValues(alpha: 0.85)
                   : Colors.white.withValues(alpha: 0.18),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(AppDimens.cardRadius),
               border: Border.all(
                 color: isAttending
                     ? colors.accentColor
@@ -464,7 +464,7 @@ class _Tag extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.18),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadius),
         border: Border.all(color: color.withValues(alpha: 0.5), width: 0.8),
       ),
       child: Text(

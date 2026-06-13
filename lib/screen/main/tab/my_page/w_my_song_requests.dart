@@ -8,6 +8,7 @@ import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
 import 'package:feple/screen/main/tab/my_page/s_song_request_list.dart';
 import 'package:feple/service/song_request_service.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -115,7 +116,7 @@ class _SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
             child: InkWell(
               onTap: _openFullList,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Row(

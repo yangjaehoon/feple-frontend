@@ -12,6 +12,7 @@ import 'package:feple/screen/settings/s_notification_settings.dart';
 import 'package:feple/common/data/preference/prefs.dart';
 import 'package:feple/screen/onboarding/s_onboarding.dart';
 import 'package:flutter/foundation.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get_utils/src/extensions/string_extensions.dart';
@@ -375,7 +376,7 @@ class _LanguageItem extends StatelessWidget {
       child: DropdownButton<String>(
         value: lang.name.capitalizeFirst,
         dropdownColor: colors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,

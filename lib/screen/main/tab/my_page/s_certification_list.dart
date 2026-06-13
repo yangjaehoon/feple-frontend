@@ -8,6 +8,7 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/certification_model.dart';
 import 'package:feple/service/certification_service.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 import 'cert_status_style.dart';
@@ -72,7 +73,7 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
       itemBuilder: (_, __) => Container(
         decoration: BoxDecoration(
           color: colors.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
           boxShadow: [
             BoxShadow(
               color: colors.cardShadow.withValues(alpha: 0.08),
@@ -209,7 +210,7 @@ class _CertCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
       decoration: BoxDecoration(
         color: statusColor.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadius),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -289,7 +290,7 @@ class _CertCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
         boxShadow: [
           BoxShadow(
             color: colors.cardShadow.withValues(alpha: 0.08),

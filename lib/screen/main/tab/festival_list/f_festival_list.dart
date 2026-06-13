@@ -104,7 +104,7 @@ class _FilterPanel extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
         boxShadow: [
           BoxShadow(
             color: colors.cardShadow.withValues(alpha: 0.08),
@@ -129,7 +129,7 @@ class _FilterPanel extends StatelessWidget {
   Widget _buildHeader(AbstractThemeColors colors, FestivalPreviewProvider provider) {
     return InkWell(
       onTap: onToggle,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
@@ -262,7 +262,7 @@ class _FilterSection extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: isSelected ? colors.activate : colors.backgroundMain,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadius),
           border: Border.all(color: isSelected ? colors.activate : colors.listDivider),
         ),
         child: Text(

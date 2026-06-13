@@ -5,6 +5,7 @@ import 'package:feple/screen/main/tab/search/festival_information/weather_style.
 import 'package:feple/injection.dart';
 import 'package:feple/model/weather_model.dart';
 import 'package:feple/service/festival_detail_service.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 class WeatherBottomSheet extends StatefulWidget {
@@ -223,7 +224,7 @@ class _InfoChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadius),
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(

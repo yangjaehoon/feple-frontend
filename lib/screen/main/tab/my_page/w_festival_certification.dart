@@ -8,6 +8,7 @@ import 'package:feple/screen/main/tab/my_page/s_certification_list.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -204,7 +205,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
                 color: ringColor.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(AppDimens.cardRadius),
               ),
               child: Text(
                 cert.status.labelKey.tr(),

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:feple/common/exception/banned_word_exception.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/followed_artist.dart';
@@ -60,12 +60,7 @@ class UserService {
     try {
       await DioClient.dio.patch('/users/$userId/bio', data: {'bio': bio});
     } on DioException catch (e) {
-      if (e.response?.statusCode == 400) {
-        final data = e.response?.data;
-        if (data is Map && data['code'] == 'BAD_WORD') {
-          throw BannedWordException(data['field'] as String? ?? 'bio');
-        }
-      }
+      throwIfBannedWord(e, defaultField: 'bio');
       rethrow;
     }
   }

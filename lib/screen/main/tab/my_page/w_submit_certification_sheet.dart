@@ -184,12 +184,12 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: InkWell(
         onTap: _showFestivalSearchSheet,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
         child: InputDecorator(
           decoration: InputDecoration(
             labelText: 'tab_concert'.tr(),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
             ),
             contentPadding: const EdgeInsets.symmetric(
                 horizontal: 14, vertical: 12),
@@ -295,7 +295,7 @@ class _FestivalSearchSheetState extends State<_FestivalSearchSheet> {
           hintText: 'festival_search_hint'.tr(),
           prefixIcon: const Icon(Icons.search),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
           ),
           contentPadding: const EdgeInsets.symmetric(
               horizontal: 14, vertical: 12),

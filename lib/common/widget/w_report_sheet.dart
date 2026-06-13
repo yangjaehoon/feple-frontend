@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/service/report_service.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 /// 신고 사유 선택 바텀시트.
@@ -79,7 +80,7 @@ Future<void> showReportSheet(
                 decoration: InputDecoration(
                   hintText: 'report_detail_hint'.tr(),
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8)),
+                      borderRadius: BorderRadius.circular(AppDimens.radiusSmall)),
                   contentPadding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 ),

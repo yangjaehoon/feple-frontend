@@ -6,6 +6,7 @@ import 'package:feple/common/widget/w_report_sheet.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/service/report_service.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:feple/model/artist_photo_response.dart';
@@ -146,7 +147,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
     return Container(
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
         boxShadow: [
           BoxShadow(
               color: colors.cardShadow.withValues(alpha: 0.08),
@@ -216,7 +217,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
             color: Colors.black.withValues(alpha: 0.45),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -313,7 +314,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: colors.activate.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadius),
       ),
       child: Text(
         photo.description,

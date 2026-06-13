@@ -80,7 +80,7 @@ class _DateChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         decoration: BoxDecoration(
           color: selected ? colors.activate : colors.backgroundMain,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadius),
           border: Border.all(
             color: selected ? colors.activate : colors.listDivider,
           ),

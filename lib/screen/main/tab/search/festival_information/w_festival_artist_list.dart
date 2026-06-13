@@ -10,6 +10,7 @@ import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/screen/main/tab/search/festival_information/festival_artists_notifier.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 class FestivalArtistListScreen extends StatelessWidget {
@@ -106,7 +107,7 @@ class FestivalArtistListScreen extends StatelessWidget {
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20.0),
+                  borderRadius: BorderRadius.circular(AppDimens.cardRadius),
                   border: isFollowed
                       ? Border.all(color: colors.activate, width: 2.5)
                       : null,
@@ -154,7 +155,7 @@ class FestivalArtistListScreen extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: colors.activate.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadius),
       ),
       child: Icon(Icons.person_rounded, color: colors.activate, size: 40),
     );

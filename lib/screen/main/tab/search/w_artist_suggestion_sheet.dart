@@ -4,6 +4,7 @@ import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/artist_suggestion_service.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 class ArtistSuggestionSheet extends StatefulWidget {
@@ -122,7 +123,7 @@ class _ArtistSuggestionSheetState extends State<ArtistSuggestionSheet> {
         decoration: InputDecoration(
           labelText: 'artist_suggestion_name_label'.tr(),
           hintText: 'artist_suggestion_name_hint'.tr(),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny)),
           contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           errorText: _nameError,
         ),
@@ -137,7 +138,7 @@ class _ArtistSuggestionSheetState extends State<ArtistSuggestionSheet> {
         decoration: InputDecoration(
           labelText: 'artist_suggestion_note_label'.tr(),
           hintText: 'artist_suggestion_note_hint'.tr(),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny)),
           contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         ),
       ),

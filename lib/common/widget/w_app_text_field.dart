@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 /// 앱 전체에서 사용하는 공통 텍스트 필드 스타일.
@@ -37,17 +38,17 @@ class AppTextField extends StatelessWidget {
       fillColor: colors.surface,
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
         borderSide: BorderSide(color: colors.divider),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
         borderSide: BorderSide(
           color: errorText != null ? AppColors.errorRed : colors.divider,
         ),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
         borderSide: BorderSide(color: colors.focusedBorder, width: 2),
       ),
     );

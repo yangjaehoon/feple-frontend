@@ -9,38 +9,8 @@ import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.d
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/text_highlight.dart';
 import 'package:flutter/material.dart';
-
-Widget _buildHighlightedText(
-  String text,
-  String? keyword,
-  TextStyle baseStyle,
-  Color highlightColor,
-) {
-  if (keyword == null || keyword.isEmpty) {
-    return Text(text, style: baseStyle, maxLines: 1, overflow: TextOverflow.ellipsis);
-  }
-  final lower = text.toLowerCase();
-  final lowerKw = keyword.toLowerCase();
-  final spans = <TextSpan>[];
-  int start = 0;
-  for (final match in RegExp(RegExp.escape(lowerKw)).allMatches(lower)) {
-    if (match.start > start) {
-      spans.add(TextSpan(text: text.substring(start, match.start)));
-    }
-    spans.add(TextSpan(
-      text: text.substring(match.start, match.end),
-      style: TextStyle(color: highlightColor, fontWeight: FontWeight.w700),
-    ));
-    start = match.end;
-  }
-  if (start < text.length) spans.add(TextSpan(text: text.substring(start)));
-  return RichText(
-    text: TextSpan(style: baseStyle, children: spans),
-    maxLines: 1,
-    overflow: TextOverflow.ellipsis,
-  );
-}
 
 class SearchArtistTile extends StatelessWidget {
   final Artist data;

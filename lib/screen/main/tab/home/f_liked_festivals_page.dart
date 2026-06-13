@@ -7,6 +7,7 @@ import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/screen/main/tab/home/w_reorder_sheet.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 class LikedFestivalsPage extends StatelessWidget {
@@ -97,7 +98,7 @@ class _FestivalCard extends StatelessWidget {
       height: 120,
       margin: const EdgeInsets.all(10),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
         child: AspectRatio(
           aspectRatio: 2 / 3,
           child: Stack(
@@ -189,7 +190,7 @@ class _FestivalCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadius),
         boxShadow: [
           BoxShadow(
             color: colors.cardShadow.withValues(alpha: 0.12),

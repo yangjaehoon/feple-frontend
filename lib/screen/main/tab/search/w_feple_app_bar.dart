@@ -142,7 +142,7 @@ class _FepleAppBarState extends State<FepleAppBar> {
       decoration: BoxDecoration(
         color: AppColors.errorRed,
         shape: count > 9 ? BoxShape.rectangle : BoxShape.circle,
-        borderRadius: count > 9 ? BorderRadius.circular(8) : null,
+        borderRadius: count > 9 ? BorderRadius.circular(AppDimens.radiusSmall) : null,
         border: Border.all(color: Colors.white, width: 1.5),
       ),
       child: Text(

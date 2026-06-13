@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/timetable_colors.dart';
 import 'package:feple/common/dart/extension/time_of_day_extension.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_user_entry.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 class TimetableEntryDialog extends StatefulWidget {
@@ -88,7 +89,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
 
     return AlertDialog(
       backgroundColor: colors.surface,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadius)),
       title: Text(
         widget.isEditing ? 'timetable_edit_entry'.tr() : 'timetable_add_entry'.tr(),
         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: colors.textTitle),
@@ -123,7 +124,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
           style: FilledButton.styleFrom(
             backgroundColor: colors.activate,
             foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.radiusSmall)),
           ),
           child: Text(widget.isEditing ? 'photo_edit_action'.tr() : 'timetable_add'.tr()),
         ),
@@ -254,7 +255,7 @@ class _TimeBtn extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
             decoration: BoxDecoration(
               color: colors.backgroundMain,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
               border: Border.all(color: colors.listDivider),
             ),
             child: Text(

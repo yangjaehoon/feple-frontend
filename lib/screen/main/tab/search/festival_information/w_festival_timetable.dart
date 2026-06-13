@@ -142,7 +142,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   color: colors.activate.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
                 ),
                 child: Icon(Icons.open_in_full_rounded, size: 16, color: colors.activate),
               ),

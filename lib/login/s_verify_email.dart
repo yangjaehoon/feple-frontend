@@ -4,6 +4,7 @@ import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/service/auth_service.dart';
 import 'package:feple/service/fcm_service.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -270,7 +271,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
               : colors.textSecondary.withValues(alpha: 0.3),
         ),
         minimumSize: const Size(double.infinity, 52),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny)),
       ),
       child: Text(
         _cooldown > 0

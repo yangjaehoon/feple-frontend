@@ -9,6 +9,7 @@ import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/followed_artist.dart';
 import 'package:feple/screen/main/tab/home/w_reorder_sheet.dart';
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 class FollowedArtistsByGenrePage extends StatefulWidget {
@@ -164,7 +165,7 @@ class _FollowedArtistsByGenrePageState
           aspectRatio: 1.0,
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12.0),
+              borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
               boxShadow: [
                 BoxShadow(
                   color: colors.cardShadow.withValues(alpha: 0.15),
@@ -174,7 +175,7 @@ class _FollowedArtistsByGenrePageState
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(12.0),
+              borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
               child: (artist.profileImageUrl?.isNotEmpty == true)
                   ? CachedNetworkImage(
                       imageUrl: artist.profileImageUrl!,

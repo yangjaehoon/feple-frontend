@@ -1,4 +1,5 @@
 import 'package:feple/common/constant/app_colors.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 extension SnackbarContextExtension on BuildContext {
@@ -67,7 +68,7 @@ void _show(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
         boxShadow: [
           BoxShadow(
             color: bg.withValues(alpha: 0.45),

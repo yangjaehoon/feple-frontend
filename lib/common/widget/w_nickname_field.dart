@@ -3,6 +3,7 @@ import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/nickname_check_result.dart';
 import 'package:feple/service/user_service.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 /// signup, edit_profile, change_nickname에서 공통으로 사용하는
@@ -119,11 +120,11 @@ class NicknameFieldState extends State<NicknameField> {
         fillColor: colors.surface,
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
           borderSide: BorderSide(color: colors.divider),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
           borderSide: BorderSide(
             color: _available == false
                 ? AppColors.errorRed
@@ -133,7 +134,7 @@ class NicknameFieldState extends State<NicknameField> {
           ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
           borderSide: BorderSide(color: colors.focusedBorder, width: 2),
         ),
       ),

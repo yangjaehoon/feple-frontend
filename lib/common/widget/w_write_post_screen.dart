@@ -8,6 +8,7 @@ import 'package:feple/common/util/image_upload_helper.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/service/post_service.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -122,7 +123,7 @@ class _WritePostScreenState extends State<WritePostScreen> {
 
   InputDecoration _fieldDecoration(String hintKey, {String? bannedWordMessage}) {
     final colors = context.appColors;
-    final radius = BorderRadius.circular(12);
+    final radius = BorderRadius.circular(AppDimens.cardRadiusTiny);
     return InputDecoration(
       hintText: hintKey.tr(),
       hintStyle: TextStyle(color: colors.textSecondary),
@@ -169,12 +170,12 @@ class _WritePostScreenState extends State<WritePostScreen> {
     Widget? preview;
     if (_selectedImage != null) {
       preview = ClipRRect(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
         child: Image.memory(_selectedImage!, fit: BoxFit.cover, width: 72, height: 72),
       );
     } else if (_existingImageUrl != null) {
       preview = ClipRRect(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
         child: CachedNetworkImage(imageUrl: _existingImageUrl!, width: 72, height: 72, fit: BoxFit.cover),
       );
     }
@@ -188,7 +189,7 @@ class _WritePostScreenState extends State<WritePostScreen> {
             height: 72,
             decoration: BoxDecoration(
               border: Border.all(color: colors.listDivider),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
             ),
             child: preview ?? Icon(Icons.add_photo_alternate_outlined, color: colors.textSecondary, size: 32),
           ),

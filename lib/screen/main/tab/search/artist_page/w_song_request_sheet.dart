@@ -145,7 +145,7 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
         decoration: InputDecoration(
           labelText: 'song_request_song_title'.tr(),
           hintText: 'song_request_song_title_hint'.tr(),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny)),
           contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           errorText: _titleError,
         ),
@@ -161,7 +161,7 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
         decoration: InputDecoration(
           labelText: 'song_request_youtube_url'.tr(),
           hintText: 'song_request_youtube_url_hint'.tr(),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny)),
           contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           errorText: _urlError,
         ),

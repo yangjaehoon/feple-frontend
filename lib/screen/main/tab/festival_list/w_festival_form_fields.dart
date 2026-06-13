@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 class FestivalTextField extends StatelessWidget {
@@ -29,15 +30,15 @@ class FestivalTextField extends StatelessWidget {
         filled: true,
         fillColor: colors.surface,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
           borderSide: BorderSide(color: colors.listDivider),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
           borderSide: BorderSide(color: colors.listDivider),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
           borderSide: BorderSide(color: colors.activate, width: 1.5),
         ),
       ),
@@ -66,7 +67,7 @@ class FestivalDateTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         decoration: BoxDecoration(
           color: colors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
           border: Border.all(color: colors.listDivider),
         ),
         child: Row(

@@ -161,7 +161,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           height: 8,
           decoration: BoxDecoration(
             color: isActive ? colors.activate : colors.inActivate,
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(AppDimens.radiusXs),
           ),
         );
       }),
@@ -274,7 +274,7 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
           height: 8,
           decoration: BoxDecoration(
             color: isActive ? colors.activate : colors.inActivate,
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(AppDimens.radiusXs),
           ),
         );
       }),
@@ -427,7 +427,7 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: colors.activate.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(AppDimens.cardRadius),
               ),
               child: Text(
                 'onboarding_pick_selected'.tr(args: ['$count']),
@@ -477,7 +477,7 @@ class _ArtistSelectCard extends StatelessWidget {
             child: AnimatedContainer(
               duration: AppDimens.animFast,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
                 border: Border.all(
                   color: selected ? colors.activate : Colors.transparent,
                   width: 2.5,

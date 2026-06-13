@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/text_highlight.dart';
 import 'package:feple/common/widget/w_profile_avatar.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_like_comment_row.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 /// 게시글 목록에서 한 줄 타일
@@ -18,41 +20,12 @@ class PostListTile extends StatelessWidget {
     this.highlightKeyword,
   });
 
-  List<TextSpan> _buildHighlightedSpans(String text, String keyword, TextStyle base, Color highlightColor) {
-    if (keyword.isEmpty) return [TextSpan(text: text, style: base)];
-    final pattern = RegExp(RegExp.escape(keyword), caseSensitive: false);
-    final spans = <TextSpan>[];
-    int last = 0;
-    for (final match in pattern.allMatches(text)) {
-      if (match.start > last) {
-        spans.add(TextSpan(text: text.substring(last, match.start), style: base));
-      }
-      spans.add(TextSpan(
-        text: text.substring(match.start, match.end),
-        style: base.copyWith(color: highlightColor, fontWeight: FontWeight.w700),
-      ));
-      last = match.end;
-    }
-    if (last < text.length) spans.add(TextSpan(text: text.substring(last), style: base));
-    return spans;
-  }
-
   Widget _buildTitle(AbstractThemeColors colors) {
-    if (highlightKeyword != null && highlightKeyword!.isNotEmpty) {
-      return RichText(
-        text: TextSpan(
-          children: _buildHighlightedSpans(
-            post.title,
-            highlightKeyword!,
-            TextStyle(color: colors.textTitle, fontWeight: FontWeight.w600),
-            colors.activate,
-          ),
-        ),
-      );
-    }
-    return Text(
+    return buildHighlightedText(
       post.title,
-      style: TextStyle(color: colors.textTitle, fontWeight: FontWeight.w600),
+      highlightKeyword,
+      TextStyle(color: colors.textTitle, fontWeight: FontWeight.w600),
+      colors.activate,
     );
   }
 
@@ -82,7 +55,7 @@ class PostListTile extends StatelessWidget {
       children: [
         if (post.imageUrl != null) ...[
           ClipRRect(
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(AppDimens.radiusXs),
             child: CachedNetworkImage(
               imageUrl: post.imageUrl!,
               width: 48,

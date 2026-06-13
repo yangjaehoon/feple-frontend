@@ -8,6 +8,7 @@ import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/w_artist_suggestion_sheet.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../model/artist_model.dart';
@@ -238,7 +239,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
           aspectRatio: 1.0,
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12.0),
+              borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
               boxShadow: [
                 BoxShadow(
                   color: isFollowed
@@ -251,14 +252,14 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
             ),
             foregroundDecoration: isFollowed
                 ? BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.0),
+                    borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
                     border: Border.all(color: colors.activate, width: 2.5),
                   )
                 : null,
             child: Hero(
               tag: 'artist_image_${artist.id}',
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(12.0),
+                borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
                 child: CachedNetworkImage(
                   imageUrl: artist.profileImageUrl,
                   memCacheWidth: 200,
@@ -268,7 +269,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
                   errorWidget: (_, __, ___) => Container(
                     decoration: BoxDecoration(
                       color: colors.activate.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
                     ),
                     child: Icon(Icons.person_rounded,
                         color: colors.activate, size: 40),

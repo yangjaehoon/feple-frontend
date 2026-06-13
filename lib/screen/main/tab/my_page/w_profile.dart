@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/screen/main/tab/my_page/w_edit_profile.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -153,7 +154,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
         color: colors.levelBadgeBg.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadius),
       ),
       child: Text(
         'Lv.${user.level}',
@@ -175,7 +176,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
     return Container(
       decoration: BoxDecoration(
         color: colors.actionBtnPrimary,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
         boxShadow: [
           BoxShadow(
             color: colors.cardShadow.withValues(alpha: 0.3),
@@ -188,7 +189,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
         color: Colors.transparent,
         child: InkWell(
           onTap: onPressed,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             child: Row(

@@ -5,6 +5,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/festival_model.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 class HomeFestivalsSection extends StatelessWidget {
@@ -44,7 +45,7 @@ class HomeFestivalsSection extends StatelessWidget {
             child: SkeletonBox(
               width: 130,
               height: 190,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
             ),
           ),
         ),
@@ -88,7 +89,7 @@ class _FestivalItem extends StatelessWidget {
         width: 130,
         margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
           boxShadow: [
             BoxShadow(
               color: colors.cardShadow.withValues(alpha: 0.12),
@@ -98,7 +99,7 @@ class _FestivalItem extends StatelessWidget {
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
           child: Stack(
             fit: StackFit.expand,
             children: [

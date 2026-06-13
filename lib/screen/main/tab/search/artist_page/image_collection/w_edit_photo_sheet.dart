@@ -5,6 +5,7 @@ import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/service/artist_schedule_service.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/model/artist_photo_response.dart';
 
@@ -123,9 +124,9 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
       controller: _titleCtrl,
       decoration: InputDecoration(
         labelText: 'photo_title_label'.tr(),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny)),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
           borderSide: BorderSide(color: colors.activate, width: 2),
         ),
       ),
@@ -138,9 +139,9 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
       decoration: InputDecoration(
         labelText: 'festival_label'.tr(),
         labelStyle: TextStyle(color: colors.textSecondary),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny)),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
           borderSide: BorderSide(color: colors.activate, width: 2),
         ),
       ),

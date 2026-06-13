@@ -146,7 +146,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
                   color: selected ? colors.activate : colors.surface,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(AppDimens.cardRadius),
                   border: Border.all(
                     color: selected ? colors.activate : colors.listDivider,
                   ),
@@ -177,7 +177,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
           padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
             color: colors.surface,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
             border: Border.all(color: colors.listDivider),
           ),
           child: DropdownButtonHideUnderline(

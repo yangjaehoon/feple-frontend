@@ -79,15 +79,15 @@ ThemeData lightTheme = ThemeData(
   ),
   inputDecorationTheme: InputDecorationTheme(
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
       borderSide: const BorderSide(color: Color(0xFFDDE3E7)),
     ),
     enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
       borderSide: const BorderSide(color: Color(0xFFDDE3E7)),
     ),
     focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
       borderSide: const BorderSide(color: AppColors.skyBlue, width: 2),
     ),
     errorBorder: OutlineInputBorder(
@@ -144,7 +144,7 @@ ThemeData lightTheme = ThemeData(
     space: 1,
   ),
   chipTheme: ChipThemeData(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadius)),
   ),
 );
 
@@ -199,15 +199,15 @@ ThemeData darkTheme = ThemeData(
   ),
   inputDecorationTheme: InputDecorationTheme(
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
       borderSide: const BorderSide(color: Color(0xFF2A3F50)),
     ),
     enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
       borderSide: const BorderSide(color: Color(0xFF2A3F50)),
     ),
     focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
       borderSide: const BorderSide(color: AppColors.skyBlueLight, width: 2),
     ),
     errorBorder: OutlineInputBorder(
@@ -264,6 +264,6 @@ ThemeData darkTheme = ThemeData(
     space: 1,
   ),
   chipTheme: ChipThemeData(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadius)),
   ),
 );

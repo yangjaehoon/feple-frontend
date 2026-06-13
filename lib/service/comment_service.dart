@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:feple/common/exception/banned_word_exception.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/model/comment_detail.dart';
 import 'package:feple/network/dio_client.dart';
 
@@ -30,12 +30,7 @@ class CommentService {
         if (parentId != null) 'parentId': parentId,
       });
     } on DioException catch (e) {
-      if (e.response?.statusCode == 400) {
-        final data = e.response?.data;
-        if (data is Map && data['code'] == 'BAD_WORD') {
-          throw BannedWordException(data['field'] as String? ?? 'content');
-        }
-      }
+      throwIfBannedWord(e);
       rethrow;
     }
   }
@@ -53,12 +48,7 @@ class CommentService {
     try {
       await DioClient.dio.put('/comments/$commentId', data: {'content': content});
     } on DioException catch (e) {
-      if (e.response?.statusCode == 400) {
-        final data = e.response?.data;
-        if (data is Map && data['code'] == 'BAD_WORD') {
-          throw BannedWordException(data['field'] as String? ?? 'content');
-        }
-      }
+      throwIfBannedWord(e);
       rethrow;
     }
   }

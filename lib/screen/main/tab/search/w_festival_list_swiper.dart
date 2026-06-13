@@ -79,7 +79,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
               tag: 'festival_poster_${item.id}',
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(AppDimens.cardRadius),
                   boxShadow: [
                     BoxShadow(
                       color: colors.cardShadow.withValues(alpha: 0.2),
@@ -89,7 +89,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
                   ],
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(AppDimens.cardRadius),
                   child: CachedNetworkImage(
                     imageUrl: item.posterUrl,
                     memCacheWidth: 360,
@@ -156,7 +156,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
             child: SkeletonBox(
               width: 180,
               height: 254.5,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(AppDimens.cardRadius),
             ),
           ),
           Positioned(

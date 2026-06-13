@@ -29,7 +29,7 @@ class SelectableChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
         decoration: BoxDecoration(
           color: selected ? colors.activate : colors.surface,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadius),
           border: Border.all(
             color: selected ? colors.activate : colors.listDivider,
           ),

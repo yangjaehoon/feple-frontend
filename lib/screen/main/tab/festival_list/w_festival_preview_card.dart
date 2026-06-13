@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_app_network_image.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 import 'package:feple/model/festival_preview.dart';
@@ -18,7 +19,7 @@ class FestivalPreviewCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadius),
         boxShadow: [
           BoxShadow(
             color: colors.cardShadow.withValues(alpha: 0.12),
@@ -43,7 +44,7 @@ class FestivalPreviewCard extends StatelessWidget {
       child: Hero(
         tag: 'festival_poster_${festival.id}',
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
           child: AspectRatio(
             aspectRatio: 2 / 3,
             child: Stack(

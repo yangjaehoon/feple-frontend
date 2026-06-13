@@ -153,9 +153,9 @@ class _ImgUploadState extends State<ImgUpload> {
     return TextFormField(
       controller: _titleCtrl,
       decoration: InputDecoration(
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny)),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
           borderSide: BorderSide(color: colors.activate, width: 2),
         ),
         labelText: 'photo_artwork_label'.tr(),
@@ -174,9 +174,9 @@ class _ImgUploadState extends State<ImgUpload> {
         return DropdownButtonFormField<FestivalPreview>(
           initialValue: _selectedFestival,
           decoration: InputDecoration(
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny)),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
               borderSide: BorderSide(color: colors.activate, width: 2),
             ),
             labelText: 'festival_label'.tr(),

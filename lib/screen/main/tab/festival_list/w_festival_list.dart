@@ -8,6 +8,7 @@ import 'package:feple/model/festival_preview.dart';
 import 'package:feple/screen/main/tab/festival_list/w_festival_preview_card.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -78,7 +79,7 @@ class _FestivalListSkeleton extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
             color: colors.surface,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppDimens.cardRadius),
             boxShadow: [
               BoxShadow(
                 color: colors.cardShadow.withValues(alpha: 0.12),
@@ -94,7 +95,7 @@ class _FestivalListSkeleton extends StatelessWidget {
                 child: SkeletonBox(
                   width: 80,
                   height: 120,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
                 ),
               ),
               Expanded(

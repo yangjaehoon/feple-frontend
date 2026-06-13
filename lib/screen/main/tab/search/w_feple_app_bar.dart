@@ -1,10 +1,10 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/screen/main/s_main.dart';
+import 'package:feple/screen/notification/notification_count_notifier.dart';
 import 'package:feple/screen/notification/s_notification.dart';
 import 'package:feple/screen/search/s_unified_search.dart';
 import 'package:feple/injection.dart';
-import 'package:feple/service/notification_service.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
@@ -20,22 +20,23 @@ class FepleAppBar extends StatefulWidget {
 }
 
 class _FepleAppBarState extends State<FepleAppBar> {
-  final _notifService = sl<NotificationService>();
-  int _unreadCount = 0;
+  final _countNotifier = sl<NotificationCountNotifier>();
 
   @override
   void initState() {
     super.initState();
-    _loadUnreadCount();
+    _countNotifier.addListener(_onCountChanged);
+    _countNotifier.load();
   }
 
-  Future<void> _loadUnreadCount() async {
-    try {
-      final count = await _notifService.getUnreadCount();
-      if (mounted) setState(() => _unreadCount = count);
-    } catch (e) {
-      debugPrint('[AppBar] 알림 카운트 로드 실패: $e');
-    }
+  void _onCountChanged() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _countNotifier.removeListener(_onCountChanged);
+    super.dispose();
   }
 
   Future<void> _openNotifications() async {
@@ -43,7 +44,7 @@ class _FepleAppBarState extends State<FepleAppBar> {
       context,
       SlideRoute(builder: (_) => const NotificationScreen()),
     );
-    _loadUnreadCount();
+    _countNotifier.load();
   }
 
   @override
@@ -116,6 +117,7 @@ class _FepleAppBarState extends State<FepleAppBar> {
   }
 
   Widget _buildNotificationButton(AbstractThemeColors colors) {
+    final count = _countNotifier.count;
     return Stack(
       children: [
         IconButton(
@@ -123,29 +125,28 @@ class _FepleAppBarState extends State<FepleAppBar> {
           icon: const Icon(Icons.notifications_rounded, color: Colors.white),
           onPressed: _openNotifications,
         ),
-        if (_unreadCount > 0)
+        if (count > 0)
           Positioned(
             top: 8,
             right: 8,
-            child: _buildUnreadBadge(),
+            child: _buildUnreadBadge(count),
           ),
       ],
     );
   }
 
-  Widget _buildUnreadBadge() {
+  Widget _buildUnreadBadge(int count) {
     return Container(
       padding: const EdgeInsets.all(2),
       constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
       decoration: BoxDecoration(
         color: AppColors.errorRed,
-        shape: _unreadCount > 9 ? BoxShape.rectangle : BoxShape.circle,
-        borderRadius:
-            _unreadCount > 9 ? BorderRadius.circular(8) : null,
+        shape: count > 9 ? BoxShape.rectangle : BoxShape.circle,
+        borderRadius: count > 9 ? BorderRadius.circular(8) : null,
         border: Border.all(color: Colors.white, width: 1.5),
       ),
       child: Text(
-        _unreadCount > 99 ? '99+' : '$_unreadCount',
+        count > 99 ? '99+' : '$count',
         style: const TextStyle(
           color: Colors.white,
           fontSize: 9,

@@ -71,17 +71,19 @@ class _AllFavoriteBoardsPageState extends State<AllFavoriteBoardsPage> {
   }
 
   void _navigateToBoard(FavoriteBoard board) {
+    final isEnglish = context.locale.languageCode == 'en';
+    final displayEntityName = board.entityDisplayName(isEnglish);
     final route = switch (board.type) {
       FavoriteBoardType.artist => SlideRoute(
           builder: (_) => ArtistPostListScreen(
             artistId: board.entityId,
-            artistName: board.entityName,
+            artistName: displayEntityName,
           ),
         ),
       FavoriteBoardType.festival => SlideRoute(
           builder: (_) => FestivalBoardScreen(
             festivalId: board.entityId,
-            festivalName: board.entityName,
+            festivalName: displayEntityName,
           ),
         ),
     };
@@ -208,7 +210,7 @@ class _GridBoardTile extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               ..._buildImageLayers(colors),
-              _buildNameOverlay(),
+              _buildNameOverlay(context.locale.languageCode == 'en'),
             ],
           ),
         ),
@@ -228,7 +230,7 @@ class _GridBoardTile extends StatelessWidget {
           _placeholder(colors),
       ];
 
-  Widget _buildNameOverlay() {
+  Widget _buildNameOverlay(bool isEnglish) {
     return Positioned(
       bottom: 0,
       left: 0,
@@ -249,7 +251,7 @@ class _GridBoardTile extends StatelessWidget {
               ),
             ),
             child: Text(
-              board.displayName,
+              board.displayName(isEnglish),
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 13,

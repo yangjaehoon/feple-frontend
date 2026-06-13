@@ -179,6 +179,7 @@ class HomeStateNotifier extends SafeChangeNotifier {
             type: FavoriteBoardType.artist,
             entityId: artist.id,
             entityName: artist.name,
+            entityNameEn: artist.nameEn,
             imageUrl: artist.profileImageUrl,
           )),
       ...festivals.map((festival) => FavoriteBoard(
@@ -186,6 +187,7 @@ class HomeStateNotifier extends SafeChangeNotifier {
             type: FavoriteBoardType.festival,
             entityId: festival.id,
             entityName: festival.title,
+            entityNameEn: festival.titleEn,
             imageUrl: festival.posterUrl,
           )),
     ];

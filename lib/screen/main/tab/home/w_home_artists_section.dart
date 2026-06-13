@@ -85,6 +85,9 @@ class _ArtistItem extends StatelessWidget {
   final FollowedArtist artist;
   final void Function(FollowedArtist) onTap;
 
+  String _displayName(BuildContext context) =>
+      artist.displayName(context.locale.languageCode == 'en');
+
   Widget _buildAvatar(AbstractThemeColors colors) {
     return Container(
       padding: const EdgeInsets.all(3),
@@ -131,7 +134,7 @@ class _ArtistItem extends StatelessWidget {
             SizedBox(
               width: 64,
               child: Text(
-                artist.name,
+                _displayName(context),
                 style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textTitle),
                 textAlign: TextAlign.center,
                 maxLines: 1,

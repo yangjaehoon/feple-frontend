@@ -136,7 +136,9 @@ class _MyAppState extends State<MyApp> {
     } catch (e) {
       // 응답 파싱 실패 등 예상치 못한 오류 — 죽은 토큰 정리
       log('Auto login failed (unexpected): $e');
-      await userProvider.logout();
+      try {
+        await userProvider.logout().timeout(const Duration(seconds: 8));
+      } catch (_) {}
     } finally {
       FlutterNativeSplash.remove();
     }

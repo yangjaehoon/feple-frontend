@@ -5,6 +5,7 @@ class FavoriteBoard {
   final FavoriteBoardType type;
   final int entityId;
   final String entityName;
+  final String entityNameEn;
   final String? imageUrl;
 
   const FavoriteBoard({
@@ -12,8 +13,15 @@ class FavoriteBoard {
     required this.type,
     required this.entityId,
     required this.entityName,
+    this.entityNameEn = '',
     this.imageUrl,
   });
 
-  String get displayName => '$entityName 게시판';
+  String entityDisplayName(bool isEnglish) =>
+      isEnglish && entityNameEn.isNotEmpty ? entityNameEn : entityName;
+
+  String displayName(bool isEnglish) {
+    final name = entityDisplayName(isEnglish);
+    return isEnglish ? '$name Board' : '$name 게시판';
+  }
 }

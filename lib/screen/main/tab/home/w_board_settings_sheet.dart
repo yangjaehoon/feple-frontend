@@ -199,7 +199,7 @@ class _BoardSettingsItem extends StatelessWidget {
           ],
         ),
         title: Text(
-          board.displayName,
+          board.displayName(context.locale.languageCode == 'en'),
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,

@@ -5,6 +5,8 @@ class NotificationModel {
   final NotificationType? type;
   final String title;
   final String body;
+  final String titleEn;
+  final String bodyEn;
   final int? referenceId;
   final bool read;
   final String? createdAt;
@@ -14,6 +16,8 @@ class NotificationModel {
     required this.type,
     required this.title,
     required this.body,
+    this.titleEn = '',
+    this.bodyEn = '',
     this.referenceId,
     required this.read,
     this.createdAt,
@@ -25,6 +29,8 @@ class NotificationModel {
       type: NotificationType.fromValue(json['type'] as String?),
       title: json['title'] as String? ?? '',
       body: json['body'] as String? ?? '',
+      titleEn: json['titleEn'] as String? ?? '',
+      bodyEn: json['bodyEn'] as String? ?? '',
       referenceId: json['referenceId'] != null
           ? (json['referenceId'] as num).toInt()
           : null,
@@ -38,11 +44,19 @@ class NotificationModel {
     return createdAt!.length >= 10 ? createdAt!.substring(0, 10) : createdAt;
   }
 
+  String displayTitle(bool isEnglish) =>
+      isEnglish && titleEn.isNotEmpty ? titleEn : title;
+
+  String displayBody(bool isEnglish) =>
+      isEnglish && bodyEn.isNotEmpty ? bodyEn : body;
+
   NotificationModel copyWithRead() => NotificationModel(
         id: id,
         type: type,
         title: title,
         body: body,
+        titleEn: titleEn,
+        bodyEn: bodyEn,
         referenceId: referenceId,
         read: true,
         createdAt: createdAt,

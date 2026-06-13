@@ -52,7 +52,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   void _onPhotosLoaded() {
     if (_photosNotifier.loaded && mounted) {
       setState(() {});
-      if (_photosNotifier.photoUrls.isNotEmpty) _startTimer();
+      if (_photosNotifier.photos.isNotEmpty) _startTimer();
     }
   }
 
@@ -69,8 +69,8 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _timer = Timer.periodic(const Duration(seconds: 3), (_) {
-        if (!mounted || !_pageController.hasClients || _photosNotifier.photoUrls.isEmpty || _isUserScrolling) return;
-        final nextPage = (_currentPage + 1) % _photosNotifier.photoUrls.length;
+        if (!mounted || !_pageController.hasClients || _photosNotifier.photos.isEmpty || _isUserScrolling) return;
+        final nextPage = (_currentPage + 1) % _photosNotifier.photos.length;
         _isAutoScrolling = true;
         _pageController.animateToPage(
           nextPage,
@@ -105,7 +105,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
       child: Stack(
         children: [
           _buildBackground(),
-          if (_photosNotifier.photoUrls.isNotEmpty) _buildPhotoPageView(),
+          if (_photosNotifier.photos.isNotEmpty) _buildPhotoPageView(),
           ArtistNameLike(
             artistName: widget.artistName,
             artistId: widget.artistId,
@@ -122,7 +122,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
       child: PageView.builder(
         onPageChanged: _onPageChanged,
         controller: _pageController,
-        itemCount: _photosNotifier.photoUrls.length,
+        itemCount: _photosNotifier.photos.length,
         itemBuilder: (context, index) => _buildPhotoItem(index),
       ),
     );
@@ -169,7 +169,8 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
           ],
         ),
         child: CachedNetworkImage(
-          imageUrl: _photosNotifier.photoUrls[index],
+          imageUrl: _photosNotifier.photos[index].url,
+          cacheKey: 'artist-photo-${_photosNotifier.photos[index].photoId}',
           fit: BoxFit.cover,
           memCacheWidth: 300,
         ),
@@ -178,7 +179,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   }
 
   Widget _buildBackground() {
-    if (!_photosNotifier.loaded || _photosNotifier.photoUrls.isEmpty) {
+    if (!_photosNotifier.loaded || _photosNotifier.photos.isEmpty) {
       if (widget.profileImageUrl != null) {
         return Hero(
           tag: 'artist_image_${widget.artistId}',
@@ -199,7 +200,10 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
         key: ValueKey(_currentPage),
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: CachedNetworkImageProvider(_photosNotifier.photoUrls[_currentPage]),
+            image: CachedNetworkImageProvider(
+              _photosNotifier.photos[_currentPage].url,
+              cacheKey: 'artist-photo-${_photosNotifier.photos[_currentPage].photoId}',
+            ),
             fit: BoxFit.cover,
           ),
         ),

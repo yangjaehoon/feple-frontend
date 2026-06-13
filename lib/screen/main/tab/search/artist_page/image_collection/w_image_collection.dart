@@ -182,6 +182,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
         ),
         child: CachedNetworkImage(
           imageUrl: photo.url,
+          cacheKey: 'artist-photo-${photo.photoId}',
           width: 195,
           height: 195,
           fit: BoxFit.cover,

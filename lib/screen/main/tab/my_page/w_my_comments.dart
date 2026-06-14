@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_my_page_list_screen.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
@@ -76,7 +77,7 @@ class MyCommentsScreen extends StatelessWidget {
       ),
       subtitle: Text(
         '${c.boardDisplayName} • ${c.postTitle}',
-        style: TextStyle(color: colors.textSecondary, fontSize: 12),
+        style: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXs),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),

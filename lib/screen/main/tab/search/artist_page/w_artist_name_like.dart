@@ -109,7 +109,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
           child: Text(
             widget.followNotifier.followCount.toDisplayCount(lang),
             key: ValueKey(widget.followNotifier.followCount),
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white70),
+            style: const TextStyle(fontSize: AppDimens.fontSizeMd, fontWeight: FontWeight.w600, color: Colors.white70),
           ),
         ),
         const Spacer(),
@@ -223,7 +223,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
-                    fontSize: 13,
+                    fontSize: AppDimens.fontSizeSm,
                     letterSpacing: 0.3,
                   ),
                 ),

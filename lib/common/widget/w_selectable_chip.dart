@@ -37,7 +37,7 @@ class SelectableChip extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            fontSize: 13,
+            fontSize: AppDimens.fontSizeSm,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
             color: selected ? Colors.white : (unselectedTextColor ?? colors.textSecondary),
           ),

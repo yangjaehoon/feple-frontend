@@ -54,7 +54,7 @@ class _ReorderSheetState extends State<ReorderSheet> {
           ),
           if (widget.subtitle != null) ...[
             const SizedBox(height: 4),
-            Text(widget.subtitle!, style: TextStyle(fontSize: 13, color: colors.textSecondary)),
+            Text(widget.subtitle!, style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary)),
           ],
         ],
       ),
@@ -107,7 +107,7 @@ class _ReorderSheetState extends State<ReorderSheet> {
               ),
               title: Text(
                 item.name,
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colors.textTitle),
+                style: TextStyle(fontSize: AppDimens.fontSizeMd, fontWeight: FontWeight.w600, color: colors.textTitle),
               ),
             ),
           );

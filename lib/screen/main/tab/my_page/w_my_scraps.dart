@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_my_page_list_screen.dart';
 import 'package:feple/injection.dart';
@@ -40,7 +41,7 @@ class MyScrapsScreen extends StatelessWidget {
           ),
           subtitle: Text(
             post.boardDisplayName,
-            style: TextStyle(color: colors.textSecondary, fontSize: 12),
+            style: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXs),
           ),
           trailing: PostStatRow(
             likeCount: post.likeCount,

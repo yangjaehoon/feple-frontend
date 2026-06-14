@@ -285,7 +285,7 @@ class _EnlargePostState extends State<EnlargePost> {
         children: [
           Text(
             _title,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: colors.textTitle),
+            style: TextStyle(fontSize: AppDimens.fontSizeTitle, fontWeight: FontWeight.w700, color: colors.textTitle),
           ),
           const SizedBox(height: 12),
           Row(
@@ -306,7 +306,7 @@ class _EnlargePostState extends State<EnlargePost> {
                     children: [
                       Text(
                         widget.nickname,
-                        style: TextStyle(fontSize: 13, color: colors.textSecondary, fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary, fontWeight: FontWeight.w600),
                       ),
                       InlineBadge(userRole: widget.userRole, certified: widget.certified, size: 14),
                     ],
@@ -332,7 +332,7 @@ class _EnlargePostState extends State<EnlargePost> {
             ],
           ),
           Divider(thickness: 1, height: 24, color: colors.listDivider),
-          Text(_content, style: TextStyle(color: colors.textTitle, fontSize: 15)),
+          Text(_content, style: TextStyle(color: colors.textTitle, fontSize: AppDimens.fontSizeLg)),
           if (_imageUrl != null) ...[
             const SizedBox(height: 12),
             GestureDetector(
@@ -362,7 +362,7 @@ class _EnlargePostState extends State<EnlargePost> {
               const SizedBox(width: 4),
               Text(
                 'view_count'.tr(args: [_notifier.viewCount.toString()]),
-                style: TextStyle(fontSize: 12, color: colors.textSecondary.withValues(alpha: 0.5)),
+                style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary.withValues(alpha: 0.5)),
               ),
             ],
           ),

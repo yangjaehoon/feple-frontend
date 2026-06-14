@@ -71,7 +71,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
               children: [
                 Text(
                   'see_all'.tr(),
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: colors.activate),
+                  style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w600, color: colors.activate),
                 ),
                 Icon(Icons.chevron_right_rounded, size: 18, color: colors.activate),
               ],
@@ -131,7 +131,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
           Text(
             'cert_no_history'.tr(),
             style: TextStyle(
-              fontSize: 13,
+              fontSize: AppDimens.fontSizeSm,
               fontWeight: FontWeight.w600,
               color: colors.textTitle,
             ),
@@ -152,7 +152,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
             icon: const Icon(Icons.add_rounded, size: 14),
             label: Text(
               'cert_submit'.tr(),
-              style: const TextStyle(fontSize: 12),
+              style: const TextStyle(fontSize: AppDimens.fontSizeXs),
             ),
             style: FilledButton.styleFrom(
               backgroundColor: colors.activate,

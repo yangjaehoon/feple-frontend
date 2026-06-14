@@ -104,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
         Text(
           'login_subtitle'.tr(),
           style: TextStyle(
-            fontSize: 15,
+            fontSize: AppDimens.fontSizeLg,
             color: themeColors.textSecondary,
             fontWeight: FontWeight.w500,
           ),
@@ -151,7 +151,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: Text(
                     _authError!,
                     style: const TextStyle(
-                      fontSize: 12,
+                      fontSize: AppDimens.fontSizeXs,
                       color: AppColors.errorRed,
                       fontWeight: FontWeight.w500,
                     ),
@@ -177,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           child: Text(
             'forgot_password'.tr(),
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            style: const TextStyle(fontSize: AppDimens.fontSizeMd, fontWeight: FontWeight.w500),
           ),
         ),
         const SizedBox(height: 20),
@@ -186,7 +186,7 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             Text(
               'not_member_yet'.tr(),
-              style: TextStyle(color: themeColors.textSecondary, fontSize: 14),
+              style: TextStyle(color: themeColors.textSecondary, fontSize: AppDimens.fontSizeMd),
             ),
             TextButton(
               onPressed: () => Navigator.push(
@@ -201,7 +201,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               child: Text(
                 'signup'.tr(),
-                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeMd),
               ),
             ),
           ],

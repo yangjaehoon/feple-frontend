@@ -147,7 +147,7 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
           const SizedBox(width: 8),
           Text('booth_map_title'.tr(),
               style: TextStyle(
-                  fontSize: 15,
+                  fontSize: AppDimens.fontSizeLg,
                   fontWeight: FontWeight.w700,
                   color: colors.textTitle)),
           const SizedBox(width: 10),

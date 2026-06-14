@@ -88,7 +88,7 @@ class _DateChip extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: AppDimens.fontSizeXs,
             fontWeight: FontWeight.w600,
             color: selected ? Colors.white : colors.textTitle,
           ),

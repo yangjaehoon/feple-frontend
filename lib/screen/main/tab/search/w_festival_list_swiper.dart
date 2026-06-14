@@ -62,7 +62,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
           builder: FractionPaginationBuilder(
             color: Colors.white54,
             activeColor: Colors.white,
-            fontSize: 13,
+            fontSize: AppDimens.fontSizeSm,
             activeFontSize: 15,
           ),
         ),
@@ -204,7 +204,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
           Text(
             'no_upcoming_festivals'.tr(),
             style: TextStyle(
-                fontSize: 14,
+                fontSize: AppDimens.fontSizeMd,
                 color: colors.textSecondary.withValues(alpha: 0.6)),
           ),
         ],

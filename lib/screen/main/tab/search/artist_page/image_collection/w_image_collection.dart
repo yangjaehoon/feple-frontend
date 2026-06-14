@@ -231,7 +231,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
               Text(
                 '${photo.likeCount}',
                 style: const TextStyle(
-                    fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white),
+                    fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w600, color: Colors.white),
               ),
             ],
           ),
@@ -258,7 +258,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
                     photo.title,
                     style: TextStyle(
                         fontWeight: FontWeight.w700,
-                        fontSize: 16,
+                        fontSize: AppDimens.fontSizeXl,
                         color: colors.textTitle),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,

@@ -128,7 +128,7 @@ class _ImgUploadState extends State<ImgUpload> {
                 'photo_upload_title'.tr(),
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 20,
+                  fontSize: AppDimens.fontSizeTitle,
                   fontWeight: FontWeight.w500,
                 ),
                 overflow: TextOverflow.ellipsis,
@@ -221,7 +221,7 @@ class _ImgUploadState extends State<ImgUpload> {
                     child: Text(
                       _imageError!,
                       style: const TextStyle(
-                        fontSize: 12,
+                        fontSize: AppDimens.fontSizeXs,
                         color: AppColors.errorRed,
                         fontWeight: FontWeight.w500,
                       ),

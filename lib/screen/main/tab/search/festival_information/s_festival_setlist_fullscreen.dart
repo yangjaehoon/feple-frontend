@@ -88,7 +88,7 @@ class _FestivalSetlistFullPageState extends State<FestivalSetlistFullPage> {
       ),
       title: Text(
         'setlist'.tr(),
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: colors.textTitle),
+        style: TextStyle(fontSize: AppDimens.fontSizeXl, fontWeight: FontWeight.w700, color: colors.textTitle),
       ),
       centerTitle: true,
     );
@@ -247,7 +247,7 @@ class _ArtistFullTile extends StatelessWidget {
         Text(
           entry.artistName,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: AppDimens.fontSizeMd,
             fontWeight: FontWeight.w600,
             color: colors.textTitle,
           ),
@@ -297,7 +297,7 @@ class _ArtistFullTile extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
         child: Text(
           'no_setlist'.tr(),
-          style: TextStyle(fontSize: 12, color: colors.textSecondary),
+          style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
         ),
       );
     }
@@ -318,7 +318,7 @@ class _ArtistFullTile extends StatelessWidget {
               child: Text(
                 '${index + 1}',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: colors.textSecondary, fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary, fontWeight: FontWeight.w500),
               ),
             ),
             const SizedBox(width: 10),
@@ -340,7 +340,7 @@ class _ArtistFullTile extends StatelessWidget {
             Expanded(
               child: Text(
                 song.title,
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: colors.textTitle),
+                style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w500, color: colors.textTitle),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -439,7 +439,7 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
                   Flexible(
                     child: Text(
                       widget.entry.artistName,
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: colors.textTitle),
+                      style: TextStyle(fontSize: AppDimens.fontSizeXl, fontWeight: FontWeight.w700, color: colors.textTitle),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -447,7 +447,7 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
                   const SizedBox(width: 6),
                   Text(
                     'edit_setlist'.tr(),
-                    style: TextStyle(fontSize: 13, color: colors.textSecondary),
+                    style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
                   ),
                 ],
               ),
@@ -457,7 +457,7 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                 'select_songs_hint'.tr(),
-                style: TextStyle(fontSize: 12, color: colors.textSecondary),
+                style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
               ),
             ),
             const SizedBox(height: 12),
@@ -507,7 +507,7 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
               checkColor: colors.surface,
               title: Text(
                 song.title,
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: colors.textTitle),
+                style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w500, color: colors.textTitle),
               ),
               secondary: song.thumbnailUrl != null
                   ? ClipRRect(

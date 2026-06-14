@@ -122,7 +122,7 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
           const SizedBox(width: 8),
           Text('timetable'.tr(),
               style: TextStyle(
-                  fontSize: 15, fontWeight: FontWeight.w700, color: colors.textTitle)),
+                  fontSize: AppDimens.fontSizeLg, fontWeight: FontWeight.w700, color: colors.textTitle)),
           const Spacer(),
           if (!_notifier.isLoading && _notifier.error == null && _notifier.hasEntries)
             GestureDetector(

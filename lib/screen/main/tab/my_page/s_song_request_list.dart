@@ -182,7 +182,7 @@ class SongRequestItem extends StatelessWidget {
         Text(
           req.songTitle,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: AppDimens.fontSizeMd,
             fontWeight: FontWeight.w600,
             color: colors.textTitle,
           ),
@@ -190,7 +190,7 @@ class SongRequestItem extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
         if (req.artistName != null)
-          Text(req.artistName!, style: TextStyle(fontSize: 12, color: colors.textSecondary)),
+          Text(req.artistName!, style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary)),
         if (req.formattedDate != null)
           Text(req.formattedDate!, style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary)),
       ],

@@ -242,7 +242,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Text(
               'no_recent_searches'.tr(),
-              style: TextStyle(fontSize: 13, color: colors.textSecondary.withValues(alpha: 0.6)),
+              style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary.withValues(alpha: 0.6)),
             ),
           )
         else
@@ -256,7 +256,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                   dense: true,
                   leading: Icon(Icons.history_rounded, size: 18, color: colors.textSecondary),
-                  title: Text(keyword, style: TextStyle(fontSize: 14, color: colors.textTitle)),
+                  title: Text(keyword, style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textTitle)),
                   trailing: IconButton(
                     icon: Icon(Icons.close_rounded, size: 16, color: colors.textSecondary),
                     onPressed: () => _removeRecentSearch(keyword),
@@ -284,7 +284,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
         children: [
           Text(
             'recent_searches'.tr(),
-            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: colors.textSecondary),
+            style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w700, color: colors.textSecondary),
           ),
           if (_recentSearches.isNotEmpty)
             TextButton(
@@ -296,7 +296,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
               ),
               child: Text(
                 'clear_all'.tr(),
-                style: TextStyle(fontSize: 12, color: colors.textSecondary),
+                style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
               ),
             ),
         ],
@@ -338,11 +338,11 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     final lowerQuery = query.toLowerCase();
     final matchIndex = lowerLabel.indexOf(lowerQuery);
     if (matchIndex == -1 || query.isEmpty) {
-      return Text(label, style: TextStyle(color: colors.textTitle, fontSize: 15));
+      return Text(label, style: TextStyle(color: colors.textTitle, fontSize: AppDimens.fontSizeLg));
     }
     return RichText(
       text: TextSpan(
-        style: TextStyle(color: colors.textTitle, fontSize: 15),
+        style: TextStyle(color: colors.textTitle, fontSize: AppDimens.fontSizeLg),
         children: [
           if (matchIndex > 0) TextSpan(text: label.substring(0, matchIndex)),
           TextSpan(
@@ -421,8 +421,8 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
       unselectedLabelColor: colors.textSecondary,
       indicatorColor: colors.activate,
       indicatorWeight: 2,
-      labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
-      unselectedLabelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w400),
+      labelStyle: const TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w700),
+      unselectedLabelStyle: const TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w400),
       tabs: List.generate(labels.length, (i) {
         final count = counts[i];
         return Tab(
@@ -487,9 +487,9 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
           const SizedBox(width: 8),
           Text(title,
               style: TextStyle(
-                  fontSize: 15, fontWeight: FontWeight.w800, color: colors.textTitle)),
+                  fontSize: AppDimens.fontSizeLg, fontWeight: FontWeight.w800, color: colors.textTitle)),
           const SizedBox(width: 6),
-          Text('($count)', style: TextStyle(fontSize: 13, color: colors.textSecondary)),
+          Text('($count)', style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary)),
         ],
       ),
     );

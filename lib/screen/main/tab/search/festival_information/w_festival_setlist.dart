@@ -71,7 +71,7 @@ class _FestivalSetlistState extends State<FestivalSetlist> {
           Text(
             'setlist_card_title'.tr(),
             style: TextStyle(
-              fontSize: 15,
+              fontSize: AppDimens.fontSizeLg,
               fontWeight: FontWeight.w700,
               color: colors.textTitle,
             ),
@@ -87,7 +87,7 @@ class _FestivalSetlistState extends State<FestivalSetlist> {
             ),
             child: Text(
               'view_all'.tr(),
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+              style: const TextStyle(fontSize: AppDimens.fontSizeXs, fontWeight: FontWeight.w600),
             ),
           ),
         ],

@@ -45,7 +45,7 @@ Future<void> showReportSheet(
               Text(
                 titleKey.tr(),
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: AppDimens.fontSizeXl,
                   fontWeight: FontWeight.w700,
                   color: colors.textTitle,
                 ),
@@ -67,7 +67,7 @@ Future<void> showReportSheet(
                     return RadioListTile<ReportReason>(
                       value: r,
                       title: Text(label,
-                          style: TextStyle(fontSize: 14, color: colors.textTitle)),
+                          style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textTitle)),
                       dense: true,
                       contentPadding: EdgeInsets.zero,
                     );

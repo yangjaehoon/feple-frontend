@@ -246,7 +246,7 @@ class _CommunityPostState extends State<CommunityPost> {
               const SizedBox(height: 12),
               Text(
                 'be_first_to_discuss'.tr(args: [widget.boardName]),
-                style: TextStyle(fontSize: 14, color: colors.textSecondary),
+                style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textSecondary),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -348,7 +348,7 @@ class _CommunityPostState extends State<CommunityPost> {
             _searchDebounce?.cancel();
             _search(v);
           },
-          style: TextStyle(color: colors.textTitle, fontSize: 14),
+          style: TextStyle(color: colors.textTitle, fontSize: AppDimens.fontSizeMd),
           decoration: InputDecoration(
             hintText: 'search_posts_hint'.tr(),
             prefixIcon: Icon(Icons.search_rounded, color: colors.textSecondary, size: 20),

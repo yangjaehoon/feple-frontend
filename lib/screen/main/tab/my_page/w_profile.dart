@@ -72,7 +72,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
               child: Text(
                 user.bio!,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: AppDimens.fontSizeSm,
                   color: colors.textSecondary,
                   height: 1.4,
                 ),
@@ -159,7 +159,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
       child: Text(
         'Lv.${user.level}',
         style: TextStyle(
-          fontSize: 13,
+          fontSize: AppDimens.fontSizeSm,
           fontWeight: FontWeight.w700,
           color: colors.levelBadgeText,
         ),
@@ -200,7 +200,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                 Text(
                   label,
                   style: const TextStyle(
-                    fontSize: 13,
+                    fontSize: AppDimens.fontSizeSm,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
                   ),

@@ -108,7 +108,7 @@ class TimetableGrid extends StatelessWidget {
                 ),
                 child: Text(
                   stage,
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: _colorFor(stage)),
+                  style: TextStyle(fontSize: AppDimens.fontSizeXs, fontWeight: FontWeight.w700, color: _colorFor(stage)),
                 ),
               )).toList(),
             ),

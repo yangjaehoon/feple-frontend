@@ -36,7 +36,7 @@ class FestivalArtistListScreen extends StatelessWidget {
                   return Center(
                     child: Text(
                       'no_participating_artists'.tr(),
-                      style: TextStyle(fontSize: 14, color: colors.textSecondary),
+                      style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textSecondary),
                     ),
                   );
                 }
@@ -65,7 +65,7 @@ class FestivalArtistListScreen extends StatelessWidget {
               ? Center(
                   child: Text(
                     'no_participating_artists'.tr(),
-                    style: TextStyle(fontSize: 14, color: colors.textSecondary),
+                    style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textSecondary),
                   ),
                 )
               : GridView.builder(
@@ -137,7 +137,7 @@ class FestivalArtistListScreen extends StatelessWidget {
             Text(
               artist.artistName,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: AppDimens.fontSizeSm,
                 fontWeight: FontWeight.w600,
                 color: isFollowed ? colors.activate : colors.textTitle,
               ),

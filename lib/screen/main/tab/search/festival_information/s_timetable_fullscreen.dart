@@ -197,7 +197,7 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
                   Text(
                     'timetable'.tr(),
                     style: TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w700, color: colors.textTitle),
+                        fontSize: AppDimens.fontSizeXl, fontWeight: FontWeight.w700, color: colors.textTitle),
                   ),
                 ],
               ),
@@ -211,7 +211,7 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
                   label: Text(
                     'timetable_add'.tr(),
                     style: TextStyle(
-                        fontSize: 13, fontWeight: FontWeight.w600, color: colors.activate),
+                        fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w600, color: colors.activate),
                   ),
                 ),
               ),

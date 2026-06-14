@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
@@ -133,7 +134,7 @@ class _NotifItem extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                fontSize: 15,
+                fontSize: AppDimens.fontSizeLg,
                 fontWeight: FontWeight.w500,
                 color: colors.textTitle,
               ),

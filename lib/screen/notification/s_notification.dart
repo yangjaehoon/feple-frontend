@@ -261,7 +261,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 'notifications'.tr(),
                 style: TextStyle(
                   color: colors.textTitle,
-                  fontSize: 20,
+                  fontSize: AppDimens.fontSizeTitle,
                   fontWeight: FontWeight.w500,
                 ),
                 overflow: TextOverflow.ellipsis,
@@ -274,7 +274,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   'mark_all_read'.tr(),
                   style: TextStyle(
                     color: colors.activate,
-                    fontSize: 13,
+                    fontSize: AppDimens.fontSizeSm,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

@@ -47,7 +47,7 @@ ThemeData lightTheme = ThemeData(
     scrolledUnderElevation: 0,
     foregroundColor: AppColors.textMain,
     titleTextStyle: TextStyle(
-      fontSize: 20,
+      fontSize: AppDimens.fontSizeTitle,
       fontWeight: FontWeight.w700,
       letterSpacing: -0.3,
     ),
@@ -167,7 +167,7 @@ ThemeData darkTheme = ThemeData(
     scrolledUnderElevation: 0,
     foregroundColor: Color(0xFFE8EDF2),
     titleTextStyle: TextStyle(
-      fontSize: 20,
+      fontSize: AppDimens.fontSizeTitle,
       fontWeight: FontWeight.w700,
       letterSpacing: -0.3,
     ),

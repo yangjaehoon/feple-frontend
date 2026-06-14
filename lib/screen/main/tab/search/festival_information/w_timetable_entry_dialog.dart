@@ -92,7 +92,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadius)),
       title: Text(
         widget.isEditing ? 'timetable_edit_entry'.tr() : 'timetable_add_entry'.tr(),
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: colors.textTitle),
+        style: TextStyle(fontSize: AppDimens.fontSizeXl, fontWeight: FontWeight.w700, color: colors.textTitle),
       ),
       content: SingleChildScrollView(
         child: Column(
@@ -156,7 +156,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
           value: _stage,
           isExpanded: true,
           dropdownColor: colors.surface,
-          style: TextStyle(color: colors.textTitle, fontSize: 14),
+          style: TextStyle(color: colors.textTitle, fontSize: AppDimens.fontSizeMd),
           underline: Container(height: 1, color: colors.listDivider),
           items: widget.stages.map((stage) => DropdownMenuItem(value: stage, child: Text(stage))).toList(),
           onChanged: (stage) {
@@ -175,7 +175,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Text('–', style: TextStyle(color: colors.textSecondary, fontWeight: FontWeight.w700, fontSize: 16)),
+          child: Text('–', style: TextStyle(color: colors.textSecondary, fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeXl)),
         ),
         Expanded(
           child: _TimeBtn(label: 'timetable_end'.tr(), time: _end, onTap: _pickEndTime),
@@ -225,7 +225,7 @@ class _Label extends StatelessWidget {
     final colors = context.appColors;
     return Text(
       text,
-      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: colors.textSecondary),
+      style: TextStyle(fontSize: AppDimens.fontSizeXs, fontWeight: FontWeight.w600, color: colors.textSecondary),
     );
   }
 }
@@ -260,7 +260,7 @@ class _TimeBtn extends StatelessWidget {
             ),
             child: Text(
               time.toHHmm,
-              style: TextStyle(color: colors.textTitle, fontSize: 14, fontWeight: FontWeight.w600),
+              style: TextStyle(color: colors.textTitle, fontSize: AppDimens.fontSizeMd, fontWeight: FontWeight.w600),
             ),
           ),
         ),

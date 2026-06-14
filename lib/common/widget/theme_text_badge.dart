@@ -1,3 +1,4 @@
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 import '../common.dart';
@@ -23,7 +24,7 @@ class TextBadgeTheme {
       backgroundColor: appColors.badgeBg,
       borderColor: appColors.badgeBorder,
       textColor: Colors.white,
-      fontSize: 15,
+      fontSize: AppDimens.fontSizeLg,
       borderRadius: 5,
       verticalPadding: 3,
       horizontalPadding: 5,

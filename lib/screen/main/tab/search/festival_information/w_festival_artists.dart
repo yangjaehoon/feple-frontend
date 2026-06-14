@@ -210,7 +210,7 @@ class _FestivalArtistsState extends State<FestivalArtists> {
       child: Center(
         child: Text(
           'no_participating_artists'.tr(),
-          style: TextStyle(fontSize: 13, color: colors.textSecondary),
+          style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
         ),
       ),
     );

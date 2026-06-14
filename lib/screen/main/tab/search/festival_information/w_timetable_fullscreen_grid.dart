@@ -120,7 +120,7 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
               ),
               child: Text(
                 stage,
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: color),
+                style: TextStyle(fontSize: AppDimens.fontSizeXs, fontWeight: FontWeight.w700, color: color),
                 overflow: TextOverflow.ellipsis,
               ),
             );

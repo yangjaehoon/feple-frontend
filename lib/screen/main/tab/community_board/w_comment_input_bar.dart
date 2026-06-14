@@ -65,7 +65,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
             child: Text(
               '${widget.replyToNickname} ${'reply_to'.tr()}',
               style: TextStyle(
-                  fontSize: 12,
+                  fontSize: AppDimens.fontSizeXs,
                   color: colors.textSecondary,
                   fontWeight: FontWeight.w500),
             ),
@@ -105,7 +105,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
             const SizedBox(width: 6),
             Text(
               'post_anonymous'.tr(),
-              style: TextStyle(fontSize: 12, color: colors.textSecondary),
+              style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
             ),
           ],
         ),
@@ -178,7 +178,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
       child: Text(
         widget.errorText!,
         style: const TextStyle(
-          fontSize: 12,
+          fontSize: AppDimens.fontSizeXs,
           color: AppColors.errorRed,
           fontWeight: FontWeight.w500,
         ),

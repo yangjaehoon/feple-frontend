@@ -60,7 +60,7 @@ class _BoardSettingsSheetState extends State<BoardSettingsSheet> {
           const Spacer(),
           Text(
             '${_checked.length}/${_orderedBoards.length}',
-            style: TextStyle(fontSize: 13, color: colors.textSecondary),
+            style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
           ),
         ],
       ),
@@ -201,7 +201,7 @@ class _BoardSettingsItem extends StatelessWidget {
         title: Text(
           board.displayName(context.locale.languageCode == 'en'),
           style: TextStyle(
-            fontSize: 14,
+            fontSize: AppDimens.fontSizeMd,
             fontWeight: FontWeight.w600,
             color: colors.textTitle,
           ),

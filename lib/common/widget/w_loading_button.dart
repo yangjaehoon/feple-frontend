@@ -137,7 +137,7 @@ class _LoadingButtonState extends State<LoadingButton>
         Text(
           widget.label,
           style: const TextStyle(
-            fontSize: 16,
+            fontSize: AppDimens.fontSizeXl,
             fontWeight: FontWeight.w700,
           ),
         ),

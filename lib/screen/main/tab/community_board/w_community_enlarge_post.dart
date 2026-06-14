@@ -168,29 +168,10 @@ class _EnlargePostState extends State<EnlargePost> {
   }
 
   Future<String?> _showEditCommentDialog(BuildContext context, String currentContent) {
-    final controller = TextEditingController(text: currentContent);
     return showDialog<String>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('edit_comment'.tr()),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          maxLines: null,
-          decoration: InputDecoration(hintText: 'enter_comment'.tr()),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('cancel'.tr())),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-            child: Text('done'.tr()),
-          ),
-        ],
-      ),
-    ).then((result) {
-      controller.dispose();
-      return result;
-    });
+      builder: (ctx) => _EditCommentDialog(initialContent: currentContent),
+    );
   }
 
   List<PopupMenuEntry<String>> _buildMenuItems(bool isOwn) {
@@ -468,6 +449,50 @@ class _EnlargePostState extends State<EnlargePost> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _EditCommentDialog extends StatefulWidget {
+  final String initialContent;
+  const _EditCommentDialog({required this.initialContent});
+
+  @override
+  State<_EditCommentDialog> createState() => _EditCommentDialogState();
+}
+
+class _EditCommentDialogState extends State<_EditCommentDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialContent);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('edit_comment'.tr()),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        maxLines: null,
+        decoration: InputDecoration(hintText: 'enter_comment'.tr()),
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: Text('cancel'.tr())),
+        TextButton(
+          onPressed: () => Navigator.pop(context, _controller.text.trim()),
+          child: Text('done'.tr()),
+        ),
+      ],
     );
   }
 }

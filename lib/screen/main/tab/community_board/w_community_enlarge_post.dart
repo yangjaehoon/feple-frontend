@@ -174,13 +174,13 @@ class _EnlargePostState extends State<EnlargePost> {
     );
   }
 
-  List<PopupMenuEntry<String>> _buildMenuItems(bool isOwn) {
+  List<PopupMenuEntry<String>> _buildMenuItems(bool isOwn, AbstractThemeColors colors) {
     if (isOwn) {
       return [
         PopupMenuItem(
           value: 'edit',
           child: Row(children: [
-            const Icon(Icons.edit_outlined, size: 18),
+            Icon(Icons.edit_outlined, size: 18, color: colors.textTitle),
             const SizedBox(width: 8),
             Expanded(child: Text('edit_post'.tr(), overflow: TextOverflow.ellipsis)),
           ]),
@@ -196,7 +196,7 @@ class _EnlargePostState extends State<EnlargePost> {
         PopupMenuItem(
           value: 'share',
           child: Row(children: [
-            const Icon(Icons.share_outlined, size: 18),
+            Icon(Icons.share_outlined, size: 18, color: colors.textTitle),
             const SizedBox(width: 8),
             Expanded(child: Text('share'.tr(), overflow: TextOverflow.ellipsis)),
           ]),
@@ -215,7 +215,7 @@ class _EnlargePostState extends State<EnlargePost> {
         PopupMenuItem(
           value: 'share',
           child: Row(children: [
-            const Icon(Icons.share_outlined, size: 18),
+            Icon(Icons.share_outlined, size: 18, color: colors.textTitle),
             const SizedBox(width: 8),
             Expanded(child: Text('share'.tr(), overflow: TextOverflow.ellipsis)),
           ]),
@@ -435,7 +435,7 @@ class _EnlargePostState extends State<EnlargePost> {
               PopupMenuButton<String>(
                 icon: const Icon(Icons.more_vert),
                 onSelected: _onMenuSelected,
-                itemBuilder: (_) => _buildMenuItems(isOwn),
+                itemBuilder: (_) => _buildMenuItems(isOwn, colors),
               ),
             ],
           ),

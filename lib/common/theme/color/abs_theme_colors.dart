@@ -65,7 +65,7 @@ abstract class AbstractThemeColors {
   Color get getUserBoardHeader => AppColors.skyBlue;
 
   /// Soft shadow color
-  Color get cardShadow => AppColors.skyBlue;
+  Color get cardShadow => Colors.black;
 
   /// Loading indicator color
   Color get loadingIndicator => AppColors.skyBlue;
@@ -89,11 +89,11 @@ abstract class AbstractThemeColors {
   Color get sectionBarColor => AppColors.skyBlue;
 
   /// Swiper overlay color
-  Color get swiperOverlay => AppColors.skyBlue;
+  Color get swiperOverlay => Colors.black;
 
   /// Level badge colors
   Color get levelBadgeBg => AppColors.skyBlue;
-  Color get levelBadgeText => AppColors.skyBlue;
+  Color get levelBadgeText => Colors.white;
 
   /// Action button primary color (solid, no gradient)
   Color get actionBtnPrimary => AppColors.skyBlue;

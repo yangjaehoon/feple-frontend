@@ -50,7 +50,7 @@ class AppColors {
   static const Color errorRed = Color(0xFFFF4D4F);
 
   /// Success state (loading button, password validation)
-  static const Color successGreen = AppColors.skyBlue;
+  static const Color successGreen = Color(0xFF4CAF50);
 
   /// Pending / warning state (인증 대기 등)
   static const Color statusPending = Color(0xFFFF9800);

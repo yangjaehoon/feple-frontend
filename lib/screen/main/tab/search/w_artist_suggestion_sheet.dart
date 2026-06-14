@@ -97,7 +97,7 @@ class _ArtistSuggestionSheetState extends State<ArtistSuggestionSheet> {
       child: Text(
         'artist_suggestion_title'.tr(),
         style: TextStyle(
-          fontSize: 18,
+          fontSize: AppDimens.fontSizeXxl,
           fontWeight: FontWeight.w800,
           color: colors.textTitle,
         ),

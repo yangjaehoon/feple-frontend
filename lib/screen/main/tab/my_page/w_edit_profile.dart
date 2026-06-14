@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/exception/banned_word_exception.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
@@ -279,7 +280,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
           decoration: InputDecoration(
             hintText: 'bio_hint'.tr(),
             hintStyle: TextStyle(color: colors.textSecondary, fontSize: 13),
-            counterStyle: TextStyle(color: colors.textSecondary, fontSize: 11),
+            counterStyle: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXxs),
             errorText: _bioError,
             border: OutlineInputBorder(borderSide: BorderSide(color: colors.listDivider)),
             enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: colors.listDivider)),

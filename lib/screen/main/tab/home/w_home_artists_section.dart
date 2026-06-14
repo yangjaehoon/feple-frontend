@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/followed_artist.dart';
 import 'package:flutter/material.dart';
 
@@ -33,7 +35,7 @@ class HomeArtistsSection extends StatelessWidget {
     if (artists == null) return _buildSkeleton();
     if (artists!.isEmpty) {
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Text('no_followed_artists'.tr(),
             style: TextStyle(color: colors.textSecondary)),
       );
@@ -123,7 +125,7 @@ class _ArtistItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return GestureDetector(
+    return TapScale(
       onTap: () => onTap(artist),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -135,7 +137,7 @@ class _ArtistItem extends StatelessWidget {
               width: 64,
               child: Text(
                 _displayName(context),
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textTitle),
+                style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: colors.textTitle),
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

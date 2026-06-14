@@ -146,7 +146,7 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
               TimeOfDay(hour: hour, minute: 0).toHHmm,
               textAlign: TextAlign.center,
               style: TextStyle(
-                  fontSize: 10,
+                  fontSize: AppDimens.fontSizeTiny,
                   fontWeight: FontWeight.w600,
                   color: colors.textSecondary),
             ),
@@ -278,7 +278,7 @@ class _OfficialCard extends StatelessWidget {
                   entry.artistName,
                   style: TextStyle(
                       color: followed ? Colors.white : color,
-                      fontSize: 11,
+                      fontSize: AppDimens.fontSizeXxs,
                       fontWeight: FontWeight.w700,
                       height: 1.2),
                   maxLines: 1,
@@ -322,7 +322,7 @@ class _UserCard extends StatelessWidget {
                 Text(
                   entry.label,
                   style: const TextStyle(
-                      color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700, height: 1.2),
+                      color: Colors.white, fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w700, height: 1.2),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

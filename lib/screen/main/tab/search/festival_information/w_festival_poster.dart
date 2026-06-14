@@ -367,7 +367,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
           Text(
             'retry'.tr(),
             style: const TextStyle(
-              fontSize: 11,
+              fontSize: AppDimens.fontSizeXxs,
               color: Colors.white54,
               decoration: TextDecoration.underline,
               decorationColor: Colors.white38,
@@ -446,7 +446,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 14),
             child: Text(
               widget.poster.description,
-              style: TextStyle(fontSize: 13.5, height: 1.6, color: Colors.white.withValues(alpha: 0.85)),
+              style: TextStyle(fontSize: AppDimens.fontSizeMd, height: 1.6, color: Colors.white.withValues(alpha: 0.85)),
             ),
           ),
           secondChild: const SizedBox(height: 10),
@@ -473,7 +473,7 @@ class _Tag extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color),
+        style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: color),
       ),
     );
   }

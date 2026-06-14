@@ -266,14 +266,14 @@ class _CertCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             'cert_rejection_reason'.tr(args: [rejectionMessage]),
-            style: TextStyle(fontSize: 11, color: colors.textSecondary),
+            style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
         ],
         if (createdAt != null) ...[
           const SizedBox(height: 4),
-          Text(createdAt, style: TextStyle(fontSize: 11, color: colors.textSecondary)),
+          Text(createdAt, style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary)),
         ],
       ],
     );

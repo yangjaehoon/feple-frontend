@@ -316,13 +316,13 @@ class _EnlargePostState extends State<EnlargePost> {
                       children: [
                         Text(
                           widget.createdAt!.relativeTime,
-                          style: TextStyle(fontSize: 11, color: colors.textSecondary.withValues(alpha: 0.65)),
+                          style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary.withValues(alpha: 0.65)),
                         ),
                         if (_updatedAt != null && _updatedAt!.difference(widget.createdAt!).inSeconds > 10) ...[
                           const SizedBox(width: 4),
                           Text(
                             'edited'.tr(),
-                            style: TextStyle(fontSize: 10, color: colors.textSecondary.withValues(alpha: 0.45)),
+                            style: TextStyle(fontSize: AppDimens.fontSizeTiny, color: colors.textSecondary.withValues(alpha: 0.45)),
                           ),
                         ],
                       ],

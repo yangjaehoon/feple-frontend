@@ -149,7 +149,7 @@ class TimetableGrid extends StatelessWidget {
                 child: Text(
                   '${hour.toString().padLeft(2, '0')}:00',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: colors.textSecondary),
+                  style: TextStyle(fontSize: AppDimens.fontSizeTiny, fontWeight: FontWeight.w600, color: colors.textSecondary),
                 ),
               );
             }),
@@ -273,7 +273,7 @@ class _PerformanceCard extends StatelessWidget {
             entry.artistName,
             style: TextStyle(
                 color: isFollowed ? Colors.white : color,
-                fontSize: 11,
+                fontSize: AppDimens.fontSizeXxs,
                 fontWeight: FontWeight.w700,
                 height: 1.2),
             maxLines: 1,

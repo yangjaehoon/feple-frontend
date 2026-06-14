@@ -121,7 +121,7 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
       child: Text(
         'song_request_title'.tr(),
         style: TextStyle(
-          fontSize: 18,
+          fontSize: AppDimens.fontSizeXxl,
           fontWeight: FontWeight.w800,
           color: colors.textTitle,
         ),

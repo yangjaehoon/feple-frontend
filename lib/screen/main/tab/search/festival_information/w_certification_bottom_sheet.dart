@@ -118,7 +118,7 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
             const SizedBox(width: 8),
             Text(
               'cert_title'.tr(),
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: colors.textTitle),
+              style: TextStyle(fontSize: AppDimens.fontSizeXxl, fontWeight: FontWeight.w800, color: colors.textTitle),
             ),
           ],
         ),

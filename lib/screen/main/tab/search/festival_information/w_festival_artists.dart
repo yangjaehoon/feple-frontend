@@ -164,7 +164,7 @@ class _FestivalArtistsState extends State<FestivalArtists> {
             Text(
               artist.artistName,
               style: TextStyle(
-                fontSize: 11,
+                fontSize: AppDimens.fontSizeXxs,
                 fontWeight: FontWeight.w600,
                 color: isFollowed ? colors.activate : colors.textTitle,
               ),

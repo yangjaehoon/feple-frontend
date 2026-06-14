@@ -318,7 +318,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
       ),
       child: Text(
         photo.description,
-        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: colors.activate),
+        style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: colors.activate),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),

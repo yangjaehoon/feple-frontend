@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/widget/w_inline_badge.dart';
 import 'package:feple/common/widget/w_profile_avatar.dart';
@@ -149,7 +150,7 @@ class _CommentTile extends StatelessWidget {
           children: [
             Text(
               comment.createdAt.relativeTime,
-              style: TextStyle(fontSize: 10, color: colors.textSecondary.withValues(alpha: 0.6)),
+              style: TextStyle(fontSize: AppDimens.fontSizeTiny, color: colors.textSecondary.withValues(alpha: 0.6)),
             ),
             if (comment.isEdited) ...[
               const SizedBox(width: 4),
@@ -185,7 +186,7 @@ class _CommentTile extends StatelessWidget {
                 const SizedBox(width: 3),
                 Text(
                   comment.likeCount.toString(),
-                  style: TextStyle(fontSize: 11, color: colors.textSecondary),
+                  style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
                 ),
               ],
             ],
@@ -197,7 +198,7 @@ class _CommentTile extends StatelessWidget {
             onTap: onReply,
             child: Text(
               'reply_comment'.tr(),
-              style: TextStyle(fontSize: 11, color: colors.textSecondary, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary, fontWeight: FontWeight.w500),
             ),
           ),
         ],

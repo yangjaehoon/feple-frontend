@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +54,7 @@ class HomeFestivalsSection extends StatelessWidget {
     }
     if (festivals!.isEmpty) {
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Text('no_liked_festivals'.tr(),
             style: TextStyle(color: colors.textSecondary)),
       );
@@ -83,7 +84,7 @@ class _FestivalItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return GestureDetector(
+    return TapScale(
       onTap: () => onTap(festival),
       child: Container(
         width: 130,
@@ -148,7 +149,7 @@ class _FestivalItem extends StatelessWidget {
               festival.displayTitle(isEnglish),
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 11,
+                fontSize: AppDimens.fontSizeXxs,
                 fontWeight: FontWeight.w700,
               ),
               maxLines: 2,

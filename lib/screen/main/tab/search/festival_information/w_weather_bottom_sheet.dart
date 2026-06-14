@@ -68,7 +68,7 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
           Text(
             'weather_title'.tr(),
             style: TextStyle(
-              fontSize: 17,
+              fontSize: AppDimens.fontSizeXxl,
               fontWeight: FontWeight.bold,
               color: colors.text,
             ),
@@ -121,7 +121,7 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
         Text(
           data.conditionKey.tr(),
           style: TextStyle(
-            fontSize: 18,
+            fontSize: AppDimens.fontSizeXxl,
             fontWeight: FontWeight.w600,
             color: colors.text,
           ),

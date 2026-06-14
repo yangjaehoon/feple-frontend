@@ -127,7 +127,7 @@ class _WritePostScreenState extends State<WritePostScreen> {
     return InputDecoration(
       hintText: hintKey.tr(),
       hintStyle: TextStyle(color: colors.textSecondary),
-      counterStyle: TextStyle(color: colors.textSecondary, fontSize: 11),
+      counterStyle: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXxs),
       border: OutlineInputBorder(borderRadius: radius),
       focusedBorder: OutlineInputBorder(
         borderRadius: radius,

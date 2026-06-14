@@ -20,7 +20,7 @@ class HomeSectionHeader extends StatelessWidget {
     final colors = context.appColors;
     final hasTrailing = onExpand != null || trailing != null;
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 16, hasTrailing ? 8 : 20, 8),
+      padding: EdgeInsets.fromLTRB(16, 16, hasTrailing ? 8 : 16, 8),
       child: Row(
         children: [
           Container(
@@ -35,7 +35,7 @@ class HomeSectionHeader extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-              fontSize: 18,
+              fontSize: AppDimens.fontSizeXxl,
               fontWeight: FontWeight.w800,
               color: colors.textTitle,
             ),

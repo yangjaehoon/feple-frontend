@@ -102,7 +102,7 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
           Text(
             'photo_edit_title'.tr(),
             style: TextStyle(
-              fontSize: 17,
+              fontSize: AppDimens.fontSizeXxl,
               fontWeight: FontWeight.w800,
               color: colors.textTitle,
             ),

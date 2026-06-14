@@ -134,7 +134,7 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
           child: Text(
             'cert_submit_title'.tr(),
             style: TextStyle(
-              fontSize: 18,
+              fontSize: AppDimens.fontSizeXxl,
               fontWeight: FontWeight.w800,
               color: colors.textTitle,
             ),

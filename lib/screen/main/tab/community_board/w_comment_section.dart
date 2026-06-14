@@ -209,7 +209,6 @@ class _CommentTile extends StatelessWidget {
   Widget _buildMenu(BuildContext context, AbstractThemeColors colors) {
     if (isOwn) {
       return PopupMenuButton<String>(
-        padding: EdgeInsets.zero,
         icon: Icon(Icons.more_vert, size: 16, color: colors.textSecondary),
         onSelected: (value) async {
           if (value == 'edit') {
@@ -246,7 +245,6 @@ class _CommentTile extends StatelessWidget {
     }
     if (onReport != null) {
       return PopupMenuButton<String>(
-        padding: EdgeInsets.zero,
         icon: Icon(Icons.more_vert, size: 16, color: colors.textSecondary),
         onSelected: (value) {
           if (value == 'report') onReport!();

@@ -283,7 +283,6 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
   Widget _buildPhotoMenu(
       ArtistPhotoResponse photo, bool isUploader, AbstractThemeColors colors) {
     return PopupMenuButton<String>(
-      padding: EdgeInsets.zero,
       icon: Icon(Icons.more_vert_rounded, color: colors.textSecondary, size: 20),
       onSelected: (value) {
         if (value == 'edit') {

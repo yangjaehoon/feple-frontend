@@ -74,7 +74,7 @@ class _SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
             style: TextButton.styleFrom(
               minimumSize: Size.zero,
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              tapTargetSize: MaterialTapTargetSize.padded,
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,

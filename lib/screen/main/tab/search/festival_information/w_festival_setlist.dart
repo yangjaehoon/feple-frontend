@@ -83,7 +83,7 @@ class _FestivalSetlistState extends State<FestivalSetlist> {
               foregroundColor: colors.activate,
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              tapTargetSize: MaterialTapTargetSize.padded,
             ),
             child: Text(
               'view_all'.tr(),

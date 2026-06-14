@@ -260,8 +260,6 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
                   trailing: IconButton(
                     icon: Icon(Icons.close_rounded, size: 16, color: colors.textSecondary),
                     onPressed: () => _removeRecentSearch(keyword),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
                   ),
                   onTap: () {
                     _controller.text = keyword;
@@ -292,7 +290,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
               style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                tapTargetSize: MaterialTapTargetSize.padded,
               ),
               child: Text(
                 'clear_all'.tr(),

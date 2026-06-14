@@ -22,12 +22,14 @@ class CommentService {
     required String content,
     required int postId,
     int? parentId,
+    bool anonymous = false,
   }) async {
     try {
       await DioClient.dio.post('/comments', data: {
         'content': content,
         'postId': postId,
         if (parentId != null) 'parentId': parentId,
+        'anonymous': anonymous,
       });
     } on DioException catch (e) {
       throwIfBannedWord(e);

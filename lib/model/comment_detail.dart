@@ -15,6 +15,7 @@ class CommentDetail {
   final int? parentId;
   final int likeCount;
   final bool liked;
+  final bool anonymous;
 
   const CommentDetail({
     required this.id,
@@ -30,6 +31,7 @@ class CommentDetail {
     this.parentId,
     required this.likeCount,
     required this.liked,
+    this.anonymous = false,
   });
 
   factory CommentDetail.fromJson(Map<String, dynamic> json) {
@@ -47,6 +49,7 @@ class CommentDetail {
       parentId: json['parentId'] != null ? (json['parentId'] as num).toInt() : null,
       likeCount: (json['likeCount'] as num?)?.toInt() ?? 0,
       liked: json['liked'] as bool? ?? false,
+      anonymous: json['anonymous'] as bool? ?? false,
     );
   }
 
@@ -64,6 +67,7 @@ class CommentDetail {
         parentId: parentId,
         likeCount: likeCount ?? this.likeCount,
         liked: liked ?? this.liked,
+        anonymous: anonymous,
       );
 
   bool get isEdited {

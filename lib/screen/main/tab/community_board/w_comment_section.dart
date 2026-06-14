@@ -116,11 +116,12 @@ class _CommentTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ProfileAvatar(
-            imageUrl: comment.profileImageUrl,
+            imageUrl: comment.anonymous ? null : comment.profileImageUrl,
             nickname: comment.nickname,
-            certified: comment.certified,
-            userRole: comment.userRole,
+            certified: comment.anonymous ? false : comment.certified,
+            userRole: comment.anonymous ? null : comment.userRole,
             radius: isReply ? 13 : 16,
+            anonymous: comment.anonymous,
           ),
           const SizedBox(width: 10),
           Expanded(child: _buildBody(colors)),
@@ -140,7 +141,8 @@ class _CommentTile extends StatelessWidget {
               comment.nickname,
               style: TextStyle(color: colors.textSecondary, fontSize: 12, fontWeight: FontWeight.bold),
             ),
-            InlineBadge(userRole: comment.userRole, certified: comment.certified),
+            if (!comment.anonymous)
+              InlineBadge(userRole: comment.userRole, certified: comment.certified),
           ],
         ),
         Row(

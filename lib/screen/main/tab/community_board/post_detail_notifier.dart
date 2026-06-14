@@ -115,7 +115,7 @@ class PostDetailNotifier extends SafeChangeNotifier {
     }
   }
 
-  Future<void> submitComment(String content, {int? parentId}) async {
+  Future<void> submitComment(String content, {int? parentId, bool anonymous = false}) async {
     if (content.isEmpty) {
       commentError = 'enter_comment_please';
       safeNotify();
@@ -130,6 +130,7 @@ class PostDetailNotifier extends SafeChangeNotifier {
         content: content,
         postId: postId,
         parentId: parentId,
+        anonymous: anonymous,
       );
       await fetchComments();
       onSuccess?.call('comment_posted');

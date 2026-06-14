@@ -182,7 +182,7 @@ class _EnlargePostState extends State<EnlargePost> {
           child: Row(children: [
             const Icon(Icons.edit_outlined, size: 18),
             const SizedBox(width: 8),
-            Text('edit_post'.tr()),
+            Expanded(child: Text('edit_post'.tr(), overflow: TextOverflow.ellipsis)),
           ]),
         ),
         PopupMenuItem(
@@ -190,7 +190,7 @@ class _EnlargePostState extends State<EnlargePost> {
           child: Row(children: [
             const Icon(Icons.delete_outline_rounded, size: 18, color: AppColors.errorRed),
             const SizedBox(width: 8),
-            Text('delete_post'.tr(), style: const TextStyle(color: AppColors.errorRed)),
+            Expanded(child: Text('delete_post'.tr(), style: const TextStyle(color: AppColors.errorRed), overflow: TextOverflow.ellipsis)),
           ]),
         ),
         PopupMenuItem(
@@ -198,7 +198,7 @@ class _EnlargePostState extends State<EnlargePost> {
           child: Row(children: [
             const Icon(Icons.share_outlined, size: 18),
             const SizedBox(width: 8),
-            Text('share'.tr()),
+            Expanded(child: Text('share'.tr(), overflow: TextOverflow.ellipsis)),
           ]),
         ),
       ];
@@ -209,7 +209,7 @@ class _EnlargePostState extends State<EnlargePost> {
           child: Row(children: [
             const Icon(Icons.flag_outlined, size: 18, color: AppColors.errorRed),
             const SizedBox(width: 8),
-            Text('report_post'.tr(), style: const TextStyle(color: AppColors.errorRed)),
+            Expanded(child: Text('report_post'.tr(), style: const TextStyle(color: AppColors.errorRed), overflow: TextOverflow.ellipsis)),
           ]),
         ),
         PopupMenuItem(
@@ -217,7 +217,7 @@ class _EnlargePostState extends State<EnlargePost> {
           child: Row(children: [
             const Icon(Icons.share_outlined, size: 18),
             const SizedBox(width: 8),
-            Text('share'.tr()),
+            Expanded(child: Text('share'.tr(), overflow: TextOverflow.ellipsis)),
           ]),
         ),
       ];

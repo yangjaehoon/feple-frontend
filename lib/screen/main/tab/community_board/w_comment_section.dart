@@ -230,7 +230,7 @@ class _CommentTile extends StatelessWidget {
             child: Row(children: [
               const Icon(Icons.edit_outlined, size: 16),
               const SizedBox(width: 8),
-              Text('edit_comment'.tr(), style: const TextStyle(fontSize: AppDimens.fontSizeSm)),
+              Expanded(child: Text('edit_comment'.tr(), style: const TextStyle(fontSize: AppDimens.fontSizeSm), overflow: TextOverflow.ellipsis)),
             ]),
           ),
           PopupMenuItem(
@@ -238,7 +238,7 @@ class _CommentTile extends StatelessWidget {
             child: Row(children: [
               const Icon(Icons.delete_outline_rounded, size: 16, color: AppColors.errorRed),
               const SizedBox(width: 8),
-              Text('delete_comment'.tr(), style: const TextStyle(color: AppColors.errorRed, fontSize: AppDimens.fontSizeSm)),
+              Expanded(child: Text('delete_comment'.tr(), style: const TextStyle(color: AppColors.errorRed, fontSize: AppDimens.fontSizeSm), overflow: TextOverflow.ellipsis)),
             ]),
           ),
         ],
@@ -257,7 +257,7 @@ class _CommentTile extends StatelessWidget {
             child: Row(children: [
               const Icon(Icons.flag_outlined, size: 16, color: AppColors.errorRed),
               const SizedBox(width: 8),
-              Text('report_comment'.tr(), style: const TextStyle(color: AppColors.errorRed, fontSize: AppDimens.fontSizeSm)),
+              Expanded(child: Text('report_comment'.tr(), style: const TextStyle(color: AppColors.errorRed, fontSize: AppDimens.fontSizeSm), overflow: TextOverflow.ellipsis)),
             ]),
           ),
         ],

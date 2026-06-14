@@ -129,16 +129,20 @@ class _LoadingButtonState extends State<LoadingButton>
     if (widget.child != null) return widget.child!;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         if (widget.icon != null) ...[
           Icon(widget.icon, size: 18),
           const SizedBox(width: 8),
         ],
-        Text(
-          widget.label,
-          style: const TextStyle(
-            fontSize: AppDimens.fontSizeXl,
-            fontWeight: FontWeight.w700,
+        Flexible(
+          child: Text(
+            widget.label,
+            style: const TextStyle(
+              fontSize: AppDimens.fontSizeXl,
+              fontWeight: FontWeight.w700,
+            ),
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],

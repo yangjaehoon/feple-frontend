@@ -72,7 +72,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
       child: Row(children: [
         Icon(icon, size: 16, color: color ?? colors.textSecondary),
         const SizedBox(width: 8),
-        Text(label, style: color != null ? TextStyle(color: color) : null),
+        Expanded(child: Text(label, style: color != null ? TextStyle(color: color) : null, overflow: TextOverflow.ellipsis)),
       ]),
     );
   }

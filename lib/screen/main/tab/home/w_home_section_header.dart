@@ -32,16 +32,18 @@ class HomeSectionHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: AppDimens.fontSizeXxl,
-              fontWeight: FontWeight.w800,
-              color: colors.textTitle,
+          Expanded(
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: AppDimens.fontSizeXxl,
+                fontWeight: FontWeight.w800,
+                color: colors.textTitle,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           if (onExpand != null) ...[
-            const Spacer(),
             IconButton(
               tooltip: 'see_all'.tr(),
               icon: Icon(Icons.arrow_forward_ios_rounded,

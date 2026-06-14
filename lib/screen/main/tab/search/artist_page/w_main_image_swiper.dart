@@ -31,11 +31,16 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   static const double _swiperHeight = 350.0;
   static const double _pageViewHeight = 250.0;
   static const double _photoCardSize = 200.0;
+  // 가상 페이지 수를 크게 잡아 양방향 무한 스크롤처럼 보이게 함
+  static const int _loopMultiplier = 10000;
 
   late final ArtistSwiperPhotosNotifier _photosNotifier;
 
-  final PageController _pageController = PageController(viewportFraction: 0.55);
-  int _currentPage = 0;
+  // 사진 수를 알아야 initialPage를 설정할 수 있으므로 로드 후 생성
+  PageController? _pageController;
+  int _virtualPage = 0;
+  int _currentRealPage = 0;
+  // PageController가 없을 때 scale 계산용 기본값
   final ValueNotifier<double> _pageOffset = ValueNotifier(0.0);
   Timer? _timer;
   bool _isUserScrolling = false;
@@ -46,18 +51,31 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
     super.initState();
     _photosNotifier = ArtistSwiperPhotosNotifier(artistId: widget.artistId)..load();
     _photosNotifier.addListener(_onPhotosLoaded);
-    _pageController.addListener(_onPageScroll);
   }
 
   void _onPhotosLoaded() {
-    if (_photosNotifier.loaded && mounted) {
+    if (!_photosNotifier.loaded || !mounted) return;
+    if (_photosNotifier.photos.isNotEmpty) {
+      final n = _photosNotifier.photos.length;
+      // 중간에서 시작해 양방향 스크롤 여유 확보
+      _virtualPage = n * (_loopMultiplier ~/ 2);
+      _currentRealPage = 0;
+      // initialPage를 정확히 설정해 첫 프레임부터 올바른 위치로 렌더링
+      final controller = PageController(
+        viewportFraction: 0.55,
+        initialPage: _virtualPage,
+      );
+      _pageOffset.value = _virtualPage.toDouble();
+      controller.addListener(_onPageScroll);
+      setState(() => _pageController = controller);
+      _startTimer();
+    } else {
       setState(() {});
-      if (_photosNotifier.photos.isNotEmpty) _startTimer();
     }
   }
 
   void _onPageScroll() {
-    final page = _pageController.page;
+    final page = _pageController?.page;
     if (page == null) return;
     _pageOffset.value = page;
     if (!_isAutoScrolling) {
@@ -66,25 +84,28 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   }
 
   void _startTimer() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _timer = Timer.periodic(const Duration(seconds: 3), (_) {
-        if (!mounted || !_pageController.hasClients || _photosNotifier.photos.isEmpty || _isUserScrolling) return;
-        final nextPage = (_currentPage + 1) % _photosNotifier.photos.length;
-        _isAutoScrolling = true;
-        _pageController.animateToPage(
-          nextPage,
-          duration: AppDimens.animSlow,
-          curve: Curves.easeIn,
-        ).whenComplete(() {
-          if (mounted) _isAutoScrolling = false;
-        });
+    _timer = Timer.periodic(const Duration(seconds: 3), (_) {
+      if (!mounted || _pageController == null || !_pageController!.hasClients ||
+          _photosNotifier.photos.isEmpty || _isUserScrolling) {
+        return;
+      }
+      _isAutoScrolling = true;
+      // 항상 +1 전진 — 마지막 사진 다음에도 자연스럽게 처음 사진으로 넘어감
+      _pageController!.animateToPage(
+        _virtualPage + 1,
+        duration: AppDimens.animSlow,
+        curve: Curves.easeIn,
+      ).whenComplete(() {
+        if (mounted) _isAutoScrolling = false;
       });
     });
   }
 
-  void _onPageChanged(int newPage) {
-    setState(() => _currentPage = newPage);
+  void _onPageChanged(int newVirtualPage) {
+    setState(() {
+      _virtualPage = newVirtualPage;
+      _currentRealPage = newVirtualPage % _photosNotifier.photos.length;
+    });
   }
 
   @override
@@ -92,9 +113,9 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
     _timer?.cancel();
     _photosNotifier.removeListener(_onPhotosLoaded);
     _photosNotifier.dispose();
-    _pageController.removeListener(_onPageScroll);
+    _pageController?.removeListener(_onPageScroll);
     _pageOffset.dispose();
-    _pageController.dispose();
+    _pageController?.dispose();
     super.dispose();
   }
 
@@ -105,7 +126,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
       child: Stack(
         children: [
           _buildBackground(),
-          if (_photosNotifier.photos.isNotEmpty) _buildPhotoPageView(),
+          if (_pageController != null) _buildPhotoPageView(),
           ArtistNameLike(
             artistName: widget.artistName,
             artistId: widget.artistId,
@@ -117,18 +138,20 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
   }
 
   Widget _buildPhotoPageView() {
+    final n = _photosNotifier.photos.length;
     return SizedBox(
       height: _pageViewHeight,
       child: PageView.builder(
         onPageChanged: _onPageChanged,
         controller: _pageController,
-        itemCount: _photosNotifier.photos.length,
-        itemBuilder: (context, index) => _buildPhotoItem(index),
+        itemCount: n * _loopMultiplier,
+        itemBuilder: (context, virtualIndex) =>
+            _buildPhotoItem(virtualIndex, virtualIndex % n),
       ),
     );
   }
 
-  Widget _buildPhotoItem(int index) {
+  Widget _buildPhotoItem(int virtualIndex, int realIndex) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 30, 0, 20),
       child: Column(
@@ -137,11 +160,12 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
           ValueListenableBuilder<double>(
             valueListenable: _pageOffset,
             builder: (context, pageOffset, child) {
-              final difference = (pageOffset - index).abs();
+              // 가상 인덱스 기준으로 scale 계산 — 인접 카드가 자연스럽게 축소됨
+              final difference = (pageOffset - virtualIndex).abs();
               final scale = 1 - (difference * 0.2);
               return Transform.scale(
                 scale: scale,
-                child: _buildPhotoCard(index),
+                child: _buildPhotoCard(realIndex),
               );
             },
           ),
@@ -150,7 +174,7 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
     );
   }
 
-  Widget _buildPhotoCard(int index) {
+  Widget _buildPhotoCard(int realIndex) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
       child: Container(
@@ -169,8 +193,8 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
           ],
         ),
         child: CachedNetworkImage(
-          imageUrl: _photosNotifier.photos[index].url,
-          cacheKey: 'artist-photo-${_photosNotifier.photos[index].photoId}',
+          imageUrl: _photosNotifier.photos[realIndex].url,
+          cacheKey: 'artist-photo-${_photosNotifier.photos[realIndex].photoId}',
           fit: BoxFit.cover,
           memCacheWidth: 300,
         ),
@@ -197,12 +221,12 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
     return AnimatedSwitcher(
       duration: AppDimens.animVerySlow,
       child: Container(
-        key: ValueKey(_currentPage),
+        key: ValueKey(_currentRealPage),
         decoration: BoxDecoration(
           image: DecorationImage(
             image: CachedNetworkImageProvider(
-              _photosNotifier.photos[_currentPage].url,
-              cacheKey: 'artist-photo-${_photosNotifier.photos[_currentPage].photoId}',
+              _photosNotifier.photos[_currentRealPage].url,
+              cacheKey: 'artist-photo-${_photosNotifier.photos[_currentRealPage].photoId}',
             ),
             fit: BoxFit.cover,
           ),

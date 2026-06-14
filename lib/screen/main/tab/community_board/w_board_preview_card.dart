@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_async_content_builder.dart';
+import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
@@ -47,34 +48,23 @@ class BoardPreviewCard extends StatelessWidget {
     Widget content = _buildPostList(context, colors);
     if (height != null) content = Expanded(child: content);
 
-    return Container(
-      width: double.infinity,
+    return SizedBox(
       height: height,
-      margin: const EdgeInsets.symmetric(
-          horizontal: AppDimens.paddingHorizontal,
-          vertical: AppDimens.paddingVertical),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius:
-            const BorderRadius.all(Radius.circular(AppDimens.cardRadiusTiny)),
-        boxShadow: [
-          BoxShadow(
-            color: colors.cardShadow.withValues(alpha: 0.12),
-            blurRadius: AppDimens.cardRadius,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          BoardCardHeader(
-            icon: headerIcon,
-            title: headerTitle,
-            headerColor: headerColor,
-            onTap: onHeaderTap,
-          ),
-          content,
-        ],
+      child: SurfaceCard(
+        borderRadius: AppDimens.cardRadiusTiny,
+        width: double.infinity,
+        child: Column(
+          mainAxisSize: height != null ? MainAxisSize.max : MainAxisSize.min,
+          children: [
+            BoardCardHeader(
+              icon: headerIcon,
+              title: headerTitle,
+              headerColor: headerColor,
+              onTap: onHeaderTap,
+            ),
+            content,
+          ],
+        ),
       ),
     );
   }

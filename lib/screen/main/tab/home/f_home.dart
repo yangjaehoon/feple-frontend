@@ -95,8 +95,7 @@ class _HomeFragmentState extends State<HomeFragment> {
           title: 'followed_artists'.tr(),
           onExpand: (_notifier.artists?.isNotEmpty ?? false)
               ? () async {
-                  await Navigator.push(
-                    context,
+                  await Navigator.of(context, rootNavigator: true).push(
                     SlideRoute(
                       builder: (_) => FollowedArtistsByGenrePage(
                         artists: _notifier.orderedArtists ?? [],
@@ -113,8 +112,7 @@ class _HomeFragmentState extends State<HomeFragment> {
           hasError: _notifier.hasError,
           onRetry: _notifier.retry,
           onTap: (artist) async {
-            await Navigator.push(
-              context,
+            await Navigator.of(context, rootNavigator: true).push(
               SlideRoute(
                 builder: (_) => ArtistPage(
                   artistId: artist.id,
@@ -132,8 +130,7 @@ class _HomeFragmentState extends State<HomeFragment> {
           title: 'liked_festivals'.tr(),
           onExpand: (_notifier.festivals?.isNotEmpty ?? false)
               ? () async {
-                  await Navigator.push(
-                    context,
+                  await Navigator.of(context, rootNavigator: true).push(
                     SlideRoute(
                       builder: (_) => LikedFestivalsPage(
                         festivals: _notifier.orderedFestivals ?? [],
@@ -150,8 +147,7 @@ class _HomeFragmentState extends State<HomeFragment> {
           hasError: _notifier.hasError,
           onRetry: _notifier.retry,
           onTap: (festival) async {
-            await Navigator.push(
-              context,
+            await Navigator.of(context, rootNavigator: true).push(
               SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)),
             );
             _notifier.refresh();

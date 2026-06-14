@@ -22,8 +22,7 @@ class ConcertListWidget extends StatelessWidget {
       index: index,
       child: TapScale(
         onTap: () {
-          Navigator.push(
-            context,
+          Navigator.of(context, rootNavigator: true).push(
             SlideRoute(
               builder: (context) => FestivalInformationFragment(poster: item.toModel()),
             ),

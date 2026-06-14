@@ -70,8 +70,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
           final item = items[index];
           return GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
+              Navigator.of(context, rootNavigator: true).push(
                 SlideRoute(builder: (context) => FestivalInformationFragment(poster: item.toModel())),
               );
             },

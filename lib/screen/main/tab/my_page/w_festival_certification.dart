@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/certification_model.dart';
@@ -182,7 +183,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
     final isApproved = cert.status == CertStatus.approved;
     final ringColor = cert.status.displayColor(colors);
 
-    return GestureDetector(
+    return TapScale(
       onTap: _openDetail,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),

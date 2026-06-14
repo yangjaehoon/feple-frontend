@@ -48,7 +48,7 @@ class ImagePickerBox extends StatelessWidget {
                 child: imageData == null
                     ? _buildPlaceholder(colors)
                     : ClipRRect(
-                        borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
                         child: Image.memory(imageData!, fit: BoxFit.cover),
                       ),
               ),

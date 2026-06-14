@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/notification_model.dart';
 import 'package:feple/screen/notification/notification_type.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ class NotificationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.appColors;
 
-    return GestureDetector(
+    return TapScale(
       onTap: onTap,
       child: AnimatedContainer(
         duration: AppDimens.animQuick,

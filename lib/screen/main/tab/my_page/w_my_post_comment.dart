@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/user_stats_model.dart';
@@ -137,7 +138,7 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
     VoidCallback? onTap,
   }) {
     final colors = context.appColors;
-    return GestureDetector(
+    return TapScale(
       onTap: onTap,
       child: Container(
         height: 90,

@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/provider/festival_preview_provider.dart';
 import 'package:feple/screen/main/tab/search/w_circle_artist.dart';
+import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:feple/screen/main/tab/search/w_festival_list_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,23 +27,28 @@ class _SearchFragmentState extends State<SearchFragment> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return Container(
+    return ColoredBox(
       color: colors.backgroundMain,
-      child: RefreshIndicator(
-        onRefresh: _onRefresh,
-        color: colors.activate,
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: EdgeInsets.only(
-            bottom: AppDimens.scrollPaddingBottom,
+      child: Column(
+        children: [
+          const FepleAppBar('Feple'),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: _onRefresh,
+              color: colors.activate,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
+                child: Column(
+                  children: [
+                    const ConcertListSwiperWidget(),
+                    CircleArtistWidget(key: ValueKey(_artistRefreshKey)),
+                  ],
+                ),
+              ),
+            ),
           ),
-          child: Column(
-            children: [
-              const ConcertListSwiperWidget(),
-              CircleArtistWidget(key: ValueKey(_artistRefreshKey)),
-            ],
-          ),
-        ),
+        ],
       ),
     );
   }

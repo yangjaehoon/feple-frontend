@@ -10,6 +10,7 @@ import 'package:feple/screen/main/tab/home/w_home_festivals_section.dart';
 import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
+import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -58,32 +59,34 @@ class _HomeFragmentState extends State<HomeFragment> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return ListenableBuilder(
-      listenable: _notifier,
-      builder: (context, _) {
-        if (_notifier.userId == null) {
-          return Container(
-            color: colors.backgroundMain,
-            child: Center(child: CircularProgressIndicator(color: colors.loadingIndicator)),
-          );
-        }
-        return Container(
-          color: colors.backgroundMain,
-          child: RefreshIndicator(
-            color: colors.activate,
-            onRefresh: () async {
-              try { await _notifier.refresh(force: true); } catch (_) {}
-            },
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.only(
-                bottom: AppDimens.scrollPaddingBottom,
-              ),
-              child: _buildScrollContent(context, colors),
+    return ColoredBox(
+      color: colors.backgroundMain,
+      child: Column(
+        children: [
+          const FepleAppBar('Feple'),
+          Expanded(
+            child: ListenableBuilder(
+              listenable: _notifier,
+              builder: (context, _) {
+                if (_notifier.userId == null) {
+                  return Center(child: CircularProgressIndicator(color: colors.loadingIndicator));
+                }
+                return RefreshIndicator(
+                  color: colors.activate,
+                  onRefresh: () async {
+                    try { await _notifier.refresh(force: true); } catch (_) {}
+                  },
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
+                    child: _buildScrollContent(context, colors),
+                  ),
+                );
+              },
             ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 
@@ -95,7 +98,8 @@ class _HomeFragmentState extends State<HomeFragment> {
           title: 'followed_artists'.tr(),
           onExpand: (_notifier.artists?.isNotEmpty ?? false)
               ? () async {
-                  await Navigator.of(context, rootNavigator: true).push(
+                  await Navigator.push(
+                    context,
                     SlideRoute(
                       builder: (_) => FollowedArtistsByGenrePage(
                         artists: _notifier.orderedArtists ?? [],
@@ -112,7 +116,8 @@ class _HomeFragmentState extends State<HomeFragment> {
           hasError: _notifier.hasError,
           onRetry: _notifier.retry,
           onTap: (artist) async {
-            await Navigator.of(context, rootNavigator: true).push(
+            await Navigator.push(
+              context,
               SlideRoute(
                 builder: (_) => ArtistPage(
                   artistId: artist.id,
@@ -130,7 +135,8 @@ class _HomeFragmentState extends State<HomeFragment> {
           title: 'liked_festivals'.tr(),
           onExpand: (_notifier.festivals?.isNotEmpty ?? false)
               ? () async {
-                  await Navigator.of(context, rootNavigator: true).push(
+                  await Navigator.push(
+                    context,
                     SlideRoute(
                       builder: (_) => LikedFestivalsPage(
                         festivals: _notifier.orderedFestivals ?? [],
@@ -147,7 +153,8 @@ class _HomeFragmentState extends State<HomeFragment> {
           hasError: _notifier.hasError,
           onRetry: _notifier.retry,
           onTap: (festival) async {
-            await Navigator.of(context, rootNavigator: true).push(
+            await Navigator.push(
+              context,
               SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)),
             );
             _notifier.refresh();

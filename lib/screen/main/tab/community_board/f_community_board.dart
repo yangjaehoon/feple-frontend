@@ -4,6 +4,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_hot_board.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_free_board.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_companion_board.dart';
+import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:flutter/material.dart';
 
 class CommunityBoardFragment extends StatelessWidget {
@@ -13,29 +14,35 @@ class CommunityBoardFragment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: context.appColors.backgroundMain,
-      child: RefreshIndicator(
-        color: context.appColors.activate,
-        onRefresh: () async {
-          AppEvents.postChanged.value++;
-          await Future.delayed(AppDimens.animRefresh);
-        },
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Padding(
-            padding: const EdgeInsets.only(
-              bottom: AppDimens.scrollPaddingBottomLarge,
-            ),
-            child: const Column(
-              children: [
-                HotBoard(),
-                FreeBoard(),
-                GetUserBoard(),
-              ],
+    final colors = context.appColors;
+    return ColoredBox(
+      color: colors.backgroundMain,
+      child: Column(
+        children: [
+          FepleAppBar('board'.tr()),
+          Expanded(
+            child: RefreshIndicator(
+              color: colors.activate,
+              onRefresh: () async {
+                AppEvents.postChanged.value++;
+                await Future.delayed(AppDimens.animRefresh);
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: const Padding(
+                  padding: EdgeInsets.only(bottom: AppDimens.scrollPaddingBottomLarge),
+                  child: Column(
+                    children: [
+                      HotBoard(),
+                      FreeBoard(),
+                      GetUserBoard(),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

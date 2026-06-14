@@ -197,7 +197,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
               return AnimatedListItem(
                 index: index,
                 child: TapScale(
-                  onTap: () => Navigator.of(context, rootNavigator: true).push(
+                  onTap: () => Navigator.push(context,
                     SlideRoute(
                       builder: (context) => ArtistPage(
                         artistName: artist.name,

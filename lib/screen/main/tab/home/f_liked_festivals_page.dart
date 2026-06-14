@@ -10,7 +10,7 @@ import 'package:feple/screen/main/tab/search/festival_information/f_festival_inf
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
-class LikedFestivalsPage extends StatelessWidget {
+class LikedFestivalsPage extends StatefulWidget {
   const LikedFestivalsPage({
     super.key,
     required this.festivals,
@@ -20,9 +20,17 @@ class LikedFestivalsPage extends StatelessWidget {
   final List<FestivalModel> festivals;
   final Future<void> Function(List<int>)? onSaveOrder;
 
-  void _openSettings(BuildContext context) {
+  @override
+  State<LikedFestivalsPage> createState() => _LikedFestivalsPageState();
+}
+
+class _LikedFestivalsPageState extends State<LikedFestivalsPage> {
+  bool _showEnded = false;
+
+  void _openSettings() {
     final isEnglish = context.locale.languageCode == 'en';
-    final items = festivals
+    final items = widget.festivals
+        .where((f) => !f.isEnded)
         .map((f) => ReorderItem(id: f.id, name: f.displayTitle(isEnglish), imageUrl: f.posterUrl))
         .toList();
     showAppBottomSheet(
@@ -31,14 +39,18 @@ class LikedFestivalsPage extends StatelessWidget {
         title: 'liked_festivals'.tr(),
         subtitle: 'reorder_liked_festivals_hint'.tr(),
         items: items,
-        onSave: onSaveOrder ?? (_) {},
+        onSave: widget.onSaveOrder ?? (_) {},
       ),
     );
   }
 
+  List<FestivalModel> get _filtered =>
+      widget.festivals.where((f) => f.isEnded == _showEnded).toList();
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final filtered = _filtered;
 
     return Scaffold(
       backgroundColor: colors.backgroundMain,
@@ -58,31 +70,127 @@ class LikedFestivalsPage extends StatelessWidget {
           ),
         ),
         actions: [
-          if (onSaveOrder != null)
+          if (widget.onSaveOrder != null && !_showEnded)
             IconButton(
               icon: Icon(Icons.settings_rounded, color: colors.textSecondary, size: 20),
-              onPressed: () => _openSettings(context),
+              onPressed: _openSettings,
             ),
         ],
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.only(top: 8, bottom: 24),
-        itemCount: festivals.length,
-        itemBuilder: (context, index) {
-          final festival = festivals[index];
-          return AnimatedListItem(
-            index: index,
-            child: TapScale(
-              onTap: () => Navigator.push(
-                context,
-                SlideRoute(
-                  builder: (_) => FestivalInformationFragment(poster: festival),
-                ),
-              ),
-              child: _FestivalCard(festival: festival),
+      body: Column(
+        children: [
+          _buildTabToggle(colors),
+          Expanded(child: _buildList(filtered, colors)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabToggle(AbstractThemeColors colors) {
+    return Container(
+      color: colors.surface,
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+      child: Row(
+        children: [
+          _TabButton(
+            label: 'tab_upcoming_festivals'.tr(),
+            selected: !_showEnded,
+            colors: colors,
+            onTap: () => setState(() => _showEnded = false),
+          ),
+          const SizedBox(width: 8),
+          _TabButton(
+            label: 'tab_ended_festivals'.tr(),
+            selected: _showEnded,
+            colors: colors,
+            onTap: () => setState(() => _showEnded = true),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildList(List<FestivalModel> items, AbstractThemeColors colors) {
+    if (items.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.favorite_border_rounded,
+                size: 40, color: colors.textSecondary.withValues(alpha: 0.3)),
+            const SizedBox(height: 10),
+            Text(
+              _showEnded ? 'tab_ended_festivals'.tr() : 'tab_upcoming_festivals'.tr(),
+              style: TextStyle(
+                  fontSize: 14, color: colors.textSecondary.withValues(alpha: 0.6)),
             ),
-          );
-        },
+            Text(
+              'no_liked_in_tab'.tr(),
+              style: TextStyle(
+                  fontSize: 13, color: colors.textSecondary.withValues(alpha: 0.45)),
+            ),
+          ],
+        ),
+      );
+    }
+    return ListView.builder(
+      padding: const EdgeInsets.only(top: 8, bottom: 24),
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        final festival = items[index];
+        return AnimatedListItem(
+          index: index,
+          child: TapScale(
+            onTap: () => Navigator.push(
+              context,
+              SlideRoute(
+                builder: (_) => FestivalInformationFragment(poster: festival),
+              ),
+            ),
+            child: _FestivalCard(festival: festival),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _TabButton extends StatelessWidget {
+  const _TabButton({
+    required this.label,
+    required this.selected,
+    required this.colors,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final AbstractThemeColors colors;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: AppDimens.animFast,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+        decoration: BoxDecoration(
+          color: selected ? colors.activate : Colors.transparent,
+          borderRadius: BorderRadius.circular(AppDimens.cardRadius),
+          border: Border.all(
+            color: selected ? colors.activate : colors.listDivider,
+            width: 1.5,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: selected ? Colors.white : colors.textSecondary,
+          ),
+        ),
       ),
     );
   }

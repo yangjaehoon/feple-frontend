@@ -20,8 +20,10 @@ class NotificationService {
     final items = (data['content'] as List)
         .map((e) => NotificationModel.fromJson(e as Map<String, dynamic>))
         .toList();
-    final last = data['last'] as bool? ?? true;
-    return NotificationPage(items: items, hasMore: !last);
+    final pageInfo = data['page'] as Map<String, dynamic>? ?? {};
+    final pageNumber = (pageInfo['number'] as num?)?.toInt() ?? 0;
+    final totalPages = (pageInfo['totalPages'] as num?)?.toInt() ?? 1;
+    return NotificationPage(items: items, hasMore: pageNumber + 1 < totalPages);
   }
 
   Future<int> getUnreadCount() async {

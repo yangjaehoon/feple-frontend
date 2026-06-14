@@ -69,10 +69,11 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
     String value, IconData icon, String label, AbstractThemeColors colors, {Color? color}) {
     return PopupMenuItem(
       value: value,
+      height: 44,
       child: Row(children: [
-        Icon(icon, size: 16, color: color ?? colors.textSecondary),
-        const SizedBox(width: 8),
-        Expanded(child: Text(label, style: color != null ? TextStyle(color: color) : null, overflow: TextOverflow.ellipsis)),
+        Icon(icon, size: 16, color: color ?? colors.textTitle),
+        const SizedBox(width: 10),
+        Expanded(child: Text(label, style: TextStyle(color: color ?? colors.textTitle), overflow: TextOverflow.ellipsis)),
       ]),
     );
   }
@@ -284,6 +285,11 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
       ArtistPhotoResponse photo, bool isUploader, AbstractThemeColors colors) {
     return PopupMenuButton<String>(
       icon: Icon(Icons.more_vert_rounded, color: colors.textSecondary, size: 20),
+      color: colors.surface,
+      elevation: 6,
+      shadowColor: colors.cardShadow.withValues(alpha: 0.18),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+      position: PopupMenuPosition.under,
       onSelected: (value) {
         if (value == 'edit') {
           _showEditBottomSheet(photo);
@@ -306,6 +312,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
       itemBuilder: (_) => [
         if (isUploader) ...[
           _menuItem('edit', Icons.edit_rounded, 'photo_edit_action'.tr(), colors),
+          const PopupMenuDivider(height: 1),
           _menuItem('delete', Icons.delete_rounded, 'msg_delete'.tr(), colors, color: AppColors.errorRed),
         ] else
           _menuItem('report', Icons.flag_rounded, 'report_photo'.tr(), colors, color: AppColors.errorRed),

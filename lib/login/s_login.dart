@@ -285,46 +285,55 @@ class _LoginPageState extends State<LoginPage> {
     final emailCtrl = TextEditingController(text: emailController.text.trim());
     await showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('reset_password'.tr(),
-            style: const TextStyle(fontWeight: FontWeight.w700)),
-        content: TextField(
-          controller: emailCtrl,
-          keyboardType: TextInputType.emailAddress,
-          decoration: InputDecoration(
-            hintText: 'registered_email'.tr(),
-            border: const OutlineInputBorder(),
+      builder: (ctx) {
+        final colors = ctx.appColors;
+        return AlertDialog(
+          backgroundColor: colors.surface,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16)),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('cancel'.tr()),
+          title: Text(
+            'reset_password'.tr(),
+            style: TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: context.appColors.activate,
-              foregroundColor: Colors.white,
+          content: TextField(
+            controller: emailCtrl,
+            keyboardType: TextInputType.emailAddress,
+            decoration: InputDecoration(
+              hintText: 'registered_email'.tr(),
+              border: const OutlineInputBorder(),
             ),
-            onPressed: () async {
-              final email = emailCtrl.text.trim();
-              if (email.isEmpty) return;
-              Navigator.pop(ctx);
-              try {
-                await AuthService.instance.sendPasswordReset(email);
-                if (mounted) {
-                  context.showSuccessSnackbar('password_reset_sent'.tr());
-                }
-              } on FirebaseAuthException catch (e) {
-                if (mounted) {
-                  context.showErrorSnackbar(AuthService.instance.firebaseErrorMessage(e.code));
-                }
-              }
-            },
-            child: Text('send'.tr()),
           ),
-        ],
-      ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text('cancel'.tr()),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colors.activate,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () async {
+                final email = emailCtrl.text.trim();
+                if (email.isEmpty) return;
+                Navigator.pop(ctx);
+                try {
+                  await AuthService.instance.sendPasswordReset(email);
+                  if (mounted) {
+                    context.showSuccessSnackbar('password_reset_sent'.tr());
+                  }
+                } on FirebaseAuthException catch (e) {
+                  if (mounted) {
+                    context.showErrorSnackbar(AuthService.instance.firebaseErrorMessage(e.code));
+                  }
+                }
+              },
+              child: Text('send'.tr()),
+            ),
+          ],
+        );
+      },
     );
     emailCtrl.dispose();
   }

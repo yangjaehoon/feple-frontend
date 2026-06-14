@@ -210,6 +210,11 @@ class _CommentTile extends StatelessWidget {
     if (isOwn) {
       return PopupMenuButton<String>(
         icon: Icon(Icons.more_vert, size: 16, color: colors.textSecondary),
+        color: colors.surface,
+        elevation: 6,
+        shadowColor: colors.cardShadow.withValues(alpha: 0.18),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+        position: PopupMenuPosition.under,
         onSelected: (value) async {
           if (value == 'edit') {
             onEdit?.call();
@@ -226,17 +231,20 @@ class _CommentTile extends StatelessWidget {
         itemBuilder: (_) => [
           PopupMenuItem(
             value: 'edit',
+            height: 44,
             child: Row(children: [
-              const Icon(Icons.edit_outlined, size: 16),
-              const SizedBox(width: 8),
-              Expanded(child: Text('edit_comment'.tr(), style: const TextStyle(fontSize: AppDimens.fontSizeSm), overflow: TextOverflow.ellipsis)),
+              Icon(Icons.edit_outlined, size: 16, color: colors.textTitle),
+              const SizedBox(width: 10),
+              Expanded(child: Text('edit_comment'.tr(), style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textTitle), overflow: TextOverflow.ellipsis)),
             ]),
           ),
+          PopupMenuDivider(height: 1),
           PopupMenuItem(
             value: 'delete',
+            height: 44,
             child: Row(children: [
               const Icon(Icons.delete_outline_rounded, size: 16, color: AppColors.errorRed),
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
               Expanded(child: Text('delete_comment'.tr(), style: const TextStyle(color: AppColors.errorRed, fontSize: AppDimens.fontSizeSm), overflow: TextOverflow.ellipsis)),
             ]),
           ),
@@ -246,15 +254,21 @@ class _CommentTile extends StatelessWidget {
     if (onReport != null) {
       return PopupMenuButton<String>(
         icon: Icon(Icons.more_vert, size: 16, color: colors.textSecondary),
+        color: colors.surface,
+        elevation: 6,
+        shadowColor: colors.cardShadow.withValues(alpha: 0.18),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+        position: PopupMenuPosition.under,
         onSelected: (value) {
           if (value == 'report') onReport!();
         },
         itemBuilder: (_) => [
           PopupMenuItem(
             value: 'report',
+            height: 44,
             child: Row(children: [
               const Icon(Icons.flag_outlined, size: 16, color: AppColors.errorRed),
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
               Expanded(child: Text('report_comment'.tr(), style: const TextStyle(color: AppColors.errorRed, fontSize: AppDimens.fontSizeSm), overflow: TextOverflow.ellipsis)),
             ]),
           ),

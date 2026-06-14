@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/constant/festival_constants.dart';
 import 'package:feple/screen/main/tab/festival_list/w_festival_list.dart';
+import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -48,37 +49,42 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
       (p) => p.selectedGenres.length + p.selectedRegions.length + p.selectedAgeRestrictions.length,
     );
 
-    return Container(
+    return ColoredBox(
       color: colors.backgroundMain,
-      child: RefreshIndicator(
-        onRefresh: () async {
-          try {
-            await context.read<FestivalPreviewProvider>().refresh(force: true);
-          } catch (_) {}
-        },
-        color: colors.activate,
-        child: CustomScrollView(
-          controller: _scrollController,
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.only(
-                bottom: AppDimens.scrollPaddingBottom,
-              ),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  _FilterPanel(
-                    expanded: _filterExpanded,
-                    onToggle: () =>
-                        setState(() => _filterExpanded = !_filterExpanded),
-                    activeFilterCount: activeFilterCount,
+      child: Column(
+        children: [
+          FepleAppBar('festival_schedule'.tr()),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () async {
+                try {
+                  await context.read<FestivalPreviewProvider>().refresh(force: true);
+                } catch (_) {}
+              },
+              color: colors.activate,
+              child: CustomScrollView(
+                controller: _scrollController,
+                slivers: [
+                  SliverPadding(
+                    padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate([
+                        _FilterPanel(
+                          expanded: _filterExpanded,
+                          onToggle: () =>
+                              setState(() => _filterExpanded = !_filterExpanded),
+                          activeFilterCount: activeFilterCount,
+                        ),
+                        const ConcertListWidget(),
+                        const _LoadMoreIndicator(),
+                      ]),
+                    ),
                   ),
-                  const ConcertListWidget(),
-                  const _LoadMoreIndicator(),
-                ]),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

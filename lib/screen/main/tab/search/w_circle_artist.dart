@@ -337,7 +337,7 @@ class _ArtistSuggestionBanner extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: colors.surface,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
           border: Border.all(color: colors.activate.withValues(alpha: 0.25)),
         ),
         child: Row(

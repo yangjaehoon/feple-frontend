@@ -56,6 +56,14 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
         initialDate: DateTime.now(),
         firstDate: DateTime(2020),
         lastDate: DateTime(2030),
+        builder: (ctx, child) => Theme(
+          data: Theme.of(ctx).copyWith(
+            colorScheme: Theme.of(ctx).colorScheme.copyWith(
+              primary: ctx.appColors.activate,
+            ),
+          ),
+          child: child!,
+        ),
       );
 
   Future<void> _submit() async {

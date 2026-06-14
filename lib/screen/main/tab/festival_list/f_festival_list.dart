@@ -292,9 +292,9 @@ class _LoadMoreIndicator extends StatelessWidget {
     return Consumer<FestivalPreviewProvider>(
       builder: (_, p, __) {
         if (p.isLoadingMore) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 20),
-            child: Center(child: CircularProgressIndicator()),
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Center(child: CircularProgressIndicator(color: context.appColors.activate)),
           );
         }
         return const SizedBox.shrink();

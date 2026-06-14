@@ -200,11 +200,11 @@ class _CommunityPostState extends State<CommunityPost> {
 
   Widget _buildList(AbstractThemeColors colors) {
     if (_isSearching && _searchResults == null) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(child: CircularProgressIndicator(color: colors.activate));
     }
     final displayPosts = _searchResults;
     if (displayPosts != null) {
-      if (_isSearching) return const Center(child: CircularProgressIndicator());
+      if (_isSearching) return Center(child: CircularProgressIndicator(color: colors.activate));
       if (displayPosts.isEmpty) {
         return Center(
           child: Text('no_search_results'.tr(), style: TextStyle(color: colors.textSecondary)),
@@ -262,9 +262,9 @@ class _CommunityPostState extends State<CommunityPost> {
       itemCount: _posts.length + (_loadingMore ? 1 : 0),
       itemBuilder: (context, index) {
         if (index == _posts.length) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: Center(child: CircularProgressIndicator()),
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Center(child: CircularProgressIndicator(color: colors.activate)),
           );
         }
         final post = _posts[index];

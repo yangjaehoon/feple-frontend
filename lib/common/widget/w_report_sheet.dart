@@ -92,6 +92,11 @@ Future<void> showReportSheet(
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(ctx),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: colors.textSecondary,
+                        side: BorderSide(color: colors.listDivider),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.radiusSmall)),
+                      ),
                       child: Text('report_cancel'.tr()),
                     ),
                   ),
@@ -117,6 +122,11 @@ Future<void> showReportSheet(
                                     isConflict ? duplicateErrorKey.tr() : 'report_failed'.tr());
                               }
                             },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.errorRed,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.radiusSmall)),
+                      ),
                       child: Text('report_submit'.tr()),
                     ),
                   ),

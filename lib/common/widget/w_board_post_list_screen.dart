@@ -1,8 +1,9 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
-import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_write_post_fab.dart';
 import 'package:feple/common/widget/w_write_post_screen.dart';
@@ -13,14 +14,14 @@ import 'package:flutter/material.dart';
 
 class BoardPostListScreen extends StatefulWidget {
   final String boardName;
-  final Future<List<Post>> Function() fetchPosts;
+  final Future<PostCursorPage> Function({int? cursor, int size}) fetchPage;
   final String writeScreenTitle;
   final Future<void> Function(String title, String content, bool anonymous, String? imageObjectKey) onSubmitPost;
 
   const BoardPostListScreen({
     super.key,
     required this.boardName,
-    required this.fetchPosts,
+    required this.fetchPage,
     required this.writeScreenTitle,
     required this.onSubmitPost,
   });
@@ -30,19 +31,82 @@ class BoardPostListScreen extends StatefulWidget {
 }
 
 class _BoardPostListScreenState extends State<BoardPostListScreen> {
-  late Future<List<Post>> _postsFuture;
+  final _scrollController = ScrollController();
+  List<Post> _posts = [];
+  bool _loading = true;
+  bool _hasError = false;
+  bool _isLoadingMore = false;
+  bool _hasMore = true;
+  int? _nextCursor;
 
   @override
   void initState() {
     super.initState();
-    _postsFuture = widget.fetchPosts();
+    _scrollController.addListener(_onScroll);
+    _load();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 300) {
+      _loadMore();
+    }
+  }
+
+  Future<void> _load() async {
+    setState(() { _loading = true; _hasError = false; _posts = []; _hasMore = true; _nextCursor = null; });
+    try {
+      final result = await widget.fetchPage(size: 20);
+      if (mounted) {
+        setState(() {
+          _posts = result.content;
+          _hasMore = result.hasNext;
+          _nextCursor = result.nextCursor;
+          _loading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() { _loading = false; _hasError = true; });
+    }
   }
 
   Future<void> _refresh() async {
-    setState(() => _postsFuture = widget.fetchPosts());
     try {
-      await _postsFuture;
+      final result = await widget.fetchPage(size: 20);
+      if (mounted) {
+        setState(() {
+          _posts = result.content;
+          _hasMore = result.hasNext;
+          _nextCursor = result.nextCursor;
+          _hasError = false;
+        });
+      }
     } catch (_) {}
+  }
+
+  Future<void> _loadMore() async {
+    if (_isLoadingMore || !_hasMore || _loading) return;
+    setState(() => _isLoadingMore = true);
+    try {
+      final result = await widget.fetchPage(cursor: _nextCursor, size: 20);
+      if (mounted) {
+        setState(() {
+          _posts = [..._posts, ...result.content];
+          _hasMore = result.hasNext;
+          _nextCursor = result.nextCursor;
+          _isLoadingMore = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _isLoadingMore = false);
+    }
   }
 
   Widget _buildFab() {
@@ -62,13 +126,66 @@ class _BoardPostListScreenState extends State<BoardPostListScreen> {
     );
   }
 
-  Widget _buildPostList(AbstractThemeColors colors, List<Post> posts) {
+  Widget _buildBody(AbstractThemeColors colors) {
+    return Column(
+      children: [
+        SecondaryAppBar(title: widget.boardName),
+        Expanded(
+          child: RefreshIndicator(
+            color: colors.activate,
+            onRefresh: _refresh,
+            child: _buildContent(colors),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContent(AbstractThemeColors colors) {
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator.adaptive());
+    }
+    if (_hasError) {
+      return LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: constraints.maxHeight,
+            child: Center(child: ErrorState(message: 'err_fetch_data'.tr(), onRetry: _load)),
+          ),
+        ),
+      );
+    }
+    if (_posts.isEmpty) {
+      return LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: constraints.maxHeight,
+            child: Center(
+              child: EmptyState(
+                icon: Icons.article_outlined,
+                title: 'no_posts_yet'.tr(),
+                subtitle: 'first_post_hint'.tr(),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
     return ListView.separated(
+      controller: _scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(bottom: 80),
-      itemCount: posts.length,
+      padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
+      itemCount: _posts.length + (_isLoadingMore ? 1 : 0),
       itemBuilder: (context, index) {
-        final post = posts[index];
+        if (index == _posts.length) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Center(child: CircularProgressIndicator.adaptive()),
+          );
+        }
+        final post = _posts[index];
         return AnimatedListItem(
           index: index,
           child: PostListTile(
@@ -87,37 +204,7 @@ class _BoardPostListScreenState extends State<BoardPostListScreen> {
           ),
         );
       },
-      separatorBuilder: (_, __) =>
-          Divider(thickness: 1, color: colors.listDivider),
-    );
-  }
-
-  Widget _buildBody(AbstractThemeColors colors) {
-    return Column(
-      children: [
-        SecondaryAppBar(title: widget.boardName),
-        Expanded(
-          child: RefreshIndicator(
-            color: colors.activate,
-            onRefresh: _refresh,
-            child: AsyncContentBuilder<List<Post>>(
-              future: _postsFuture,
-              onRetry: _refresh,
-              emptyBuilder: (_) => ListView(
-                children: [
-                  const SizedBox(height: 80),
-                  EmptyState(
-                    icon: Icons.article_outlined,
-                    title: 'no_posts_yet'.tr(),
-                    subtitle: 'first_post_hint'.tr(),
-                  ),
-                ],
-              ),
-              builder: (context, posts) => _buildPostList(colors, posts),
-            ),
-          ),
-        ),
-      ],
+      separatorBuilder: (_, __) => Divider(thickness: 1, color: colors.listDivider),
     );
   }
 

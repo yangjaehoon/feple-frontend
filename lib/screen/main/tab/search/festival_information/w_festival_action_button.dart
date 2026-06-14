@@ -37,7 +37,7 @@ class FestivalActionButton extends StatelessWidget {
             Text(
               label!,
               style: TextStyle(
-                fontSize: 10,
+                fontSize: AppDimens.fontSizeTiny,
                 fontWeight: FontWeight.w500,
                 color: (color ?? Colors.white).withValues(alpha: 0.85),
               ),

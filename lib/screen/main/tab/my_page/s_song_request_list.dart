@@ -192,7 +192,7 @@ class SongRequestItem extends StatelessWidget {
         if (req.artistName != null)
           Text(req.artistName!, style: TextStyle(fontSize: 12, color: colors.textSecondary)),
         if (req.formattedDate != null)
-          Text(req.formattedDate!, style: TextStyle(fontSize: 11, color: colors.textSecondary)),
+          Text(req.formattedDate!, style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary)),
       ],
     );
   }
@@ -211,7 +211,7 @@ class SongRequestItem extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             statusLabel,
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: statusColor),
+            style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: statusColor),
           ),
         ],
       ),

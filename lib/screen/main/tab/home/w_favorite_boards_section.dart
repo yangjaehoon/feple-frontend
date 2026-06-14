@@ -237,7 +237,7 @@ class _BoardTile extends StatelessWidget {
               board.displayName(isEnglish),
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 10,
+                fontSize: AppDimens.fontSizeTiny,
                 fontWeight: FontWeight.w700,
               ),
               maxLines: 2,

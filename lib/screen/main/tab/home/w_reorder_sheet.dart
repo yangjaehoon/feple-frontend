@@ -50,7 +50,7 @@ class _ReorderSheetState extends State<ReorderSheet> {
         children: [
           Text(
             widget.title,
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: colors.textTitle),
+            style: TextStyle(fontSize: AppDimens.fontSizeXxl, fontWeight: FontWeight.w800, color: colors.textTitle),
           ),
           if (widget.subtitle != null) ...[
             const SizedBox(height: 4),

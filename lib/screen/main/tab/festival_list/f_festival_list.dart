@@ -161,7 +161,7 @@ class _FilterPanel extends StatelessWidget {
                 child: Text(
                   '$activeFilterCount',
                   style: const TextStyle(
-                      color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
+                      color: Colors.white, fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w700),
                 ),
               ),
             ],

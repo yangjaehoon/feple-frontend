@@ -247,7 +247,7 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
           const SizedBox(width: 4),
           Text(
             'timetable_hint'.tr(),
-            style: TextStyle(fontSize: 10, color: colors.textSecondary),
+            style: TextStyle(fontSize: AppDimens.fontSizeTiny, color: colors.textSecondary),
           ),
         ],
       ),

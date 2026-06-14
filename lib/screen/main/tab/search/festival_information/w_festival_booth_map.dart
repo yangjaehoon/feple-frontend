@@ -247,7 +247,7 @@ class _LegendDot extends StatelessWidget {
         const SizedBox(width: 3),
         Text(label,
             style: TextStyle(
-                fontSize: 11,
+                fontSize: AppDimens.fontSizeXxs,
                 color: context.appColors.textSecondary)),
       ],
     );

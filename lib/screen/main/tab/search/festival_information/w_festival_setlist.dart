@@ -9,6 +9,7 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/festival_setlist_entry.dart';
 import 'package:feple/model/song_model.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:feple/screen/main/tab/search/festival_information/s_festival_setlist_fullscreen.dart';
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +38,7 @@ class _FestivalSetlistState extends State<FestivalSetlist> {
   Future<void> _openFullPage() async {
     final changed = await Navigator.push<bool>(
       context,
-      MaterialPageRoute(
+      SlideRoute(
         builder: (_) => FestivalSetlistFullPage(festivalId: widget.festivalId),
       ),
     );
@@ -204,7 +205,7 @@ class _ArtistCompactRow extends StatelessWidget {
         else
           Text(
             'no_setlist'.tr(),
-            style: TextStyle(fontSize: 11, color: colors.textSecondary),
+            style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
           ),
       ],
     );
@@ -231,7 +232,7 @@ class _ArtistCompactRow extends StatelessWidget {
         Expanded(
           child: Text(
             topSong.title,
-            style: TextStyle(fontSize: 11, color: colors.textSecondary),
+            style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -239,7 +240,7 @@ class _ArtistCompactRow extends StatelessWidget {
         if (entry.songs.length > 1)
           Text(
             ' +${entry.songs.length - 1}',
-            style: TextStyle(fontSize: 11, color: colors.activate),
+            style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.activate),
           ),
       ],
     );

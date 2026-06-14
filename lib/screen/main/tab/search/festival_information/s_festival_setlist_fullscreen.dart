@@ -255,7 +255,7 @@ class _ArtistFullTile extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           'total_songs'.tr(args: ['${entry.songs.length}']),
-          style: TextStyle(fontSize: 11, color: colors.textSecondary),
+          style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
         ),
       ],
     );

@@ -30,9 +30,15 @@ class AppDimens {
   static const double boardCardHeight = 280.0;
   static const double boardHeaderHeight = 35.0;
 
-  // ── Spacing ──
+  // ── Spacing (8px 그리드) ──
   static const double paddingHorizontal = 16.0;
   static const double paddingVertical = 8.0;
+  static const double space4 = 4.0;
+  static const double space8 = 8.0;
+  static const double space12 = 12.0;
+  static const double space16 = 16.0;
+  static const double space20 = 20.0;
+  static const double space24 = 24.0;
 
   // ── Icon ──
   static const double iconSizeSm = 14.0;
@@ -40,11 +46,14 @@ class AppDimens {
   static const double iconSizeLg = 18.0;
 
   // ── Font ──
+  static const double fontSizeTiny = 10.0;
+  static const double fontSizeXxs = 11.0;
   static const double fontSizeXs = 12.0;
   static const double fontSizeSm = 13.0;
   static const double fontSizeMd = 14.0;
   static const double fontSizeLg = 15.0;
   static const double fontSizeXl = 16.0;
+  static const double fontSizeXxl = 18.0;
   static const double fontSizeTitle = 20.0;
 
   // ── Animation Duration ──

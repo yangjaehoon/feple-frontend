@@ -80,7 +80,7 @@ class FestivalDateTile extends StatelessWidget {
                 children: [
                   Text(label,
                       style:
-                          TextStyle(fontSize: 11, color: colors.textSecondary)),
+                          TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary)),
                   const SizedBox(height: 2),
                   Text(
                     date != null ? date!.toDisplayDate : 'label_not_selected'.tr(),

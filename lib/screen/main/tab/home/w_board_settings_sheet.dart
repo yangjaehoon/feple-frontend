@@ -55,7 +55,7 @@ class _BoardSettingsSheetState extends State<BoardSettingsSheet> {
         children: [
           Text(
             'select_boards'.tr(),
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: colors.textTitle),
+            style: TextStyle(fontSize: AppDimens.fontSizeXxl, fontWeight: FontWeight.w800, color: colors.textTitle),
           ),
           const Spacer(),
           Text(

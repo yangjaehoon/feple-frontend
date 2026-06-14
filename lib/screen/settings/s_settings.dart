@@ -262,7 +262,7 @@ class _SectionHeader extends StatelessWidget {
       child: Text(
         label.toUpperCase(),
         style: TextStyle(
-          fontSize: 11,
+          fontSize: AppDimens.fontSizeXxs,
           fontWeight: FontWeight.w700,
           color: colors.textSecondary,
           letterSpacing: 0.8,

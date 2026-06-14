@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/injection.dart';
@@ -91,7 +92,7 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
         textStyle: TextStyle(
           color: colors.textTitle,
           fontWeight: FontWeight.w700,
-          fontSize: 17,
+          fontSize: AppDimens.fontSizeXxl,
         ),
         backgroundColor: colors.backgroundMain,
       ),

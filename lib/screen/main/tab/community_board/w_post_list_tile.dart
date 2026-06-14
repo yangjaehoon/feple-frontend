@@ -43,7 +43,7 @@ class PostListTile extends StatelessWidget {
         if (post.createdAt != null)
           Text(
             post.createdAt!.relativeTime,
-            style: TextStyle(fontSize: 11, color: colors.textSecondary.withValues(alpha: 0.6)),
+            style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary.withValues(alpha: 0.6)),
           ),
       ],
     );

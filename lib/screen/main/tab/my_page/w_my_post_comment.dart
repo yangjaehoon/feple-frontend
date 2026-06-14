@@ -162,7 +162,7 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
               label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 10,
+                fontSize: AppDimens.fontSizeTiny,
                 fontWeight: FontWeight.w600,
                 color: colors.textSecondary,
               ),

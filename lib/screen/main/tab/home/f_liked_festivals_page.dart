@@ -64,7 +64,7 @@ class _LikedFestivalsPageState extends State<LikedFestivalsPage> {
         title: Text(
           'liked_festivals'.tr(),
           style: TextStyle(
-            fontSize: 18,
+            fontSize: AppDimens.fontSizeXxl,
             fontWeight: FontWeight.w700,
             color: colors.textTitle,
           ),
@@ -352,7 +352,7 @@ class _DayBadge extends StatelessWidget {
         label,
         style: const TextStyle(
           color: Colors.white,
-          fontSize: 10,
+          fontSize: AppDimens.fontSizeTiny,
           fontWeight: FontWeight.w800,
           letterSpacing: 0.5,
         ),

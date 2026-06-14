@@ -94,7 +94,7 @@ class SongListTile extends StatelessWidget {
             child: Text(
               'festival_performed_count'.tr(args: [song.festivalCount.toString()]),
               style: TextStyle(
-                fontSize: 10,
+                fontSize: AppDimens.fontSizeTiny,
                 fontWeight: FontWeight.w600,
                 color: colors.activate,
               ),

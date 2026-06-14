@@ -101,7 +101,7 @@ class NotificationCard extends StatelessWidget {
           Text(
             item.formattedDate!,
             style: TextStyle(
-              fontSize: 11,
+              fontSize: AppDimens.fontSizeXxs,
               color: colors.textSecondary.withValues(alpha: 0.6),
             ),
           ),

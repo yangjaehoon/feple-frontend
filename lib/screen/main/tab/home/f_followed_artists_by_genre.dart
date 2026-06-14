@@ -76,7 +76,7 @@ class _FollowedArtistsByGenrePageState
         title: Text(
           'followed_artists'.tr(),
           style: TextStyle(
-            fontSize: 18,
+            fontSize: AppDimens.fontSizeXxl,
             fontWeight: FontWeight.w700,
             color: colors.textTitle,
           ),

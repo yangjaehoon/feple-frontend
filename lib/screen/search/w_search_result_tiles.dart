@@ -39,7 +39,7 @@ class SearchArtistTile extends StatelessWidget {
       subtitle: Text(data.genre, style: TextStyle(color: colors.textSecondary, fontSize: 12)),
       trailing: Text(
         'follower_count'.tr(args: ['${data.followerCount}']),
-        style: TextStyle(fontSize: 11, color: colors.textSecondary),
+        style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
       ),
       onTap: () => Navigator.push(context, SlideRoute(
         builder: (_) => ArtistPage(
@@ -151,17 +151,17 @@ class SearchPostTile extends StatelessWidget {
         children: [
           Text(
             data.boardDisplayName,
-            style: TextStyle(fontSize: 10, color: colors.textSecondary),
+            style: TextStyle(fontSize: AppDimens.fontSizeTiny, color: colors.textSecondary),
           ),
           const SizedBox(height: 2),
           Row(mainAxisSize: MainAxisSize.min, children: [
             Icon(Icons.favorite_border_rounded, size: 12, color: colors.textSecondary),
             const SizedBox(width: 2),
-            Text('${data.likeCount}', style: TextStyle(fontSize: 11, color: colors.textSecondary)),
+            Text('${data.likeCount}', style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary)),
             const SizedBox(width: 6),
             Icon(Icons.comment_rounded, size: 12, color: colors.textSecondary),
             const SizedBox(width: 2),
-            Text('${data.commentCount}', style: TextStyle(fontSize: 11, color: colors.textSecondary)),
+            Text('${data.commentCount}', style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary)),
           ]),
         ],
       ),

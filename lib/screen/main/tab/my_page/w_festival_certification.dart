@@ -140,7 +140,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
           Text(
             'cert_no_history_hint'.tr(),
             style: TextStyle(
-              fontSize: 11,
+              fontSize: AppDimens.fontSizeXxs,
               color: colors.textSecondary,
               height: 1.4,
             ),
@@ -195,7 +195,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
               width: 106,
               child: Text(
                 cert.festivalTitle,
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textTitle),
+                style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: colors.textTitle),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
@@ -209,7 +209,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
               ),
               child: Text(
                 cert.status.labelKey.tr(),
-                style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: ringColor),
+                style: TextStyle(fontSize: AppDimens.fontSizeTiny, fontWeight: FontWeight.w600, color: ringColor),
               ),
             ),
           ],

@@ -111,7 +111,7 @@ class DarkAppColors extends AbstractThemeColors {
   @override
   Color get levelBadgeBg => AppColors.skyBlue;
   @override
-  Color get levelBadgeText => AppColors.skyBlue;
+  Color get levelBadgeText => Colors.white;
 
   @override
   Color get actionBtnPrimary => AppColors.skyBlue;

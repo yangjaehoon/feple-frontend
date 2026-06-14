@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:nav/dialog/dialog.dart';
 
 import '../../common/common.dart';
+import '../../common/constant/app_dimensions.dart';
 
 class ConfirmDialog extends DialogWidget<SimpleResult> {
   final String? message;
@@ -75,7 +76,7 @@ class _MessageDialogState extends DialogState<ConfirmDialog> {
                     widget.cancelButtonText,
                     style: TextStyle(
                       color: context.appColors.confirmText,
-                      fontSize: 16,
+                      fontSize: AppDimens.fontSizeXl,
                       fontWeight: FontWeight.w700,
                       fontStyle: FontStyle.normal,
                     ),
@@ -99,7 +100,7 @@ class _MessageDialogState extends DialogState<ConfirmDialog> {
                     widget.buttonText,
                     style: TextStyle(
                       color: context.appColors.confirmText,
-                      fontSize: 16,
+                      fontSize: AppDimens.fontSizeXl,
                       fontWeight: FontWeight.w700,
                       fontStyle: FontStyle.normal,
                     ),

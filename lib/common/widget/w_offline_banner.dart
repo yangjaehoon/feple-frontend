@@ -86,7 +86,7 @@ class _OfflineBannerState extends State<OfflineBanner>
                     'offline_banner'.tr(),
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 13,
+                      fontSize: AppDimens.fontSizeSm,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

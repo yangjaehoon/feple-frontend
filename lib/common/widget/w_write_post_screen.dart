@@ -228,7 +228,7 @@ class _WritePostScreenState extends State<WritePostScreen> {
               const SizedBox(width: 6),
               Text(
                 'post_anonymous'.tr(),
-                style: TextStyle(fontSize: 14, color: colors.textTitle),
+                style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textTitle),
               ),
             ],
           ),

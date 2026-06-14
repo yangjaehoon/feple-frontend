@@ -323,7 +323,7 @@ class _SettingsItem extends StatelessWidget {
               child: Text(
                 label,
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: AppDimens.fontSizeLg,
                   fontWeight: FontWeight.w500,
                   color: textColor,
                 ),
@@ -359,7 +359,7 @@ class _LanguageItem extends StatelessWidget {
             child: Text(
               'language'.tr(),
               style: TextStyle(
-                fontSize: 15,
+                fontSize: AppDimens.fontSizeLg,
                 fontWeight: FontWeight.w500,
                 color: colors.textTitle,
               ),
@@ -378,7 +378,7 @@ class _LanguageItem extends StatelessWidget {
         dropdownColor: colors.surface,
         borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
         style: TextStyle(
-          fontSize: 14,
+          fontSize: AppDimens.fontSizeMd,
           fontWeight: FontWeight.w600,
           color: colors.textTitle,
         ),
@@ -393,7 +393,7 @@ class _LanguageItem extends StatelessWidget {
                 Text(
                   l.name.capitalizeFirst!,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: AppDimens.fontSizeMd,
                     fontWeight: FontWeight.w600,
                     color: colors.textTitle,
                   ),
@@ -430,7 +430,7 @@ class _VersionItem extends StatelessWidget {
             child: Text(
               'app_version'.tr(),
               style: TextStyle(
-                fontSize: 15,
+                fontSize: AppDimens.fontSizeLg,
                 fontWeight: FontWeight.w500,
                 color: colors.textTitle,
               ),
@@ -439,7 +439,7 @@ class _VersionItem extends StatelessWidget {
           Text(
             version.isEmpty ? '-' : 'v$version',
             style: TextStyle(
-              fontSize: 14,
+              fontSize: AppDimens.fontSizeMd,
               fontWeight: FontWeight.w500,
               color: colors.textSecondary,
             ),

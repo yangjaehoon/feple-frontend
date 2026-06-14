@@ -46,7 +46,7 @@ class PasswordChecklist extends StatelessWidget {
                 Text(
                   rule.label.tr(),
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: AppDimens.fontSizeXs,
                     color: ok ? colors.activate : colors.textSecondary,
                     fontWeight: ok ? FontWeight.w600 : FontWeight.w400,
                   ),

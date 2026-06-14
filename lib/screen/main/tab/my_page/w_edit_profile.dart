@@ -192,7 +192,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
           ),
         ),
         const SizedBox(height: 8),
-        Text('change_photo'.tr(), style: TextStyle(fontSize: 13, color: colors.textSecondary)),
+        Text('change_photo'.tr(), style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary)),
       ],
     );
   }
@@ -249,7 +249,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
       children: [
         Text(
           'nickname'.tr(),
-          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: colors.textSecondary),
+          style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w700, color: colors.textSecondary),
         ),
         const SizedBox(height: 8),
         NicknameField(
@@ -267,7 +267,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
       children: [
         Text(
           'bio'.tr(),
-          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: colors.textSecondary),
+          style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w700, color: colors.textSecondary),
         ),
         const SizedBox(height: 8),
         TextField(
@@ -279,7 +279,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
           },
           decoration: InputDecoration(
             hintText: 'bio_hint'.tr(),
-            hintStyle: TextStyle(color: colors.textSecondary, fontSize: 13),
+            hintStyle: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeSm),
             counterStyle: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXxs),
             errorText: _bioError,
             border: OutlineInputBorder(borderSide: BorderSide(color: colors.listDivider)),
@@ -294,7 +294,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
               borderSide: BorderSide(color: AppColors.errorRed, width: 2),
             ),
           ),
-          style: TextStyle(color: colors.textTitle, fontSize: 14),
+          style: TextStyle(color: colors.textTitle, fontSize: AppDimens.fontSizeMd),
         ),
       ],
     );

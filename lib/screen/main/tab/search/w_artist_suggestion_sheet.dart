@@ -107,7 +107,7 @@ class _ArtistSuggestionSheetState extends State<ArtistSuggestionSheet> {
       padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
       child: Text(
         'artist_suggestion_desc'.tr(),
-        style: TextStyle(fontSize: 13, color: colors.textSecondary, height: 1.5),
+        style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary, height: 1.5),
       ),
     ),
   ];

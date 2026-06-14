@@ -81,7 +81,7 @@ class NotificationCard extends StatelessWidget {
         Text(
           item.displayTitle(isEnglish),
           style: TextStyle(
-            fontSize: 14,
+            fontSize: AppDimens.fontSizeMd,
             fontWeight: item.read ? FontWeight.w500 : FontWeight.w700,
             color: colors.textTitle,
           ),
@@ -90,7 +90,7 @@ class NotificationCard extends StatelessWidget {
         Text(
           item.displayBody(isEnglish),
           style: TextStyle(
-            fontSize: 13,
+            fontSize: AppDimens.fontSizeSm,
             color: colors.textSecondary,
           ),
           maxLines: 2,

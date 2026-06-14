@@ -153,7 +153,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
             child: Text(
               'artist'.tr(),
               style: TextStyle(
-                fontSize: 20,
+                fontSize: AppDimens.fontSizeTitle,
                 fontWeight: FontWeight.w800,
                 color: colors.textTitle,
                 letterSpacing: -0.3,
@@ -282,7 +282,7 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
         Text(
           artist.displayName(isEnglish),
           style: TextStyle(
-            fontSize: 13,
+            fontSize: AppDimens.fontSizeSm,
             fontWeight: isFollowed ? FontWeight.w700 : FontWeight.w600,
             color: isFollowed ? colors.activate : colors.textTitle,
           ),
@@ -351,7 +351,7 @@ class _ArtistSuggestionBanner extends StatelessWidget {
                   Text(
                     'artist_suggestion_banner'.tr(),
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: AppDimens.fontSizeSm,
                       fontWeight: FontWeight.w600,
                       color: colors.textTitle,
                     ),
@@ -359,7 +359,7 @@ class _ArtistSuggestionBanner extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     'artist_suggestion_banner_sub'.tr(),
-                    style: TextStyle(fontSize: 12, color: colors.textSecondary),
+                    style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
                   ),
                 ],
               ),

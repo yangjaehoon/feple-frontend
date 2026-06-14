@@ -145,7 +145,7 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
           child: Text(
             'cert_photo_guide'.tr(),
             style: TextStyle(
-                fontSize: 13, color: colors.textSecondary, height: 1.5),
+                fontSize: AppDimens.fontSizeSm, color: colors.textSecondary, height: 1.5),
           ),
         ),
       ],
@@ -169,12 +169,12 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
             Expanded(
               child: Text(
                 'err_fetch_data'.tr(),
-                style: TextStyle(fontSize: 13, color: colors.textSecondary),
+                style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
               ),
             ),
             TextButton(
               onPressed: _loadFestivals,
-              child: Text('retry'.tr(), style: TextStyle(color: colors.activate, fontSize: 13)),
+              child: Text('retry'.tr(), style: TextStyle(color: colors.activate, fontSize: AppDimens.fontSizeSm)),
             ),
           ],
         ),
@@ -198,7 +198,7 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
           isEmpty: _selectedFestival == null,
           child: Text(
             _selectedFestival?.title ?? '',
-            style: const TextStyle(fontSize: 14),
+            style: const TextStyle(fontSize: AppDimens.fontSizeMd),
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -322,7 +322,7 @@ class _FestivalSearchSheetState extends State<_FestivalSearchSheet> {
         return ListTile(
           title: Text(
             festival.title,
-            style: const TextStyle(fontSize: 14),
+            style: const TextStyle(fontSize: AppDimens.fontSizeMd),
           ),
           onTap: () => Navigator.pop(ctx, festival),
         );

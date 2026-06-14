@@ -154,7 +154,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
                 child: Text(
                   label.tr(),
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: AppDimens.fontSizeMd,
                     fontWeight: FontWeight.w600,
                     color: selected ? Colors.white : colors.textTitle,
                   ),

@@ -193,7 +193,7 @@ class _FollowedArtistsByGenrePageState
         Text(
           artist.name,
           style: TextStyle(
-            fontSize: 13,
+            fontSize: AppDimens.fontSizeSm,
             fontWeight: FontWeight.w600,
             color: colors.textTitle,
           ),

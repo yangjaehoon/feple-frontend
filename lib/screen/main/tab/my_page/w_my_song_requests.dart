@@ -81,7 +81,7 @@ class _SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
               children: [
                 Text(
                   'see_all'.tr(),
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: colors.activate),
+                  style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w600, color: colors.activate),
                 ),
                 Icon(Icons.chevron_right_rounded, size: 18, color: colors.activate),
               ],
@@ -125,7 +125,7 @@ class _SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
                     Text(
                       '+ ${items.length - _previewCount}',
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: AppDimens.fontSizeSm,
                         fontWeight: FontWeight.w600,
                         color: colors.textSecondary,
                       ),
@@ -134,7 +134,7 @@ class _SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
                     Text(
                       'see_all'.tr(),
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: AppDimens.fontSizeSm,
                         fontWeight: FontWeight.w600,
                         color: colors.textSecondary,
                       ),
@@ -160,7 +160,7 @@ class _SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
             const SizedBox(height: 8),
             Text(
               'song_request_no_history'.tr(),
-              style: TextStyle(fontSize: 13, color: colors.textSecondary),
+              style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
             ),
           ],
         ),

@@ -175,7 +175,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 Text(
                   'verify_email_sent_to'.tr(args: [widget.email]),
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: AppDimens.fontSizeMd,
                     color: colors.textSecondary,
                     fontWeight: FontWeight.w500,
                     height: 1.6,
@@ -186,7 +186,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 Text(
                   'verify_email_instruction'.tr(),
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: AppDimens.fontSizeSm,
                     color: colors.textSecondary,
                     height: 1.6,
                   ),
@@ -199,7 +199,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                     child: Text(
                       _errorMessage!,
                       style: const TextStyle(
-                        fontSize: 13,
+                        fontSize: AppDimens.fontSizeSm,
                         color: AppColors.errorRed,
                         fontWeight: FontWeight.w500,
                       ),
@@ -230,7 +230,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                           'verify_email_cancel'.tr(),
                           style: TextStyle(
                             color: colors.textSecondary,
-                            fontSize: 14,
+                            fontSize: AppDimens.fontSizeMd,
                           ),
                         ),
                 ),
@@ -277,7 +277,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         _cooldown > 0
             ? 'verify_email_resend_wait'.tr(args: [_cooldown.toString()])
             : 'verify_email_resend'.tr(),
-        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: AppDimens.fontSizeLg),
       ),
     );
   }

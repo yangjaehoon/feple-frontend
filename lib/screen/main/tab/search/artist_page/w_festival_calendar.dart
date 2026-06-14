@@ -97,7 +97,7 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
         backgroundColor: colors.backgroundMain,
       ),
       viewHeaderStyle: ViewHeaderStyle(
-        dayTextStyle: TextStyle(color: colors.textSecondary, fontSize: 12),
+        dayTextStyle: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXs),
       ),
     );
   }

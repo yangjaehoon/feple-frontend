@@ -36,7 +36,7 @@ class CommentSection extends StatelessWidget {
       child: Center(
         child: Text(
           'be_first_to_comment'.tr(),
-          style: TextStyle(fontSize: 13, color: colors.textSecondary),
+          style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
         ),
       ),
     );
@@ -140,7 +140,7 @@ class _CommentTile extends StatelessWidget {
           children: [
             Text(
               comment.nickname,
-              style: TextStyle(color: colors.textSecondary, fontSize: 12, fontWeight: FontWeight.bold),
+              style: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXs, fontWeight: FontWeight.bold),
             ),
             if (!comment.anonymous)
               InlineBadge(userRole: comment.userRole, certified: comment.certified),
@@ -230,7 +230,7 @@ class _CommentTile extends StatelessWidget {
             child: Row(children: [
               const Icon(Icons.edit_outlined, size: 16),
               const SizedBox(width: 8),
-              Text('edit_comment'.tr(), style: const TextStyle(fontSize: 13)),
+              Text('edit_comment'.tr(), style: const TextStyle(fontSize: AppDimens.fontSizeSm)),
             ]),
           ),
           PopupMenuItem(
@@ -238,7 +238,7 @@ class _CommentTile extends StatelessWidget {
             child: Row(children: [
               const Icon(Icons.delete_outline_rounded, size: 16, color: AppColors.errorRed),
               const SizedBox(width: 8),
-              Text('delete_comment'.tr(), style: const TextStyle(color: AppColors.errorRed, fontSize: 13)),
+              Text('delete_comment'.tr(), style: const TextStyle(color: AppColors.errorRed, fontSize: AppDimens.fontSizeSm)),
             ]),
           ),
         ],
@@ -257,7 +257,7 @@ class _CommentTile extends StatelessWidget {
             child: Row(children: [
               const Icon(Icons.flag_outlined, size: 16, color: AppColors.errorRed),
               const SizedBox(width: 8),
-              Text('report_comment'.tr(), style: const TextStyle(color: AppColors.errorRed, fontSize: 13)),
+              Text('report_comment'.tr(), style: const TextStyle(color: AppColors.errorRed, fontSize: AppDimens.fontSizeSm)),
             ]),
           ),
         ],

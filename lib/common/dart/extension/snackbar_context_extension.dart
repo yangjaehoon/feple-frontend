@@ -86,7 +86,7 @@ void _show(
               message,
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 14,
+                fontSize: AppDimens.fontSizeMd,
                 fontWeight: FontWeight.w600,
                 height: 1.4,
               ),

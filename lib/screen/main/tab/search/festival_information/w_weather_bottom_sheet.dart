@@ -166,7 +166,7 @@ class _TooEarlyMessage extends StatelessWidget {
             'weather_too_early'.tr(),
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: AppDimens.fontSizeMd,
               color: colors.text,
               fontWeight: FontWeight.w500,
               height: 1.6,
@@ -176,7 +176,7 @@ class _TooEarlyMessage extends StatelessWidget {
           Text(
             'weather_too_early_hint'.tr(),
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 12, color: colors.textSecondary),
+            style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
           ),
         ],
       ),
@@ -198,7 +198,7 @@ class _NoDataMessage extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             'weather_no_data'.tr(),
-            style: TextStyle(fontSize: 14, color: colors.textSecondary),
+            style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textSecondary),
           ),
         ],
       ),
@@ -234,7 +234,7 @@ class _InfoChip extends StatelessWidget {
           const SizedBox(width: 6),
           Text(label,
               style: TextStyle(
-                  fontSize: 13,
+                  fontSize: AppDimens.fontSizeSm,
                   color: colors.text,
                   fontWeight: FontWeight.w500)),
         ],

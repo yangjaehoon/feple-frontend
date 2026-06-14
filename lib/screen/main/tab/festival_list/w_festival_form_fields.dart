@@ -85,7 +85,7 @@ class FestivalDateTile extends StatelessWidget {
                   Text(
                     date != null ? date!.toDisplayDate : 'label_not_selected'.tr(),
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: AppDimens.fontSizeMd,
                       fontWeight: FontWeight.w600,
                       color: date != null ? colors.textTitle : colors.textSecondary,
                     ),
@@ -111,7 +111,7 @@ class FestivalSectionLabel extends StatelessWidget {
     return Text(
       label,
       style: TextStyle(
-        fontSize: 14,
+        fontSize: AppDimens.fontSizeMd,
         fontWeight: FontWeight.w700,
         color: colors.textTitle,
       ),

@@ -33,7 +33,7 @@ class AppTextField extends StatelessWidget {
       counterText: maxLength != null ? '' : null,
       prefixIcon: Icon(icon, color: colors.activate, size: 22),
       hintText: hintText,
-      hintStyle: TextStyle(color: colors.hintText, fontSize: 15),
+      hintStyle: TextStyle(color: colors.hintText, fontSize: AppDimens.fontSizeLg),
       filled: true,
       fillColor: colors.surface,
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -68,7 +68,7 @@ class AppTextField extends StatelessWidget {
             keyboardType: keyboardType,
             maxLength: maxLength,
             onChanged: onChanged,
-            style: TextStyle(fontSize: 15, color: colors.text),
+            style: TextStyle(fontSize: AppDimens.fontSizeLg, color: colors.text),
             decoration: _buildInputDecoration(colors),
           ),
         ),
@@ -78,7 +78,7 @@ class AppTextField extends StatelessWidget {
             child: Text(
               errorText!,
               style: const TextStyle(
-                fontSize: 12,
+                fontSize: AppDimens.fontSizeXs,
                 color: AppColors.errorRed,
                 fontWeight: FontWeight.w500,
               ),

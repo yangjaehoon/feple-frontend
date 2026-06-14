@@ -125,7 +125,7 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
         const SizedBox(height: 8),
         Text(
           'cert_description'.tr(args: [widget.festivalName]),
-          style: TextStyle(fontSize: 14, color: colors.textSecondary, height: 1.5),
+          style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textSecondary, height: 1.5),
         ),
       ],
     );
@@ -160,7 +160,7 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
                   const SizedBox(height: 8),
                   Text(
                     'cert_photo_hint'.tr(),
-                    style: TextStyle(fontSize: 13, color: colors.textSecondary),
+                    style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
                   ),
                 ],
               ),

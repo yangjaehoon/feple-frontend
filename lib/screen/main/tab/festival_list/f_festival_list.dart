@@ -145,7 +145,7 @@ class _FilterPanel extends StatelessWidget {
             Text(
               'btn_filter'.tr(),
               style: TextStyle(
-                fontSize: 14,
+                fontSize: AppDimens.fontSizeMd,
                 fontWeight: FontWeight.w700,
                 color: colors.textTitle,
               ),
@@ -171,7 +171,7 @@ class _FilterPanel extends StatelessWidget {
                 onTap: provider.clearFilters,
                 child: Text(
                   'btn_reset'.tr(),
-                  style: TextStyle(fontSize: 12, color: colors.textSecondary),
+                  style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
                 ),
               ),
             const SizedBox(width: 8),
@@ -241,7 +241,7 @@ class _FilterSection extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: colors.textSecondary),
+          style: TextStyle(fontSize: AppDimens.fontSizeXs, fontWeight: FontWeight.w700, color: colors.textSecondary),
         ),
         const SizedBox(height: 8),
         _buildChips(colors),
@@ -274,7 +274,7 @@ class _FilterSection extends StatelessWidget {
         child: Text(
           displayName.tr(),
           style: TextStyle(
-            fontSize: 13,
+            fontSize: AppDimens.fontSizeSm,
             fontWeight: FontWeight.w600,
             color: isSelected ? Colors.white : colors.textTitle,
           ),

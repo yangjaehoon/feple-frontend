@@ -110,12 +110,12 @@ class NicknameFieldState extends State<NicknameField> {
       controller: controller,
       maxLength: NicknameCheckResult.maxLength,
       onChanged: _onTextChanged,
-      style: TextStyle(fontSize: 15, color: colors.text),
+      style: TextStyle(fontSize: AppDimens.fontSizeLg, color: colors.text),
       decoration: InputDecoration(
         counterText: '',
         prefixIcon: Icon(Icons.badge_outlined, color: colors.activate, size: 22),
         hintText: 'nickname_hint_format'.tr(),
-        hintStyle: TextStyle(color: colors.hintText, fontSize: 15),
+        hintStyle: TextStyle(color: colors.hintText, fontSize: AppDimens.fontSizeLg),
         filled: true,
         fillColor: colors.surface,
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -172,7 +172,7 @@ class NicknameFieldState extends State<NicknameField> {
             child: Text(
               _message,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: AppDimens.fontSizeXs,
                 color: _available == true ? colors.activate : AppColors.errorRed,
                 fontWeight: FontWeight.w500,
               ),

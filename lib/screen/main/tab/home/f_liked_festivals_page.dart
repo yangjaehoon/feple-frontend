@@ -122,12 +122,12 @@ class _LikedFestivalsPageState extends State<LikedFestivalsPage> {
             Text(
               _showEnded ? 'tab_ended_festivals'.tr() : 'tab_upcoming_festivals'.tr(),
               style: TextStyle(
-                  fontSize: 14, color: colors.textSecondary.withValues(alpha: 0.6)),
+                  fontSize: AppDimens.fontSizeMd, color: colors.textSecondary.withValues(alpha: 0.6)),
             ),
             Text(
               'no_liked_in_tab'.tr(),
               style: TextStyle(
-                  fontSize: 13, color: colors.textSecondary.withValues(alpha: 0.45)),
+                  fontSize: AppDimens.fontSizeSm, color: colors.textSecondary.withValues(alpha: 0.45)),
             ),
           ],
         ),
@@ -186,7 +186,7 @@ class _TabButton extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            fontSize: 13,
+            fontSize: AppDimens.fontSizeSm,
             fontWeight: FontWeight.w600,
             color: selected ? Colors.white : colors.textSecondary,
           ),
@@ -220,7 +220,7 @@ class _FestivalCard extends StatelessWidget {
                     'status_ended'.tr(),
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 13,
+                      fontSize: AppDimens.fontSizeSm,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 1,
                     ),
@@ -251,7 +251,7 @@ class _FestivalCard extends StatelessWidget {
               festival.displayTitle(isEnglish),
               style: TextStyle(
                 fontWeight: FontWeight.w800,
-                fontSize: 16,
+                fontSize: AppDimens.fontSizeXl,
                 color: colors.textTitle,
                 letterSpacing: -0.3,
               ),
@@ -266,7 +266,7 @@ class _FestivalCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     festival.location,
-                    style: TextStyle(fontSize: 12, color: colors.textSecondary, fontWeight: FontWeight.w500),
+                    style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary, fontWeight: FontWeight.w500),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -280,7 +280,7 @@ class _FestivalCard extends StatelessWidget {
                 const SizedBox(width: 4),
                 Text(
                   festival.startDate,
-                  style: TextStyle(fontSize: 12, color: colors.textSecondary, fontWeight: FontWeight.w500),
+                  style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary, fontWeight: FontWeight.w500),
                 ),
               ],
             ),

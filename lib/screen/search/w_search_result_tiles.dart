@@ -36,7 +36,7 @@ class SearchArtistTile extends StatelessWidget {
         TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle),
         colors.activate,
       ),
-      subtitle: Text(data.genre, style: TextStyle(color: colors.textSecondary, fontSize: 12)),
+      subtitle: Text(data.genre, style: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXs)),
       trailing: Text(
         'follower_count'.tr(args: ['${data.followerCount}']),
         style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
@@ -85,7 +85,7 @@ class SearchFestivalTile extends StatelessWidget {
       ),
       subtitle: Text(
         '${data.location} · ${data.startDate}',
-        style: TextStyle(color: colors.textSecondary, fontSize: 12),
+        style: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXs),
       ),
       onTap: () => Navigator.push(context, SlideRoute(
         builder: (_) => FestivalInformationFragment(
@@ -141,7 +141,7 @@ class SearchPostTile extends StatelessWidget {
       ),
       subtitle: Text(
         data.content,
-        style: TextStyle(color: colors.textSecondary, fontSize: 12),
+        style: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXs),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),

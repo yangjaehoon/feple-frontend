@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/screen/main/tab/home/f_all_favorite_boards.dart';
 import 'package:feple/screen/main/tab/home/w_boards_section_skeleton.dart';
 import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
@@ -171,7 +172,7 @@ class _BoardTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return GestureDetector(
+    return TapScale(
       onTap: () => _navigate(context),
       child: Container(
         width: 110,

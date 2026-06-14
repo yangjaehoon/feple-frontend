@@ -2,6 +2,7 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/password_validator.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/common/widget/w_nickname_field.dart';
@@ -160,7 +161,7 @@ class _SignupPageState extends State<SignupPage> {
                       child: Text(
                         _generalError!,
                         style: const TextStyle(
-                          fontSize: 13,
+                          fontSize: AppDimens.fontSizeSm,
                           color: AppColors.errorRed,
                           fontWeight: FontWeight.w500,
                         ),
@@ -209,7 +210,7 @@ class _SignupPageState extends State<SignupPage> {
         const SizedBox(height: 8),
         Text(
           'signup_subtitle'.tr(),
-          style: TextStyle(fontSize: 14, color: themeColors.textSecondary, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: AppDimens.fontSizeMd, color: themeColors.textSecondary, fontWeight: FontWeight.w500),
         ),
         const SizedBox(height: 36),
       ],
@@ -264,7 +265,7 @@ class _SignupPageState extends State<SignupPage> {
       children: [
         Text(
           'already_have_account'.tr(),
-          style: TextStyle(color: themeColors.textSecondary, fontSize: 14),
+          style: TextStyle(color: themeColors.textSecondary, fontSize: AppDimens.fontSizeMd),
         ),
         TextButton(
           onPressed: () => Navigator.pop(context),
@@ -276,7 +277,7 @@ class _SignupPageState extends State<SignupPage> {
           ),
           child: Text(
             'login'.tr(),
-            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeMd),
           ),
         ),
       ],

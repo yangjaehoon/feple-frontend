@@ -230,7 +230,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
         Text(
           widget.poster.displayTitle(context.locale.languageCode == 'en'),
           softWrap: true,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white),
+          style: const TextStyle(fontSize: AppDimens.fontSizeTitle, fontWeight: FontWeight.w800, color: Colors.white),
         ),
         const SizedBox(height: 8),
         _buildTagRow(),
@@ -242,7 +242,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
             widget.poster.endDate.isNotEmpty
                 ? '${widget.poster.startDate} ~ ${widget.poster.endDate}'
                 : widget.poster.startDate,
-            style: const TextStyle(fontSize: 14, color: Colors.white70),
+            style: const TextStyle(fontSize: AppDimens.fontSizeMd, color: Colors.white70),
           ),
         ),
         const SizedBox(height: 6),
@@ -255,7 +255,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
               widget.poster.location,
               softWrap: true,
               style: const TextStyle(
-                fontSize: 14,
+                fontSize: AppDimens.fontSizeMd,
                 color: Colors.white70,
                 decoration: TextDecoration.underline,
                 decorationColor: Colors.white54,
@@ -322,7 +322,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
             count > 0
                 ? 'attending_count'.tr(args: ['$count'])
                 : 'attend_toggle'.tr(),
-            style: const TextStyle(fontSize: 13, color: Colors.white70),
+            style: const TextStyle(fontSize: AppDimens.fontSizeSm, color: Colors.white70),
           ),
         ),
         GestureDetector(
@@ -345,7 +345,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
             child: Text(
               'attend_toggle'.tr(),
               style: TextStyle(
-                fontSize: 12,
+                fontSize: AppDimens.fontSizeXs,
                 fontWeight: FontWeight.w600,
                 color: isAttending ? Colors.white : Colors.white70,
               ),
@@ -424,7 +424,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
                 Text(
                   'festival_info'.tr(),
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: AppDimens.fontSizeSm,
                     fontWeight: FontWeight.w600,
                     color: Colors.white.withValues(alpha: 0.7),
                   ),

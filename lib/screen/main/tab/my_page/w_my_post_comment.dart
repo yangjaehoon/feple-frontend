@@ -171,7 +171,7 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
             Text(
               value,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: AppDimens.fontSizeXl,
                 fontWeight: FontWeight.w800,
                 color: colors.textTitle,
               ),

@@ -32,7 +32,7 @@ class ErrorState extends StatelessWidget {
             Text(
               message,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: AppDimens.fontSizeMd,
                 color: colors.textSecondary,
                 height: 1.5,
               ),

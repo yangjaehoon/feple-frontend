@@ -61,7 +61,7 @@ class FestivalPreviewCard extends StatelessWidget {
                       'status_ended'.tr(),
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 13,
+                        fontSize: AppDimens.fontSizeSm,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 1,
                       ),
@@ -96,7 +96,7 @@ class FestivalPreviewCard extends StatelessWidget {
                   festival.displayTitle(isEnglish),
                   style: TextStyle(
                     fontWeight: FontWeight.w800,
-                    fontSize: 16,
+                    fontSize: AppDimens.fontSizeXl,
                     color: colors.textTitle,
                     letterSpacing: -0.3,
                   ),
@@ -115,7 +115,7 @@ class FestivalPreviewCard extends StatelessWidget {
                 child: Text(
                   festival.location,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: AppDimens.fontSizeXs,
                     color: colors.textSecondary,
                     fontWeight: FontWeight.w500,
                   ),
@@ -133,7 +133,7 @@ class FestivalPreviewCard extends StatelessWidget {
               Text(
                 festival.startDate,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: AppDimens.fontSizeXs,
                   color: colors.textSecondary,
                   fontWeight: FontWeight.w500,
                 ),

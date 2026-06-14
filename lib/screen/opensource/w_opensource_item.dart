@@ -21,7 +21,7 @@ class OpensourceItem extends StatelessWidget {
             child: Text(
               package.name,
               style: TextStyle(
-                fontSize: 20,
+                fontSize: AppDimens.fontSizeTitle,
                 fontWeight: FontWeight.bold,
                 color: colors.textTitle,
               ),
@@ -31,7 +31,7 @@ class OpensourceItem extends StatelessWidget {
             padding: const EdgeInsets.only(left: 20, bottom: 8, right: 20),
             child: Text(
               package.description,
-              style: TextStyle(fontSize: 14, color: colors.textSecondary),
+              style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textSecondary),
             ),
           ),
           if (package.authors.isNotEmpty)
@@ -39,7 +39,7 @@ class OpensourceItem extends StatelessWidget {
               padding: const EdgeInsets.only(left: 20, top: 12),
               child: Text(
                 package.authors.join(', '),
-                style: TextStyle(fontSize: 14, color: colors.textSecondary),
+                style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textSecondary),
               ),
             ),
           if (package.homepage != null && package.homepage!.isNotEmpty)
@@ -47,7 +47,7 @@ class OpensourceItem extends StatelessWidget {
               padding: const EdgeInsets.only(left: 20, top: 15),
               child: Text(
                 package.homepage!,
-                style: TextStyle(fontSize: 14, color: colors.textSecondary),
+                style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textSecondary),
               ),
             ),
           Container(
@@ -62,7 +62,7 @@ class OpensourceItem extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               child: Text(
                 package.license ?? '',
-                style: TextStyle(fontSize: 12, color: colors.textSecondary),
+                style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
               ),
             ),
           ),

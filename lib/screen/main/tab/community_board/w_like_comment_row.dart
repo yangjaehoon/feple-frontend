@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -106,7 +107,7 @@ class LikeCommentRow extends StatelessWidget {
             const SizedBox(width: 4),
             Text(
               data.heartCount.toString(),
-              style: TextStyle(fontSize: 16, color: colors.textTitle, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: AppDimens.fontSizeXl, color: colors.textTitle, fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -133,7 +134,7 @@ class LikeCommentRow extends StatelessWidget {
             const SizedBox(width: 4),
             Text(
               data.scrapCount.toString(),
-              style: TextStyle(fontSize: 16, color: colors.textTitle, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: AppDimens.fontSizeXl, color: colors.textTitle, fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -154,7 +155,7 @@ class LikeCommentRow extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           data.commentCount.toString(),
-          style: TextStyle(fontSize: 16, color: colors.textTitle, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: AppDimens.fontSizeXl, color: colors.textTitle, fontWeight: FontWeight.w600),
         ),
       ],
     );

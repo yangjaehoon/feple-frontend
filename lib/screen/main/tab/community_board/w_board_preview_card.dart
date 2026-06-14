@@ -138,14 +138,14 @@ class BoardPreviewCard extends StatelessWidget {
               const SizedBox(height: 10),
               Text(
                 emptyHint ?? 'no_posts_yet'.tr(),
-                style: TextStyle(fontSize: 13, color: colors.textSecondary),
+                style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
                 textAlign: TextAlign.center,
               ),
               if (onWriteTap != null)
                 TextButton.icon(
                   onPressed: onWriteTap,
                   icon: const Icon(Icons.edit_outlined, size: 16),
-                  label: Text('write_post'.tr(), style: const TextStyle(fontSize: 13)),
+                  label: Text('write_post'.tr(), style: const TextStyle(fontSize: AppDimens.fontSizeSm)),
                 ),
             ],
           ),

@@ -171,7 +171,7 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
             icon: Icon(Icons.add_photo_alternate_rounded, color: colors.certRingColor, size: 20),
             label: Text(
               'cert_submit'.tr(),
-              style: TextStyle(color: colors.certRingColor, fontWeight: FontWeight.w700, fontSize: 13),
+              style: TextStyle(color: colors.certRingColor, fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeSm),
             ),
           ),
         ],
@@ -220,7 +220,7 @@ class _CertCard extends StatelessWidget {
           Text(
             statusLabel,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: AppDimens.fontSizeXs,
               fontWeight: FontWeight.w600,
               color: statusColor,
             ),
@@ -245,7 +245,7 @@ class _CertCard extends StatelessWidget {
           children: [
             Text(
               cert.festivalTitle,
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: colors.textTitle),
+              style: TextStyle(fontSize: AppDimens.fontSizeLg, fontWeight: FontWeight.w700, color: colors.textTitle),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),

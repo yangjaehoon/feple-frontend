@@ -210,7 +210,7 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
                       widget.festivalName,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 20,
+                        fontSize: AppDimens.fontSizeTitle,
                         fontWeight: FontWeight.w500,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -225,8 +225,8 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
               unselectedLabelColor: Colors.white54,
               indicatorColor: Colors.white,
               indicatorWeight: 2.5,
-              labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
-              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+              labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeMd),
+              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: AppDimens.fontSizeMd),
               tabs: [
                 Tab(text: 'free_board'.tr()),
                 Tab(text: 'companion_tab'.tr()),

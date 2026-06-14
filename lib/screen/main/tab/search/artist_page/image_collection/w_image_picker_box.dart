@@ -64,7 +64,7 @@ class ImagePickerBox extends StatelessWidget {
           label ?? 'photo_add'.tr(),
           style: TextStyle(
             color: colors.textSecondary,
-            fontSize: 14,
+            fontSize: AppDimens.fontSizeMd,
             fontWeight: FontWeight.w500,
           ),
         ),

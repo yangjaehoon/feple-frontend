@@ -138,14 +138,14 @@ class _WeatherCard extends StatelessWidget {
       children: [
         Text(
           'weather_title'.tr(),
-          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: colors.text),
+          style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.bold, color: colors.text),
         ),
         const SizedBox(height: 4),
-        Text(data.conditionKey.tr(), style: TextStyle(fontSize: 14, color: colors.text)),
+        Text(data.conditionKey.tr(), style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.text)),
         const SizedBox(height: 2),
         Text(
           'weather_temp_range'.tr(args: [minT, maxT]),
-          style: TextStyle(fontSize: 13, color: colors.textSecondary),
+          style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
         ),
       ],
     );
@@ -167,7 +167,7 @@ class _RainProbBadge extends StatelessWidget {
         Text(
           '$prob%',
           style: TextStyle(
-            fontSize: 14,
+            fontSize: AppDimens.fontSizeMd,
             fontWeight: FontWeight.bold,
             color: color,
           ),

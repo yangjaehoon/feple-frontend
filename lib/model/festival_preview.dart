@@ -15,6 +15,7 @@ class FestivalPreview {
   final String? ageRestriction;
   final double? latitude;
   final double? longitude;
+  final int attendingCount;
 
   const FestivalPreview({
     required this.id,
@@ -30,6 +31,7 @@ class FestivalPreview {
     this.ageRestriction,
     this.latitude,
     this.longitude,
+    this.attendingCount = 0,
   });
 
   String displayTitle(bool isEnglish) =>
@@ -53,6 +55,7 @@ class FestivalPreview {
         longitude: longitude,
         genres: genres,
         ageRestriction: ageRestriction,
+        attendingCount: attendingCount,
       );
 
   factory FestivalPreview.fromJson(Map<String, dynamic> json) {
@@ -70,6 +73,7 @@ class FestivalPreview {
       ageRestriction: json['ageRestriction'] as String?,
       latitude: (json['latitude'] as num?)?.toDouble(),
       longitude: (json['longitude'] as num?)?.toDouble(),
+      attendingCount: (json['attendingCount'] as num?)?.toInt() ?? 0,
     );
   }
 }

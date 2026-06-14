@@ -21,34 +21,39 @@ class ImagePickerBox extends StatelessWidget {
     final colors = context.appColors;
     return GestureDetector(
       onTap: onTap,
-      child: Align(
-        alignment: Alignment.center,
-        child: Container(
-          margin: const EdgeInsets.all(20),
-          height: 240,
-          width: 240,
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-            border: Border.all(
-              color: colors.activate.withValues(alpha: 0.4),
-              width: 1.5,
-              strokeAlign: BorderSide.strokeAlignInside,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: colors.cardShadow.withValues(alpha: 0.08),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: imageData == null
-              ? _buildPlaceholder(colors)
-              : ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Image.memory(imageData!, fit: BoxFit.cover),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 240),
+            child: AspectRatio(
+              aspectRatio: 1.0,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: colors.surface,
+                  borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
+                  border: Border.all(
+                    color: colors.activate.withValues(alpha: 0.4),
+                    width: 1.5,
+                    strokeAlign: BorderSide.strokeAlignInside,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: colors.cardShadow.withValues(alpha: 0.08),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
+                child: imageData == null
+                    ? _buildPlaceholder(colors)
+                    : ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: Image.memory(imageData!, fit: BoxFit.cover),
+                      ),
+              ),
+            ),
+          ),
         ),
       ),
     );

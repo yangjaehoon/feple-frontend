@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_app_network_image.dart';
+import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
@@ -14,25 +15,15 @@ class FestivalPreviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.appColors;
 
-    return Container(
-      height: 140,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(AppDimens.cardRadius),
-        boxShadow: [
-          BoxShadow(
-            color: colors.cardShadow.withValues(alpha: 0.12),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          _buildPoster(colors),
-          Expanded(child: _buildInfo(colors, context.locale.languageCode == 'en')),
-        ],
+    return SurfaceCard(
+      child: SizedBox(
+        height: 140,
+        child: Row(
+          children: [
+            _buildPoster(colors),
+            Expanded(child: _buildInfo(colors, context.locale.languageCode == 'en')),
+          ],
+        ),
       ),
     );
   }

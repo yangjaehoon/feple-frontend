@@ -72,11 +72,14 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
             onTap: () {
               Navigator.push(
                 context,
-                SlideRoute(builder: (context) => FestivalInformationFragment(poster: item.toModel())),
+                SlideRoute(builder: (context) => FestivalInformationFragment(
+                  poster: item.toModel(),
+                  heroTag: 'swiper_fp_${item.id}',
+                )),
               );
             },
             child: Hero(
-              tag: 'festival_poster_${item.id}',
+              tag: 'swiper_fp_${item.id}',
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(AppDimens.cardRadius),

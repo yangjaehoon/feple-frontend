@@ -11,9 +11,10 @@ import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:flutter/material.dart';
 
 class FestivalInformationFragment extends StatefulWidget {
-  const FestivalInformationFragment({super.key, required this.poster});
+  const FestivalInformationFragment({super.key, required this.poster, this.heroTag});
 
   final FestivalModel poster;
+  final String? heroTag;
 
   @override
   State<FestivalInformationFragment> createState() =>
@@ -56,6 +57,7 @@ class _FestivalInformationFragmentState
             FestivalPoster(
               key: ValueKey('poster_$_refreshKey'),
               poster: widget.poster,
+              heroTag: widget.heroTag,
             ),
             const SizedBox(height: 16),
             FestivalArtists(

@@ -144,36 +144,41 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
 
   Widget _buildPhotoCard(
       ArtistPhotoResponse photo, bool isUploader, AbstractThemeColors colors) {
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-        boxShadow: [
-          BoxShadow(
-              color: colors.cardShadow.withValues(alpha: 0.08),
-              blurRadius: 10,
-              offset: const Offset(0, 2)),
-        ],
-      ),
-      child: Row(
-        children: [
-          _buildPhotoImageArea(photo, colors),
-          Expanded(child: _buildPhotoInfoArea(photo, isUploader, colors)),
-        ],
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final imageSize = (constraints.maxWidth * 0.44).clamp(0.0, 195.0);
+        return Container(
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
+            boxShadow: [
+              BoxShadow(
+                  color: colors.cardShadow.withValues(alpha: 0.08),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2)),
+            ],
+          ),
+          child: Row(
+            children: [
+              _buildPhotoImageArea(photo, colors, imageSize),
+              Expanded(child: _buildPhotoInfoArea(photo, isUploader, colors, imageSize)),
+            ],
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildPhotoImageArea(ArtistPhotoResponse photo, AbstractThemeColors colors) {
+  Widget _buildPhotoImageArea(ArtistPhotoResponse photo, AbstractThemeColors colors, double imageSize) {
     return Stack(
       children: [
-        _buildPhoto(photo, colors),
+        _buildPhoto(photo, colors, imageSize),
         _buildLikeOverlay(photo),
       ],
     );
   }
 
-  Widget _buildPhoto(ArtistPhotoResponse photo, AbstractThemeColors colors) {
+  Widget _buildPhoto(ArtistPhotoResponse photo, AbstractThemeColors colors, double imageSize) {
     return GestureDetector(
       onDoubleTap: () => _notifier.toggleLike(photo.photoId),
       child: ClipRRect(
@@ -184,12 +189,12 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
         child: CachedNetworkImage(
           imageUrl: photo.url,
           cacheKey: 'artist-photo-${photo.photoId}',
-          width: 195,
-          height: 195,
+          width: imageSize,
+          height: imageSize,
           fit: BoxFit.cover,
           placeholder: (context, url) => Container(
-            width: 195,
-            height: 195,
+            width: imageSize,
+            height: imageSize,
             color: colors.listDivider,
             child: Center(
               child: CircularProgressIndicator(
@@ -197,8 +202,8 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
             ),
           ),
           errorWidget: (context, url, error) => Container(
-            width: 195,
-            height: 195,
+            width: imageSize,
+            height: imageSize,
             color: colors.listDivider,
             child: Icon(Icons.broken_image_rounded, color: colors.textSecondary),
           ),
@@ -241,9 +246,9 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
   }
 
   Widget _buildPhotoInfoArea(
-      ArtistPhotoResponse photo, bool isUploader, AbstractThemeColors colors) {
+      ArtistPhotoResponse photo, bool isUploader, AbstractThemeColors colors, double imageSize) {
     return SizedBox(
-      height: 195,
+      height: imageSize,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(14, 12, 4, 12),
         child: Column(

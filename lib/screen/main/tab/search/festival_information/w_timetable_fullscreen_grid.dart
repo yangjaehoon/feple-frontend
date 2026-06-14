@@ -267,23 +267,28 @@ class _OfficialCard extends StatelessWidget {
             : null,
       ),
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Text(entry.timeRange, style: subStyle),
-          Expanded(
-            child: Text(
-              entry.artistName,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: followed ? Colors.white : color,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  height: 1.2),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  entry.artistName,
+                  style: TextStyle(
+                      color: followed ? Colors.white : color,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      height: 1.2),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Text('${entry.durationMinutes}분', style: subStyle),
+            ],
           ),
-          Text('${entry.durationMinutes}분', style: subStyle),
+          Text(entry.timeRange, style: subStyle),
         ],
       ),
     );

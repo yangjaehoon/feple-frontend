@@ -82,12 +82,15 @@ class _OfflineBannerState extends State<OfflineBanner>
                   const Icon(Icons.wifi_off_rounded,
                       color: Colors.white70, size: 16),
                   const SizedBox(width: 8),
-                  Text(
-                    'offline_banner'.tr(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: AppDimens.fontSizeSm,
-                      fontWeight: FontWeight.w600,
+                  Flexible(
+                    child: Text(
+                      'offline_banner'.tr(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: AppDimens.fontSizeSm,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],

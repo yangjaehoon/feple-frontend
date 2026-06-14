@@ -98,11 +98,14 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
                     memCacheWidth: 360,
                     fit: BoxFit.fill,
                     placeholder: (context, url) => const SkeletonBox(height: double.infinity),
-                    errorWidget: (context, url, error) => Container(
-                      color: Colors.grey.withValues(alpha: 0.12),
-                      child: Icon(Icons.broken_image_rounded,
-                          size: 36, color: Colors.grey.withValues(alpha: 0.45)),
-                    ),
+                    errorWidget: (context, url, error) {
+                      final colors = context.appColors;
+                      return Container(
+                        color: colors.surface,
+                        child: Icon(Icons.broken_image_rounded,
+                            size: 36, color: colors.textSecondary.withValues(alpha: 0.4)),
+                      );
+                    },
                   ),
                 ),
               ),

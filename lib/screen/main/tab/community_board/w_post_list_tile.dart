@@ -61,6 +61,15 @@ class PostListTile extends StatelessWidget {
               width: 48,
               height: 48,
               fit: BoxFit.cover,
+              errorWidget: (context, url, error) {
+                final colors = context.appColors;
+                return Container(
+                  width: 48,
+                  height: 48,
+                  color: colors.surface,
+                  child: Icon(Icons.broken_image_rounded, size: 20, color: colors.textSecondary.withValues(alpha: 0.4)),
+                );
+              },
             ),
           ),
           const SizedBox(width: 8),

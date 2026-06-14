@@ -214,7 +214,10 @@ class _FestivalPosterState extends State<FestivalPoster> {
           memCacheWidth: 300,
           fit: BoxFit.cover,
           placeholder: (context, url) => const SkeletonBox(height: double.infinity),
-          errorWidget: (context, url, error) => const Icon(Icons.broken_image),
+          errorWidget: (_, __, ___) => Container(
+            color: colors.surface,
+            child: Icon(Icons.broken_image_rounded, size: 32, color: colors.textSecondary.withValues(alpha: 0.4)),
+          ),
         ),
       ),
     );

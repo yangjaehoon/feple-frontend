@@ -22,7 +22,7 @@ class ArtistCircleImage extends StatelessWidget {
   Widget _buildAvatarContent(AbstractThemeColors colors, double size) {
     final icon = Icon(
       Icons.person_rounded,
-      color: colors.activate.withValues(alpha: 0.5),
+      color: colors.activate,
       size: 26,
     );
     if (imageUrl != null && imageUrl!.isNotEmpty) {

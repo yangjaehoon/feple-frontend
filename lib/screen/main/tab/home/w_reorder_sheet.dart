@@ -167,7 +167,7 @@ class _ReorderSheetState extends State<ReorderSheet> {
       width: 40,
       height: 40,
       color: colors.surface,
-      child: Icon(Icons.person_rounded, color: colors.textSecondary, size: 20),
+      child: Icon(Icons.forum_rounded, color: colors.textSecondary, size: 20),
     );
   }
 }

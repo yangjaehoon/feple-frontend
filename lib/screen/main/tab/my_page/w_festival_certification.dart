@@ -65,7 +65,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
             style: TextButton.styleFrom(
               minimumSize: Size.zero,
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              tapTargetSize: MaterialTapTargetSize.padded,
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -159,7 +159,7 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
               backgroundColor: colors.activate,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
               minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              tapTargetSize: MaterialTapTargetSize.padded,
             ),
           ),
         ],

@@ -173,7 +173,7 @@ class _LoginPageState extends State<LoginPage> {
             foregroundColor: themeColors.activate,
             padding: EdgeInsets.zero,
             minimumSize: Size.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            tapTargetSize: MaterialTapTargetSize.padded,
           ),
           child: Text(
             'forgot_password'.tr(),
@@ -197,7 +197,7 @@ class _LoginPageState extends State<LoginPage> {
                 foregroundColor: themeColors.activate,
                 padding: EdgeInsets.zero,
                 minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                tapTargetSize: MaterialTapTargetSize.padded,
               ),
               child: Text(
                 'signup'.tr(),

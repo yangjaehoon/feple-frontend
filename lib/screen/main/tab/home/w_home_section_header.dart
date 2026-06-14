@@ -49,10 +49,7 @@ class HomeSectionHeader extends StatelessWidget {
               icon: Icon(Icons.arrow_forward_ios_rounded,
                   color: colors.textSecondary, size: 16),
               onPressed: onExpand,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
             ),
-            const SizedBox(width: 4),
           ] else if (trailing != null) ...[
             const Spacer(),
             trailing!,

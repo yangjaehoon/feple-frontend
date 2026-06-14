@@ -121,7 +121,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               foregroundColor: colors.textSecondary,
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              tapTargetSize: MaterialTapTargetSize.padded,
             ),
             child: Text(
               'onboarding_skip'.tr(),

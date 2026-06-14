@@ -273,7 +273,7 @@ class _SignupPageState extends State<SignupPage> {
             foregroundColor: themeColors.activate,
             padding: EdgeInsets.zero,
             minimumSize: Size.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            tapTargetSize: MaterialTapTargetSize.padded,
           ),
           child: Text(
             'login'.tr(),

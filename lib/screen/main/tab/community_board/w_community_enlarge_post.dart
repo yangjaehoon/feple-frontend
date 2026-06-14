@@ -175,51 +175,33 @@ class _EnlargePostState extends State<EnlargePost> {
   }
 
   List<PopupMenuEntry<String>> _buildMenuItems(bool isOwn, AbstractThemeColors colors) {
+    final normalStyle = TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textTitle, fontWeight: FontWeight.w500);
+    final dangerStyle = const TextStyle(fontSize: AppDimens.fontSizeMd, color: AppColors.errorRed, fontWeight: FontWeight.w500);
+
+    PopupMenuItem<String> item(String value, IconData icon, String label, {bool danger = false}) {
+      return PopupMenuItem(
+        value: value,
+        height: 48,
+        child: Row(children: [
+          Icon(icon, size: 19, color: danger ? AppColors.errorRed : colors.textTitle),
+          const SizedBox(width: 12),
+          Expanded(child: Text(label, style: danger ? dangerStyle : normalStyle, overflow: TextOverflow.ellipsis)),
+        ]),
+      );
+    }
+
     if (isOwn) {
       return [
-        PopupMenuItem(
-          value: 'edit',
-          child: Row(children: [
-            Icon(Icons.edit_outlined, size: 18, color: colors.textTitle),
-            const SizedBox(width: 8),
-            Expanded(child: Text('edit_post'.tr(), overflow: TextOverflow.ellipsis)),
-          ]),
-        ),
-        PopupMenuItem(
-          value: 'delete',
-          child: Row(children: [
-            const Icon(Icons.delete_outline_rounded, size: 18, color: AppColors.errorRed),
-            const SizedBox(width: 8),
-            Expanded(child: Text('delete_post'.tr(), style: const TextStyle(color: AppColors.errorRed), overflow: TextOverflow.ellipsis)),
-          ]),
-        ),
-        PopupMenuItem(
-          value: 'share',
-          child: Row(children: [
-            Icon(Icons.share_outlined, size: 18, color: colors.textTitle),
-            const SizedBox(width: 8),
-            Expanded(child: Text('share'.tr(), overflow: TextOverflow.ellipsis)),
-          ]),
-        ),
+        item('edit', Icons.edit_outlined, 'edit_post'.tr()),
+        item('share', Icons.share_outlined, 'share'.tr()),
+        PopupMenuDivider(height: 1),
+        item('delete', Icons.delete_outline_rounded, 'delete_post'.tr(), danger: true),
       ];
     } else {
       return [
-        PopupMenuItem(
-          value: 'report',
-          child: Row(children: [
-            const Icon(Icons.flag_outlined, size: 18, color: AppColors.errorRed),
-            const SizedBox(width: 8),
-            Expanded(child: Text('report_post'.tr(), style: const TextStyle(color: AppColors.errorRed), overflow: TextOverflow.ellipsis)),
-          ]),
-        ),
-        PopupMenuItem(
-          value: 'share',
-          child: Row(children: [
-            Icon(Icons.share_outlined, size: 18, color: colors.textTitle),
-            const SizedBox(width: 8),
-            Expanded(child: Text('share'.tr(), overflow: TextOverflow.ellipsis)),
-          ]),
-        ),
+        item('share', Icons.share_outlined, 'share'.tr()),
+        PopupMenuDivider(height: 1),
+        item('report', Icons.flag_outlined, 'report_post'.tr(), danger: true),
       ];
     }
   }
@@ -436,6 +418,11 @@ class _EnlargePostState extends State<EnlargePost> {
                 icon: const Icon(Icons.more_vert),
                 onSelected: _onMenuSelected,
                 itemBuilder: (_) => _buildMenuItems(isOwn, colors),
+                color: colors.surface,
+                shadowColor: colors.cardShadow.withValues(alpha: 0.18),
+                elevation: 6,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                position: PopupMenuPosition.under,
               ),
             ],
           ),

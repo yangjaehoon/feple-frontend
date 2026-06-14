@@ -141,7 +141,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
     return Text(
       user.nickname,
       style: TextStyle(
-        fontSize: 24,
+        fontSize: AppDimens.fontSizeDisplay,
         fontWeight: FontWeight.w800,
         color: colors.textTitle,
         letterSpacing: -0.5,

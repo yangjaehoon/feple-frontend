@@ -47,6 +47,7 @@ class AppDimens {
   static const double iconSizeLg = 18.0;
 
   // ── Font ──
+  static const double fontSizeDisplay = 24.0;  // 닉네임, 온보딩 타이틀
   static const double fontSizeTiny = 10.0;
   static const double fontSizeXxs = 11.0;
   static const double fontSizeXs = 12.0;

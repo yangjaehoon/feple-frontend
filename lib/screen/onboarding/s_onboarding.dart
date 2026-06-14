@@ -241,7 +241,7 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
           Text(
             'onboarding_pick_title'.tr(),
             style: TextStyle(
-              fontSize: 24,
+              fontSize: AppDimens.fontSizeDisplay,
               fontWeight: FontWeight.w800,
               color: colors.textTitle,
               height: 1.3,
@@ -582,7 +582,7 @@ class _PageContent extends StatelessWidget {
             page.titleKey.tr(),
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 24,
+              fontSize: AppDimens.fontSizeDisplay,
               fontWeight: FontWeight.w800,
               color: colors.textTitle,
               height: 1.3,

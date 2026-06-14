@@ -24,7 +24,10 @@ class ConcertListWidget extends StatelessWidget {
         onTap: () {
           Navigator.push(context,
             SlideRoute(
-              builder: (context) => FestivalInformationFragment(poster: item.toModel()),
+              builder: (context) => FestivalInformationFragment(
+                poster: item.toModel(),
+                heroTag: 'list_fp_${item.id}',
+              ),
             ),
           );
         },

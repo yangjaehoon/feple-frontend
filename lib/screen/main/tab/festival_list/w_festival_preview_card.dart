@@ -42,7 +42,7 @@ class FestivalPreviewCard extends StatelessWidget {
       height: 120,
       margin: const EdgeInsets.all(10),
       child: Hero(
-        tag: 'festival_poster_${festival.id}',
+        tag: 'list_fp_${festival.id}',
         child: ClipRRect(
           borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
           child: AspectRatio(

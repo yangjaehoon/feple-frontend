@@ -21,9 +21,10 @@ import 'w_festival_action_button.dart';
 import 'w_weather_bottom_sheet.dart';
 
 class FestivalPoster extends StatefulWidget {
-  const FestivalPoster({super.key, required this.poster});
+  const FestivalPoster({super.key, required this.poster, this.heroTag});
 
   final FestivalModel poster;
+  final String? heroTag;
 
   @override
   State<FestivalPoster> createState() => _FestivalPosterState();
@@ -184,38 +185,41 @@ class _FestivalPosterState extends State<FestivalPoster> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Hero(
-            tag: 'festival_poster_${widget.poster.id}',
-            child: Container(
-              width: _posterThumbnailWidth,
-              height: _posterThumbnailHeight,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-                boxShadow: [
-                  BoxShadow(
-                    color: colors.cardShadow.withValues(alpha: 0.3),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-                child: CachedNetworkImage(
-                  imageUrl: widget.poster.posterUrl,
-                  memCacheWidth: 300,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => const SkeletonBox(height: double.infinity),
-                  errorWidget: (context, url, error) => const Icon(Icons.broken_image),
-                ),
-              ),
-            ),
-          ),
+          _buildPosterThumbnail(colors),
           const SizedBox(width: 16),
           Expanded(child: _buildInfoColumn(colors)),
         ],
       ),
     );
+  }
+
+  Widget _buildPosterThumbnail(AbstractThemeColors colors) {
+    final child = Container(
+      width: _posterThumbnailWidth,
+      height: _posterThumbnailHeight,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
+        boxShadow: [
+          BoxShadow(
+            color: colors.cardShadow.withValues(alpha: 0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
+        child: CachedNetworkImage(
+          imageUrl: widget.poster.posterUrl,
+          memCacheWidth: 300,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => const SkeletonBox(height: double.infinity),
+          errorWidget: (context, url, error) => const Icon(Icons.broken_image),
+        ),
+      ),
+    );
+    if (widget.heroTag == null) return child;
+    return Hero(tag: widget.heroTag!, child: child);
   }
 
   Widget _buildInfoColumn(AbstractThemeColors colors) {

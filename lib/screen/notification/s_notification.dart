@@ -339,9 +339,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
       separatorBuilder: (_, index) => index < displayed.length - 1 ? const SizedBox(height: 8) : const SizedBox.shrink(),
       itemBuilder: (_, index) {
         if (index == displayed.length) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: Center(child: CircularProgressIndicator()),
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Center(child: CircularProgressIndicator(color: colors.activate)),
           );
         }
         final item = displayed[index];

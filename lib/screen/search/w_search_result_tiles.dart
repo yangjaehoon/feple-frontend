@@ -41,7 +41,7 @@ class SearchArtistTile extends StatelessWidget {
         'follower_count'.tr(args: ['${data.followerCount}']),
         style: TextStyle(fontSize: 11, color: colors.textSecondary),
       ),
-      onTap: () => Navigator.push(context, SlideRoute(
+      onTap: () => Navigator.of(context, rootNavigator: true).push(SlideRoute(
         builder: (_) => ArtistPage(
           artistName: data.name,
           artistId: data.id,
@@ -87,7 +87,7 @@ class SearchFestivalTile extends StatelessWidget {
         '${data.location} · ${data.startDate}',
         style: TextStyle(color: colors.textSecondary, fontSize: 12),
       ),
-      onTap: () => Navigator.push(context, SlideRoute(
+      onTap: () => Navigator.of(context, rootNavigator: true).push(SlideRoute(
         builder: (_) => FestivalInformationFragment(
           poster: FestivalModel(
             id: data.id,

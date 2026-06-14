@@ -26,7 +26,8 @@ class _ArtistPostListScreenState extends State<ArtistPostListScreen> {
     return BoardPostListScreen(
       boardName: 'name_board'.tr(args: [widget.artistName]),
       writeScreenTitle: 'name_board_write'.tr(args: [widget.artistName]),
-      fetchPosts: () => _postService.fetchArtistPosts(widget.artistId),
+      fetchPage: ({int? cursor, int size = 20}) =>
+          _postService.fetchArtistPostsPage(widget.artistId, cursor: cursor, size: size),
       onSubmitPost: (t, c, a, img) => _postService.createArtistPost(
         artistId: widget.artistId,
         title: t,

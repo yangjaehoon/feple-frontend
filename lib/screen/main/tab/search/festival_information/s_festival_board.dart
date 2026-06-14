@@ -1,8 +1,8 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
-import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_write_post_screen.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/post_model.dart';
@@ -29,8 +29,6 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   late final List<_BoardTab> _tabs;
-  late List<Future<List<Post>>?> _futures;
-  late List<int> _tabRefreshKeys;
 
   @override
   void initState() {
@@ -39,50 +37,33 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
     _tabs = [
       _BoardTab(
         name: 'name_board'.tr(args: [widget.festivalName]),
-        fetch: () => postService.fetchFestivalPosts(widget.festivalId),
+        fetchPage: ({int? cursor, int size = 20}) =>
+            postService.fetchFestivalPostsPage(widget.festivalId, cursor: cursor, size: size),
         submit: (t, c, a, img) => postService.createFestivalPost(
             festivalId: widget.festivalId, title: t, content: c, anonymous: a, imageObjectKey: img),
       ),
       _BoardTab(
         name: 'companion_board'.tr(),
-        fetch: () => postService.fetchFestivalCompanionPosts(widget.festivalId),
+        fetchPage: ({int? cursor, int size = 20}) =>
+            postService.fetchFestivalCompanionPostsPage(widget.festivalId, cursor: cursor, size: size),
         submit: (t, c, a, img) => postService.createFestivalCompanionPost(
             festivalId: widget.festivalId, title: t, content: c, anonymous: a, imageObjectKey: img),
       ),
       _BoardTab(
         name: 'ticket_board'.tr(),
-        fetch: () => postService.fetchFestivalTicketPosts(widget.festivalId),
+        fetchPage: ({int? cursor, int size = 20}) =>
+            postService.fetchFestivalTicketPostsPage(widget.festivalId, cursor: cursor, size: size),
         submit: (t, c, a, img) => postService.createFestivalTicketPost(
             festivalId: widget.festivalId, title: t, content: c, anonymous: a, imageObjectKey: img),
       ),
     ];
     _tabController = TabController(length: _tabs.length, vsync: this);
-    _tabController.addListener(_onTabChanged);
-    _tabRefreshKeys = List.filled(_tabs.length, 0);
-    _futures = List.filled(_tabs.length, null);
-    _futures[0] = _tabs[0].fetch();
   }
 
   @override
   void dispose() {
-    _tabController.removeListener(_onTabChanged);
     _tabController.dispose();
     super.dispose();
-  }
-
-  void _onTabChanged() {
-    if (!_tabController.indexIsChanging) {
-      setState(() {
-        _futures[_tabController.index] ??= _tabs[_tabController.index].fetch();
-      });
-    }
-  }
-
-  void _refreshTab(int index) {
-    setState(() {
-      _futures[index] = _tabs[index].fetch();
-      _tabRefreshKeys[index]++;
-    });
   }
 
   Future<void> _openWrite(int index) async {
@@ -96,69 +77,14 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
         ),
       ),
     );
-    if (!mounted) return;
-    _refreshTab(index);
-  }
-
-  Widget _buildTabContent(int index, AbstractThemeColors colors) {
-    final future = _futures[index];
-    if (future == null) {
-      return const Center(child: CircularProgressIndicator.adaptive());
-    }
-    final boardName = _tabs[index].name;
-    return RefreshIndicator(
-      color: colors.activate,
-      onRefresh: () async {
-        _refreshTab(index);
-        try { await _futures[index]!; } catch (_) {}
-      },
-      child: AsyncContentBuilder<List<Post>>(
-        key: ValueKey(_tabRefreshKeys[index]),
-        future: future,
-        onRetry: () => _refreshTab(index),
-        emptyBuilder: (_) => ListView(
-          children: [
-            const SizedBox(height: 80),
-            EmptyState(
-              icon: Icons.article_outlined,
-              title: 'no_posts_yet'.tr(),
-              subtitle: 'first_post_hint'.tr(),
-            ),
-          ],
-        ),
-        builder: (ctx, posts) => ListView.separated(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.only(bottom: 100),
-          itemCount: posts.length,
-          itemBuilder: (_, i) {
-            final post = posts[i];
-            return PostListTile(
-              post: post,
-              onTap: () async {
-                await Navigator.of(ctx, rootNavigator: true).push(
-                  SlideRoute(
-                    builder: (_) => EnlargePost.fromPost(boardName: boardName, post: post),
-                  ),
-                );
-                if (!mounted) return;
-                _refreshTab(index);
-              },
-            );
-          },
-          separatorBuilder: (_, __) =>
-              Divider(thickness: 1, color: colors.listDivider),
-        ),
-      ),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final tabIndex = _tabController.index;
     return Scaffold(
       backgroundColor: colors.backgroundMain,
-      floatingActionButton: _buildFab(colors, tabIndex),
+      floatingActionButton: _buildFab(colors),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Column(
         children: [
@@ -166,7 +92,14 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: List.generate(_tabs.length, (i) => _buildTabContent(i, colors)),
+              children: List.generate(
+                _tabs.length,
+                (i) => _FestivalBoardTabContent(
+                  key: ValueKey(i),
+                  tab: _tabs[i],
+                  onPostCreated: () => _openWrite(i),
+                ),
+              ),
             ),
           ),
         ],
@@ -174,17 +107,20 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
     );
   }
 
-  Widget _buildFab(AbstractThemeColors colors, int tabIndex) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppDimens.fabBottomPadding),
-      child: FloatingActionButton.extended(
-        backgroundColor: colors.activate,
-        onPressed: () => _openWrite(tabIndex),
-        label: Text(
-          'write_post'.tr(),
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+  Widget _buildFab(AbstractThemeColors colors) {
+    return ListenableBuilder(
+      listenable: _tabController,
+      builder: (context, _) => Padding(
+        padding: const EdgeInsets.only(bottom: AppDimens.fabBottomPadding),
+        child: FloatingActionButton.extended(
+          backgroundColor: colors.activate,
+          onPressed: () => _openWrite(_tabController.index),
+          label: Text(
+            'write_post'.tr(),
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+          ),
+          icon: const Icon(Icons.edit_rounded, color: Colors.white),
         ),
-        icon: const Icon(Icons.edit_rounded, color: Colors.white),
       ),
     );
   }
@@ -240,16 +176,188 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
   }
 }
 
+class _FestivalBoardTabContent extends StatefulWidget {
+  final _BoardTab tab;
+  final VoidCallback onPostCreated;
+
+  const _FestivalBoardTabContent({
+    super.key,
+    required this.tab,
+    required this.onPostCreated,
+  });
+
+  @override
+  State<_FestivalBoardTabContent> createState() => _FestivalBoardTabContentState();
+}
+
+class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
+    with AutomaticKeepAliveClientMixin {
+  final _scrollController = ScrollController();
+  List<Post> _posts = [];
+  bool _loading = true;
+  bool _hasError = false;
+  bool _isLoadingMore = false;
+  bool _hasMore = true;
+  int? _nextCursor;
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+    _load();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 300) {
+      _loadMore();
+    }
+  }
+
+  Future<void> _load() async {
+    setState(() { _loading = true; _hasError = false; _posts = []; _hasMore = true; _nextCursor = null; });
+    try {
+      final result = await widget.tab.fetchPage(size: 20);
+      if (mounted) {
+        setState(() {
+          _posts = result.content;
+          _hasMore = result.hasNext;
+          _nextCursor = result.nextCursor;
+          _loading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() { _loading = false; _hasError = true; });
+    }
+  }
+
+  Future<void> _refresh() async {
+    try {
+      final result = await widget.tab.fetchPage(size: 20);
+      if (mounted) {
+        setState(() {
+          _posts = result.content;
+          _hasMore = result.hasNext;
+          _nextCursor = result.nextCursor;
+          _hasError = false;
+        });
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _loadMore() async {
+    if (_isLoadingMore || !_hasMore || _loading) return;
+    setState(() => _isLoadingMore = true);
+    try {
+      final result = await widget.tab.fetchPage(cursor: _nextCursor, size: 20);
+      if (mounted) {
+        setState(() {
+          _posts = [..._posts, ...result.content];
+          _hasMore = result.hasNext;
+          _nextCursor = result.nextCursor;
+          _isLoadingMore = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _isLoadingMore = false);
+    }
+  }
+
+  Future<void> _openPost(Post post) async {
+    await Navigator.of(context, rootNavigator: true).push(
+      SlideRoute(
+        builder: (_) => EnlargePost.fromPost(boardName: widget.tab.name, post: post),
+      ),
+    );
+    if (!mounted) return;
+    _refresh();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    final colors = context.appColors;
+    return RefreshIndicator(
+      color: colors.activate,
+      onRefresh: _refresh,
+      child: _buildContent(colors),
+    );
+  }
+
+  Widget _buildContent(AbstractThemeColors colors) {
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator.adaptive());
+    }
+    if (_hasError) {
+      return LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: constraints.maxHeight,
+            child: Center(child: ErrorState(message: 'err_fetch_data'.tr(), onRetry: _load)),
+          ),
+        ),
+      );
+    }
+    if (_posts.isEmpty) {
+      return LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: constraints.maxHeight,
+            child: Center(
+              child: EmptyState(
+                icon: Icons.article_outlined,
+                title: 'no_posts_yet'.tr(),
+                subtitle: 'first_post_hint'.tr(),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    return ListView.separated(
+      controller: _scrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(bottom: 100),
+      itemCount: _posts.length + (_isLoadingMore ? 1 : 0),
+      itemBuilder: (_, i) {
+        if (i == _posts.length) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Center(child: CircularProgressIndicator.adaptive()),
+          );
+        }
+        return PostListTile(
+          post: _posts[i],
+          onTap: () => _openPost(_posts[i]),
+        );
+      },
+      separatorBuilder: (_, __) => Divider(thickness: 1, color: colors.listDivider),
+    );
+  }
+}
+
 typedef _SubmitFn = Future<void> Function(String, String, bool, String?);
 
 class _BoardTab {
   final String name;
-  final Future<List<Post>> Function() fetch;
+  final Future<PostCursorPage> Function({int? cursor, int size}) fetchPage;
   final _SubmitFn submit;
 
   const _BoardTab({
     required this.name,
-    required this.fetch,
+    required this.fetchPage,
     required this.submit,
   });
 }

@@ -3,10 +3,10 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class CommentInputBar extends StatelessWidget {
+class CommentInputBar extends StatefulWidget {
   final TextEditingController controller;
   final bool isSubmitting;
-  final VoidCallback onSubmit;
+  final void Function(bool anonymous) onSubmit;
   final String? errorText;
   final String? replyToNickname;
   final VoidCallback? onCancelReply;
@@ -22,6 +22,13 @@ class CommentInputBar extends StatelessWidget {
   });
 
   @override
+  State<CommentInputBar> createState() => _CommentInputBarState();
+}
+
+class _CommentInputBarState extends State<CommentInputBar> {
+  bool _anonymous = false;
+
+  @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
     final bottom = MediaQuery.of(context).viewInsets.bottom;
@@ -32,9 +39,10 @@ class CommentInputBar extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (replyToNickname != null) _buildReplyBanner(colors),
+          if (widget.replyToNickname != null) _buildReplyBanner(colors),
+          _buildAnonymousToggle(colors),
           _buildInputRow(colors),
-          if (errorText != null && errorText!.isNotEmpty) _buildErrorText(),
+          if (widget.errorText != null && widget.errorText!.isNotEmpty) _buildErrorText(),
         ],
       ),
     );
@@ -55,7 +63,7 @@ class CommentInputBar extends StatelessWidget {
           const SizedBox(width: 4),
           Expanded(
             child: Text(
-              '$replyToNickname ${'reply_to'.tr()}',
+              '${widget.replyToNickname} ${'reply_to'.tr()}',
               style: TextStyle(
                   fontSize: 12,
                   color: colors.textSecondary,
@@ -66,11 +74,41 @@ class CommentInputBar extends StatelessWidget {
             button: true,
             label: 'cancel_reply'.tr(),
             child: GestureDetector(
-              onTap: onCancelReply,
+              onTap: widget.onCancelReply,
               child: Icon(Icons.close, size: 14, color: colors.textSecondary),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAnonymousToggle(AbstractThemeColors colors) {
+    return GestureDetector(
+      onTap: () => setState(() => _anonymous = !_anonymous),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 20,
+              height: 20,
+              child: Checkbox(
+                value: _anonymous,
+                onChanged: (v) => setState(() => _anonymous = v ?? false),
+                visualDensity: VisualDensity.compact,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                activeColor: colors.activate,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              'post_anonymous'.tr(),
+              style: TextStyle(fontSize: 12, color: colors.textSecondary),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -86,11 +124,11 @@ class CommentInputBar extends StatelessWidget {
         children: [
           Expanded(
             child: TextField(
-              controller: controller,
+              controller: widget.controller,
               maxLength: 300,
               decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: replyToNickname != null
+                hintText: widget.replyToNickname != null
                     ? 'enter_reply'.tr()
                     : 'enter_comment'.tr(),
                 hintStyle: TextStyle(color: colors.textSecondary),
@@ -108,7 +146,7 @@ class CommentInputBar extends StatelessWidget {
           SizedBox(
             width: 48,
             height: 48,
-            child: isSubmitting
+            child: widget.isSubmitting
                 ? Center(
                     child: SizedBox(
                       width: 24,
@@ -123,7 +161,7 @@ class CommentInputBar extends StatelessWidget {
                     tooltip: 'send_comment'.tr(),
                     onPressed: () {
                       HapticFeedback.lightImpact();
-                      onSubmit();
+                      widget.onSubmit(_anonymous);
                     },
                     icon: Icon(Icons.send_rounded, color: colors.activate),
                   ),
@@ -138,7 +176,7 @@ class CommentInputBar extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 6, left: 4),
       child: Text(
-        errorText!,
+        widget.errorText!,
         style: const TextStyle(
           fontSize: 12,
           color: AppColors.errorRed,

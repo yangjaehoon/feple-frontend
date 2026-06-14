@@ -400,7 +400,7 @@ class _EnlargePostState extends State<EnlargePost> {
       builder: (_, __) => CommentInputBar(
         controller: _commentController,
         isSubmitting: _notifier.isSubmitting,
-        onSubmit: () {
+        onSubmit: (anonymous) {
           if (userId == null) {
             context.showInfoSnackbar('no_login_info'.tr());
             return;
@@ -408,6 +408,7 @@ class _EnlargePostState extends State<EnlargePost> {
           _notifier.submitComment(
             _commentController.text.trim(),
             parentId: _replyToCommentId,
+            anonymous: anonymous,
           );
         },
         errorText: _notifier.commentError?.tr(),

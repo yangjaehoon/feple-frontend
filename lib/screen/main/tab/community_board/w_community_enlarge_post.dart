@@ -466,8 +466,16 @@ class _EditCommentDialogState extends State<_EditCommentDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return AlertDialog(
-      title: Text('edit_comment'.tr()),
+      backgroundColor: colors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(16)),
+      ),
+      title: Text(
+        'edit_comment'.tr(),
+        style: TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle),
+      ),
       content: TextField(
         controller: _controller,
         autofocus: true,

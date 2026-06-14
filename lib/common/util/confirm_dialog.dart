@@ -6,12 +6,21 @@ Future<bool> showConfirmDialog(
   required String title,
   required String content,
   required String confirmLabel,
-}) async =>
-    await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(title),
-        content: Text(content),
+}) async {
+  return await showDialog<bool>(
+    context: context,
+    builder: (ctx) {
+      final colors = ctx.appColors;
+      return AlertDialog(
+        backgroundColor: colors.surface,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+        ),
+        title: Text(
+          title,
+          style: TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle),
+        ),
+        content: Text(content, style: TextStyle(color: colors.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -25,6 +34,7 @@ Future<bool> showConfirmDialog(
             ),
           ),
         ],
-      ),
-    ) ??
-    false;
+      );
+    },
+  ) ?? false;
+}

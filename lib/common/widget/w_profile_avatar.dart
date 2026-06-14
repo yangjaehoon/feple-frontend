@@ -30,7 +30,7 @@ class ProfileAvatar extends StatelessWidget {
     if (anonymous) {
       return CircleAvatar(
         radius: radius,
-        backgroundColor: Colors.grey[300],
+        backgroundColor: colors.listDivider,
         backgroundImage: const AssetImage('assets/image/feple_logo.png'),
       );
     }

@@ -66,7 +66,7 @@ class _FestivalSetlistState extends State<FestivalSetlist> {
       padding: const EdgeInsets.fromLTRB(16, 14, 8, 10),
       child: Row(
         children: [
-          Icon(Icons.queue_music_rounded, size: 15, color: colors.activate),
+          Icon(Icons.queue_music_rounded, size: AppDimens.iconSizeMd, color: colors.activate),
           const SizedBox(width: 8),
           Text(
             'setlist_card_title'.tr(),

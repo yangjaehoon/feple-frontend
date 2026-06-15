@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/model/booth_model.dart';
 import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/model/festival_setlist_entry.dart';
@@ -12,13 +12,6 @@ class FestivalDetailService {
 
   FestivalDetailService(this._cache);
 
-  static bool _isOffline(Object e) =>
-      e is DioException &&
-      (e.type == DioExceptionType.connectionError ||
-          e.type == DioExceptionType.connectionTimeout ||
-          e.type == DioExceptionType.receiveTimeout ||
-          e.type == DioExceptionType.unknown);
-
   Future<List<FestivalArtistItem>> fetchFestivalArtists(int festivalId) async {
     try {
       final response =
@@ -29,7 +22,7 @@ class FestivalDetailService {
       await _cache.saveArtists(festivalId, items);
       return items;
     } catch (e) {
-      if (_isOffline(e)) {
+      if (isOffline(e)) {
         final cached = await _cache.loadArtists(festivalId);
         if (cached != null) return cached;
       }
@@ -46,7 +39,7 @@ class FestivalDetailService {
       await _cache.saveBooths(festivalId, items);
       return items;
     } catch (e) {
-      if (_isOffline(e)) {
+      if (isOffline(e)) {
         final cached = await _cache.loadBooths(festivalId);
         if (cached != null) return cached;
       }
@@ -66,7 +59,7 @@ class FestivalDetailService {
       await _cache.saveTimetable(festivalId, items);
       return items;
     } catch (e) {
-      if (_isOffline(e)) {
+      if (isOffline(e)) {
         final cached = await _cache.loadTimetable(festivalId);
         if (cached != null) return cached;
       }
@@ -93,7 +86,7 @@ class FestivalDetailService {
       await _cache.saveSetlist(festivalId, items);
       return items;
     } catch (e) {
-      if (_isOffline(e)) {
+      if (isOffline(e)) {
         final cached = await _cache.loadSetlist(festivalId);
         if (cached != null) return cached;
       }

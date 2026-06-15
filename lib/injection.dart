@@ -39,7 +39,7 @@ void setupDependencies() {
   sl.registerLazySingleton<ArtistService>(() => ArtistService());
   sl.registerLazySingleton<CertificationService>(() => CertificationService());
   sl.registerLazySingleton<CommentService>(() => CommentService());
-  sl.registerLazySingleton<FestivalService>(() => FestivalService());
+  sl.registerLazySingleton<FestivalService>(() => FestivalService(sl<FestivalCacheService>()));
   sl.registerLazySingleton<FestivalCacheService>(() => FestivalCacheService());
   sl.registerLazySingleton<FestivalDetailService>(() => FestivalDetailService(sl<FestivalCacheService>()));
   sl.registerLazySingleton<CachePrefetchService>(() => CachePrefetchService(sl<FestivalDetailService>()));

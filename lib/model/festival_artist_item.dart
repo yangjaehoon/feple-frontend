@@ -14,6 +14,14 @@ class FestivalArtistItem {
     this.performanceDates = const [],
   });
 
+  Map<String, dynamic> toJson() => {
+        'artistId': artistId,
+        'artistName': artistName,
+        'profileImageUrl': profileImageUrl,
+        'stageName': stageName,
+        'performanceDates': performanceDates,
+      };
+
   factory FestivalArtistItem.fromJson(Map<String, dynamic> json) {
     return FestivalArtistItem(
       artistId: json['artistId'] as int,

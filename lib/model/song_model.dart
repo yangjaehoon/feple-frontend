@@ -15,6 +15,15 @@ class SongModel {
     this.festivalCount = 0,
   });
 
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'youtubeVideoId': youtubeVideoId,
+        'thumbnailUrl': thumbnailUrl,
+        'youtubeUrl': youtubeUrl,
+        'festivalCount': festivalCount,
+      };
+
   factory SongModel.fromJson(Map<String, dynamic> json) {
     final videoId = json['youtubeVideoId'] as String;
     return SongModel(

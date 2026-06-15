@@ -65,6 +65,16 @@ class TimetableEntry {
     required this.endTime,
   });
 
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'stageName': stageName,
+        'stageOrder': stageOrder,
+        'artistName': artistName,
+        'festivalDate': festivalDate,
+        'startTime': startTime,
+        'endTime': endTime,
+      };
+
   factory TimetableEntry.fromJson(Map<String, dynamic> j) => TimetableEntry(
         id: (j['id'] as num?)?.toInt() ?? 0,
         stageName: j['stageName'] as String? ?? '',

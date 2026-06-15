@@ -9,6 +9,7 @@ import 'service/auth_service.dart';
 import 'service/certification_service.dart';
 import 'service/comment_service.dart';
 import 'service/fcm_service.dart';
+import 'service/festival_cache_service.dart';
 import 'service/festival_detail_service.dart';
 import 'service/festival_interaction_service.dart';
 import 'service/festival_service.dart';
@@ -39,8 +40,9 @@ void setupDependencies() {
   sl.registerLazySingleton<CertificationService>(() => CertificationService());
   sl.registerLazySingleton<CommentService>(() => CommentService());
   sl.registerLazySingleton<FestivalService>(() => FestivalService());
+  sl.registerLazySingleton<FestivalCacheService>(() => FestivalCacheService());
+  sl.registerLazySingleton<FestivalDetailService>(() => FestivalDetailService(sl<FestivalCacheService>()));
   sl.registerLazySingleton<CachePrefetchService>(() => CachePrefetchService(sl<FestivalDetailService>()));
-  sl.registerLazySingleton<FestivalDetailService>(() => FestivalDetailService());
   sl.registerLazySingleton<FestivalInteractionService>(() => FestivalInteractionService());
   sl.registerLazySingleton<NotificationCountNotifier>(() => NotificationCountNotifier());
   sl.registerLazySingleton<NotificationPreferenceService>(() => NotificationPreferenceService());

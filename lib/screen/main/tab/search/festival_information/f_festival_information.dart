@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_offline_banner.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_poster.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_timetable.dart';
@@ -34,13 +35,15 @@ class _FestivalInformationFragmentState
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return Container(
-      color: colors.backgroundMain,
-      child: Stack(
-        children: [
-          _buildScrollBody(colors),
-          FepleAppBar('festival_detail'.tr(), showBackButton: true),
-        ],
+    return OfflineBanner(
+      child: Container(
+        color: colors.backgroundMain,
+        child: Stack(
+          children: [
+            _buildScrollBody(colors),
+            FepleAppBar('festival_detail'.tr(), showBackButton: true),
+          ],
+        ),
       ),
     );
   }

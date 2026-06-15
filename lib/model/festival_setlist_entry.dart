@@ -17,6 +17,14 @@ class FestivalSetlistEntry {
 
   Set<int> get songIds => songs.map((s) => s.id).toSet();
 
+  Map<String, dynamic> toJson() => {
+        'artistFestivalId': artistFestivalId,
+        'artistId': artistId,
+        'artistName': artistName,
+        'profileImageUrl': profileImageUrl,
+        'songs': songs.map((s) => s.toJson()).toList(),
+      };
+
   factory FestivalSetlistEntry.fromJson(Map<String, dynamic> json) {
     return FestivalSetlistEntry(
       artistFestivalId: (json['artistFestivalId'] as num).toInt(),

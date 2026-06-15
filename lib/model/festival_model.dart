@@ -38,6 +38,22 @@ class FestivalModel {
 
   int? get dDaysUntil => festivalDDaysUntil(startDate: startDate, isEnded: isEnded);
 
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'titleEn': titleEn,
+        'description': description,
+        'location': location,
+        'startDate': startDate,
+        'endDate': endDate,
+        'posterUrl': posterUrl,
+        'latitude': latitude,
+        'longitude': longitude,
+        'genres': genres,
+        'ageRestriction': ageRestriction,
+        'attendingCount': attendingCount,
+      };
+
   factory FestivalModel.fromJson(Map<String, dynamic> json) {
     return FestivalModel(
       id: json['id'] as int,

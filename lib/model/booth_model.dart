@@ -20,6 +20,17 @@ class BoothModel {
     this.imageUrl,
   });
 
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'boothType': boothType,
+        'boothTypeName': boothTypeName,
+        'latitude': latitude,
+        'longitude': longitude,
+        'description': description,
+        'imageUrl': imageUrl,
+      };
+
   factory BoothModel.fromJson(Map<String, dynamic> j) => BoothModel(
         id: (j['id'] as num).toInt(),
         name: j['name'] as String,

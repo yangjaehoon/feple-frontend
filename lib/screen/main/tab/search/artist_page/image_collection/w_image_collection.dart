@@ -273,8 +273,16 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
                 _buildPhotoMenu(photo, isUploader, colors),
               ],
             ),
-            if (photo.description.isNotEmpty)
-              _buildDescriptionBadge(photo, colors),
+            Row(
+              children: [
+                if (photo.isAnonymous)
+                  _buildBadge(Icons.visibility_off_rounded, 'post_anonymous'.tr(), colors),
+                if (photo.isAnonymous && photo.description.isNotEmpty)
+                  const SizedBox(width: 6),
+                if (photo.description.isNotEmpty)
+                  Flexible(child: _buildDescriptionBadge(photo, colors)),
+              ],
+            ),
           ],
         ),
       ),
@@ -317,6 +325,27 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
         ] else
           _menuItem('report', Icons.flag_rounded, 'report_photo'.tr(), colors, color: AppColors.errorRed),
       ],
+    );
+  }
+
+  Widget _buildBadge(IconData icon, String label, AbstractThemeColors colors) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+        color: colors.textSecondary.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadius),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 10, color: colors.textSecondary),
+          const SizedBox(width: 3),
+          Text(
+            label,
+            style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: colors.textSecondary),
+          ),
+        ],
+      ),
     );
   }
 

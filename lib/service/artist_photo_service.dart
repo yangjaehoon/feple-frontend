@@ -29,6 +29,7 @@ class ArtistPhotoService {
     required Uint8List imageData,
     required String title,
     required String description,
+    bool isAnonymous = false,
   }) async {
     final presign = await ImageUploadHelper.compressAndUpload(
       presignEndpoint: '/artists/$artistId/photos/presign',
@@ -42,6 +43,7 @@ class ArtistPhotoService {
         'contentType': 'image/jpeg',
         'title': title,
         'description': description,
+        'isAnonymous': isAnonymous,
       },
     );
   }

@@ -128,10 +128,6 @@ class PostService {
     return PostCursorPage.fromJson(response.data as Map<String, dynamic>);
   }
 
-  /// 페스티벌 게시판 목록 조회
-  Future<List<Post>> fetchFestivalPosts(int festivalId) =>
-      _fetchPostList('/posts/festival/$festivalId');
-
   /// 페스티벌 게시판 글 작성
   Future<void> createFestivalPost({
     required int festivalId,
@@ -155,10 +151,6 @@ class PostService {
     return PostCursorPage.fromJson(response.data as Map<String, dynamic>);
   }
 
-  /// 동행구하기 게시판 목록 조회
-  Future<List<Post>> fetchFestivalCompanionPosts(int festivalId) =>
-      _fetchPostList('/posts/festival/$festivalId/companion');
-
   /// 동행구하기 게시판 글 작성
   Future<void> createFestivalCompanionPost({
     required int festivalId,
@@ -177,10 +169,6 @@ class PostService {
     });
     return PostCursorPage.fromJson(response.data as Map<String, dynamic>);
   }
-
-  /// 티켓양도 게시판 목록 조회
-  Future<List<Post>> fetchFestivalTicketPosts(int festivalId) =>
-      _fetchPostList('/posts/festival/$festivalId/ticket');
 
   /// 티켓양도 게시판 글 작성
   Future<void> createFestivalTicketPost({

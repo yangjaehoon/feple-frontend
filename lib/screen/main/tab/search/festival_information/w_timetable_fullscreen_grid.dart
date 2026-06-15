@@ -270,29 +270,30 @@ class _OfficialCard extends StatelessWidget {
             ? [BoxShadow(color: color.withValues(alpha: 0.3), blurRadius: 4, offset: const Offset(0, 2))]
             : null,
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+      padding: EdgeInsets.symmetric(horizontal: 6, vertical: cardH < 22 ? 2 : 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  entry.artistName,
-                  style: TextStyle(
-                      color: followed ? Colors.white : color,
-                      fontSize: AppDimens.fontSizeXxs,
-                      fontWeight: FontWeight.w700,
-                      height: 1.2),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+          if (cardH > 14)
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    entry.artistName,
+                    style: TextStyle(
+                        color: followed ? Colors.white : color,
+                        fontSize: AppDimens.fontSizeXxs,
+                        fontWeight: FontWeight.w700,
+                        height: 1.2),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-              if (cardH > 28) Text('${entry.durationMinutes}분', style: subStyle),
-            ],
-          ),
-          if (cardH > 28) Text(entry.timeRange, style: subStyle),
+                if (cardH > 32) Text('${entry.durationMinutes}분', style: subStyle),
+              ],
+            ),
+          if (cardH > 32) Text(entry.timeRange, style: subStyle),
         ],
       ),
     );

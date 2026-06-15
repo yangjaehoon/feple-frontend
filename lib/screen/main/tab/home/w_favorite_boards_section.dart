@@ -239,7 +239,7 @@ class _BoardTile extends StatelessWidget {
                 fontSize: AppDimens.fontSizeXs,
                 fontWeight: FontWeight.w700,
               ),
-              maxLines: 2,
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
             ),

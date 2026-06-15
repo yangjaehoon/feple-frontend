@@ -40,13 +40,15 @@ class NotificationCard extends StatelessWidget {
 
   BoxDecoration _buildCardDecoration(AbstractThemeColors colors) {
     return BoxDecoration(
-      color: colors.surface,
+      color: item.read
+          ? colors.surface
+          : Color.alphaBlend(colors.activate.withValues(alpha: 0.10), colors.surface),
       borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
       border: Border.all(
         color: item.read
             ? colors.listDivider
-            : colors.activate.withValues(alpha: 0.5),
-        width: item.read ? 1 : 1.5,
+            : colors.activate.withValues(alpha: 0.35),
+        width: 1,
       ),
       boxShadow: [
         BoxShadow(

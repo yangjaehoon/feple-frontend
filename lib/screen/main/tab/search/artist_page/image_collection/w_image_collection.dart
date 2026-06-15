@@ -1,0 +1,338 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/common/util/bottom_sheet_helper.dart';
+import 'package:feple/common/widget/w_empty_state.dart';
+import 'package:feple/common/widget/w_report_sheet.dart';
+import 'package:feple/injection.dart';
+import 'package:feple/provider/user_provider.dart';
+import 'package:feple/service/report_service.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:feple/model/artist_photo_response.dart';
+import 'package:feple/common/util/confirm_dialog.dart';
+import 'artist_photo_notifier.dart';
+import 'w_edit_photo_sheet.dart';
+
+class ImgCollectionWidget extends StatefulWidget {
+  const ImgCollectionWidget(
+      {super.key, required this.artistId, required this.artistName});
+
+  final int artistId;
+  final String artistName;
+
+  @override
+  State<ImgCollectionWidget> createState() => ImgCollectionWidgetState();
+}
+
+class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
+  late final ArtistPhotoNotifier _notifier;
+  final _reportService = sl<ReportService>();
+
+  @override
+  void initState() {
+    super.initState();
+    _notifier = ArtistPhotoNotifier(artistId: widget.artistId);
+    _notifier.addListener(_onNotifierChange);
+    _notifier.loadPhotos();
+  }
+
+  void _onNotifierChange() {
+    final key = _notifier.errorKey;
+    if (key != null && mounted) {
+      context.showErrorSnackbar(key.tr());
+      _notifier.clearError();
+    }
+  }
+
+  @override
+  void dispose() {
+    _notifier.removeListener(_onNotifierChange);
+    _notifier.dispose();
+    super.dispose();
+  }
+
+  void refresh() => _notifier.loadPhotos();
+
+  Future<void> _confirmAndDelete(int photoId) async {
+    final confirmed = await showConfirmDialog(
+      context,
+      title: 'photo_delete_title'.tr(),
+      content: 'photo_delete_confirm'.tr(),
+      confirmLabel: 'msg_delete'.tr(),
+    );
+    if (confirmed) _notifier.deletePhoto(photoId);
+  }
+
+
+  PopupMenuItem<String> _menuItem(
+    String value, IconData icon, String label, AbstractThemeColors colors, {Color? color}) {
+    return PopupMenuItem(
+      value: value,
+      height: 44,
+      child: Row(children: [
+        Icon(icon, size: 16, color: color ?? colors.textTitle),
+        const SizedBox(width: 10),
+        Expanded(child: Text(label, style: TextStyle(color: color ?? colors.textTitle), overflow: TextOverflow.ellipsis)),
+      ]),
+    );
+  }
+
+  void _showEditBottomSheet(ArtistPhotoResponse photo) {
+    showAppBottomSheet(
+      context,
+      useRootNavigator: true,
+      builder: (_) => EditPhotoSheet(
+        artistId: widget.artistId,
+        photo: photo,
+        onSave: (newTitle, newDesc) =>
+            _notifier.updatePhoto(photo.photoId, newTitle, newDesc),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final currentUserId =
+        Provider.of<UserProvider>(context, listen: false).currentUserId;
+
+    return ListenableBuilder(
+      listenable: _notifier,
+      builder: (context, _) => _buildContent(colors, currentUserId),
+    );
+  }
+
+  Widget _buildContent(AbstractThemeColors colors, int? currentUserId) {
+    if (_notifier.isLoading) {
+      return SliverToBoxAdapter(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 80),
+            child: CircularProgressIndicator(color: colors.loadingIndicator),
+          ),
+        ),
+      );
+    }
+
+    if (_notifier.photos.isEmpty) {
+      return _buildEmptyState();
+    }
+
+    return SliverList.builder(
+      itemCount: _notifier.photos.length,
+      itemBuilder: (context, index) {
+        final photo = _notifier.photos[index];
+        final isUploader =
+            currentUserId != null && photo.uploaderUserId == currentUserId;
+        return Padding(
+          padding: EdgeInsets.only(
+              bottom: index == _notifier.photos.length - 1 ? 0 : 12.0),
+          child: _buildPhotoCard(photo, isUploader, colors),
+        );
+      },
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return SliverToBoxAdapter(
+      child: EmptyState(
+        icon: Icons.photo_library_outlined,
+        title: 'photo_no_photos'.tr(),
+      ),
+    );
+  }
+
+  Widget _buildPhotoCard(
+      ArtistPhotoResponse photo, bool isUploader, AbstractThemeColors colors) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final imageSize = (constraints.maxWidth * 0.44).clamp(0.0, 195.0);
+        return Container(
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
+            boxShadow: [
+              BoxShadow(
+                  color: colors.cardShadow.withValues(alpha: 0.08),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2)),
+            ],
+          ),
+          child: Row(
+            children: [
+              _buildPhotoImageArea(photo, colors, imageSize),
+              Expanded(child: _buildPhotoInfoArea(photo, isUploader, colors, imageSize)),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildPhotoImageArea(ArtistPhotoResponse photo, AbstractThemeColors colors, double imageSize) {
+    return Stack(
+      children: [
+        _buildPhoto(photo, colors, imageSize),
+        _buildLikeOverlay(photo),
+      ],
+    );
+  }
+
+  Widget _buildPhoto(ArtistPhotoResponse photo, AbstractThemeColors colors, double imageSize) {
+    return GestureDetector(
+      onDoubleTap: () => _notifier.toggleLike(photo.photoId),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(16),
+          bottomLeft: Radius.circular(16),
+        ),
+        child: CachedNetworkImage(
+          imageUrl: photo.url,
+          cacheKey: 'artist-photo-${photo.photoId}',
+          width: imageSize,
+          height: imageSize,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => Container(
+            width: imageSize,
+            height: imageSize,
+            color: colors.listDivider,
+            child: Center(
+              child: CircularProgressIndicator(
+                  color: colors.loadingIndicator, strokeWidth: 2),
+            ),
+          ),
+          errorWidget: (context, url, error) => Container(
+            width: imageSize,
+            height: imageSize,
+            color: colors.listDivider,
+            child: Icon(Icons.broken_image_rounded, color: colors.textSecondary),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLikeOverlay(ArtistPhotoResponse photo) {
+    return Positioned(
+      left: 6,
+      bottom: 6,
+      child: GestureDetector(
+        onTap: () => _notifier.toggleLike(photo.photoId),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.45),
+            borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                photo.isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                color: photo.isLiked ? AppColors.kawaiiPink : Colors.white,
+                size: 18,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                '${photo.likeCount}',
+                style: const TextStyle(
+                    fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w600, color: Colors.white),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPhotoInfoArea(
+      ArtistPhotoResponse photo, bool isUploader, AbstractThemeColors colors, double imageSize) {
+    return SizedBox(
+      height: imageSize,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 12, 4, 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    photo.title,
+                    style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: AppDimens.fontSizeXl,
+                        color: colors.textTitle),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                _buildPhotoMenu(photo, isUploader, colors),
+              ],
+            ),
+            if (photo.description.isNotEmpty)
+              _buildDescriptionBadge(photo, colors),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPhotoMenu(
+      ArtistPhotoResponse photo, bool isUploader, AbstractThemeColors colors) {
+    return PopupMenuButton<String>(
+      icon: Icon(Icons.more_vert_rounded, color: colors.textSecondary, size: 20),
+      color: colors.surface,
+      elevation: 6,
+      shadowColor: colors.cardShadow.withValues(alpha: 0.18),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+      position: PopupMenuPosition.under,
+      onSelected: (value) {
+        if (value == 'edit') {
+          _showEditBottomSheet(photo);
+        } else if (value == 'delete') {
+          _confirmAndDelete(photo.photoId);
+        } else if (value == 'report') {
+          showReportSheet(
+            context,
+            titleKey: 'report_photo',
+            onSubmit: (reason, detail) => _reportService.submitPhotoReport(
+              widget.artistId,
+              photo.photoId,
+              reason,
+              detail: detail,
+            ),
+            duplicateErrorKey: 'report_photo_duplicate',
+          );
+        }
+      },
+      itemBuilder: (_) => [
+        if (isUploader) ...[
+          _menuItem('edit', Icons.edit_rounded, 'photo_edit_action'.tr(), colors),
+          const PopupMenuDivider(height: 1),
+          _menuItem('delete', Icons.delete_rounded, 'msg_delete'.tr(), colors, color: AppColors.errorRed),
+        ] else
+          _menuItem('report', Icons.flag_rounded, 'report_photo'.tr(), colors, color: AppColors.errorRed),
+      ],
+    );
+  }
+
+  Widget _buildDescriptionBadge(ArtistPhotoResponse photo, AbstractThemeColors colors) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: colors.activate.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadius),
+      ),
+      child: Text(
+        photo.description,
+        style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: colors.activate),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+}

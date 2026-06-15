@@ -1,0 +1,304 @@
+import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/constant/festival_constants.dart';
+import 'package:feple/screen/main/tab/festival_list/w_festival_list.dart';
+import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../../../provider/festival_preview_provider.dart';
+
+class ConcertListFragment extends StatefulWidget {
+  const ConcertListFragment({super.key});
+
+  @override
+  State<ConcertListFragment> createState() => _ConcertListFragmentState();
+}
+
+class _ConcertListFragmentState extends State<ConcertListFragment> {
+  bool _filterExpanded = false;
+  late final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (!mounted) return;
+    final provider = context.read<FestivalPreviewProvider>();
+    if (!provider.hasMore || provider.isLoadingMore || provider.isLoading) return;
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 300) {
+      provider.fetchNext();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    // 필터 개수만 구독 — 페스티벌 목록 로딩과 무관하게 재빌드하지 않음
+    final activeFilterCount = context.select<FestivalPreviewProvider, int>(
+      (p) => p.selectedGenres.length + p.selectedRegions.length + p.selectedAgeRestrictions.length,
+    );
+
+    return ColoredBox(
+      color: colors.backgroundMain,
+      child: Column(
+        children: [
+          FepleAppBar('festival_schedule'.tr()),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () async {
+                try {
+                  await context.read<FestivalPreviewProvider>().refresh(force: true);
+                } catch (_) {}
+              },
+              color: colors.activate,
+              child: CustomScrollView(
+                controller: _scrollController,
+                slivers: [
+                  SliverPadding(
+                    padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate([
+                        _FilterPanel(
+                          expanded: _filterExpanded,
+                          onToggle: () =>
+                              setState(() => _filterExpanded = !_filterExpanded),
+                          activeFilterCount: activeFilterCount,
+                        ),
+                        const ConcertListWidget(),
+                        const _LoadMoreIndicator(),
+                      ]),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FilterPanel extends StatelessWidget {
+  final bool expanded;
+  final VoidCallback onToggle;
+  final int activeFilterCount;
+
+  const _FilterPanel({
+    required this.expanded,
+    required this.onToggle,
+    required this.activeFilterCount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final provider = context.watch<FestivalPreviewProvider>();
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
+        boxShadow: [
+          BoxShadow(
+            color: colors.cardShadow.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeader(colors, provider),
+          if (expanded) ...[
+            Divider(height: 1, color: colors.listDivider),
+            _buildBody(colors, provider),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(AbstractThemeColors colors, FestivalPreviewProvider provider) {
+    return InkWell(
+      onTap: onToggle,
+      borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Icon(Icons.tune_rounded, size: 18, color: colors.activate),
+            const SizedBox(width: 8),
+            Text(
+              'btn_filter'.tr(),
+              style: TextStyle(
+                fontSize: AppDimens.fontSizeMd,
+                fontWeight: FontWeight.w700,
+                color: colors.textTitle,
+              ),
+            ),
+            if (activeFilterCount > 0) ...[
+              const SizedBox(width: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                decoration: BoxDecoration(
+                  color: colors.activate,
+                  borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+                ),
+                child: Text(
+                  '$activeFilterCount',
+                  style: const TextStyle(
+                      color: Colors.white, fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w700),
+                ),
+              ),
+            ],
+            const Spacer(),
+            if (activeFilterCount > 0)
+              GestureDetector(
+                onTap: provider.clearFilters,
+                child: Text(
+                  'btn_reset'.tr(),
+                  style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
+                ),
+              ),
+            const SizedBox(width: 8),
+            Icon(
+              expanded
+                  ? Icons.keyboard_arrow_up_rounded
+                  : Icons.keyboard_arrow_down_rounded,
+              color: colors.textSecondary,
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBody(AbstractThemeColors colors, FestivalPreviewProvider provider) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _FilterSection(
+            label: 'filter_genre'.tr(),
+            items: kGenreOptions,
+            selected: provider.selectedGenres,
+            onToggle: provider.toggleGenre,
+          ),
+          const SizedBox(height: 12),
+          _FilterSection(
+            label: 'filter_region'.tr(),
+            items: kRegionOptions,
+            selected: provider.selectedRegions,
+            onToggle: provider.toggleRegion,
+          ),
+          const SizedBox(height: 12),
+          _FilterSection(
+            label: 'filter_age_restriction'.tr(),
+            items: kAgeRestrictionOptions,
+            selected: provider.selectedAgeRestrictions,
+            onToggle: provider.toggleAgeRestriction,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FilterSection extends StatelessWidget {
+  final String label;
+  final List<(String, String)> items;
+  final Set<String> selected;
+  final void Function(String) onToggle;
+
+  const _FilterSection({
+    required this.label,
+    required this.items,
+    required this.selected,
+    required this.onToggle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(fontSize: AppDimens.fontSizeXs, fontWeight: FontWeight.w700, color: colors.textSecondary),
+        ),
+        const SizedBox(height: 8),
+        _buildChips(colors),
+      ],
+    );
+  }
+
+  Widget _buildChips(AbstractThemeColors colors) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 6,
+      children: items.map((item) {
+        final (value, displayName) = item;
+        return _buildChip(colors, value, displayName, selected.contains(value));
+      }).toList(),
+    );
+  }
+
+  Widget _buildChip(AbstractThemeColors colors, String value, String displayName, bool isSelected) {
+    return GestureDetector(
+      onTap: () => onToggle(value),
+      child: AnimatedContainer(
+        duration: AppDimens.animXFast,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: isSelected ? colors.activate : colors.backgroundMain,
+          borderRadius: BorderRadius.circular(AppDimens.cardRadius),
+          border: Border.all(color: isSelected ? colors.activate : colors.listDivider),
+        ),
+        child: Text(
+          displayName.tr(),
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeSm,
+            fontWeight: FontWeight.w600,
+            color: isSelected ? Colors.white : colors.textTitle,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LoadMoreIndicator extends StatelessWidget {
+  const _LoadMoreIndicator();
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<FestivalPreviewProvider>(
+      builder: (_, p, __) {
+        if (p.isLoadingMore) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Center(child: CircularProgressIndicator(color: context.appColors.activate)),
+          );
+        }
+        return const SizedBox.shrink();
+      },
+    );
+  }
+}

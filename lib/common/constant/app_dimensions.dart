@@ -1,0 +1,70 @@
+/// 앱 전체에서 공유하는 레이아웃 상수
+///
+/// 매직넘버 대신 이 상수를 사용하세요.
+class AppDimens {
+  AppDimens._(); // 인스턴스화 방지
+
+  // ── AppBar ──
+  static const double appBarHeight = 50.0;
+
+  // ── Scroll padding (Stack 레이아웃에서 앱바/탭바 가림 방지) ──
+  static const double scrollPaddingTop = appBarHeight;
+  static const double scrollPaddingBottom = 80.0;
+  static const double scrollPaddingBottomLarge = 120.0;
+  static const double fabBottomPadding = 80.0;
+
+  // ── Shape (MD3 기준) ──
+  // Extra Small(4) · Small(8) · Medium(12) · Large(16) · Extra Large(28)
+  static const double shapeInput = 12.0;    // 입력 필드 — Medium
+  static const double shapeButton = 16.0;   // 버튼 — Large
+  static const double shapeDialog = 28.0;   // 다이얼로그 — Extra Large
+  static const double shapeSheet = 28.0;    // 바텀시트 상단 — Extra Large
+
+  // ── Card / Container ──
+  static const double cardRadius = 20.0;
+  static const double cardRadiusSmall = 16.0;
+  static const double cardRadiusTiny = 12.0;
+  static const double radiusSmall = 8.0;    // 작은 이미지 썸네일, 컴팩트 컨테이너
+  static const double radiusBadge = 6.0;    // 배지/필 컨테이너
+  static const double radiusXs = 4.0;       // 매우 작은 요소 (코드 블록 등)
+  static const double barRadius = 2.0;      // 섹션 바 액센트, 드래그 핸들
+  static const double boardCardHeight = 280.0;
+  static const double boardHeaderHeight = 35.0;
+
+  // ── Spacing (8px 그리드) ──
+  static const double paddingHorizontal = 16.0;
+  static const double paddingVertical = 8.0;
+  static const double space4 = 4.0;
+  static const double space8 = 8.0;
+  static const double space12 = 12.0;
+  static const double space16 = 16.0;
+  static const double space20 = 20.0;
+  static const double space24 = 24.0;
+
+  // ── Icon ──
+  static const double iconSizeSm = 14.0;
+  static const double iconSizeMd = 16.0;
+  static const double iconSizeLg = 18.0;
+
+  // ── Font ──
+  static const double fontSizeDisplay = 24.0;  // 닉네임, 온보딩 타이틀
+  static const double fontSizeTiny = 10.0;
+  static const double fontSizeXxs = 11.0;
+  static const double fontSizeXs = 12.0;
+  static const double fontSizeSm = 13.0;
+  static const double fontSizeMd = 14.0;
+  static const double fontSizeLg = 15.0;
+  static const double fontSizeXl = 16.0;
+  static const double fontSizeXxl = 18.0;
+  static const double fontSizeTitle = 20.0;
+
+  // ── Animation Duration ──
+  static const Duration animFast = Duration(milliseconds: 200);
+  static const Duration animQuick = Duration(milliseconds: 250);
+  static const Duration animNormal = Duration(milliseconds: 300);
+  static const Duration animSlow = Duration(milliseconds: 350);
+  static const Duration animVerySlow = Duration(milliseconds: 500);
+  static const Duration animSuccessDelay = Duration(milliseconds: 700);
+  static const Duration animRefresh = Duration(milliseconds: 400);
+  static const Duration animXFast = Duration(milliseconds: 150);
+}

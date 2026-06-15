@@ -212,6 +212,7 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
                   entry: entry,
                   color: _stageColor(entry.stageName),
                   followed: widget.followedNames.contains(entry.artistName),
+                  cardH: cardH - 4,
                 ),
               );
             }),
@@ -243,11 +244,13 @@ class _OfficialCard extends StatelessWidget {
   final TimetableEntry entry;
   final Color color;
   final bool followed;
+  final double cardH;
 
   const _OfficialCard({
     required this.entry,
     required this.color,
     required this.followed,
+    required this.cardH,
   });
 
   @override
@@ -256,6 +259,7 @@ class _OfficialCard extends StatelessWidget {
     final subStyle = TextStyle(color: subColor, fontSize: 9, height: 1.2);
 
     return Container(
+      clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
         color: followed ? color.withValues(alpha: 0.88) : Colors.transparent,
         borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
@@ -285,10 +289,10 @@ class _OfficialCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              Text('${entry.durationMinutes}분', style: subStyle),
+              if (cardH > 28) Text('${entry.durationMinutes}분', style: subStyle),
             ],
           ),
-          Text(entry.timeRange, style: subStyle),
+          if (cardH > 28) Text(entry.timeRange, style: subStyle),
         ],
       ),
     );
@@ -304,6 +308,7 @@ class _UserCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
         color: entry.color.withValues(alpha: 0.88),
         borderRadius: BorderRadius.circular(AppDimens.radiusSmall),

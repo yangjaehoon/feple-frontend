@@ -82,7 +82,7 @@ class _ArtistPageState extends State<ArtistPage> {
             artistName: widget.artistName,
             artistId: widget.artistId,
             followNotifier: _followNotifier,
-            profileImageUrl: widget.profileImageUrl,
+            profileImageUrl: (widget.profileImageUrl?.isNotEmpty ?? false) ? widget.profileImageUrl : null,
           ),
           ArtistSchedule(
             key: ValueKey('schedule_$_refreshKey'),

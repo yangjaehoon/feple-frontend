@@ -270,12 +270,15 @@ class _OfficialCard extends StatelessWidget {
             ? [BoxShadow(color: color.withValues(alpha: 0.3), blurRadius: 4, offset: const Offset(0, 2))]
             : null,
       ),
-      padding: EdgeInsets.symmetric(horizontal: 6, vertical: cardH < 22 ? 2 : 4),
+      // border(1.5×2=3) + padding(2×2=4) = 7px overhead for non-followed cards.
+      // Name row: fontSize 11 × height 1.2 = 13.2px → need cardH > 13.2+7 = 21 (non-followed).
+      // Time row: 13.2 + 10.8 = 24px → need cardH > 24+7 = 31, use 36 with margin.
+      padding: EdgeInsets.symmetric(horizontal: 6, vertical: cardH < 36 ? 2 : 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (cardH > 14)
+          if (cardH > 22)
             Row(
               children: [
                 Expanded(
@@ -290,10 +293,10 @@ class _OfficialCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (cardH > 32) Text('${entry.durationMinutes}분', style: subStyle),
+                if (cardH > 36) Text('${entry.durationMinutes}분', style: subStyle),
               ],
             ),
-          if (cardH > 32) Text(entry.timeRange, style: subStyle),
+          if (cardH > 36) Text(entry.timeRange, style: subStyle),
         ],
       ),
     );

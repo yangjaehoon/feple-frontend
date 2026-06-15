@@ -290,6 +290,7 @@ class _OfficialCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     entry.artistName,
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       color: nameColor,
                       fontSize: nameFontSize,

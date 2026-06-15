@@ -164,4 +164,10 @@ class FestivalCacheService {
       sp.remove('${_p}_time_$festivalId'),
     ]);
   }
+
+  Future<void> clearAll() async {
+    final sp = await _sp;
+    final keys = sp.getKeys().where((k) => k.startsWith('${_p}_')).toList();
+    await Future.wait(keys.map((k) => sp.remove(k)));
+  }
 }

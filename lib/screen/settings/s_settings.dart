@@ -14,6 +14,8 @@ import 'package:feple/screen/onboarding/s_onboarding.dart';
 import 'package:flutter/foundation.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/injection.dart';
+import 'package:feple/service/festival_cache_service.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get_utils/src/extensions/string_extensions.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -95,7 +97,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _clearCache() async {
     setState(() => _clearingCache = true);
-    await DefaultCacheManager().emptyCache();
+    await Future.wait([
+      DefaultCacheManager().emptyCache(),
+      sl<FestivalCacheService>().clearAll(),
+    ]);
     if (!mounted) return;
     setState(() => _clearingCache = false);
     context.showSuccessSnackbar('clear_cache_done'.tr());

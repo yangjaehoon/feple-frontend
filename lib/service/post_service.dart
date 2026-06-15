@@ -19,7 +19,16 @@ class PostService {
 
   Future<List<Post>> _fetchPostList(String endpoint) async {
     final response = await DioClient.dio.get(endpoint);
-    return response.toModelList(Post.fromJson);
+    final data = response.data;
+    final List<dynamic> list;
+    if (data is List) {
+      list = data;
+    } else if (data is Map && data['content'] is List) {
+      list = data['content'] as List<dynamic>;
+    } else {
+      list = const [];
+    }
+    return list.map((e) => Post.fromJson(e as Map<String, dynamic>)).toList();
   }
 
   /// 게시글 목록 조회 (hot은 List 직접 반환, free/mate는 CursorPage에서 content 추출)

@@ -3,6 +3,8 @@ class ArtistPhotoResponse {
   final String url;
   // 익명 업로드 시 타인에게는 null로 반환됨; 본인 글은 항상 반환
   final int? uploaderUserId;
+  // 익명 업로드 시 "익명" 반환
+  final String uploaderNickname;
   final DateTime createdAt;
   final String title;
   final String description;
@@ -14,6 +16,7 @@ class ArtistPhotoResponse {
     required this.photoId,
     required this.url,
     required this.uploaderUserId,
+    required this.uploaderNickname,
     required this.createdAt,
     required this.title,
     required this.description,
@@ -26,6 +29,7 @@ class ArtistPhotoResponse {
     int? photoId,
     String? url,
     int? uploaderUserId,
+    String? uploaderNickname,
     DateTime? createdAt,
     String? title,
     String? description,
@@ -37,6 +41,7 @@ class ArtistPhotoResponse {
       photoId: photoId ?? this.photoId,
       url: url ?? this.url,
       uploaderUserId: uploaderUserId ?? this.uploaderUserId,
+      uploaderNickname: uploaderNickname ?? this.uploaderNickname,
       createdAt: createdAt ?? this.createdAt,
       title: title ?? this.title,
       description: description ?? this.description,
@@ -51,6 +56,7 @@ class ArtistPhotoResponse {
       photoId: (json['photoId'] as num).toInt(),
       url: json['url'] as String,
       uploaderUserId: (json['uploaderUserId'] as num?)?.toInt(),
+      uploaderNickname: json['uploaderNickname'] as String? ?? '',
       createdAt: DateTime.parse(json['createdAt'] as String),
       title: json['title'] as String? ?? '',
       description: json['description'] as String? ?? '',

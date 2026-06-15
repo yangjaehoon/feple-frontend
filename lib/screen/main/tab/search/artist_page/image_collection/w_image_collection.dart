@@ -283,6 +283,24 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
                   Flexible(child: _buildDescriptionBadge(photo, colors)),
               ],
             ),
+            if (photo.uploaderNickname.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Row(
+                  children: [
+                    Icon(Icons.person_rounded, size: 12, color: colors.textSecondary),
+                    const SizedBox(width: 3),
+                    Flexible(
+                      child: Text(
+                        photo.uploaderNickname,
+                        style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),

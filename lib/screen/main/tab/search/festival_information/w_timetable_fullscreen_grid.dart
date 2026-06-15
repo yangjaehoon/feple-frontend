@@ -30,7 +30,7 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
   static const double _topPad = 16.0;
   static const double _bottomPad = 16.0;
   static const double _timeColW = 48.0;
-  static const double _stageHeaderH = 36.0;
+  static const double _stageHeaderH = 28.0;
 
   Offset? _tapPos;
 

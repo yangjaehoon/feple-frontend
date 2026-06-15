@@ -40,7 +40,7 @@ class _MypageFragmentState extends State<MypageFragment> {
             extraTrailingActions: [_buildSettingsButton(context)],
           ),
           if (userId == null)
-            const Expanded(child: Center(child: CircularProgressIndicator()))
+            Expanded(child: Center(child: CircularProgressIndicator(color: colors.activate)))
           else
             Expanded(
               child: RefreshIndicator(

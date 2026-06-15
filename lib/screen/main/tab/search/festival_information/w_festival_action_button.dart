@@ -25,7 +25,7 @@ class FestivalActionButton extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: bgColor ?? Colors.white.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
@@ -37,9 +37,9 @@ class FestivalActionButton extends StatelessWidget {
             Text(
               label!,
               style: TextStyle(
-                fontSize: AppDimens.fontSizeTiny,
-                fontWeight: FontWeight.w500,
-                color: (color ?? Colors.white).withValues(alpha: 0.85),
+                fontSize: AppDimens.fontSizeXs,
+                fontWeight: FontWeight.w600,
+                color: color ?? Colors.white,
               ),
             ),
           ],

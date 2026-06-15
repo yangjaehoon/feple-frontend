@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/screen/main/tab/home/f_all_favorite_boards.dart';
 import 'package:feple/screen/main/tab/home/w_boards_section_skeleton.dart';
@@ -121,12 +122,9 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
   Widget _buildBoardList(
       List<FavoriteBoard> selectedBoards, AbstractThemeColors colors) {
     if (selectedBoards.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        child: Text(
-          'select_boards_prompt'.tr(),
-          style: TextStyle(color: colors.textSecondary),
-        ),
+      return EmptyState(
+        icon: Icons.view_list_rounded,
+        title: 'select_boards_prompt'.tr(),
       );
     }
     return SizedBox(
@@ -182,8 +180,8 @@ class _BoardTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
           boxShadow: [
             BoxShadow(
-              color: colors.cardShadow.withValues(alpha: 0.12),
-              blurRadius: 10,
+              color: colors.cardShadow.withValues(alpha: 0.18),
+              blurRadius: 12,
               offset: const Offset(0, 3),
             ),
           ],
@@ -238,7 +236,7 @@ class _BoardTile extends StatelessWidget {
               board.displayName(isEnglish),
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: AppDimens.fontSizeTiny,
+                fontSize: AppDimens.fontSizeXs,
                 fontWeight: FontWeight.w700,
               ),
               maxLines: 2,

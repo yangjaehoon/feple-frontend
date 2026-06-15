@@ -46,7 +46,7 @@ class SearchArtistTile extends StatelessWidget {
           artistName: data.name,
           artistId: data.id,
           followerCount: data.followerCount,
-          profileImageUrl: data.profileImageUrl.isNotEmpty ? data.profileImageUrl : null,
+          profileImageUrl: data.profileImageUrl,
         ),
       )),
     );

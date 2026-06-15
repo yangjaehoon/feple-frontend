@@ -120,22 +120,69 @@ class _FestivalArtistsState extends State<FestivalArtists> {
     );
   }
 
+  static const int _maxVisible = 10;
+
   Widget _buildArtistRow(AbstractThemeColors colors) {
     final displayed = _notifier.displayedArtists;
     if (displayed.isEmpty) {
       return _buildEmptyRow(colors);
     }
+    final hasMore = displayed.length > _maxVisible;
+    final visible = hasMore ? displayed.sublist(0, _maxVisible) : displayed;
     return SizedBox(
       height: 80,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: displayed.length,
+        itemCount: visible.length + (hasMore ? 1 : 0),
         separatorBuilder: (_, __) => const SizedBox(width: 16),
         itemBuilder: (context, index) {
-          final artist = displayed[index];
+          if (hasMore && index == visible.length) {
+            return _buildMoreItem(colors);
+          }
+          final artist = visible[index];
           final isFollowed = _notifier.isFollowed(artist.artistId);
           return _buildArtistItem(context, artist, isFollowed, colors);
         },
+      ),
+    );
+  }
+
+  Widget _buildMoreItem(AbstractThemeColors colors) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        SlideRoute(
+          builder: (_) => FestivalArtistListScreen(notifier: _notifier),
+        ),
+      ),
+      child: SizedBox(
+        width: 64,
+        child: Column(
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: colors.backgroundMain,
+                shape: BoxShape.circle,
+                border: Border.all(color: colors.listDivider),
+              ),
+              child: Icon(Icons.more_horiz_rounded, size: 22, color: colors.textSecondary),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'see_more'.tr(),
+              style: TextStyle(
+                fontSize: AppDimens.fontSizeXxs,
+                fontWeight: FontWeight.w600,
+                color: colors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }

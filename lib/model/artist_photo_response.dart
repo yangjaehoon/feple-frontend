@@ -1,13 +1,14 @@
 class ArtistPhotoResponse {
   final int photoId;
   final String url;
-  final int uploaderUserId;
+  // 익명 업로드 시 타인에게는 null로 반환됨; 본인 글은 항상 반환
+  final int? uploaderUserId;
   final DateTime createdAt;
   final String title;
   final String description;
   final int likeCount;
   final bool isLiked;
-
+  final bool isAnonymous;
 
   ArtistPhotoResponse({
     required this.photoId,
@@ -18,6 +19,7 @@ class ArtistPhotoResponse {
     required this.description,
     required this.likeCount,
     required this.isLiked,
+    required this.isAnonymous,
   });
 
   ArtistPhotoResponse copyWith({
@@ -29,6 +31,7 @@ class ArtistPhotoResponse {
     String? description,
     int? likeCount,
     bool? isLiked,
+    bool? isAnonymous,
   }) {
     return ArtistPhotoResponse(
       photoId: photoId ?? this.photoId,
@@ -39,6 +42,7 @@ class ArtistPhotoResponse {
       description: description ?? this.description,
       likeCount: likeCount ?? this.likeCount,
       isLiked: isLiked ?? this.isLiked,
+      isAnonymous: isAnonymous ?? this.isAnonymous,
     );
   }
 
@@ -46,12 +50,13 @@ class ArtistPhotoResponse {
     return ArtistPhotoResponse(
       photoId: (json['photoId'] as num).toInt(),
       url: json['url'] as String,
-      uploaderUserId: (json['uploaderUserId'] as num).toInt(),
+      uploaderUserId: (json['uploaderUserId'] as num?)?.toInt(),
       createdAt: DateTime.parse(json['createdAt'] as String),
       title: json['title'] as String? ?? '',
       description: json['description'] as String? ?? '',
       likeCount: (json['likeCount'] as num?)?.toInt() ?? 0,
       isLiked: json['isLiked'] as bool? ?? false,
+      isAnonymous: json['isAnonymous'] as bool? ?? false,
     );
   }
 }

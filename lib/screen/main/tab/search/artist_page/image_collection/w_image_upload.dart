@@ -33,6 +33,7 @@ class _ImgUploadState extends State<ImgUpload> {
   FestivalPreview? _selectedFestival;
   late final Future<List<FestivalPreview>> _festivalsFuture;
   bool isUploading = false;
+  bool _isAnonymous = false;
   String? _imageError;
 
   @override
@@ -75,6 +76,7 @@ class _ImgUploadState extends State<ImgUpload> {
         imageData: imageData!,
         title: _titleCtrl.text,
         description: festival.id == photoCategoryOther.id ? '' : festival.title,
+        isAnonymous: _isAnonymous,
       );
       if (!mounted) return;
       Navigator.pop(context, true);
@@ -201,6 +203,19 @@ class _ImgUploadState extends State<ImgUpload> {
     );
   }
 
+  Widget _buildAnonymousToggle(AbstractThemeColors colors) {
+    return SwitchListTile(
+      contentPadding: EdgeInsets.zero,
+      value: _isAnonymous,
+      onChanged: (v) => setState(() => _isAnonymous = v),
+      activeColor: colors.activate,
+      title: Text(
+        'post_anonymous'.tr(),
+        style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textTitle),
+      ),
+    );
+  }
+
   Widget _buildScrollContent(AbstractThemeColors colors) {
     return Expanded(
       child: SingleChildScrollView(
@@ -247,6 +262,8 @@ class _ImgUploadState extends State<ImgUpload> {
                     _buildTitleField(colors),
                     const SizedBox(height: 12),
                     _buildFestivalDropdown(colors),
+                    const SizedBox(height: 4),
+                    _buildAnonymousToggle(colors),
                   ],
                 ),
               ),

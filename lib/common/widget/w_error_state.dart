@@ -17,12 +17,16 @@ class ErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
+    return LayoutBuilder(builder: (_, constraints) {
+      return SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
             Icon(
               Icons.wifi_off_rounded,
               size: 52,
@@ -55,9 +59,12 @@ class ErrorState extends StatelessWidget {
                 ),
               ),
             ],
-          ],
+                ],
+              ),
+            ),
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

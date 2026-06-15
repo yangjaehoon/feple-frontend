@@ -245,7 +245,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
             widget.poster.endDate.isNotEmpty
                 ? '${widget.poster.startDate} ~ ${widget.poster.endDate}'
                 : widget.poster.startDate,
-            style: const TextStyle(fontSize: AppDimens.fontSizeMd, color: Colors.white70),
+            style: const TextStyle(fontSize: AppDimens.fontSizeMd, color: Colors.white),
           ),
         ),
         const SizedBox(height: 6),
@@ -259,9 +259,9 @@ class _FestivalPosterState extends State<FestivalPoster> {
               softWrap: true,
               style: const TextStyle(
                 fontSize: AppDimens.fontSizeMd,
-                color: Colors.white70,
+                color: Colors.white,
                 decoration: TextDecoration.underline,
-                decorationColor: Colors.white54,
+                decorationColor: Colors.white70,
               ),
             ),
           ),

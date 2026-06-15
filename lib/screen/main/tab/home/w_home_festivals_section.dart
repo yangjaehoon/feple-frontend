@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
@@ -25,8 +26,6 @@ class HomeFestivalsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.appColors;
-
     if (hasError) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
@@ -53,10 +52,9 @@ class HomeFestivalsSection extends StatelessWidget {
       );
     }
     if (festivals!.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Text('no_liked_festivals'.tr(),
-            style: TextStyle(color: colors.textSecondary)),
+      return EmptyState(
+        icon: Icons.favorite_border_rounded,
+        title: 'no_liked_festivals'.tr(),
       );
     }
     return SizedBox(
@@ -93,8 +91,8 @@ class _FestivalItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
           boxShadow: [
             BoxShadow(
-              color: colors.cardShadow.withValues(alpha: 0.12),
-              blurRadius: 12,
+              color: colors.cardShadow.withValues(alpha: 0.18),
+              blurRadius: 14,
               offset: const Offset(0, 4),
             ),
           ],
@@ -149,7 +147,7 @@ class _FestivalItem extends StatelessWidget {
               festival.displayTitle(isEnglish),
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: AppDimens.fontSizeXxs,
+                fontSize: AppDimens.fontSizeSm,
                 fontWeight: FontWeight.w700,
               ),
               maxLines: 2,

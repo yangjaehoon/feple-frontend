@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
@@ -23,8 +24,6 @@ class HomeArtistsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.appColors;
-
     if (hasError) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
@@ -34,10 +33,9 @@ class HomeArtistsSection extends StatelessWidget {
 
     if (artists == null) return _buildSkeleton();
     if (artists!.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Text('no_followed_artists'.tr(),
-            style: TextStyle(color: colors.textSecondary)),
+      return EmptyState(
+        icon: Icons.people_outline_rounded,
+        title: 'no_followed_artists'.tr(),
       );
     }
     return SizedBox(
@@ -137,7 +135,7 @@ class _ArtistItem extends StatelessWidget {
               width: 64,
               child: Text(
                 _displayName(context),
-                style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: colors.textTitle),
+                style: TextStyle(fontSize: AppDimens.fontSizeXs, fontWeight: FontWeight.w600, color: colors.textTitle),
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

@@ -232,16 +232,18 @@ class _BoardTile extends StatelessWidget {
                 ],
               ),
             ),
-            child: Text(
-              board.displayName(isEnglish),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: AppDimens.fontSizeXs,
-                fontWeight: FontWeight.w700,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                board.displayName(isEnglish),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: AppDimens.fontSizeXs,
+                  fontWeight: FontWeight.w700,
+                ),
+                maxLines: 1,
+                textAlign: TextAlign.center,
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
             ),
           ),
         ),

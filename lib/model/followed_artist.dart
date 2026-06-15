@@ -15,6 +15,15 @@ class FollowedArtist {
     this.followerCount = 0,
   });
 
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'nameEn': nameEn,
+        'profileImageUrl': profileImageUrl,
+        'genre': genre,
+        'followerCount': followerCount,
+      };
+
   factory FollowedArtist.fromJson(Map<String, dynamic> json) {
     return FollowedArtist(
       id: json['id'] as int,

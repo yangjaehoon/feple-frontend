@@ -42,6 +42,23 @@ class FestivalPreview {
   /// 오늘 기준 D-day. 음수 = 진행중, 0 = 오늘 시작, 양수 = N일 후. null = 날짜 파싱 불가 또는 종료됨
   int? get dDaysUntil => festivalDDaysUntil(startDate: startDate, isEnded: isEnded);
 
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'titleEn': titleEn,
+        'description': description,
+        'location': location,
+        'posterUrl': posterUrl,
+        'startDate': startDate,
+        'endDate': endDate,
+        'genres': genres,
+        'region': region,
+        'ageRestriction': ageRestriction,
+        'latitude': latitude,
+        'longitude': longitude,
+        'attendingCount': attendingCount,
+      };
+
   FestivalModel toModel() => FestivalModel(
         id: id,
         title: title,

@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'package:feple/model/booth_model.dart';
 import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/model/festival_model.dart';
+import 'package:feple/model/festival_preview.dart';
 import 'package:feple/model/festival_setlist_entry.dart';
+import 'package:feple/model/followed_artist.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// 페스티벌 상세 데이터를 SharedPreferences에 JSON으로 저장하는 캐시.
+/// 페스티벌 관련 데이터를 SharedPreferences에 JSON으로 저장하는 캐시.
 /// 유효 시간: 24시간. 만료된 경우 null 반환.
 class FestivalCacheService {
   static const _ttlHours = 24;
@@ -21,9 +23,12 @@ class FestivalCacheService {
 
   // ── 유효성 ──────────────────────────────────────────────────────
 
-  Future<bool> isStale(int festivalId) async {
+  Future<bool> isStale(int festivalId) async =>
+      _isKeyStale('${_p}_time_$festivalId');
+
+  Future<bool> _isKeyStale(String tsKey) async {
     final sp = await _sp;
-    final ts = sp.getInt('${_p}_time_$festivalId');
+    final ts = sp.getInt(tsKey);
     if (ts == null) return true;
     return DateTime.now()
             .difference(DateTime.fromMillisecondsSinceEpoch(ts))
@@ -31,18 +36,17 @@ class FestivalCacheService {
         _ttlHours;
   }
 
-  Future<void> _touch(int festivalId) async {
+  Future<void> _touch(String tsKey) async {
     final sp = await _sp;
-    await sp.setInt(
-        '${_p}_time_$festivalId', DateTime.now().millisecondsSinceEpoch);
+    await sp.setInt(tsKey, DateTime.now().millisecondsSinceEpoch);
   }
 
-  // ── festival ────────────────────────────────────────────────────
+  // ── festival detail ──────────────────────────────────────────────
 
   Future<void> saveFestival(int id, FestivalModel model) async {
     final sp = await _sp;
     await sp.setString('${_p}_festival_$id', jsonEncode(model.toJson()));
-    await _touch(id);
+    await _touch('${_p}_time_$id');
   }
 
   Future<FestivalModel?> loadFestival(int id) async {
@@ -147,6 +151,76 @@ class FestivalCacheService {
           .toList();
     } catch (e) {
       debugPrint('[Cache] booths 로드 실패: $e');
+      return null;
+    }
+  }
+
+  // ── festival preview list (탭2 목록, 필터 없는 첫 페이지) ──────────
+
+  Future<void> savePreviewList(List<FestivalPreview> items) async {
+    final sp = await _sp;
+    await sp.setString(
+        '${_p}_previews', jsonEncode(items.map((e) => e.toJson()).toList()));
+    await _touch('${_p}_previews_time');
+  }
+
+  Future<List<FestivalPreview>?> loadPreviewList() async {
+    if (await _isKeyStale('${_p}_previews_time')) return null;
+    final sp = await _sp;
+    final s = sp.getString('${_p}_previews');
+    if (s == null) return null;
+    try {
+      return (jsonDecode(s) as List)
+          .map((e) => FestivalPreview.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      debugPrint('[Cache] previews 로드 실패: $e');
+      return null;
+    }
+  }
+
+  // ── home screen data (좋아요 페스티벌 + 팔로우 아티스트) ──────────
+
+  Future<void> saveHomeFestivals(int userId, List<FestivalModel> items) async {
+    final sp = await _sp;
+    await sp.setString('${_p}_home_festivals_$userId',
+        jsonEncode(items.map((e) => e.toJson()).toList()));
+    await _touch('${_p}_home_time_$userId');
+  }
+
+  Future<List<FestivalModel>?> loadHomeFestivals(int userId) async {
+    if (await _isKeyStale('${_p}_home_time_$userId')) return null;
+    final sp = await _sp;
+    final s = sp.getString('${_p}_home_festivals_$userId');
+    if (s == null) return null;
+    try {
+      return (jsonDecode(s) as List)
+          .map((e) => FestivalModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      debugPrint('[Cache] home festivals 로드 실패: $e');
+      return null;
+    }
+  }
+
+  Future<void> saveHomeArtists(int userId, List<FollowedArtist> items) async {
+    final sp = await _sp;
+    await sp.setString('${_p}_home_artists_$userId',
+        jsonEncode(items.map((e) => e.toJson()).toList()));
+    // TTL은 saveFestivals와 공유 (홈 데이터는 함께 저장됨)
+  }
+
+  Future<List<FollowedArtist>?> loadHomeArtists(int userId) async {
+    if (await _isKeyStale('${_p}_home_time_$userId')) return null;
+    final sp = await _sp;
+    final s = sp.getString('${_p}_home_artists_$userId');
+    if (s == null) return null;
+    try {
+      return (jsonDecode(s) as List)
+          .map((e) => FollowedArtist.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      debugPrint('[Cache] home artists 로드 실패: $e');
       return null;
     }
   }

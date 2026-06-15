@@ -4,6 +4,7 @@ import 'package:feple/model/favorite_board.dart';
 import 'package:feple/model/followed_artist.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/service/cache_prefetch_service.dart';
+import 'package:feple/service/festival_cache_service.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -61,13 +62,31 @@ class HomeStateNotifier extends SafeChangeNotifier {
       festivals = fetchedFestivals;
       boards = _buildBoards(fetchedArtists, fetchedFestivals);
       _loadedAt = DateTime.now();
+      final cache = sl<FestivalCacheService>();
+      // ignore: unawaited_futures
+      cache.saveHomeFestivals(id, fetchedFestivals);
+      // ignore: unawaited_futures
+      cache.saveHomeArtists(id, fetchedArtists);
       // ignore: unawaited_futures
       sl<CachePrefetchService>().prefetchForFestivals(fetchedFestivals);
     } catch (e) {
       if (userId != id) return;
       debugPrint('[Home] 데이터 로드 실패: $e');
-      // 기존 데이터가 있으면 유지, 없을 때만 에러 상태 표시
-      if (artists == null) hasError = true;
+      if (artists == null) {
+        // 네트워크 오류 시 캐시 폴백
+        final cache = sl<FestivalCacheService>();
+        final (cachedFestivals, cachedArtists) = await (
+          cache.loadHomeFestivals(id),
+          cache.loadHomeArtists(id),
+        ).wait;
+        if (cachedFestivals != null || cachedArtists != null) {
+          festivals = cachedFestivals ?? [];
+          artists = cachedArtists ?? [];
+          boards = _buildBoards(artists!, festivals!);
+        } else {
+          hasError = true;
+        }
+      }
     }
     safeNotify();
   }

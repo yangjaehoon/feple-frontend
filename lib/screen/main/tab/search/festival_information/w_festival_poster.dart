@@ -383,6 +383,7 @@ class _FestivalPosterState extends State<FestivalPoster> {
 
   Widget _buildActionButtons(AbstractThemeColors colors) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         FestivalActionButton(
           onTap: () => _withHaptic(_notifier.toggleLike),
@@ -393,13 +394,9 @@ class _FestivalPosterState extends State<FestivalPoster> {
               : Colors.white.withValues(alpha: 0.15),
           label: 'action_like'.tr(),
         ),
-        const SizedBox(width: 8),
         FestivalActionButton(onTap: _shareFestival, icon: Icons.share_outlined, label: 'action_share'.tr()),
-        const SizedBox(width: 8),
         FestivalActionButton(onTap: _showWeather, icon: Icons.cloud_outlined, label: 'action_weather'.tr()),
-        const SizedBox(width: 8),
         FestivalActionButton(onTap: _openKakaoMap, icon: Icons.location_on_rounded, label: 'action_map'.tr()),
-        const SizedBox(width: 8),
         FestivalActionButton(
           onTap: _certButtonTap(),
           icon: _certButtonIcon(),

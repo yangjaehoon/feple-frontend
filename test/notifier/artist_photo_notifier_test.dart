@@ -16,11 +16,13 @@ ArtistPhotoResponse _photo({
       photoId: id,
       url: 'https://example.com/$id.jpg',
       uploaderUserId: 10,
+      uploaderNickname: 'user',
       createdAt: DateTime(2025),
       title: 'title $id',
       description: 'desc $id',
       likeCount: likeCount,
       isLiked: isLiked,
+      isAnonymous: false,
     );
 
 void main() {

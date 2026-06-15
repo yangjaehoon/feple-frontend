@@ -115,17 +115,45 @@ class _FestivalSetlistState extends State<FestivalSetlist> {
     );
   }
 
+  static const int _maxVisible = 5;
+
   Widget _buildList(List<FestivalSetlistEntry> entries, AbstractThemeColors colors) {
+    final hasMore = entries.length > _maxVisible;
+    final visible = hasMore ? entries.sublist(0, _maxVisible) : entries;
     return Column(
-      children: entries.asMap().entries.map((e) {
-        final index = e.key;
-        final entry = e.value;
-        final isLast = index == entries.length - 1;
-        return _ArtistCompactRow(
-          entry: entry,
-          isLast: isLast,
-        );
-      }).toList(),
+      children: [
+        ...visible.asMap().entries.map((e) {
+          final index = e.key;
+          final entry = e.value;
+          final isLast = index == visible.length - 1 && !hasMore;
+          return _ArtistCompactRow(entry: entry, isLast: isLast);
+        }),
+        if (hasMore) _buildMoreButton(colors),
+      ],
+    );
+  }
+
+  Widget _buildMoreButton(AbstractThemeColors colors) {
+    return InkWell(
+      onTap: _openFullPage,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'see_more'.tr(),
+              style: TextStyle(
+                fontSize: AppDimens.fontSizeSm,
+                fontWeight: FontWeight.w600,
+                color: colors.activate,
+              ),
+            ),
+            const SizedBox(width: 2),
+            Icon(Icons.keyboard_arrow_down_rounded, size: 18, color: colors.activate),
+          ],
+        ),
+      ),
     );
   }
 

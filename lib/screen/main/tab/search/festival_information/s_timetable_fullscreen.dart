@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/common/widget/w_date_tab_bar.dart';
 import 'package:feple/common/constant/timetable_colors.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_entry_dialog.dart';
@@ -152,20 +151,6 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
               top: false,
               child: Column(
                 children: [
-                  if (widget.dates.length > 1)
-                    DateTabBar(
-                      dates: widget.dates,
-                      selectedDate: _selectedDate,
-                      onDateSelected: (d) {
-                        if (d == null) return;
-                        setState(() {
-                          _selectedDate = d;
-                          _range = computeTimetableRange(widget.entries, _selectedDate);
-                        });
-                      },
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                      labelBuilder: (d) => d,
-                    ),
                   Expanded(child: _buildGridArea(colors)),
                   if (_range.stages.isNotEmpty) _buildHint(colors),
                 ],
@@ -189,19 +174,7 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
               icon: Icon(Icons.close_rounded, color: colors.textTitle),
               onPressed: () => Navigator.pop(context),
             ),
-            Expanded(
-              child: Row(
-                children: [
-                  Icon(Icons.schedule_rounded, size: 15, color: colors.activate),
-                  const SizedBox(width: 8),
-                  Text(
-                    'timetable'.tr(),
-                    style: TextStyle(
-                        fontSize: AppDimens.fontSizeXl, fontWeight: FontWeight.w700, color: colors.textTitle),
-                  ),
-                ],
-              ),
-            ),
+            Expanded(child: _buildAppBarCenter(colors)),
             if (_range.stages.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(right: 8),
@@ -217,6 +190,57 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
               ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildAppBarCenter(AbstractThemeColors colors) {
+    if (widget.dates.length <= 1) {
+      return Row(
+        children: [
+          Icon(Icons.schedule_rounded, size: 15, color: colors.activate),
+          const SizedBox(width: 8),
+          Text(
+            'timetable'.tr(),
+            style: TextStyle(
+                fontSize: AppDimens.fontSizeXl, fontWeight: FontWeight.w700, color: colors.textTitle),
+          ),
+        ],
+      );
+    }
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Row(
+        children: widget.dates.map((date) {
+          final selected = _selectedDate == date;
+          return GestureDetector(
+            onTap: () => setState(() {
+              _selectedDate = date;
+              _range = computeTimetableRange(widget.entries, _selectedDate);
+            }),
+            child: AnimatedContainer(
+              duration: AppDimens.animXFast,
+              margin: const EdgeInsets.only(right: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: selected ? colors.activate : Colors.transparent,
+                borderRadius: BorderRadius.circular(AppDimens.cardRadius),
+                border: Border.all(
+                  color: selected ? colors.activate : colors.listDivider,
+                ),
+              ),
+              child: Text(
+                date,
+                style: TextStyle(
+                  fontSize: AppDimens.fontSizeXs,
+                  fontWeight: FontWeight.w600,
+                  color: selected ? Colors.white : colors.textTitle,
+                ),
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }

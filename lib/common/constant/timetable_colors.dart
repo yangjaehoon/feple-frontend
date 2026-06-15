@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 
 const List<Color> kStageColors = [
   AppColors.skyBlue,
-  AppColors.sunnyYellow,
   AppColors.kawaiiPink,
   AppColors.kawaiiPurple,
   AppColors.kawaiiMint,
   AppColors.accentPink,
   AppColors.accentPurple,
   AppColors.skyBlueLight,
+  AppColors.sunnyYellow,
 ];
 
 const List<Color> kUserScheduleColors = [

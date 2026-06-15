@@ -13,6 +13,7 @@ import 'package:feple/model/artist_photo_response.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'artist_photo_notifier.dart';
 import 'w_edit_photo_sheet.dart';
+import 'w_photo_fullscreen_viewer.dart';
 
 class ImgCollectionWidget extends StatefulWidget {
   const ImgCollectionWidget(
@@ -179,8 +180,22 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
     );
   }
 
+  void _openFullscreen(ArtistPhotoResponse photo) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PhotoFullscreenViewer(
+          photo: photo,
+          onLike: () => _notifier.toggleLike(photo.photoId),
+        ),
+        fullscreenDialog: true,
+      ),
+    );
+  }
+
   Widget _buildPhoto(ArtistPhotoResponse photo, AbstractThemeColors colors, double imageSize) {
     return GestureDetector(
+      onTap: () => _openFullscreen(photo),
       onDoubleTap: () => _notifier.toggleLike(photo.photoId),
       child: ClipRRect(
         borderRadius: const BorderRadius.only(

@@ -255,8 +255,8 @@ class _OfficialCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final nameColor = followed ? Colors.white : color;
     final subColor = followed ? Colors.white70 : color.withValues(alpha: 0.7);
-    final subStyle = TextStyle(color: subColor, fontSize: 9, height: 1.2);
 
     return Container(
       clipBehavior: Clip.hardEdge,
@@ -270,35 +270,38 @@ class _OfficialCard extends StatelessWidget {
             ? [BoxShadow(color: color.withValues(alpha: 0.3), blurRadius: 4, offset: const Offset(0, 2))]
             : null,
       ),
-      // border(1.5×2=3) + padding(2×2=4) = 7px overhead for non-followed cards.
-      // Name row: fontSize 11 × height 1.2 = 13.2px → need cardH > 13.2+7 = 21 (non-followed).
-      // Time row: 13.2 + 10.8 = 24px → need cardH > 24+7 = 31, use 36 with margin.
-      padding: EdgeInsets.symmetric(horizontal: 6, vertical: cardH < 36 ? 2 : 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (cardH > 22)
-            Row(
+      // border(1.5×2=3) + padding(2×2=4) = 7px overhead; single text row ≈ 11px → show if cardH > 18
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      child: cardH > 18
+          ? Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                Text(
+                  entry.timeRange,
+                  style: TextStyle(color: subColor, fontSize: 9, height: 1.2),
+                ),
+                const SizedBox(width: 4),
                 Expanded(
                   child: Text(
                     entry.artistName,
                     style: TextStyle(
-                        color: followed ? Colors.white : color,
-                        fontSize: AppDimens.fontSizeXxs,
-                        fontWeight: FontWeight.w700,
-                        height: 1.2),
+                      color: nameColor,
+                      fontSize: AppDimens.fontSizeXxs,
+                      fontWeight: FontWeight.w700,
+                      height: 1.2,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (cardH > 36) Text('${entry.durationMinutes}분', style: subStyle),
+                const SizedBox(width: 4),
+                Text(
+                  '${entry.durationMinutes}분',
+                  style: TextStyle(color: subColor, fontSize: 9, height: 1.2),
+                ),
               ],
-            ),
-          if (cardH > 36) Text(entry.timeRange, style: subStyle),
-        ],
-      ),
+            )
+          : const SizedBox.shrink(),
     );
   }
 }

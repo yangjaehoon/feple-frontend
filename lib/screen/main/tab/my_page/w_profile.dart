@@ -42,7 +42,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<UserProvider>().user;
+    final user = context.select<UserProvider, User?>((p) => p.user);
     final colors = context.appColors;
 
     if (_hasError && user == null) {

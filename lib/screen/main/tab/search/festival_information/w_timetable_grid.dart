@@ -3,6 +3,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/constant/timetable_colors.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:flutter/material.dart';
+import 'w_timetable_stage_cell.dart';
 
 class TimetableScrollControllers {
   final ScrollController hHeader;
@@ -69,47 +70,27 @@ class TimetableGrid extends StatelessWidget {
 
     return Column(
       children: [
-        _buildStageHeader(colors, stageW),
+        _buildStageHeader(stageW),
         _buildBody(colors, stageW, totalW, totalH),
       ],
     );
   }
 
-  Widget _buildStageHeader(AbstractThemeColors colors, double stageW) {
+  Widget _buildStageHeader(double stageW) {
     return Row(
       children: [
-        Container(
-          width: _timeColW,
-          height: _stageHeaderH,
-          decoration: BoxDecoration(
-            color: colors.surface,
-            border: Border(
-              bottom: BorderSide(color: colors.listDivider),
-              right: BorderSide(color: colors.listDivider),
-            ),
-          ),
-        ),
+        TimetableCornerCell(width: _timeColW, height: _stageHeaderH),
         Expanded(
           child: SingleChildScrollView(
             controller: scrollControllers.hHeader,
             scrollDirection: Axis.horizontal,
             physics: const NeverScrollableScrollPhysics(),
             child: Row(
-              children: stages.map((stage) => Container(
+              children: stages.map((stage) => TimetableStageCell(
+                stage: stage,
+                color: _colorFor(stage),
                 width: stageW,
                 height: _stageHeaderH,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: _colorFor(stage).withValues(alpha: 0.12),
-                  border: Border(
-                    bottom: BorderSide(color: colors.listDivider),
-                    right: BorderSide(color: colors.listDivider, width: 0.5),
-                  ),
-                ),
-                child: Text(
-                  stage,
-                  style: TextStyle(fontSize: AppDimens.fontSizeXs, fontWeight: FontWeight.w700, color: _colorFor(stage)),
-                ),
               )).toList(),
             ),
           ),

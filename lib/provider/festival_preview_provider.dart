@@ -13,7 +13,9 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
   final FestivalService _service;
 
   final List<FestivalPreview> _items = [];
-  List<FestivalPreview> get items => List.unmodifiable(_items);
+  List<FestivalPreview> _cachedItems = const [];
+  // context.select 비교가 참조 동등성을 사용하므로, items 내용이 바뀔 때만 새 참조 생성
+  List<FestivalPreview> get items => _cachedItems;
 
   Set<String> _selectedGenres = {};
   Set<String> _selectedRegions = {};
@@ -61,6 +63,7 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
   // 필터 변경 시: 즉시 목록 비우고 재요청
   void _clearAndFetch() {
     _items.clear();
+    _cachedItems = const [];
     _page = 0;
     _hasMore = true;
     _error = null;
@@ -107,6 +110,7 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
       // page 0이면 기존 데이터를 새 데이터로 교체
       if (wasFirstPage) _items.clear();
       _items.addAll(newItems);
+      _cachedItems = List.unmodifiable(_items);
       if (newItems.length < _size) _hasMore = false;
       _page += 1;
       if (wasFirstPage) _loadedAt = DateTime.now();

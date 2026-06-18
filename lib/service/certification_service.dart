@@ -24,7 +24,7 @@ class CertificationService {
 
   /// 내 인증 목록 조회
   Future<List<CertificationModel>> getMyCertifications() async {
-    final response = await DioClient.dio.get('/certifications/my');
+    final response = await DioClient.dio.get('/certifications');
     return (response.data as List)
         .cast<Map<String, dynamic>>()
         .map(CertificationModel.fromJson)
@@ -33,14 +33,14 @@ class CertificationService {
 
   /// 승인된 페스티벌 ID 목록 조회
   Future<List<int>> getApprovedFestivalIds() async {
-    final response = await DioClient.dio.get('/certifications/my/approved-festivals');
+    final response = await DioClient.dio.get('/certifications/approved-festivals');
     return (response.data as List).cast<int>();
   }
 
   /// 특정 페스티벌의 인증 상태 단건 조회 (NONE / PENDING / APPROVED / REJECTED)
   Future<CertStatus?> getCertState(int festivalId) async {
     final response = await DioClient.dio.get(
-      '/certifications/my/cert-state',
+      '/certifications/cert-state',
       queryParameters: {'festivalId': festivalId},
     );
     final state = (response.data as Map<String, dynamic>)['certState'] as String?;

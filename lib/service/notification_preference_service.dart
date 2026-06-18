@@ -7,16 +7,14 @@ class NotificationPreferenceService {
     return NotificationPreferenceModel.fromJson(response.data as Map<String, dynamic>);
   }
 
-  Future<NotificationPreferenceModel> updatePreferences(NotificationPreferenceModel prefs) async {
-    final response = await DioClient.dio.put(
-      '/users/me/notification-preferences',
-      data: {
-        'certEnabled': prefs.certEnabled,
-        'commentEnabled': prefs.commentEnabled,
-        'festivalEnabled': prefs.festivalEnabled,
-        'songRequestEnabled': prefs.songRequestEnabled,
-      },
-    );
-    return NotificationPreferenceModel.fromJson(response.data as Map<String, dynamic>);
-  }
+  Future<void> updatePreferences(NotificationPreferenceModel prefs) =>
+      DioClient.dio.put(
+        '/users/me/notification-preferences',
+        data: {
+          'certEnabled': prefs.certEnabled,
+          'commentEnabled': prefs.commentEnabled,
+          'festivalEnabled': prefs.festivalEnabled,
+          'songRequestEnabled': prefs.songRequestEnabled,
+        },
+      );
 }

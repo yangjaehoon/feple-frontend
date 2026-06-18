@@ -128,17 +128,18 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final previewProvider = Provider.of<FestivalPreviewProvider>(context);
+    final isLoadingEmpty = context.select<FestivalPreviewProvider, bool>(
+        (p) => p.isLoading && p.items.isEmpty);
+    final isErrorEmpty = context.select<FestivalPreviewProvider, bool>(
+        (p) => p.error != null && p.items.isEmpty);
+    final allItems = context.select<FestivalPreviewProvider, List<FestivalPreview>>(
+        (p) => p.items);
     final colors = context.appColors;
 
-    if (previewProvider.isLoading && previewProvider.items.isEmpty) {
-      return _buildSkeleton();
-    }
-    if (previewProvider.error != null && previewProvider.items.isEmpty) {
-      return _buildError(previewProvider);
-    }
+    if (isLoadingEmpty) return _buildSkeleton();
+    if (isErrorEmpty) return _buildError(context);
 
-    final items = previewProvider.items.where((f) => !f.isEnded).toList();
+    final items = allItems.where((f) => !f.isEnded).toList();
     if (items.isEmpty) return _buildEmpty(colors);
 
     final safeCurrentPage = _currentPage.clamp(0, items.length - 1);
@@ -182,13 +183,13 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
     );
   }
 
-  Widget _buildError(FestivalPreviewProvider provider) {
+  Widget _buildError(BuildContext context) {
     return SizedBox(
       height: 160,
       child: Center(
         child: ErrorState(
           message: 'err_fetch_data'.tr(),
-          onRetry: () => provider.refresh(),
+          onRetry: () => context.read<FestivalPreviewProvider>().refresh(),
         ),
       ),
     );

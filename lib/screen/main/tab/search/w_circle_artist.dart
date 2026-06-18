@@ -22,10 +22,10 @@ class CircleArtistWidget extends StatefulWidget {
   const CircleArtistWidget({super.key});
 
   @override
-  State<CircleArtistWidget> createState() => _CircleArtistWidgetState();
+  State<CircleArtistWidget> createState() => CircleArtistWidgetState();
 }
 
-class _CircleArtistWidgetState extends State<CircleArtistWidget> {
+class CircleArtistWidgetState extends State<CircleArtistWidget> {
   late Future<List<Artist>> _artistsFuture;
   String? _selectedGenre;
   Set<int> _followedIds = {};
@@ -35,6 +35,11 @@ class _CircleArtistWidgetState extends State<CircleArtistWidget> {
     super.initState();
     _artistsFuture = sl<ArtistService>().fetchArtists();
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadFollowedIds());
+  }
+
+  void refresh() {
+    setState(() => _artistsFuture = sl<ArtistService>().fetchArtists());
+    _loadFollowedIds();
   }
 
   Future<void> _loadFollowedIds() async {

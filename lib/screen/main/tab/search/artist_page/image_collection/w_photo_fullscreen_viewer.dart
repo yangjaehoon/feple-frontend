@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/model/artist_photo_response.dart';
 import 'package:flutter/material.dart';
@@ -37,8 +36,8 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
     } else {
       final pos = details.localPosition;
       _transformController.value = Matrix4.identity()
-        ..translate(-pos.dx * 1.5, -pos.dy * 1.5)
-        ..scale(2.5);
+        ..translateByDouble(-pos.dx * 1.5, -pos.dy * 1.5, 0.0, 0.0)
+        ..scaleByDouble(2.5, 2.5, 2.5, 1.0);
     }
   }
 

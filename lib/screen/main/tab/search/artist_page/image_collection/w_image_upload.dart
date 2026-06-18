@@ -208,7 +208,7 @@ class _ImgUploadState extends State<ImgUpload> {
       contentPadding: EdgeInsets.zero,
       value: _isAnonymous,
       onChanged: (v) => setState(() => _isAnonymous = v),
-      activeColor: colors.activate,
+      activeThumbColor: colors.activate,
       title: Text(
         'post_anonymous'.tr(),
         style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textTitle),

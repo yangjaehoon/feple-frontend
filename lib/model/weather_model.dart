@@ -41,17 +41,4 @@ class WeatherModel {
     };
   }
 
-  String get conditionIcon {
-    return switch (ptyCode) {
-      '1' => '🌧',
-      '2' => '🌨',
-      '3' => '❄️',
-      '4' => '🌦',
-      _ => switch (skyCode) {
-        '3' => '🌤',
-        '4' => '☁️',
-        _ => '☀️',
-      },
-    };
-  }
 }

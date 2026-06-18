@@ -89,7 +89,9 @@ class _MyPageListScreenState<T> extends State<MyPageListScreen<T>> {
     try {
       final data = await widget.loader();
       if (mounted) setState(() { _items = data; _hasError = false; });
-    } catch (_) {}
+    } catch (_) {
+      if (mounted) setState(() => _hasError = true);
+    }
   }
 
   @override

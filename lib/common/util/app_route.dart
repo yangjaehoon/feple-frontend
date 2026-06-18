@@ -1,3 +1,4 @@
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 /// 오른쪽에서 슬라이드 인 하는 페이지 전환 라우트.
@@ -9,8 +10,8 @@ class SlideRoute<T> extends PageRouteBuilder<T> {
   SlideRoute({required this.builder, super.settings})
       : super(
           pageBuilder: (context, _, __) => builder(context),
-          transitionDuration: const Duration(milliseconds: 280),
-          reverseTransitionDuration: const Duration(milliseconds: 240),
+          transitionDuration: AppDimens.animSlideIn,
+          reverseTransitionDuration: AppDimens.animSlideOut,
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             final curved = CurvedAnimation(
               parent: animation,

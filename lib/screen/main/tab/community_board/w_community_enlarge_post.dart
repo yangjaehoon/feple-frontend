@@ -4,6 +4,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
+import 'package:feple/common/util/popup_menu_item_builder.dart';
 import 'package:feple/common/widget/w_inline_badge.dart';
 import 'package:feple/common/widget/w_profile_avatar.dart';
 import 'package:feple/common/widget/w_write_post_screen.dart';
@@ -178,32 +179,20 @@ class _EnlargePostState extends State<EnlargePost> {
 
   List<PopupMenuEntry<String>> _buildMenuItems(
       bool isOwn, AbstractThemeColors colors) {
-    final normalStyle = TextStyle(
-        fontSize: AppDimens.fontSizeMd,
-        color: colors.textTitle,
-        fontWeight: FontWeight.w500);
-    final dangerStyle = const TextStyle(
-        fontSize: AppDimens.fontSizeMd,
-        color: AppColors.errorRed,
-        fontWeight: FontWeight.w500);
-
     PopupMenuItem<String> item(String value, IconData icon, String label,
-        {bool danger = false}) {
-      return PopupMenuItem(
-        value: value,
-        height: 48,
-        child: Row(children: [
-          Icon(icon,
-              size: 19,
-              color: danger ? AppColors.errorRed : colors.textTitle),
-          const SizedBox(width: 12),
-          Expanded(
-              child: Text(label,
-                  style: danger ? dangerStyle : normalStyle,
-                  overflow: TextOverflow.ellipsis)),
-        ]),
-      );
-    }
+            {bool danger = false}) =>
+        buildPopupMenuItem(
+          value: value,
+          icon: icon,
+          label: label,
+          colors: colors,
+          danger: danger,
+          height: 48,
+          iconSize: 19,
+          spacing: 12,
+          fontSize: AppDimens.fontSizeMd,
+          fontWeight: FontWeight.w500,
+        );
 
     if (isOwn) {
       return [

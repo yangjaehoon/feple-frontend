@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
+import 'package:feple/common/util/popup_menu_item_builder.dart';
 import 'package:feple/common/widget/w_inline_badge.dart';
 import 'package:feple/common/widget/w_profile_avatar.dart';
 import 'package:feple/model/comment_detail.dart';
@@ -229,24 +230,21 @@ class _CommentTile extends StatelessWidget {
           }
         },
         itemBuilder: (_) => [
-          PopupMenuItem(
+          buildPopupMenuItem(
             value: 'edit',
-            height: 44,
-            child: Row(children: [
-              Icon(Icons.edit_outlined, size: 16, color: colors.textTitle),
-              const SizedBox(width: 10),
-              Expanded(child: Text('edit_comment'.tr(), style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textTitle), overflow: TextOverflow.ellipsis)),
-            ]),
+            icon: Icons.edit_outlined,
+            label: 'edit_comment'.tr(),
+            colors: colors,
+            fontSize: AppDimens.fontSizeSm,
           ),
-          PopupMenuDivider(height: 1),
-          PopupMenuItem(
+          const PopupMenuDivider(height: 1),
+          buildPopupMenuItem(
             value: 'delete',
-            height: 44,
-            child: Row(children: [
-              const Icon(Icons.delete_outline_rounded, size: 16, color: AppColors.errorRed),
-              const SizedBox(width: 10),
-              Expanded(child: Text('delete_comment'.tr(), style: const TextStyle(color: AppColors.errorRed, fontSize: AppDimens.fontSizeSm), overflow: TextOverflow.ellipsis)),
-            ]),
+            icon: Icons.delete_outline_rounded,
+            label: 'delete_comment'.tr(),
+            colors: colors,
+            danger: true,
+            fontSize: AppDimens.fontSizeSm,
           ),
         ],
       );
@@ -263,14 +261,13 @@ class _CommentTile extends StatelessWidget {
           if (value == 'report') onReport!();
         },
         itemBuilder: (_) => [
-          PopupMenuItem(
+          buildPopupMenuItem(
             value: 'report',
-            height: 44,
-            child: Row(children: [
-              const Icon(Icons.flag_outlined, size: 16, color: AppColors.errorRed),
-              const SizedBox(width: 10),
-              Expanded(child: Text('report_comment'.tr(), style: const TextStyle(color: AppColors.errorRed, fontSize: AppDimens.fontSizeSm), overflow: TextOverflow.ellipsis)),
-            ]),
+            icon: Icons.flag_outlined,
+            label: 'report_comment'.tr(),
+            colors: colors,
+            danger: true,
+            fontSize: AppDimens.fontSizeSm,
           ),
         ],
       );

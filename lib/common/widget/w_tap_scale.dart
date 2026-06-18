@@ -1,3 +1,4 @@
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -14,7 +15,7 @@ class TapScale extends StatefulWidget {
     required this.child,
     this.onTap,
     this.scale = 0.95,
-    this.duration = const Duration(milliseconds: 100),
+    this.duration = AppDimens.animTapFeedback,
   });
 
   @override

@@ -14,11 +14,7 @@ extension SnackbarContextExtension on BuildContext {
   }
 
   /// 에러 스낵바 (빨강)
-  void showErrorSnackbar(
-    String message, {
-    @Deprecated('Use showErrorSnackbar without bgColor') Color bgColor = AppColors.salmon,
-    double bottomMargin = 0,
-  }) {
+  void showErrorSnackbar(String message) {
     _show(this, message, _SnackType.error);
   }
 
@@ -63,7 +59,7 @@ void _show(
     behavior: SnackBarBehavior.floating,
     backgroundColor: Colors.transparent,
     margin: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-    duration: const Duration(milliseconds: 2800),
+    duration: AppDimens.animSnackbar,
     content: Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
       decoration: BoxDecoration(

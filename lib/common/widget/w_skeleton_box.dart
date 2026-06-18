@@ -1,3 +1,4 @@
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 /// 로딩 중 콘텐츠 모양을 흉내낸 shimmer 애니메이션 박스.
@@ -28,7 +29,7 @@ class _SkeletonBoxState extends State<SkeletonBox>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: AppDimens.animSkeleton,
     )..repeat();
     _shimmer = Tween<double>(begin: -1.5, end: 1.5).animate(_controller);
   }

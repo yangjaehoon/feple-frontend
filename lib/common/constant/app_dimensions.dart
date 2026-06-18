@@ -59,12 +59,17 @@ class AppDimens {
   static const double fontSizeTitle = 20.0;
 
   // ── Animation Duration ──
+  static const Duration animXFast = Duration(milliseconds: 150);
+  static const Duration animTapFeedback = Duration(milliseconds: 100);
   static const Duration animFast = Duration(milliseconds: 200);
   static const Duration animQuick = Duration(milliseconds: 250);
   static const Duration animNormal = Duration(milliseconds: 300);
   static const Duration animSlow = Duration(milliseconds: 350);
+  static const Duration animRefresh = Duration(milliseconds: 400);
   static const Duration animVerySlow = Duration(milliseconds: 500);
   static const Duration animSuccessDelay = Duration(milliseconds: 700);
-  static const Duration animRefresh = Duration(milliseconds: 400);
-  static const Duration animXFast = Duration(milliseconds: 150);
+  static const Duration animSkeleton = Duration(milliseconds: 1200);
+  static const Duration animSnackbar = Duration(milliseconds: 2800);
+  static const Duration animSlideIn = Duration(milliseconds: 280);
+  static const Duration animSlideOut = Duration(milliseconds: 240);
 }

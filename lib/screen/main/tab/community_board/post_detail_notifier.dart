@@ -14,6 +14,9 @@ class PostDetailNotifier extends SafeChangeNotifier {
   final _commentService = sl<CommentService>();
   final _scrapService = sl<ScrapService>();
 
+  // 댓글 내용이 바뀔 때만 증가 — UI에서 CommentSection만 구독할 수 있도록
+  final ValueNotifier<int> commentsVersion = ValueNotifier(0);
+
   List<CommentDetail> comments = [];
   bool liked = false;
   bool scraped = false;
@@ -75,6 +78,12 @@ class PostDetailNotifier extends SafeChangeNotifier {
     viewCount = initialViewCount;
   }
 
+  @override
+  void dispose() {
+    commentsVersion.dispose();
+    super.dispose();
+  }
+
   Future<void> init() async {
     await Future.wait([loadPostState(), fetchComments(), _incrementView()]);
   }
@@ -109,6 +118,7 @@ class PostDetailNotifier extends SafeChangeNotifier {
   Future<void> fetchComments() async {
     try {
       comments = await _commentService.fetchPostComments(postId);
+      commentsVersion.value++;
       safeNotify();
     } catch (e) {
       debugPrint('fetchComments error: $e');
@@ -161,15 +171,18 @@ class PostDetailNotifier extends SafeChangeNotifier {
     if (index == -1) return;
     final originalComment = comments[index];
     _replaceCommentAt(index, originalComment.copyWith(content: newContent, updatedAt: DateTime.now()));
+    commentsVersion.value++;
     safeNotify();
     try {
       await _commentService.updateComment(commentId, newContent);
     } on BannedWordException {
       _replaceCommentAt(index, originalComment);
+      commentsVersion.value++;
       commentError = 'comment_banned_word';
       safeNotify();
     } catch (e) {
       _replaceCommentAt(index, originalComment);
+      commentsVersion.value++;
       safeNotify();
       debugPrint('updateComment error: $e');
       onError?.call('comment_update_failed');
@@ -181,11 +194,13 @@ class PostDetailNotifier extends SafeChangeNotifier {
     comments = comments
         .where((c) => c.id != commentId && c.parentId != commentId)
         .toList();
+    commentsVersion.value++;
     safeNotify();
     try {
       await _commentService.deleteComment(commentId);
     } catch (e) {
       comments = originalComments;
+      commentsVersion.value++;
       safeNotify();
       debugPrint('deleteComment error: $e');
       onError?.call('comment_delete_failed');
@@ -203,6 +218,7 @@ class PostDetailNotifier extends SafeChangeNotifier {
       liked: !originalComment.liked,
       likeCount: originalComment.likeCount + (!originalComment.liked ? 1 : -1),
     ));
+    commentsVersion.value++;
     safeNotify();
     try {
       final result = await _commentService.toggleCommentLike(commentId);
@@ -213,12 +229,14 @@ class PostDetailNotifier extends SafeChangeNotifier {
           liked: result.liked,
           likeCount: result.likeCount,
         ));
+        commentsVersion.value++;
         safeNotify();
       }
     } catch (e) {
       final commentIndex = comments.indexWhere((c) => c.id == commentId);
       if (commentIndex != -1) {
         _replaceCommentAt(commentIndex, originalComment);
+        commentsVersion.value++;
         safeNotify();
       }
       debugPrint('toggleCommentLike error: $e');

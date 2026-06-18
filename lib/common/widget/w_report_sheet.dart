@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
+import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/service/report_service.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ Future<void> showReportSheet(
   String duplicateErrorKey = 'report_duplicate',
 }) async {
   ReportReason? selected;
+  bool isSubmitting = false;
   final detailController = TextEditingController();
 
   await showAppBottomSheet<void>(
@@ -102,32 +104,28 @@ Future<void> showReportSheet(
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
+                    child: LoadingButton(
+                      label: 'report_submit'.tr(),
+                      isLoading: isSubmitting,
                       onPressed: selected == null
                           ? null
                           : () async {
-                              Navigator.pop(ctx);
+                              setModalState(() => isSubmitting = true);
                               try {
-                                await onSubmit(
-                                    selected!, detailController.text.trim());
-                                if (context.mounted) {
-                                  context.showSuccessSnackbar(
-                                      'report_success'.tr());
-                                }
+                                await onSubmit(selected!, detailController.text.trim());
+                                if (ctx.mounted) Navigator.pop(ctx);
+                                if (context.mounted) context.showSuccessSnackbar('report_success'.tr());
                               } on DioException catch (e) {
                                 debugPrint('[Report] submit failed: $e');
+                                if (ctx.mounted) setModalState(() => isSubmitting = false);
                                 if (!context.mounted) return;
                                 final isConflict = e.response?.statusCode == 409;
-                                context.showErrorSnackbar(
-                                    isConflict ? duplicateErrorKey.tr() : 'report_failed'.tr());
+                                context.showErrorSnackbar(isConflict ? duplicateErrorKey.tr() : 'report_failed'.tr());
                               }
                             },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.errorRed,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.radiusSmall)),
-                      ),
-                      child: Text('report_submit'.tr()),
+                      backgroundColor: AppColors.errorRed,
+                      borderRadius: AppDimens.radiusSmall,
+                      height: 48,
                     ),
                   ),
                 ],

@@ -15,10 +15,10 @@ class ProfileWidget extends StatefulWidget {
   const ProfileWidget({required this.userId, super.key});
 
   @override
-  State<ProfileWidget> createState() => _ProfileWidgetState();
+  State<ProfileWidget> createState() => ProfileWidgetState();
 }
 
-class _ProfileWidgetState extends State<ProfileWidget> {
+class ProfileWidgetState extends State<ProfileWidget> {
   bool _fetched = false;
   bool _hasError = false;
 
@@ -30,6 +30,8 @@ class _ProfileWidgetState extends State<ProfileWidget> {
       _fetchUser();
     }
   }
+
+  void refresh() => _fetchUser();
 
   Future<void> _fetchUser() async {
     setState(() => _hasError = false);

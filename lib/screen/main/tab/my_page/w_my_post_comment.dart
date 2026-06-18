@@ -19,10 +19,10 @@ class MyPostCommentWidget extends StatefulWidget {
   const MyPostCommentWidget({super.key, required this.userId});
 
   @override
-  State<MyPostCommentWidget> createState() => _MyPostCommentWidgetState();
+  State<MyPostCommentWidget> createState() => MyPostCommentWidgetState();
 }
 
-class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
+class MyPostCommentWidgetState extends State<MyPostCommentWidget> {
   late Future<UserStats> _statsFuture;
 
   @override
@@ -34,7 +34,7 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
   Future<UserStats> _fetchStats() =>
       sl<UserActivityService>().fetchStats(widget.userId);
 
-  void _refresh() => setState(() { _statsFuture = _fetchStats(); });
+  void refresh() => setState(() { _statsFuture = _fetchStats(); });
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +53,7 @@ class _MyPostCommentWidgetState extends State<MyPostCommentWidget> {
       return _buildSkeleton();
     }
     if (snapshot.hasError) {
-      return ErrorState(message: 'err_fetch_data'.tr(), onRetry: _refresh);
+      return ErrorState(message: 'err_fetch_data'.tr(), onRetry: refresh);
     }
     final stats = snapshot.data!;
     final colors = context.appColors;

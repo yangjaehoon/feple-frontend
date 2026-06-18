@@ -47,11 +47,11 @@ class Post {
   // JSON에서 객체로 변환
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       title: json['title'] as String,
       content: json['content'] as String,
       boardType: json['boardType'] as String?,
-      likeCount: json['likeCount'] as int,
+      likeCount: (json['likeCount'] as num).toInt(),
       scrapCount: json['scrapCount'] as int? ?? 0,
       commentCount: json['commentCount'] as int? ?? 0,
       nickname: json['nickname'] as String,

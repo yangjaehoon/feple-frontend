@@ -13,7 +13,7 @@ class NotificationService {
 
   Future<NotificationPage> fetchPage(int page) async {
     final response = await DioClient.dio.get(
-      '/notifications/my',
+      '/notifications',
       queryParameters: {'page': page, 'size': _pageSize},
     );
     final data = response.data as Map<String, dynamic>;
@@ -27,7 +27,7 @@ class NotificationService {
   }
 
   Future<int> getUnreadCount() async {
-    final response = await DioClient.dio.get('/notifications/my/unread-count');
+    final response = await DioClient.dio.get('/notifications/unread-count');
     return (response.data['count'] as num?)?.toInt() ?? 0;
   }
 
@@ -36,6 +36,6 @@ class NotificationService {
   }
 
   Future<void> markAllRead() async {
-    await DioClient.dio.patch('/notifications/my/read-all');
+    await DioClient.dio.patch('/notifications/read-all');
   }
 }

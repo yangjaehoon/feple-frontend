@@ -1,8 +1,8 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
-import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_schedule_model.dart';
@@ -108,36 +108,18 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
   }
 
   Widget _buildScheduleList(AbstractThemeColors colors) {
-    return FutureBuilder<List<ArtistScheduleModel>>(
+    return AsyncContentBuilder<List<ArtistScheduleModel>>(
       future: _scheduleFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildScheduleSkeleton();
-        }
-        if (snapshot.hasError) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: ErrorState(
-              message: 'err_fetch_data'.tr(),
-              onRetry: () => setState(() {
-                _scheduleFuture = _fetchSchedule();
-              }),
-            ),
-          );
-        }
-
-        final upcoming = (snapshot.data ?? []).where((item) => !item.isPast).toList();
-
-        if (upcoming.isEmpty) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: EmptyState(
-              icon: Icons.calendar_today_outlined,
-              title: 'no_schedule'.tr(),
-            ),
-          );
-        }
-
+      loadingBuilder: (_) => _buildScheduleSkeleton(),
+      onRetry: () => setState(() => _scheduleFuture = _fetchSchedule()),
+      isEmpty: (data) => data.every((item) => item.isPast),
+      emptyBuilder: (_) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: EmptyState(icon: Icons.calendar_today_outlined, title: 'no_schedule'.tr()),
+      ),
+      useListViewForEmptyState: false,
+      builder: (_, data) {
+        final upcoming = data.where((item) => !item.isPast).toList();
         return ListView.separated(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,

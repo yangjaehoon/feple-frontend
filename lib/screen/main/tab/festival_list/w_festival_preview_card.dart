@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_app_network_image.dart';
+import 'package:feple/common/widget/w_day_badge.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +9,9 @@ import 'package:feple/model/festival_preview.dart';
 
 class FestivalPreviewCard extends StatelessWidget {
   final FestivalPreview festival;
+  final String? heroTag;
 
-  const FestivalPreviewCard({super.key, required this.festival});
+  const FestivalPreviewCard({super.key, required this.festival, this.heroTag});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,7 @@ class FestivalPreviewCard extends StatelessWidget {
         height: 140,
         child: Row(
           children: [
-            _buildPoster(colors),
+            _buildPoster(),
             Expanded(child: _buildInfo(colors, context.locale.languageCode == 'en')),
           ],
         ),
@@ -28,48 +30,47 @@ class FestivalPreviewCard extends StatelessWidget {
     );
   }
 
-  Widget _buildPoster(AbstractThemeColors colors) {
+  Widget _buildPoster() {
+    final inner = ClipRRect(
+      borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+      child: AspectRatio(
+        aspectRatio: 2 / 3,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            AppNetworkImage(
+              imageUrl: festival.posterUrl,
+              fit: BoxFit.fill,
+            ),
+            if (festival.isEnded) ...[
+              Container(color: Colors.black.withValues(alpha: 0.5)),
+              Center(
+                child: Text(
+                  'status_ended'.tr(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: AppDimens.fontSizeSm,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1,
+                  ),
+                ),
+              ),
+            ],
+            if (!festival.isEnded && festival.dDaysUntil != null)
+              Positioned(
+                top: 6,
+                left: 6,
+                child: DayBadge(dDays: festival.dDaysUntil!),
+              ),
+          ],
+        ),
+      ),
+    );
+
     return Container(
       height: 120,
       margin: const EdgeInsets.all(10),
-      child: Hero(
-        tag: 'list_fp_${festival.id}',
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-          child: AspectRatio(
-            aspectRatio: 2 / 3,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                AppNetworkImage(
-                  imageUrl: festival.posterUrl,
-                  fit: BoxFit.fill,
-                ),
-                if (festival.isEnded) ...[
-                  Container(color: Colors.black.withValues(alpha: 0.5)),
-                  Center(
-                    child: Text(
-                      'status_ended'.tr(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: AppDimens.fontSizeSm,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                  ),
-                ],
-                if (!festival.isEnded && festival.dDaysUntil != null)
-                  Positioned(
-                    top: 6,
-                    left: 6,
-                    child: _DayBadge(dDays: festival.dDaysUntil!),
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ),
+      child: heroTag != null ? Hero(tag: heroTag!, child: inner) : inner,
     );
   }
 
@@ -79,23 +80,16 @@ class FestivalPreviewCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Text(
-                  festival.displayTitle(isEnglish),
-                  style: TextStyle(
-                    fontWeight: FontWeight.w800,
-                    fontSize: AppDimens.fontSizeXl,
-                    color: colors.textTitle,
-                    letterSpacing: -0.3,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
+          Text(
+            festival.displayTitle(isEnglish),
+            style: TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: AppDimens.fontSizeXl,
+              color: colors.textTitle,
+              letterSpacing: -0.3,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 6),
           Row(
@@ -132,49 +126,6 @@ class FestivalPreviewCard extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _DayBadge extends StatelessWidget {
-  final int dDays;
-  const _DayBadge({required this.dDays});
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-    final String label;
-    final Color color;
-
-    if (dDays < 0) {
-      label = 'festival_ongoing'.tr();
-      color = colors.statusOngoingColor;
-    } else if (dDays == 0) {
-      label = 'd_day'.tr();
-      color = AppColors.errorRed;
-    } else if (dDays <= 7) {
-      label = 'D-$dDays';
-      color = colors.activate;
-    } else {
-      label = 'D-$dDays';
-      color = colors.textSecondary;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(AppDimens.radiusBadge),
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: AppDimens.fontSizeTiny,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 0.5,
-        ),
       ),
     );
   }

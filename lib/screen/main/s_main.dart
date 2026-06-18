@@ -5,6 +5,7 @@ import 'package:feple/screen/main/tab/tab_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../common/app_events.dart';
+import '../../model/post_changed_event.dart';
 import '../../common/common.dart';
 
 class MainScreen extends StatefulWidget {
@@ -217,7 +218,7 @@ class MainScreenState extends State<MainScreen>
       popAllHistory(navigatorKeys[index]);
     }
     if (tabs[index] == TabItem.communityBoard) {
-      AppEvents.postChanged.value++;
+      AppEvents.postChanged.value = PostChangedEvent.refreshAll();
     }
     _changeTab(index);
   }

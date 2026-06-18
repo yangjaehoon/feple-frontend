@@ -1,4 +1,5 @@
 import 'package:feple/common/app_events.dart';
+import 'package:feple/model/post_changed_event.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_hot_board.dart';
@@ -24,7 +25,7 @@ class CommunityBoardFragment extends StatelessWidget {
             child: RefreshIndicator(
               color: colors.activate,
               onRefresh: () async {
-                AppEvents.postChanged.value++;
+                AppEvents.postChanged.value = PostChangedEvent.refreshAll();
                 await Future.delayed(AppDimens.animRefresh);
               },
               child: SingleChildScrollView(

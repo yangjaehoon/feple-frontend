@@ -4,6 +4,7 @@ import 'package:feple/common/widget/w_selectable_chip.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/constant/festival_constants.dart';
 import 'package:feple/common/data/preference/prefs.dart';
+import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -282,23 +283,17 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
   }
 
   Widget _buildGrid(AbstractThemeColors colors) {
-    return FutureBuilder<List<Artist>>(
+    return AsyncContentBuilder<List<Artist>>(
       future: _artistsFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return _buildSkeleton();
-        }
-        if (snapshot.hasError || snapshot.data == null) {
-          return Center(
-            child: ErrorState(
-              message: 'onboarding_pick_load_failed'.tr(),
-              onRetry: () => setState(() {
-                _artistsFuture = sl<ArtistService>().fetchArtists();
-              }),
-            ),
-          );
-        }
-        final artists = snapshot.data!;
+      loadingBuilder: (_) => _buildSkeleton(),
+      errorBuilder: (_) => Center(
+        child: ErrorState(
+          message: 'onboarding_pick_load_failed'.tr(),
+          onRetry: () => setState(() => _artistsFuture = sl<ArtistService>().fetchArtists()),
+        ),
+      ),
+      isEmpty: (_) => false,
+      builder: (_, artists) {
         final genres = _extractGenres(artists);
         final filtered = _selectedGenre == null
             ? artists

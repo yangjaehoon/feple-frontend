@@ -31,7 +31,7 @@ class ConcertListWidget extends StatelessWidget {
             ),
           );
         },
-        child: FestivalPreviewCard(festival: item),
+        child: FestivalPreviewCard(festival: item, heroTag: 'list_fp_${item.id}'),
       ),
     );
   }

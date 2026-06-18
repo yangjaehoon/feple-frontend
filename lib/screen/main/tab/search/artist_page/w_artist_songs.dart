@@ -2,8 +2,8 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
+import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
-import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/song_model.dart';
@@ -101,37 +101,17 @@ class _ArtistSongsState extends State<ArtistSongs> {
   }
 
   Widget _buildSongList(AbstractThemeColors colors) {
-    return FutureBuilder<List<SongModel>>(
+    return AsyncContentBuilder<List<SongModel>>(
       future: _songsFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildSongSkeleton();
-        }
-        if (snapshot.hasError) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: ErrorState(
-              message: 'err_fetch_data'.tr(),
-              onRetry: () => setState(() {
-                _songsFuture = _fetchSongs();
-              }),
-            ),
-          );
-        }
-
-        final songs = snapshot.data ?? [];
-        if (songs.isEmpty) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: EmptyState(
-              icon: Icons.music_off_rounded,
-              title: 'no_songs'.tr(),
-            ),
-          );
-        }
-
+      loadingBuilder: (_) => _buildSongSkeleton(),
+      onRetry: () => setState(() => _songsFuture = _fetchSongs()),
+      emptyBuilder: (_) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: EmptyState(icon: Icons.music_off_rounded, title: 'no_songs'.tr()),
+      ),
+      useListViewForEmptyState: false,
+      builder: (_, songs) {
         final preview = songs.take(5).toList();
-
         return ListView.separated(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,

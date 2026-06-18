@@ -1,3 +1,4 @@
+import 'package:feple/model/post_changed_event.dart';
 import 'package:flutter/foundation.dart';
 
 /// 상태 없는 이벤트 신호 전달용 ValueNotifier.
@@ -11,6 +12,7 @@ class AppEvents {
   /// 아티스트 팔로우 상태 변경 시 신호
   static final artistFollowChanged = ValueNotifier<int>(0);
 
-  /// 게시글 작성/수정/삭제 시 신호
-  static final postChanged = ValueNotifier<int>(0);
+  /// 게시글 작성/수정/삭제 시 신호.
+  /// postId == null → 전체 갱신, postId != null → 특정 게시글 변경
+  static final postChanged = ValueNotifier<PostChangedEvent?>(null);
 }

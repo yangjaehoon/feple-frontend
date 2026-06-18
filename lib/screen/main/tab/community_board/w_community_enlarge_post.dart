@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/app_events.dart';
+import 'package:feple/model/post_changed_event.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/app_route.dart';
@@ -133,7 +134,7 @@ class _EnlargePostState extends State<EnlargePost> {
         context.showErrorSnackbar(key.tr());
       },
       onPostDeleted: () {
-        AppEvents.postChanged.value++;
+        AppEvents.postChanged.value = PostChangedEvent.specific(widget.id);
         if (mounted) Navigator.of(context, rootNavigator: true).pop();
       },
     );
@@ -241,7 +242,7 @@ class _EnlargePostState extends State<EnlargePost> {
               content: c,
               imageObjectKey: img,
             );
-            AppEvents.postChanged.value++;
+            AppEvents.postChanged.value = PostChangedEvent.specific(widget.id);
             if (mounted) {
               setState(() {
                 _title = t;

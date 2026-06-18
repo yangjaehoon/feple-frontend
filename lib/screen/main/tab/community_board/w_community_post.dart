@@ -6,6 +6,7 @@ import 'package:feple/common/widget/w_write_post_fab.dart';
 import 'package:feple/common/widget/w_write_post_screen.dart';
 import 'package:feple/common/constant/board_types.dart';
 import 'package:feple/common/app_events.dart';
+import 'package:feple/model/post_changed_event.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_error_state.dart';
@@ -76,7 +77,13 @@ class _CommunityPostState extends State<CommunityPost> {
     super.dispose();
   }
 
-  void _onPostChanged() => _load();
+  void _onPostChanged() {
+    final event = AppEvents.postChanged.value;
+    // refreshAll(null) 또는 현재 목록에 있는 게시글이 변경된 경우만 재로드
+    if (event?.postId == null || _posts.any((p) => p.id == event!.postId)) {
+      _load();
+    }
+  }
 
   void _onScroll() {
     final pos = _scrollController.position;
@@ -323,7 +330,7 @@ class _CommunityPostState extends State<CommunityPost> {
                   onSubmit: (t, c, a, img) async {
                     await _postService.createPost(
                         boardType: _serviceBoardType, title: t, content: c, anonymous: a, imageObjectKey: img);
-                    AppEvents.postChanged.value++;
+                    AppEvents.postChanged.value = PostChangedEvent.refreshAll();
                   },
                 ),
               ),

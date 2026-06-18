@@ -21,6 +21,7 @@ import '../../../../provider/user_provider.dart';
 import 'post_detail_notifier.dart';
 import 'w_comment_input_bar.dart';
 import 'w_comment_section.dart';
+import 'w_edit_comment_dialog.dart';
 import 'w_like_comment_row.dart';
 
 class EnlargePost extends StatefulWidget {
@@ -167,25 +168,39 @@ class _EnlargePostState extends State<EnlargePost> {
     );
   }
 
-  Future<String?> _showEditCommentDialog(BuildContext context, String currentContent) {
+  Future<String?> _showEditCommentDialog(
+      BuildContext context, String currentContent) {
     return showDialog<String>(
       context: context,
-      builder: (ctx) => _EditCommentDialog(initialContent: currentContent),
+      builder: (ctx) => EditCommentDialog(initialContent: currentContent),
     );
   }
 
-  List<PopupMenuEntry<String>> _buildMenuItems(bool isOwn, AbstractThemeColors colors) {
-    final normalStyle = TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textTitle, fontWeight: FontWeight.w500);
-    final dangerStyle = const TextStyle(fontSize: AppDimens.fontSizeMd, color: AppColors.errorRed, fontWeight: FontWeight.w500);
+  List<PopupMenuEntry<String>> _buildMenuItems(
+      bool isOwn, AbstractThemeColors colors) {
+    final normalStyle = TextStyle(
+        fontSize: AppDimens.fontSizeMd,
+        color: colors.textTitle,
+        fontWeight: FontWeight.w500);
+    final dangerStyle = const TextStyle(
+        fontSize: AppDimens.fontSizeMd,
+        color: AppColors.errorRed,
+        fontWeight: FontWeight.w500);
 
-    PopupMenuItem<String> item(String value, IconData icon, String label, {bool danger = false}) {
+    PopupMenuItem<String> item(String value, IconData icon, String label,
+        {bool danger = false}) {
       return PopupMenuItem(
         value: value,
         height: 48,
         child: Row(children: [
-          Icon(icon, size: 19, color: danger ? AppColors.errorRed : colors.textTitle),
+          Icon(icon,
+              size: 19,
+              color: danger ? AppColors.errorRed : colors.textTitle),
           const SizedBox(width: 12),
-          Expanded(child: Text(label, style: danger ? dangerStyle : normalStyle, overflow: TextOverflow.ellipsis)),
+          Expanded(
+              child: Text(label,
+                  style: danger ? dangerStyle : normalStyle,
+                  overflow: TextOverflow.ellipsis)),
         ]),
       );
     }
@@ -194,13 +209,14 @@ class _EnlargePostState extends State<EnlargePost> {
       return [
         item('edit', Icons.edit_outlined, 'edit_post'.tr()),
         item('share', Icons.share_outlined, 'share'.tr()),
-        PopupMenuDivider(height: 1),
-        item('delete', Icons.delete_outline_rounded, 'delete_post'.tr(), danger: true),
+        const PopupMenuDivider(height: 1),
+        item('delete', Icons.delete_outline_rounded, 'delete_post'.tr(),
+            danger: true),
       ];
     } else {
       return [
         item('share', Icons.share_outlined, 'share'.tr()),
-        PopupMenuDivider(height: 1),
+        const PopupMenuDivider(height: 1),
         item('report', Icons.flag_outlined, 'report_post'.tr(), danger: true),
       ];
     }
@@ -265,66 +281,24 @@ class _EnlargePostState extends State<EnlargePost> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            _title,
-            style: TextStyle(fontSize: AppDimens.fontSizeTitle, fontWeight: FontWeight.w700, color: colors.textTitle),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              ProfileAvatar(
-                imageUrl: widget.profileImageUrl,
-                nickname: widget.nickname,
-                certified: widget.certified,
-                userRole: widget.userRole,
-                radius: 16,
-                anonymous: widget.anonymous,
-              ),
-              const SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        widget.nickname,
-                        style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary, fontWeight: FontWeight.w600),
-                      ),
-                      InlineBadge(userRole: widget.userRole, certified: widget.certified, size: 14),
-                    ],
-                  ),
-                  if (widget.createdAt != null)
-                    Row(
-                      children: [
-                        Text(
-                          widget.createdAt!.relativeTime,
-                          style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary.withValues(alpha: 0.65)),
-                        ),
-                        if (_updatedAt != null && _updatedAt!.difference(widget.createdAt!).inSeconds > 10) ...[
-                          const SizedBox(width: 4),
-                          Text(
-                            'edited'.tr(),
-                            style: TextStyle(fontSize: AppDimens.fontSizeTiny, color: colors.textSecondary.withValues(alpha: 0.45)),
-                          ),
-                        ],
-                      ],
-                    ),
-                ],
-              ),
-            ],
+          _PostHeaderSection(
+            title: _title,
+            nickname: widget.nickname,
+            profileImageUrl: widget.profileImageUrl,
+            certified: widget.certified,
+            userRole: widget.userRole,
+            anonymous: widget.anonymous,
+            createdAt: widget.createdAt,
+            updatedAt: _updatedAt,
           ),
           Divider(thickness: 1, height: 24, color: colors.listDivider),
-          Text(_content, style: TextStyle(color: colors.textTitle, fontSize: AppDimens.fontSizeLg)),
-          if (_imageUrl != null) ...[
-            const SizedBox(height: 12),
-            GestureDetector(
-              onTap: () => _showImageViewer(context, _imageUrl!),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-                child: CachedNetworkImage(imageUrl: _imageUrl!, fit: BoxFit.cover, width: double.infinity),
-              ),
-            ),
-          ],
+          _PostContentSection(
+            content: _content,
+            imageUrl: _imageUrl,
+            onImageTap: _imageUrl != null
+                ? () => _showImageViewer(context, _imageUrl!)
+                : null,
+          ),
           Divider(thickness: 1, height: 40, color: colors.listDivider),
           LikeCommentRow(
             data: PostInteractionData(
@@ -340,11 +314,15 @@ class _EnlargePostState extends State<EnlargePost> {
           const SizedBox(height: 8),
           Row(
             children: [
-              Icon(Icons.remove_red_eye_outlined, size: 14, color: colors.textSecondary.withValues(alpha: 0.5)),
+              Icon(Icons.remove_red_eye_outlined,
+                  size: 14,
+                  color: colors.textSecondary.withValues(alpha: 0.5)),
               const SizedBox(width: 4),
               Text(
                 'view_count'.tr(args: [_notifier.viewCount.toString()]),
-                style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary.withValues(alpha: 0.5)),
+                style: TextStyle(
+                    fontSize: AppDimens.fontSizeXs,
+                    color: colors.textSecondary.withValues(alpha: 0.5)),
               ),
             ],
           ),
@@ -361,10 +339,12 @@ class _EnlargePostState extends State<EnlargePost> {
               duplicateErrorKey: 'report_comment_duplicate',
             ),
             onReply: _setReplyTo,
-            onToggleLike: (commentId) => _notifier.toggleCommentLike(commentId, userId),
+            onToggleLike: (commentId) =>
+                _notifier.toggleCommentLike(commentId, userId),
             onDeleteComment: (commentId) => _notifier.deleteComment(commentId),
             onEditComment: (commentId, currentContent) async {
-              final result = await _showEditCommentDialog(context, currentContent);
+              final result =
+                  await _showEditCommentDialog(context, currentContent);
               if (result != null && result.isNotEmpty) {
                 await _notifier.updateComment(commentId, result);
               }
@@ -421,7 +401,8 @@ class _EnlargePostState extends State<EnlargePost> {
                 color: colors.surface,
                 shadowColor: colors.cardShadow.withValues(alpha: 0.18),
                 elevation: 6,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
                 position: PopupMenuPosition.under,
               ),
             ],
@@ -441,53 +422,138 @@ class _EnlargePostState extends State<EnlargePost> {
   }
 }
 
-class _EditCommentDialog extends StatefulWidget {
-  final String initialContent;
-  const _EditCommentDialog({required this.initialContent});
+class _PostHeaderSection extends StatelessWidget {
+  final String title;
+  final String nickname;
+  final String? profileImageUrl;
+  final bool certified;
+  final String? userRole;
+  final bool anonymous;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
-  @override
-  State<_EditCommentDialog> createState() => _EditCommentDialogState();
-}
-
-class _EditCommentDialogState extends State<_EditCommentDialog> {
-  late final TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(text: widget.initialContent);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  const _PostHeaderSection({
+    required this.title,
+    required this.nickname,
+    this.profileImageUrl,
+    required this.certified,
+    this.userRole,
+    required this.anonymous,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return AlertDialog(
-      backgroundColor: colors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(16)),
-      ),
-      title: Text(
-        'edit_comment'.tr(),
-        style: TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle),
-      ),
-      content: TextField(
-        controller: _controller,
-        autofocus: true,
-        maxLines: null,
-        decoration: InputDecoration(hintText: 'enter_comment'.tr()),
-      ),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: Text('cancel'.tr())),
-        TextButton(
-          onPressed: () => Navigator.pop(context, _controller.text.trim()),
-          child: Text('done'.tr()),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeTitle,
+            fontWeight: FontWeight.w700,
+            color: colors.textTitle,
+          ),
         ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            ProfileAvatar(
+              imageUrl: profileImageUrl,
+              nickname: nickname,
+              certified: certified,
+              userRole: userRole,
+              radius: 16,
+              anonymous: anonymous,
+            ),
+            const SizedBox(width: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      nickname,
+                      style: TextStyle(
+                        fontSize: AppDimens.fontSizeSm,
+                        color: colors.textSecondary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    InlineBadge(
+                        userRole: userRole, certified: certified, size: 14),
+                  ],
+                ),
+                if (createdAt != null)
+                  Row(
+                    children: [
+                      Text(
+                        createdAt!.relativeTime,
+                        style: TextStyle(
+                          fontSize: AppDimens.fontSizeXxs,
+                          color:
+                              colors.textSecondary.withValues(alpha: 0.65),
+                        ),
+                      ),
+                      if (updatedAt != null &&
+                          updatedAt!.difference(createdAt!).inSeconds >
+                              10) ...[
+                        const SizedBox(width: 4),
+                        Text(
+                          'edited'.tr(),
+                          style: TextStyle(
+                            fontSize: AppDimens.fontSizeTiny,
+                            color: colors.textSecondary
+                                .withValues(alpha: 0.45),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _PostContentSection extends StatelessWidget {
+  final String content;
+  final String? imageUrl;
+  final VoidCallback? onImageTap;
+
+  const _PostContentSection({
+    required this.content,
+    this.imageUrl,
+    this.onImageTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          content,
+          style:
+              TextStyle(color: colors.textTitle, fontSize: AppDimens.fontSizeLg),
+        ),
+        if (imageUrl != null) ...[
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: onImageTap,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+              child: CachedNetworkImage(
+                  imageUrl: imageUrl!, fit: BoxFit.cover, width: double.infinity),
+            ),
+          ),
+        ],
       ],
     );
   }

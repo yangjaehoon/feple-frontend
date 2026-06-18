@@ -3,7 +3,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
-import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
@@ -95,44 +95,33 @@ class _FestivalSetlistFullPageState extends State<FestivalSetlistFullPage> {
   }
 
   Widget _buildBody(AbstractThemeColors colors) {
-    return FutureBuilder<List<FestivalSetlistEntry>>(
+    return AsyncContentBuilder<List<FestivalSetlistEntry>>(
       future: _future,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildSkeleton(colors);
-        }
-        if (snapshot.hasError) {
-          return ErrorState(
-            message: 'err_fetch_data'.tr(),
-            onRetry: () => setState(() => _future = _fetch()),
-          );
-        }
-        final entries = snapshot.data ?? [];
-        if (entries.isEmpty) {
-          return Center(
-            child: Text('no_setlist'.tr(), style: TextStyle(color: colors.textSecondary)),
-          );
-        }
-        return ListView.separated(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          itemCount: entries.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 8),
-          itemBuilder: (_, i) => _ArtistFullTile(
-            entry: entries[i],
-            isExpanded: _expanded.contains(entries[i].artistId),
-            onToggle: () => setState(() {
-              final id = entries[i].artistId;
-              if (_expanded.contains(id)) {
-                _expanded.remove(id);
-              } else {
-                _expanded.add(id);
-              }
-            }),
-            onSongTap: _openYoutubeMusic,
-            onEdit: () => _openEditSheet(entries[i]),
-          ),
-        );
-      },
+      loadingBuilder: (_) => _buildSkeleton(colors),
+      onRetry: () => setState(() => _future = _fetch()),
+      emptyBuilder: (_) => Center(
+        child: Text('no_setlist'.tr(), style: TextStyle(color: colors.textSecondary)),
+      ),
+      useListViewForEmptyState: false,
+      builder: (_, entries) => ListView.separated(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        itemCount: entries.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 8),
+        itemBuilder: (_, i) => _ArtistFullTile(
+          entry: entries[i],
+          isExpanded: _expanded.contains(entries[i].artistId),
+          onToggle: () => setState(() {
+            final id = entries[i].artistId;
+            if (_expanded.contains(id)) {
+              _expanded.remove(id);
+            } else {
+              _expanded.add(id);
+            }
+          }),
+          onSongTap: _openYoutubeMusic,
+          onEdit: () => _openEditSheet(entries[i]),
+        ),
+      ),
     );
   }
 
@@ -470,63 +459,55 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
   }
 
   Widget _buildSongList(AbstractThemeColors colors, ScrollController controller) {
-    return FutureBuilder<List<SongModel>>(
+    return AsyncContentBuilder<List<SongModel>>(
       future: _songsFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator.adaptive());
-        }
-        if (snapshot.hasError) {
-          return Center(
-            child: Text('err_fetch_data'.tr(), style: TextStyle(color: colors.textSecondary)),
+      loadingBuilder: (_) => const Center(child: CircularProgressIndicator.adaptive()),
+      errorBuilder: (_) => Center(
+        child: Text('err_fetch_data'.tr(), style: TextStyle(color: colors.textSecondary)),
+      ),
+      emptyBuilder: (_) => Center(
+        child: Text('no_setlist'.tr(), style: TextStyle(color: colors.textSecondary)),
+      ),
+      useListViewForEmptyState: false,
+      builder: (_, songs) => ListView.separated(
+        controller: controller,
+        itemCount: songs.length,
+        separatorBuilder: (_, __) => Divider(height: 1, color: colors.listDivider, indent: 16, endIndent: 16),
+        itemBuilder: (_, i) {
+          final song = songs[i];
+          final checked = _selectedIds.contains(song.id);
+          return CheckboxListTile(
+            value: checked,
+            onChanged: (_) => setState(() {
+              if (checked) {
+                _selectedIds.remove(song.id);
+              } else {
+                _selectedIds.add(song.id);
+              }
+            }),
+            activeColor: colors.activate,
+            checkColor: colors.surface,
+            title: Text(
+              song.title,
+              style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w500, color: colors.textTitle),
+            ),
+            secondary: song.thumbnailUrl != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+                    child: CachedNetworkImage(
+                      imageUrl: song.thumbnailUrl!,
+                      width: 40,
+                      height: 40,
+                      memCacheWidth: 80,
+                      fit: BoxFit.cover,
+                      errorWidget: (_, __, ___) => _thumbPlaceholder(colors),
+                    ),
+                  )
+                : _thumbPlaceholder(colors),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           );
-        }
-        final songs = snapshot.data ?? [];
-        if (songs.isEmpty) {
-          return Center(
-            child: Text('no_setlist'.tr(), style: TextStyle(color: colors.textSecondary)),
-          );
-        }
-        return ListView.separated(
-          controller: controller,
-          itemCount: songs.length,
-          separatorBuilder: (_, __) => Divider(height: 1, color: colors.listDivider, indent: 16, endIndent: 16),
-          itemBuilder: (_, i) {
-            final song = songs[i];
-            final checked = _selectedIds.contains(song.id);
-            return CheckboxListTile(
-              value: checked,
-              onChanged: (_) => setState(() {
-                if (checked) {
-                  _selectedIds.remove(song.id);
-                } else {
-                  _selectedIds.add(song.id);
-                }
-              }),
-              activeColor: colors.activate,
-              checkColor: colors.surface,
-              title: Text(
-                song.title,
-                style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w500, color: colors.textTitle),
-              ),
-              secondary: song.thumbnailUrl != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-                      child: CachedNetworkImage(
-                        imageUrl: song.thumbnailUrl!,
-                        width: 40,
-                        height: 40,
-                        memCacheWidth: 80,
-                        fit: BoxFit.cover,
-                        errorWidget: (_, __, ___) => _thumbPlaceholder(colors),
-                      ),
-                    )
-                  : _thumbPlaceholder(colors),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            );
-          },
-        );
-      },
+        },
+      ),
     );
   }
 

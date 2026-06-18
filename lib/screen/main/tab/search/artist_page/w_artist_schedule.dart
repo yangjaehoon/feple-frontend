@@ -24,10 +24,10 @@ class ArtistSchedule extends StatefulWidget {
   });
 
   @override
-  State<ArtistSchedule> createState() => _ArtistScheduleState();
+  State<ArtistSchedule> createState() => ArtistScheduleState();
 }
 
-class _ArtistScheduleState extends State<ArtistSchedule> {
+class ArtistScheduleState extends State<ArtistSchedule> {
   final _scheduleService = sl<ArtistScheduleService>();
   late Future<List<ArtistScheduleModel>> _scheduleFuture;
 
@@ -39,6 +39,8 @@ class _ArtistScheduleState extends State<ArtistSchedule> {
 
   Future<List<ArtistScheduleModel>> _fetchSchedule() =>
       _scheduleService.fetchSchedule(widget.artistId);
+
+  void refresh() => setState(() => _scheduleFuture = _fetchSchedule());
 
   @override
   Widget build(BuildContext context) {

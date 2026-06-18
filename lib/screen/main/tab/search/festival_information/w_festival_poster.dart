@@ -27,10 +27,10 @@ class FestivalPoster extends StatefulWidget {
   final String? heroTag;
 
   @override
-  State<FestivalPoster> createState() => _FestivalPosterState();
+  State<FestivalPoster> createState() => FestivalPosterState();
 }
 
-class _FestivalPosterState extends State<FestivalPoster> {
+class FestivalPosterState extends State<FestivalPoster> {
   static const double _posterThumbnailWidth = 120.0;
   static const double _posterThumbnailHeight = 160.0;
 
@@ -53,6 +53,8 @@ class _FestivalPosterState extends State<FestivalPoster> {
     _notifier.dispose();
     super.dispose();
   }
+
+  void refresh() => _notifier.init();
 
   Future<void> _openKakaoMap() async {
     final lat = widget.poster.latitude;

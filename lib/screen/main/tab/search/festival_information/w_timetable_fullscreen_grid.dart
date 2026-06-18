@@ -3,6 +3,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/constant/timetable_colors.dart';
 import 'package:feple/common/dart/extension/time_of_day_extension.dart';
 import 'package:feple/model/timetable_entry.dart';
+import 'package:feple/screen/main/tab/search/festival_information/w_timetable_stage_cell.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_user_entry.dart';
 import 'package:flutter/material.dart';
 
@@ -75,7 +76,7 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
 
       return Column(
         children: [
-          _buildStageHeader(stageW, colors),
+          _buildStageHeader(stageW),
           SizedBox(
             height: gridH,
             child: Row(
@@ -91,40 +92,17 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
     });
   }
 
-  Widget _buildStageHeader(double stageW, AbstractThemeColors colors) {
+  Widget _buildStageHeader(double stageW) {
     return SizedBox(
       height: _stageHeaderH,
       child: Row(
         children: [
-          Container(
-            width: _timeColW,
-            decoration: BoxDecoration(
-              color: colors.surface,
-              border: Border(
-                bottom: BorderSide(color: colors.listDivider),
-                right: BorderSide(color: colors.listDivider),
-              ),
-            ),
-          ),
-          ...widget.range.stages.map((stage) {
-            final color = _stageColor(stage);
-            return Container(
-              width: stageW,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
-                border: Border(
-                  bottom: BorderSide(color: colors.listDivider),
-                  right: BorderSide(color: colors.listDivider, width: 0.5),
-                ),
-              ),
-              child: Text(
-                stage,
-                style: TextStyle(fontSize: AppDimens.fontSizeXs, fontWeight: FontWeight.w700, color: color),
-                overflow: TextOverflow.ellipsis,
-              ),
-            );
-          }),
+          TimetableCornerCell(width: _timeColW),
+          ...widget.range.stages.map((stage) => TimetableStageCell(
+                stage: stage,
+                color: _stageColor(stage),
+                width: stageW,
+              )),
         ],
       ),
     );

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/service/festival_service.dart';
@@ -17,12 +19,13 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
   // context.select 비교가 참조 동등성을 사용하므로, items 내용이 바뀔 때만 새 참조 생성
   List<FestivalPreview> get items => _cachedItems;
 
-  Set<String> _selectedGenres = {};
-  Set<String> _selectedRegions = {};
-  Set<String> _selectedAgeRestrictions = {};
-  Set<String> get selectedGenres => Set.unmodifiable(_selectedGenres);
-  Set<String> get selectedRegions => Set.unmodifiable(_selectedRegions);
-  Set<String> get selectedAgeRestrictions => Set.unmodifiable(_selectedAgeRestrictions);
+  // 불변 Set으로 유지 — 참조가 바뀔 때만 context.select가 재빌드하도록
+  Set<String> _selectedGenres = const {};
+  Set<String> _selectedRegions = const {};
+  Set<String> _selectedAgeRestrictions = const {};
+  Set<String> get selectedGenres => _selectedGenres;
+  Set<String> get selectedRegions => _selectedRegions;
+  Set<String> get selectedAgeRestrictions => _selectedAgeRestrictions;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -40,27 +43,39 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
   bool get _isStale =>
       _loadedAt == null || DateTime.now().difference(_loadedAt!) > _staleAfter;
 
-  void _toggleInSet(Set<String> set, String value) {
-    if (set.contains(value)) {
-      set.remove(value);
-    } else {
-      set.add(value);
-    }
-    _clearAndFetch();
+  // 연속 필터 변경 시 마지막 변경 후 400ms 뒤에만 API 호출
+  Timer? _filterDebounce;
+  static const _filterDebounceDelay = Duration(milliseconds: 400);
+
+  void _toggleInSet(Set<String> current, String value, void Function(Set<String>) assign) {
+    final updated = current.contains(value)
+        ? current.where((e) => e != value).toSet()
+        : {...current, value};
+    assign(Set.unmodifiable(updated));
+    _scheduleFetch();
   }
 
-  void toggleGenre(String genre) => _toggleInSet(_selectedGenres, genre);
-  void toggleRegion(String region) => _toggleInSet(_selectedRegions, region);
-  void toggleAgeRestriction(String ageRestriction) => _toggleInSet(_selectedAgeRestrictions, ageRestriction);
+  void toggleGenre(String genre) =>
+      _toggleInSet(_selectedGenres, genre, (s) => _selectedGenres = s);
+  void toggleRegion(String region) =>
+      _toggleInSet(_selectedRegions, region, (s) => _selectedRegions = s);
+  void toggleAgeRestriction(String ageRestriction) =>
+      _toggleInSet(_selectedAgeRestrictions, ageRestriction, (s) => _selectedAgeRestrictions = s);
 
   void clearFilters() {
-    _selectedGenres = {};
-    _selectedRegions = {};
-    _selectedAgeRestrictions = {};
-    _clearAndFetch();
+    _selectedGenres = const {};
+    _selectedRegions = const {};
+    _selectedAgeRestrictions = const {};
+    _scheduleFetch();
   }
 
-  // 필터 변경 시: 즉시 목록 비우고 재요청
+  void _scheduleFetch() {
+    _filterDebounce?.cancel();
+    _filterDebounce = Timer(_filterDebounceDelay, _clearAndFetch);
+    safeNotify(); // 칩 상태 즉시 반영
+  }
+
+  // 필터 변경 확정 후: 즉시 목록 비우고 재요청
   void _clearAndFetch() {
     _items.clear();
     _cachedItems = const [];
@@ -123,5 +138,11 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
       _isLoadingMore = false;
       safeNotify();
     }
+  }
+
+  @override
+  void dispose() {
+    _filterDebounce?.cancel();
+    super.dispose();
   }
 }

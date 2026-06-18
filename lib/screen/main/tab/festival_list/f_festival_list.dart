@@ -44,9 +44,15 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    // 필터 개수만 구독 — 페스티벌 목록 로딩과 무관하게 재빌드하지 않음
-    final activeFilterCount = context.select<FestivalPreviewProvider, int>(
-      (p) => p.selectedGenres.length + p.selectedRegions.length + p.selectedAgeRestrictions.length,
+    // 각 필터 Set을 개별 구독 — 로딩·목록 변경 시 재빌드 없음
+    final selectedGenres = context.select<FestivalPreviewProvider, Set<String>>(
+      (p) => p.selectedGenres,
+    );
+    final selectedRegions = context.select<FestivalPreviewProvider, Set<String>>(
+      (p) => p.selectedRegions,
+    );
+    final selectedAgeRestrictions = context.select<FestivalPreviewProvider, Set<String>>(
+      (p) => p.selectedAgeRestrictions,
     );
 
     return ColoredBox(
@@ -73,7 +79,9 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
                           expanded: _filterExpanded,
                           onToggle: () =>
                               setState(() => _filterExpanded = !_filterExpanded),
-                          activeFilterCount: activeFilterCount,
+                          selectedGenres: selectedGenres,
+                          selectedRegions: selectedRegions,
+                          selectedAgeRestrictions: selectedAgeRestrictions,
                         ),
                         const ConcertListWidget(),
                         const _LoadMoreIndicator(),
@@ -93,18 +101,26 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
 class _FilterPanel extends StatelessWidget {
   final bool expanded;
   final VoidCallback onToggle;
-  final int activeFilterCount;
+  final Set<String> selectedGenres;
+  final Set<String> selectedRegions;
+  final Set<String> selectedAgeRestrictions;
 
   const _FilterPanel({
     required this.expanded,
     required this.onToggle,
-    required this.activeFilterCount,
+    required this.selectedGenres,
+    required this.selectedRegions,
+    required this.selectedAgeRestrictions,
   });
+
+  int get _activeFilterCount =>
+      selectedGenres.length + selectedRegions.length + selectedAgeRestrictions.length;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final provider = context.watch<FestivalPreviewProvider>();
+    // context.read: 콜백 전용 (반응형 상태 아님)
+    final p = context.read<FestivalPreviewProvider>();
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -122,17 +138,17 @@ class _FilterPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildHeader(colors, provider),
+          _buildHeader(colors, p.clearFilters),
           if (expanded) ...[
             Divider(height: 1, color: colors.listDivider),
-            _buildBody(colors, provider),
+            _buildBody(colors, p),
           ],
         ],
       ),
     );
   }
 
-  Widget _buildHeader(AbstractThemeColors colors, FestivalPreviewProvider provider) {
+  Widget _buildHeader(AbstractThemeColors colors, VoidCallback onClearFilters) {
     return InkWell(
       onTap: onToggle,
       borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
@@ -150,7 +166,7 @@ class _FilterPanel extends StatelessWidget {
                 color: colors.textTitle,
               ),
             ),
-            if (activeFilterCount > 0) ...[
+            if (_activeFilterCount > 0) ...[
               const SizedBox(width: 6),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
@@ -159,16 +175,16 @@ class _FilterPanel extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
                 ),
                 child: Text(
-                  '$activeFilterCount',
+                  '$_activeFilterCount',
                   style: const TextStyle(
                       color: Colors.white, fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w700),
                 ),
               ),
             ],
             const Spacer(),
-            if (activeFilterCount > 0)
+            if (_activeFilterCount > 0)
               GestureDetector(
-                onTap: provider.clearFilters,
+                onTap: onClearFilters,
                 child: Text(
                   'btn_reset'.tr(),
                   style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
@@ -188,7 +204,7 @@ class _FilterPanel extends StatelessWidget {
     );
   }
 
-  Widget _buildBody(AbstractThemeColors colors, FestivalPreviewProvider provider) {
+  Widget _buildBody(AbstractThemeColors colors, FestivalPreviewProvider p) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -197,22 +213,22 @@ class _FilterPanel extends StatelessWidget {
           _FilterSection(
             label: 'filter_genre'.tr(),
             items: kGenreOptions,
-            selected: provider.selectedGenres,
-            onToggle: provider.toggleGenre,
+            selected: selectedGenres,
+            onToggle: p.toggleGenre,
           ),
           const SizedBox(height: 12),
           _FilterSection(
             label: 'filter_region'.tr(),
             items: kRegionOptions,
-            selected: provider.selectedRegions,
-            onToggle: provider.toggleRegion,
+            selected: selectedRegions,
+            onToggle: p.toggleRegion,
           ),
           const SizedBox(height: 12),
           _FilterSection(
             label: 'filter_age_restriction'.tr(),
             items: kAgeRestrictionOptions,
-            selected: provider.selectedAgeRestrictions,
-            onToggle: provider.toggleAgeRestriction,
+            selected: selectedAgeRestrictions,
+            onToggle: p.toggleAgeRestriction,
           ),
         ],
       ),

@@ -1,6 +1,3 @@
-import 'package:feple/common/constant/app_colors.dart';
-import 'package:flutter/material.dart';
-
 class CommentDetail {
   final int id;
   final int postId;
@@ -76,10 +73,4 @@ class CommentDetail {
   }
 
   bool get isReply => parentId != null;
-
-  Color roleColor(BuildContext context) {
-    if (userRole == 'ADMIN') return AppColors.errorRed;
-    if (certified) return AppColors.successGreen;
-    return Colors.transparent;
-  }
 }

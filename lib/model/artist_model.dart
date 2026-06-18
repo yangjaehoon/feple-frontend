@@ -22,7 +22,7 @@ class Artist {
       nameEn: (json['nameEn'] as String?) ?? '',
       genre: json['genre'] as String,
       profileImageUrl: json['profileImageUrl'] as String,
-      followerCount: (json['followerCount'] ?? 0) as int,
+      followerCount: (json['followerCount'] as num?)?.toInt() ?? 0,
     );
   }
 

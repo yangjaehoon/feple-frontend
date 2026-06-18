@@ -1,6 +1,6 @@
-import 'dart:typed_data';
 import 'package:feple/model/presign_response.dart';
 import 'package:feple/network/dio_client.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:http/http.dart' as http;
 
@@ -34,7 +34,8 @@ abstract final class ImageUploadHelper {
       body: compressed,
     );
     if (putResponse.statusCode < 200 || putResponse.statusCode >= 300) {
-      throw Exception('S3 upload failed: ${putResponse.statusCode}');
+      debugPrint('[ImageUpload] S3 upload failed: ${putResponse.statusCode}');
+      throw Exception('S3 upload failed');
     }
 
     return presign;

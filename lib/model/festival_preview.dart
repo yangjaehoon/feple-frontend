@@ -78,12 +78,12 @@ class FestivalPreview {
   factory FestivalPreview.fromJson(Map<String, dynamic> json) {
     return FestivalPreview(
       id: (json['id'] as num).toInt(),
-      title: (json['title'] ?? '') as String,
-      titleEn: (json['titleEn'] as String?) ?? '',
-      description: (json['description'] ?? '') as String,
-      location: (json['location'] ?? '') as String,
-      posterUrl: (json['posterUrl'] ?? '') as String,
-      startDate: (json['startDate'] ?? '') as String,
+      title: json['title'] as String? ?? '',
+      titleEn: json['titleEn'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      location: json['location'] as String? ?? '',
+      posterUrl: json['posterUrl'] as String? ?? '',
+      startDate: json['startDate'] as String? ?? '',
       endDate: json['endDate'] as String?,
       genres: (json['genres'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
       region: json['region'] as String?,

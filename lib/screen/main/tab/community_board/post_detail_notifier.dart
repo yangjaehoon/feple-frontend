@@ -176,14 +176,18 @@ class PostDetailNotifier extends SafeChangeNotifier {
     try {
       await _commentService.updateComment(commentId, newContent);
     } on BannedWordException {
-      _replaceCommentAt(index, originalComment);
-      commentsVersion.value++;
-      commentError = 'comment_banned_word';
-      safeNotify();
+      if (!isDisposed) {
+        _replaceCommentAt(index, originalComment);
+        commentsVersion.value++;
+        commentError = 'comment_banned_word';
+        safeNotify();
+      }
     } catch (e) {
-      _replaceCommentAt(index, originalComment);
-      commentsVersion.value++;
-      safeNotify();
+      if (!isDisposed) {
+        _replaceCommentAt(index, originalComment);
+        commentsVersion.value++;
+        safeNotify();
+      }
       debugPrint('updateComment error: $e');
       onError?.call('comment_update_failed');
     }
@@ -199,9 +203,11 @@ class PostDetailNotifier extends SafeChangeNotifier {
     try {
       await _commentService.deleteComment(commentId);
     } catch (e) {
-      comments = originalComments;
-      commentsVersion.value++;
-      safeNotify();
+      if (!isDisposed) {
+        comments = originalComments;
+        commentsVersion.value++;
+        safeNotify();
+      }
       debugPrint('deleteComment error: $e');
       onError?.call('comment_delete_failed');
     }
@@ -222,22 +228,26 @@ class PostDetailNotifier extends SafeChangeNotifier {
     safeNotify();
     try {
       final result = await _commentService.toggleCommentLike(commentId);
-      // 서버 실제 값으로 동기화 — 빠른 연속 탭 시 불일치 방지
-      final commentIndex = comments.indexWhere((c) => c.id == commentId);
-      if (commentIndex != -1) {
-        _replaceCommentAt(commentIndex, comments[commentIndex].copyWith(
-          liked: result.liked,
-          likeCount: result.likeCount,
-        ));
-        commentsVersion.value++;
-        safeNotify();
+      if (!isDisposed) {
+        // 서버 실제 값으로 동기화 — 빠른 연속 탭 시 불일치 방지
+        final commentIndex = comments.indexWhere((c) => c.id == commentId);
+        if (commentIndex != -1) {
+          _replaceCommentAt(commentIndex, comments[commentIndex].copyWith(
+            liked: result.liked,
+            likeCount: result.likeCount,
+          ));
+          commentsVersion.value++;
+          safeNotify();
+        }
       }
     } catch (e) {
-      final commentIndex = comments.indexWhere((c) => c.id == commentId);
-      if (commentIndex != -1) {
-        _replaceCommentAt(commentIndex, originalComment);
-        commentsVersion.value++;
-        safeNotify();
+      if (!isDisposed) {
+        final commentIndex = comments.indexWhere((c) => c.id == commentId);
+        if (commentIndex != -1) {
+          _replaceCommentAt(commentIndex, originalComment);
+          commentsVersion.value++;
+          safeNotify();
+        }
       }
       debugPrint('toggleCommentLike error: $e');
     } finally {

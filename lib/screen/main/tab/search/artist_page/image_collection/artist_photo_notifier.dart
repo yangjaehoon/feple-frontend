@@ -48,8 +48,9 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
       }
     } catch (e) {
       debugPrint('toggle like error: $e');
-      errorKey = 'like_failed';
       await loadPhotos();
+      errorKey = 'like_failed';
+      safeNotify();
     }
   }
 

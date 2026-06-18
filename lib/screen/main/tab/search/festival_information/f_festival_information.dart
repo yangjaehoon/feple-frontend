@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_named_board.dart';
 import 'package:feple/common/widget/w_offline_banner.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_poster.dart';
@@ -24,12 +25,20 @@ class FestivalInformationFragment extends StatefulWidget {
 
 class _FestivalInformationFragmentState
     extends State<FestivalInformationFragment> {
-  int _refreshKey = 0;
+  final _posterKey = GlobalKey<FestivalPosterState>();
+  final _artistsKey = GlobalKey<FestivalArtistsState>();
+  final _boardKey = GlobalKey<NamedBoardState>();
+  final _timetableKey = GlobalKey<FestivalTimetableState>();
+  final _setlistKey = GlobalKey<FestivalSetlistState>();
   final _mapKey = GlobalKey<FestivalBoothMapState>();
 
   Future<void> _onRefresh() async {
+    _posterKey.currentState?.refresh();
+    _artistsKey.currentState?.refresh();
+    _boardKey.currentState?.refresh();
+    _timetableKey.currentState?.refresh();
+    _setlistKey.currentState?.refresh();
     _mapKey.currentState?.refresh();
-    setState(() => _refreshKey++);
   }
 
   @override
@@ -58,22 +67,22 @@ class _FestivalInformationFragmentState
         child: Column(
           children: [
             FestivalPoster(
-              key: ValueKey('poster_$_refreshKey'),
+              key: _posterKey,
               poster: widget.poster,
               heroTag: widget.heroTag,
             ),
             const SizedBox(height: 16),
             FestivalArtists(
-              key: ValueKey('artists_$_refreshKey'),
+              key: _artistsKey,
               festivalId: widget.poster.id,
             ),
             FestivalBoard(
-              key: ValueKey('board_$_refreshKey'),
+              boardKey: _boardKey,
               festivalId: widget.poster.id,
               festivalName: widget.poster.title,
             ),
             FestivalTimetable(
-              key: ValueKey('timetable_$_refreshKey'),
+              key: _timetableKey,
               festivalId: widget.poster.id,
               startDate: widget.poster.startDate,
               endDate: widget.poster.endDate,
@@ -85,7 +94,7 @@ class _FestivalInformationFragmentState
               festivalLng: widget.poster.longitude,
             ),
             FestivalSetlist(
-              key: ValueKey('setlist_$_refreshKey'),
+              key: _setlistKey,
               festivalId: widget.poster.id,
             ),
           ],

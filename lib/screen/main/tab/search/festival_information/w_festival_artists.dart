@@ -24,10 +24,10 @@ class FestivalArtists extends StatefulWidget {
   const FestivalArtists({super.key, required this.festivalId});
 
   @override
-  State<FestivalArtists> createState() => _FestivalArtistsState();
+  State<FestivalArtists> createState() => FestivalArtistsState();
 }
 
-class _FestivalArtistsState extends State<FestivalArtists> {
+class FestivalArtistsState extends State<FestivalArtists> {
   late final FestivalArtistsNotifier _notifier;
 
   @override
@@ -48,6 +48,8 @@ class _FestivalArtistsState extends State<FestivalArtists> {
     _notifier.dispose();
     super.dispose();
   }
+
+  void refresh() => _notifier.fetch();
 
   @override
   Widget build(BuildContext context) {

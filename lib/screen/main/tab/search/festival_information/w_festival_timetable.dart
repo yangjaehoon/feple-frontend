@@ -29,10 +29,10 @@ class FestivalTimetable extends StatefulWidget {
   });
 
   @override
-  State<FestivalTimetable> createState() => _FestivalTimetableState();
+  State<FestivalTimetable> createState() => FestivalTimetableState();
 }
 
-class _FestivalTimetableState extends State<FestivalTimetable> {
+class FestivalTimetableState extends State<FestivalTimetable> {
   final _vContent = ScrollController();
   final _vTime = ScrollController();
   final _hContent = ScrollController();
@@ -83,6 +83,8 @@ class _FestivalTimetableState extends State<FestivalTimetable> {
     _notifier.dispose();
     super.dispose();
   }
+
+  void refresh() => _notifier.fetch();
 
   @override
   Widget build(BuildContext context) {

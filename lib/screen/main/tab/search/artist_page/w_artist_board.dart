@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 class ArtistBoard extends StatelessWidget {
   final int artistId;
   final String artistName;
+  final GlobalKey<NamedBoardState>? boardKey;
 
   final _postService = sl<PostService>();
 
@@ -14,11 +15,13 @@ class ArtistBoard extends StatelessWidget {
     super.key,
     required this.artistId,
     required this.artistName,
+    this.boardKey,
   });
 
   @override
   Widget build(BuildContext context) {
     return NamedBoard(
+      key: boardKey,
       name: artistName,
       headerIcon: Icons.forum_rounded,
       fetchPosts: () => _postService.fetchArtistPosts(artistId),

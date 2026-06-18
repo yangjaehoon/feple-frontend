@@ -24,10 +24,10 @@ class MainImageSwiper extends StatefulWidget {
   final String? profileImageUrl;
 
   @override
-  State<MainImageSwiper> createState() => _MainImageSwiperState();
+  State<MainImageSwiper> createState() => MainImageSwiperState();
 }
 
-class _MainImageSwiperState extends State<MainImageSwiper> {
+class MainImageSwiperState extends State<MainImageSwiper> {
   static const double _swiperHeight = 350.0;
   static const double _pageViewHeight = 250.0;
   static const double _photoCardSize = 200.0;
@@ -106,6 +106,15 @@ class _MainImageSwiperState extends State<MainImageSwiper> {
       _virtualPage = newVirtualPage;
       _currentRealPage = newVirtualPage % _photosNotifier.photos.length;
     });
+  }
+
+  void refresh() {
+    _timer?.cancel();
+    _timer = null;
+    _pageController?.removeListener(_onPageScroll);
+    _pageController?.dispose();
+    setState(() => _pageController = null);
+    _photosNotifier.load();
   }
 
   @override

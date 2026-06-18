@@ -28,10 +28,10 @@ class NamedBoard extends StatefulWidget {
   });
 
   @override
-  State<NamedBoard> createState() => _NamedBoardState();
+  State<NamedBoard> createState() => NamedBoardState();
 }
 
-class _NamedBoardState extends State<NamedBoard> {
+class NamedBoardState extends State<NamedBoard> {
   late Future<List<Post>> _postsFuture;
 
   @override
@@ -40,7 +40,7 @@ class _NamedBoardState extends State<NamedBoard> {
     _postsFuture = widget.fetchPosts();
   }
 
-  void _refresh() => setState(() => _postsFuture = widget.fetchPosts());
+  void refresh() => setState(() => _postsFuture = widget.fetchPosts());
 
   @override
   Widget build(BuildContext context) {
@@ -62,9 +62,9 @@ class _NamedBoardState extends State<NamedBoard> {
             builder: (_) => EnlargePost.fromPost(boardName: boardName, post: post),
           ),
         );
-        if (mounted) _refresh();
+        if (mounted) refresh();
       },
-      onRetry: _refresh,
+      onRetry: refresh,
       onWriteTap: widget.onWriteTap,
     );
   }

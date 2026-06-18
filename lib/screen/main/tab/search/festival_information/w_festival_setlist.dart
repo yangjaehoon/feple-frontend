@@ -20,10 +20,10 @@ class FestivalSetlist extends StatefulWidget {
   const FestivalSetlist({super.key, required this.festivalId});
 
   @override
-  State<FestivalSetlist> createState() => _FestivalSetlistState();
+  State<FestivalSetlist> createState() => FestivalSetlistState();
 }
 
-class _FestivalSetlistState extends State<FestivalSetlist> {
+class FestivalSetlistState extends State<FestivalSetlist> {
   late Future<List<FestivalSetlistEntry>> _future;
 
   @override
@@ -34,6 +34,8 @@ class _FestivalSetlistState extends State<FestivalSetlist> {
 
   Future<List<FestivalSetlistEntry>> _fetch() =>
       sl<FestivalDetailService>().fetchSetlist(widget.festivalId);
+
+  void refresh() => setState(() => _future = _fetch());
 
   Future<void> _openFullPage() async {
     final changed = await Navigator.push<bool>(

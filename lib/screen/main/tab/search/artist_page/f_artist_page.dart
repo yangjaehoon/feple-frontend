@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_named_board.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/screen/main/tab/search/artist_page/artist_follow_notifier.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_board.dart';
@@ -26,8 +27,11 @@ class ArtistPage extends StatefulWidget {
 }
 
 class _ArtistPageState extends State<ArtistPage> {
-  int _refreshKey = 0;
   late final ArtistFollowNotifier _followNotifier;
+  final _swiperKey = GlobalKey<MainImageSwiperState>();
+  final _scheduleKey = GlobalKey<ArtistScheduleState>();
+  final _boardKey = GlobalKey<NamedBoardState>();
+  final _songsKey = GlobalKey<ArtistSongsState>();
 
   @override
   void initState() {
@@ -45,7 +49,10 @@ class _ArtistPageState extends State<ArtistPage> {
   }
 
   Future<void> _onRefresh() async {
-    setState(() => _refreshKey++);
+    _swiperKey.currentState?.refresh();
+    _scheduleKey.currentState?.refresh();
+    _boardKey.currentState?.refresh();
+    _songsKey.currentState?.refresh();
     await _followNotifier.init();
   }
 
@@ -78,24 +85,24 @@ class _ArtistPageState extends State<ArtistPage> {
       child: Column(
         children: [
           MainImageSwiper(
-            key: ValueKey('swiper_$_refreshKey'),
+            key: _swiperKey,
             artistName: widget.artistName,
             artistId: widget.artistId,
             followNotifier: _followNotifier,
             profileImageUrl: (widget.profileImageUrl?.isNotEmpty ?? false) ? widget.profileImageUrl : null,
           ),
           ArtistSchedule(
-            key: ValueKey('schedule_$_refreshKey'),
+            key: _scheduleKey,
             artistId: widget.artistId,
             artistName: widget.artistName,
           ),
           ArtistBoard(
-            key: ValueKey('board_$_refreshKey'),
+            boardKey: _boardKey,
             artistId: widget.artistId,
             artistName: widget.artistName,
           ),
           ArtistSongs(
-            key: ValueKey('songs_$_refreshKey'),
+            key: _songsKey,
             artistId: widget.artistId,
             artistName: widget.artistName,
           ),

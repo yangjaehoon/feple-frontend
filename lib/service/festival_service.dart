@@ -1,3 +1,5 @@
+import 'dart:async' show unawaited;
+
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/festival_preview.dart';
@@ -49,7 +51,7 @@ class FestivalService {
 
       if (isDefaultList) {
         // 필터 없는 첫 페이지만 캐시 (오프라인 폴백용)
-        _cache.savePreviewList(items); // ignore: unawaited_futures
+        unawaited(_cache.savePreviewList(items));
       }
       return items;
     } catch (e) {

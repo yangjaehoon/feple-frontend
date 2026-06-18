@@ -4,12 +4,8 @@ import 'package:feple/model/comment_detail.dart';
 import 'package:feple/network/dio_client.dart';
 
 class CommentService {
-  Future<void> deleteComment(int commentId) async {
-    final response = await DioClient.dio.delete('/comments/$commentId');
-    if (response.statusCode != 204) {
-      throw StateError('Unexpected delete response: ${response.statusCode}');
-    }
-  }
+  Future<void> deleteComment(int commentId) =>
+      DioClient.dio.delete('/comments/$commentId');
 
   /// 게시글 댓글 목록 조회 (상세 화면용 — liked/likeCount 포함)
   Future<List<CommentDetail>> fetchPostComments(int postId) async {

@@ -15,13 +15,13 @@ class SearchFragment extends StatefulWidget {
 }
 
 class _SearchFragmentState extends State<SearchFragment> {
-  int _artistRefreshKey = 0;
+  final _circleArtistKey = GlobalKey<CircleArtistWidgetState>();
 
   Future<void> _onRefresh() async {
     try {
       await context.read<FestivalPreviewProvider>().refresh();
     } catch (_) {}
-    setState(() => _artistRefreshKey++);
+    _circleArtistKey.currentState?.refresh();
   }
 
   @override
@@ -42,7 +42,7 @@ class _SearchFragmentState extends State<SearchFragment> {
                 child: Column(
                   children: [
                     const ConcertListSwiperWidget(),
-                    CircleArtistWidget(key: ValueKey(_artistRefreshKey)),
+                    CircleArtistWidget(key: _circleArtistKey),
                   ],
                 ),
               ),

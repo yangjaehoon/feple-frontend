@@ -6,6 +6,7 @@ import 'package:feple/injection.dart';
 import 'package:feple/model/artist_model.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/model/post_model.dart';
+import 'package:feple/screen/search/search_style.dart';
 import 'package:feple/screen/search/w_search_result_tiles.dart';
 import 'package:feple/service/search_service.dart';
 import 'package:flutter/material.dart';

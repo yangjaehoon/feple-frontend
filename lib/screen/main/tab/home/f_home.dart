@@ -91,6 +91,8 @@ class _HomeFragmentState extends State<HomeFragment> {
   }
 
   Widget _buildScrollContent(BuildContext context, AbstractThemeColors colors) {
+    final orderedArtists = _notifier.orderedArtists;
+    final orderedFestivals = _notifier.orderedFestivals;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -102,7 +104,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                     context,
                     SlideRoute(
                       builder: (_) => FollowedArtistsByGenrePage(
-                        artists: _notifier.orderedArtists ?? [],
+                        artists: orderedArtists ?? [],
                         onSaveOrder: _notifier.saveArtistOrder,
                       ),
                     ),
@@ -112,7 +114,7 @@ class _HomeFragmentState extends State<HomeFragment> {
               : null,
         ),
         HomeArtistsSection(
-          artists: _notifier.orderedArtists,
+          artists: orderedArtists,
           hasError: _notifier.hasError,
           onRetry: _notifier.retry,
           onTap: (artist) async {
@@ -139,7 +141,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                     context,
                     SlideRoute(
                       builder: (_) => LikedFestivalsPage(
-                        festivals: _notifier.orderedFestivals ?? [],
+                        festivals: orderedFestivals ?? [],
                         onSaveOrder: _notifier.saveFestivalOrder,
                       ),
                     ),
@@ -149,7 +151,7 @@ class _HomeFragmentState extends State<HomeFragment> {
               : null,
         ),
         HomeFestivalsSection(
-          festivals: _notifier.orderedFestivals,
+          festivals: orderedFestivals,
           hasError: _notifier.hasError,
           onRetry: _notifier.retry,
           onTap: (festival) async {

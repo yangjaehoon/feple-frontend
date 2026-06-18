@@ -18,15 +18,17 @@ class SongRequestHistoryWidget extends StatefulWidget {
   const SongRequestHistoryWidget({super.key});
 
   @override
-  State<SongRequestHistoryWidget> createState() => _SongRequestHistoryWidgetState();
+  State<SongRequestHistoryWidget> createState() => SongRequestHistoryWidgetState();
 }
 
-class _SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
+class SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
   final _service = sl<SongRequestService>();
   List<SongRequestModel>? _requests;
   bool _loading = true;
   bool _hasError = false;
   int? _userId;
+
+  void refresh() => _load();
 
   @override
   void didChangeDependencies() {

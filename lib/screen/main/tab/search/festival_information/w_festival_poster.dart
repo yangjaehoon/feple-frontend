@@ -123,33 +123,35 @@ class _FestivalPosterState extends State<FestivalPoster> {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: _notifier,
-      builder: (context, _) {
-        final colors = context.appColors;
-        final hasDescription = widget.poster.description.isNotEmpty;
-        return Stack(
-          clipBehavior: Clip.none,
-          children: [
-            ..._buildBackground(colors),
-            SafeArea(
-              top: false,
-              bottom: false,
-              child: Padding(
-                padding: const EdgeInsets.only(top: AppDimens.appBarHeight),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildInfoRow(colors),
-                    if (hasDescription) ..._buildDescriptionSection(colors),
-                    if (!hasDescription) const SizedBox(height: 8),
-                  ],
-                ),
-              ),
+    final colors = context.appColors;
+    final hasDescription = widget.poster.description.isNotEmpty;
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        ..._buildBackground(colors),
+        SafeArea(
+          top: false,
+          bottom: false,
+          child: Padding(
+            padding: const EdgeInsets.only(top: AppDimens.appBarHeight),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildInfoRow(colors),
+                if (hasDescription)
+                  ListenableBuilder(
+                    listenable: _notifier,
+                    builder: (_, __) => Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: _buildDescriptionSection(colors),
+                    ),
+                  ),
+                if (!hasDescription) const SizedBox(height: 8),
+              ],
             ),
-          ],
-        );
-      },
+          ),
+        ),
+      ],
     );
   }
 
@@ -267,6 +269,19 @@ class _FestivalPosterState extends State<FestivalPoster> {
           ),
         ),
         const SizedBox(height: 8),
+        ListenableBuilder(
+          listenable: _notifier,
+          builder: (_, __) => _buildInfoColumnBottom(colors),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInfoColumnBottom(AbstractThemeColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
         _buildAttendingRow(colors),
         if (_notifier.hasInitError) ...[
           const SizedBox(height: 4),

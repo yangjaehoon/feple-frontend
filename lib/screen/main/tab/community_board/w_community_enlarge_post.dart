@@ -223,56 +223,69 @@ class _EnlargePostState extends State<EnlargePost> {
   }
 
   Future<void> _onMenuSelected(String value) async {
-    if (value == 'edit') {
-      await Navigator.push(
-        context,
-        SlideRoute(
-          builder: (_) => WritePostScreen(
-            title: 'edit_post'.tr(),
-            initialTitle: _title,
-            initialContent: _content,
-            initialImageUrl: _imageUrl,
-            showAnonymous: false,
-            onSubmit: (t, c, _, img) async {
-              await _postService.updatePost(
-                postId: widget.id,
-                title: t,
-                content: c,
-                imageObjectKey: img,
-              );
-              AppEvents.postChanged.value++;
-              if (mounted) {
-                setState(() {
-                  _title = t;
-                  _content = c;
-                  _imageUrl = img;
-                  _updatedAt = DateTime.now();
-                });
-                context.showSuccessSnackbar('post_updated'.tr());
-              }
-            },
-          ),
-        ),
-      );
-    } else if (value == 'delete') {
-      final confirmed = await showConfirmDialog(
-        context,
-        title: 'delete_post'.tr(),
-        content: 'delete_post_confirm'.tr(),
-        confirmLabel: 'delete_post'.tr(),
-      );
-      if (confirmed) await _notifier.deletePost();
-    } else if (value == 'report') {
-      showReportSheet(
-        context,
-        titleKey: 'report_post',
-        onSubmit: (reason, detail) =>
-            _reportService.submitReport(widget.id, reason, detail: detail),
-        duplicateErrorKey: 'report_duplicate',
-      );
-    } else if (value == 'share') {
-      Share.share('$_title\n\n$_content');
+    switch (value) {
+      case 'edit':
+        await _onEditPost();
+      case 'delete':
+        await _onDeletePost();
+      case 'report':
+        _onReportPost();
+      case 'share':
+        Share.share('$_title\n\n$_content');
     }
+  }
+
+  Future<void> _onEditPost() async {
+    await Navigator.push(
+      context,
+      SlideRoute(
+        builder: (_) => WritePostScreen(
+          title: 'edit_post'.tr(),
+          initialTitle: _title,
+          initialContent: _content,
+          initialImageUrl: _imageUrl,
+          showAnonymous: false,
+          onSubmit: (t, c, _, img) async {
+            await _postService.updatePost(
+              postId: widget.id,
+              title: t,
+              content: c,
+              imageObjectKey: img,
+            );
+            AppEvents.postChanged.value++;
+            if (mounted) {
+              setState(() {
+                _title = t;
+                _content = c;
+                _imageUrl = img;
+                _updatedAt = DateTime.now();
+              });
+              context.showSuccessSnackbar('post_updated'.tr());
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Future<void> _onDeletePost() async {
+    final confirmed = await showConfirmDialog(
+      context,
+      title: 'delete_post'.tr(),
+      content: 'delete_post_confirm'.tr(),
+      confirmLabel: 'delete_post'.tr(),
+    );
+    if (confirmed) await _notifier.deletePost();
+  }
+
+  void _onReportPost() {
+    showReportSheet(
+      context,
+      titleKey: 'report_post',
+      onSubmit: (reason, detail) =>
+          _reportService.submitReport(widget.id, reason, detail: detail),
+      duplicateErrorKey: 'report_duplicate',
+    );
   }
 
   Widget _buildScrollContent(AbstractThemeColors colors, int? userId) {
@@ -312,20 +325,7 @@ class _EnlargePostState extends State<EnlargePost> {
             onScrapTap: () => _notifier.toggleScrap(userId),
           ),
           const SizedBox(height: 8),
-          Row(
-            children: [
-              Icon(Icons.remove_red_eye_outlined,
-                  size: 14,
-                  color: colors.textSecondary.withValues(alpha: 0.5)),
-              const SizedBox(width: 4),
-              Text(
-                'view_count'.tr(args: [_notifier.viewCount.toString()]),
-                style: TextStyle(
-                    fontSize: AppDimens.fontSizeXs,
-                    color: colors.textSecondary.withValues(alpha: 0.5)),
-              ),
-            ],
-          ),
+          _buildViewCountRow(colors),
           const SizedBox(height: 24),
           CommentSection(
             rootComments: _notifier.rootComments,
@@ -353,6 +353,22 @@ class _EnlargePostState extends State<EnlargePost> {
           const SizedBox(height: 16),
         ],
       ),
+    );
+  }
+
+  Widget _buildViewCountRow(AbstractThemeColors colors) {
+    return Row(
+      children: [
+        Icon(Icons.remove_red_eye_outlined,
+            size: 14, color: colors.textSecondary.withValues(alpha: 0.5)),
+        const SizedBox(width: 4),
+        Text(
+          'view_count'.tr(args: [_notifier.viewCount.toString()]),
+          style: TextStyle(
+              fontSize: AppDimens.fontSizeXs,
+              color: colors.textSecondary.withValues(alpha: 0.5)),
+        ),
+      ],
     );
   }
 

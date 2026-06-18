@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:feple/model/artist_photo_response.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
+import 'package:feple/common/util/popup_menu_item_builder.dart';
 import 'artist_photo_notifier.dart';
 import 'w_edit_photo_sheet.dart';
 import 'w_photo_fullscreen_viewer.dart';
@@ -65,19 +66,6 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
     if (confirmed) _notifier.deletePhoto(photoId);
   }
 
-
-  PopupMenuItem<String> _menuItem(
-    String value, IconData icon, String label, AbstractThemeColors colors, {Color? color}) {
-    return PopupMenuItem(
-      value: value,
-      height: 44,
-      child: Row(children: [
-        Icon(icon, size: 16, color: color ?? colors.textTitle),
-        const SizedBox(width: 10),
-        Expanded(child: Text(label, style: TextStyle(color: color ?? colors.textTitle), overflow: TextOverflow.ellipsis)),
-      ]),
-    );
-  }
 
   void _showEditBottomSheet(ArtistPhotoResponse photo) {
     showAppBottomSheet(
@@ -352,11 +340,28 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
       },
       itemBuilder: (_) => [
         if (isUploader) ...[
-          _menuItem('edit', Icons.edit_rounded, 'photo_edit_action'.tr(), colors),
+          buildPopupMenuItem(
+            value: 'edit',
+            icon: Icons.edit_rounded,
+            label: 'photo_edit_action'.tr(),
+            colors: colors,
+          ),
           const PopupMenuDivider(height: 1),
-          _menuItem('delete', Icons.delete_rounded, 'msg_delete'.tr(), colors, color: AppColors.errorRed),
+          buildPopupMenuItem(
+            value: 'delete',
+            icon: Icons.delete_rounded,
+            label: 'msg_delete'.tr(),
+            colors: colors,
+            danger: true,
+          ),
         ] else
-          _menuItem('report', Icons.flag_rounded, 'report_photo'.tr(), colors, color: AppColors.errorRed),
+          buildPopupMenuItem(
+            value: 'report',
+            icon: Icons.flag_rounded,
+            label: 'report_photo'.tr(),
+            colors: colors,
+            danger: true,
+          ),
       ],
     );
   }

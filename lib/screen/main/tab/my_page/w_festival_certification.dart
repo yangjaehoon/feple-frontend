@@ -17,10 +17,10 @@ class FtvCertificationWidget extends StatefulWidget {
   const FtvCertificationWidget({super.key});
 
   @override
-  State<FtvCertificationWidget> createState() => _FtvCertificationWidgetState();
+  State<FtvCertificationWidget> createState() => FtvCertificationWidgetState();
 }
 
-class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
+class FtvCertificationWidgetState extends State<FtvCertificationWidget> {
   final _certService = sl<CertificationService>();
   List<CertificationModel>? _certifications;
   bool _loading = true;
@@ -31,6 +31,8 @@ class _FtvCertificationWidgetState extends State<FtvCertificationWidget> {
     super.initState();
     _load();
   }
+
+  void refresh() => _load();
 
   Future<void> _load() async {
     setState(() { _loading = true; _hasError = false; });

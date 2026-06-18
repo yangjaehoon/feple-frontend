@@ -19,10 +19,16 @@ class MypageFragment extends StatefulWidget {
 }
 
 class _MypageFragmentState extends State<MypageFragment> {
-  int _refreshKey = 0;
+  final _profileKey = GlobalKey<ProfileWidgetState>();
+  final _statsKey = GlobalKey<MyPostCommentWidgetState>();
+  final _certKey = GlobalKey<FtvCertificationWidgetState>();
+  final _songsKey = GlobalKey<SongRequestHistoryWidgetState>();
 
   Future<void> _onRefresh() async {
-    setState(() => _refreshKey++);
+    _profileKey.currentState?.refresh();
+    _statsKey.currentState?.refresh();
+    _certKey.currentState?.refresh();
+    _songsKey.currentState?.refresh();
   }
 
   @override
@@ -51,10 +57,10 @@ class _MypageFragmentState extends State<MypageFragment> {
                   padding: EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
                   child: Column(
                     children: [
-                      ProfileWidget(key: ValueKey('profile_$_refreshKey'), userId: userId),
-                      MyPostCommentWidget(key: ValueKey('stats_$_refreshKey'), userId: userId),
-                      FtvCertificationWidget(key: ValueKey('cert_$_refreshKey')),
-                      SongRequestHistoryWidget(key: ValueKey('songs_$_refreshKey')),
+                      ProfileWidget(key: _profileKey, userId: userId),
+                      MyPostCommentWidget(key: _statsKey, userId: userId),
+                      FtvCertificationWidget(key: _certKey),
+                      SongRequestHistoryWidget(key: _songsKey),
                     ],
                   ),
                 ),

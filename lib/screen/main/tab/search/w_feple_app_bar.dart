@@ -25,18 +25,7 @@ class _FepleAppBarState extends State<FepleAppBar> {
   @override
   void initState() {
     super.initState();
-    _countNotifier.addListener(_onCountChanged);
     _countNotifier.load();
-  }
-
-  void _onCountChanged() {
-    if (mounted) setState(() {});
-  }
-
-  @override
-  void dispose() {
-    _countNotifier.removeListener(_onCountChanged);
-    super.dispose();
   }
 
   Future<void> _openNotifications() async {
@@ -63,7 +52,10 @@ class _FepleAppBarState extends State<FepleAppBar> {
           const Spacer(),
           ...widget.extraTrailingActions,
           _buildSearchButton(context),
-          _buildNotificationButton(colors),
+          ListenableBuilder(
+            listenable: _countNotifier,
+            builder: (_, __) => _buildNotificationButton(colors),
+          ),
         ],
       ),
     );

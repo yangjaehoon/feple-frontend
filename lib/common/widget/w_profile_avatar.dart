@@ -1,9 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/user_roles.dart';
 import 'package:flutter/material.dart';
-
-const _kRoleAdmin = 'ADMIN';
-const _kRoleArtist = 'ARTIST';
 
 /// 프로필 이미지 + 역할 배지(Admin/Artist/인증) 오버레이 위젯.
 class ProfileAvatar extends StatelessWidget {
@@ -58,8 +56,8 @@ class ProfileAvatar extends StatelessWidget {
   }
 
   Widget _buildWithBadge(Widget avatar) {
-    final isAdmin = userRole == _kRoleAdmin;
-    final isArtist = userRole == _kRoleArtist;
+    final isAdmin = userRole == kRoleAdmin;
+    final isArtist = userRole == kRoleArtist;
 
     final Color badgeColor;
     final IconData badgeIcon;
@@ -108,8 +106,8 @@ class ProfileAvatar extends StatelessWidget {
     final colors = context.appColors;
     final avatar = _buildAvatar(colors);
 
-    final isAdmin = userRole == _kRoleAdmin;
-    final isArtist = userRole == _kRoleArtist;
+    final isAdmin = userRole == kRoleAdmin;
+    final isArtist = userRole == kRoleArtist;
     final hasBadge = certified || isAdmin || isArtist;
     if (!hasBadge) return avatar;
 

@@ -7,7 +7,7 @@ class FollowResponse {
   factory FollowResponse.fromJson(Map<String, dynamic> json) {
     return FollowResponse(
       followed: json['followed'] as bool,
-      followerCount: json['followerCount'] as int,
+      followerCount: (json['followerCount'] as num).toInt(),
     );
   }
 }

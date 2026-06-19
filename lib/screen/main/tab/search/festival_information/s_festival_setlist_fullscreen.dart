@@ -420,36 +420,7 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
           children: [
             const SizedBox(height: 12),
             const BottomSheetHandle(),
-            const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  Flexible(
-                    child: Text(
-                      widget.entry.artistName,
-                      style: TextStyle(fontSize: AppDimens.fontSizeXl, fontWeight: FontWeight.w700, color: colors.textTitle),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    'edit_setlist'.tr(),
-                    style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 6),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                'select_songs_hint'.tr(),
-                style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
-              ),
-            ),
-            const SizedBox(height: 12),
+            _buildSheetHeader(colors),
             Expanded(child: _buildSongList(colors, controller)),
             _buildFooter(colors),
           ],
@@ -508,6 +479,44 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
           );
         },
       ),
+    );
+  }
+
+  Widget _buildSheetHeader(AbstractThemeColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            children: [
+              Flexible(
+                child: Text(
+                  widget.entry.artistName,
+                  style: TextStyle(fontSize: AppDimens.fontSizeXl, fontWeight: FontWeight.w700, color: colors.textTitle),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                'edit_setlist'.tr(),
+                style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 6),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Text(
+            'select_songs_hint'.tr(),
+            style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
+          ),
+        ),
+        const SizedBox(height: 12),
+      ],
     );
   }
 

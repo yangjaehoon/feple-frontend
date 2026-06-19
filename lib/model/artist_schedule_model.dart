@@ -57,7 +57,7 @@ class ArtistScheduleModel {
 
   factory ArtistScheduleModel.fromJson(Map<String, dynamic> json) {
     return ArtistScheduleModel(
-      festivalId: json['festivalId'] as int,
+      festivalId: (json['festivalId'] as num).toInt(),
       title: json['title'] as String,
       description: json['description'] as String?,
       location: json['location'] as String?,
@@ -86,7 +86,7 @@ class CoArtistInfo {
 
   factory CoArtistInfo.fromJson(Map<String, dynamic> json) {
     return CoArtistInfo(
-      artistId: json['artistId'] as int,
+      artistId: (json['artistId'] as num).toInt(),
       artistName: json['artistName'] as String,
       profileImageUrl: json['profileImageUrl'] as String?,
     );

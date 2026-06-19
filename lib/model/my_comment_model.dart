@@ -20,13 +20,13 @@ class MyComment {
   });
 
   factory MyComment.fromJson(Map<String, dynamic> json) => MyComment(
-        commentId: json['commentId'] as int,
+        commentId: (json['commentId'] as num).toInt(),
         content: json['content'] as String,
-        postId: json['postId'] as int,
+        postId: (json['postId'] as num).toInt(),
         postTitle: json['postTitle'] as String,
         postContent: json['postContent'] as String,
         postNickname: json['postNickname'] as String,
-        postLikeCount: json['postLikeCount'] as int,
+        postLikeCount: (json['postLikeCount'] as num).toInt(),
         boardDisplayName: json['boardDisplayName'] as String,
       );
 }

@@ -198,40 +198,44 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
                 ? Border.all(color: Colors.white.withValues(alpha: 0.4), width: 1)
                 : null,
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              isLoading
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation(Colors.white),
-                      ),
-                    )
-                  : Icon(
-                      isFollowed ? Icons.check_rounded : Icons.favorite_rounded,
-                      color: Colors.white,
-                      size: 16,
-                    ),
-              const SizedBox(width: 6),
-              Opacity(
-                opacity: isLoading ? 0 : 1,
-                child: Text(
-                  isFollowed ? 'following'.tr() : 'follow'.tr(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: AppDimens.fontSizeSm,
-                    letterSpacing: 0.3,
-                  ),
-                ),
-              ),
-            ],
-          ),
+          child: _buildFollowButtonContent(isFollowed: isFollowed, isLoading: isLoading),
         ),
       ),
+    );
+  }
+
+  Widget _buildFollowButtonContent({required bool isFollowed, required bool isLoading}) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        isLoading
+            ? const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                ),
+              )
+            : Icon(
+                isFollowed ? Icons.check_rounded : Icons.favorite_rounded,
+                color: Colors.white,
+                size: 16,
+              ),
+        const SizedBox(width: 6),
+        Opacity(
+          opacity: isLoading ? 0 : 1,
+          child: Text(
+            isFollowed ? 'following'.tr() : 'follow'.tr(),
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+              fontSize: AppDimens.fontSizeSm,
+              letterSpacing: 0.3,
+            ),
+          ),
+        ),
+      ],
     );
   }
 

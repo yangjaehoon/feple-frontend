@@ -15,9 +15,9 @@ class Comment {
 
   factory Comment.fromJson(Map<String, dynamic> json) {
     return Comment(
-      id: json['id'] as int,
-      postId: json['postId'] as int,
-      userId: json['userId'] as int,
+      id: (json['id'] as num).toInt(),
+      postId: (json['postId'] as num).toInt(),
+      userId: (json['userId'] as num).toInt(),
       content: json['content'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
     );

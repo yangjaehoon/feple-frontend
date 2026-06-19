@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/user_roles.dart';
 import 'package:flutter/material.dart';
 
 /// 닉네임 옆에 인라인으로 표시하는 역할 배지 아이콘.
@@ -18,8 +19,8 @@ class InlineBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isAdmin = userRole == 'ADMIN';
-    final isArtist = userRole == 'ARTIST';
+    final isAdmin = userRole == kRoleAdmin;
+    final isArtist = userRole == kRoleArtist;
     if (!isAdmin && !isArtist && !certified) return const SizedBox.shrink();
 
     final Color color;

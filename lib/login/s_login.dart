@@ -287,51 +287,57 @@ class _LoginPageState extends State<LoginPage> {
       context: context,
       builder: (ctx) {
         final colors = ctx.appColors;
-        return AlertDialog(
-          backgroundColor: colors.surface,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(16)),
-          ),
-          title: Text(
-            'reset_password'.tr(),
-            style: TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle),
-          ),
-          content: TextField(
-            controller: emailCtrl,
-            keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              hintText: 'registered_email'.tr(),
-              border: const OutlineInputBorder(),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: Text('cancel'.tr()),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colors.activate,
-                foregroundColor: Colors.white,
+        bool isSending = false;
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) {
+            return AlertDialog(
+              backgroundColor: colors.surface,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(16)),
               ),
-              onPressed: () async {
-                final email = emailCtrl.text.trim();
-                if (email.isEmpty) return;
-                Navigator.pop(ctx);
-                try {
-                  await AuthService.instance.sendPasswordReset(email);
-                  if (mounted) {
-                    context.showSuccessSnackbar('password_reset_sent'.tr());
-                  }
-                } on FirebaseAuthException catch (e) {
-                  if (mounted) {
-                    context.showErrorSnackbar(AuthService.instance.firebaseErrorMessage(e.code));
-                  }
-                }
-              },
-              child: Text('send'.tr()),
-            ),
-          ],
+              title: Text(
+                'reset_password'.tr(),
+                style: TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle),
+              ),
+              content: TextField(
+                controller: emailCtrl,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  hintText: 'registered_email'.tr(),
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: Text('cancel'.tr()),
+                ),
+                SizedBox(
+                  width: 80,
+                  child: LoadingButton(
+                    label: 'send'.tr(),
+                    isLoading: isSending,
+                    backgroundColor: colors.activate,
+                    height: 40,
+                    borderRadius: AppDimens.radiusSmall,
+                    onPressed: () async {
+                      final email = emailCtrl.text.trim();
+                      if (email.isEmpty) return;
+                      setDialogState(() => isSending = true);
+                      try {
+                        await AuthService.instance.sendPasswordReset(email);
+                        if (ctx.mounted) Navigator.pop(ctx);
+                        if (mounted) context.showSuccessSnackbar('password_reset_sent'.tr());
+                      } on FirebaseAuthException catch (e) {
+                        if (ctx.mounted) setDialogState(() => isSending = false);
+                        if (mounted) context.showErrorSnackbar(AuthService.instance.firebaseErrorMessage(e.code));
+                      }
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
         );
       },
     );

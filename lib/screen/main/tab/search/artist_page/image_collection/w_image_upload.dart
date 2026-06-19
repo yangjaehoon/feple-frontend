@@ -223,53 +223,66 @@ class _ImgUploadState extends State<ImgUpload> {
           padding: const EdgeInsets.all(18.0),
           child: Column(
             children: [
-              ImagePickerBox(
-                imageData: imageData,
-                onTap: _pickImage,
-                label: 'artist_photo_add_label'.tr(),
-              ),
-              if (_imageError != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 6, left: 4),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      _imageError!,
-                      style: const TextStyle(
-                        fontSize: AppDimens.fontSizeXs,
-                        color: AppColors.errorRed,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
-              Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Text(
-                        widget.artistName,
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          color: colors.textTitle,
-                        ),
-                      ),
-                    ),
-                    _buildTitleField(colors),
-                    const SizedBox(height: 12),
-                    _buildFestivalDropdown(colors),
-                    const SizedBox(height: 4),
-                    _buildAnonymousToggle(colors),
-                  ],
-                ),
-              ),
+              _buildImagePicker(),
+              _buildForm(colors),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildImagePicker() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ImagePickerBox(
+          imageData: imageData,
+          onTap: _pickImage,
+          label: 'artist_photo_add_label'.tr(),
+        ),
+        if (_imageError != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 6, left: 4),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                _imageError!,
+                style: const TextStyle(
+                  fontSize: AppDimens.fontSizeXs,
+                  color: AppColors.errorRed,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildForm(AbstractThemeColors colors) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: Text(
+              widget.artistName,
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: colors.textTitle,
+              ),
+            ),
+          ),
+          _buildTitleField(colors),
+          const SizedBox(height: 12),
+          _buildFestivalDropdown(colors),
+          const SizedBox(height: 4),
+          _buildAnonymousToggle(colors),
+        ],
       ),
     );
   }

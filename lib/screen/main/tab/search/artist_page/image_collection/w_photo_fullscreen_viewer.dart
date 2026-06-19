@@ -137,52 +137,60 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 6),
-              Row(
-                children: [
-                  const Icon(Icons.person_rounded, size: 13, color: Colors.white70),
-                  const SizedBox(width: 4),
-                  Text(
-                    photo.uploaderNickname,
-                    style: const TextStyle(color: Colors.white70, fontSize: AppDimens.fontSizeXs),
-                  ),
-                  if (photo.description.isNotEmpty) ...[
-                    const SizedBox(width: 10),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Colors.white24,
-                        borderRadius: BorderRadius.circular(AppDimens.cardRadius),
-                      ),
-                      child: Text(
-                        photo.description,
-                        style: const TextStyle(color: Colors.white, fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
+              _buildUploaderRow(photo),
               const SizedBox(height: 12),
-              GestureDetector(
-                onTap: widget.onLike,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      photo.isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                      color: photo.isLiked ? const Color(0xFFFF6B8A) : Colors.white70,
-                      size: 22,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      '${photo.likeCount}',
-                      style: const TextStyle(color: Colors.white70, fontSize: AppDimens.fontSizeMd, fontWeight: FontWeight.w600),
-                    ),
-                  ],
-                ),
-              ),
+              _buildLikeRow(photo),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildUploaderRow(ArtistPhotoResponse photo) {
+    return Row(
+      children: [
+        const Icon(Icons.person_rounded, size: 13, color: Colors.white70),
+        const SizedBox(width: 4),
+        Text(
+          photo.uploaderNickname,
+          style: const TextStyle(color: Colors.white70, fontSize: AppDimens.fontSizeXs),
+        ),
+        if (photo.description.isNotEmpty) ...[
+          const SizedBox(width: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: Colors.white24,
+              borderRadius: BorderRadius.circular(AppDimens.cardRadius),
+            ),
+            child: Text(
+              photo.description,
+              style: const TextStyle(color: Colors.white, fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildLikeRow(ArtistPhotoResponse photo) {
+    return GestureDetector(
+      onTap: widget.onLike,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            photo.isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+            color: photo.isLiked ? const Color(0xFFFF6B8A) : Colors.white70,
+            size: 22,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            '${photo.likeCount}',
+            style: const TextStyle(color: Colors.white70, fontSize: AppDimens.fontSizeMd, fontWeight: FontWeight.w600),
+          ),
+        ],
       ),
     );
   }

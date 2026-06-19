@@ -259,54 +259,68 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(
-                    photo.title,
-                    style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: AppDimens.fontSizeXl,
-                        color: colors.textTitle),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                _buildPhotoMenu(photo, isUploader, colors),
-              ],
-            ),
-            Row(
-              children: [
-                if (photo.isAnonymous)
-                  _buildBadge(Icons.visibility_off_rounded, 'post_anonymous'.tr(), colors),
-                if (photo.isAnonymous && photo.description.isNotEmpty)
-                  const SizedBox(width: 6),
-                if (photo.description.isNotEmpty)
-                  Flexible(child: _buildDescriptionBadge(photo, colors)),
-              ],
-            ),
-            if (photo.uploaderNickname.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Row(
-                  children: [
-                    Icon(Icons.person_rounded, size: 12, color: colors.textSecondary),
-                    const SizedBox(width: 3),
-                    Flexible(
-                      child: Text(
-                        photo.uploaderNickname,
-                        style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            _buildPhotoHeader(photo, isUploader, colors),
+            _buildPhotoMeta(photo, colors),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildPhotoHeader(ArtistPhotoResponse photo, bool isUploader, AbstractThemeColors colors) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Text(
+            photo.title,
+            style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: AppDimens.fontSizeXl,
+                color: colors.textTitle),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        _buildPhotoMenu(photo, isUploader, colors),
+      ],
+    );
+  }
+
+  Widget _buildPhotoMeta(ArtistPhotoResponse photo, AbstractThemeColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          children: [
+            if (photo.isAnonymous)
+              _buildBadge(Icons.visibility_off_rounded, 'post_anonymous'.tr(), colors),
+            if (photo.isAnonymous && photo.description.isNotEmpty)
+              const SizedBox(width: 6),
+            if (photo.description.isNotEmpty)
+              Flexible(child: _buildDescriptionBadge(photo, colors)),
+          ],
+        ),
+        if (photo.uploaderNickname.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Row(
+              children: [
+                Icon(Icons.person_rounded, size: 12, color: colors.textSecondary),
+                const SizedBox(width: 3),
+                Flexible(
+                  child: Text(
+                    photo.uploaderNickname,
+                    style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
     );
   }
 

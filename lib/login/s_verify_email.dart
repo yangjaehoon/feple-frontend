@@ -161,51 +161,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
               children: [
                 _buildIcon(colors),
                 const SizedBox(height: 28),
-                Text(
-                  'verify_email_title'.tr(),
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w800,
-                    color: colors.textTitle,
-                    letterSpacing: -0.5,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'verify_email_sent_to'.tr(args: [widget.email]),
-                  style: TextStyle(
-                    fontSize: AppDimens.fontSizeMd,
-                    color: colors.textSecondary,
-                    fontWeight: FontWeight.w500,
-                    height: 1.6,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'verify_email_instruction'.tr(),
-                  style: TextStyle(
-                    fontSize: AppDimens.fontSizeSm,
-                    color: colors.textSecondary,
-                    height: 1.6,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
+                _buildTextSection(colors),
                 const SizedBox(height: 40),
-                if (_errorMessage != null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: Text(
-                      _errorMessage!,
-                      style: const TextStyle(
-                        fontSize: AppDimens.fontSizeSm,
-                        color: AppColors.errorRed,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
+                if (_errorMessage != null) _buildError(),
                 LoadingButton(
                   label: 'verify_email_done_btn'.tr(),
                   onPressed: busy ? null : _onVerifyTapped,
@@ -238,6 +196,59 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTextSection(AbstractThemeColors colors) {
+    return Column(
+      children: [
+        Text(
+          'verify_email_title'.tr(),
+          style: TextStyle(
+            fontSize: 26,
+            fontWeight: FontWeight.w800,
+            color: colors.textTitle,
+            letterSpacing: -0.5,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 12),
+        Text(
+          'verify_email_sent_to'.tr(args: [widget.email]),
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeMd,
+            color: colors.textSecondary,
+            fontWeight: FontWeight.w500,
+            height: 1.6,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'verify_email_instruction'.tr(),
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeSm,
+            color: colors.textSecondary,
+            height: 1.6,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildError() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Text(
+        _errorMessage!,
+        style: const TextStyle(
+          fontSize: AppDimens.fontSizeSm,
+          color: AppColors.errorRed,
+          fontWeight: FontWeight.w500,
+        ),
+        textAlign: TextAlign.center,
       ),
     );
   }

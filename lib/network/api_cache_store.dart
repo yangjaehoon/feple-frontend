@@ -89,7 +89,7 @@ class ApiCacheStore {
     if (raw == null) return null;
     try {
       final map = jsonDecode(raw) as Map<String, dynamic>;
-      final ts = map['ts'] as int;
+      final ts = (map['ts'] as num).toInt();
       if (_expired(url, ts)) {
         prefs.remove(_key(url));
         return null;
@@ -193,7 +193,7 @@ class ApiCacheStore {
       final raw = prefs.getString(_key(url));
       if (raw == null) return null;
       final map = jsonDecode(raw) as Map<String, dynamic>;
-      final ts = map['ts'] as int;
+      final ts = (map['ts'] as num).toInt();
       if (_expired(url, ts)) {
         await prefs.remove(_key(url));
         return null;

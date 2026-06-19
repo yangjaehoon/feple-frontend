@@ -24,7 +24,7 @@ class FestivalArtistItem {
 
   factory FestivalArtistItem.fromJson(Map<String, dynamic> json) {
     return FestivalArtistItem(
-      artistId: json['artistId'] as int,
+      artistId: (json['artistId'] as num).toInt(),
       artistName: json['artistName'] as String,
       profileImageUrl: json['profileImageUrl'] as String?,
       stageName: json['stageName'] as String?,

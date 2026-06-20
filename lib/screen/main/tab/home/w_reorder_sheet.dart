@@ -64,7 +64,6 @@ class _ReorderSheetState extends State<ReorderSheet> {
   Widget _buildList(AbstractThemeColors colors) {
     return Flexible(
       child: ReorderableListView.builder(
-        shrinkWrap: true,
         itemCount: _items.length,
         onReorder: (oldIndex, newIndex) {
           setState(() {

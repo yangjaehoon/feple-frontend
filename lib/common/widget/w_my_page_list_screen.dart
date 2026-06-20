@@ -8,12 +8,8 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:flutter/material.dart';
 
 /// 내 게시글·스크랩처럼 '제목 + 서브텍스트 + trailing 숫자' 형태 목록의 기본 스켈레톤.
-Widget postListSkeleton(AbstractThemeColors colors) => ListView.separated(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: 5,
-      separatorBuilder: (_, __) => Divider(thickness: 1, color: colors.listDivider),
-      itemBuilder: (_, __) => Padding(
+Widget postListSkeleton(AbstractThemeColors colors) {
+  Widget item() => Padding(
         padding: const EdgeInsets.symmetric(
             horizontal: AppDimens.paddingHorizontal, vertical: 12),
         child: Row(
@@ -32,8 +28,16 @@ Widget postListSkeleton(AbstractThemeColors colors) => ListView.separated(
             const SkeletonBox(width: 50, height: 13),
           ],
         ),
-      ),
-    );
+      );
+  return Column(
+    children: [
+      for (int i = 0; i < 5; i++) ...[
+        item(),
+        if (i < 4) Divider(thickness: 1, color: colors.listDivider),
+      ],
+    ],
+  );
+}
 
 /// 마이페이지의 목록형 서브 화면(내 게시글, 내 댓글, 스크랩)에서 공유하는 스캐폴드.
 ///

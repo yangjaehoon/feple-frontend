@@ -114,17 +114,19 @@ class ArtistSongsState extends State<ArtistSongs> {
       useListViewForEmptyState: false,
       builder: (_, songs) {
         final preview = songs.take(5).toList();
-        return ListView.separated(
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: preview.length,
-          itemBuilder: (_, index) => SongListTile(song: preview[index], index: index),
-          separatorBuilder: (_, __) => Divider(
-            thickness: 1,
-            color: colors.listDivider,
-            indent: AppDimens.paddingHorizontal,
-            endIndent: AppDimens.paddingHorizontal,
-          ),
+        return Column(
+          children: [
+            for (int i = 0; i < preview.length; i++) ...[
+              SongListTile(song: preview[i], index: i),
+              if (i < preview.length - 1)
+                Divider(
+                  thickness: 1,
+                  color: colors.listDivider,
+                  indent: AppDimens.paddingHorizontal,
+                  endIndent: AppDimens.paddingHorizontal,
+                ),
+            ],
+          ],
         );
       },
     );

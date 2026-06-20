@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:feple/app.dart';
+import 'package:feple/auth/token_store.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/notification_type.dart';
@@ -135,6 +136,9 @@ class FcmService {
 
   Future<void> _unregisterFromServer() async {
     try {
+      // JWT가 없으면(세션 만료 후 logout 재진입 시) 서버 호출 생략
+      final jwt = await TokenStore.readAccessToken();
+      if (jwt == null || jwt.isEmpty) return;
       // getToken()은 네트워크/APNs 상태에 따라 무기한 대기할 수 있으므로 타임아웃 필수
       final token = await _messaging.getToken()
           .timeout(const Duration(seconds: 5));

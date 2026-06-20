@@ -18,6 +18,7 @@ class UserProvider with ChangeNotifier {
   final UserService _userService;
 
   User? _user;
+  bool _isLoggingOut = false;
   User? get user => _user;
   int? get currentUserId => _user?.id;
   String? get currentProfileImageUrl => _user?.profileImageUrl;
@@ -76,20 +77,26 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> logout() async {
-    // 서버 리프레시 토큰 취소 — TokenStore.clear() 전에 호출해야 토큰을 읽을 수 있음
+    if (_isLoggingOut) return;
+    _isLoggingOut = true;
     try {
-      final refreshToken = await TokenStore.readRefreshToken();
-      if (refreshToken != null) {
-        await AuthService.instance.revokeRefreshToken(refreshToken);
-      }
-    } catch (_) {}
-    await FcmService.instance.stop();
-    await AuthService.instance.signOut();
-    await TokenStore.clear();
-    await _storage.delete(key: _kUserJson);
-    await Prefs.onboardingCompleted.set(false);
-    _user = null;
-    notifyListeners();
+      // 서버 리프레시 토큰 취소 — TokenStore.clear() 전에 호출해야 토큰을 읽을 수 있음
+      try {
+        final refreshToken = await TokenStore.readRefreshToken();
+        if (refreshToken != null) {
+          await AuthService.instance.revokeRefreshToken(refreshToken);
+        }
+      } catch (_) {}
+      await FcmService.instance.stop();
+      await AuthService.instance.signOut();
+      await TokenStore.clear();
+      await _storage.delete(key: _kUserJson);
+      await Prefs.onboardingCompleted.set(false);
+      _user = null;
+      notifyListeners();
+    } finally {
+      _isLoggingOut = false;
+    }
   }
 
   Future<void> deleteAccount() async {

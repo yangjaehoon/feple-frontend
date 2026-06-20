@@ -122,17 +122,19 @@ class ArtistScheduleState extends State<ArtistSchedule> {
       useListViewForEmptyState: false,
       builder: (_, data) {
         final upcoming = data.where((item) => !item.isPast).toList();
-        return ListView.separated(
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: upcoming.length,
-          itemBuilder: (_, index) => ScheduleListTile(item: upcoming[index]),
-          separatorBuilder: (_, __) => Divider(
-            thickness: 1,
-            color: colors.listDivider,
-            indent: AppDimens.paddingHorizontal,
-            endIndent: AppDimens.paddingHorizontal,
-          ),
+        return Column(
+          children: [
+            for (int i = 0; i < upcoming.length; i++) ...[
+              ScheduleListTile(item: upcoming[i]),
+              if (i < upcoming.length - 1)
+                Divider(
+                  thickness: 1,
+                  color: colors.listDivider,
+                  indent: AppDimens.paddingHorizontal,
+                  endIndent: AppDimens.paddingHorizontal,
+                ),
+            ],
+          ],
         );
       },
     );

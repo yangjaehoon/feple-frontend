@@ -14,35 +14,36 @@ class MyCommentsScreen extends StatelessWidget {
   const MyCommentsScreen({super.key, required this.userId});
 
   Widget _buildSkeleton(AbstractThemeColors colors) {
-    return ListView.separated(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: 5,
-      separatorBuilder: (_, __) =>
-          Divider(thickness: 1, color: colors.listDivider),
-      itemBuilder: (_, __) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: const [
-            SkeletonBox(
-              width: 36,
-              height: 36,
-              borderRadius: BorderRadius.all(Radius.circular(18)),
+    Widget item() => Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: const [
+          SkeletonBox(
+            width: 36,
+            height: 36,
+            borderRadius: BorderRadius.all(Radius.circular(18)),
+          ),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SkeletonBox(height: 14),
+                SizedBox(height: 6),
+                SkeletonBox(width: 120, height: 11),
+              ],
             ),
-            SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SkeletonBox(height: 14),
-                  SizedBox(height: 6),
-                  SkeletonBox(width: 120, height: 11),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
+    );
+    return Column(
+      children: [
+        for (int i = 0; i < 5; i++) ...[
+          item(),
+          if (i < 4) Divider(thickness: 1, color: colors.listDivider),
+        ],
+      ],
     );
   }
 

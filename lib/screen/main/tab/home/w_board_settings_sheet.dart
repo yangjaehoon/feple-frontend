@@ -70,7 +70,6 @@ class _BoardSettingsSheetState extends State<BoardSettingsSheet> {
   Widget _buildBoardList(AbstractThemeColors colors) {
     return Flexible(
       child: ReorderableListView.builder(
-        shrinkWrap: true,
         itemCount: _orderedBoards.length,
         onReorder: (oldIndex, newIndex) {
           setState(() {

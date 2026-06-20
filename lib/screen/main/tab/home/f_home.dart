@@ -38,7 +38,7 @@ class _HomeFragmentState extends State<HomeFragment> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final userId = context.select<UserProvider, int?>((p) => p.currentUserId);
+    final userId = context.read<UserProvider>().currentUserId;
     if (userId != null && _notifier.userId != userId) {
       _notifier.init(userId);
     }

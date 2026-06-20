@@ -118,31 +118,32 @@ class CircleArtistWidgetState extends State<CircleArtistWidget> {
   }
 
   Widget _buildSkeletonGrid() {
-    return GridView.builder(
+    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: 6,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        mainAxisSpacing: 16,
-        crossAxisSpacing: 12,
-        childAspectRatio: 0.75,
-      ),
-      itemBuilder: (_, __) => Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: const [
-          AspectRatio(
-            aspectRatio: 1.0,
-            child: SkeletonBox(
-              height: double.infinity,
-              borderRadius: BorderRadius.all(Radius.circular(12)),
+      child: LayoutBuilder(builder: (context, constraints) {
+        final colWidth = (constraints.maxWidth - 24) / 3;
+        return Wrap(
+          spacing: 12,
+          runSpacing: 16,
+          children: List.generate(6, (_) => SizedBox(
+            width: colWidth,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: const [
+                AspectRatio(
+                  aspectRatio: 1.0,
+                  child: SkeletonBox(
+                    height: double.infinity,
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                  ),
+                ),
+                SizedBox(height: 8),
+                SkeletonBox(width: 60, height: 13),
+              ],
             ),
-          ),
-          SizedBox(height: 8),
-          SkeletonBox(width: 60, height: 13),
-        ],
-      ),
+          )),
+        );
+      }),
     );
   }
 
@@ -186,40 +187,42 @@ class CircleArtistWidgetState extends State<CircleArtistWidget> {
             ),
           ),
           const SizedBox(height: 12),
-          GridView.builder(
+          Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: artists.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 12,
-              childAspectRatio: 0.75,
-            ),
-            itemBuilder: (context, index) {
-              final artist = artists[index];
-              return AnimatedListItem(
-                index: index,
-                child: TapScale(
-                  onTap: () => Navigator.push(context,
-                    SlideRoute(
-                      builder: (context) => ArtistPage(
-                        artistName: artist.name,
-                        artistId: artist.id,
-                        followerCount: artist.followerCount,
-                        profileImageUrl: artist.profileImageUrl,
+            child: LayoutBuilder(builder: (context, constraints) {
+              final colWidth = (constraints.maxWidth - 24) / 3;
+              return Wrap(
+                spacing: 12,
+                runSpacing: 16,
+                children: [
+                  for (int index = 0; index < artists.length; index++)
+                    SizedBox(
+                      width: colWidth,
+                      child: AnimatedListItem(
+                        index: index,
+                        child: TapScale(
+                          onTap: () => Navigator.push(
+                            context,
+                            SlideRoute(
+                              builder: (context) => ArtistPage(
+                                artistName: artists[index].name,
+                                artistId: artists[index].id,
+                                followerCount: artists[index].followerCount,
+                                profileImageUrl: artists[index].profileImageUrl,
+                              ),
+                            ),
+                          ).then((_) => _loadFollowedIds()),
+                          child: ArtistCard(
+                            artist: artists[index],
+                            isFollowed: _followedIds.contains(artists[index].id),
+                            isEnglish: context.locale.languageCode == 'en',
+                          ),
+                        ),
                       ),
                     ),
-                  ).then((_) => _loadFollowedIds()),
-                  child: ArtistCard(
-                    artist: artist,
-                    isFollowed: _followedIds.contains(artist.id),
-                    isEnglish: context.locale.languageCode == 'en',
-                  ),
-                ),
+                ],
               );
-            },
+            }),
           ),
           const SizedBox(height: 20),
           const _ArtistSuggestionBanner(),

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:flutter/material.dart';
 
@@ -42,6 +43,8 @@ class AppNetworkImage extends StatelessWidget {
         height: height,
         memCacheWidth: width != null ? (width! * 2).round() : 400,
         memCacheHeight: height != null ? (height! * 2).round() : 600,
+        fadeInDuration: AppDimens.animXFast,
+        fadeOutDuration: AppDimens.animTapFeedback,
         placeholder: (context, url) => const SkeletonBox(
           height: double.infinity,
         ),

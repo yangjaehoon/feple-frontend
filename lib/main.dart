@@ -26,6 +26,11 @@ import 'screen/onboarding/s_onboarding.dart';
 void main() async {
   final bindings = WidgetsFlutterBinding.ensureInitialized();
   setupDependencies();
+
+  // 기본 ImageCache: 1000개 / 100MB — 고해상도 포스터가 많은 페스티벌 앱 특성상
+  // 이미지 수 제한을 줄이고 바이트 예산을 명시해 OOM 위험 감소
+  PaintingBinding.instance.imageCache.maximumSize = 150;
+  PaintingBinding.instance.imageCache.maximumSizeBytes = 60 * 1024 * 1024; // 60MB
   FlutterNativeSplash.preserve(widgetsBinding: bindings);
 
   // google-services.json이 Android에서 자동 초기화하므로 중복 방지

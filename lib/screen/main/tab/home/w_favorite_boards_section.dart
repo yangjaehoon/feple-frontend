@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
@@ -217,34 +215,29 @@ class _BoardTile extends StatelessWidget {
       bottom: 0,
       left: 0,
       right: 0,
-      child: ClipRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-                colors: [
-                  Colors.black.withValues(alpha: 0.75),
-                  Colors.black.withValues(alpha: 0.3),
-                ],
-              ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+            colors: [
+              Colors.black.withValues(alpha: 0.82),
+              Colors.black.withValues(alpha: 0.0),
+            ],
+          ),
+        ),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            board.displayName(isEnglish),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: AppDimens.fontSizeXs,
+              fontWeight: FontWeight.w700,
             ),
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                board.displayName(isEnglish),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: AppDimens.fontSizeXs,
-                  fontWeight: FontWeight.w700,
-                ),
-                maxLines: 1,
-                textAlign: TextAlign.center,
-              ),
-            ),
+            maxLines: 1,
+            textAlign: TextAlign.center,
           ),
         ),
       ),

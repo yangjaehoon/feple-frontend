@@ -236,6 +236,8 @@ class MainImageSwiperState extends State<MainImageSwiper> {
             image: CachedNetworkImageProvider(
               _photosNotifier.photos[_currentRealPage].url,
               cacheKey: 'artist-photo-${_photosNotifier.photos[_currentRealPage].photoId}',
+              // 배경은 블러 처리되므로 600px 이상 불필요 — 포토 카드와 캐시 공유
+              maxWidth: 600,
             ),
             fit: BoxFit.cover,
           ),

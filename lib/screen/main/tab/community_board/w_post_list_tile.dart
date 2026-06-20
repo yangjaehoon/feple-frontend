@@ -98,6 +98,7 @@ class PostListTile extends StatelessWidget {
                   imageUrl: post.imageUrl!,
                   width: 56,
                   height: 56,
+                  memCacheWidth: 112, // 56px * 2 (Retina)
                   fit: BoxFit.cover,
                   errorWidget: (context, url, error) {
                     final c = context.appColors;

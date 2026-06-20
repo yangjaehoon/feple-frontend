@@ -222,7 +222,8 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
           backgroundImage: _pickedImage != null
               ? FileImage(File(_pickedImage!.path)) as ImageProvider
               : (profileImageUrl != null && profileImageUrl.isNotEmpty)
-                  ? CachedNetworkImageProvider(profileImageUrl, maxWidth: 200) as ImageProvider
+                  // radius 48 → diameter 96px, *1.5 = 144
+                  ? CachedNetworkImageProvider(profileImageUrl, maxWidth: 144) as ImageProvider
                   : const AssetImage('assets/image/feple_logo.png'),
           child: null,
         ),

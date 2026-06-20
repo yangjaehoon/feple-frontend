@@ -130,8 +130,9 @@ class ProfileWidgetState extends State<ProfileWidget> {
           radius: 48,
           backgroundImage: (user.profileImageUrl != null &&
                   user.profileImageUrl!.isNotEmpty)
+              // radius 48 → diameter 96px, *1.5 = 144 (고DPI 여유분)
               ? CachedNetworkImageProvider(user.profileImageUrl!,
-                  maxWidth: 200) as ImageProvider
+                  maxWidth: 144) as ImageProvider
               : const AssetImage('assets/image/feple_logo.png'),
           backgroundColor: colors.backgroundMain,
         ),

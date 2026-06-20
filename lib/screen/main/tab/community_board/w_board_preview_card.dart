@@ -143,40 +143,39 @@ class BoardPreviewCard extends StatelessWidget {
       ),
       builder: (ctx, posts) {
         final displayPosts = maxItems != null ? posts.take(maxItems!).toList() : posts;
-        return ListView.separated(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: displayPosts.length,
-        itemBuilder: (_, index) {
-          final post = displayPosts[index];
-          return ListTile(
-            dense: true,
-            visualDensity: const VisualDensity(vertical: -3),
-            minVerticalPadding: 0,
-            contentPadding: const EdgeInsets.symmetric(
-                horizontal: AppDimens.paddingHorizontal, vertical: 0),
-            onTap: () => onPostTap(ctx, post),
-            title: Text(
-              post.title,
-              style: TextStyle(
-                color: colors.textTitle,
-                fontWeight: FontWeight.w600,
-                fontSize: AppDimens.fontSizeMd,
+        return Column(
+          children: [
+            for (int i = 0; i < displayPosts.length; i++) ...[
+              ListTile(
+                dense: true,
+                visualDensity: const VisualDensity(vertical: -3),
+                minVerticalPadding: 0,
+                contentPadding: const EdgeInsets.symmetric(
+                    horizontal: AppDimens.paddingHorizontal, vertical: 0),
+                onTap: () => onPostTap(ctx, displayPosts[i]),
+                title: Text(
+                  displayPosts[i].title,
+                  style: TextStyle(
+                    color: colors.textTitle,
+                    fontWeight: FontWeight.w600,
+                    fontSize: AppDimens.fontSizeMd,
+                  ),
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: (trailingBuilder ?? _defaultTrailing)(displayPosts[i], colors),
+                ),
               ),
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: (trailingBuilder ?? _defaultTrailing)(post, colors),
-            ),
-          );
-        },
-        separatorBuilder: (_, __) => Divider(
-          thickness: 1,
-          color: colors.listDivider,
-          indent: AppDimens.paddingHorizontal,
-          endIndent: AppDimens.paddingHorizontal,
-        ),
-      );
+              if (i < displayPosts.length - 1)
+                Divider(
+                  thickness: 1,
+                  color: colors.listDivider,
+                  indent: AppDimens.paddingHorizontal,
+                  endIndent: AppDimens.paddingHorizontal,
+                ),
+            ],
+          ],
+        );
       },
     );
   }

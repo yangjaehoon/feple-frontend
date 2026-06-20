@@ -105,13 +105,17 @@ class SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
     final preview = items.take(_previewCount).toList();
     return Column(
       children: [
-        ListView.separated(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
+        Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemCount: preview.length,
-          separatorBuilder: (_, __) => Divider(height: 1, color: colors.listDivider),
-          itemBuilder: (_, index) => SongRequestItem(req: preview[index], verticalPadding: 12),
+          child: Column(
+            children: [
+              for (int i = 0; i < preview.length; i++) ...[
+                SongRequestItem(req: preview[i], verticalPadding: 12),
+                if (i < preview.length - 1)
+                  Divider(height: 1, color: colors.listDivider),
+              ],
+            ],
+          ),
         ),
         if (items.length > _previewCount)
           Padding(

@@ -37,6 +37,7 @@ class HomeFestivalsSection extends StatelessWidget {
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 16),
+          itemExtent: 142, // 130px item + 12px right margin
           itemCount: 4,
           itemBuilder: (_, __) => Padding(
             padding: const EdgeInsets.only(right: 12),
@@ -60,6 +61,7 @@ class HomeFestivalsSection extends StatelessWidget {
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemExtent: 142, // 130px item + 12px right margin
         itemCount: festivals!.length,
         itemBuilder: (_, index) => _FestivalItem(
           key: ValueKey(festivals![index].id),

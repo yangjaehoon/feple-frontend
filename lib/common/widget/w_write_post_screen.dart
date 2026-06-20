@@ -176,7 +176,7 @@ class _WritePostScreenState extends State<WritePostScreen> {
     } else if (_existingImageUrl != null) {
       preview = ClipRRect(
         borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-        child: CachedNetworkImage(imageUrl: _existingImageUrl!, width: 72, height: 72, fit: BoxFit.cover),
+        child: CachedNetworkImage(imageUrl: _existingImageUrl!, width: 72, height: 72, memCacheWidth: 144, fit: BoxFit.cover),
       );
     }
 

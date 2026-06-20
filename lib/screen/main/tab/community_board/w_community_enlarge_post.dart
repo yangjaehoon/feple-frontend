@@ -566,7 +566,11 @@ class _PostContentSection extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
               child: CachedNetworkImage(
-                  imageUrl: imageUrl!, fit: BoxFit.cover, width: double.infinity),
+                imageUrl: imageUrl!,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                memCacheWidth: 800, // 최대 스크린 너비 기준
+              ),
             ),
           ),
         ],

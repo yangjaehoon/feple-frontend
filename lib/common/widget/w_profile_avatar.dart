@@ -38,7 +38,11 @@ class ProfileAvatar extends StatelessWidget {
     if (_hasCustomImage) {
       return CircleAvatar(
         radius: radius,
-        backgroundImage: CachedNetworkImageProvider(imageUrl!),
+        backgroundImage: CachedNetworkImageProvider(
+          imageUrl!,
+          // radius*2=diameter, *2=Retina — 기본값 없으면 원본 해상도로 메모리 로드
+          maxWidth: (radius * 4).round(),
+        ),
         backgroundColor: colors.activate,
       );
     }

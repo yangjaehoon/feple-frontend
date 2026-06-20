@@ -27,7 +27,9 @@ class SearchArtistTile extends StatelessWidget {
       leading: CircleAvatar(
         radius: 24,
         backgroundColor: colors.certRingColor.withValues(alpha: 0.15),
-        backgroundImage: hasImage ? CachedNetworkImageProvider(data.profileImageUrl) : null,
+        backgroundImage: hasImage
+            ? CachedNetworkImageProvider(data.profileImageUrl, maxWidth: 96)
+            : null,
         child: hasImage ? null : Icon(Icons.person, color: colors.textSecondary),
       ),
       title: buildHighlightedText(
@@ -73,6 +75,7 @@ class SearchFestivalTile extends StatelessWidget {
               ? CachedNetworkImage(
                   imageUrl: data.posterUrl,
                   fit: BoxFit.cover,
+                  memCacheWidth: 88, // 44px * 2 (Retina)
                   errorWidget: (_, __, ___) => _placeholder(colors),
                 )
               : _placeholder(colors),

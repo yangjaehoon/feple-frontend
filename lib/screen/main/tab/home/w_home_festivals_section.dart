@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
@@ -128,33 +126,30 @@ class _FestivalItem extends StatelessWidget {
       bottom: 0,
       left: 0,
       right: 0,
-      child: ClipRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-                colors: [
-                  Colors.black.withValues(alpha: 0.75),
-                  Colors.black.withValues(alpha: 0.3),
-                ],
-              ),
-            ),
-            child: Text(
-              festival.displayTitle(isEnglish),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: AppDimens.fontSizeSm,
-                fontWeight: FontWeight.w700,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-            ),
+      // BackdropFilter(blur) 제거 — 스크롤 중 매 프레임 GPU offscreen 합성 유발
+      // LinearGradient만으로 가독성은 동일하게 유지
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+            colors: [
+              Colors.black.withValues(alpha: 0.82),
+              Colors.black.withValues(alpha: 0.0),
+            ],
           ),
+        ),
+        child: Text(
+          festival.displayTitle(isEnglish),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: AppDimens.fontSizeSm,
+            fontWeight: FontWeight.w700,
+          ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
         ),
       ),
     );

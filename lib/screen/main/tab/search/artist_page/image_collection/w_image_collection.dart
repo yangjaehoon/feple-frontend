@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:feple/model/artist_photo_response.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/popup_menu_item_builder.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'artist_photo_notifier.dart';
 import 'w_edit_photo_sheet.dart';
 import 'w_photo_fullscreen_viewer.dart';
@@ -196,14 +197,11 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
           width: imageSize,
           height: imageSize,
           fit: BoxFit.cover,
-          placeholder: (context, url) => Container(
+          // CircularProgressIndicator는 매 프레임 repaint — 리스트에서 스피너가
+          // 여러 개 동시에 애니메이션되면 GPU 부담 증가 → SkeletonBox로 교체
+          placeholder: (context, url) => SkeletonBox(
             width: imageSize,
             height: imageSize,
-            color: colors.listDivider,
-            child: Center(
-              child: CircularProgressIndicator(
-                  color: colors.loadingIndicator, strokeWidth: 2),
-            ),
           ),
           errorWidget: (context, url, error) => Container(
             width: imageSize,

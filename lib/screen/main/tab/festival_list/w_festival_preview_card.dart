@@ -31,6 +31,9 @@ class FestivalPreviewCard extends StatelessWidget {
   }
 
   Widget _buildPoster() {
+    // 컨테이너 height=120, aspect ratio=2:3 → 렌더 width=80px
+    // memCacheWidth를 80*2=160(Retina) 으로 고정해 기본값 400에서 오는 불필요한 메모리 절약
+    const double posterWidth = 80.0;
     final inner = ClipRRect(
       borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
       child: AspectRatio(
@@ -41,6 +44,7 @@ class FestivalPreviewCard extends StatelessWidget {
             AppNetworkImage(
               imageUrl: festival.posterUrl,
               fit: BoxFit.fill,
+              width: posterWidth,
             ),
             if (festival.isEnded) ...[
               Container(color: Colors.black.withValues(alpha: 0.5)),

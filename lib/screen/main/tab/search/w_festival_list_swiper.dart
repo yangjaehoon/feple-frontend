@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:card_swiper/card_swiper.dart';
@@ -30,18 +29,19 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
   }
 
   Widget _buildBlurBackground(AbstractThemeColors colors, String posterUrl) {
+    // 100px ResizeImage는 늘릴 때 자연스럽게 흐려짐 — BackdropFilter GPU offscreen 불필요
     return ClipRect(
-      child: Container(
+      child: SizedBox(
         height: 300,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: ResizeImage(CachedNetworkImageProvider(posterUrl), width: 100),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-          child: Container(color: colors.swiperOverlay.withValues(alpha: 0.5)),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image(
+              image: ResizeImage(CachedNetworkImageProvider(posterUrl), width: 100),
+              fit: BoxFit.cover,
+            ),
+            ColoredBox(color: colors.swiperOverlay.withValues(alpha: 0.55)),
+          ],
         ),
       ),
     );
@@ -97,6 +97,8 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
                     imageUrl: item.posterUrl,
                     memCacheWidth: 360,
                     fit: BoxFit.fill,
+                    fadeInDuration: AppDimens.animXFast,
+                    fadeOutDuration: AppDimens.animTapFeedback,
                     placeholder: (context, url) => const SkeletonBox(height: double.infinity),
                     errorWidget: (context, url, error) {
                       final colors = context.appColors;

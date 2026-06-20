@@ -53,6 +53,8 @@ class ArtistCard extends StatelessWidget {
                   imageUrl: artist.profileImageUrl,
                   memCacheWidth: 200,
                   fit: BoxFit.cover,
+                  fadeInDuration: AppDimens.animXFast,
+                  fadeOutDuration: AppDimens.animTapFeedback,
                   placeholder: (context, url) =>
                       const SkeletonBox(height: double.infinity),
                   errorWidget: (_, __, ___) => Container(

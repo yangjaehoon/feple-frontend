@@ -181,6 +181,8 @@ class _FollowedArtistsByGenrePageState
                       imageUrl: artist.profileImageUrl!,
                       memCacheWidth: 200,
                       fit: BoxFit.cover,
+                      fadeInDuration: AppDimens.animXFast,
+                      fadeOutDuration: AppDimens.animTapFeedback,
                       placeholder: (_, __) =>
                           const SkeletonBox(height: double.infinity),
                       errorWidget: (_, __, ___) => _buildPlaceholder(colors),

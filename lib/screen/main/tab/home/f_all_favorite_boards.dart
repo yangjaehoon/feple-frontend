@@ -223,6 +223,8 @@ class _GridBoardTile extends StatelessWidget {
             imageUrl: board.imageUrl!,
             fit: BoxFit.cover,
             memCacheWidth: 350,
+            fadeInDuration: AppDimens.animXFast,
+            fadeOutDuration: AppDimens.animTapFeedback,
             errorWidget: (_, __, ___) => _placeholder(colors),
           )
         else

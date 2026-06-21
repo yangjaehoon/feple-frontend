@@ -261,6 +261,8 @@ class _ArtistFullTile extends StatelessWidget {
           height: size,
           memCacheWidth: 80,
           fit: BoxFit.cover,
+          fadeInDuration: AppDimens.animXFast,
+          fadeOutDuration: AppDimens.animTapFeedback,
           errorWidget: (_, __, ___) => _avatarPlaceholder(size, colors),
         ),
       );
@@ -320,6 +322,8 @@ class _ArtistFullTile extends StatelessWidget {
                   height: 38,
                   memCacheWidth: 76,
                   fit: BoxFit.cover,
+                  fadeInDuration: AppDimens.animXFast,
+                  fadeOutDuration: AppDimens.animTapFeedback,
                   errorWidget: (_, __, ___) => _thumbPlaceholder(colors),
                 ),
               )
@@ -471,6 +475,8 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
                       height: 40,
                       memCacheWidth: 80,
                       fit: BoxFit.cover,
+                      fadeInDuration: AppDimens.animXFast,
+                      fadeOutDuration: AppDimens.animTapFeedback,
                       errorWidget: (_, __, ___) => _thumbPlaceholder(colors),
                     ),
                   )

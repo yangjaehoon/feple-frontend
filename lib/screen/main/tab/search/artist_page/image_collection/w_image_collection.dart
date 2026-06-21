@@ -197,6 +197,8 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
           width: imageSize,
           height: imageSize,
           fit: BoxFit.cover,
+          fadeInDuration: AppDimens.animXFast,
+          fadeOutDuration: AppDimens.animTapFeedback,
           // CircularProgressIndicator는 매 프레임 repaint — 리스트에서 스피너가
           // 여러 개 동시에 애니메이션되면 GPU 부담 증가 → SkeletonBox로 교체
           placeholder: (context, url) => SkeletonBox(

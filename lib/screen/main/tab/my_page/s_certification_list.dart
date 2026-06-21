@@ -197,6 +197,8 @@ class _CertCard extends StatelessWidget {
                 imageUrl: posterUrl,
                 fit: BoxFit.cover,
                 memCacheWidth: 180,
+                fadeInDuration: AppDimens.animXFast,
+                fadeOutDuration: AppDimens.animTapFeedback,
                 placeholder: (_, __) => const SkeletonBox(height: double.infinity),
                 errorWidget: (_, __, ___) => _buildPhotoPlaceholder(colors),
               )

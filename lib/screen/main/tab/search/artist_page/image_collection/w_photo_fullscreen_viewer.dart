@@ -74,6 +74,8 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
             imageUrl: widget.photo.url,
             cacheKey: 'artist-photo-${widget.photo.photoId}',
             fit: BoxFit.contain,
+            fadeInDuration: AppDimens.animXFast,
+            fadeOutDuration: AppDimens.animTapFeedback,
             placeholder: (_, __) => const Center(
               child: CircularProgressIndicator(color: Colors.white54, strokeWidth: 2),
             ),

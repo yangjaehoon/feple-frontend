@@ -161,7 +161,11 @@ class _EnlargePostState extends State<EnlargePost> {
               child: InteractiveViewer(
                 minScale: 0.5,
                 maxScale: 4.0,
-                child: CachedNetworkImage(imageUrl: imageUrl),
+                child: CachedNetworkImage(
+                  imageUrl: imageUrl,
+                  fadeInDuration: AppDimens.animXFast,
+                  fadeOutDuration: AppDimens.animTapFeedback,
+                ),
               ),
             ),
           ),
@@ -570,6 +574,8 @@ class _PostContentSection extends StatelessWidget {
                 fit: BoxFit.cover,
                 width: double.infinity,
                 memCacheWidth: 800, // 최대 스크린 너비 기준
+                fadeInDuration: AppDimens.animXFast,
+                fadeOutDuration: AppDimens.animTapFeedback,
               ),
             ),
           ),

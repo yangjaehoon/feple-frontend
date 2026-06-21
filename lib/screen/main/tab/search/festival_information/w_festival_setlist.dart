@@ -255,6 +255,8 @@ class _ArtistCompactRow extends StatelessWidget {
                 height: 20,
                 memCacheWidth: 40,
                 fit: BoxFit.cover,
+                fadeInDuration: AppDimens.animXFast,
+                fadeOutDuration: AppDimens.animTapFeedback,
                 errorWidget: (_, __, ___) => const SizedBox.shrink(),
               ),
             ),
@@ -287,6 +289,8 @@ class _ArtistCompactRow extends StatelessWidget {
           height: size,
           memCacheWidth: 72,
           fit: BoxFit.cover,
+          fadeInDuration: AppDimens.animXFast,
+          fadeOutDuration: AppDimens.animTapFeedback,
           errorWidget: (_, __, ___) => _placeholder(size, colors),
         ),
       );

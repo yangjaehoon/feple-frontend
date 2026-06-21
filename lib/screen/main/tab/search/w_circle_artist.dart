@@ -72,10 +72,10 @@ class CircleArtistWidgetState extends State<CircleArtistWidget> {
           );
         }
         final allArtists = snapshot.data ?? [];
-        final genres = allArtists.map((a) => a.genre).toSet().toList()..sort();
+        final genres = allArtists.expand((a) => a.genres).toSet().toList()..sort();
         final artists = _selectedGenre == null
             ? allArtists
-            : allArtists.where((a) => a.genre == _selectedGenre).toList();
+            : allArtists.where((a) => a.genres.contains(_selectedGenre)).toList();
         return _buildContent(artists, genres, colors);
       },
     );
@@ -236,18 +236,14 @@ class CircleArtistWidgetState extends State<CircleArtistWidget> {
 
 String _genreLabel(String genre) {
   switch (genre) {
-    case 'Band':
-      return 'genre_band'.tr();
-    case 'Hip-hop':
-      return 'genre_hip_hop'.tr();
-    case 'Indie':
-      return 'genre_indie'.tr();
-    case 'Ballad':
-      return 'genre_ballad'.tr();
-    case 'R&B':
-      return 'genre_rnb'.tr();
-    default:
-      return 'genre_etc'.tr();
+    case 'Band':    return 'genre_band'.tr();
+    case 'Hip-hop': return 'genre_hip_hop'.tr();
+    case 'Indie':   return 'genre_indie'.tr();
+    case 'Ballad':  return 'genre_ballad'.tr();
+    case 'R&B':     return 'genre_rnb'.tr();
+    case '댄스':     return 'genre_dance'.tr();
+    case '아이돌':   return 'genre_idol'.tr();
+    default:        return genre;
   }
 }
 

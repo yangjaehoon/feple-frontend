@@ -26,6 +26,9 @@ class Artist {
     );
   }
 
+  List<String> get genres =>
+      genre.isEmpty ? const [] : genre.split(', ');
+
   String displayName(bool isEnglish) =>
       isEnglish && nameEn.isNotEmpty ? nameEn : name;
 }

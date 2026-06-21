@@ -35,6 +35,12 @@ class FollowedArtist {
     );
   }
 
+  List<String> get genres {
+    final g = genre;
+    if (g == null || g.isEmpty) return const [];
+    return g.split(', ');
+  }
+
   String displayName(bool isEnglish) =>
       isEnglish && nameEn.isNotEmpty ? nameEn : name;
 }

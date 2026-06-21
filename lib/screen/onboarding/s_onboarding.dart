@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_selectable_chip.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/common/constant/festival_constants.dart';
 import 'package:feple/common/data/preference/prefs.dart';
 import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:feple/common/widget/w_error_state.dart';
@@ -297,7 +296,7 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
         final genres = _extractGenres(artists);
         final filtered = _selectedGenre == null
             ? artists
-            : artists.where((a) => a.genre == _selectedGenre).toList();
+            : artists.where((a) => a.genres.contains(_selectedGenre)).toList();
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -337,21 +336,20 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
   }
 
   List<String> _extractGenres(List<Artist> artists) {
-    final existing = artists.map((a) => a.genre).toSet();
-    final ordered = kGenreOptions
-        .map((e) => e.$1)
-        .where(existing.contains)
-        .toList();
-    final extras = existing
-        .where((g) => !ordered.contains(g))
-        .toList()
-      ..sort();
-    return [...ordered, ...extras];
+    return artists.expand((a) => a.genres).toSet().toList()..sort();
   }
 
   String _genreLabel(String genre) {
-    final matching = kGenreOptions.where((e) => e.$1 == genre);
-    return matching.isEmpty ? genre : matching.first.$2.tr();
+    switch (genre) {
+      case 'Band':    return 'genre_band'.tr();
+      case 'Hip-hop': return 'genre_hip_hop'.tr();
+      case 'Indie':   return 'genre_indie'.tr();
+      case 'Ballad':  return 'genre_ballad'.tr();
+      case 'R&B':     return 'genre_rnb'.tr();
+      case '댄스':     return 'genre_dance'.tr();
+      case '아이돌':   return 'genre_idol'.tr();
+      default:        return genre;
+    }
   }
 
   Widget _buildGenreChips(List<String> genres, AbstractThemeColors colors) {

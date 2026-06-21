@@ -32,16 +32,14 @@ class _FollowedArtistsByGenrePageState
   String? _selectedGenre;
 
   List<String> get _genres => widget.artists
-      .map((a) => a.genre)
-      .whereType<String>()
-      .where((g) => g.isNotEmpty)
+      .expand((a) => a.genres)
       .toSet()
       .toList()
     ..sort();
 
   List<FollowedArtist> get _filteredArtists => _selectedGenre == null
       ? widget.artists
-      : widget.artists.where((a) => a.genre == _selectedGenre).toList();
+      : widget.artists.where((a) => a.genres.contains(_selectedGenre)).toList();
 
   void _openSettings() {
     final items = widget.artists

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 class ArtistCircleImage extends StatelessWidget {
@@ -32,6 +33,8 @@ class ArtistCircleImage extends StatelessWidget {
         width: size,
         height: size,
         memCacheWidth: 110,
+        fadeInDuration: AppDimens.animXFast,
+        fadeOutDuration: AppDimens.animTapFeedback,
         errorWidget: (context, url, error) => icon,
       );
     }

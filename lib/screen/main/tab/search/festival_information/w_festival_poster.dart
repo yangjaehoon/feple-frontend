@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -164,14 +163,10 @@ class FestivalPosterState extends State<FestivalPoster> {
               imageUrl: widget.poster.posterUrl,
               memCacheWidth: 100,
               fit: BoxFit.cover,
+              fadeInDuration: AppDimens.animXFast,
+              fadeOutDuration: AppDimens.animTapFeedback,
               errorWidget: (_, __, ___) => const ColoredBox(color: Colors.black26),
             ),
-          ),
-        ),
-        Positioned.fill(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-            child: const SizedBox.expand(),
           ),
         ),
         Positioned(

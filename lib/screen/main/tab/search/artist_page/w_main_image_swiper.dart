@@ -206,6 +206,8 @@ class MainImageSwiperState extends State<MainImageSwiper> {
           cacheKey: 'artist-photo-${_photosNotifier.photos[realIndex].photoId}',
           fit: BoxFit.cover,
           memCacheWidth: 300,
+          fadeInDuration: AppDimens.animXFast,
+          fadeOutDuration: AppDimens.animTapFeedback,
         ),
       ),
     );
@@ -222,6 +224,8 @@ class MainImageSwiperState extends State<MainImageSwiper> {
             width: double.infinity,
             height: double.infinity,
             memCacheWidth: 600,
+            fadeInDuration: AppDimens.animXFast,
+            fadeOutDuration: AppDimens.animTapFeedback,
           ),
         );
       }

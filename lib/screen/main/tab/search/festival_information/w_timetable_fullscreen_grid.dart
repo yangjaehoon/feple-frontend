@@ -189,7 +189,7 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
                 child: _OfficialCard(
                   entry: entry,
                   color: _stageColor(entry.stageName),
-                  followed: widget.followedNames.contains(entry.artistName),
+                  followed: entry.isFollowedBy(widget.followedNames),
                   cardH: cardH - 4,
                 ),
               );
@@ -257,33 +257,45 @@ class _OfficialCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 6),
       child: nameFontSize < 5.0
           ? const SizedBox.shrink()
-          : Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  entry.timeRange,
-                  style: TextStyle(color: subColor, fontSize: subFontSize, height: 1.25),
-                ),
-                SizedBox(width: nameFontSize > 8 ? 4 : 2),
-                Expanded(
-                  child: Text(
-                    entry.artistName,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: nameColor,
-                      fontSize: nameFontSize,
-                      fontWeight: FontWeight.w700,
-                      height: 1.25,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      entry.timeRange,
+                      style: TextStyle(color: subColor, fontSize: subFontSize, height: 1.25),
                     ),
+                    SizedBox(width: nameFontSize > 8 ? 4 : 2),
+                    Expanded(
+                      child: Text(
+                        entry.artistName,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: nameColor,
+                          fontSize: nameFontSize,
+                          fontWeight: FontWeight.w700,
+                          height: 1.25,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    SizedBox(width: nameFontSize > 8 ? 4 : 2),
+                    Text(
+                      '${entry.durationMinutes}분',
+                      style: TextStyle(color: subColor, fontSize: subFontSize, height: 1.25),
+                    ),
+                  ],
+                ),
+                if (entry.memberArtistNames.isNotEmpty && availH > nameFontSize * 1.25 + 10)
+                  Text(
+                    entry.memberArtistNames.join(' · '),
+                    style: TextStyle(color: subColor, fontSize: subFontSize * 0.9, height: 1.2),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                SizedBox(width: nameFontSize > 8 ? 4 : 2),
-                Text(
-                  '${entry.durationMinutes}분',
-                  style: TextStyle(color: subColor, fontSize: subFontSize, height: 1.25),
-                ),
               ],
             ),
     );

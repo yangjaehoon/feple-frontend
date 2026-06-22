@@ -9,18 +9,22 @@ import 'package:feple/model/followed_artist.dart';
 import 'package:flutter/material.dart';
 
 class HomeArtistsSection extends StatelessWidget {
+  static const int maxPreview = 10;
+
   const HomeArtistsSection({
     super.key,
     required this.artists,
     required this.onTap,
     this.hasError = false,
     this.onRetry,
+    this.onShowMore,
   });
 
   final List<FollowedArtist>? artists;
   final void Function(FollowedArtist) onTap;
   final bool hasError;
   final VoidCallback? onRetry;
+  final VoidCallback? onShowMore;
 
   @override
   Widget build(BuildContext context) {
@@ -38,17 +42,25 @@ class HomeArtistsSection extends StatelessWidget {
         title: 'no_followed_artists'.tr(),
       );
     }
+    final preview = artists!.take(maxPreview).toList();
+    final remaining = artists!.length - maxPreview;
+    final showMoreItem = remaining > 0 && onShowMore != null;
     return SizedBox(
       height: 110,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: artists!.length,
-        itemBuilder: (_, index) => _ArtistItem(
-          key: ValueKey(artists![index].id),
-          artist: artists![index],
-          onTap: onTap,
-        ),
+        itemCount: preview.length + (showMoreItem ? 1 : 0),
+        itemBuilder: (_, index) {
+          if (showMoreItem && index == preview.length) {
+            return _ShowMoreItem(remaining: remaining, onTap: onShowMore!);
+          }
+          return _ArtistItem(
+            key: ValueKey(preview[index].id),
+            artist: preview[index],
+            onTap: onTap,
+          );
+        },
       ),
     );
   }
@@ -73,6 +85,64 @@ class HomeArtistsSection extends StatelessWidget {
               const SkeletonBox(width: 56, height: 12),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ShowMoreItem extends StatelessWidget {
+  const _ShowMoreItem({required this.remaining, required this.onTap});
+
+  final int remaining;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    return TapScale(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Column(
+          children: [
+            Container(
+              width: 74,
+              height: 74,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: colors.activate.withValues(alpha: 0.1),
+                border: Border.all(color: colors.activate.withValues(alpha: 0.3), width: 1.5),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '+$remaining',
+                    style: TextStyle(
+                      fontSize: AppDimens.fontSizeMd,
+                      fontWeight: FontWeight.w700,
+                      color: colors.activate,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 6),
+            SizedBox(
+              width: 64,
+              child: Text(
+                'see_more'.tr(),
+                style: TextStyle(
+                  fontSize: AppDimens.fontSizeXs,
+                  fontWeight: FontWeight.w600,
+                  color: colors.activate,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+              ),
+            ),
+          ],
         ),
       ),
     );

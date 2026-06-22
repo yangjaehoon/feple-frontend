@@ -117,6 +117,20 @@ class _HomeFragmentState extends State<HomeFragment> {
           artists: orderedArtists,
           hasError: _notifier.hasError,
           onRetry: _notifier.retry,
+          onShowMore: (orderedArtists != null && orderedArtists.length > HomeArtistsSection.maxPreview)
+              ? () async {
+                  await Navigator.push(
+                    context,
+                    SlideRoute(
+                      builder: (_) => FollowedArtistsByGenrePage(
+                        artists: orderedArtists,
+                        onSaveOrder: _notifier.saveArtistOrder,
+                      ),
+                    ),
+                  );
+                  _notifier.refresh();
+                }
+              : null,
           onTap: (artist) async {
             await Navigator.push(
               context,

@@ -12,6 +12,10 @@ const kGenreOptions = [
   ('HIP_HOP', 'genre_hip_hop'),
   ('INDIE', 'genre_indie'),
   ('BAND', 'genre_band'),
+  ('BALLAD', 'genre_ballad'),
+  ('RNB', 'genre_rnb'),
+  ('DANCE', 'genre_dance'),
+  ('IDOL', 'genre_idol'),
   ('ETC', 'genre_etc'),
 ];
 

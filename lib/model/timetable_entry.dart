@@ -54,6 +54,7 @@ class TimetableEntry {
   final String festivalDate;
   final String startTime;
   final String endTime;
+  final List<String> memberArtistNames;
 
   const TimetableEntry({
     required this.id,
@@ -63,7 +64,13 @@ class TimetableEntry {
     required this.festivalDate,
     required this.startTime,
     required this.endTime,
+    this.memberArtistNames = const [],
   });
+
+  bool isFollowedBy(Set<String> followedNames) {
+    if (followedNames.contains(artistName)) return true;
+    return memberArtistNames.any(followedNames.contains);
+  }
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -73,6 +80,7 @@ class TimetableEntry {
         'festivalDate': festivalDate,
         'startTime': startTime,
         'endTime': endTime,
+        'memberArtistNames': memberArtistNames,
       };
 
   factory TimetableEntry.fromJson(Map<String, dynamic> j) => TimetableEntry(
@@ -83,6 +91,10 @@ class TimetableEntry {
         festivalDate: j['festivalDate'] as String? ?? '',
         startTime: _toHHmm(j['startTime']),
         endTime: _toHHmm(j['endTime']),
+        memberArtistNames: (j['memberArtistNames'] as List<dynamic>?)
+                ?.map((e) => e as String)
+                .toList() ??
+            const [],
       );
 
   String get timeRange => '$startTime – $endTime';

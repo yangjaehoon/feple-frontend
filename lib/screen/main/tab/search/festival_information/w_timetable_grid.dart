@@ -213,7 +213,7 @@ class TimetableGrid extends StatelessWidget {
           entry: entry,
           color: _colorFor(entry.stageName),
           cardHeight: clampedH,
-          isFollowed: followedNames.contains(entry.artistName),
+          isFollowed: entry.isFollowedBy(followedNames),
         ),
       );
     }).toList();
@@ -260,6 +260,16 @@ class _PerformanceCard extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
+          if (entry.memberArtistNames.isNotEmpty && cardHeight > 36)
+            Text(
+              entry.memberArtistNames.join(' · '),
+              style: TextStyle(
+                  color: isFollowed ? Colors.white70 : color.withValues(alpha: 0.7),
+                  fontSize: 8,
+                  height: 1.2),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           if (cardHeight > 28)
             Text(
               entry.timeRange,

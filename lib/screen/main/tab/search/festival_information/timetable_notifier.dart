@@ -49,7 +49,10 @@ class TimetableNotifier extends SafeChangeNotifier {
       for (var d = start; !d.isAfter(end); d = d.add(const Duration(days: 1))) {
         dates.add(d.toYMD);
       }
-      selectedDate = dates.isNotEmpty ? dates.first : null;
+      if (dates.isNotEmpty) {
+        final today = DateTime.now().toYMD;
+        selectedDate = dates.contains(today) ? today : dates.first;
+      }
     } catch (e) {
       debugPrint('[Timetable] date parse failed: $e');
     }

@@ -13,4 +13,23 @@ abstract class SafeChangeNotifier extends ChangeNotifier {
   void safeNotify() {
     if (!_disposed) notifyListeners();
   }
+
+  /// 낙관적 토글: apply(!current) → notify → action() → 실패 시 apply(current) → notify
+  @protected
+  Future<void> optimisticToggle(
+    bool current, {
+    required void Function(bool) apply,
+    required Future<void> Function() action,
+    void Function()? onError,
+  }) async {
+    apply(!current);
+    safeNotify();
+    try {
+      await action();
+    } catch (_) {
+      apply(current);
+      safeNotify();
+      onError?.call();
+    }
+  }
 }

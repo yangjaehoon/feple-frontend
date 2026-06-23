@@ -258,18 +258,13 @@ class PostDetailNotifier extends SafeChangeNotifier {
   Future<void> toggleLike(int? userId) async {
     if (isToggling || userId == null) return;
     isToggling = true;
-    // 낙관적 업데이트 (TDA: 서버 응답을 물어서 결정하는 대신, 바로 토글 지시)
-    final wasLiked = liked;
-    liked = !liked;
-    heartCount += liked ? 1 : -1;
-    safeNotify();
     try {
-      await _postService.toggleLike(postId);
-    } catch (e) {
-      liked = wasLiked;
-      heartCount += liked ? 1 : -1;
-      debugPrint('toggleLike error: $e');
-      onError?.call('like_failed');
+      await optimisticToggle(
+        liked,
+        apply: (v) { liked = v; heartCount += v ? 1 : -1; },
+        action: () => _postService.toggleLike(postId),
+        onError: () => onError?.call('like_failed'),
+      );
     } finally {
       isToggling = false;
       safeNotify();

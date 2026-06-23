@@ -94,17 +94,14 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
   }
 
   Future<void> toggleLike() async {
-    final prev = liked;
-    liked = !liked;
-    safeNotify();
-    try {
-      await festivalService.toggleLike(festivalId);
-      AppEvents.festivalLikeChanged.value++;
-    } catch (e) {
-      liked = prev;
-      safeNotify();
-      debugPrint('toggleLike error: $e');
-    }
+    await optimisticToggle(
+      liked,
+      apply: (v) => liked = v,
+      action: () async {
+        await festivalService.toggleLike(festivalId);
+        AppEvents.festivalLikeChanged.value++;
+      },
+    );
   }
 
   Future<void> toggleAttending() async {

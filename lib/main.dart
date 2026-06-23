@@ -124,6 +124,18 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _tryAutoLogin(UserProvider userProvider) async {
+    // connect(5s) + receive(12s) + 갱신 재시도(20s) + 여유 = 40s 상한
+    // _plainDio 타임아웃 없음으로 인한 무한 대기 방지
+    try {
+      await _doAutoLogin(userProvider).timeout(const Duration(seconds: 40));
+    } on TimeoutException {
+      log('Auto login timed out');
+    } finally {
+      FlutterNativeSplash.remove();
+    }
+  }
+
+  Future<void> _doAutoLogin(UserProvider userProvider) async {
     try {
       final token = await TokenStore.readAccessToken();
       if (token != null) {
@@ -144,8 +156,6 @@ class _MyAppState extends State<MyApp> {
       try {
         await userProvider.logout().timeout(const Duration(seconds: 8));
       } catch (_) {}
-    } finally {
-      FlutterNativeSplash.remove();
     }
   }
 

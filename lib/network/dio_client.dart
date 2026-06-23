@@ -28,7 +28,11 @@ class DioClient {
   static void Function()? onUserBanned;
 
   /// 인터셉터 없이 토큰 갱신/재시도에만 사용하는 내부 Dio
-  static final Dio _plainDio = Dio(BaseOptions(baseUrl: app_config.baseUrl));
+  static final Dio _plainDio = Dio(BaseOptions(
+    baseUrl: app_config.baseUrl,
+    connectTimeout: const Duration(seconds: 10),
+    receiveTimeout: const Duration(seconds: 20),
+  ));
 
   // refresh 중복 호출 방지: 진행 중인 refresh가 있으면 완료될 때까지 대기
   static bool _isRefreshing = false;

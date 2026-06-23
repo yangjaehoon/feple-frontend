@@ -307,58 +307,64 @@ class _EnlargePostState extends State<EnlargePost> {
                 : null,
           ),
           Divider(thickness: 1, height: 40, color: colors.listDivider),
-          // 게시물 상호작용 영역: 좋아요/스크랩/조회수 변경 시만 리빌드
-          ListenableBuilder(
-            listenable: _notifier,
-            builder: (_, __) => Column(
-              children: [
-                LikeCommentRow(
-                  data: PostInteractionData(
-                    liked: _notifier.liked,
-                    heartCount: _notifier.heartCount,
-                    commentCount: _notifier.comments.length,
-                    scraped: _notifier.scraped,
-                    scrapCount: _notifier.scrapCount,
-                  ),
-                  onLikeTap: () => _notifier.toggleLike(userId),
-                  onScrapTap: () => _notifier.toggleScrap(userId),
-                ),
-                const SizedBox(height: 8),
-                _buildViewCountRow(colors),
-              ],
-            ),
-          ),
+          _buildInteractionArea(colors, userId),
           const SizedBox(height: 24),
-          // 댓글 영역: commentsVersion이 바뀔 때만 리빌드
-          // 댓글 좋아요가 게시물 헤더/상호작용 영역을 리빌드하지 않음
-          ListenableBuilder(
-            listenable: _notifier.commentsVersion,
-            builder: (_, __) => CommentSection(
-              rootComments: _notifier.rootComments,
-              repliesMap: _notifier.repliesMap,
-              currentUserId: userId,
-              onReport: (commentId) => showReportSheet(
-                context,
-                titleKey: 'report_comment',
-                onSubmit: (reason, detail) => _reportService
-                    .submitCommentReport(commentId, reason, detail: detail),
-                duplicateErrorKey: 'report_comment_duplicate',
-              ),
-              onReply: _setReplyTo,
-              onToggleLike: (commentId) =>
-                  _notifier.toggleCommentLike(commentId, userId),
-              onDeleteComment: (commentId) => _notifier.deleteComment(commentId),
-              onEditComment: (commentId, currentContent) async {
-                final result =
-                    await _showEditCommentDialog(context, currentContent);
-                if (result != null && result.isNotEmpty) {
-                  await _notifier.updateComment(commentId, result);
-                }
-              },
-            ),
-          ),
+          _buildCommentArea(userId),
           const SizedBox(height: 16),
         ],
+      ),
+    );
+  }
+
+  // 좋아요/스크랩/조회수 변경 시만 리빌드 — 댓글 리빌드와 분리
+  Widget _buildInteractionArea(AbstractThemeColors colors, int? userId) {
+    return ListenableBuilder(
+      listenable: _notifier,
+      builder: (_, __) => Column(
+        children: [
+          LikeCommentRow(
+            data: PostInteractionData(
+              liked: _notifier.liked,
+              heartCount: _notifier.heartCount,
+              commentCount: _notifier.comments.length,
+              scraped: _notifier.scraped,
+              scrapCount: _notifier.scrapCount,
+            ),
+            onLikeTap: () => _notifier.toggleLike(userId),
+            onScrapTap: () => _notifier.toggleScrap(userId),
+          ),
+          const SizedBox(height: 8),
+          _buildViewCountRow(colors),
+        ],
+      ),
+    );
+  }
+
+  // commentsVersion이 바뀔 때만 리빌드 — 댓글 좋아요가 상호작용 영역을 리빌드하지 않음
+  Widget _buildCommentArea(int? userId) {
+    return ListenableBuilder(
+      listenable: _notifier.commentsVersion,
+      builder: (_, __) => CommentSection(
+        rootComments: _notifier.rootComments,
+        repliesMap: _notifier.repliesMap,
+        currentUserId: userId,
+        onReport: (commentId) => showReportSheet(
+          context,
+          titleKey: 'report_comment',
+          onSubmit: (reason, detail) => _reportService
+              .submitCommentReport(commentId, reason, detail: detail),
+          duplicateErrorKey: 'report_comment_duplicate',
+        ),
+        onReply: _setReplyTo,
+        onToggleLike: (commentId) =>
+            _notifier.toggleCommentLike(commentId, userId),
+        onDeleteComment: (commentId) => _notifier.deleteComment(commentId),
+        onEditComment: (commentId, currentContent) async {
+          final result = await _showEditCommentDialog(context, currentContent);
+          if (result != null && result.isNotEmpty) {
+            await _notifier.updateComment(commentId, result);
+          }
+        },
       ),
     );
   }

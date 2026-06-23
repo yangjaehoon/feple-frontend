@@ -85,6 +85,8 @@ class _FepleAppBarState extends State<FepleAppBar> {
               'assets/image/feple_clear_960.png',
               height: 50,
               width: 50,
+              // 960px 원본을 50 logical px로 표시 — 3x 디바이스 기준 150 physical px로 디코딩 제한
+              cacheWidth: (50 * MediaQuery.devicePixelRatioOf(context)).round(),
             ),
             const SizedBox(width: 2),
             Text(

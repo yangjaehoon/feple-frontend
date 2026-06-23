@@ -134,7 +134,8 @@ class MainImageSwiperState extends State<MainImageSwiper> {
       height: _swiperHeight,
       child: Stack(
         children: [
-          _buildBackground(),
+          // 블러 배경은 포토카드 스케일 애니메이션과 독립적으로 리페인트되도록 격리
+          RepaintBoundary(child: _buildBackground()),
           if (_pageController != null) _buildPhotoPageView(),
           ArtistNameLike(
             artistName: widget.artistName,

@@ -17,10 +17,16 @@ class ScheduleListTile extends StatelessWidget {
     this.isPast = false,
   });
 
+  // 지난 일정에 적용하는 투명도 — Opacity 위젯으로 전체를 감싸면 saveLayer()가 발생해
+  // 리스트 항목마다 GPU offscreen buffer가 생긴다. 색상에 직접 alpha를 녹여 방지한다.
+  static const double _pastAlpha = 0.55;
+
+  Color _c(Color base) => isPast ? base.withValues(alpha: _pastAlpha) : base;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final row = InkWell(
+    return InkWell(
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(
@@ -37,13 +43,13 @@ class ScheduleListTile extends StatelessWidget {
         ),
       ),
     );
-    return isPast ? Opacity(opacity: 0.55, child: row) : row;
   }
 
   Widget _buildPoster(AbstractThemeColors colors) {
     final typeConfig = getEventTypeConfig(item.eventType, colors);
     final hasPoster = item.posterUrl != null && item.posterUrl!.isNotEmpty;
-    return ClipRRect(
+    // 포스터 이미지는 색상 속성으로 alpha를 적용할 수 없으므로 42×42px 범위에만 Opacity 사용
+    final poster = ClipRRect(
       borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
       child: hasPoster
           ? CachedNetworkImage(
@@ -58,6 +64,7 @@ class ScheduleListTile extends StatelessWidget {
             )
           : EventTypeIcon(config: typeConfig),
     );
+    return isPast ? Opacity(opacity: _pastAlpha, child: poster) : poster;
   }
 
   Widget _buildContent(AbstractThemeColors colors) {
@@ -69,25 +76,25 @@ class ScheduleListTile extends StatelessWidget {
           style: TextStyle(
             fontSize: AppDimens.fontSizeMd,
             fontWeight: FontWeight.w700,
-            color: colors.textTitle,
+            color: _c(colors.textTitle),
           ),
         ),
         if (item.location != null && item.location!.isNotEmpty) ...[
           const SizedBox(height: 2),
           Text(
             item.location!,
-            style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
+            style: TextStyle(fontSize: AppDimens.fontSizeXs, color: _c(colors.textSecondary)),
           ),
         ],
         if (item.startDate != null) ...[
           const SizedBox(height: 4),
           Row(
             children: [
-              Icon(Icons.calendar_today_rounded, size: 11, color: colors.textSecondary),
+              Icon(Icons.calendar_today_rounded, size: 11, color: _c(colors.textSecondary)),
               const SizedBox(width: 4),
               Text(
                 item.dateRange,
-                style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
+                style: TextStyle(fontSize: AppDimens.fontSizeXs, color: _c(colors.textSecondary)),
               ),
             ],
           ),
@@ -114,12 +121,12 @@ class ScheduleListTile extends StatelessWidget {
               message: coArtist.artistName,
               child: CircleAvatar(
                 radius: 13,
-                backgroundColor: colors.backgroundMain,
+                backgroundColor: _c(colors.backgroundMain),
                 backgroundImage: (coArtist.profileImageUrl != null && coArtist.profileImageUrl!.isNotEmpty)
                     ? CachedNetworkImageProvider(coArtist.profileImageUrl!, maxWidth: 52)
                     : null,
                 child: (coArtist.profileImageUrl == null || coArtist.profileImageUrl!.isEmpty)
-                    ? Icon(Icons.person_rounded, size: 12, color: colors.textSecondary)
+                    ? Icon(Icons.person_rounded, size: 12, color: _c(colors.textSecondary))
                     : null,
               ),
             ),

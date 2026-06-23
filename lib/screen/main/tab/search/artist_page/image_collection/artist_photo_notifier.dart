@@ -35,22 +35,21 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
   }
 
   Future<void> toggleLike(int photoId) async {
+    final index = _photos.indexWhere((p) => p.photoId == photoId);
+    if (index == -1) return;
+    final original = _photos[index];
+    _photos[index] = original.copyWith(
+      likeCount: original.isLiked ? original.likeCount - 1 : original.likeCount + 1,
+      isLiked: !original.isLiked,
+    );
+    safeNotify();
     try {
       await _photoService.toggleLike(artistId, photoId);
-      final index = _photos.indexWhere((photo) => photo.photoId == photoId);
-      if (index != -1) {
-        final photo = _photos[index];
-        _photos[index] = photo.copyWith(
-          likeCount: photo.isLiked ? photo.likeCount - 1 : photo.likeCount + 1,
-          isLiked: !photo.isLiked,
-        );
-        safeNotify();
-      }
     } catch (e) {
-      debugPrint('toggle like error: $e');
-      await loadPhotos();
+      _photos[index] = original;
       errorKey = 'like_failed';
       safeNotify();
+      debugPrint('toggle like error: $e');
     }
   }
 

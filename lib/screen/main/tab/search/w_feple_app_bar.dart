@@ -121,18 +121,18 @@ class _FepleAppBarState extends State<FepleAppBar> {
           Positioned(
             top: 8,
             right: 8,
-            child: _buildUnreadBadge(count),
+            child: _buildUnreadBadge(count, colors),
           ),
       ],
     );
   }
 
-  Widget _buildUnreadBadge(int count) {
+  Widget _buildUnreadBadge(int count, AbstractThemeColors colors) {
     return Container(
       padding: const EdgeInsets.all(2),
       constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
       decoration: BoxDecoration(
-        color: AppColors.errorRed,
+        color: colors.error,
         shape: count > 9 ? BoxShape.rectangle : BoxShape.circle,
         borderRadius: count > 9 ? BorderRadius.circular(AppDimens.radiusSmall) : null,
         border: Border.all(color: Colors.white, width: 1.5),

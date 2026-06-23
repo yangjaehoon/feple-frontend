@@ -135,11 +135,11 @@ class _WritePostScreenState extends State<WritePostScreen> {
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: radius,
-        borderSide: const BorderSide(color: AppColors.errorRed, width: 1.5),
+        borderSide: BorderSide(color: colors.error, width: 1.5),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: radius,
-        borderSide: const BorderSide(color: AppColors.errorRed, width: 2),
+        borderSide: BorderSide(color: colors.error, width: 2),
       ),
       errorText: bannedWordMessage,
     );

@@ -123,7 +123,7 @@ Future<void> showReportSheet(
                                 context.showErrorSnackbar(isConflict ? duplicateErrorKey.tr() : 'report_failed'.tr());
                               }
                             },
-                      backgroundColor: AppColors.errorRed,
+                      backgroundColor: colors.error,
                       borderRadius: AppDimens.radiusSmall,
                       height: 48,
                     ),

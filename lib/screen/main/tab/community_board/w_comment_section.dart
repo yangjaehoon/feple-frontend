@@ -181,7 +181,7 @@ class _CommentTile extends StatelessWidget {
               Icon(
                 comment.liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
                 size: 13,
-                color: comment.liked ? AppColors.kawaiiPink : colors.textSecondary,
+                color: comment.liked ? colors.likeActiveColor : colors.textSecondary,
               ),
               if (comment.likeCount > 0) ...[
                 const SizedBox(width: 3),

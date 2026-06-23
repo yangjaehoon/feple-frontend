@@ -40,7 +40,7 @@ class PostStatRow extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(Icons.favorite_border_rounded,
-            color: AppColors.kawaiiPink, size: _heartSize),
+            color: colors.likeActiveColor, size: _heartSize),
         const SizedBox(width: 4),
         Text(likeCount.toString(), style: textStyle),
         if (scrapCount != null) ...[
@@ -102,7 +102,7 @@ class LikeCommentRow extends StatelessWidget {
           children: [
             Icon(
               data.liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-              color: AppColors.kawaiiPink,
+              color: colors.likeActiveColor,
             ),
             const SizedBox(width: 4),
             Text(

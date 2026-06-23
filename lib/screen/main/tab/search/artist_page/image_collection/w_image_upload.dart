@@ -223,7 +223,7 @@ class _ImgUploadState extends State<ImgUpload> {
           padding: const EdgeInsets.all(18.0),
           child: Column(
             children: [
-              _buildImagePicker(),
+              _buildImagePicker(colors),
               _buildForm(colors),
             ],
           ),
@@ -232,7 +232,7 @@ class _ImgUploadState extends State<ImgUpload> {
     );
   }
 
-  Widget _buildImagePicker() {
+  Widget _buildImagePicker(AbstractThemeColors colors) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -248,9 +248,9 @@ class _ImgUploadState extends State<ImgUpload> {
               alignment: Alignment.centerLeft,
               child: Text(
                 _imageError!,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: AppDimens.fontSizeXs,
-                  color: AppColors.errorRed,
+                  color: colors.error,
                   fontWeight: FontWeight.w500,
                 ),
               ),

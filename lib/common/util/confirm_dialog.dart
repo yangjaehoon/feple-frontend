@@ -30,7 +30,7 @@ Future<bool> showConfirmDialog(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
               confirmLabel,
-              style: const TextStyle(color: AppColors.errorRed),
+              style: TextStyle(color: colors.error),
             ),
           ),
         ],

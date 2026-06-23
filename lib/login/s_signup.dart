@@ -160,9 +160,9 @@ class _SignupPageState extends State<SignupPage> {
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Text(
                         _generalError!,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: AppDimens.fontSizeSm,
-                          color: AppColors.errorRed,
+                          color: themeColors.error,
                           fontWeight: FontWeight.w500,
                         ),
                         textAlign: TextAlign.center,

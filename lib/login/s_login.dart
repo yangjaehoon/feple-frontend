@@ -144,15 +144,15 @@ class _LoginPageState extends State<LoginPage> {
             padding: const EdgeInsets.only(top: 6, left: 4),
             child: Row(
               children: [
-                const Icon(Icons.error_outline_rounded,
-                    color: AppColors.errorRed, size: 14),
+                Icon(Icons.error_outline_rounded,
+                    color: themeColors.error, size: 14),
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
                     _authError!,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: AppDimens.fontSizeXs,
-                      color: AppColors.errorRed,
+                      color: themeColors.error,
                       fontWeight: FontWeight.w500,
                     ),
                   ),

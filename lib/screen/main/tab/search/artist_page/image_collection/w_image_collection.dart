@@ -164,7 +164,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
     return Stack(
       children: [
         _buildPhoto(photo, colors, imageSize),
-        _buildLikeOverlay(photo),
+        _buildLikeOverlay(photo, colors),
       ],
     );
   }
@@ -216,7 +216,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
     );
   }
 
-  Widget _buildLikeOverlay(ArtistPhotoResponse photo) {
+  Widget _buildLikeOverlay(ArtistPhotoResponse photo, AbstractThemeColors colors) {
     return Positioned(
       left: 6,
       bottom: 6,
@@ -233,7 +233,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
             children: [
               Icon(
                 photo.isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                color: photo.isLiked ? AppColors.kawaiiPink : Colors.white,
+                color: photo.isLiked ? colors.likeActiveColor : Colors.white,
                 size: 18,
               ),
               const SizedBox(width: 4),

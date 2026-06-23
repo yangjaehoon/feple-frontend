@@ -102,15 +102,18 @@ void main() {
       expect(notifier.photos.last.likeCount, 4);
     });
 
-    test('서비스 예외 시 loadPhotos로 복구', () async {
-      when(() => mockService.fetchPhotos(1))
-          .thenAnswer((_) async => [_photo(id: 1)]);
+    test('서비스 예외 시 원본 항목 복원 (fetchPhotos 추가 호출 없음)', () async {
+      final original = _photo(id: 1, likeCount: 5, isLiked: false);
+      when(() => mockService.fetchPhotos(1)).thenAnswer((_) async => [original]);
       when(() => mockService.toggleLike(1, 1)).thenThrow(Exception('err'));
       await notifier.loadPhotos();
 
       await notifier.toggleLike(1);
 
-      verify(() => mockService.fetchPhotos(1)).called(greaterThanOrEqualTo(1));
+      expect(notifier.photos.first.isLiked, false);
+      expect(notifier.photos.first.likeCount, 5);
+      // 오류 시 전체 재로드 없이 원본 복원
+      verify(() => mockService.fetchPhotos(1)).called(1);
     });
 
     test('likeCount=0인 좋아요 상태 사진 토글 시 likeCount -1 (낙관적 업데이트)', () async {
@@ -125,15 +128,14 @@ void main() {
       expect(notifier.photos.first.likeCount, -1);
     });
 
-    test('photos 빈 상태에서 toggleLike 호출 시 서비스는 호출되나 상태 변경 없음', () async {
+    test('존재하지 않는 photoId로 toggleLike 시 서비스 미호출 상태 변경 없음', () async {
       when(() => mockService.fetchPhotos(1)).thenAnswer((_) async => []);
-      when(() => mockService.toggleLike(1, 99)).thenAnswer((_) async {});
       await notifier.loadPhotos();
 
       await notifier.toggleLike(99);
 
       expect(notifier.photos, isEmpty);
-      verify(() => mockService.toggleLike(1, 99)).called(1);
+      verifyNever(() => mockService.toggleLike(any(), any()));
     });
   });
 

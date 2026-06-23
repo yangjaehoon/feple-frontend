@@ -127,7 +127,7 @@ class NicknameFieldState extends State<NicknameField> {
           borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
           borderSide: BorderSide(
             color: _available == false
-                ? AppColors.errorRed
+                ? colors.error
                 : _available == true
                     ? colors.activate
                     : colors.divider,
@@ -173,7 +173,7 @@ class NicknameFieldState extends State<NicknameField> {
               _message,
               style: TextStyle(
                 fontSize: AppDimens.fontSizeXs,
-                color: _available == true ? colors.activate : AppColors.errorRed,
+                color: _available == true ? colors.activate : colors.error,
                 fontWeight: FontWeight.w500,
               ),
             ),

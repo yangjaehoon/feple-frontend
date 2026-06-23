@@ -44,7 +44,7 @@ class AppTextField extends StatelessWidget {
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
         borderSide: BorderSide(
-          color: errorText != null ? AppColors.errorRed : colors.divider,
+          color: errorText != null ? colors.error : colors.divider,
         ),
       ),
       focusedBorder: OutlineInputBorder(
@@ -77,9 +77,9 @@ class AppTextField extends StatelessWidget {
             padding: const EdgeInsets.only(top: 6, left: 4),
             child: Text(
               errorText!,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: AppDimens.fontSizeXs,
-                color: AppColors.errorRed,
+                color: colors.error,
                 fontWeight: FontWeight.w500,
               ),
             ),

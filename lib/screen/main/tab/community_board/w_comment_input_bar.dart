@@ -42,7 +42,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
           if (widget.replyToNickname != null) _buildReplyBanner(colors),
           _buildAnonymousToggle(colors),
           _buildInputRow(colors),
-          if (widget.errorText != null && widget.errorText!.isNotEmpty) _buildErrorText(),
+          if (widget.errorText != null && widget.errorText!.isNotEmpty) _buildErrorText(colors),
         ],
       ),
     );
@@ -172,14 +172,14 @@ class _CommentInputBarState extends State<CommentInputBar> {
     );
   }
 
-  Widget _buildErrorText() {
+  Widget _buildErrorText(AbstractThemeColors colors) {
     return Padding(
       padding: const EdgeInsets.only(top: 6, left: 4),
       child: Text(
         widget.errorText!,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: AppDimens.fontSizeXs,
-          color: AppColors.errorRed,
+          color: colors.error,
           fontWeight: FontWeight.w500,
         ),
       ),

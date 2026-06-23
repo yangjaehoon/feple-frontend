@@ -288,11 +288,11 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(color: colors.activate, width: 1.5),
             ),
-            errorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: AppColors.errorRed, width: 1.5),
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: colors.error, width: 1.5),
             ),
-            focusedErrorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: AppColors.errorRed, width: 2),
+            focusedErrorBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: colors.error, width: 2),
             ),
           ),
           style: TextStyle(color: colors.textTitle, fontSize: AppDimens.fontSizeMd),

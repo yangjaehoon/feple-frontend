@@ -163,7 +163,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 const SizedBox(height: 28),
                 _buildTextSection(colors),
                 const SizedBox(height: 40),
-                if (_errorMessage != null) _buildError(),
+                if (_errorMessage != null) _buildError(context),
                 LoadingButton(
                   label: 'verify_email_done_btn'.tr(),
                   onPressed: busy ? null : _onVerifyTapped,
@@ -238,14 +238,15 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     );
   }
 
-  Widget _buildError() {
+  Widget _buildError(BuildContext context) {
+    final colors = context.appColors;
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Text(
         _errorMessage!,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: AppDimens.fontSizeSm,
-          color: AppColors.errorRed,
+          color: colors.error,
           fontWeight: FontWeight.w500,
         ),
         textAlign: TextAlign.center,

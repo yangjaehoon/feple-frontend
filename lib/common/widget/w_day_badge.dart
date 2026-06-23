@@ -17,7 +17,7 @@ class DayBadge extends StatelessWidget {
       color = colors.statusOngoingColor;
     } else if (dDays == 0) {
       label = 'd_day'.tr();
-      color = AppColors.errorRed;
+      color = colors.error;
     } else if (dDays <= 7) {
       label = 'D-$dDays';
       color = colors.activate;

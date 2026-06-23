@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 /// 아이콘 + 텍스트 Row 구조의 PopupMenuItem을 생성하는 공통 빌더.
 ///
-/// [danger]가 true이면 [AppColors.errorRed]를 사용한다.
+/// [danger]가 true이면 [AbstractThemeColors.error]를 사용한다.
 /// [color]를 명시하면 [danger] 설정을 덮어쓴다.
 PopupMenuItem<T> buildPopupMenuItem<T>({
   required T value,
@@ -19,7 +19,7 @@ PopupMenuItem<T> buildPopupMenuItem<T>({
   FontWeight? fontWeight,
 }) {
   final effectiveColor =
-      color ?? (danger ? AppColors.errorRed : colors.textTitle);
+      color ?? (danger ? colors.error : colors.textTitle);
   return PopupMenuItem<T>(
     value: value,
     height: height,

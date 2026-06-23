@@ -113,7 +113,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
         if (widget.isEditing)
           TextButton(
             onPressed: () => Navigator.pop(context, 'delete'),
-            child: Text('msg_delete'.tr(), style: const TextStyle(color: AppColors.errorRed)),
+            child: Text('msg_delete'.tr(), style: TextStyle(color: colors.error)),
           ),
         TextButton(
           onPressed: () => Navigator.pop(context),

@@ -164,7 +164,7 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         child: Row(
           children: [
-            Icon(Icons.error_outline, color: AppColors.errorRed, size: 18),
+            Icon(Icons.error_outline, color: colors.error, size: 18),
             const SizedBox(width: 8),
             Expanded(
               child: Text(

@@ -355,7 +355,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
               alignment: Alignment.centerRight,
               padding: const EdgeInsets.only(right: 20),
               decoration: BoxDecoration(
-                color: AppColors.errorRed,
+                color: colors.error,
                 borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
               ),
               child: const Icon(Icons.delete_rounded, color: Colors.white, size: 22),

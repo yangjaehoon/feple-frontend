@@ -113,4 +113,7 @@ abstract class AbstractThemeColors {
 
   /// Like button active color (heart icon)
   Color get likeActiveColor => AppColors.kawaiiPink;
+
+  /// Error / destructive color
+  Color get error => AppColors.errorRed;
 }

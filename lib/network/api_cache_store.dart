@@ -174,7 +174,7 @@ class ApiCacheStore {
     if (url.contains('/notifications')) return ['/notifications/my'];
 
     // 인증
-    if (url.contains('/certifications')) return ['/certifications/my'];
+    if (url.contains('/certifications')) return ['/certifications'];
 
     // 유저 프로필 수정
     m = RegExp(r'/users/(me|\d+)').firstMatch(url);

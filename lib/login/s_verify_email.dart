@@ -109,7 +109,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     final userProvider = context.read<UserProvider>();
     Navigator.of(context).popUntil((route) => route.isFirst);
     await userProvider.setUser(user);
-    FcmService.instance.init().catchError((e) => debugPrint('[FCM] init failed: $e'));
+    FcmService.instance.initWithRationale().catchError((e) => debugPrint('[FCM] init failed: $e'));
   }
 
   Future<void> _onResendTapped() async {

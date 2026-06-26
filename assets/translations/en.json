@@ -502,5 +502,12 @@
   "onboarding_pick_skip": "Skip for now",
   "onboarding_pick_load_failed": "Failed to load artists",
   "onboarding_pick_retry": "Try again",
-  "onboarding_replay": "Replay Onboarding"
+  "onboarding_replay": "Replay Onboarding",
+  "perm_notif_title": "Stay in the loop",
+  "perm_notif_desc": "Get notified about new festivals from artists you follow,\ncertification results, and replies.",
+  "perm_notif_allow": "Allow notifications",
+  "perm_loc_title": "Use my location",
+  "perm_loc_desc": "See your current location on the booth map.",
+  "perm_loc_allow": "Allow location",
+  "perm_later": "Later"
 }

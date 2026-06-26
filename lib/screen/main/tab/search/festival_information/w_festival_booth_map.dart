@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/permission_rationale.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
@@ -69,14 +70,23 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
 
   Future<void> _getUserLocation() async {
     try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) return;
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) return;
-      }
+
+      var permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.deniedForever) return;
+
+      if (permission == LocationPermission.denied) {
+        if (!mounted) return;
+        final proceed = await PermissionRationale.showLocation(context);
+        if (!proceed) return;
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied ||
+            permission == LocationPermission.deniedForever) {
+          return;
+        }
+      }
+
       final pos = await Geolocator.getCurrentPosition(
           locationSettings:
               const LocationSettings(accuracy: LocationAccuracy.high));

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:feple/app.dart';
 import 'package:feple/auth/token_store.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/permission_rationale.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/notification_type.dart';
 import 'package:feple/network/dio_client.dart';
@@ -39,17 +40,46 @@ class FcmService {
   );
 
   Future<void> init() async {
-    // 백그라운드 핸들러 등록
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-    // 권한 요청
     final settings = await _messaging.requestPermission(
       alert: true,
       badge: true,
       sound: true,
     );
     debugPrint('[FCM] 권한 상태: ${settings.authorizationStatus}');
+    await _setupChannelsAndListeners();
+  }
 
+  /// 알림 권한을 처음 요청하는 경우 사전 설명 바텀시트를 먼저 표시.
+  /// 이미 권한이 결정된 경우(허용/거부)에는 바텀시트 없이 바로 진행.
+  Future<void> initWithRationale() async {
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+    final current = await _messaging.getNotificationSettings();
+    final needsRationale =
+        current.authorizationStatus == AuthorizationStatus.notDetermined;
+
+    bool requestPermission = true;
+    if (needsRationale) {
+      final ctx = App.navigatorKey.currentContext;
+      if (ctx != null && ctx.mounted) {
+        requestPermission = await PermissionRationale.showNotification(ctx);
+      }
+    }
+
+    if (requestPermission) {
+      final settings = await _messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+      debugPrint('[FCM] 권한 상태: ${settings.authorizationStatus}');
+    }
+
+    await _setupChannelsAndListeners();
+  }
+
+  Future<void> _setupChannelsAndListeners() async {
     // Android 알림 채널 생성
     await _localNotifications
         .resolvePlatformSpecificImplementation<

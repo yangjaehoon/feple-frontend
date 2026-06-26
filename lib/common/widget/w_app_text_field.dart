@@ -14,6 +14,7 @@ class AppTextField extends StatelessWidget {
   final String? errorText;
   final ValueChanged<String>? onChanged;
   final String? semanticsLabel;
+  final TextInputAction? textInputAction;
 
   const AppTextField({
     super.key,
@@ -26,6 +27,7 @@ class AppTextField extends StatelessWidget {
     this.errorText,
     this.onChanged,
     this.semanticsLabel,
+    this.textInputAction,
   });
 
   InputDecoration _buildInputDecoration(AbstractThemeColors colors) {
@@ -66,6 +68,7 @@ class AppTextField extends StatelessWidget {
             controller: controller,
             obscureText: obscureText,
             keyboardType: keyboardType,
+            textInputAction: textInputAction,
             maxLength: maxLength,
             onChanged: onChanged,
             style: TextStyle(fontSize: AppDimens.fontSizeLg, color: colors.text),

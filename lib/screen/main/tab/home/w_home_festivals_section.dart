@@ -118,6 +118,7 @@ class _FestivalItem extends StatelessWidget {
       fit: BoxFit.cover,
       fadeInDuration: AppDimens.animXFast,
       fadeOutDuration: AppDimens.animTapFeedback,
+      placeholder: (_, __) => Container(color: colors.surface),
       errorWidget: (_, __, ___) => Container(
         color: colors.surface,
         child: Icon(Icons.image_not_supported_rounded, color: colors.textSecondary),

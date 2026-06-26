@@ -78,6 +78,7 @@ class SearchFestivalTile extends StatelessWidget {
                   memCacheWidth: 88, // 44px * 2 (Retina)
                   fadeInDuration: AppDimens.animXFast,
                   fadeOutDuration: AppDimens.animTapFeedback,
+                  placeholder: (_, __) => _placeholder(colors),
                   errorWidget: (_, __, ___) => _placeholder(colors),
                 )
               : _placeholder(colors),

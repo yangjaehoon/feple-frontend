@@ -502,5 +502,12 @@
   "onboarding_pick_skip": "나중에 선택하기",
   "onboarding_pick_load_failed": "아티스트를 불러오지 못했습니다",
   "onboarding_pick_retry": "다시 시도",
-  "onboarding_replay": "온보딩 다시 보기"
+  "onboarding_replay": "온보딩 다시 보기",
+  "perm_notif_title": "알림을 받아보세요",
+  "perm_notif_desc": "팔로우한 아티스트의 새 페스티벌 소식, 인증 결과, 답글 등\n중요한 업데이트를 놓치지 마세요.",
+  "perm_notif_allow": "알림 허용하기",
+  "perm_loc_title": "내 위치 사용",
+  "perm_loc_desc": "부스 지도에서 현재 내 위치를 확인할 수 있어요.",
+  "perm_loc_allow": "위치 허용하기",
+  "perm_later": "나중에"
 }

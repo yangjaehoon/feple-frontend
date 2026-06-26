@@ -240,7 +240,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _handleLoginSuccess(dynamic user) async {
     if (!mounted) return;
     await context.read<UserProvider>().setUser(user);
-    FcmService.instance.init().catchError((e) => debugPrint('[FCM] init failed: $e'));
+    FcmService.instance.initWithRationale().catchError((e) => debugPrint('[FCM] init failed: $e'));
   }
 
   Future<void> _loginWithEmail() async {
@@ -299,7 +299,7 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final user = await AuthService.instance.loginWithKakao();
       await userProvider.setUser(user);
-      FcmService.instance.init().catchError((e) => debugPrint('[FCM] init failed: $e'));
+      FcmService.instance.initWithRationale().catchError((e) => debugPrint('[FCM] init failed: $e'));
     } on PlatformException catch (e) {
       debugPrint('[Auth] 카카오 PlatformException: $e');
       if (e.code != 'CANCELED' && mounted) {

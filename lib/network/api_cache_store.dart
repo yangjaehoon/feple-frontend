@@ -37,11 +37,11 @@ class ApiCacheStore {
         url.contains('/schedule')) {
       return 12 * 60 * 60 * 1000; // 12시간
     }
-    // 거의 바뀌지 않는 정적 콘텐츠
-    if (url.contains('/songs') ||
-        url.contains('/photos')) {
-      return 30 * 24 * 60 * 60 * 1000; // 30일
-    }
+    // 텍스트 데이터 — presigned URL 없음
+    if (url.contains('/songs')) return 30 * 24 * 60 * 60 * 1000;        // 30일
+    // presigned URL 포함 — 백엔드 TTL(7일)보다 짧게 유지
+    if (url.contains('/photos')) return 6 * 60 * 60 * 1000;             // 6시간
+    if (url.contains('/certifications')) return 60 * 60 * 1000;         // 1시간 (상태 변경 + presigned URL)
     // 기본값: 페스티벌 목록/상세, 아티스트, 유저 프로필 등
     return 7 * 24 * 60 * 60 * 1000;                                      // 7일
   }

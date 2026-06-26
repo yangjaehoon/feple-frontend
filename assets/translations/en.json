@@ -509,5 +509,8 @@
   "perm_loc_title": "Use my location",
   "perm_loc_desc": "See your current location on the booth map.",
   "perm_loc_allow": "Allow location",
-  "perm_later": "Later"
+  "perm_later": "Later",
+  "discard_changes": "Discard changes",
+  "discard_changes_msg": "If you leave now, your progress will be lost.",
+  "discard": "Leave"
 }

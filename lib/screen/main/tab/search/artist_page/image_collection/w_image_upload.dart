@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/constant/photo_category.dart';
+import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/service/artist_schedule_service.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,8 @@ class _ImgUploadState extends State<ImgUpload> {
   bool isUploading = false;
   bool _isAnonymous = false;
   String? _imageError;
+
+  bool get _isDirty => imageData != null || _titleCtrl.text.isNotEmpty;
 
   @override
   void initState() {
@@ -99,16 +102,34 @@ class _ImgUploadState extends State<ImgUpload> {
     super.dispose();
   }
 
+  Future<void> _onPopInvoked(bool didPop) async {
+    if (didPop) return;
+    if (isUploading) return;
+    if (!_isDirty) { Navigator.of(context).pop(); return; }
+    final ctx = context;
+    final confirmed = await showConfirmDialog(
+      ctx,
+      title: 'discard_changes'.tr(),
+      content: 'discard_changes_msg'.tr(),
+      confirmLabel: 'discard'.tr(),
+    );
+    if (confirmed && ctx.mounted) Navigator.of(ctx).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return Scaffold(
-      backgroundColor: colors.backgroundMain,
-      body: Column(
-        children: [
-          _buildCustomAppBar(colors),
-          _buildScrollContent(colors),
-        ],
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) => _onPopInvoked(didPop),
+      child: Scaffold(
+        backgroundColor: colors.backgroundMain,
+        body: Column(
+          children: [
+            _buildCustomAppBar(colors),
+            _buildScrollContent(colors),
+          ],
+        ),
       ),
     );
   }

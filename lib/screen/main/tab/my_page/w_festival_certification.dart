@@ -81,16 +81,17 @@ class FtvCertificationWidgetState extends State<FtvCertificationWidget> {
             ),
           ),
         ),
-        SizedBox(
-          height: 150,
-          child: _loading
-              ? _buildSkeletonList()
-              : _hasError
-                  ? ErrorState(message: 'load_error'.tr(), onRetry: _load)
-                  : _certifications == null || _certifications!.isEmpty
-                      ? _buildEmptyState(colors)
-                      : _buildCertList(colors),
-        ),
+        if (_hasError)
+          ErrorState(message: 'load_error'.tr(), onRetry: _load)
+        else
+          SizedBox(
+            height: 150,
+            child: _loading
+                ? _buildSkeletonList()
+                : _certifications == null || _certifications!.isEmpty
+                    ? _buildEmptyState(colors)
+                    : _buildCertList(colors),
+          ),
       ],
     );
   }

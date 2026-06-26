@@ -90,6 +90,7 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
     final songs = snapshot.data ?? [];
     if (songs.isEmpty) {
       return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
         children: [
           const SizedBox(height: 80),
           EmptyState(icon: Icons.music_off_rounded, title: 'no_songs'.tr()),

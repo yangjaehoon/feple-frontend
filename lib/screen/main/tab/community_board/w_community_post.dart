@@ -243,20 +243,28 @@ class _CommunityPostState extends State<CommunityPost> {
     }
 
     if (_posts.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.chat_bubble_outline_rounded, size: 48, color: colors.textSecondary.withValues(alpha: 0.3)),
-              const SizedBox(height: 12),
-              Text(
-                'be_first_to_discuss'.tr(args: [widget.boardName]),
-                style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textSecondary),
-                textAlign: TextAlign.center,
+      return LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: constraints.maxHeight,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.chat_bubble_outline_rounded, size: 48, color: colors.textSecondary.withValues(alpha: 0.3)),
+                    const SizedBox(height: 12),
+                    Text(
+                      'be_first_to_discuss'.tr(args: [widget.boardName]),
+                      style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textSecondary),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
-            ],
+            ),
           ),
         ),
       );

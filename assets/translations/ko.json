@@ -512,5 +512,7 @@
   "perm_later": "나중에",
   "discard_changes": "작성 취소",
   "discard_changes_msg": "지금 나가면 작성 중인 내용이 사라져요.",
-  "discard": "나가기"
+  "discard": "나가기",
+  "notification_dismissed": "알림을 삭제했습니다.",
+  "undo": "실행취소"
 }

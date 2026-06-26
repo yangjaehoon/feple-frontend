@@ -19,6 +19,7 @@ class ErrorState extends StatelessWidget {
     final colors = context.appColors;
     return LayoutBuilder(builder: (_, constraints) {
       return SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         child: ConstrainedBox(
           constraints: BoxConstraints(minHeight: constraints.maxHeight),
           child: Center(

@@ -512,5 +512,7 @@
   "perm_later": "Later",
   "discard_changes": "Discard changes",
   "discard_changes_msg": "If you leave now, your progress will be lost.",
-  "discard": "Leave"
+  "discard": "Leave",
+  "notification_dismissed": "Notification deleted.",
+  "undo": "Undo"
 }

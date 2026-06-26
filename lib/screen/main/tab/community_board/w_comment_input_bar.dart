@@ -85,7 +85,10 @@ class _CommentInputBarState extends State<CommentInputBar> {
 
   Widget _buildAnonymousToggle(AbstractThemeColors colors) {
     return GestureDetector(
-      onTap: () => setState(() => _anonymous = !_anonymous),
+      onTap: () {
+        HapticFeedback.lightImpact();
+        setState(() => _anonymous = !_anonymous);
+      },
       child: Padding(
         padding: const EdgeInsets.only(bottom: 4),
         child: Row(

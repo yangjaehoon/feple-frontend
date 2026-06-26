@@ -141,6 +141,7 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: TextField(
         controller: _titleCtrl,
+        textInputAction: TextInputAction.next,
         onChanged: (_) { if (_titleError != null) setState(() => _titleError = null); },
         decoration: InputDecoration(
           labelText: 'song_request_song_title'.tr(),
@@ -157,6 +158,7 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
       child: TextField(
         controller: _urlCtrl,
         keyboardType: TextInputType.url,
+        textInputAction: TextInputAction.done,
         onChanged: (_) { if (_urlError != null) setState(() => _urlError = null); },
         decoration: InputDecoration(
           labelText: 'song_request_youtube_url'.tr(),

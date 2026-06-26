@@ -7,6 +7,7 @@ class FestivalTextField extends StatelessWidget {
   final String label;
   final int maxLines;
   final String? Function(String?)? validator;
+  final TextInputAction? textInputAction;
 
   const FestivalTextField({
     super.key,
@@ -14,6 +15,7 @@ class FestivalTextField extends StatelessWidget {
     required this.label,
     this.maxLines = 1,
     this.validator,
+    this.textInputAction,
   });
 
   @override
@@ -23,6 +25,7 @@ class FestivalTextField extends StatelessWidget {
       controller: controller,
       maxLines: maxLines,
       validator: validator,
+      textInputAction: textInputAction ?? (maxLines == 1 ? TextInputAction.next : TextInputAction.newline),
       style: TextStyle(color: colors.textTitle),
       decoration: InputDecoration(
         labelText: label,

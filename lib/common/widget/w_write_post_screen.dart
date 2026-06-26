@@ -262,6 +262,7 @@ class _WritePostScreenState extends State<WritePostScreen> {
           TextFormField(
             controller: _titleController,
             maxLength: 50,
+            textInputAction: TextInputAction.next,
             style: TextStyle(color: colors.textTitle),
             decoration: _fieldDecoration(
               'enter_title',
@@ -275,6 +276,7 @@ class _WritePostScreenState extends State<WritePostScreen> {
             maxLines: null,
             minLines: 8,
             maxLength: 500,
+            textInputAction: TextInputAction.newline,
             style: TextStyle(color: colors.textTitle),
             decoration: _fieldDecoration(
               'enter_content',

@@ -125,4 +125,25 @@ class NotificationNotifier extends SafeChangeNotifier {
       debugPrint('[Notification] markRead 실패: $e');
     }
   }
+
+  // 실행취소 지원 분리 메서드 — UI에서 직접 사용
+  void removeLocally(NotificationModel item) {
+    _items.removeWhere((n) => n.id == item.id);
+    safeNotify();
+  }
+
+  void undoDismiss(NotificationModel item) {
+    if (_items.any((n) => n.id == item.id)) return;
+    _items.insert(0, item);
+    safeNotify();
+  }
+
+  Future<void> confirmDismiss(NotificationModel item) async {
+    if (item.type == NotificationType.adminBroadcast) return;
+    try {
+      await _service.markRead(item.id);
+    } catch (e) {
+      debugPrint('[Notification] markRead 실패: $e');
+    }
+  }
 }

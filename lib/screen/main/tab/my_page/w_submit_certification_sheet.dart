@@ -235,6 +235,7 @@ class _FestivalSearchSheet extends StatefulWidget {
 class _FestivalSearchSheetState extends State<_FestivalSearchSheet> {
   late List<FestivalModel> _filtered;
   final _searchCtrl = TextEditingController();
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -244,15 +245,21 @@ class _FestivalSearchSheetState extends State<_FestivalSearchSheet> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _searchCtrl.dispose();
     super.dispose();
   }
 
   void _onSearch(String query) {
-    setState(() {
-      _filtered = widget.festivals
-          .where((f) => f.title.toLowerCase().contains(query.toLowerCase()))
-          .toList();
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 150), () {
+      if (mounted) {
+        setState(() {
+          _filtered = widget.festivals
+              .where((f) => f.title.toLowerCase().contains(query.toLowerCase()))
+              .toList();
+        });
+      }
     });
   }
 

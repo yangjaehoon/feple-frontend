@@ -26,7 +26,8 @@ class CommunityBoardFragment extends StatelessWidget {
               color: colors.activate,
               onRefresh: () async {
                 AppEvents.postChanged.value = PostChangedEvent.refreshAll();
-                await Future.delayed(AppDimens.animRefresh);
+                // 하위 보드가 이벤트를 받아 리로드하는 시간 확보
+                await Future.delayed(const Duration(milliseconds: 1200));
               },
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),

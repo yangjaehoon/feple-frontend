@@ -180,6 +180,25 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
+  void _dismissWithUndo(NotificationModel item) {
+    _notifier.removeLocally(item);
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(
+          content: Text('notification_dismissed'.tr()),
+          duration: const Duration(seconds: 4),
+          action: SnackBarAction(
+            label: 'undo'.tr(),
+            onPressed: () => _notifier.undoDismiss(item),
+          ),
+        ))
+        .closed
+        .then((reason) {
+          if (reason != SnackBarClosedReason.action && mounted) {
+            _notifier.confirmDismiss(item);
+          }
+        });
+  }
+
   Widget _buildNotificationList(AbstractThemeColors colors) {
     final displayed = _notifier.filtered;
     if (displayed.isEmpty) {
@@ -209,7 +228,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           child: Dismissible(
             key: ValueKey(item.id),
             direction: DismissDirection.endToStart,
-            onDismissed: (_) => _notifier.dismiss(item),
+            onDismissed: (_) => _dismissWithUndo(item),
             background: Container(
               alignment: Alignment.centerRight,
               padding: const EdgeInsets.only(right: 20),

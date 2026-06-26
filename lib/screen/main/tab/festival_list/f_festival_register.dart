@@ -1,6 +1,8 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/constant/festival_constants.dart';
@@ -31,6 +33,16 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
   final Set<String> _selectedGenres = {};
   String? _selectedRegion;
   bool _isLoading = false;
+
+  bool get _isDirty =>
+      _titleController.text.isNotEmpty ||
+      _descriptionController.text.isNotEmpty ||
+      _locationController.text.isNotEmpty ||
+      _posterUrlController.text.isNotEmpty ||
+      _startDate != null ||
+      _endDate != null ||
+      _selectedGenres.isNotEmpty ||
+      _selectedRegion != null;
 
   @override
   void dispose() {
@@ -211,24 +223,44 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
     );
   }
 
+  Future<void> _onPopInvoked(bool didPop) async {
+    if (didPop) return;
+    if (_isLoading) return;
+    if (!_isDirty) { Navigator.of(context).pop(); return; }
+    final ctx = context;
+    final confirmed = await showConfirmDialog(
+      ctx,
+      title: 'discard_changes'.tr(),
+      content: 'discard_changes_msg'.tr(),
+      confirmLabel: 'discard'.tr(),
+    );
+    if (confirmed && ctx.mounted) Navigator.of(ctx).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return Scaffold(
-      backgroundColor: colors.backgroundMain,
-      body: Column(
-        children: [
-          SecondaryAppBar(title: 'festival_reg_register_title'.tr()),
-          Expanded(
-            child: Form(
-              key: _formKey,
-              child: ListView(
-                padding: const EdgeInsets.all(20),
-                children: _buildFormContent(colors),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) => _onPopInvoked(didPop),
+      child: Scaffold(
+        backgroundColor: colors.backgroundMain,
+        body: KeyboardDismiss(
+          child: Column(
+            children: [
+              SecondaryAppBar(title: 'festival_reg_register_title'.tr()),
+              Expanded(
+                child: Form(
+                  key: _formKey,
+                  child: ListView(
+                    padding: const EdgeInsets.all(20),
+                    children: _buildFormContent(colors),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

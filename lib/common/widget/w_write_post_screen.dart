@@ -5,6 +5,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/exception/banned_word_exception.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/util/image_upload_helper.dart';
+import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/service/post_service.dart';
@@ -44,6 +45,12 @@ class _WritePostScreenState extends State<WritePostScreen> {
   bool _anonymous = false;
   Uint8List? _selectedImage;
   String? _existingImageUrl;
+
+  bool get _isDirty =>
+      _titleController.text != (widget.initialTitle ?? '') ||
+      _contentController.text != (widget.initialContent ?? '') ||
+      _selectedImage != null ||
+      _existingImageUrl != widget.initialImageUrl;
 
   @override
   void initState() {
@@ -283,26 +290,44 @@ class _WritePostScreenState extends State<WritePostScreen> {
     );
   }
 
+  Future<void> _onPopInvoked(bool didPop) async {
+    if (didPop) return;
+    if (_isSubmitting) return;
+    if (!_isDirty) { Navigator.of(context).pop(); return; }
+    final ctx = context;
+    final confirmed = await showConfirmDialog(
+      ctx,
+      title: 'discard_changes'.tr(),
+      content: 'discard_changes_msg'.tr(),
+      confirmLabel: 'discard'.tr(),
+    );
+    if (confirmed && ctx.mounted) Navigator.of(ctx).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return Scaffold(
-      backgroundColor: colors.backgroundMain,
-      body: Column(
-        children: [
-          SecondaryAppBar(
-            title: widget.title,
-            actions: [_buildSubmitAction()],
-          ),
-          Expanded(
-            child: KeyboardDismiss(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: SingleChildScrollView(child: _buildForm(colors)),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) => _onPopInvoked(didPop),
+      child: Scaffold(
+        backgroundColor: colors.backgroundMain,
+        body: Column(
+          children: [
+            SecondaryAppBar(
+              title: widget.title,
+              actions: [_buildSubmitAction()],
+            ),
+            Expanded(
+              child: KeyboardDismiss(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: SingleChildScrollView(child: _buildForm(colors)),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

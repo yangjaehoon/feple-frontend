@@ -17,6 +17,7 @@ class ForgotPasswordDialog extends StatefulWidget {
 class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
   late final TextEditingController _emailCtrl;
   bool _isSending = false;
+  String? _emailError;
 
   @override
   void initState() {
@@ -32,8 +33,11 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
 
   Future<void> _onSend() async {
     final email = _emailCtrl.text.trim();
-    if (email.isEmpty) return;
-    setState(() => _isSending = true);
+    if (email.isEmpty) {
+      setState(() => _emailError = 'enter_email'.tr());
+      return;
+    }
+    setState(() { _emailError = null; _isSending = true; });
     try {
       await AuthService.instance.sendPasswordReset(email);
       if (!mounted) return;
@@ -62,9 +66,13 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
       content: TextField(
         controller: _emailCtrl,
         keyboardType: TextInputType.emailAddress,
+        onChanged: (_) {
+          if (_emailError != null) setState(() => _emailError = null);
+        },
         decoration: InputDecoration(
           hintText: 'registered_email'.tr(),
           border: const OutlineInputBorder(),
+          errorText: _emailError,
         ),
       ),
       actions: [

@@ -509,5 +509,8 @@
   "perm_loc_title": "내 위치 사용",
   "perm_loc_desc": "부스 지도에서 현재 내 위치를 확인할 수 있어요.",
   "perm_loc_allow": "위치 허용하기",
-  "perm_later": "나중에"
+  "perm_later": "나중에",
+  "discard_changes": "작성 취소",
+  "discard_changes_msg": "지금 나가면 작성 중인 내용이 사라져요.",
+  "discard": "나가기"
 }

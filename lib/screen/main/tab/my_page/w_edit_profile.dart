@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/exception/banned_word_exception.dart';
+import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
@@ -26,10 +27,18 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
   XFile? _pickedImage;
   bool _isSaving = false;
   String _originalNickname = '';
+  String _originalBio = '';
 
   final _nicknameKey = GlobalKey<NicknameFieldState>();
   final _bioController = TextEditingController();
   String? _bioError;
+
+  bool get _isDirty {
+    final currentNickname = _nicknameKey.currentState?.currentNickname ?? _originalNickname;
+    return _pickedImage != null ||
+        currentNickname != _originalNickname ||
+        _bioController.text.trim() != _originalBio;
+  }
 
   @override
   void initState() {
@@ -37,7 +46,8 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
     final user = context.read<UserProvider>().user;
     if (user != null) {
       _originalNickname = user.nickname;
-      _bioController.text = user.bio ?? '';
+      _originalBio = user.bio ?? '';
+      _bioController.text = _originalBio;
     }
   }
 
@@ -121,6 +131,20 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
     }
   }
 
+  Future<void> _onPopInvoked(bool didPop) async {
+    if (didPop) return;
+    if (_isSaving) return;
+    if (!_isDirty) { Navigator.of(context).pop(); return; }
+    final ctx = context;
+    final confirmed = await showConfirmDialog(
+      ctx,
+      title: 'discard_changes'.tr(),
+      content: 'discard_changes_msg'.tr(),
+      confirmLabel: 'discard'.tr(),
+    );
+    if (confirmed && ctx.mounted) Navigator.of(ctx).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -129,9 +153,12 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
       (p) => (p.currentProfileImageUrl, p.currentUserId),
     );
 
-    return Scaffold(
-      backgroundColor: colors.backgroundMain,
-      body: Column(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) => _onPopInvoked(didPop),
+      child: Scaffold(
+        backgroundColor: colors.backgroundMain,
+        body: Column(
         children: [
           SecondaryAppBar(
             title: 'edit_profile'.tr(),
@@ -159,6 +186,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
             ),
           ),
         ],
+      ),
       ),
     );
   }

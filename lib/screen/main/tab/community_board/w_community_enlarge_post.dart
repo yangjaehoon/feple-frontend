@@ -165,6 +165,12 @@ class _EnlargePostState extends State<EnlargePost> {
                   imageUrl: imageUrl,
                   fadeInDuration: AppDimens.animXFast,
                   fadeOutDuration: AppDimens.animTapFeedback,
+                  placeholder: (_, __) => const Center(
+                    child: CircularProgressIndicator(color: Colors.white54, strokeWidth: 2),
+                  ),
+                  errorWidget: (_, __, ___) => const Center(
+                    child: Icon(Icons.broken_image_rounded, color: Colors.white38, size: 56),
+                  ),
                 ),
               ),
             ),
@@ -178,6 +184,7 @@ class _EnlargePostState extends State<EnlargePost> {
       BuildContext context, String currentContent) {
     return showDialog<String>(
       context: context,
+      barrierDismissible: false,
       builder: (ctx) => EditCommentDialog(initialContent: currentContent),
     );
   }
@@ -582,6 +589,17 @@ class _PostContentSection extends StatelessWidget {
                 memCacheWidth: 800, // 최대 스크린 너비 기준
                 fadeInDuration: AppDimens.animXFast,
                 fadeOutDuration: AppDimens.animTapFeedback,
+                placeholder: (_, __) => Container(
+                  height: 200,
+                  color: colors.listDivider,
+                ),
+                errorWidget: (_, __, ___) => Container(
+                  height: 120,
+                  color: colors.listDivider,
+                  child: Center(
+                    child: Icon(Icons.broken_image_rounded, color: colors.textSecondary, size: 36),
+                  ),
+                ),
               ),
             ),
           ),

@@ -456,7 +456,6 @@
   "clear_all": "Clear All",
   "search_all": "All",
   "no_upcoming_festivals": "No upcoming festivals",
-  "following": "Following",
   "festival_ongoing": "Ongoing",
   "settings": "Settings",
   "settings_account": "Account",
@@ -514,5 +513,7 @@
   "discard_changes_msg": "If you leave now, your progress will be lost.",
   "discard": "Leave",
   "notification_dismissed": "Notification deleted.",
-  "undo": "Undo"
+  "undo": "Undo",
+  "fcm_channel_name": "FEPLE Notifications",
+  "fcm_channel_desc": "New festival alerts for artists you follow"
 }

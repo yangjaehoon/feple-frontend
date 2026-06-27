@@ -134,7 +134,7 @@ class FestivalTimetableState extends State<FestivalTimetable> {
                 _isNavigating = true;
                 Navigator.push(
                   context,
-                  SlideRoute(builder: (_) => TimetableFullscreenPage(
+                  SlideRoute(builder: (_) => TimetableFullscreenScreen(
                     festivalId: widget.festivalId,
                     entries: _notifier.entries,
                     followedNames: _notifier.followedNames,

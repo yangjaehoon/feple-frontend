@@ -9,7 +9,7 @@ import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/model/favorite_board.dart';
 import 'package:feple/screen/main/tab/home/w_board_settings_sheet.dart';
-import 'package:feple/screen/main/tab/search/artist_page/w_artist_post_list.dart';
+import 'package:feple/screen/main/tab/search/artist_page/s_artist_post_list.dart';
 import 'package:feple/screen/main/tab/search/festival_information/s_festival_board.dart';
 import 'package:flutter/material.dart';
 

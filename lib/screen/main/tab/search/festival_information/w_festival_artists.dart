@@ -11,7 +11,7 @@ import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_circle_image.dart';
 import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/screen/main/tab/search/festival_information/festival_artists_notifier.dart';
-import 'package:feple/screen/main/tab/search/festival_information/w_festival_artist_list.dart';
+import 'package:feple/screen/main/tab/search/festival_information/s_festival_artist_list.dart';
 import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:feple/common/util/app_route.dart';

@@ -33,6 +33,11 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
   bool get isLoadingMore => _isLoadingMore;
   String? _error;
   String? get error => _error;
+  // page 0 refresh 실패 + 기존 아이템 있을 때 설정 — UI가 snackbar로 표시 후 clearRefreshError() 호출
+  String? _refreshError;
+  String? get refreshError => _refreshError;
+
+  void clearRefreshError() => _refreshError = null;
   int _page = 0;
   final int _size = 20;
   bool _hasMore = true;
@@ -123,7 +128,10 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
       );
 
       // page 0이면 기존 데이터를 새 데이터로 교체
-      if (wasFirstPage) _items.clear();
+      if (wasFirstPage) {
+        _items.clear();
+        _refreshError = null;
+      }
       _items.addAll(newItems);
       _cachedItems = List.unmodifiable(_items);
       if (newItems.length < _size) _hasMore = false;
@@ -131,8 +139,12 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
       if (wasFirstPage) _loadedAt = DateTime.now();
     } catch (e) {
       debugPrint('festival preview error: $e');
-      // 기존 데이터가 있으면 에러 미표시 — 조용히 실패
-      if (_items.isEmpty) _error = 'err_fetch_data'.tr();
+      if (_items.isEmpty) {
+        _error = 'err_fetch_data'.tr();
+      } else if (wasFirstPage) {
+        // 기존 데이터 유지, 새로고침 실패 알림 (snackbar용 일회성 플래그)
+        _refreshError = 'err_fetch_data'.tr();
+      }
     } finally {
       _isLoading = false;
       _isLoadingMore = false;

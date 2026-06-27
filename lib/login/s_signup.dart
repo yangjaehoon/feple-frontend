@@ -239,6 +239,7 @@ class _SignupPageState extends State<SignupPage> {
           hintText: 'email'.tr(),
           icon: Icons.mail_outline_rounded,
           keyboardType: TextInputType.emailAddress,
+          textInputAction: TextInputAction.next,
           errorText: _emailError,
           onChanged: (_) {
             setState(() { _emailError = null; _generalError = null; });
@@ -257,6 +258,7 @@ class _SignupPageState extends State<SignupPage> {
           hintText: 'password'.tr(),
           icon: Icons.lock_outline_rounded,
           obscureText: true,
+          textInputAction: TextInputAction.done,
           errorText: _passwordError,
           onChanged: (v) {
             setState(() {

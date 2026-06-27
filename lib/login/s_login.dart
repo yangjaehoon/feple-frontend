@@ -123,6 +123,7 @@ class _LoginPageState extends State<LoginPage> {
           controller: emailController,
           hintText: 'email'.tr(),
           icon: Icons.mail_outline_rounded,
+          textInputAction: TextInputAction.next,
           errorText: _emailError,
           onChanged: (_) {
             if (_emailError != null) setState(() => _emailError = null);
@@ -134,6 +135,8 @@ class _LoginPageState extends State<LoginPage> {
           hintText: 'password'.tr(),
           icon: Icons.lock_outline_rounded,
           obscureText: true,
+          textInputAction: TextInputAction.done,
+          onSubmitted: (_) => _loginWithEmail(),
           errorText: _passwordError,
           onChanged: (_) {
             if (_passwordError != null || _authError != null) {

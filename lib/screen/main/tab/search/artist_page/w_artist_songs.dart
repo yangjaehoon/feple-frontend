@@ -30,6 +30,7 @@ class ArtistSongs extends StatefulWidget {
 class ArtistSongsState extends State<ArtistSongs> {
   final _songService = sl<SongService>();
   late Future<List<SongModel>> _songsFuture;
+  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -53,15 +54,19 @@ class ArtistSongsState extends State<ArtistSongs> {
             icon: Icons.music_note_rounded,
             title: 'artist_songs_title'.tr(args: [widget.artistName]),
             headerColor: colors.activate,
-            onTap: () => Navigator.push(
-              context,
-              SlideRoute(
-                builder: (_) => ArtistSongsScreen(
-                  artistId: widget.artistId,
-                  artistName: widget.artistName,
+            onTap: () {
+              if (_isNavigating) return;
+              _isNavigating = true;
+              Navigator.push(
+                context,
+                SlideRoute(
+                  builder: (_) => ArtistSongsScreen(
+                    artistId: widget.artistId,
+                    artistName: widget.artistName,
+                  ),
                 ),
-              ),
-            ),
+              ).whenComplete(() { if (mounted) _isNavigating = false; });
+            },
           ),
           _buildSongList(colors),
         ],

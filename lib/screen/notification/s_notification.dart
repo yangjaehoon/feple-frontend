@@ -26,6 +26,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   final _festivalService = sl<FestivalService>();
   final _scrollController = ScrollController();
   late final NotificationNotifier _notifier;
+  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -58,10 +59,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   Future<void> _navigateToFestival(int festivalId) async {
+    if (_isNavigating) return;
+    _isNavigating = true;
     try {
       final festival = await _festivalService.fetchById(festivalId);
       if (!mounted) return;
-      Navigator.push(
+      await Navigator.push(
         context,
         SlideRoute(
           builder: (_) => FestivalInformationFragment(poster: festival),
@@ -69,6 +72,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
       );
     } catch (e) {
       debugPrint('[Notification] 페스티벌 이동 실패: $e');
+    } finally {
+      if (mounted) _isNavigating = false;
     }
   }
 

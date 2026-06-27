@@ -165,6 +165,7 @@ class FestivalPosterState extends State<FestivalPoster> {
               fit: BoxFit.cover,
               fadeInDuration: AppDimens.animXFast,
               fadeOutDuration: AppDimens.animTapFeedback,
+              placeholder: (_, __) => const ColoredBox(color: Colors.black26),
               errorWidget: (_, __, ___) => const ColoredBox(color: Colors.black26),
             ),
           ),

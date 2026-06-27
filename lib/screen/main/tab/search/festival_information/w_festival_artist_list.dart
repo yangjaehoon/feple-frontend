@@ -92,16 +92,19 @@ class FestivalArtistListScreen extends StatelessWidget {
     return AnimatedListItem(
       index: index,
       child: TapScale(
-        onTap: () => Navigator.push(
-          context,
-          SlideRoute(
-            builder: (_) => ArtistPage(
-              artistId: artist.artistId,
-              artistName: artist.artistName,
-              followerCount: 0,
+        onTap: () {
+          if (ModalRoute.of(context)?.isCurrent != true) return;
+          Navigator.push(
+            context,
+            SlideRoute(
+              builder: (_) => ArtistPage(
+                artistId: artist.artistId,
+                artistName: artist.artistName,
+                followerCount: 0,
+              ),
             ),
-          ),
-        ),
+          );
+        },
         child: Column(
           children: [
             Expanded(

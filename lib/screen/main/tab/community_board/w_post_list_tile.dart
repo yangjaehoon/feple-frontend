@@ -102,6 +102,10 @@ class PostListTile extends StatelessWidget {
                   fit: BoxFit.cover,
                   fadeInDuration: AppDimens.animXFast,
                   fadeOutDuration: AppDimens.animTapFeedback,
+                  placeholder: (context, _) {
+                    final c = context.appColors;
+                    return Container(width: 56, height: 56, color: c.surface);
+                  },
                   errorWidget: (context, url, error) {
                     final c = context.appColors;
                     return Container(

@@ -66,6 +66,7 @@ class SongListTile extends StatelessWidget {
         fit: BoxFit.cover,
         fadeInDuration: AppDimens.animXFast,
         fadeOutDuration: AppDimens.animTapFeedback,
+        placeholder: (_, __) => _placeholder(colors),
         errorWidget: (_, __, ___) => _placeholder(colors),
       ),
     );

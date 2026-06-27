@@ -31,6 +31,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _clearingCache = false;
+  bool _isNavigating = false;
   String _appVersion = '';
 
   @override
@@ -137,10 +138,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _SettingsItem(
         icon: Icons.edit_rounded,
         label: 'edit_profile'.tr(),
-        onTap: () => Navigator.push(
-          context,
-          SlideRoute(builder: (_) => const EditProfileWidget()),
-        ),
+        onTap: () {
+          if (_isNavigating) return;
+          _isNavigating = true;
+          Navigator.push(context, SlideRoute(builder: (_) => const EditProfileWidget()))
+              .whenComplete(() { if (mounted) _isNavigating = false; });
+        },
       ),
       const _ItemDivider(),
       _SettingsItem(
@@ -190,10 +193,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _SettingsItem(
         icon: Icons.notifications_rounded,
         label: 'notif_settings'.tr(),
-        onTap: () => Navigator.push(
-          context,
-          SlideRoute(builder: (_) => const NotificationSettingsScreen()),
-        ),
+        onTap: () {
+          if (_isNavigating) return;
+          _isNavigating = true;
+          Navigator.push(context, SlideRoute(builder: (_) => const NotificationSettingsScreen()))
+              .whenComplete(() { if (mounted) _isNavigating = false; });
+        },
       ),
     ];
   }
@@ -232,10 +237,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _SettingsItem(
         icon: Icons.code_rounded,
         label: 'opensource'.tr(),
-        onTap: () => Navigator.push(
-          context,
-          SlideRoute(builder: (_) => const OpensourceScreen()),
-        ),
+        onTap: () {
+          if (_isNavigating) return;
+          _isNavigating = true;
+          Navigator.push(context, SlideRoute(builder: (_) => const OpensourceScreen()))
+              .whenComplete(() { if (mounted) _isNavigating = false; });
+        },
       ),
       const _ItemDivider(),
       _VersionItem(version: _appVersion),

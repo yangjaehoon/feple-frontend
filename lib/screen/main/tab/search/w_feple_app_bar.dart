@@ -21,6 +21,7 @@ class FepleAppBar extends StatefulWidget {
 
 class _FepleAppBarState extends State<FepleAppBar> {
   final _countNotifier = sl<NotificationCountNotifier>();
+  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -103,10 +104,12 @@ class _FepleAppBarState extends State<FepleAppBar> {
     return IconButton(
       tooltip: 'search'.tr(),
       icon: const Icon(Icons.search_rounded, color: Colors.white),
-      onPressed: () => Navigator.push(
-        context,
-        SlideRoute(builder: (_) => const UnifiedSearchScreen()),
-      ),
+      onPressed: () {
+        if (_isNavigating) return;
+        _isNavigating = true;
+        Navigator.push(context, SlideRoute(builder: (_) => const UnifiedSearchScreen()))
+            .whenComplete(() { if (mounted) _isNavigating = false; });
+      },
     );
   }
 

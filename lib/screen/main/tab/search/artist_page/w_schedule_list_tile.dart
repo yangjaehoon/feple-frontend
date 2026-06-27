@@ -60,6 +60,7 @@ class ScheduleListTile extends StatelessWidget {
               fit: BoxFit.cover,
               fadeInDuration: AppDimens.animXFast,
               fadeOutDuration: AppDimens.animTapFeedback,
+              placeholder: (_, __) => EventTypeIcon(config: typeConfig),
               errorWidget: (_, __, ___) => EventTypeIcon(config: typeConfig),
             )
           : EventTypeIcon(config: typeConfig),

@@ -29,6 +29,7 @@ class CircleArtistWidgetState extends State<CircleArtistWidget> {
   late Future<List<Artist>> _artistsFuture;
   String? _selectedGenre;
   Set<int> _followedIds = {};
+  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -201,17 +202,22 @@ class CircleArtistWidgetState extends State<CircleArtistWidget> {
                       child: AnimatedListItem(
                         index: index,
                         child: TapScale(
-                          onTap: () => Navigator.push(
-                            context,
-                            SlideRoute(
-                              builder: (context) => ArtistPage(
-                                artistName: artists[index].name,
-                                artistId: artists[index].id,
-                                followerCount: artists[index].followerCount,
-                                profileImageUrl: artists[index].profileImageUrl,
+                          onTap: () {
+                            if (_isNavigating) return;
+                            _isNavigating = true;
+                            Navigator.push(
+                              context,
+                              SlideRoute(
+                                builder: (context) => ArtistPage(
+                                  artistName: artists[index].name,
+                                  artistId: artists[index].id,
+                                  followerCount: artists[index].followerCount,
+                                  profileImageUrl: artists[index].profileImageUrl,
+                                ),
                               ),
-                            ),
-                          ).then((_) => _loadFollowedIds()),
+                            ).then((_) { if (mounted) _loadFollowedIds(); })
+                             .whenComplete(() { if (mounted) _isNavigating = false; });
+                          },
                           child: ArtistCard(
                             artist: artists[index],
                             isFollowed: _followedIds.contains(artists[index].id),

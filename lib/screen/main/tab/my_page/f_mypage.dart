@@ -23,6 +23,7 @@ class _MypageFragmentState extends State<MypageFragment> {
   final _statsKey = GlobalKey<MyPostCommentWidgetState>();
   final _certKey = GlobalKey<FtvCertificationWidgetState>();
   final _songsKey = GlobalKey<SongRequestHistoryWidgetState>();
+  bool _isNavigating = false;
 
   Future<void> _onRefresh() async {
     _profileKey.currentState?.refresh();
@@ -75,10 +76,12 @@ class _MypageFragmentState extends State<MypageFragment> {
     return IconButton(
       tooltip: 'settings'.tr(),
       icon: const Icon(Icons.settings_rounded, color: Colors.white),
-      onPressed: () => Navigator.push(
-        context,
-        SlideRoute(builder: (_) => const SettingsScreen()),
-      ),
+      onPressed: () {
+        if (_isNavigating) return;
+        _isNavigating = true;
+        Navigator.push(context, SlideRoute(builder: (_) => const SettingsScreen()))
+            .whenComplete(() { if (mounted) _isNavigating = false; });
+      },
     );
   }
 }

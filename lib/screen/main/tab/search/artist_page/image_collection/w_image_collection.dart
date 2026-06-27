@@ -199,6 +199,8 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
           cacheKey: 'artist-photo-${photo.photoId}',
           width: imageSize,
           height: imageSize,
+          memCacheWidth: (imageSize * 2).round(),
+          memCacheHeight: (imageSize * 2).round(),
           fit: BoxFit.cover,
           fadeInDuration: AppDimens.animXFast,
           fadeOutDuration: AppDimens.animTapFeedback,

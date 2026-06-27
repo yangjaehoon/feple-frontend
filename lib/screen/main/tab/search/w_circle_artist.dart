@@ -27,9 +27,7 @@ class CircleArtistWidget extends StatefulWidget {
 
 class CircleArtistWidgetState extends State<CircleArtistWidget> {
   late Future<List<Artist>> _artistsFuture;
-  String? _selectedGenre;
   Set<int> _followedIds = {};
-  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -57,7 +55,6 @@ class CircleArtistWidgetState extends State<CircleArtistWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.appColors;
     return FutureBuilder<List<Artist>>(
       future: _artistsFuture,
       builder: (context, snapshot) {
@@ -72,12 +69,11 @@ class CircleArtistWidgetState extends State<CircleArtistWidget> {
             }),
           );
         }
-        final allArtists = snapshot.data ?? [];
-        final genres = allArtists.expand((a) => a.genres).toSet().toList()..sort();
-        final artists = _selectedGenre == null
-            ? allArtists
-            : allArtists.where((a) => a.genres.contains(_selectedGenre)).toList();
-        return _buildContent(artists, genres, colors);
+        return _ArtistContent(
+          allArtists: snapshot.data ?? [],
+          followedIds: _followedIds,
+          onRefreshFollowedIds: _loadFollowedIds,
+        );
       },
     );
   }
@@ -147,6 +143,38 @@ class CircleArtistWidgetState extends State<CircleArtistWidget> {
       }),
     );
   }
+}
+
+// Owns _selectedGenre so genre chip taps only rebuild this widget,
+// not the FutureBuilder in CircleArtistWidgetState.
+class _ArtistContent extends StatefulWidget {
+  final List<Artist> allArtists;
+  final Set<int> followedIds;
+  final VoidCallback onRefreshFollowedIds;
+
+  const _ArtistContent({
+    required this.allArtists,
+    required this.followedIds,
+    required this.onRefreshFollowedIds,
+  });
+
+  @override
+  State<_ArtistContent> createState() => _ArtistContentState();
+}
+
+class _ArtistContentState extends State<_ArtistContent> {
+  String? _selectedGenre;
+  bool _isNavigating = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final genres = widget.allArtists.expand((a) => a.genres).toSet().toList()..sort();
+    final artists = _selectedGenre == null
+        ? widget.allArtists
+        : widget.allArtists.where((a) => a.genres.contains(_selectedGenre)).toList();
+    return _buildContent(artists, genres, colors);
+  }
 
   Widget _buildContent(
       List<Artist> artists, List<String> genres, AbstractThemeColors colors) {
@@ -215,12 +243,12 @@ class CircleArtistWidgetState extends State<CircleArtistWidget> {
                                   profileImageUrl: artists[index].profileImageUrl,
                                 ),
                               ),
-                            ).then((_) { if (mounted) _loadFollowedIds(); })
+                            ).then((_) { if (mounted) widget.onRefreshFollowedIds(); })
                              .whenComplete(() { if (mounted) _isNavigating = false; });
                           },
                           child: ArtistCard(
                             artist: artists[index],
-                            isFollowed: _followedIds.contains(artists[index].id),
+                            isFollowed: widget.followedIds.contains(artists[index].id),
                             isEnglish: context.locale.languageCode == 'en',
                           ),
                         ),
@@ -237,7 +265,6 @@ class CircleArtistWidgetState extends State<CircleArtistWidget> {
       ),
     );
   }
-
 }
 
 String _genreLabel(String genre) {
@@ -314,4 +341,3 @@ class _ArtistSuggestionBanner extends StatelessWidget {
     );
   }
 }
-

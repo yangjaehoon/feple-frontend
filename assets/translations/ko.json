@@ -515,5 +515,6 @@
   "notification_dismissed": "알림을 삭제했습니다.",
   "undo": "실행취소",
   "fcm_channel_name": "FEPLE 알림",
-  "fcm_channel_desc": "팔로우 아티스트 신규 페스티벌 알림"
+  "fcm_channel_desc": "팔로우 아티스트 신규 페스티벌 알림",
+  "select_color": "색상 선택"
 }

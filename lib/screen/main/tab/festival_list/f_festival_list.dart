@@ -23,10 +23,28 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<FestivalPreviewProvider>().addListener(_onProviderChange);
+    });
+  }
+
+  void _onProviderChange() {
+    if (!mounted) return;
+    final provider = context.read<FestivalPreviewProvider>();
+    final err = provider.refreshError;
+    if (err == null) return;
+    provider.clearRefreshError();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(err),
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 
   @override
   void dispose() {
+    context.read<FestivalPreviewProvider>().removeListener(_onProviderChange);
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();

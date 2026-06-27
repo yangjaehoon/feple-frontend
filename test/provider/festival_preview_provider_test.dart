@@ -157,7 +157,7 @@ void main() {
   // C. 에러 처리
   // ───────────────────────────────────────────────────
   group('C. 에러 처리', () {
-    test('기존 아이템 있을 때 에러 → error=null (조용한 실패)', () async {
+    test('기존 아이템 있을 때 page 0 에러 → error=null, refreshError 설정', () async {
       var callCount = 0;
       when(() => mockService.fetchPreviews(
             page: any(named: 'page'),
@@ -176,8 +176,56 @@ void main() {
 
       await notifier.refresh(force: true);
 
-      expect(notifier.error, isNull); // 조용한 실패
+      expect(notifier.error, isNull); // 전체 화면 에러 없음
+      expect(notifier.refreshError, isNotNull); // snackbar용 에러 설정
       expect(notifier.isLoading, false);
+    });
+
+    test('clearRefreshError 후 refreshError=null', () async {
+      var callCount = 0;
+      when(() => mockService.fetchPreviews(
+            page: any(named: 'page'),
+            size: any(named: 'size'),
+            includeEnded: any(named: 'includeEnded'),
+            genres: any(named: 'genres'),
+            regions: any(named: 'regions'),
+            ageRestrictions: any(named: 'ageRestrictions'),
+          )).thenAnswer((_) async {
+        if (callCount++ == 0) return _pages(5);
+        throw Exception('network error');
+      });
+
+      final notifier = await make();
+      await notifier.refresh(force: true);
+      expect(notifier.refreshError, isNotNull);
+
+      notifier.clearRefreshError();
+
+      expect(notifier.refreshError, isNull);
+    });
+
+    test('성공 시 refreshError 자동 초기화', () async {
+      var callCount = 0;
+      when(() => mockService.fetchPreviews(
+            page: any(named: 'page'),
+            size: any(named: 'size'),
+            includeEnded: any(named: 'includeEnded'),
+            genres: any(named: 'genres'),
+            regions: any(named: 'regions'),
+            ageRestrictions: any(named: 'ageRestrictions'),
+          )).thenAnswer((_) async {
+        final c = callCount++;
+        if (c == 0) return _pages(5);
+        if (c == 1) throw Exception('error');
+        return _pages(5);
+      });
+
+      final notifier = await make();
+      await notifier.refresh(force: true); // 실패 → refreshError 설정
+      expect(notifier.refreshError, isNotNull);
+
+      await notifier.refresh(force: true); // 성공 → refreshError 초기화
+      expect(notifier.refreshError, isNull);
     });
 
     test('아이템 없을 때 에러 → error 설정', () async {

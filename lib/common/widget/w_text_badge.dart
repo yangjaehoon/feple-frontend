@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../common.dart';
-import 'theme_text_badge.dart';
+import 'w_text_badge_theme.dart';
 
-export 'theme_text_badge.dart';
+export 'w_text_badge_theme.dart';
 
 class TextBadge extends StatelessWidget {
   final String text;

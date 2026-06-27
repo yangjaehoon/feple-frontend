@@ -12,7 +12,7 @@ import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:flutter/material.dart';
-import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
+import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
@@ -101,7 +101,7 @@ class _CommunityPostState extends State<CommunityPost> {
     _isNavigating = true;
     try {
       await Navigator.of(context, rootNavigator: true).push(
-        SlideRoute(builder: (_) => EnlargePost.fromPost(boardName: widget.boardName, post: post)),
+        SlideRoute(builder: (_) => PostDetailCard.fromPost(boardName: widget.boardName, post: post)),
       );
     } finally {
       if (mounted) _isNavigating = false;

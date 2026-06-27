@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-export 'cli_async.dart';
 
 extension AsyncExt on Object {
   Timer delay(Function func, [Duration duration = const Duration(milliseconds: 50)]) {

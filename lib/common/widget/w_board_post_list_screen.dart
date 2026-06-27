@@ -8,7 +8,7 @@ import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_write_post_fab.dart';
 import 'package:feple/common/widget/w_write_post_screen.dart';
 import 'package:feple/model/post_model.dart';
-import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
+import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
 import 'package:flutter/material.dart';
 
@@ -193,7 +193,7 @@ class _BoardPostListScreenState extends State<BoardPostListScreen> {
             onTap: () async {
               await Navigator.of(context, rootNavigator: true).push(
                 SlideRoute(
-                  builder: (_) => EnlargePost.fromPost(
+                  builder: (_) => PostDetailCard.fromPost(
                     boardName: widget.boardName,
                     post: post,
                   ),

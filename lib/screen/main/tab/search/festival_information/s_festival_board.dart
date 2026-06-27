@@ -7,7 +7,7 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_write_post_screen.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/post_model.dart';
-import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
+import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:flutter/material.dart';
@@ -282,7 +282,7 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
     try {
       await Navigator.of(context, rootNavigator: true).push(
         SlideRoute(
-          builder: (_) => EnlargePost.fromPost(boardName: widget.tab.name, post: post),
+          builder: (_) => PostDetailCard.fromPost(boardName: widget.tab.name, post: post),
         ),
       );
       if (!mounted) return;

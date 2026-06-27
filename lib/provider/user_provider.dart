@@ -55,7 +55,7 @@ class UserProvider with ChangeNotifier {
       }
     } catch (e) {
       // 재설치 후 Keystore 키 소실 등 복구 불가 오류 — 보안 스토리지 전체 초기화
-      debugPrint('[UserProvider] 보안 스토리지 로드 실패, 초기화: $e');
+      debugPrint('[UserProvider] 보안 스토리지 복구 불가 오류, 초기화');
       try {
         await TokenStore.clear();
         await _storage.delete(key: _kUserJson);

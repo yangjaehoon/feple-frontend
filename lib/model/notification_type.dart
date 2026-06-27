@@ -3,6 +3,9 @@ enum NotificationType {
   certApproved('CERT_APPROVED'),
   certRejected('CERT_REJECTED'),
   newComment('NEW_COMMENT'),
+  newReply('NEW_REPLY'),
+  postLiked('POST_LIKED'),
+  postDeletedByAdmin('POST_DELETED_BY_ADMIN'),
   festivalReminder('FESTIVAL_REMINDER'),
   songRequestApproved('SONG_REQUEST_APPROVED'),
   songRequestRejected('SONG_REQUEST_REJECTED'),
@@ -28,7 +31,11 @@ enum NotificationType {
       this == NotificationType.certApproved ||
       this == NotificationType.certRejected;
 
-  bool get isCommentType => this == NotificationType.newComment;
+  bool get isCommentType =>
+      this == NotificationType.newComment ||
+      this == NotificationType.newReply ||
+      this == NotificationType.postLiked ||
+      this == NotificationType.postDeletedByAdmin;
 
   bool get isFestivalFilterType =>
       this == NotificationType.newFestival ||

@@ -43,6 +43,7 @@ class LikedFestivalsPage extends StatefulWidget {
 
 class _LikedFestivalsPageState extends State<LikedFestivalsPage> {
   bool _showEnded = false;
+  bool _isNavigating = false;
 
   void _openSettings() {
     final isEnglish = context.locale.languageCode == 'en';
@@ -158,12 +159,14 @@ class _LikedFestivalsPageState extends State<LikedFestivalsPage> {
         return AnimatedListItem(
           index: index,
           child: TapScale(
-            onTap: () => Navigator.push(
-              context,
-              SlideRoute(
-                builder: (_) => FestivalInformationFragment(poster: festival),
-              ),
-            ),
+            onTap: () {
+              if (_isNavigating) return;
+              _isNavigating = true;
+              Navigator.push(
+                context,
+                SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)),
+              ).whenComplete(() { if (mounted) _isNavigating = false; });
+            },
             child: FestivalPreviewCard(festival: _asPreview(festival)),
           ),
         );

@@ -51,6 +51,7 @@ class _CommunityPostState extends State<CommunityPost> {
   bool _isSearching = false;
   List<Post>? _searchResults;
   bool _showScrollTop = false;
+  bool _isNavigating = false;
   Timer? _searchDebounce;
 
   String get _serviceBoardType => widget.boardType;
@@ -92,6 +93,18 @@ class _CommunityPostState extends State<CommunityPost> {
     if (_loadingMore || !_hasMore || !_isPaginated) return;
     if (pos.pixels >= pos.maxScrollExtent - 200) {
       _loadMore();
+    }
+  }
+
+  Future<void> _openPost(Post post) async {
+    if (_isNavigating) return;
+    _isNavigating = true;
+    try {
+      await Navigator.of(context, rootNavigator: true).push(
+        SlideRoute(builder: (_) => EnlargePost.fromPost(boardName: widget.boardName, post: post)),
+      );
+    } finally {
+      if (mounted) _isNavigating = false;
     }
   }
 
@@ -226,9 +239,7 @@ class _CommunityPostState extends State<CommunityPost> {
           return PostListTile(
             post: post,
             highlightKeyword: _searchController.text.trim(),
-            onTap: () => Navigator.of(context, rootNavigator: true).push(
-              SlideRoute(builder: (_) => EnlargePost.fromPost(boardName: widget.boardName, post: post)),
-            ),
+            onTap: () => _openPost(post),
           );
         },
         separatorBuilder: (_, __) => Divider(thickness: 1, color: colors.listDivider),
@@ -287,14 +298,7 @@ class _CommunityPostState extends State<CommunityPost> {
           index: index,
           child: PostListTile(
             post: post,
-            onTap: () => Navigator.of(context, rootNavigator: true).push(
-              SlideRoute(
-                builder: (_) => EnlargePost.fromPost(
-                  boardName: widget.boardName,
-                  post: post,
-                ),
-              ),
-            ),
+            onTap: () => _openPost(post),
           ),
         );
       },

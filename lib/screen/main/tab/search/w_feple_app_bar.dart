@@ -3,7 +3,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/screen/main/s_main.dart';
 import 'package:feple/screen/notification/notification_count_notifier.dart';
 import 'package:feple/screen/notification/s_notification.dart';
-import 'package:feple/screen/search/s_unified_search.dart';
+import 'package:feple/screen/main/tab/search/s_unified_search.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';

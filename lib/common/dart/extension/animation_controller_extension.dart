@@ -1,4 +1,4 @@
-import 'package:feple/common/cli_common.dart';
+import 'package:feple/common/dart/extension/num_duration_extension.dart';
 import 'package:flutter/widgets.dart';
 
 extension AnimationControllerExtension on AnimationController {

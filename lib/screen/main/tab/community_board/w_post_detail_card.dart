@@ -26,7 +26,7 @@ import 'w_comment_section.dart';
 import 'w_edit_comment_dialog.dart';
 import 'w_like_comment_row.dart';
 
-class EnlargePost extends StatefulWidget {
+class PostDetailCard extends StatefulWidget {
   final String boardName;
   final int id;
   final String nickname;
@@ -43,7 +43,7 @@ class EnlargePost extends StatefulWidget {
   final int? postUserId;
   final bool anonymous;
 
-  const EnlargePost({
+  const PostDetailCard({
     super.key,
     required this.boardName,
     required this.id,
@@ -62,7 +62,7 @@ class EnlargePost extends StatefulWidget {
     this.anonymous = false,
   });
 
-  EnlargePost.fromPost({
+  PostDetailCard.fromPost({
     super.key,
     required this.boardName,
     required Post post,
@@ -82,10 +82,10 @@ class EnlargePost extends StatefulWidget {
         anonymous = post.anonymous;
 
   @override
-  State<EnlargePost> createState() => _EnlargePostState();
+  State<PostDetailCard> createState() => _PostDetailCardState();
 }
 
-class _EnlargePostState extends State<EnlargePost> {
+class _PostDetailCardState extends State<PostDetailCard> {
   final _postService = sl<PostService>();
   final _reportService = sl<ReportService>();
   final _commentController = TextEditingController();

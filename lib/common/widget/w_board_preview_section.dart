@@ -2,7 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_preview_card.dart';
-import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
+import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:flutter/material.dart';
 
 /// 아티스트·페스티벌 게시판 미리보기 카드 공통 위젯.
@@ -59,7 +59,7 @@ class NamedBoardState extends State<NamedBoard> {
       onPostTap: (context, post) async {
         await Navigator.of(context, rootNavigator: true).push(
           SlideRoute(
-            builder: (_) => EnlargePost.fromPost(boardName: boardName, post: post),
+            builder: (_) => PostDetailCard.fromPost(boardName: boardName, post: post),
           ),
         );
         if (mounted) refresh();

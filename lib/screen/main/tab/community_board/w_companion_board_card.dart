@@ -3,8 +3,8 @@ import 'package:feple/common/constant/board_types.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_board_card.dart';
 import 'package:flutter/material.dart';
 
-class GetUserBoard extends StatelessWidget {
-  const GetUserBoard({super.key});
+class CompanionBoardCard extends StatelessWidget {
+  const CompanionBoardCard({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -4,7 +4,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_hot_board.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_free_board.dart';
-import 'package:feple/screen/main/tab/community_board/w_community_companion_board.dart';
+import 'package:feple/screen/main/tab/community_board/w_companion_board_card.dart';
 import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -37,7 +37,7 @@ class CommunityBoardFragment extends StatelessWidget {
                     children: [
                       HotBoard(),
                       FreeBoard(),
-                      GetUserBoard(),
+                      CompanionBoardCard(),
                     ],
                   ),
                 ),

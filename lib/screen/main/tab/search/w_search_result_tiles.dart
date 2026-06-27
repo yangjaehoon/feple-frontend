@@ -5,7 +5,7 @@ import 'package:feple/model/artist_model.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/model/post_model.dart';
-import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
+import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/common/util/app_route.dart';
@@ -181,7 +181,7 @@ class SearchPostTile extends StatelessWidget {
       onTap: () {
         if (ModalRoute.of(context)?.isCurrent != true) return;
         Navigator.of(context, rootNavigator: true).push(SlideRoute(
-          builder: (_) => EnlargePost.fromPost(
+          builder: (_) => PostDetailCard.fromPost(
             boardName: data.boardDisplayName,
             post: data,
           ),

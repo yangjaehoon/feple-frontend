@@ -5,7 +5,7 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/my_comment_model.dart';
 import 'package:feple/service/user_activity_service.dart';
-import 'package:feple/screen/main/tab/community_board/w_community_enlarge_post.dart';
+import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
@@ -57,7 +57,7 @@ class MyCommentsScreen extends StatelessWidget {
       onTap: () async {
         await Navigator.of(context, rootNavigator: true).push(
           SlideRoute(
-            builder: (_) => EnlargePost(
+            builder: (_) => PostDetailCard(
               boardName: c.boardDisplayName,
               id: c.postId,
               nickname: c.postNickname,

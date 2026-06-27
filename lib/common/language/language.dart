@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import '../../app.dart';
 import '../common.dart';
 
+const _flagBasePath = 'assets/image';
+
 enum Language {
-  korean(Locale('ko'), '$basePath/flag/flag_kr.png'),
-  english(Locale('en'), '$basePath/flag/flag_us.png');
+  korean(Locale('ko'), '$_flagBasePath/flag/flag_kr.png'),
+  english(Locale('en'), '$_flagBasePath/flag/flag_us.png');
 
   final Locale locale;
   final String flagPath;

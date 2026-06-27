@@ -33,6 +33,7 @@ class _ArtistSuggestionSheetState extends State<ArtistSuggestionSheet> {
       setState(() => _nameError = 'artist_suggestion_name_required'.tr());
       return;
     }
+    FocusScope.of(context).unfocus();
     setState(() { _nameError = null; _submitting = true; });
 
     try {

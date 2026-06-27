@@ -60,6 +60,7 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
       setState(() => _urlError = 'song_request_invalid_url'.tr());
       return;
     }
+    FocusScope.of(context).unfocus();
     setState(() { _titleError = null; _urlError = null; _submitting = true; });
 
     try {

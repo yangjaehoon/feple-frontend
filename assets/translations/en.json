@@ -515,5 +515,6 @@
   "notification_dismissed": "Notification deleted.",
   "undo": "Undo",
   "fcm_channel_name": "FEPLE Notifications",
-  "fcm_channel_desc": "New festival alerts for artists you follow"
+  "fcm_channel_desc": "New festival alerts for artists you follow",
+  "select_color": "Select color"
 }

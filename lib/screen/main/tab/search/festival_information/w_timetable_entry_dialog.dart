@@ -196,18 +196,27 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
           runSpacing: 8,
           children: kUserScheduleColors.map((c) {
             final selected = c.toARGB32() == _color.toARGB32();
-            return GestureDetector(
-              onTap: () => setState(() => _color = c),
-              child: Container(
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(
-                  color: c,
-                  shape: BoxShape.circle,
-                  border: selected ? Border.all(color: colors.textTitle, width: 2.5) : null,
+            return Semantics(
+              label: 'select_color'.tr(),
+              button: true,
+              selected: selected,
+              child: GestureDetector(
+                onTap: () => setState(() => _color = c),
+                behavior: HitTestBehavior.opaque,
+                child: Padding(
+                  padding: const EdgeInsets.all(9),
+                  child: Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: c,
+                      shape: BoxShape.circle,
+                      border: selected ? Border.all(color: colors.textTitle, width: 2.5) : null,
+                    ),
+                    alignment: Alignment.center,
+                    child: selected ? const Icon(Icons.check_rounded, size: 16, color: Colors.white) : null,
+                  ),
                 ),
-                alignment: Alignment.center,
-                child: selected ? const Icon(Icons.check_rounded, size: 16, color: Colors.white) : null,
               ),
             );
           }).toList(),

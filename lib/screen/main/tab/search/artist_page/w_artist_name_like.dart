@@ -251,20 +251,31 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
   }) {
     return Tooltip(
       message: label,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.15),
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.25),
-              width: 1,
+      child: Semantics(
+        label: label,
+        button: true,
+        child: SizedBox(
+          width: 48,
+          height: 48,
+          child: GestureDetector(
+            onTap: onTap,
+            behavior: HitTestBehavior.opaque,
+            child: Center(
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.25),
+                    width: 1,
+                  ),
+                ),
+                child: Icon(icon, color: Colors.white, size: 20),
+              ),
             ),
           ),
-          child: Icon(icon, color: Colors.white, size: 20),
         ),
       ),
     );

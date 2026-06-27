@@ -143,6 +143,7 @@
   "enter_email_password": "이메일과 비밀번호를 입력해주세요.",
   "login_failed": "로그인 실패",
   "login_failed_detail": "로그인 실패: {}",
+  "kakao_login_btn": "카카오 로그인",
   "kakao_login_success": "카카오 로그인 성공",
   "kakao_login_failed": "카카오 로그인 실패: {}",
   "not_member_yet": "아직 회원이 아니신가요?",

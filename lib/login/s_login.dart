@@ -224,11 +224,9 @@ class _LoginPageState extends State<LoginPage> {
         child: LoadingButton(
           isLoading: _isKakaoLoading,
           backgroundColor: AppColors.kakaoYellow,
+          foregroundColor: const Color(0xFF3C1E1E),
           onPressed: signInWithKakao,
-          child: Image.asset(
-            'assets/image/login/kakao_login_medium_narrow.png',
-            height: 24,
-          ),
+          label: 'kakao_login_btn'.tr(),
         ),
       ),
     );

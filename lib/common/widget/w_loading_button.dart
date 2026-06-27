@@ -13,6 +13,7 @@ class LoadingButton extends StatefulWidget {
   final bool isSuccess;
   final IconData? icon;
   final Color? backgroundColor;
+  final Color? foregroundColor;
   final double height;
   final double borderRadius;
 
@@ -25,6 +26,7 @@ class LoadingButton extends StatefulWidget {
     this.isSuccess = false,
     this.icon,
     this.backgroundColor,
+    this.foregroundColor,
     this.height = 52,
     this.borderRadius = 16,
   });
@@ -89,7 +91,7 @@ class _LoadingButtonState extends State<LoadingButton>
             backgroundColor: Colors.transparent,
             disabledBackgroundColor: Colors.transparent,
             shadowColor: Colors.transparent,
-            foregroundColor: Colors.white,
+            foregroundColor: widget.foregroundColor ?? Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(widget.borderRadius),
             ),

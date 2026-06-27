@@ -456,7 +456,6 @@
   "clear_all": "전체 삭제",
   "search_all": "전체",
   "no_upcoming_festivals": "예정된 페스티벌이 없습니다",
-  "following": "팔로잉",
   "festival_ongoing": "진행중",
   "settings": "설정",
   "settings_account": "계정",
@@ -514,5 +513,7 @@
   "discard_changes_msg": "지금 나가면 작성 중인 내용이 사라져요.",
   "discard": "나가기",
   "notification_dismissed": "알림을 삭제했습니다.",
-  "undo": "실행취소"
+  "undo": "실행취소",
+  "fcm_channel_name": "FEPLE 알림",
+  "fcm_channel_desc": "팔로우 아티스트 신규 페스티벌 알림"
 }

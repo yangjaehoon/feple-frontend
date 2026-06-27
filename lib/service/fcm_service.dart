@@ -6,6 +6,7 @@ import 'package:feple/auth/token_store.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/permission_rationale.dart';
 import 'package:feple/injection.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/model/notification_type.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
@@ -32,12 +33,7 @@ class FcmService {
   StreamSubscription? _tokenSubscription;
   StreamSubscription? _openedAppSubscription;
 
-  static const _androidChannel = AndroidNotificationChannel(
-    'feple_high_importance',
-    'FEPLE 알림',
-    description: '팔로우 아티스트 신규 페스티벌 알림',
-    importance: Importance.high,
-  );
+  static const _channelId = 'feple_high_importance';
 
   Future<void> init() async {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -80,11 +76,17 @@ class FcmService {
   }
 
   Future<void> _setupChannelsAndListeners() async {
-    // Android 알림 채널 생성
+    // Android 알림 채널 생성 — 채널 이름/설명을 현재 언어로 반영
+    final channel = AndroidNotificationChannel(
+      _channelId,
+      'fcm_channel_name'.tr(),
+      description: 'fcm_channel_desc'.tr(),
+      importance: Importance.high,
+    );
     await _localNotifications
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(_androidChannel);
+        ?.createNotificationChannel(channel);
 
     // local_notifications 초기화 — 포그라운드 알림 탭 핸들러 등록
     const initSettings = InitializationSettings(
@@ -191,9 +193,9 @@ class FcmService {
       notification.body,
       NotificationDetails(
         android: AndroidNotificationDetails(
-          _androidChannel.id,
-          _androidChannel.name,
-          channelDescription: _androidChannel.description,
+          _channelId,
+          'fcm_channel_name'.tr(),
+          channelDescription: 'fcm_channel_desc'.tr(),
           importance: Importance.high,
           priority: Priority.high,
           icon: '@mipmap/ic_launcher',

@@ -87,7 +87,7 @@ class MyPostCommentWidgetState extends State<MyPostCommentWidget> {
             label: 'posts'.tr(),
             value: stats.postCount.toString(),
             color: colors.activate,
-            onTap: () => _navigate(MyPostsScreen(userId: widget.userId)),
+            onTap: () => _navigate(MyPostsView(userId: widget.userId)),
           )),
           const SizedBox(width: 6),
           Expanded(child: _buildStatCard(
@@ -96,7 +96,7 @@ class MyPostCommentWidgetState extends State<MyPostCommentWidget> {
             label: 'comments'.tr(),
             value: stats.commentCount.toString(),
             color: colors.activate,
-            onTap: () => _navigate(MyCommentsScreen(userId: widget.userId)),
+            onTap: () => _navigate(MyCommentsView(userId: widget.userId)),
           )),
           const SizedBox(width: 6),
           Expanded(child: _buildStatCard(
@@ -105,7 +105,7 @@ class MyPostCommentWidgetState extends State<MyPostCommentWidget> {
             label: 'scraps'.tr(),
             value: stats.scrapCount.toString(),
             color: colors.accentColor,
-            onTap: () => _navigate(const MyScrapsScreen()),
+            onTap: () => _navigate(const MyScrapsView()),
           )),
           const SizedBox(width: 6),
           Expanded(child: _buildStatCard(
@@ -114,7 +114,7 @@ class MyPostCommentWidgetState extends State<MyPostCommentWidget> {
             label: 'liked_posts'.tr(),
             value: stats.likedPostCount.toString(),
             color: colors.accentColor,
-            onTap: () => _navigate(MyLikedPostsScreen(userId: widget.userId)),
+            onTap: () => _navigate(MyLikedPostsView(userId: widget.userId)),
           )),
         ],
       ),

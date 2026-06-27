@@ -3,7 +3,7 @@ import 'package:feple/common/widget/w_selectable_chip.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_write_post_fab.dart';
-import 'package:feple/common/widget/w_write_post_screen.dart';
+import 'package:feple/common/widget/w_write_post.dart';
 import 'package:feple/common/constant/board_types.dart';
 import 'package:feple/common/app_events.dart';
 import 'package:feple/model/post_changed_event.dart';
@@ -340,7 +340,7 @@ class _CommunityPostState extends State<CommunityPost> {
             await Navigator.push(
               context,
               SlideRoute(
-                builder: (_) => WritePostScreen(
+                builder: (_) => WritePost(
                   title: 'write_post'.tr(),
                   onSubmit: (t, c, a, img) async {
                     await _postService.createPost(

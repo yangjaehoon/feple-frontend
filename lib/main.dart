@@ -171,7 +171,7 @@ class _MyAppState extends State<MyApp> {
             home: Consumer<UserProvider>(
               builder: (context, userProvider, _) {
                 if (userProvider.user == null) {
-                  return const LoginPage();
+                  return const LoginScreen();
                 } else if (!Prefs.onboardingCompleted.get()) {
                   return OnboardingScreen(onComplete: _onOnboardingComplete);
                 } else {

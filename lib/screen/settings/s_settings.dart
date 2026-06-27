@@ -59,7 +59,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     try {
       await userProvider.logout();
     } catch (_) {}
-    // logout()이 notifyListeners → Consumer가 home을 LoginPage로 교체.
+    // logout()이 notifyListeners → Consumer가 home을 LoginScreen으로 교체.
     // rootNavigator에 남은 extra 라우트(rootNavigator:true로 push된 것들)만 정리.
     rootNav.popUntil((route) => route.isFirst);
   }

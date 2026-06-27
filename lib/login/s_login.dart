@@ -15,14 +15,14 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../provider/user_provider.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool _isEmailLoading = false;
@@ -197,7 +197,7 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () {
                 if (_isNavigating) return;
                 _isNavigating = true;
-                Navigator.push(context, SlideRoute(builder: (_) => const SignupPage()))
+                Navigator.push(context, SlideRoute(builder: (_) => const SignupScreen()))
                     .whenComplete(() { if (mounted) _isNavigating = false; });
               },
               style: TextButton.styleFrom(
@@ -267,7 +267,7 @@ class _LoginPageState extends State<LoginPage> {
       await Navigator.push(
         context,
         SlideRoute(
-          builder: (_) => VerifyEmailPage(email: emailController.text.trim()),
+          builder: (_) => VerifyEmailScreen(email: emailController.text.trim()),
         ),
       );
     } on FirebaseAuthException catch (e) {

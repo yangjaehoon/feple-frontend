@@ -13,15 +13,15 @@ import 'package:feple/screen/main/tab/community_board/w_like_comment_row.dart';
 import 'package:feple/service/user_activity_service.dart';
 import 'package:flutter/material.dart';
 
-class MyPostsScreen extends StatefulWidget {
+class MyPostsView extends StatefulWidget {
   final int userId;
-  const MyPostsScreen({super.key, required this.userId});
+  const MyPostsView({super.key, required this.userId});
 
   @override
-  State<MyPostsScreen> createState() => _MyPostsScreenState();
+  State<MyPostsView> createState() => _MyPostsViewState();
 }
 
-class _MyPostsScreenState extends State<MyPostsScreen> {
+class _MyPostsViewState extends State<MyPostsView> {
   final _service = sl<UserActivityService>();
   final _scrollController = ScrollController();
   List<Post> _posts = [];

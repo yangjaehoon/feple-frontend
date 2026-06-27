@@ -14,14 +14,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 
-class SignupPage extends StatefulWidget {
-  const SignupPage({super.key});
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({super.key});
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  State<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _SignupScreenState extends State<SignupScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool _isLoading = false;
@@ -119,7 +119,7 @@ class _SignupPageState extends State<SignupPage> {
       await Navigator.push(
         context,
         SlideRoute(
-          builder: (_) => VerifyEmailPage(email: email, deleteOnCancel: true),
+          builder: (_) => VerifyEmailScreen(email: email, deleteOnCancel: true),
         ),
       );
     } on FirebaseAuthException catch (e) {

@@ -1,7 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/responsive_size.dart';
-import 'package:feple/common/widget/w_write_post_screen.dart';
+import 'package:feple/common/widget/w_write_post.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_preview_card.dart';
@@ -91,7 +91,7 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
     await Navigator.push(
       context,
       SlideRoute(
-        builder: (_) => WritePostScreen(
+        builder: (_) => WritePost(
           title: 'write_post'.tr(),
           onSubmit: (t, c, a, img) async {
             await _postService.createPost(

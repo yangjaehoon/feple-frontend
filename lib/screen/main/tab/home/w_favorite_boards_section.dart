@@ -79,7 +79,7 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
     Navigator.push(
       context,
       SlideRoute(
-        builder: (_) => AllFavoriteBoardsPage(
+        builder: (_) => AllFavoriteBoardsScreen(
           allBoards: widget.allBoards,
           orderedSelectedIds: _orderedSelectedIds,
           onSave: (newIds) {

@@ -6,19 +6,19 @@ import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_write_post_fab.dart';
-import 'package:feple/common/widget/w_write_post_screen.dart';
+import 'package:feple/common/widget/w_write_post.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
 import 'package:flutter/material.dart';
 
-class BoardPostListScreen extends StatefulWidget {
+class BoardPostList extends StatefulWidget {
   final String boardName;
   final Future<PostCursorPage> Function({int? cursor, int size}) fetchPage;
   final String writeScreenTitle;
   final Future<void> Function(String title, String content, bool anonymous, String? imageObjectKey) onSubmitPost;
 
-  const BoardPostListScreen({
+  const BoardPostList({
     super.key,
     required this.boardName,
     required this.fetchPage,
@@ -27,10 +27,10 @@ class BoardPostListScreen extends StatefulWidget {
   });
 
   @override
-  State<BoardPostListScreen> createState() => _BoardPostListScreenState();
+  State<BoardPostList> createState() => _BoardPostListState();
 }
 
-class _BoardPostListScreenState extends State<BoardPostListScreen> {
+class _BoardPostListState extends State<BoardPostList> {
   final _scrollController = ScrollController();
   List<Post> _posts = [];
   bool _loading = true;
@@ -115,7 +115,7 @@ class _BoardPostListScreenState extends State<BoardPostListScreen> {
         await Navigator.push(
           context,
           SlideRoute(
-            builder: (_) => WritePostScreen(
+            builder: (_) => WritePost(
               title: widget.writeScreenTitle,
               onSubmit: widget.onSubmitPost,
             ),

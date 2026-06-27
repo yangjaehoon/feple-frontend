@@ -1,4 +1,4 @@
-import 'festival_date_utils.dart';
+import 'package:feple/common/util/festival_date_utils.dart';
 
 class FestivalModel {
   final int id;

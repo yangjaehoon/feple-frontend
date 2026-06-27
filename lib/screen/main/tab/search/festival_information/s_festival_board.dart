@@ -4,7 +4,7 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
-import 'package:feple/common/widget/w_write_post_screen.dart';
+import 'package:feple/common/widget/w_write_post.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
@@ -72,7 +72,7 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
     await Navigator.push(
       context,
       SlideRoute(
-        builder: (_) => WritePostScreen(
+        builder: (_) => WritePost(
           title: tab.name,
           onSubmit: tab.submit,
         ),

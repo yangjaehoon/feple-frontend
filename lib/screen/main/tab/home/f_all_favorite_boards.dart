@@ -13,12 +13,12 @@ import 'package:feple/screen/main/tab/search/artist_page/w_artist_post_list.dart
 import 'package:feple/screen/main/tab/search/festival_information/s_festival_board.dart';
 import 'package:flutter/material.dart';
 
-class AllFavoriteBoardsPage extends StatefulWidget {
+class AllFavoriteBoardsScreen extends StatefulWidget {
   final List<FavoriteBoard> allBoards;
   final List<String> orderedSelectedIds;
   final void Function(List<String>) onSave;
 
-  const AllFavoriteBoardsPage({
+  const AllFavoriteBoardsScreen({
     super.key,
     required this.allBoards,
     required this.orderedSelectedIds,
@@ -26,10 +26,10 @@ class AllFavoriteBoardsPage extends StatefulWidget {
   });
 
   @override
-  State<AllFavoriteBoardsPage> createState() => _AllFavoriteBoardsPageState();
+  State<AllFavoriteBoardsScreen> createState() => _AllFavoriteBoardsScreenState();
 }
 
-class _AllFavoriteBoardsPageState extends State<AllFavoriteBoardsPage> {
+class _AllFavoriteBoardsScreenState extends State<AllFavoriteBoardsScreen> {
   late List<String> _orderedSelectedIds;
   FavoriteBoardType? _selectedType;
   bool _isSheetOpen = false;

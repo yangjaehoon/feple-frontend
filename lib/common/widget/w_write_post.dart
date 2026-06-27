@@ -14,7 +14,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-class WritePostScreen extends StatefulWidget {
+class WritePost extends StatefulWidget {
   final String title;
   final Future<void> Function(String title, String content, bool anonymous, String? imageObjectKey) onSubmit;
   final String? initialTitle;
@@ -22,7 +22,7 @@ class WritePostScreen extends StatefulWidget {
   final bool showAnonymous;
   final String? initialImageUrl;
 
-  const WritePostScreen({
+  const WritePost({
     super.key,
     required this.title,
     required this.onSubmit,
@@ -33,10 +33,10 @@ class WritePostScreen extends StatefulWidget {
   });
 
   @override
-  State<WritePostScreen> createState() => _WritePostScreenState();
+  State<WritePost> createState() => _WritePostState();
 }
 
-class _WritePostScreenState extends State<WritePostScreen> {
+class _WritePostState extends State<WritePost> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();

@@ -8,24 +8,24 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class VerifyEmailPage extends StatefulWidget {
+class VerifyEmailScreen extends StatefulWidget {
   final String email;
 
   /// true: 신규 가입 계정 — 취소 시 Firebase 계정 삭제
   /// false: 기존 미인증 계정 — 취소 시 signOut만
   final bool deleteOnCancel;
 
-  const VerifyEmailPage({
+  const VerifyEmailScreen({
     super.key,
     required this.email,
     this.deleteOnCancel = false,
   });
 
   @override
-  State<VerifyEmailPage> createState() => _VerifyEmailPageState();
+  State<VerifyEmailScreen> createState() => _VerifyEmailScreenState();
 }
 
-class _VerifyEmailPageState extends State<VerifyEmailPage> {
+class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   static const _resendCooldownSecs = 60;
   static const _pollIntervalSecs = 3;
 
@@ -104,7 +104,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   }
 
   Future<void> _navigateToApp(dynamic user) async {
-    // setUser 전에 스택 정리 — LoginPage→SignupPage→VerifyEmailPage가 쌓인 상태에서
+    // setUser 전에 스택 정리 — LoginScreen→SignupScreen→VerifyEmailScreen가 쌓인 상태에서
     // setUser만 호출하면 Consumer가 home을 교체해도 위 라우트들이 남아 화면이 안 바뀜
     final userProvider = context.read<UserProvider>();
     Navigator.of(context).popUntil((route) => route.isFirst);

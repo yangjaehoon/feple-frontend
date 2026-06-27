@@ -43,7 +43,7 @@ Widget postListSkeleton(AbstractThemeColors colors) {
 ///
 /// 로딩 → 스켈레톤, 에러 → 재시도 버튼, 빈 목록 → [emptyIcon]/[emptyTitle],
 /// 데이터 있음 → [itemBuilder]를 사용한 ListView.separated 를 표준 방식으로 렌더합니다.
-class MyPageListScreen<T> extends StatefulWidget {
+class MyPageList<T> extends StatefulWidget {
   final String title;
   final Future<List<T>> Function() loader;
   final Widget Function(AbstractThemeColors colors) skeletonBuilder;
@@ -51,7 +51,7 @@ class MyPageListScreen<T> extends StatefulWidget {
   final IconData emptyIcon;
   final String emptyTitle;
 
-  const MyPageListScreen({
+  const MyPageList({
     super.key,
     required this.title,
     required this.loader,
@@ -62,10 +62,10 @@ class MyPageListScreen<T> extends StatefulWidget {
   });
 
   @override
-  State<MyPageListScreen<T>> createState() => _MyPageListScreenState<T>();
+  State<MyPageList<T>> createState() => _MyPageListState<T>();
 }
 
-class _MyPageListScreenState<T> extends State<MyPageListScreen<T>> {
+class _MyPageListState<T> extends State<MyPageList<T>> {
   List<T> _items = [];
   bool _loading = true;
   bool _hasError = false;

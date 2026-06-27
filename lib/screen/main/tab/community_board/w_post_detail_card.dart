@@ -8,7 +8,7 @@ import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/popup_menu_item_builder.dart';
 import 'package:feple/common/widget/w_inline_badge.dart';
 import 'package:feple/common/widget/w_profile_avatar.dart';
-import 'package:feple/common/widget/w_write_post_screen.dart';
+import 'package:feple/common/widget/w_write_post.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/common/widget/w_report_sheet.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
@@ -243,7 +243,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
     await Navigator.push(
       context,
       SlideRoute(
-        builder: (_) => WritePostScreen(
+        builder: (_) => WritePost(
           title: 'edit_post'.tr(),
           initialTitle: _title,
           initialContent: _content,

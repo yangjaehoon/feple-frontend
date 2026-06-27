@@ -30,6 +30,7 @@ class ArtistSchedule extends StatefulWidget {
 class ArtistScheduleState extends State<ArtistSchedule> {
   final _scheduleService = sl<ArtistScheduleService>();
   late Future<List<ArtistScheduleModel>> _scheduleFuture;
+  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -53,15 +54,19 @@ class ArtistScheduleState extends State<ArtistSchedule> {
             icon: Icons.calendar_month_rounded,
             title: 'artist_schedule_title'.tr(args: [widget.artistName]),
             headerColor: colors.activate,
-            onTap: () => Navigator.push(
-              context,
-              SlideRoute(
-                builder: (_) => ArtistScheduleListScreen(
-                  artistId: widget.artistId,
-                  artistName: widget.artistName,
+            onTap: () {
+              if (_isNavigating) return;
+              _isNavigating = true;
+              Navigator.push(
+                context,
+                SlideRoute(
+                  builder: (_) => ArtistScheduleListScreen(
+                    artistId: widget.artistId,
+                    artistName: widget.artistName,
+                  ),
                 ),
-              ),
-            ),
+              ).whenComplete(() { if (mounted) _isNavigating = false; });
+            },
           ),
           _buildScheduleList(colors),
         ],

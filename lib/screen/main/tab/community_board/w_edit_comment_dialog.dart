@@ -41,6 +41,8 @@ class _EditCommentDialogState extends State<EditCommentDialog> {
         controller: _controller,
         autofocus: true,
         maxLines: null,
+        textInputAction: TextInputAction.done,
+        onSubmitted: (_) => Navigator.pop(context, _controller.text.trim()),
         decoration: InputDecoration(hintText: 'enter_comment'.tr()),
       ),
       actions: [

@@ -17,10 +17,31 @@ class SearchFragment extends StatefulWidget {
 class _SearchFragmentState extends State<SearchFragment> {
   final _circleArtistKey = GlobalKey<CircleArtistWidgetState>();
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<FestivalPreviewProvider>().addListener(_onProviderChange);
+    });
+  }
+
+  @override
+  void dispose() {
+    context.read<FestivalPreviewProvider>().removeListener(_onProviderChange);
+    super.dispose();
+  }
+
+  void _onProviderChange() {
+    if (!mounted) return;
+    final provider = context.read<FestivalPreviewProvider>();
+    final err = provider.refreshError;
+    if (err == null) return;
+    provider.clearRefreshError();
+    context.showErrorSnackbar(err);
+  }
+
   Future<void> _onRefresh() async {
-    try {
-      await context.read<FestivalPreviewProvider>().refresh();
-    } catch (_) {}
+    await context.read<FestivalPreviewProvider>().refresh();
     _circleArtistKey.currentState?.refresh();
   }
 

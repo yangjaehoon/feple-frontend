@@ -149,7 +149,10 @@ class _CommunityPostState extends State<CommunityPost> {
         if (!mounted || _loadId != myId) return;
         setState(() { _posts..clear()..addAll(items); _hasError = false; });
       }
-    } catch (_) {}
+    } catch (_) {
+      if (!context.mounted || _loadId != myId) return;
+      context.showErrorSnackbar('refresh_failed'.tr());
+    }
   }
 
   Future<void> _loadMore() async {

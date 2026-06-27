@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
@@ -250,18 +249,13 @@ class MainImageSwiperState extends State<MainImageSwiper> {
             image: CachedNetworkImageProvider(
               _photosNotifier.photos[_currentRealPage].url,
               cacheKey: 'artist-photo-${_photosNotifier.photos[_currentRealPage].photoId}',
-              // 배경은 블러 처리되므로 600px 이상 불필요 — 포토 카드와 캐시 공유
-              maxWidth: 600,
+              // 의도적으로 초저해상도 캐시 — 전체 너비로 늘려지면 자연스럽게 블러처럼 보임, BackdropFilter 없이 동일 효과
+              maxWidth: 20,
             ),
             fit: BoxFit.cover,
           ),
         ),
-        child: ClipRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-            child: Container(color: Colors.black.withValues(alpha: 0.5)),
-          ),
-        ),
+        child: Container(color: Colors.black.withValues(alpha: 0.5)),
       ),
     );
   }

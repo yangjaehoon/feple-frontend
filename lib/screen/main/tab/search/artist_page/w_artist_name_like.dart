@@ -183,33 +183,32 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
     required bool isLoading,
     required AbstractThemeColors colors,
   }) {
-    return Opacity(
-      opacity: widget.followNotifier.initFailed ? 0.4 : 1.0,
-      child: GestureDetector(
-        onTap: (isLoading || widget.followNotifier.initFailed) ? null : _toggleFollow,
-        child: AnimatedContainer(
-          duration: AppDimens.animNormal,
-          curve: Curves.easeInOut,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-          decoration: BoxDecoration(
-            gradient: isFollowed
-                ? null
-                : LinearGradient(
-                    colors: [colors.activate, colors.activate.withValues(alpha: 0.75)],
-                  ),
-            color: isFollowed ? Colors.white.withValues(alpha: 0.2) : null,
-            borderRadius: BorderRadius.circular(AppDimens.cardRadius),
-            border: isFollowed
-                ? Border.all(color: Colors.white.withValues(alpha: 0.4), width: 1)
-                : null,
-          ),
-          child: _buildFollowButtonContent(isFollowed: isFollowed, isLoading: isLoading),
+    final dimmed = widget.followNotifier.initFailed;
+    final alpha = dimmed ? 0.4 : 1.0;
+    return GestureDetector(
+      onTap: (isLoading || dimmed) ? null : _toggleFollow,
+      child: AnimatedContainer(
+        duration: AppDimens.animNormal,
+        curve: Curves.easeInOut,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        decoration: BoxDecoration(
+          gradient: isFollowed
+              ? null
+              : LinearGradient(
+                  colors: [colors.activate.withValues(alpha: alpha), colors.activate.withValues(alpha: 0.75 * alpha)],
+                ),
+          color: isFollowed ? Colors.white.withValues(alpha: 0.2 * alpha) : null,
+          borderRadius: BorderRadius.circular(AppDimens.cardRadius),
+          border: isFollowed
+              ? Border.all(color: Colors.white.withValues(alpha: 0.4 * alpha), width: 1)
+              : null,
         ),
+        child: _buildFollowButtonContent(isFollowed: isFollowed, isLoading: isLoading, alpha: alpha),
       ),
     );
   }
 
-  Widget _buildFollowButtonContent({required bool isFollowed, required bool isLoading}) {
+  Widget _buildFollowButtonContent({required bool isFollowed, required bool isLoading, double alpha = 1.0}) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -224,16 +223,19 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
               )
             : Icon(
                 isFollowed ? Icons.check_rounded : Icons.favorite_rounded,
-                color: Colors.white,
+                color: Colors.white.withValues(alpha: alpha),
                 size: 16,
               ),
         const SizedBox(width: 6),
-        Opacity(
-          opacity: isLoading ? 0 : 1,
+        Visibility(
+          visible: !isLoading,
+          maintainSize: true,
+          maintainAnimation: true,
+          maintainState: true,
           child: Text(
             isFollowed ? 'following'.tr() : 'follow'.tr(),
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: alpha),
               fontWeight: FontWeight.w700,
               fontSize: AppDimens.fontSizeSm,
               letterSpacing: 0.3,

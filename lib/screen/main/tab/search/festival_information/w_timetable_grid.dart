@@ -151,50 +151,27 @@ class TimetableGrid extends StatelessWidget {
           height: totalH,
           child: Stack(
             children: [
-              ..._buildVerticalDividers(colors, stageW),
-              ..._buildHorizontalLines(colors),
+              // 수십~수백 개의 Positioned Container 대신 CustomPaint 1개로 처리
+              Positioned.fill(
+                child: RepaintBoundary(
+                  child: CustomPaint(
+                    painter: _TimetableGridPainter(
+                      dividerColor: colors.listDivider,
+                      stages: stages,
+                      stageW: stageW,
+                      topPad: _topPad,
+                      minPx: _minPx,
+                      startHour: startHour,
+                      endHour: endHour,
+                    ),
+                  ),
+                ),
+              ),
               ..._buildPerformanceCards(stageW),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  List<Widget> _buildVerticalDividers(AbstractThemeColors colors, double stageW) {
-    return List.generate(
-      stages.length,
-      (i) => Positioned(
-        left: (i + 1) * stageW - 0.5,
-        top: 0,
-        bottom: 0,
-        width: 0.5,
-        child: Container(color: colors.listDivider),
-      ),
-    );
-  }
-
-  List<Widget> _buildHorizontalLines(AbstractThemeColors colors) {
-    return List.generate(
-      (endHour - startHour) * 6 + 1,
-      (i) {
-        final mins = i * 10;
-        final isHour = mins % 60 == 0;
-        final isHalf = mins % 30 == 0;
-        return Positioned(
-          top: _topPad + mins * _minPx,
-          left: 0,
-          right: 0,
-          height: 0.5,
-          child: Container(
-            color: isHour
-                ? colors.listDivider.withValues(alpha: 0.9)
-                : isHalf
-                    ? colors.listDivider.withValues(alpha: 0.5)
-                    : colors.listDivider.withValues(alpha: 0.2),
-          ),
-        );
-      },
     );
   }
 
@@ -218,6 +195,57 @@ class TimetableGrid extends StatelessWidget {
       );
     }).toList();
   }
+}
+
+class _TimetableGridPainter extends CustomPainter {
+  final Color dividerColor;
+  final List<String> stages;
+  final double stageW;
+  final double topPad;
+  final double minPx;
+  final int startHour;
+  final int endHour;
+
+  const _TimetableGridPainter({
+    required this.dividerColor,
+    required this.stages,
+    required this.stageW,
+    required this.topPad,
+    required this.minPx,
+    required this.startHour,
+    required this.endHour,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final totalMinutes = (endHour - startHour) * 60;
+    for (int mins = 0; mins <= totalMinutes; mins += 10) {
+      final isHour = mins % 60 == 0;
+      final isHalf = mins % 30 == 0;
+      final alpha = isHour ? 0.9 : isHalf ? 0.5 : 0.2;
+      final paint = Paint()
+        ..color = dividerColor.withValues(alpha: alpha)
+        ..strokeWidth = 0.5;
+      final y = topPad + mins * minPx;
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    }
+
+    final vPaint = Paint()
+      ..color = dividerColor
+      ..strokeWidth = 0.5;
+    for (int i = 1; i <= stages.length; i++) {
+      final x = i * stageW - 0.5;
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), vPaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_TimetableGridPainter old) =>
+      old.dividerColor != dividerColor ||
+      old.stages.length != stages.length ||
+      old.stageW != stageW ||
+      old.startHour != startHour ||
+      old.endHour != endHour;
 }
 
 class _PerformanceCard extends StatelessWidget {

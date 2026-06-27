@@ -26,6 +26,8 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
   Set<String> get selectedGenres => _selectedGenres;
   Set<String> get selectedRegions => _selectedRegions;
   Set<String> get selectedAgeRestrictions => _selectedAgeRestrictions;
+  bool get hasActiveFilters =>
+      _selectedGenres.isNotEmpty || _selectedRegions.isNotEmpty || _selectedAgeRestrictions.isNotEmpty;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;

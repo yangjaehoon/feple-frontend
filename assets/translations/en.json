@@ -517,5 +517,8 @@
   "undo": "Undo",
   "fcm_channel_name": "FEPLE Notifications",
   "fcm_channel_desc": "New festival alerts for artists you follow",
-  "select_color": "Select color"
+  "select_color": "Select color",
+  "refresh_failed": "Failed to refresh. Please try again.",
+  "no_festival_filter_hint": "No festivals match your filters",
+  "filter_reset_action": "Reset filters"
 }

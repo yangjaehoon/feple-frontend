@@ -517,5 +517,8 @@
   "undo": "실행취소",
   "fcm_channel_name": "FEPLE 알림",
   "fcm_channel_desc": "팔로우 아티스트 신규 페스티벌 알림",
-  "select_color": "색상 선택"
+  "select_color": "색상 선택",
+  "refresh_failed": "새로고침에 실패했습니다.",
+  "no_festival_filter_hint": "조건에 맞는 페스티벌이 없어요",
+  "filter_reset_action": "필터 초기화"
 }

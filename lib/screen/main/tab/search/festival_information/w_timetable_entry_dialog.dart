@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/timetable_colors.dart';
+import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/dart/extension/time_of_day_extension.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_user_entry.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -112,7 +113,15 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
       actions: [
         if (widget.isEditing)
           TextButton(
-            onPressed: () => Navigator.pop(context, 'delete'),
+            onPressed: () async {
+              final confirmed = await showConfirmDialog(
+                context,
+                title: 'timetable_delete_title'.tr(),
+                content: 'timetable_delete_confirm'.tr(),
+                confirmLabel: 'msg_delete'.tr(),
+              );
+              if (confirmed && context.mounted) Navigator.pop(context, 'delete');
+            },
             child: Text('msg_delete'.tr(), style: TextStyle(color: colors.error)),
           ),
         TextButton(

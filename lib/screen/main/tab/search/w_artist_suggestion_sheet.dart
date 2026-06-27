@@ -119,6 +119,7 @@ class _ArtistSuggestionSheetState extends State<ArtistSuggestionSheet> {
       child: TextField(
         controller: _nameCtrl,
         autofocus: true,
+        textInputAction: TextInputAction.next,
         onChanged: (_) {
           if (_nameError != null) setState(() => _nameError = null);
         },
@@ -137,6 +138,7 @@ class _ArtistSuggestionSheetState extends State<ArtistSuggestionSheet> {
       child: TextField(
         controller: _noteCtrl,
         maxLines: 3,
+        textInputAction: TextInputAction.done,
         decoration: InputDecoration(
           labelText: 'artist_suggestion_note_label'.tr(),
           hintText: 'artist_suggestion_note_hint'.tr(),

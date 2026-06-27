@@ -520,5 +520,7 @@
   "select_color": "색상 선택",
   "refresh_failed": "새로고침에 실패했습니다.",
   "no_festival_filter_hint": "조건에 맞는 페스티벌이 없어요",
-  "filter_reset_action": "필터 초기화"
+  "filter_reset_action": "필터 초기화",
+  "timetable_delete_title": "항목 삭제",
+  "timetable_delete_confirm": "이 타임테이블 항목을 삭제할까요?"
 }

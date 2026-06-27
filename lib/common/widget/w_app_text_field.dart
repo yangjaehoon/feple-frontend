@@ -13,6 +13,7 @@ class AppTextField extends StatelessWidget {
   final int? maxLength;
   final String? errorText;
   final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
   final String? semanticsLabel;
   final TextInputAction? textInputAction;
 
@@ -26,6 +27,7 @@ class AppTextField extends StatelessWidget {
     this.maxLength,
     this.errorText,
     this.onChanged,
+    this.onSubmitted,
     this.semanticsLabel,
     this.textInputAction,
   });
@@ -71,6 +73,7 @@ class AppTextField extends StatelessWidget {
             textInputAction: textInputAction,
             maxLength: maxLength,
             onChanged: onChanged,
+            onSubmitted: onSubmitted,
             style: TextStyle(fontSize: AppDimens.fontSizeLg, color: colors.text),
             decoration: _buildInputDecoration(colors),
           ),

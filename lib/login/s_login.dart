@@ -27,6 +27,7 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
   bool _isEmailLoading = false;
   bool _isKakaoLoading = false;
+  bool _isNavigating = false;
   String? _emailError;
   String? _passwordError;   // 빈 필드 → 빨간 테두리
   String? _authError;       // 인증 실패 → 텍스트만, 테두리 없음
@@ -190,10 +191,12 @@ class _LoginPageState extends State<LoginPage> {
               style: TextStyle(color: themeColors.textSecondary, fontSize: AppDimens.fontSizeMd),
             ),
             TextButton(
-              onPressed: () => Navigator.push(
-                context,
-                SlideRoute(builder: (context) => const SignupPage()),
-              ),
+              onPressed: () {
+                if (_isNavigating) return;
+                _isNavigating = true;
+                Navigator.push(context, SlideRoute(builder: (_) => const SignupPage()))
+                    .whenComplete(() { if (mounted) _isNavigating = false; });
+              },
               style: TextButton.styleFrom(
                 foregroundColor: themeColors.activate,
                 padding: EdgeInsets.zero,

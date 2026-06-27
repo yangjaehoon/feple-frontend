@@ -28,6 +28,7 @@ class ArtistSongsScreen extends StatefulWidget {
 class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
   final _songService = sl<SongService>();
   late Future<List<SongModel>> _future;
+  bool _isSheetOpen = false;
 
   @override
   void initState() {
@@ -53,13 +54,17 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
         title: 'artist_songs_title'.tr(args: [widget.artistName]),
         actions: [
           TextButton.icon(
-            onPressed: () => showAppBottomSheet(
-              context,
-              builder: (_) => SongRequestSheet(
-                artistId: widget.artistId,
-                artistName: widget.artistName,
-              ),
-            ),
+            onPressed: () {
+              if (_isSheetOpen) return;
+              _isSheetOpen = true;
+              showAppBottomSheet(
+                context,
+                builder: (_) => SongRequestSheet(
+                  artistId: widget.artistId,
+                  artistName: widget.artistName,
+                ),
+              ).whenComplete(() { if (mounted) _isSheetOpen = false; });
+            },
             icon: const Icon(Icons.add_rounded, size: 16),
             label: Text('song_request_button'.tr()),
             style: TextButton.styleFrom(

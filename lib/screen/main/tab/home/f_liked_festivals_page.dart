@@ -44,8 +44,11 @@ class LikedFestivalsPage extends StatefulWidget {
 class _LikedFestivalsPageState extends State<LikedFestivalsPage> {
   bool _showEnded = false;
   bool _isNavigating = false;
+  bool _isSheetOpen = false;
 
   void _openSettings() {
+    if (_isSheetOpen) return;
+    _isSheetOpen = true;
     final isEnglish = context.locale.languageCode == 'en';
     final items = widget.festivals
         .where((f) => !f.isEnded)
@@ -59,7 +62,7 @@ class _LikedFestivalsPageState extends State<LikedFestivalsPage> {
         items: items,
         onSave: widget.onSaveOrder ?? (_) {},
       ),
-    );
+    ).whenComplete(() { if (mounted) _isSheetOpen = false; });
   }
 
   List<FestivalModel> get _filtered =>

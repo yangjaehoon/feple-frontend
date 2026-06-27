@@ -263,6 +263,7 @@ class _ArtistFullTile extends StatelessWidget {
           fit: BoxFit.cover,
           fadeInDuration: AppDimens.animXFast,
           fadeOutDuration: AppDimens.animTapFeedback,
+          placeholder: (_, __) => _avatarPlaceholder(size, colors),
           errorWidget: (_, __, ___) => _avatarPlaceholder(size, colors),
         ),
       );

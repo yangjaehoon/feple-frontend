@@ -34,6 +34,7 @@ class FestivalPosterState extends State<FestivalPoster> {
   static const double _posterThumbnailHeight = 160.0;
 
   late final FestivalPosterNotifier _notifier;
+  bool _isSheetOpen = false;
 
   @override
   void initState() {
@@ -88,6 +89,8 @@ class FestivalPosterState extends State<FestivalPoster> {
   }
 
   void _showWeather() {
+    if (_isSheetOpen) return;
+    _isSheetOpen = true;
     showAppBottomSheet(
       context,
       isScrollControlled: false,
@@ -96,7 +99,7 @@ class FestivalPosterState extends State<FestivalPoster> {
         startDate: widget.poster.startDate,
         endDate: widget.poster.endDate,
       ),
-    );
+    ).whenComplete(() { if (mounted) _isSheetOpen = false; });
   }
 
   VoidCallback? _certButtonTap() => switch (_notifier.certState) {

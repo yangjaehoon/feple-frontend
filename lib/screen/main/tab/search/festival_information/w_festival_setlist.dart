@@ -291,6 +291,7 @@ class _ArtistCompactRow extends StatelessWidget {
           fit: BoxFit.cover,
           fadeInDuration: AppDimens.animXFast,
           fadeOutDuration: AppDimens.animTapFeedback,
+          placeholder: (_, __) => _placeholder(size, colors),
           errorWidget: (_, __, ___) => _placeholder(size, colors),
         ),
       );

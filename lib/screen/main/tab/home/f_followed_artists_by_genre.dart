@@ -31,6 +31,7 @@ class _FollowedArtistsByGenrePageState
     extends State<FollowedArtistsByGenrePage> {
   String? _selectedGenre;
   bool _isNavigating = false;
+  bool _isSheetOpen = false;
 
   List<String> get _genres => widget.artists
       .expand((a) => a.genres)
@@ -43,6 +44,8 @@ class _FollowedArtistsByGenrePageState
       : widget.artists.where((a) => a.genres.contains(_selectedGenre)).toList();
 
   void _openSettings() {
+    if (_isSheetOpen) return;
+    _isSheetOpen = true;
     final items = widget.artists
         .map((a) => ReorderItem(id: a.id, name: a.name, imageUrl: a.profileImageUrl))
         .toList();
@@ -54,7 +57,7 @@ class _FollowedArtistsByGenrePageState
         items: items,
         onSave: widget.onSaveOrder ?? (_) {},
       ),
-    );
+    ).whenComplete(() { if (mounted) _isSheetOpen = false; });
   }
 
   @override

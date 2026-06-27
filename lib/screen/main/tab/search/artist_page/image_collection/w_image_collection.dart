@@ -31,6 +31,7 @@ class ImgCollectionWidget extends StatefulWidget {
 class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
   late final ArtistPhotoNotifier _notifier;
   final _reportService = sl<ReportService>();
+  bool _isSheetOpen = false;
 
   @override
   void initState() {
@@ -69,6 +70,8 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
 
 
   void _showEditBottomSheet(ArtistPhotoResponse photo) {
+    if (_isSheetOpen) return;
+    _isSheetOpen = true;
     showAppBottomSheet(
       context,
       useRootNavigator: true,
@@ -78,7 +81,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
         onSave: (newTitle, newDesc) =>
             _notifier.updatePhoto(photo.photoId, newTitle, newDesc),
       ),
-    );
+    ).whenComplete(() { if (mounted) _isSheetOpen = false; });
   }
 
   @override

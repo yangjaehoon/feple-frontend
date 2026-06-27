@@ -34,12 +34,7 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
     final err = provider.refreshError;
     if (err == null) return;
     provider.clearRefreshError();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(err),
-        duration: const Duration(seconds: 3),
-      ),
-    );
+    context.showErrorSnackbar(err);
   }
 
   @override
@@ -80,11 +75,7 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
           FepleAppBar('festival_schedule'.tr()),
           Expanded(
             child: RefreshIndicator(
-              onRefresh: () async {
-                try {
-                  await context.read<FestivalPreviewProvider>().refresh(force: true);
-                } catch (_) {}
-              },
+              onRefresh: () => context.read<FestivalPreviewProvider>().refresh(force: true),
               color: colors.activate,
               child: CustomScrollView(
                 controller: _scrollController,

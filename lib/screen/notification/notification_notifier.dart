@@ -56,14 +56,12 @@ class NotificationNotifier extends SafeChangeNotifier {
   }
 
   Future<void> refresh() async {
-    try {
-      final result = await _service.fetchPage(0);
-      _items = result.items;
-      _hasMore = result.hasMore;
-      _page = 1;
-      hasError = false;
-      safeNotify();
-    } catch (_) {}
+    final result = await _service.fetchPage(0);
+    _items = result.items;
+    _hasMore = result.hasMore;
+    _page = 1;
+    hasError = false;
+    safeNotify();
   }
 
   Future<void> loadMore() async {

@@ -21,6 +21,8 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
   bool isCertified = false;
   bool isPending = false;
   bool hasInitError = false;
+  bool isTogglingLike = false;
+  bool isTogglingAttend = false;
 
   CertState get certState {
     if (isCertified) return CertState.certified;
@@ -94,17 +96,26 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
   }
 
   Future<void> toggleLike() async {
-    await optimisticToggle(
-      liked,
-      apply: (v) => liked = v,
-      action: () async {
-        await festivalService.toggleLike(festivalId);
-        AppEvents.festivalLikeChanged.value++;
-      },
-    );
+    if (isTogglingLike) return;
+    isTogglingLike = true;
+    try {
+      await optimisticToggle(
+        liked,
+        apply: (v) => liked = v,
+        action: () async {
+          await festivalService.toggleLike(festivalId);
+          AppEvents.festivalLikeChanged.value++;
+        },
+      );
+    } finally {
+      isTogglingLike = false;
+      safeNotify();
+    }
   }
 
   Future<void> toggleAttending() async {
+    if (isTogglingAttend) return;
+    isTogglingAttend = true;
     final prevAttending = attending;
     final prevCount = attendingCount;
     attending = !attending;
@@ -117,6 +128,9 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
       attendingCount = prevCount;
       safeNotify();
       debugPrint('toggleAttending error: $e');
+    } finally {
+      isTogglingAttend = false;
+      safeNotify();
     }
   }
 

@@ -136,6 +136,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
     return TextField(
       controller: _labelCtrl,
       autofocus: true,
+      textInputAction: TextInputAction.done,
       onChanged: (_) => setState(() {}),
       decoration: InputDecoration(
         hintText: 'timetable_entry_name_hint'.tr(),

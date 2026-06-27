@@ -90,7 +90,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
             _buildFilterChips(colors),
             Expanded(
               child: RefreshIndicator(
-                onRefresh: _notifier.refresh,
+                onRefresh: () async {
+                  try {
+                    await _notifier.refresh();
+                  } catch (_) {
+                    if (context.mounted) context.showErrorSnackbar('refresh_failed'.tr());
+                  }
+                },
                 color: colors.activate,
                 child: _notifier.isLoading
                     ? _buildSkeleton(colors)

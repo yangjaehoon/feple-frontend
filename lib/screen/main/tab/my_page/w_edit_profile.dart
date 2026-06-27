@@ -304,6 +304,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
           controller: _bioController,
           maxLength: 150,
           maxLines: 3,
+          textInputAction: TextInputAction.done,
           onChanged: (_) {
             if (_bioError != null) setState(() => _bioError = null);
           },

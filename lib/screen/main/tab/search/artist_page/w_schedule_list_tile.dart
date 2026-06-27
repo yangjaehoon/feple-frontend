@@ -48,8 +48,7 @@ class ScheduleListTile extends StatelessWidget {
   Widget _buildPoster(AbstractThemeColors colors) {
     final typeConfig = getEventTypeConfig(item.eventType, colors);
     final hasPoster = item.posterUrl != null && item.posterUrl!.isNotEmpty;
-    // 포스터 이미지는 색상 속성으로 alpha를 적용할 수 없으므로 42×42px 범위에만 Opacity 사용
-    final poster = ClipRRect(
+    return ClipRRect(
       borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
       child: hasPoster
           ? CachedNetworkImage(
@@ -58,6 +57,9 @@ class ScheduleListTile extends StatelessWidget {
               height: 42,
               memCacheWidth: 84,
               fit: BoxFit.cover,
+              // CachedNetworkImage color 파라미터로 alpha 적용 — Opacity 위젯(saveLayer) 불필요
+              color: isPast ? Colors.white.withValues(alpha: _pastAlpha) : null,
+              colorBlendMode: isPast ? BlendMode.modulate : null,
               fadeInDuration: AppDimens.animXFast,
               fadeOutDuration: AppDimens.animTapFeedback,
               placeholder: (_, __) => EventTypeIcon(config: typeConfig),
@@ -65,7 +67,6 @@ class ScheduleListTile extends StatelessWidget {
             )
           : EventTypeIcon(config: typeConfig),
     );
-    return isPast ? Opacity(opacity: _pastAlpha, child: poster) : poster;
   }
 
   Widget _buildContent(AbstractThemeColors colors) {

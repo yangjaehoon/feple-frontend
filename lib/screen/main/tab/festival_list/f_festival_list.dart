@@ -17,6 +17,7 @@ class ConcertListFragment extends StatefulWidget {
 
 class _ConcertListFragmentState extends State<ConcertListFragment> {
   bool _filterExpanded = false;
+  bool _showScrollToTop = false;
   late final ScrollController _scrollController = ScrollController();
 
   @override
@@ -47,9 +48,12 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
 
   void _onScroll() {
     if (!mounted) return;
+    final pixels = _scrollController.position.pixels;
+    final show = pixels > 300;
+    if (show != _showScrollToTop) setState(() => _showScrollToTop = show);
     final provider = context.read<FestivalPreviewProvider>();
     if (!provider.hasMore || provider.isLoadingMore || provider.isLoading) return;
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 300) {
+    if (pixels >= _scrollController.position.maxScrollExtent - 300) {
       provider.fetchNext();
     }
   }
@@ -68,7 +72,9 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
       (p) => p.selectedAgeRestrictions,
     );
 
-    return ColoredBox(
+    return Stack(
+      children: [
+        ColoredBox(
       color: colors.backgroundMain,
       child: Column(
         children: [
@@ -103,6 +109,25 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
           ),
         ],
       ),
+        ),
+        if (_showScrollToTop)
+          Positioned(
+            bottom: 20,
+            right: 16,
+            child: FloatingActionButton.small(
+              heroTag: 'festivalScrollTop',
+              onPressed: () => _scrollController.animateTo(
+                0,
+                duration: AppDimens.animNormal,
+                curve: Curves.easeOut,
+              ),
+              backgroundColor: colors.surface,
+              foregroundColor: colors.textTitle,
+              elevation: 2,
+              child: const Icon(Icons.arrow_upward_rounded, size: 20),
+            ),
+          ),
+      ],
     );
   }
 }

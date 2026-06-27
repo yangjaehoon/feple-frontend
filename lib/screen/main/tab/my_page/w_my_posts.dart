@@ -3,6 +3,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/injection.dart';
@@ -120,9 +121,34 @@ class _MyPostsScreenState extends State<MyPostsScreen> {
     );
   }
 
+  Widget _buildSkeleton(AbstractThemeColors colors) {
+    return ListView.separated(
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 6,
+      separatorBuilder: (_, __) => Divider(height: 1, color: colors.divider),
+      itemBuilder: (_, __) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SkeletonBox(width: double.infinity, height: 14, borderRadius: BorderRadius.circular(4)),
+            const SizedBox(height: 8),
+            SkeletonBox(width: 160, height: 12, borderRadius: BorderRadius.circular(4)),
+            const SizedBox(height: 8),
+            Row(children: [
+              SkeletonBox(width: 40, height: 10, borderRadius: BorderRadius.circular(4)),
+              const SizedBox(width: 12),
+              SkeletonBox(width: 40, height: 10, borderRadius: BorderRadius.circular(4)),
+            ]),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildContent(AbstractThemeColors colors) {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator.adaptive());
+      return _buildSkeleton(colors);
     }
     if (_hasError) {
       return LayoutBuilder(

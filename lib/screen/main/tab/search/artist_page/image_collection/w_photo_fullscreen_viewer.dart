@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/model/artist_photo_response.dart';
 import 'package:flutter/material.dart';
@@ -95,6 +96,7 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: IconButton(
+            tooltip: 'close'.tr(),
             onPressed: () => Navigator.pop(context),
             icon: const Icon(Icons.close_rounded, color: Colors.white, size: 28),
             style: IconButton.styleFrom(

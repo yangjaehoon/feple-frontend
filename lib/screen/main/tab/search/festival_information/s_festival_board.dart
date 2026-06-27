@@ -139,6 +139,7 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
               child: Row(
                 children: [
                   IconButton(
+                    tooltip: 'back'.tr(),
                     icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
                     onPressed: () => Navigator.pop(context),
                   ),

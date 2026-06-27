@@ -72,6 +72,7 @@ class _FollowedArtistsByGenrePageState
         backgroundColor: colors.surface,
         elevation: 0,
         leading: IconButton(
+          tooltip: 'back'.tr(),
           icon: Icon(Icons.arrow_back_ios_rounded, color: colors.textTitle, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
@@ -86,6 +87,7 @@ class _FollowedArtistsByGenrePageState
         actions: [
           if (widget.onSaveOrder != null)
             IconButton(
+              tooltip: 'settings'.tr(),
               icon: Icon(Icons.settings_rounded, color: colors.textSecondary, size: 20),
               onPressed: _openSettings,
             ),

@@ -376,6 +376,7 @@ class _CommunityPostState extends State<CommunityPost> {
             prefixIcon: Icon(Icons.search_rounded, color: colors.textSecondary, size: 20),
             suffixIcon: _searchController.text.isNotEmpty
                 ? IconButton(
+                    tooltip: 'clear'.tr(),
                     icon: Icon(Icons.close_rounded, size: 18, color: colors.textSecondary),
                     onPressed: () {
                       _searchDebounce?.cancel();

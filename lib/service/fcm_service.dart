@@ -19,7 +19,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // 백그라운드에서는 시스템이 자동으로 알림 표시
-  debugPrint('[FCM] 백그라운드 메시지: ${message.notification?.title}');
+  debugPrint('[FCM] 백그라운드 메시지 수신');
 }
 
 class FcmService {
@@ -148,7 +148,7 @@ class FcmService {
       });
       debugPrint('[FCM] 토큰 서버 등록 완료');
     } catch (e) {
-      debugPrint('[FCM] 토큰 서버 등록 실패: $e');
+      debugPrint('[FCM] 토큰 서버 등록 실패');
     }
   }
 
@@ -176,7 +176,7 @@ class FcmService {
       await DioClient.dio.delete('/users/device-token', data: {'token': token});
       debugPrint('[FCM] 토큰 서버 삭제 완료');
     } catch (e) {
-      debugPrint('[FCM] 토큰 서버 삭제 실패: $e');
+      debugPrint('[FCM] 토큰 서버 삭제 실패');
     }
   }
 

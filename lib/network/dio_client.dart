@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import '../auth/token_store.dart';
 import '../config.dart' as app_config;
 import 'api_cache_store.dart';
+import 'performance_interceptor.dart';
 
 extension ResponseListExt on Response {
   List<T> toModelList<T>(T Function(Map<String, dynamic>) fromJson) =>
@@ -217,5 +218,5 @@ class DioClient {
         handler.next(error);
       },
     ),
-  );
+  )..interceptors.add(PerformanceInterceptor());
 }

@@ -257,6 +257,7 @@ class _ArtistSuggestionBanner extends StatelessWidget {
   const _ArtistSuggestionBanner();
 
   void _openSheet(BuildContext context) {
+    if (ModalRoute.of(context)?.isCurrent != true) return;
     final userId = context.read<UserProvider>().currentUserId;
     if (userId == null) {
       context.showInfoSnackbar('no_login_info'.tr());

@@ -93,6 +93,7 @@ class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
       return;
     }
 
+    FocusScope.of(context).unfocus();
     setState(() => _isLoading = true);
     try {
       await sl<FestivalService>().submitFestival(

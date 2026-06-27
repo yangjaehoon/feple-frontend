@@ -94,6 +94,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
       }
     }
 
+    FocusScope.of(context).unfocus();
     setState(() => _isSaving = true);
     try {
       final userService = sl<UserService>();

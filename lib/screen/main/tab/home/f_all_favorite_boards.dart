@@ -32,6 +32,7 @@ class AllFavoriteBoardsPage extends StatefulWidget {
 class _AllFavoriteBoardsPageState extends State<AllFavoriteBoardsPage> {
   late List<String> _orderedSelectedIds;
   FavoriteBoardType? _selectedType;
+  bool _isSheetOpen = false;
 
   List<FavoriteBoard> get _selectedBoards {
     final boardMap = {for (final b in widget.allBoards) b.boardId: b};
@@ -54,6 +55,8 @@ class _AllFavoriteBoardsPageState extends State<AllFavoriteBoardsPage> {
   }
 
   void _openSettings() {
+    if (_isSheetOpen) return;
+    _isSheetOpen = true;
     final selectedSet = _orderedSelectedIds.toSet();
     showAppBottomSheet(
       context,
@@ -66,7 +69,7 @@ class _AllFavoriteBoardsPageState extends State<AllFavoriteBoardsPage> {
           widget.onSave(newIds);
         },
       ),
-    );
+    ).whenComplete(() { if (mounted) _isSheetOpen = false; });
   }
 
   void _navigateToBoard(FavoriteBoard board) {

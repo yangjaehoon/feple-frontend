@@ -15,6 +15,7 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../app.dart';
 import '../../../../common/app_events.dart';
 import '../../../../provider/user_provider.dart';
 
@@ -35,6 +36,7 @@ class _HomeFragmentState extends State<HomeFragment> {
     super.initState();
     AppEvents.festivalLikeChanged.addListener(_onFestivalLikeChanged);
     AppEvents.artistFollowChanged.addListener(_onArtistFollowChanged);
+    App.resumeEvent.addListener(_onAppResumed);
     _scrollController.addListener(_onScroll);
   }
 
@@ -56,6 +58,7 @@ class _HomeFragmentState extends State<HomeFragment> {
   void dispose() {
     AppEvents.festivalLikeChanged.removeListener(_onFestivalLikeChanged);
     AppEvents.artistFollowChanged.removeListener(_onArtistFollowChanged);
+    App.resumeEvent.removeListener(_onAppResumed);
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _notifier.dispose();
@@ -64,6 +67,7 @@ class _HomeFragmentState extends State<HomeFragment> {
 
   void _onFestivalLikeChanged() => _notifier.refreshFestivals();
   void _onArtistFollowChanged() => _notifier.refreshArtists();
+  void _onAppResumed() => _notifier.refresh();
 
 
   @override
@@ -136,8 +140,7 @@ class _HomeFragmentState extends State<HomeFragment> {
         HomeSectionHeader(
           title: 'followed_artists'.tr(),
           onExpand: (_notifier.artists?.isNotEmpty ?? false)
-              ? () async {
-                  await Navigator.push(
+              ? () => Navigator.push(
                     context,
                     SlideRoute(
                       builder: (_) => FollowedArtistsByGenrePage(
@@ -145,9 +148,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                         onSaveOrder: _notifier.saveArtistOrder,
                       ),
                     ),
-                  );
-                  _notifier.refresh();
-                }
+                  )
               : null,
         ),
         HomeArtistsSection(
@@ -155,8 +156,7 @@ class _HomeFragmentState extends State<HomeFragment> {
           hasError: _notifier.hasError,
           onRetry: _notifier.retry,
           onShowMore: (orderedArtists != null && orderedArtists.length > HomeArtistsSection.maxPreview)
-              ? () async {
-                  await Navigator.push(
+              ? () => Navigator.push(
                     context,
                     SlideRoute(
                       builder: (_) => FollowedArtistsByGenrePage(
@@ -164,31 +164,25 @@ class _HomeFragmentState extends State<HomeFragment> {
                         onSaveOrder: _notifier.saveArtistOrder,
                       ),
                     ),
-                  );
-                  _notifier.refresh();
-                }
+                  )
               : null,
-          onTap: (artist) async {
-            await Navigator.push(
-              context,
-              SlideRoute(
-                builder: (_) => ArtistPage(
-                  artistId: artist.id,
-                  artistName: artist.name,
-                  followerCount: artist.followerCount,
-                  profileImageUrl: artist.profileImageUrl,
-                ),
+          onTap: (artist) => Navigator.push(
+            context,
+            SlideRoute(
+              builder: (_) => ArtistPage(
+                artistId: artist.id,
+                artistName: artist.name,
+                followerCount: artist.followerCount,
+                profileImageUrl: artist.profileImageUrl,
               ),
-            );
-            _notifier.refresh();
-          },
+            ),
+          ),
         ),
         const SizedBox(height: 8),
         HomeSectionHeader(
           title: 'liked_festivals'.tr(),
           onExpand: (_notifier.festivals?.isNotEmpty ?? false)
-              ? () async {
-                  await Navigator.push(
+              ? () => Navigator.push(
                     context,
                     SlideRoute(
                       builder: (_) => LikedFestivalsPage(
@@ -196,22 +190,17 @@ class _HomeFragmentState extends State<HomeFragment> {
                         onSaveOrder: _notifier.saveFestivalOrder,
                       ),
                     ),
-                  );
-                  _notifier.refresh();
-                }
+                  )
               : null,
         ),
         HomeFestivalsSection(
           festivals: orderedFestivals,
           hasError: _notifier.hasError,
           onRetry: _notifier.retry,
-          onTap: (festival) async {
-            await Navigator.push(
-              context,
-              SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)),
-            );
-            _notifier.refresh();
-          },
+          onTap: (festival) => Navigator.push(
+            context,
+            SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)),
+          ),
         ),
         const SizedBox(height: 8),
         if (_notifier.hasError)

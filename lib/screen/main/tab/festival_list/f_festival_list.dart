@@ -6,6 +6,7 @@ import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../app.dart';
 import '../../../../provider/festival_preview_provider.dart';
 
 class ConcertListFragment extends StatefulWidget {
@@ -24,6 +25,7 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    App.resumeEvent.addListener(_onAppResumed);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<FestivalPreviewProvider>().addListener(_onProviderChange);
     });
@@ -41,9 +43,15 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
   @override
   void dispose() {
     context.read<FestivalPreviewProvider>().removeListener(_onProviderChange);
+    App.resumeEvent.removeListener(_onAppResumed);
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onAppResumed() {
+    if (!mounted) return;
+    context.read<FestivalPreviewProvider>().refresh();
   }
 
   void _onScroll() {

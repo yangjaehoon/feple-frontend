@@ -18,6 +18,11 @@ class NotificationNotifier extends SafeChangeNotifier {
   int _page = 0;
   NotifFilter filter = NotifFilter.all;
 
+  DateTime? _loadedAt;
+  static const _staleAfter = Duration(minutes: 3);
+  bool get _isStale =>
+      _loadedAt == null || DateTime.now().difference(_loadedAt!) > _staleAfter;
+
   List<NotificationModel> get items => List.unmodifiable(_items);
   bool get hasUnread => _items.any((n) => !n.read);
 
@@ -47,6 +52,7 @@ class NotificationNotifier extends SafeChangeNotifier {
       _items = result.items;
       _hasMore = result.hasMore;
       _page = 1;
+      _loadedAt = DateTime.now();
     } catch (_) {
       hasError = true;
     } finally {
@@ -55,12 +61,15 @@ class NotificationNotifier extends SafeChangeNotifier {
     }
   }
 
-  Future<void> refresh() async {
+  /// [force] true면 항상 재요청. false면 stale 기준 이내 데이터가 있으면 skip.
+  Future<void> refresh({bool force = false}) async {
+    if (!force && _items.isNotEmpty && !_isStale) return;
     final result = await _service.fetchPage(0);
     _items = result.items;
     _hasMore = result.hasMore;
     _page = 1;
     hasError = false;
+    _loadedAt = DateTime.now();
     safeNotify();
   }
 

@@ -74,7 +74,12 @@ class _HomeFragmentState extends State<HomeFragment> {
                 return RefreshIndicator(
                   color: colors.activate,
                   onRefresh: () async {
-                    try { await _notifier.refresh(force: true); } catch (_) {}
+                    try {
+                      await _notifier.refresh(force: true);
+                    } catch (_) {
+                      if (!context.mounted) return;
+                      context.showErrorSnackbar('refresh_failed'.tr());
+                    }
                   },
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),

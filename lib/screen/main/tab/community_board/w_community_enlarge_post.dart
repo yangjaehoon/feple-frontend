@@ -127,7 +127,10 @@ class _EnlargePostState extends State<EnlargePost> {
       onSuccess: (key) {
         _commentController.clear();
         _cancelReply();
-        if (mounted) context.showSuccessSnackbar(key.tr());
+        if (mounted) {
+          FocusScope.of(context).unfocus();
+          context.showSuccessSnackbar(key.tr());
+        }
       },
       onError: (key) {
         if (!mounted) return;
@@ -400,7 +403,23 @@ class _EnlargePostState extends State<EnlargePost> {
         isSubmitting: _notifier.isSubmitting,
         onSubmit: (anonymous) {
           if (userId == null) {
-            context.showInfoSnackbar('no_login_info'.tr());
+            final userProvider = context.read<UserProvider>();
+            context.showInfoSnackbar(
+              'no_login_info'.tr(),
+              extraButton: GestureDetector(
+                onTap: () => userProvider.logout(),
+                child: Text(
+                  'login'.tr(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: AppDimens.fontSizeSm,
+                    decoration: TextDecoration.underline,
+                    decorationColor: Colors.white,
+                  ),
+                ),
+              ),
+            );
             return;
           }
           _notifier.submitComment(

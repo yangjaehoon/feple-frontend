@@ -39,13 +39,15 @@ class ConcertListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // isLoadingMore(추가 로딩) 변경 시 ConcertListWidget이 불필요하게 리빌드되지 않도록
-    // 실제로 사용하는 3개 필드만 선택적으로 구독
+    // 실제로 사용하는 필드만 선택적으로 구독
     final isLoading = context.select<FestivalPreviewProvider, bool>(
         (p) => p.isLoading && p.items.isEmpty);
     final error = context.select<FestivalPreviewProvider, String?>(
         (p) => p.items.isEmpty ? p.error : null);
     final items = context.select<FestivalPreviewProvider, List<FestivalPreview>>(
         (p) => p.items);
+    final hasActiveFilters = context.select<FestivalPreviewProvider, bool>(
+        (p) => p.hasActiveFilters);
 
     if (isLoading) {
       return const _FestivalListSkeleton();
@@ -59,6 +61,18 @@ class ConcertListWidget extends StatelessWidget {
     }
 
     if (items.isEmpty) {
+      if (hasActiveFilters) {
+        final colors = context.appColors;
+        return EmptyState(
+          icon: Icons.filter_list_off_rounded,
+          title: 'no_festival_filter_hint'.tr(),
+          action: FilledButton(
+            onPressed: context.read<FestivalPreviewProvider>().clearFilters,
+            style: FilledButton.styleFrom(backgroundColor: colors.activate),
+            child: Text('filter_reset_action'.tr()),
+          ),
+        );
+      }
       return EmptyState(
         icon: Icons.event_busy_rounded,
         title: 'no_festival_condition'.tr(),

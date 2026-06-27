@@ -34,6 +34,16 @@ class _SignupPageState extends State<SignupPage> {
 
   // 닉네임 필드 상태 접근용 키
   final _nicknameKey = GlobalKey<NicknameFieldState>();
+  bool _nicknameAvailable = false;
+
+  bool get _isFormComplete {
+    final email = emailController.text.trim();
+    final password = passwordController.text;
+    return email.isNotEmpty &&
+        password.isNotEmpty &&
+        PasswordValidator.validate(password) == null &&
+        _nicknameAvailable;
+  }
 
   @override
   void dispose() {
@@ -168,11 +178,15 @@ class _SignupPageState extends State<SignupPage> {
                         textAlign: TextAlign.center,
                       ),
                     ),
-                  LoadingButton(
-                    label: 'register'.tr(),
-                    onPressed: _register,
-                    isLoading: _isLoading,
-                    backgroundColor: themeColors.activate,
+                  AnimatedOpacity(
+                    opacity: _isFormComplete ? 1.0 : 0.5,
+                    duration: AppDimens.animNormal,
+                    child: LoadingButton(
+                      label: 'register'.tr(),
+                      onPressed: _register,
+                      isLoading: _isLoading,
+                      backgroundColor: themeColors.activate,
+                    ),
                   ),
                   const SizedBox(height: 24),
                   _buildLoginLink(themeColors),
@@ -227,13 +241,16 @@ class _SignupPageState extends State<SignupPage> {
           keyboardType: TextInputType.emailAddress,
           errorText: _emailError,
           onChanged: (_) {
-            if (_emailError != null || _generalError != null) {
-              setState(() { _emailError = null; _generalError = null; });
-            }
+            setState(() { _emailError = null; _generalError = null; });
           },
         ),
         const SizedBox(height: 14),
-        NicknameField(key: _nicknameKey),
+        NicknameField(
+          key: _nicknameKey,
+          onStateChanged: (available) {
+            setState(() => _nicknameAvailable = available == true);
+          },
+        ),
         const SizedBox(height: 14),
         AppTextField(
           controller: passwordController,

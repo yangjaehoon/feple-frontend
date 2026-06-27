@@ -19,8 +19,8 @@ extension SnackbarContextExtension on BuildContext {
   }
 
   /// 정보 스낵바 (파랑)
-  void showInfoSnackbar(String message) {
-    _show(this, message, _SnackType.info);
+  void showInfoSnackbar(String message, {Widget? extraButton}) {
+    _show(this, message, _SnackType.info, extraButton: extraButton);
   }
 }
 

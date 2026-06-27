@@ -15,10 +15,14 @@ class NicknameField extends StatefulWidget {
   /// 외부에서 초기값을 설정할 때 사용
   final String initialValue;
 
+  /// 닉네임 가용 여부가 변경될 때마다 호출됨 (null=초기화/수정중, true=사용가능, false=사용불가)
+  final void Function(bool? available)? onStateChanged;
+
   const NicknameField({
     super.key,
     this.excludeUserId,
     this.initialValue = '',
+    this.onStateChanged,
   });
 
   @override
@@ -94,6 +98,7 @@ class NicknameFieldState extends State<NicknameField> {
       _available = avail;
       _message = msg;
     });
+    widget.onStateChanged?.call(avail);
   }
 
   void _onTextChanged(String _) {
@@ -102,6 +107,7 @@ class NicknameFieldState extends State<NicknameField> {
         _available = null;
         _message = '';
       });
+      widget.onStateChanged?.call(null);
     }
   }
 

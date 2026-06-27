@@ -9,7 +9,7 @@ import 'package:feple/service/report_service.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:feple/model/artist_photo_response.dart';
+import 'package:feple/model/artist_photo.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/popup_menu_item_builder.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';

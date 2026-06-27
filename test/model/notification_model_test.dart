@@ -1,5 +1,5 @@
 import 'package:feple/model/notification_model.dart';
-import 'package:feple/screen/notification/notification_type.dart';
+import 'package:feple/screen/notification/notification_type_style.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

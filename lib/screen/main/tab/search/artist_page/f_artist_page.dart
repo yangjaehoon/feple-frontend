@@ -1,5 +1,5 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/widget/w_named_board.dart';
+import 'package:feple/common/widget/w_board_preview_section.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/screen/main/tab/search/artist_page/artist_follow_notifier.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_board.dart';

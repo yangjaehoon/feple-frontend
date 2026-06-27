@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import 'package:feple/common/util/image_upload_helper.dart';
-import 'package:feple/model/artist_photo_response.dart';
+import 'package:feple/model/artist_photo.dart';
 import 'package:feple/network/dio_client.dart';
 
 class ArtistPhotoService {

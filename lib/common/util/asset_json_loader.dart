@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
-import '../../model/vo_package.dart';
+import '../../model/open_source_package.dart';
 
 class LocalJson {
   static Future<T> getObject<T>(String filePath) async {

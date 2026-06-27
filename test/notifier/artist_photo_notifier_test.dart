@@ -1,5 +1,5 @@
 import 'package:feple/injection.dart';
-import 'package:feple/model/artist_photo_response.dart';
+import 'package:feple/model/artist_photo.dart';
 import 'package:feple/screen/main/tab/search/artist_page/image_collection/artist_photo_notifier.dart';
 import 'package:feple/service/artist_photo_service.dart';
 import 'package:flutter_test/flutter_test.dart';

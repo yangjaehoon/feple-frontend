@@ -95,6 +95,7 @@ class _WritePostScreenState extends State<WritePostScreen> {
 
   Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
+    FocusScope.of(context).unfocus();
     final title = _titleController.text.trim();
     final content = _contentController.text.trim();
     setState(() => _isSubmitting = true);
@@ -191,6 +192,11 @@ class _WritePostScreenState extends State<WritePostScreen> {
           fit: BoxFit.cover,
           fadeInDuration: AppDimens.animXFast,
           fadeOutDuration: AppDimens.animTapFeedback,
+          placeholder: (_, __) => Container(width: 72, height: 72, color: Colors.grey.shade200),
+          errorWidget: (_, __, ___) => Container(
+            width: 72, height: 72, color: Colors.grey.shade200,
+            child: const Icon(Icons.broken_image_rounded, color: Colors.grey),
+          ),
         ),
       );
     }

@@ -29,6 +29,7 @@ class FestivalArtists extends StatefulWidget {
 
 class FestivalArtistsState extends State<FestivalArtists> {
   late final FestivalArtistsNotifier _notifier;
+  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -70,14 +71,14 @@ class FestivalArtistsState extends State<FestivalArtists> {
       icon: Icons.music_note_rounded,
       title: 'participating_artists'.tr(),
       headerColor: colors.activate,
-      onTap: () => Navigator.push(
-        context,
-        SlideRoute(
-          builder: (_) => FestivalArtistListScreen(
-            notifier: _notifier,
-          ),
-        ),
-      ),
+      onTap: () {
+        if (_isNavigating) return;
+        _isNavigating = true;
+        Navigator.push(
+          context,
+          SlideRoute(builder: (_) => FestivalArtistListScreen(notifier: _notifier)),
+        ).whenComplete(() { if (mounted) _isNavigating = false; });
+      },
     );
   }
 
@@ -151,12 +152,14 @@ class FestivalArtistsState extends State<FestivalArtists> {
 
   Widget _buildMoreItem(AbstractThemeColors colors) {
     return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        SlideRoute(
-          builder: (_) => FestivalArtistListScreen(notifier: _notifier),
-        ),
-      ),
+      onTap: () {
+        if (_isNavigating) return;
+        _isNavigating = true;
+        Navigator.push(
+          context,
+          SlideRoute(builder: (_) => FestivalArtistListScreen(notifier: _notifier)),
+        ).whenComplete(() { if (mounted) _isNavigating = false; });
+      },
       child: SizedBox(
         width: 64,
         child: Column(
@@ -191,16 +194,18 @@ class FestivalArtistsState extends State<FestivalArtists> {
 
   Widget _buildArtistItem(BuildContext context, FestivalArtistItem artist, bool isFollowed, AbstractThemeColors colors) {
     return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        SlideRoute(
-          builder: (_) => ArtistPage(
+      onTap: () {
+        if (_isNavigating) return;
+        _isNavigating = true;
+        Navigator.push(
+          context,
+          SlideRoute(builder: (_) => ArtistPage(
             artistId: artist.artistId,
             artistName: artist.artistName,
             followerCount: 0,
-          ),
-        ),
-      ),
+          )),
+        ).whenComplete(() { if (mounted) _isNavigating = false; });
+      },
       child: SizedBox(
         width: 64,
         child: Column(

@@ -30,6 +30,7 @@ class FollowedArtistsByGenrePage extends StatefulWidget {
 class _FollowedArtistsByGenrePageState
     extends State<FollowedArtistsByGenrePage> {
   String? _selectedGenre;
+  bool _isNavigating = false;
 
   List<String> get _genres => widget.artists
       .expand((a) => a.genres)
@@ -137,17 +138,19 @@ class _FollowedArtistsByGenrePageState
         return AnimatedListItem(
           index: index,
           child: TapScale(
-            onTap: () => Navigator.push(
-              context,
-              SlideRoute(
-                builder: (_) => ArtistPage(
+            onTap: () {
+              if (_isNavigating) return;
+              _isNavigating = true;
+              Navigator.push(
+                context,
+                SlideRoute(builder: (_) => ArtistPage(
                   artistId: artist.id,
                   artistName: artist.name,
                   followerCount: artist.followerCount,
                   profileImageUrl: artist.profileImageUrl,
-                ),
-              ),
-            ),
+                )),
+              ).whenComplete(() { if (mounted) _isNavigating = false; });
+            },
             child: _buildArtistCard(artist, colors),
           ),
         );

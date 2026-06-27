@@ -38,6 +38,7 @@ class FestivalTimetableState extends State<FestivalTimetable> {
   final _hContent = ScrollController();
   final _hHeader = ScrollController();
   bool _isVerticalScrollLocked = false, _isHorizontalScrollLocked = false;
+  bool _isNavigating = false;
 
   late final TimetableNotifier _notifier;
 
@@ -128,18 +129,20 @@ class FestivalTimetableState extends State<FestivalTimetable> {
           const Spacer(),
           if (!_notifier.isLoading && _notifier.error == null && _notifier.hasEntries)
             GestureDetector(
-              onTap: () => Navigator.push(
-                context,
-                SlideRoute(
-                  builder: (_) => TimetableFullscreenPage(
+              onTap: () {
+                if (_isNavigating) return;
+                _isNavigating = true;
+                Navigator.push(
+                  context,
+                  SlideRoute(builder: (_) => TimetableFullscreenPage(
                     festivalId: widget.festivalId,
                     entries: _notifier.entries,
                     followedNames: _notifier.followedNames,
                     dates: _notifier.dates,
                     initialDate: _notifier.selectedDate,
-                  ),
-                ),
-              ),
+                  )),
+                ).whenComplete(() { if (mounted) _isNavigating = false; });
+              },
               child: Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(

@@ -28,6 +28,7 @@ class ArtistNameLike extends StatefulWidget {
 class _ArtistNameLikeState extends State<ArtistNameLike>
     with SingleTickerProviderStateMixin {
   late AnimationController _heartController;
+  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -116,22 +117,26 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
         _buildActionIcon(
           icon: Icons.calendar_month_rounded,
           label: 'action_schedule'.tr(),
-          onTap: () => Navigator.push(
-            context,
-            SlideRoute(
-              builder: (context) => FestivalCalendar(artistId: widget.artistId, artistName: widget.artistName),
-            ),
-          ),
+          onTap: () {
+            if (_isNavigating) return;
+            _isNavigating = true;
+            Navigator.push(
+              context,
+              SlideRoute(builder: (context) => FestivalCalendar(artistId: widget.artistId, artistName: widget.artistName)),
+            ).whenComplete(() { if (mounted) _isNavigating = false; });
+          },
         ),
         const SizedBox(width: 4),
         _buildActionIcon(
           icon: Icons.photo_library_rounded,
           label: 'action_gallery'.tr(),
-          onTap: () => Navigator.of(context, rootNavigator: true).push(
-            SlideRoute(
-              builder: (context) => ImgCollection(artistName: widget.artistName, artistId: widget.artistId),
-            ),
-          ),
+          onTap: () {
+            if (_isNavigating) return;
+            _isNavigating = true;
+            Navigator.of(context, rootNavigator: true).push(
+              SlideRoute(builder: (context) => ImgCollection(artistName: widget.artistName, artistId: widget.artistId)),
+            ).whenComplete(() { if (mounted) _isNavigating = false; });
+          },
         ),
       ],
     );

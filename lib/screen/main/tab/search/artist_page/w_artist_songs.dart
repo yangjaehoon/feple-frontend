@@ -9,7 +9,7 @@ import 'package:feple/injection.dart';
 import 'package:feple/model/song_model.dart';
 import 'package:feple/service/song_service.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
-import 'package:feple/screen/main/tab/search/artist_page/f_artist_songs.dart';
+import 'package:feple/screen/main/tab/search/artist_page/s_artist_songs.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_song_list_tile.dart';
 import 'package:flutter/material.dart';
 

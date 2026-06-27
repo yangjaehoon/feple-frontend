@@ -14,16 +14,16 @@ import 'package:feple/service/song_service.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class FestivalSetlistFullPage extends StatefulWidget {
+class FestivalSetlistFullScreen extends StatefulWidget {
   final int festivalId;
 
-  const FestivalSetlistFullPage({super.key, required this.festivalId});
+  const FestivalSetlistFullScreen({super.key, required this.festivalId});
 
   @override
-  State<FestivalSetlistFullPage> createState() => _FestivalSetlistFullPageState();
+  State<FestivalSetlistFullScreen> createState() => _FestivalSetlistFullScreenState();
 }
 
-class _FestivalSetlistFullPageState extends State<FestivalSetlistFullPage> {
+class _FestivalSetlistFullScreenState extends State<FestivalSetlistFullScreen> {
   late Future<List<FestivalSetlistEntry>> _future;
   final Set<int> _expanded = {};
   bool _changed = false;

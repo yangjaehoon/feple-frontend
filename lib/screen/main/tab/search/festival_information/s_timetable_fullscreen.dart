@@ -10,14 +10,14 @@ import 'package:feple/screen/main/tab/search/festival_information/w_timetable_us
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class TimetableFullscreenPage extends StatefulWidget {
+class TimetableFullscreenScreen extends StatefulWidget {
   final int festivalId;
   final List<TimetableEntry> entries;
   final Set<String> followedNames;
   final List<String> dates;
   final String? initialDate;
 
-  const TimetableFullscreenPage({
+  const TimetableFullscreenScreen({
     super.key,
     required this.festivalId,
     required this.entries,
@@ -27,10 +27,10 @@ class TimetableFullscreenPage extends StatefulWidget {
   });
 
   @override
-  State<TimetableFullscreenPage> createState() => _TimetableFullscreenPageState();
+  State<TimetableFullscreenScreen> createState() => _TimetableFullscreenScreenState();
 }
 
-class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
+class _TimetableFullscreenScreenState extends State<TimetableFullscreenScreen> {
   late String? _selectedDate;
 
   final Map<String, List<UserEntry>> _userEntriesMap = {};

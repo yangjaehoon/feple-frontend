@@ -12,7 +12,7 @@ import 'package:feple/login/s_login.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
 import 'app.dart';
-import 'auth/get_api_key.dart';
+import 'auth/api_key_loader.dart';
 import 'auth/token_store.dart';
 import 'common/data/preference/app_preferences.dart';
 import 'common/data/preference/prefs.dart';

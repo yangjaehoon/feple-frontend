@@ -7,7 +7,7 @@ import 'package:feple/model/festival_preview.dart';
 import 'package:feple/service/artist_schedule_service.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
-import 'package:feple/model/artist_photo_response.dart';
+import 'package:feple/model/artist_photo.dart';
 
 // ── 사진 수정 바텀시트 ──
 

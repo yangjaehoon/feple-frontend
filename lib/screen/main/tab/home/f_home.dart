@@ -1,7 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/screen/main/tab/home/f_followed_artists_by_genre.dart';
-import 'package:feple/screen/main/tab/home/f_liked_festivals_page.dart';
+import 'package:feple/screen/main/tab/home/f_liked_festivals.dart';
 import 'package:feple/screen/main/tab/home/home_state_notifier.dart';
 import 'package:feple/screen/main/tab/home/w_boards_section_skeleton.dart';
 import 'package:feple/screen/main/tab/home/w_favorite_boards_section.dart';

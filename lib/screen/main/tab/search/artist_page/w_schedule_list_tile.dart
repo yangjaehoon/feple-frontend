@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/model/artist_schedule_model.dart';
-import 'package:feple/screen/main/tab/search/artist_page/w_event_type_config.dart';
+import 'package:feple/screen/main/tab/search/artist_page/event_type_style.dart';
 import 'package:flutter/material.dart';
 
 class ScheduleListTile extends StatelessWidget {

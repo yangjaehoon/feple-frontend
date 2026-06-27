@@ -1,7 +1,7 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/util/local_json.dart';
+import 'package:feple/common/util/asset_json_loader.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
-import 'package:feple/model/vo_package.dart';
+import 'package:feple/model/open_source_package.dart';
 import 'package:flutter/material.dart';
 
 import 'w_opensource_item.dart';

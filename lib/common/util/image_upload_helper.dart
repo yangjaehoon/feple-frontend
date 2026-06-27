@@ -1,4 +1,4 @@
-import 'package:feple/model/presign_response.dart';
+import 'package:feple/model/presign_result.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';

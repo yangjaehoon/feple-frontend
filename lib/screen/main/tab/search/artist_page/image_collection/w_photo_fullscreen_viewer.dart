@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/model/artist_photo_response.dart';
+import 'package:feple/model/artist_photo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

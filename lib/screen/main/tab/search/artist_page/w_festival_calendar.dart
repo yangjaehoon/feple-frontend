@@ -4,7 +4,7 @@ import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_schedule_model.dart';
-import 'package:feple/screen/main/tab/search/artist_page/w_event_type_config.dart';
+import 'package:feple/screen/main/tab/search/artist_page/event_type_style.dart';
 import 'package:feple/service/artist_schedule_service.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';

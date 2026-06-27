@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'vo_package.dart';
+part of 'open_source_package.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator

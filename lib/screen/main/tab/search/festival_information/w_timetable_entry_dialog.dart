@@ -135,6 +135,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
   Widget _buildLabelField(AbstractThemeColors colors) {
     return TextField(
       controller: _labelCtrl,
+      autofocus: true,
       onChanged: (_) => setState(() {}),
       decoration: InputDecoration(
         hintText: 'timetable_entry_name_hint'.tr(),

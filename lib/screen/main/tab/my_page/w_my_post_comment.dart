@@ -24,6 +24,7 @@ class MyPostCommentWidget extends StatefulWidget {
 
 class MyPostCommentWidgetState extends State<MyPostCommentWidget> {
   late Future<UserStats> _statsFuture;
+  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -35,6 +36,16 @@ class MyPostCommentWidgetState extends State<MyPostCommentWidget> {
       sl<UserActivityService>().fetchStats(widget.userId);
 
   void refresh() => setState(() { _statsFuture = _fetchStats(); });
+
+  Future<void> _navigate(Widget screen) async {
+    if (_isNavigating) return;
+    setState(() => _isNavigating = true);
+    try {
+      await Navigator.push(context, SlideRoute(builder: (_) => screen));
+    } finally {
+      if (mounted) setState(() => _isNavigating = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +78,7 @@ class MyPostCommentWidgetState extends State<MyPostCommentWidget> {
             label: 'certification_badge'.tr(),
             value: stats.certificationCount.toString(),
             color: colors.activate,
-            onTap: () => Navigator.push(context, SlideRoute(builder: (_) => const CertificationListScreen())),
+            onTap: () => _navigate(const CertificationListScreen()),
           )),
           const SizedBox(width: 6),
           Expanded(child: _buildStatCard(
@@ -76,7 +87,7 @@ class MyPostCommentWidgetState extends State<MyPostCommentWidget> {
             label: 'posts'.tr(),
             value: stats.postCount.toString(),
             color: colors.activate,
-            onTap: () => Navigator.push(context, SlideRoute(builder: (_) => MyPostsScreen(userId: widget.userId))),
+            onTap: () => _navigate(MyPostsScreen(userId: widget.userId)),
           )),
           const SizedBox(width: 6),
           Expanded(child: _buildStatCard(
@@ -85,7 +96,7 @@ class MyPostCommentWidgetState extends State<MyPostCommentWidget> {
             label: 'comments'.tr(),
             value: stats.commentCount.toString(),
             color: colors.activate,
-            onTap: () => Navigator.push(context, SlideRoute(builder: (_) => MyCommentsScreen(userId: widget.userId))),
+            onTap: () => _navigate(MyCommentsScreen(userId: widget.userId)),
           )),
           const SizedBox(width: 6),
           Expanded(child: _buildStatCard(
@@ -94,7 +105,7 @@ class MyPostCommentWidgetState extends State<MyPostCommentWidget> {
             label: 'scraps'.tr(),
             value: stats.scrapCount.toString(),
             color: colors.accentColor,
-            onTap: () => Navigator.push(context, SlideRoute(builder: (_) => const MyScrapsScreen())),
+            onTap: () => _navigate(const MyScrapsScreen()),
           )),
           const SizedBox(width: 6),
           Expanded(child: _buildStatCard(
@@ -103,7 +114,7 @@ class MyPostCommentWidgetState extends State<MyPostCommentWidget> {
             label: 'liked_posts'.tr(),
             value: stats.likedPostCount.toString(),
             color: colors.accentColor,
-            onTap: () => Navigator.push(context, SlideRoute(builder: (_) => MyLikedPostsScreen(userId: widget.userId))),
+            onTap: () => _navigate(MyLikedPostsScreen(userId: widget.userId)),
           )),
         ],
       ),

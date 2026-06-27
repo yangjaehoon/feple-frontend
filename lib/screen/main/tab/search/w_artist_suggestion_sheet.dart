@@ -117,6 +117,7 @@ class _ArtistSuggestionSheetState extends State<ArtistSuggestionSheet> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: TextField(
         controller: _nameCtrl,
+        autofocus: true,
         onChanged: (_) {
           if (_nameError != null) setState(() => _nameError = null);
         },

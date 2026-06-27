@@ -43,14 +43,17 @@ class SearchArtistTile extends StatelessWidget {
         'follower_count'.tr(args: ['${data.followerCount}']),
         style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
       ),
-      onTap: () => Navigator.push(context, SlideRoute(
-        builder: (_) => ArtistPage(
-          artistName: data.name,
-          artistId: data.id,
-          followerCount: data.followerCount,
-          profileImageUrl: data.profileImageUrl,
-        ),
-      )),
+      onTap: () {
+        if (ModalRoute.of(context)?.isCurrent != true) return;
+        Navigator.push(context, SlideRoute(
+          builder: (_) => ArtistPage(
+            artistName: data.name,
+            artistId: data.id,
+            followerCount: data.followerCount,
+            profileImageUrl: data.profileImageUrl,
+          ),
+        ));
+      },
     );
   }
 }
@@ -94,23 +97,26 @@ class SearchFestivalTile extends StatelessWidget {
         '${data.location} · ${data.startDate}',
         style: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXs),
       ),
-      onTap: () => Navigator.push(context, SlideRoute(
-        builder: (_) => FestivalInformationFragment(
-          poster: FestivalModel(
-            id: data.id,
-            title: data.title,
-            description: data.description,
-            location: data.location,
-            startDate: data.startDate,
-            endDate: data.endDate ?? '',
-            posterUrl: data.posterUrl,
-            latitude: data.latitude,
-            longitude: data.longitude,
-            genres: data.genres,
-            ageRestriction: data.ageRestriction,
+      onTap: () {
+        if (ModalRoute.of(context)?.isCurrent != true) return;
+        Navigator.push(context, SlideRoute(
+          builder: (_) => FestivalInformationFragment(
+            poster: FestivalModel(
+              id: data.id,
+              title: data.title,
+              description: data.description,
+              location: data.location,
+              startDate: data.startDate,
+              endDate: data.endDate ?? '',
+              posterUrl: data.posterUrl,
+              latitude: data.latitude,
+              longitude: data.longitude,
+              genres: data.genres,
+              ageRestriction: data.ageRestriction,
+            ),
           ),
-        ),
-      )),
+        ));
+      },
     );
   }
 
@@ -172,12 +178,15 @@ class SearchPostTile extends StatelessWidget {
           ]),
         ],
       ),
-      onTap: () => Navigator.of(context, rootNavigator: true).push(SlideRoute(
-        builder: (_) => EnlargePost.fromPost(
-          boardName: data.boardDisplayName,
-          post: data,
-        ),
-      )),
+      onTap: () {
+        if (ModalRoute.of(context)?.isCurrent != true) return;
+        Navigator.of(context, rootNavigator: true).push(SlideRoute(
+          builder: (_) => EnlargePost.fromPost(
+            boardName: data.boardDisplayName,
+            post: data,
+          ),
+        ));
+      },
     );
   }
 }

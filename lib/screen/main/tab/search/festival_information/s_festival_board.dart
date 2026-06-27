@@ -198,6 +198,7 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
   bool _hasError = false;
   bool _isLoadingMore = false;
   bool _hasMore = true;
+  bool _isNavigating = false;
   int? _nextCursor;
 
   @override
@@ -274,13 +275,19 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
   }
 
   Future<void> _openPost(Post post) async {
-    await Navigator.of(context, rootNavigator: true).push(
-      SlideRoute(
-        builder: (_) => EnlargePost.fromPost(boardName: widget.tab.name, post: post),
-      ),
-    );
-    if (!mounted) return;
-    _refresh();
+    if (_isNavigating) return;
+    _isNavigating = true;
+    try {
+      await Navigator.of(context, rootNavigator: true).push(
+        SlideRoute(
+          builder: (_) => EnlargePost.fromPost(boardName: widget.tab.name, post: post),
+        ),
+      );
+      if (!mounted) return;
+      _refresh();
+    } finally {
+      if (mounted) _isNavigating = false;
+    }
   }
 
   @override

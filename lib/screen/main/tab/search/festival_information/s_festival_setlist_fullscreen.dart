@@ -83,6 +83,7 @@ class _FestivalSetlistFullPageState extends State<FestivalSetlistFullPage> {
       backgroundColor: colors.surface,
       elevation: 0,
       leading: IconButton(
+        tooltip: 'back'.tr(),
         icon: Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: colors.textTitle),
         onPressed: () => Navigator.pop(context, _changed),
       ),

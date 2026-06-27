@@ -259,6 +259,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
                   leading: Icon(Icons.history_rounded, size: 18, color: colors.textSecondary),
                   title: Text(keyword, style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textTitle)),
                   trailing: IconButton(
+                    tooltip: 'delete'.tr(),
                     icon: Icon(Icons.close_rounded, size: 16, color: colors.textSecondary),
                     onPressed: () => _removeRecentSearch(keyword),
                   ),

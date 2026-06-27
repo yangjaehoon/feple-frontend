@@ -171,6 +171,7 @@ class _TimetableFullscreenPageState extends State<TimetableFullscreenPage> {
         child: Row(
           children: [
             IconButton(
+              tooltip: 'close'.tr(),
               icon: Icon(Icons.close_rounded, color: colors.textTitle),
               onPressed: () => Navigator.pop(context),
             ),

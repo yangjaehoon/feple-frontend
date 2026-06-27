@@ -14,6 +14,8 @@
   "clear_cache_done": "Cache has been cleared.",
   "close": "Close",
   "done": "Done",
+  "submit": "Submit",
+  "delete": "Delete",
   "cancel": "Cancel",
   "confirm": "Confirm",
   "account_banned_title": "Account Suspended",

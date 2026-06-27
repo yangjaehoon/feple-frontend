@@ -143,6 +143,7 @@ class _ImgUploadState extends State<ImgUpload> {
         child: Row(
           children: [
             IconButton(
+              tooltip: 'back'.tr(),
               icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
               onPressed: () => Navigator.pop(context),
             ),
@@ -158,6 +159,7 @@ class _ImgUploadState extends State<ImgUpload> {
               ),
             ),
             IconButton(
+              tooltip: 'submit'.tr(),
               onPressed: isUploading ? null : _submit,
               icon: isUploading
                   ? const SizedBox(

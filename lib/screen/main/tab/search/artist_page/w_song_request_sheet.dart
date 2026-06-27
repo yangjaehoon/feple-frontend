@@ -141,6 +141,7 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: TextField(
         controller: _titleCtrl,
+        autofocus: true,
         textInputAction: TextInputAction.next,
         onChanged: (_) { if (_titleError != null) setState(() => _titleError = null); },
         decoration: InputDecoration(

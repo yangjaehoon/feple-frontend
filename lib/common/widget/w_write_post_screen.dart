@@ -8,6 +8,7 @@ import 'package:feple/common/util/image_upload_helper.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
+import 'package:feple/service/app_review_service.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
@@ -111,6 +112,7 @@ class _WritePostScreenState extends State<WritePostScreen> {
         imageObjectKey = _existingImageUrl;
       }
       await widget.onSubmit(title, content, _anonymous, imageObjectKey);
+      AppReviewService.recordPostCreated();
       if (!mounted) return;
       context.showSuccessSnackbar('post_success'.tr());
       Navigator.of(context).pop();

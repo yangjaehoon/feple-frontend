@@ -3,6 +3,7 @@ import 'package:feple/injection.dart';
 import 'package:feple/model/artist_photo_response.dart';
 import 'package:feple/service/artist_photo_service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
 class ArtistPhotoNotifier extends SafeChangeNotifier {
   final int artistId;
@@ -37,6 +38,7 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
   Future<void> toggleLike(int photoId) async {
     final index = _photos.indexWhere((p) => p.photoId == photoId);
     if (index == -1) return;
+    HapticFeedback.lightImpact();
     final original = _photos[index];
     _photos[index] = original.copyWith(
       likeCount: original.isLiked ? original.likeCount - 1 : original.likeCount + 1,

@@ -27,12 +27,20 @@ class HomeFragment extends StatefulWidget {
 
 class _HomeFragmentState extends State<HomeFragment> {
   final _notifier = HomeStateNotifier();
+  final _scrollController = ScrollController();
+  bool _showScrollToTop = false;
 
   @override
   void initState() {
     super.initState();
     AppEvents.festivalLikeChanged.addListener(_onFestivalLikeChanged);
     AppEvents.artistFollowChanged.addListener(_onArtistFollowChanged);
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    final show = _scrollController.position.pixels > 300;
+    if (show != _showScrollToTop) setState(() => _showScrollToTop = show);
   }
 
   @override
@@ -48,6 +56,8 @@ class _HomeFragmentState extends State<HomeFragment> {
   void dispose() {
     AppEvents.festivalLikeChanged.removeListener(_onFestivalLikeChanged);
     AppEvents.artistFollowChanged.removeListener(_onArtistFollowChanged);
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     _notifier.dispose();
     super.dispose();
   }
@@ -59,39 +69,61 @@ class _HomeFragmentState extends State<HomeFragment> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return ColoredBox(
-      color: colors.backgroundMain,
-      child: Column(
-        children: [
-          const FepleAppBar('Feple'),
-          Expanded(
-            child: ListenableBuilder(
-              listenable: _notifier,
-              builder: (context, _) {
-                if (_notifier.userId == null) {
-                  return Center(child: CircularProgressIndicator(color: colors.loadingIndicator));
-                }
-                return RefreshIndicator(
-                  color: colors.activate,
-                  onRefresh: () async {
-                    try {
-                      await _notifier.refresh(force: true);
-                    } catch (_) {
-                      if (!context.mounted) return;
-                      context.showErrorSnackbar('refresh_failed'.tr());
+    return Stack(
+      children: [
+        ColoredBox(
+          color: colors.backgroundMain,
+          child: Column(
+            children: [
+              const FepleAppBar('Feple'),
+              Expanded(
+                child: ListenableBuilder(
+                  listenable: _notifier,
+                  builder: (context, _) {
+                    if (_notifier.userId == null) {
+                      return Center(child: CircularProgressIndicator(color: colors.loadingIndicator));
                     }
+                    return RefreshIndicator(
+                      color: colors.activate,
+                      onRefresh: () async {
+                        try {
+                          await _notifier.refresh(force: true);
+                        } catch (_) {
+                          if (!context.mounted) return;
+                          context.showErrorSnackbar('refresh_failed'.tr());
+                        }
+                      },
+                      child: SingleChildScrollView(
+                        controller: _scrollController,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
+                        child: _buildScrollContent(context, colors),
+                      ),
+                    );
                   },
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
-                    child: _buildScrollContent(context, colors),
-                  ),
-                );
-              },
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (_showScrollToTop)
+          Positioned(
+            bottom: 20,
+            right: 16,
+            child: FloatingActionButton.small(
+              heroTag: 'homeScrollTop',
+              onPressed: () => _scrollController.animateTo(
+                0,
+                duration: AppDimens.animNormal,
+                curve: Curves.easeOut,
+              ),
+              backgroundColor: colors.surface,
+              foregroundColor: colors.textTitle,
+              elevation: 2,
+              child: const Icon(Icons.arrow_upward_rounded, size: 20),
             ),
           ),
-        ],
-      ),
+      ],
     );
   }
 

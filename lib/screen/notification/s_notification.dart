@@ -27,6 +27,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   final _scrollController = ScrollController();
   late final NotificationNotifier _notifier;
   bool _isNavigating = false;
+  bool _showScrollToTop = false;
 
   @override
   void initState() {
@@ -45,8 +46,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 300) {
+    final pixels = _scrollController.position.pixels;
+    final show = pixels > 300;
+    if (show != _showScrollToTop) setState(() => _showScrollToTop = show);
+    if (pixels >= _scrollController.position.maxScrollExtent - 300) {
       _notifier.loadMore();
     }
   }
@@ -84,6 +87,20 @@ class _NotificationScreenState extends State<NotificationScreen> {
       listenable: _notifier,
       builder: (context, _) => Scaffold(
         backgroundColor: colors.backgroundMain,
+        floatingActionButton: _showScrollToTop
+            ? FloatingActionButton.small(
+                heroTag: 'notifScrollTop',
+                onPressed: () => _scrollController.animateTo(
+                  0,
+                  duration: AppDimens.animNormal,
+                  curve: Curves.easeOut,
+                ),
+                backgroundColor: colors.surface,
+                foregroundColor: colors.textTitle,
+                elevation: 2,
+                child: const Icon(Icons.arrow_upward_rounded, size: 20),
+              )
+            : null,
         body: Column(
           children: [
             _buildAppBar(colors),

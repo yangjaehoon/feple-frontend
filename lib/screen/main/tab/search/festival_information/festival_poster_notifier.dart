@@ -7,6 +7,7 @@ import 'package:feple/model/certification_model.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FestivalPosterNotifier extends SafeChangeNotifier {
@@ -98,6 +99,7 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
   Future<void> toggleLike() async {
     if (isTogglingLike) return;
     isTogglingLike = true;
+    HapticFeedback.lightImpact();
     try {
       await optimisticToggle(
         liked,
@@ -116,6 +118,7 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
   Future<void> toggleAttending() async {
     if (isTogglingAttend) return;
     isTogglingAttend = true;
+    HapticFeedback.lightImpact();
     final prevAttending = attending;
     final prevCount = attendingCount;
     attending = !attending;

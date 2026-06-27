@@ -5,6 +5,7 @@ import 'package:feple/common/theme/color/light_app_colors.dart';
 import 'package:feple/common/theme/shadows/dark_app_shadows.dart';
 import 'package:feple/common/theme/shadows/light_app_shadows.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 
 enum CustomTheme {
   dark(
@@ -46,6 +47,10 @@ ThemeData lightTheme = ThemeData(
     elevation: 0,
     scrolledUnderElevation: 0,
     foregroundColor: AppColors.textMain,
+    systemOverlayStyle: SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+    ),
     titleTextStyle: TextStyle(
       fontSize: AppDimens.fontSizeTitle,
       fontWeight: FontWeight.w700,
@@ -166,6 +171,10 @@ ThemeData darkTheme = ThemeData(
     elevation: 0,
     scrolledUnderElevation: 0,
     foregroundColor: Color(0xFFE8EDF2),
+    systemOverlayStyle: SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+    ),
     titleTextStyle: TextStyle(
       fontSize: AppDimens.fontSizeTitle,
       fontWeight: FontWeight.w700,

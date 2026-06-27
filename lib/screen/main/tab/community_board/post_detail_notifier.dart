@@ -7,6 +7,7 @@ import 'package:feple/service/comment_service.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/service/scrap_service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
 class PostDetailNotifier extends SafeChangeNotifier {
   final int postId;
@@ -258,6 +259,7 @@ class PostDetailNotifier extends SafeChangeNotifier {
   Future<void> toggleLike(int? userId) async {
     if (isToggling || userId == null) return;
     isToggling = true;
+    HapticFeedback.lightImpact();
     try {
       await optimisticToggle(
         liked,
@@ -274,6 +276,7 @@ class PostDetailNotifier extends SafeChangeNotifier {
   Future<void> toggleScrap(int? userId) async {
     if (isScrapping || userId == null) return;
     isScrapping = true;
+    HapticFeedback.lightImpact();
     // 낙관적 업데이트 (TDA: 서버 응답 bool을 받아 결정하는 대신, 바로 토글 지시)
     final wasScraped = scraped;
     scraped = !scraped;

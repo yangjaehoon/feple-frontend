@@ -1,5 +1,6 @@
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/service/app_review_service.dart';
 import 'package:feple/service/artist_follow_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -44,6 +45,7 @@ class ArtistFollowNotifier extends SafeChangeNotifier {
         await _followService.unfollow(artistId);
       } else {
         await _followService.follow(artistId);
+        AppReviewService.recordArtistFollowed();
       }
     } catch (e) {
       isFollowed = prevFollowed;

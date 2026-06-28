@@ -287,6 +287,8 @@
   "reviews_count": "{} Ratings",
   "reviews_no_reviews": "No ratings yet",
   "reviews_load_failed": "Failed to load reviews",
+  "reviews_be_first": "Review",
+  "reviews_empty_hint": "No ratings yet.\nAttended this festival?\nGet certified and be the first to rate!",
   "notifications": "Notifications",
   "no_notifications": "No new notifications.",
   "mark_all_read": "Mark all read",

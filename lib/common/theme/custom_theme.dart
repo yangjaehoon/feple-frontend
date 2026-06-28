@@ -30,6 +30,8 @@ enum CustomTheme {
         return lightTheme;
     }
   }
+
+  Brightness get brightness => themeData.brightness;
 }
 
 ThemeData lightTheme = ThemeData(

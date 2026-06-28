@@ -254,93 +254,90 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
     );
   }
 
-  Widget _buildCtaContent(AbstractThemeColors colors) {
-    if (widget.certState == CertState.pending) {
-      return Row(
-        children: [
-          Icon(Icons.hourglass_top_rounded, color: colors.textSecondary, size: 16),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              'reviews_cert_pending'.tr(),
-              style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
-            ),
-          ),
-        ],
-      );
-    }
+  Widget _buildCtaContent(AbstractThemeColors colors) => switch (widget.certState) {
+    CertState.pending => _buildPendingCta(colors),
+    CertState.none => _buildNoCertCta(colors),
+    CertState.certified => _isSubmittingRating ? _buildLoadingCta(colors) : _buildCertifiedCta(colors),
+  };
 
-    if (widget.certState == CertState.none) {
-      return Row(
-        children: [
-          Icon(Icons.workspace_premium_outlined, color: colors.certRingColor, size: 16),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              'reviews_cert_prompt'.tr(),
-              style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textTitle),
-            ),
-          ),
-          const SizedBox(width: 8),
-          TextButton(
-            onPressed: _openCertSheet,
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            child: Text(
-              'reviews_cert_btn'.tr(),
-              style: TextStyle(color: colors.activate, fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeSm),
-            ),
-          ),
-        ],
-      );
-    }
-
-    // CertState.certified
-    if (_isSubmittingRating) {
-      return SizedBox(
-        height: 24,
-        child: Center(child: CircularProgressIndicator(color: colors.activate, strokeWidth: 2)),
-      );
-    }
-
-    return Row(
-      children: [
-        Icon(Icons.workspace_premium_rounded, color: colors.certRingColor, size: 16),
-        const SizedBox(width: 8),
-        Text(
-          'reviews_my_rating'.tr(),
-          style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w600, color: colors.textTitle),
+  Widget _buildPendingCta(AbstractThemeColors colors) => Row(
+    children: [
+      Icon(Icons.hourglass_top_rounded, color: colors.textSecondary, size: 16),
+      const SizedBox(width: 8),
+      Expanded(
+        child: Text(
+          'reviews_cert_pending'.tr(),
+          style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
         ),
-        if (_myRating != null) ...[
-          const SizedBox(width: 8),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: List.generate(5, (i) => Icon(
-              i < _myRating! ? Icons.star_rounded : Icons.star_outline_rounded,
-              color: Colors.amber,
-              size: 14,
-            )),
-          ),
-        ],
-        const Spacer(),
-        TextButton(
-          onPressed: _openRatingSheet,
-          style: TextButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            minimumSize: Size.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-          child: Text(
-            _myRating != null ? 'reviews_edit_rating'.tr() : 'reviews_leave_rating'.tr(),
-            style: TextStyle(color: colors.activate, fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeSm),
-          ),
+      ),
+    ],
+  );
+
+  Widget _buildNoCertCta(AbstractThemeColors colors) => Row(
+    children: [
+      Icon(Icons.workspace_premium_outlined, color: colors.certRingColor, size: 16),
+      const SizedBox(width: 8),
+      Expanded(
+        child: Text(
+          'reviews_cert_prompt'.tr(),
+          style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textTitle),
+        ),
+      ),
+      const SizedBox(width: 8),
+      TextButton(
+        onPressed: _openCertSheet,
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+        child: Text(
+          'reviews_cert_btn'.tr(),
+          style: TextStyle(color: colors.activate, fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeSm),
+        ),
+      ),
+    ],
+  );
+
+  Widget _buildLoadingCta(AbstractThemeColors colors) => SizedBox(
+    height: 24,
+    child: Center(child: CircularProgressIndicator(color: colors.activate, strokeWidth: 2)),
+  );
+
+  Widget _buildCertifiedCta(AbstractThemeColors colors) => Row(
+    children: [
+      Icon(Icons.workspace_premium_rounded, color: colors.certRingColor, size: 16),
+      const SizedBox(width: 8),
+      Text(
+        'reviews_my_rating'.tr(),
+        style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w600, color: colors.textTitle),
+      ),
+      if (_myRating != null) ...[
+        const SizedBox(width: 8),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(5, (i) => Icon(
+            i < _myRating! ? Icons.star_rounded : Icons.star_outline_rounded,
+            color: Colors.amber,
+            size: 14,
+          )),
         ),
       ],
-    );
-  }
+      const Spacer(),
+      TextButton(
+        onPressed: _openRatingSheet,
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+        child: Text(
+          _myRating != null ? 'reviews_edit_rating'.tr() : 'reviews_leave_rating'.tr(),
+          style: TextStyle(color: colors.activate, fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeSm),
+        ),
+      ),
+    ],
+  );
 
   Widget _buildSummary(AbstractThemeColors colors) {
     return Padding(

@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 
 import 'service/artist_follow_service.dart';
+import 'service/artist_photo_manageable.dart';
 import 'service/artist_photo_readable.dart';
 import 'service/artist_photo_uploadable.dart';
 import 'service/cache_prefetch_service.dart';
@@ -16,6 +17,8 @@ import 'service/festival_detail_service.dart';
 import 'service/festival_interaction_service.dart';
 import 'service/festival_service.dart';
 import 'screen/notification/notification_count_notifier.dart';
+import 'service/notification_countable.dart';
+import 'service/notification_feedable.dart';
 import 'service/notification_preference_service.dart';
 import 'service/notification_service.dart';
 import 'service/post_service.dart';
@@ -39,6 +42,7 @@ void setupDependencies() {
   sl.registerLazySingleton<ArtistPhotoService>(() => ArtistPhotoService());
   sl.registerLazySingleton<ArtistPhotoReadable>(() => sl<ArtistPhotoService>());
   sl.registerLazySingleton<ArtistPhotoUploadable>(() => sl<ArtistPhotoService>());
+  sl.registerLazySingleton<ArtistPhotoManageable>(() => sl<ArtistPhotoService>());
   sl.registerLazySingleton<ArtistScheduleService>(() => ArtistScheduleService());
   sl.registerLazySingleton<ArtistService>(() => ArtistService());
   sl.registerLazySingleton<CertificationService>(() => CertificationService());
@@ -51,6 +55,8 @@ void setupDependencies() {
   sl.registerLazySingleton<NotificationCountNotifier>(() => NotificationCountNotifier());
   sl.registerLazySingleton<NotificationPreferenceService>(() => NotificationPreferenceService());
   sl.registerLazySingleton<NotificationService>(() => NotificationService());
+  sl.registerLazySingleton<NotificationCountable>(() => sl<NotificationService>());
+  sl.registerLazySingleton<NotificationFeedable>(() => sl<NotificationService>());
   sl.registerLazySingleton<PostService>(() => PostService());
   sl.registerLazySingleton<ReportService>(() => ReportService());
   sl.registerLazySingleton<ScrapService>(() => ScrapService());

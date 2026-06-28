@@ -2,13 +2,13 @@ import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/notification_model.dart';
 import 'package:feple/model/notification_type.dart';
-import 'package:feple/service/notification_service.dart';
+import 'package:feple/service/notification_feedable.dart';
 import 'package:flutter/foundation.dart';
 
 enum NotifFilter { all, cert, comment, festival }
 
 class NotificationNotifier extends SafeChangeNotifier {
-  final _service = sl<NotificationService>();
+  final _service = sl<NotificationFeedable>();
 
   List<NotificationModel> _items = [];
   bool isLoading = true;

@@ -1,13 +1,13 @@
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_photo.dart';
-import 'package:feple/service/artist_photo_service.dart';
+import 'package:feple/service/artist_photo_manageable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 class ArtistPhotoNotifier extends SafeChangeNotifier {
   final int artistId;
-  final _photoService = sl<ArtistPhotoService>();
+  final _photoService = sl<ArtistPhotoManageable>();
 
   List<ArtistPhotoResponse> _photos = [];
   List<ArtistPhotoResponse> get photos => List.unmodifiable(_photos);

@@ -26,18 +26,21 @@ class CircleArtistWidget extends StatefulWidget {
 }
 
 class CircleArtistWidgetState extends State<CircleArtistWidget> {
+  final _artistService = sl<ArtistService>();
+  final _followService = sl<ArtistFollowService>();
+
   late Future<List<Artist>> _artistsFuture;
   Set<int> _followedIds = {};
 
   @override
   void initState() {
     super.initState();
-    _artistsFuture = sl<ArtistService>().fetchArtists();
+    _artistsFuture = _artistService.fetchArtists();
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadFollowedIds());
   }
 
   void refresh() {
-    setState(() { _artistsFuture = sl<ArtistService>().fetchArtists(); });
+    setState(() { _artistsFuture = _artistService.fetchArtists(); });
     _loadFollowedIds();
   }
 
@@ -46,7 +49,7 @@ class CircleArtistWidgetState extends State<CircleArtistWidget> {
     final userId = context.read<UserProvider>().currentUserId;
     if (userId == null) return;
     try {
-      final ids = await sl<ArtistFollowService>().getFollowingIds(userId);
+      final ids = await _followService.getFollowingIds(userId);
       if (mounted) setState(() => _followedIds = ids);
     } catch (e) {
       debugPrint('[CircleArtist] follow ids load failed: $e');
@@ -65,7 +68,7 @@ class CircleArtistWidgetState extends State<CircleArtistWidget> {
           return ErrorState(
             message: 'err_fetch_data'.tr(),
             onRetry: () => setState(() {
-              _artistsFuture = sl<ArtistService>().fetchArtists();
+              _artistsFuture = _artistService.fetchArtists();
             }),
           );
         }

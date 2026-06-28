@@ -10,6 +10,10 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeStateNotifier extends SafeChangeNotifier {
+  final _userService = sl<UserService>();
+  final _cacheService = sl<FestivalCacheService>();
+  final _prefetchService = sl<CachePrefetchService>();
+
   List<FollowedArtist>? artists;
   List<FestivalModel>? festivals;
   List<FavoriteBoard>? boards;
@@ -62,22 +66,20 @@ class HomeStateNotifier extends SafeChangeNotifier {
       festivals = fetchedFestivals;
       boards = _buildBoards(fetchedArtists, fetchedFestivals);
       _loadedAt = DateTime.now();
-      final cache = sl<FestivalCacheService>();
       // ignore: unawaited_futures
-      cache.saveHomeFestivals(id, fetchedFestivals);
+      _cacheService.saveHomeFestivals(id, fetchedFestivals);
       // ignore: unawaited_futures
-      cache.saveHomeArtists(id, fetchedArtists);
+      _cacheService.saveHomeArtists(id, fetchedArtists);
       // ignore: unawaited_futures
-      sl<CachePrefetchService>().prefetchForFestivals(fetchedFestivals);
+      _prefetchService.prefetchForFestivals(fetchedFestivals);
     } catch (e) {
       if (userId != id) return;
       debugPrint('[Home] 데이터 로드 실패: $e');
       if (artists == null) {
         // 네트워크 오류 시 캐시 폴백
-        final cache = sl<FestivalCacheService>();
         final (cachedFestivals, cachedArtists) = await (
-          cache.loadHomeFestivals(id),
-          cache.loadHomeArtists(id),
+          _cacheService.loadHomeFestivals(id),
+          _cacheService.loadHomeArtists(id),
         ).wait;
         if (cachedFestivals != null || cachedArtists != null) {
           festivals = cachedFestivals ?? [];
@@ -185,10 +187,10 @@ class HomeStateNotifier extends SafeChangeNotifier {
   }
 
   Future<List<FollowedArtist>> _fetchArtists(int userId) =>
-      sl<UserService>().fetchFollowingArtists(userId);
+      _userService.fetchFollowingArtists(userId);
 
   Future<List<FestivalModel>> _fetchFestivals(int userId) =>
-      sl<UserService>().fetchLikedFestivals(userId);
+      _userService.fetchLikedFestivals(userId);
 
   List<FavoriteBoard> _buildBoards(
       List<FollowedArtist> artists, List<FestivalModel> festivals) {

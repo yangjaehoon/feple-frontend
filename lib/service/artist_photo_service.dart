@@ -2,10 +2,10 @@ import 'dart:typed_data';
 import 'package:feple/common/util/image_upload_helper.dart';
 import 'package:feple/model/artist_photo.dart';
 import 'package:feple/network/dio_client.dart';
-import 'package:feple/service/artist_photo_readable.dart';
+import 'package:feple/service/artist_photo_manageable.dart';
 import 'package:feple/service/artist_photo_uploadable.dart';
 
-class ArtistPhotoService implements ArtistPhotoReadable, ArtistPhotoUploadable {
+class ArtistPhotoService implements ArtistPhotoManageable, ArtistPhotoUploadable {
   @override
   Future<List<ArtistPhotoResponse>> fetchPhotos(int artistId) async {
     final response = await DioClient.dio.get('/artists/$artistId/photos');
@@ -14,12 +14,15 @@ class ArtistPhotoService implements ArtistPhotoReadable, ArtistPhotoUploadable {
         .toList();
   }
 
+  @override
   Future<void> toggleLike(int artistId, int photoId) =>
       DioClient.dio.post('/artists/$artistId/photos/$photoId/like');
 
+  @override
   Future<void> deletePhoto(int artistId, int photoId) =>
       DioClient.dio.delete('/artists/$artistId/photos/$photoId');
 
+  @override
   Future<void> updatePhoto(
           int artistId, int photoId, String title, String description) =>
       DioClient.dio.patch(

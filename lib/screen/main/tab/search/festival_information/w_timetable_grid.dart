@@ -293,7 +293,7 @@ class _PerformanceCard extends StatelessWidget {
               entry.memberArtistNames.join(' · '),
               style: TextStyle(
                   color: isFollowed ? Colors.white70 : color.withValues(alpha: 0.7),
-                  fontSize: 8,
+                  fontSize: AppDimens.fontSizeNano,
                   height: 1.2),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -303,7 +303,7 @@ class _PerformanceCard extends StatelessWidget {
               entry.timeRange,
               style: TextStyle(
                   color: isFollowed ? Colors.white70 : color.withValues(alpha: 0.7),
-                  fontSize: 9,
+                  fontSize: AppDimens.fontSizeMini,
                   height: 1.3),
             ),
         ],

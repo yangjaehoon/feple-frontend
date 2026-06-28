@@ -157,7 +157,7 @@ class _CommentTile extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 'edited'.tr(),
-                style: TextStyle(fontSize: 9, color: colors.textSecondary.withValues(alpha: 0.45)),
+                style: TextStyle(fontSize: AppDimens.fontSizeMini, color: colors.textSecondary.withValues(alpha: 0.45)),
               ),
             ],
           ],

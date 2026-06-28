@@ -66,6 +66,7 @@ class HomeArtistsSection extends StatelessWidget {
   }
 
   Widget _buildSkeleton() {
+    const avatarSize = 74.0;
     return SizedBox(
       height: 110,
       child: ListView.builder(
@@ -76,10 +77,10 @@ class HomeArtistsSection extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Column(
             children: [
-              SkeletonBox(
-                width: 74,
-                height: 74,
-                borderRadius: BorderRadius.circular(37),
+              const SkeletonBox(
+                width: avatarSize,
+                height: avatarSize,
+                borderRadius: BorderRadius.all(Radius.circular(avatarSize / 2)),
               ),
               const SizedBox(height: 6),
               const SkeletonBox(width: 56, height: 12),

@@ -390,7 +390,7 @@ class _CommunityPostState extends State<CommunityPost> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             filled: true,
             fillColor: colors.surface,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimens.radiusMedium), borderSide: BorderSide.none),
           ),
         ),
       ),

@@ -146,7 +146,7 @@ class _FepleAppBarState extends State<FepleAppBar> {
         count > 99 ? '99+' : '$count',
         style: const TextStyle(
           color: Colors.white,
-          fontSize: 9,
+          fontSize: AppDimens.fontSizeMini,
           fontWeight: FontWeight.w700,
         ),
         textAlign: TextAlign.center,

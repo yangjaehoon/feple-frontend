@@ -71,7 +71,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
     return Text(
       widget.artistName,
       style: const TextStyle(
-        fontSize: 30,
+        fontSize: AppDimens.fontSizeHero,
         fontWeight: FontWeight.w800,
         color: Colors.white,
         letterSpacing: -0.5,

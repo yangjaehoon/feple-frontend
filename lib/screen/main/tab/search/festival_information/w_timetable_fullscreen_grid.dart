@@ -342,7 +342,7 @@ class _UserCard extends StatelessWidget {
                 if (cardH > 26)
                   Text(
                     entry.timeRange,
-                    style: const TextStyle(color: Colors.white70, fontSize: 9, height: 1.3),
+                    style: const TextStyle(color: Colors.white70, fontSize: AppDimens.fontSizeMini, height: 1.3),
                   ),
               ],
             ),

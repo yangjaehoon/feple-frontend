@@ -457,7 +457,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
                 shadowColor: colors.cardShadow.withValues(alpha: 0.18),
                 elevation: 6,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny)),
                 position: PopupMenuPosition.under,
               ),
             ],

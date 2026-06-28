@@ -477,7 +477,7 @@ class _ArtistSelectCard extends StatelessWidget {
                 ),
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
                 child: CachedNetworkImage(
                   imageUrl: artist.profileImageUrl,
                   fit: BoxFit.cover,

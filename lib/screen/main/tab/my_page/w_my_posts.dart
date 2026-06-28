@@ -131,14 +131,14 @@ class _MyPostsViewState extends State<MyPostsView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SkeletonBox(width: double.infinity, height: 14, borderRadius: BorderRadius.circular(4)),
+            SkeletonBox(width: double.infinity, height: 14, borderRadius: BorderRadius.circular(AppDimens.radiusXs)),
             const SizedBox(height: 8),
-            SkeletonBox(width: 160, height: 12, borderRadius: BorderRadius.circular(4)),
+            SkeletonBox(width: 160, height: 12, borderRadius: BorderRadius.circular(AppDimens.radiusXs)),
             const SizedBox(height: 8),
             Row(children: [
-              SkeletonBox(width: 40, height: 10, borderRadius: BorderRadius.circular(4)),
+              SkeletonBox(width: 40, height: 10, borderRadius: BorderRadius.circular(AppDimens.radiusXs)),
               const SizedBox(width: 12),
-              SkeletonBox(width: 40, height: 10, borderRadius: BorderRadius.circular(4)),
+              SkeletonBox(width: 40, height: 10, borderRadius: BorderRadius.circular(AppDimens.radiusXs)),
             ]),
           ],
         ),

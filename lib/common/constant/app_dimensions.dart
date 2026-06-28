@@ -25,6 +25,7 @@ class AppDimens {
   static const double cardRadiusSmall = 16.0;
   static const double cardRadiusTiny = 12.0;
   static const double radiusSmall = 8.0;    // 작은 이미지 썸네일, 컴팩트 컨테이너
+  static const double radiusMedium = 10.0;  // 입력 필드 대체 반경, 곡선 버튼
   static const double radiusBadge = 6.0;    // 배지/필 컨테이너
   static const double radiusXs = 4.0;       // 매우 작은 요소 (코드 블록 등)
   static const double barRadius = 2.0;      // 섹션 바 액센트, 드래그 핸들
@@ -47,8 +48,11 @@ class AppDimens {
   static const double iconSizeLg = 18.0;
 
   // ── Font ──
+  static const double fontSizeHero = 30.0;     // 아티스트 이름 등 히어로 텍스트
   static const double fontSizeDisplay = 24.0;  // 닉네임, 온보딩 타이틀
   static const double fontSizeTiny = 10.0;
+  static const double fontSizeNano = 8.0;       // 타임테이블 멤버 서브텍스트
+  static const double fontSizeMini = 9.0;      // 밀집 UI 극소형 텍스트 (타임테이블, 댓글 메타)
   static const double fontSizeXxs = 11.0;
   static const double fontSizeXs = 12.0;
   static const double fontSizeSm = 13.0;

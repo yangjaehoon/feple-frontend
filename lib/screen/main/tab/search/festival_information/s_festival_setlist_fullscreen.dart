@@ -40,11 +40,7 @@ class _FestivalSetlistFullScreenState extends State<FestivalSetlistFullScreen> {
   Future<void> _openYoutubeMusic(String url) async {
     final uri = Uri.parse(url);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('youtube_open_failed'.tr())),
-        );
-      }
+      if (mounted) context.showErrorSnackbar('youtube_open_failed'.tr());
     }
   }
 
@@ -393,18 +389,12 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
         _selectedIds.toList(),
       );
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('setlist_saved'.tr())),
-        );
+        context.showSuccessSnackbar('setlist_saved'.tr());
         Navigator.pop(context, true);
       }
     } catch (e) {
       debugPrint('[Setlist] 저장 실패: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('setlist_save_failed'.tr())),
-        );
-      }
+      if (mounted) context.showErrorSnackbar('setlist_save_failed'.tr());
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -541,7 +531,7 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
                   side: BorderSide(color: colors.activate),
                   foregroundColor: colors.activate,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.radiusMedium)),
                 ),
                 child: Text('cancel'.tr()),
               ),

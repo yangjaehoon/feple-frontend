@@ -216,14 +216,10 @@ class FestivalPosterState extends State<FestivalPoster> {
           width: _posterThumbnailWidth,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ...List.generate(5, (_) => const Icon(Icons.star_outline_rounded, color: Colors.white54, size: 11)),
-              const SizedBox(width: 4),
-              Text(
-                'reviews_be_first'.tr(),
-                style: const TextStyle(fontSize: AppDimens.fontSizeXxs, color: Colors.white60),
-              ),
-            ],
+            children: List.generate(
+              5,
+              (_) => const Icon(Icons.star_outline_rounded, color: Colors.white60, size: 20),
+            ),
           ),
         ),
       );
@@ -235,13 +231,13 @@ class FestivalPosterState extends State<FestivalPoster> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.star_rounded, color: Colors.amber, size: 14),
-            const SizedBox(width: 3),
+            const Icon(Icons.star_rounded, color: Colors.amber, size: 18),
+            const SizedBox(width: 4),
             Text(
               _notifier.averageRating.toStringAsFixed(1),
               style: const TextStyle(
-                fontSize: AppDimens.fontSizeSm,
-                fontWeight: FontWeight.w700,
+                fontSize: AppDimens.fontSizeLg,
+                fontWeight: FontWeight.w800,
                 color: Colors.white,
                 decoration: TextDecoration.underline,
                 decorationColor: Colors.white54,

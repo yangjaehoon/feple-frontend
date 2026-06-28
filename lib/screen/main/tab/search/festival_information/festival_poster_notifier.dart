@@ -26,6 +26,7 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
   bool isTogglingAttend = false;
   double averageRating = 0.0;
   int ratingCount = 0;
+  bool ratingLoaded = false;
 
   CertState get certState {
     if (isCertified) return CertState.certified;
@@ -103,9 +104,11 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
       final info = await certService.getFestivalRating(festivalId);
       averageRating = info.averageRating;
       ratingCount = info.ratingCount;
-      safeNotify();
     } catch (e) {
       debugPrint('[FestivalPoster] 별점 정보 로드 실패: $e');
+    } finally {
+      ratingLoaded = true;
+      safeNotify();
     }
   }
 

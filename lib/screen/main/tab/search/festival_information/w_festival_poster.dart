@@ -208,9 +208,26 @@ class FestivalPosterState extends State<FestivalPoster> {
   }
 
   Widget _buildRatingBadge() {
-    if (_notifier.ratingCount == 0) return const SizedBox.shrink();
-    final stars = _notifier.averageRating;
-    final count = _notifier.ratingCount;
+    if (!_notifier.ratingLoaded) return const SizedBox.shrink();
+    if (_notifier.ratingCount == 0) {
+      return GestureDetector(
+        onTap: _showReviews,
+        child: SizedBox(
+          width: _posterThumbnailWidth,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ...List.generate(5, (_) => const Icon(Icons.star_outline_rounded, color: Colors.white54, size: 11)),
+              const SizedBox(width: 4),
+              Text(
+                'reviews_be_first'.tr(),
+                style: const TextStyle(fontSize: AppDimens.fontSizeXxs, color: Colors.white60),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     return GestureDetector(
       onTap: _showReviews,
       child: SizedBox(
@@ -221,7 +238,7 @@ class FestivalPosterState extends State<FestivalPoster> {
             const Icon(Icons.star_rounded, color: Colors.amber, size: 14),
             const SizedBox(width: 3),
             Text(
-              stars.toStringAsFixed(1),
+              _notifier.averageRating.toStringAsFixed(1),
               style: const TextStyle(
                 fontSize: AppDimens.fontSizeSm,
                 fontWeight: FontWeight.w700,
@@ -232,7 +249,7 @@ class FestivalPosterState extends State<FestivalPoster> {
             ),
             const SizedBox(width: 3),
             Text(
-              '($count)',
+              '(${_notifier.ratingCount})',
               style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: Colors.white.withValues(alpha: 0.65)),
             ),
           ],

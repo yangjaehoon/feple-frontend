@@ -166,7 +166,7 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
         ),
         children: [
           _buildSummary(colors),
-          Divider(color: colors.divider),
+          if (_ratingCount > 0) Divider(color: colors.divider),
           if (_reviews.isEmpty)
             _buildEmpty(colors)
           else ...[
@@ -183,6 +183,7 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
   }
 
   Widget _buildSummary(AbstractThemeColors colors) {
+    if (_ratingCount == 0) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
       child: Row(
@@ -274,12 +275,40 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
 
   Widget _buildEmpty(AbstractThemeColors colors) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 56),
-      child: Center(
-        child: Text(
-          'reviews_no_reviews'.tr(),
-          style: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeMd),
-        ),
+      padding: const EdgeInsets.fromLTRB(32, 40, 32, 40),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              5,
+              (_) => const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 3),
+                child: Icon(Icons.star_outline_rounded, color: Colors.amber, size: 32),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'reviews_no_reviews'.tr(),
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeLg,
+              fontWeight: FontWeight.w700,
+              color: colors.textTitle,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'reviews_empty_hint'.tr(),
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeMd,
+              color: colors.textSecondary,
+              height: 1.6,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }

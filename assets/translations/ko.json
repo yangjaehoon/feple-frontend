@@ -287,6 +287,8 @@
   "reviews_count": "{}명이 평가했어요",
   "reviews_no_reviews": "아직 별점이 없어요",
   "reviews_load_failed": "리뷰를 불러오지 못했어요",
+  "reviews_be_first": "리뷰",
+  "reviews_empty_hint": "아직 별점이 없어요.\n페스티벌에 다녀오셨나요?\n인증 후 첫 번째 별점을 남겨보세요!",
   "notifications": "알림",
   "no_notifications": "새로운 알림이 없습니다.",
   "mark_all_read": "전체 읽음",

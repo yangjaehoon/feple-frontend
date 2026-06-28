@@ -23,7 +23,7 @@ class FestivalPreviewCard extends StatelessWidget {
         child: Row(
           children: [
             _buildPoster(),
-            Expanded(child: _buildInfo(colors, context.locale.languageCode == 'en')),
+            Expanded(child: _buildInfo(colors, context.isEnglish)),
           ],
         ),
       ),

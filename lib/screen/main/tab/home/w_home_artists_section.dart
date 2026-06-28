@@ -156,7 +156,7 @@ class _ArtistItem extends StatelessWidget {
   final void Function(FollowedArtist) onTap;
 
   String _displayName(BuildContext context) =>
-      artist.displayName(context.locale.languageCode == 'en');
+      artist.displayName(context.isEnglish);
 
   Widget _buildAvatar(AbstractThemeColors colors) {
     return Container(

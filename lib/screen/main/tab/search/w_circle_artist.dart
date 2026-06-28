@@ -249,7 +249,7 @@ class _ArtistContentState extends State<_ArtistContent> {
                           child: ArtistCard(
                             artist: artists[index],
                             isFollowed: widget.followedIds.contains(artists[index].id),
-                            isEnglish: context.locale.languageCode == 'en',
+                            isEnglish: context.isEnglish,
                           ),
                         ),
                       ),

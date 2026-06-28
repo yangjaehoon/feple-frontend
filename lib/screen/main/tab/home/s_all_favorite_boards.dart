@@ -73,7 +73,7 @@ class _AllFavoriteBoardsScreenState extends State<AllFavoriteBoardsScreen> {
   }
 
   void _navigateToBoard(FavoriteBoard board) {
-    final isEnglish = context.locale.languageCode == 'en';
+    final isEnglish = context.isEnglish;
     final displayEntityName = board.entityDisplayName(isEnglish);
     final route = switch (board.type) {
       FavoriteBoardType.artist => SlideRoute(
@@ -212,7 +212,7 @@ class _GridBoardTile extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               ..._buildImageLayers(colors),
-              _buildNameOverlay(context.locale.languageCode == 'en'),
+              _buildNameOverlay(context.isEnglish),
             ],
           ),
         ),

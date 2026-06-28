@@ -49,7 +49,7 @@ class _LikedFestivalsScreenState extends State<LikedFestivalsScreen> {
   void _openSettings() {
     if (_isSheetOpen) return;
     _isSheetOpen = true;
-    final isEnglish = context.locale.languageCode == 'en';
+    final isEnglish = context.isEnglish;
     final items = widget.festivals
         .where((f) => !f.isEnded)
         .map((f) => ReorderItem(id: f.id, name: f.displayTitle(isEnglish), imageUrl: f.posterUrl))

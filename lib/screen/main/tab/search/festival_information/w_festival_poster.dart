@@ -86,7 +86,7 @@ class FestivalPosterState extends State<FestivalPoster> {
   }
 
   void _shareFestival() {
-    Share.share('${widget.poster.displayTitle(context.locale.languageCode == 'en')}\n${widget.poster.location}\n${widget.poster.startDate}');
+    Share.share('${widget.poster.displayTitle(context.isEnglish)}\n${widget.poster.location}\n${widget.poster.startDate}');
   }
 
   void _showWeather() {
@@ -119,7 +119,7 @@ class FestivalPosterState extends State<FestivalPoster> {
     await showAppBottomSheet(
       context,
       builder: (ctx) => CertificationBottomSheet(
-        festivalName: widget.poster.displayTitle(context.locale.languageCode == 'en'),
+        festivalName: widget.poster.displayTitle(context.isEnglish),
         festivalId: widget.poster.id,
         certService: sl<CertificationService>(),
       ),
@@ -257,7 +257,7 @@ class FestivalPosterState extends State<FestivalPoster> {
   void _showReviews() {
     if (_isSheetOpen) return;
     _isSheetOpen = true;
-    final isEn = context.locale.languageCode == 'en';
+    final isEn = context.isEnglish;
     showAppBottomSheet(
       context,
       builder: (_) => FestivalReviewsSheet(
@@ -316,7 +316,7 @@ class FestivalPosterState extends State<FestivalPoster> {
       children: [
         const SizedBox(height: 4),
         Text(
-          widget.poster.displayTitle(context.locale.languageCode == 'en'),
+          widget.poster.displayTitle(context.isEnglish),
           softWrap: true,
           style: const TextStyle(fontSize: AppDimens.fontSizeTitle, fontWeight: FontWeight.w800, color: Colors.white),
         ),

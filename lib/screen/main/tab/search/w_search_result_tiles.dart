@@ -33,7 +33,7 @@ class SearchArtistTile extends StatelessWidget {
         child: hasImage ? null : Icon(Icons.person, color: colors.textSecondary),
       ),
       title: buildHighlightedText(
-        data.displayName(context.locale.languageCode == 'en'),
+        data.displayName(context.isEnglish),
         highlightKeyword,
         TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle),
         colors.activate,
@@ -89,7 +89,7 @@ class SearchFestivalTile extends StatelessWidget {
         ),
       ),
       title: buildHighlightedText(
-        data.displayTitle(context.locale.languageCode == 'en'),
+        data.displayTitle(context.isEnglish),
         highlightKeyword,
         TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle),
         colors.activate,

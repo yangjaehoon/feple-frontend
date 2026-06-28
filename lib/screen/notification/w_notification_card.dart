@@ -75,7 +75,7 @@ class NotificationCard extends StatelessWidget {
   }
 
   Widget _buildTextContent(BuildContext context, AbstractThemeColors colors) {
-    final isEnglish = context.locale.languageCode == 'en';
+    final isEnglish = context.isEnglish;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

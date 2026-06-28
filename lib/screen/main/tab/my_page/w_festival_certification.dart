@@ -171,7 +171,10 @@ class FtvCertificationWidgetState extends State<FtvCertificationWidget> {
   }
 
   Widget _buildCertList(AbstractThemeColors colors) {
-    final certs = _certifications!;
+    final certs = _certifications!
+        .where((c) => c.status == CertStatus.approved)
+        .toList();
+    if (certs.isEmpty) return _buildEmptyState(colors);
     return ListView.builder(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 12),

@@ -1,5 +1,5 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collection/collection.dart';
+import 'package:feple/common/widget/w_app_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
@@ -182,22 +182,13 @@ class _BoardSettingsItem extends StatelessWidget {
                   color: colors.textSecondary, size: 22),
             ),
             const SizedBox(width: 12),
-            ClipRRect(
+            AppNetworkImage(
+              imageUrl: board.imageUrl,
+              width: 40,
+              height: 40,
+              errorIcon: Icons.forum_rounded,
+              errorIconSize: 20,
               borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-              child: board.imageUrl != null && board.imageUrl!.isNotEmpty
-                  ? CachedNetworkImage(
-                      imageUrl: board.imageUrl!,
-                      width: 40,
-                      height: 40,
-                      fit: BoxFit.cover,
-                      memCacheWidth: 80,
-                      memCacheHeight: 80,
-                      fadeInDuration: AppDimens.animXFast,
-                      fadeOutDuration: AppDimens.animTapFeedback,
-                      placeholder: (_, __) => _placeholder(colors),
-                      errorWidget: (_, __, ___) => _placeholder(colors),
-                    )
-                  : _placeholder(colors),
             ),
           ],
         ),
@@ -218,12 +209,4 @@ class _BoardSettingsItem extends StatelessWidget {
     );
   }
 
-  Widget _placeholder(AbstractThemeColors colors) {
-    return Container(
-      width: 40,
-      height: 40,
-      color: colors.surface,
-      child: Icon(Icons.forum_rounded, color: colors.textSecondary, size: 20),
-    );
-  }
 }

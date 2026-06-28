@@ -77,10 +77,10 @@ class _TimetableFullscreenScreenState extends State<TimetableFullscreenScreen> {
   List<UserEntry> get _currentUserEntries =>
       _userEntriesMap[_selectedDate ?? ''] ?? [];
 
-  Color _nextColor() {
+  int _nextColor() {
     final color = kUserScheduleColors[_colorCursor % kUserScheduleColors.length];
     _colorCursor++;
-    return color;
+    return color.toARGB32();
   }
 
   Future<void> _upsert(UserEntry entry) async {
@@ -115,7 +115,7 @@ class _TimetableFullscreenScreenState extends State<TimetableFullscreenScreen> {
       label: '',
       startTime: startTime ?? '${_range.startHour.toString().padLeft(2, '0')}:00',
       endTime: '${(_range.startHour + 1).clamp(0, 23).toString().padLeft(2, '0')}:00',
-      color: _nextColor(),
+      colorValue: _nextColor(),
     );
     final result = await showDialog<UserEntry>(
       context: context,

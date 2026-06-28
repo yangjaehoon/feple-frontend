@@ -1,12 +1,10 @@
-import 'package:flutter/material.dart';
-
 class UserEntry {
   final String id;
   final String stageName;
   final String label;
   final String startTime;
   final String endTime;
-  final Color color;
+  final int colorValue;
 
   UserEntry({
     required this.id,
@@ -14,7 +12,7 @@ class UserEntry {
     required this.label,
     required this.startTime,
     required this.endTime,
-    required this.color,
+    required this.colorValue,
   });
 
   String get timeRange => '$startTime – $endTime';
@@ -24,7 +22,7 @@ class UserEntry {
     String? label,
     String? startTime,
     String? endTime,
-    Color? color,
+    int? colorValue,
   }) =>
       UserEntry(
         id: id,
@@ -32,7 +30,7 @@ class UserEntry {
         label: label ?? this.label,
         startTime: startTime ?? this.startTime,
         endTime: endTime ?? this.endTime,
-        color: color ?? this.color,
+        colorValue: colorValue ?? this.colorValue,
       );
 
   Map<String, dynamic> toJson() => {
@@ -41,7 +39,7 @@ class UserEntry {
         'label': label,
         'startTime': startTime,
         'endTime': endTime,
-        'color': color.toARGB32(),
+        'color': colorValue,
       };
 
   factory UserEntry.fromJson(Map<String, dynamic> j) => UserEntry(
@@ -50,6 +48,6 @@ class UserEntry {
         label: j['label'] as String,
         startTime: j['startTime'] as String,
         endTime: j['endTime'] as String,
-        color: Color(j['color'] as int),
+        colorValue: j['color'] as int,
       );
 }

@@ -318,10 +318,10 @@ class _UserCard extends StatelessWidget {
     return Container(
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
-        color: entry.color.withValues(alpha: 0.88),
+        color: Color(entry.colorValue).withValues(alpha: 0.88),
         borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
         boxShadow: [
-          BoxShadow(color: entry.color.withValues(alpha: 0.4), blurRadius: 4, offset: const Offset(0, 2)),
+          BoxShadow(color: Color(entry.colorValue).withValues(alpha: 0.4), blurRadius: 4, offset: const Offset(0, 2)),
         ],
       ),
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),

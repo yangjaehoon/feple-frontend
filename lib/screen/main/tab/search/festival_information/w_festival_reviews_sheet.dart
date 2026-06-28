@@ -64,8 +64,10 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
   }
 
   Future<void> _openRatingSheet() async {
+    if (widget.certId == null) return;
     final result = await showAppBottomSheet<({int rating, String? review})>(
       context,
+      useRootNavigator: true,
       builder: (_) => RatingSheet(
         festivalTitle: widget.festivalTitle,
         initialRating: _myRating,
@@ -87,6 +89,7 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
       debugPrint('[ReviewsSheet] rating submit error: $e');
       if (!mounted) return;
       setState(() => _isSubmittingRating = false);
+      context.showErrorSnackbar('rating_submit_failed'.tr());
     }
   }
 

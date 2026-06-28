@@ -33,14 +33,8 @@ class CommentService {
     }
   }
 
-  Future<({bool liked, int likeCount})> toggleCommentLike(int commentId) async {
-    final response = await DioClient.dio.post('/comments/$commentId/like');
-    final data = response.data as Map<String, dynamic>;
-    return (
-      liked: data['liked'] as bool,
-      likeCount: (data['likeCount'] as num).toInt(),
-    );
-  }
+  Future<void> toggleCommentLike(int commentId) =>
+      DioClient.dio.post('/comments/$commentId/like');
 
   Future<void> updateComment(int commentId, String content) async {
     try {

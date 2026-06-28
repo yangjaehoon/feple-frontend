@@ -162,7 +162,8 @@ class AuthService {
       );
       final data = response.data;
       if (data is! Map<String, dynamic>) throw Exception('auth_err_auth_failed'.tr());
-      return _saveTokensAndParseUser(data);
+      await _saveTokens(data);
+      return _parseUser(data);
     } on DioException catch (e) {
       final respBody = e.response?.data;
       if (respBody is Map<String, dynamic>) {
@@ -185,7 +186,8 @@ class AuthService {
       );
       final data = response.data;
       if (data is! Map<String, dynamic>) throw Exception('auth_err_auth_failed'.tr());
-      return _saveTokensAndParseUser(data);
+      await _saveTokens(data);
+      return _parseUser(data);
     } on DioException catch (e) {
       debugPrint('[Auth] 카카오 서버 교환 실패: [${e.type.name}] ${e.response?.statusCode}');
       final respBody = e.response?.data;
@@ -223,13 +225,17 @@ class AuthService {
     }
   }
 
-  // ── 내부: 토큰 저장 + User 파싱 ──
+  // ── 내부: 토큰 저장 (command) ──
 
-  Future<app.User> _saveTokensAndParseUser(Map<String, dynamic> json) async {
+  Future<void> _saveTokens(Map<String, dynamic> json) async {
     await TokenStore.saveAccessToken(json['accessToken'] as String);
     final refreshToken = json['refreshToken'] as String?;
     if (refreshToken != null) await TokenStore.saveRefreshToken(refreshToken);
+  }
 
+  // ── 내부: User 파싱 (query) ──
+
+  app.User _parseUser(Map<String, dynamic> json) {
     final userJson = json['user'];
     if (userJson is! Map<String, dynamic>) throw Exception('auth_err_auth_failed'.tr());
     return app.User.fromJson(userJson);

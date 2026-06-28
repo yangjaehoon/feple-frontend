@@ -1,6 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
+import 'package:feple/common/widget/w_app_network_image.dart';
 import 'package:feple/common/widget/w_selectable_chip.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -211,7 +211,12 @@ class _GridBoardTile extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              ..._buildImageLayers(colors),
+              AppNetworkImage(
+                imageUrl: board.imageUrl,
+                fit: BoxFit.cover,
+                errorIcon: Icons.forum_rounded,
+                errorIconSize: 48,
+              ),
               _buildNameOverlay(context.isEnglish),
             ],
           ),
@@ -219,21 +224,6 @@ class _GridBoardTile extends StatelessWidget {
       ),
     );
   }
-
-  List<Widget> _buildImageLayers(AbstractThemeColors colors) => [
-        if (board.imageUrl != null && board.imageUrl!.isNotEmpty)
-          CachedNetworkImage(
-            imageUrl: board.imageUrl!,
-            fit: BoxFit.cover,
-            memCacheWidth: 350,
-            fadeInDuration: AppDimens.animXFast,
-            fadeOutDuration: AppDimens.animTapFeedback,
-            placeholder: (_, __) => _placeholder(colors),
-            errorWidget: (_, __, ___) => _placeholder(colors),
-          )
-        else
-          _placeholder(colors),
-      ];
 
   Widget _buildNameOverlay(bool isEnglish) {
     return Positioned(
@@ -267,10 +257,4 @@ class _GridBoardTile extends StatelessWidget {
     );
   }
 
-  Widget _placeholder(AbstractThemeColors colors) {
-    return Container(
-      color: colors.surface,
-      child: Icon(Icons.forum_rounded, color: colors.textSecondary, size: 48),
-    );
-  }
 }

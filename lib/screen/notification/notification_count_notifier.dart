@@ -1,10 +1,10 @@
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/injection.dart';
-import 'package:feple/service/notification_service.dart';
+import 'package:feple/service/notification_countable.dart';
 import 'package:flutter/foundation.dart';
 
 class NotificationCountNotifier extends SafeChangeNotifier {
-  final _service = sl<NotificationService>();
+  final _service = sl<NotificationCountable>();
 
   int _count = 0;
   int get count => _count;

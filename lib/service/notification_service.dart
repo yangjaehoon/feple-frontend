@@ -1,16 +1,15 @@
 import 'package:feple/model/notification_model.dart';
+import 'package:feple/model/notification_page.dart';
 import 'package:feple/network/dio_client.dart';
+import 'package:feple/service/notification_countable.dart';
+import 'package:feple/service/notification_feedable.dart';
 
-class NotificationPage {
-  final List<NotificationModel> items;
-  final bool hasMore;
+export 'package:feple/model/notification_page.dart';
 
-  const NotificationPage({required this.items, required this.hasMore});
-}
-
-class NotificationService {
+class NotificationService implements NotificationCountable, NotificationFeedable {
   static const int _pageSize = 20;
 
+  @override
   Future<NotificationPage> fetchPage(int page) async {
     final response = await DioClient.dio.get(
       '/notifications',
@@ -26,15 +25,18 @@ class NotificationService {
     return NotificationPage(items: items, hasMore: pageNumber + 1 < totalPages);
   }
 
+  @override
   Future<int> getUnreadCount() async {
     final response = await DioClient.dio.get('/notifications/unread-count');
     return (response.data['count'] as num?)?.toInt() ?? 0;
   }
 
+  @override
   Future<void> markRead(int id) async {
     await DioClient.dio.patch('/notifications/$id/read');
   }
 
+  @override
   Future<void> markAllRead() async {
     await DioClient.dio.patch('/notifications/read-all');
   }

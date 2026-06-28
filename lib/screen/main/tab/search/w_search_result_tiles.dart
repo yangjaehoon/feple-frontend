@@ -79,6 +79,7 @@ class SearchFestivalTile extends StatelessWidget {
                   imageUrl: data.posterUrl,
                   fit: BoxFit.cover,
                   memCacheWidth: 88, // 44px * 2 (Retina)
+                  memCacheHeight: 112, // 56px * 2 (Retina)
                   fadeInDuration: AppDimens.animXFast,
                   fadeOutDuration: AppDimens.animTapFeedback,
                   placeholder: (_, __) => _placeholder(colors),

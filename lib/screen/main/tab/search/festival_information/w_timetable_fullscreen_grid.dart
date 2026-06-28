@@ -33,17 +33,22 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
   static const double _timeColW = 48.0;
   static const double _stageHeaderH = 28.0;
 
+  TimetableRange get _range => widget.range;
+  List<String> get _stages => _range.stages;
+  int get _startHour => _range.startHour;
+  int get _endHour => _range.endHour;
+
   Offset? _tapPos;
 
   double _toY(String time, double pxPerMin) {
     final parts = time.split(':');
     final hour = int.tryParse(parts.isNotEmpty ? parts[0] : '0') ?? 0;
     final minute = int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0;
-    return ((hour - widget.range.startHour) * 60 + minute) * pxPerMin;
+    return ((hour - _startHour) * 60 + minute) * pxPerMin;
   }
 
   Color _stageColor(String stage) {
-    final colorIndex = widget.range.stages.indexOf(stage) % kStageColors.length;
+    final colorIndex = _stages.indexOf(stage) % kStageColors.length;
     return kStageColors[colorIndex < 0 ? 0 : colorIndex];
   }
 
@@ -52,15 +57,15 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
     final pos = _tapPos!;
     _tapPos = null;
 
-    final totalMins = (widget.range.endHour - widget.range.startHour) * 60;
+    final totalMins = (_endHour - _startHour) * 60;
     final rawMins = ((pos.dy - _topPad) / pxPerMin).round();
     final clampedMins = rawMins.clamp(0, totalMins);
-    final hour = widget.range.startHour + (clampedMins ~/ 60);
+    final hour = _startHour + (clampedMins ~/ 60);
     final minute = (clampedMins % 60 ~/ 10) * 10;
     final timeStr = TimeOfDay(hour: hour, minute: minute).toHHmm;
 
-    final stageIndex = (pos.dx / stageW).floor().clamp(0, widget.range.stages.length - 1);
-    widget.onTapGrid(widget.range.stages[stageIndex], timeStr);
+    final stageIndex = (pos.dx / stageW).floor().clamp(0, _stages.length - 1);
+    widget.onTapGrid(_stages[stageIndex], timeStr);
   }
 
   @override
@@ -68,11 +73,11 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
     final colors = context.appColors;
     return LayoutBuilder(builder: (_, constraints) {
       final gridH = constraints.maxHeight - _stageHeaderH;
-      final totalMins = (widget.range.endHour - widget.range.startHour) * 60;
+      final totalMins = (_endHour - _startHour) * 60;
       final pxPerMin = (gridH - _topPad - _bottomPad) / totalMins.clamp(1, 99999);
-      final stageW = widget.range.stages.isEmpty
+      final stageW = _stages.isEmpty
           ? constraints.maxWidth - _timeColW
-          : (constraints.maxWidth - _timeColW) / widget.range.stages.length;
+          : (constraints.maxWidth - _timeColW) / _stages.length;
 
       return Column(
         children: [
@@ -98,7 +103,7 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
       child: Row(
         children: [
           TimetableCornerCell(width: _timeColW),
-          ...widget.range.stages.map((stage) => TimetableStageCell(
+          ..._stages.map((stage) => TimetableStageCell(
                 stage: stage,
                 color: _stageColor(stage),
                 width: stageW,
@@ -114,8 +119,8 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
       height: gridH,
       child: Stack(
         clipBehavior: Clip.none,
-        children: List.generate(widget.range.endHour - widget.range.startHour + 1, (i) {
-          final hour = widget.range.startHour + i;
+        children: List.generate(_endHour - _startHour + 1, (i) {
+          final hour = _startHour + i;
           return Positioned(
             top: _topPad + i * 60.0 * pxPerMin - 8,
             left: 0,
@@ -137,7 +142,7 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
   Widget _buildGridContent(
       double gridH, double pxPerMin, double stageW, AbstractThemeColors colors) {
     return SizedBox(
-      width: widget.range.stages.length * stageW,
+      width: _stages.length * stageW,
       height: gridH,
       child: GestureDetector(
         onTapDown: (d) => _tapPos = d.localPosition,
@@ -146,7 +151,7 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
           clipBehavior: Clip.hardEdge,
           children: [
             ...List.generate(
-              widget.range.stages.length,
+              _stages.length,
               (i) => Positioned(
                 left: (i + 1) * stageW - 0.5,
                 top: 0,
@@ -156,7 +161,7 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
               ),
             ),
             ...List.generate(
-              (widget.range.endHour - widget.range.startHour) * 6 + 1,
+              (_endHour - _startHour) * 6 + 1,
               (i) {
                 final mins = i * 10;
                 final isHour = mins % 60 == 0;
@@ -176,8 +181,8 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
                 );
               },
             ),
-            ...widget.range.filtered.map((entry) {
-              final stageIndex = widget.range.stages.indexOf(entry.stageName);
+            ..._range.filtered.map((entry) {
+              final stageIndex = _stages.indexOf(entry.stageName);
               if (stageIndex < 0) return const SizedBox.shrink();
               final rawTop = _toY(entry.startTime, pxPerMin);
               final cardH = _toY(entry.endTime, pxPerMin) - rawTop;
@@ -195,7 +200,7 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
               );
             }),
             ...widget.userEntries.map((entry) {
-              final stageIndex = widget.range.stages.indexOf(entry.stageName);
+              final stageIndex = _stages.indexOf(entry.stageName);
               if (stageIndex < 0) return const SizedBox.shrink();
               final rawTop = _toY(entry.startTime, pxPerMin);
               final cardH = _toY(entry.endTime, pxPerMin) - rawTop;

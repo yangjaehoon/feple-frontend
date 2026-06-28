@@ -47,6 +47,8 @@ class _WritePostState extends State<WritePost> {
   Uint8List? _selectedImage;
   String? _existingImageUrl;
 
+  bool get _hasImage => _selectedImage != null || _existingImageUrl != null;
+
   bool get _isDirty =>
       _titleController.text != (widget.initialTitle ?? '') ||
       _contentController.text != (widget.initialContent ?? '') ||
@@ -217,7 +219,7 @@ class _WritePostState extends State<WritePost> {
             child: preview ?? Icon(Icons.add_photo_alternate_outlined, color: colors.textSecondary, size: 32),
           ),
         ),
-        if (_selectedImage != null || _existingImageUrl != null) ...[
+        if (_hasImage) ...[
           const SizedBox(width: 8),
           IconButton(
             tooltip: 'remove_image'.tr(),

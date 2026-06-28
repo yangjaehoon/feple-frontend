@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../common/common.dart';
 
-class ModeSwitch extends StatefulWidget {
+class ModeSwitch extends StatelessWidget {
   final bool value;
   final ValueChanged<bool> onChanged;
   final double height;
@@ -23,45 +23,38 @@ class ModeSwitch extends StatefulWidget {
     this.inactiveThumbImage,
   });
 
-  @override
-  State<ModeSwitch> createState() => _ModeSwitchState();
-}
-
-class _ModeSwitchState extends State<ModeSwitch> {
-  final duration = AppDimens.animQuick;
-
   Widget _buildTrack() {
     return AnimatedContainer(
       decoration: BoxDecoration(
-        color: widget.value
+        color: value
             ? const Color.fromARGB(255, 0, 9, 27)
             : const Color.fromARGB(255, 106, 158, 255),
-        borderRadius: BorderRadius.circular(widget.height / 2),
+        borderRadius: BorderRadius.circular(height / 2),
       ),
-      duration: duration,
+      duration: AppDimens.animQuick,
     );
   }
 
   Widget _buildThumb() {
-    final thumbSize = (3 / 4) * widget.height;
+    final thumbSize = (3 / 4) * height;
     return AnimatedContainer(
-      duration: duration,
-      padding: EdgeInsets.symmetric(horizontal: (2 / 25) * widget.height),
-      alignment: widget.value ? Alignment.centerRight : Alignment.centerLeft,
+      duration: AppDimens.animQuick,
+      padding: EdgeInsets.symmetric(horizontal: (2 / 25) * height),
+      alignment: value ? Alignment.centerRight : Alignment.centerLeft,
       child: Stack(
         children: [
           Container(
             height: thumbSize,
             width: thumbSize,
-            decoration: BoxDecoration(color: widget.activeThumbColor),
-            child: widget.activeThumbImage,
-          ).opacity(value: widget.value ? 1 : 0),
+            decoration: BoxDecoration(color: activeThumbColor),
+            child: activeThumbImage,
+          ).opacity(value: value ? 1 : 0),
           Container(
             height: thumbSize,
             width: thumbSize,
-            decoration: BoxDecoration(color: widget.inactiveThumbColor),
-            child: widget.inactiveThumbImage,
-          ).opacity(value: widget.value ? 0 : 1),
+            decoration: BoxDecoration(color: inactiveThumbColor),
+            child: inactiveThumbImage,
+          ).opacity(value: value ? 0 : 1),
         ],
       ),
     );
@@ -72,19 +65,19 @@ class _ModeSwitchState extends State<ModeSwitch> {
     const aspectRatio = (40 / 25);
     final colors = context.appColors;
     return Tap(
-      onTap: () => widget.onChanged(!widget.value),
+      onTap: () => onChanged(!value),
       child: Row(
         children: [
           'Light'
               .text
               .size(14)
-              .color(widget.value ? colors.inActivate : colors.activate)
+              .color(value ? colors.inActivate : colors.activate)
               .bold
               .makeWithDefaultFont(),
           const Width(5),
           SizedBox(
-            height: widget.height,
-            width: aspectRatio * widget.height,
+            height: height,
+            width: aspectRatio * height,
             child: Stack(
               children: [
                 _buildTrack(),
@@ -96,7 +89,7 @@ class _ModeSwitchState extends State<ModeSwitch> {
           'Dark'
               .text
               .size(14)
-              .color(widget.value ? colors.activate : colors.inActivate)
+              .color(value ? colors.activate : colors.inActivate)
               .bold
               .makeWithDefaultFont(),
         ],

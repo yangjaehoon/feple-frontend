@@ -16,6 +16,8 @@ import 'package:feple/service/festival_service.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
+import 'package:feple/common/widget/w_selectable_chip.dart';
+
 import 'cert_status_style.dart';
 import 'w_submit_certification_sheet.dart';
 
@@ -32,6 +34,11 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
   List<CertificationModel> _certifications = [];
   bool _loading = true;
   bool _hasError = false;
+  CertStatus? _filter; // null = 전체
+
+  List<CertificationModel> get _filtered => _filter == null
+      ? _certifications
+      : _certifications.where((c) => c.status == _filter).toList();
 
   @override
   void initState() {
@@ -128,7 +135,40 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
     if (result == true) _load();
   }
 
+  Widget _buildFilterChips(AbstractThemeColors colors) {
+    return SizedBox(
+      height: 44,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        children: [
+          SelectableChip(
+            label: 'filter_all'.tr(),
+            selected: _filter == null,
+            onTap: () => setState(() => _filter = null),
+          ),
+          SelectableChip(
+            label: 'cert_status_approved'.tr(),
+            selected: _filter == CertStatus.approved,
+            onTap: () => setState(() => _filter = CertStatus.approved),
+          ),
+          SelectableChip(
+            label: 'cert_status_pending'.tr(),
+            selected: _filter == CertStatus.pending,
+            onTap: () => setState(() => _filter = CertStatus.pending),
+          ),
+          SelectableChip(
+            label: 'cert_status_rejected'.tr(),
+            selected: _filter == CertStatus.rejected,
+            onTap: () => setState(() => _filter = CertStatus.rejected),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildBody(AbstractThemeColors colors) {
+    final displayed = _filtered;
     return RefreshIndicator(
       onRefresh: _refresh,
       color: colors.activate,
@@ -141,22 +181,21 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
                     onRetry: _load,
                   ),
                 )
-              : _certifications.isEmpty
+              : displayed.isEmpty
                   ? _buildScrollable(
                       EmptyState(
                         icon: Icons.verified_outlined,
                         title: 'cert_no_history'.tr(),
-                        subtitle: 'cert_no_history_hint'.tr(),
+                        subtitle: _filter == null ? 'cert_no_history_hint'.tr() : null,
                       ),
                     )
                   : ListView.separated(
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-                      itemCount: _certifications.length,
+                      itemCount: displayed.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 10),
                       itemBuilder: (context, index) {
-                        final cert = _certifications[index];
-                        return _CertCard(cert: cert, certService: _certService);
+                        return _CertCard(cert: displayed[index], certService: _certService);
                       },
                     ),
     );
@@ -181,7 +220,12 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
           ),
         ],
       ),
-      body: _buildBody(colors),
+      body: Column(
+        children: [
+          _buildFilterChips(colors),
+          Expanded(child: _buildBody(colors)),
+        ],
+      ),
     );
   }
 }

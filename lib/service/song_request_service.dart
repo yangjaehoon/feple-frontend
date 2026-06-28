@@ -15,16 +15,14 @@ class SongRequestService {
         },
       );
 
-  Future<List<SongRequestModel>> fetchMyRequests(int artistId) async {
-    final response =
-        await DioClient.dio.get('/artists/$artistId/song-requests');
-    return (response.data as List)
-        .map((json) => SongRequestModel.fromJson(json as Map<String, dynamic>))
-        .toList();
-  }
+  Future<List<SongRequestModel>> fetchMyRequests(int artistId) =>
+      _fetchRequests('/artists/$artistId/song-requests');
 
-  Future<List<SongRequestModel>> fetchAllMyRequests(int userId) async {
-    final response = await DioClient.dio.get('/users/$userId/song-requests');
+  Future<List<SongRequestModel>> fetchAllMyRequests(int userId) =>
+      _fetchRequests('/users/$userId/song-requests');
+
+  Future<List<SongRequestModel>> _fetchRequests(String endpoint) async {
+    final response = await DioClient.dio.get(endpoint);
     return (response.data as List)
         .map((json) => SongRequestModel.fromJson(json as Map<String, dynamic>))
         .toList();

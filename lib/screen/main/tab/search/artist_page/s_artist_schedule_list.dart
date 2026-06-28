@@ -41,7 +41,7 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
       _scheduleService.fetchSchedule(widget.artistId);
 
   Future<void> _refresh() async {
-    setState(() => _future = _fetch());
+    setState(() { _future = _fetch(); });
     try {
       await _future;
     } catch (_) {}

@@ -35,7 +35,7 @@ class FestivalSetlistState extends State<FestivalSetlist> {
   Future<List<FestivalSetlistEntry>> _fetch() =>
       sl<FestivalDetailService>().fetchSetlist(widget.festivalId);
 
-  void refresh() => setState(() => _future = _fetch());
+  void refresh() => setState(() { _future = _fetch(); });
 
   Future<void> _openFullPage() async {
     final changed = await Navigator.push<bool>(
@@ -45,7 +45,7 @@ class FestivalSetlistState extends State<FestivalSetlist> {
       ),
     );
     if (changed == true && mounted) {
-      setState(() => _future = _fetch());
+      setState(() { _future = _fetch(); });
     }
   }
 
@@ -105,7 +105,7 @@ class FestivalSetlistState extends State<FestivalSetlist> {
         padding: const EdgeInsets.only(bottom: 8),
         child: ErrorState(
           message: 'err_fetch_data'.tr(),
-          onRetry: () => setState(() => _future = _fetch()),
+          onRetry: () => setState(() { _future = _fetch(); }),
         ),
       ),
       emptyBuilder: (_) => Padding(

@@ -18,10 +18,13 @@ class ErrorState extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return LayoutBuilder(builder: (_, constraints) {
+      // constraints.maxHeight가 infinity이면(Column 등 무한 높이 컨텍스트)
+      // minHeight: 0으로 설정해 콘텐츠 크기만큼만 차지하게 한다.
+      final minH = constraints.hasBoundedHeight ? constraints.maxHeight : 0.0;
       return SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          constraints: BoxConstraints(minHeight: minH),
           child: Center(
             child: Padding(
               padding: const EdgeInsets.all(32),

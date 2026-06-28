@@ -252,7 +252,7 @@ class _FestivalSearchSheetState extends State<_FestivalSearchSheet> {
 
   void _onSearch(String query) {
     _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 150), () {
+    _debounce = Timer(AppDimens.animXFast, () {
       if (mounted) {
         setState(() {
           _filtered = widget.festivals

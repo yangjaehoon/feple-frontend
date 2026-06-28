@@ -25,6 +25,11 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
   bool _loading = true;
   bool _hasError = false;
   int? _userId;
+  SongRequestStatus? _filter; // null = 전체
+
+  List<SongRequestModel> get _filtered => _filter == null
+      ? _requests
+      : _requests.where((r) => r.status == _filter).toList();
 
   @override
   void didChangeDependencies() {
@@ -105,7 +110,83 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
     );
   }
 
+  Widget _buildFilterChips(AbstractThemeColors colors) {
+    return SizedBox(
+      height: 48,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        children: [
+          _statusFilterChip(
+            colors: colors,
+            label: 'filter_all'.tr(),
+            selected: _filter == null,
+            selectedColor: colors.activate,
+            onSelected: (_) => setState(() => _filter = null),
+          ),
+          _statusFilterChip(
+            colors: colors,
+            label: 'song_status_pending'.tr(),
+            selected: _filter == SongRequestStatus.pending,
+            selectedColor: colors.textSecondary,
+            onSelected: (_) => setState(() => _filter = SongRequestStatus.pending),
+          ),
+          _statusFilterChip(
+            colors: colors,
+            label: 'song_status_approved'.tr(),
+            selected: _filter == SongRequestStatus.approved,
+            selectedColor: colors.activate,
+            onSelected: (_) => setState(() => _filter = SongRequestStatus.approved),
+          ),
+          _statusFilterChip(
+            colors: colors,
+            label: 'song_status_rejected'.tr(),
+            selected: _filter == SongRequestStatus.rejected,
+            selectedColor: AppColors.errorRed,
+            onSelected: (_) => setState(() => _filter = SongRequestStatus.rejected),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _statusFilterChip({
+    required AbstractThemeColors colors,
+    required String label,
+    required bool selected,
+    required Color selectedColor,
+    required void Function(bool) onSelected,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: FilterChip(
+        label: Text(label),
+        selected: selected,
+        onSelected: onSelected,
+        selectedColor: selectedColor.withValues(alpha: 0.12),
+        checkmarkColor: selectedColor,
+        backgroundColor: colors.surface,
+        side: BorderSide(
+          color: selected
+              ? selectedColor
+              : colors.textSecondary.withValues(alpha: 0.28),
+          width: selected ? 1.5 : 1.0,
+        ),
+        labelStyle: TextStyle(
+          fontSize: AppDimens.fontSizeSm,
+          fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+          color: selected ? selectedColor : colors.textSecondary,
+        ),
+        shape: const StadiumBorder(),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        visualDensity: VisualDensity.compact,
+      ),
+    );
+  }
+
   Widget _buildBody(AbstractThemeColors colors) {
+    final displayed = _filtered;
     return RefreshIndicator(
       onRefresh: _refresh,
       color: colors.activate,
@@ -118,22 +199,24 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
                     onRetry: _load,
                   ),
                 )
-              : _requests.isEmpty
+              : displayed.isEmpty
                   ? _buildScrollable(
                       EmptyState(
                         icon: Icons.music_off_rounded,
                         title: 'song_request_no_history'.tr(),
-                        subtitle: 'song_request_no_history_hint'.tr(),
+                        subtitle: _filter == null
+                            ? 'song_request_no_history_hint'.tr()
+                            : null,
                       ),
                     )
                   : ListView.separated(
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-                      itemCount: _requests.length,
+                      itemCount: displayed.length,
                       separatorBuilder: (_, __) =>
                           Divider(height: 1, color: colors.listDivider),
                       itemBuilder: (_, index) =>
-                          SongRequestItem(req: _requests[index]),
+                          SongRequestItem(req: displayed[index]),
                     ),
     );
   }
@@ -144,7 +227,12 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
     return Scaffold(
       backgroundColor: colors.backgroundMain,
       appBar: SecondaryAppBar(title: 'song_request_history'.tr()),
-      body: _buildBody(colors),
+      body: Column(
+        children: [
+          _buildFilterChips(colors),
+          Expanded(child: _buildBody(colors)),
+        ],
+      ),
     );
   }
 }

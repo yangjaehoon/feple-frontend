@@ -27,6 +27,9 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
   double averageRating = 0.0;
   int ratingCount = 0;
   bool ratingLoaded = false;
+  int? certId;
+  int? myRating;
+  String? myReview;
 
   CertState get certState {
     if (isCertified) return CertState.certified;
@@ -88,9 +91,12 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
 
   Future<void> loadCertState() async {
     try {
-      final status = await certService.getCertState(festivalId);
-      isCertified = status == CertStatus.approved;
-      isPending = status == CertStatus.pending;
+      final detail = await certService.getCertState(festivalId);
+      isCertified = detail.status == CertStatus.approved;
+      isPending = detail.status == CertStatus.pending;
+      certId = detail.certId;
+      myRating = detail.myRating;
+      myReview = detail.myReview;
       safeNotify();
     } catch (e) {
       debugPrint('[FestivalPoster] 인증 상태 로드 실패: $e');

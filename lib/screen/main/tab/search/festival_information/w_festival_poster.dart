@@ -257,14 +257,24 @@ class FestivalPosterState extends State<FestivalPoster> {
   void _showReviews() {
     if (_isSheetOpen) return;
     _isSheetOpen = true;
+    final isEn = context.locale.languageCode == 'en';
     showAppBottomSheet(
       context,
       builder: (_) => FestivalReviewsSheet(
         festivalId: widget.poster.id,
         certService: sl<CertificationService>(),
+        certState: _notifier.certState,
+        festivalTitle: widget.poster.displayTitle(isEn),
+        certId: _notifier.certId,
+        initialRating: _notifier.myRating,
+        initialReview: _notifier.myReview,
+        onCertTap: _submitCertification,
       ),
     ).whenComplete(() {
-      if (mounted) _isSheetOpen = false;
+      if (mounted) {
+        _isSheetOpen = false;
+        _notifier.loadRatingInfo();
+      }
     });
   }
 

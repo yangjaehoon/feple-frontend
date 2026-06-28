@@ -38,15 +38,23 @@ class CertificationService {
     return (response.data as List).cast<int>();
   }
 
-  /// 특정 페스티벌의 인증 상태 단건 조회 (NONE / PENDING / APPROVED / REJECTED)
-  Future<CertStatus?> getCertState(int festivalId) async {
+  /// 특정 페스티벌의 인증 상태 및 내 별점 정보 단건 조회
+  Future<({CertStatus? status, int? certId, int? myRating, String? myReview})> getCertState(int festivalId) async {
     final response = await DioClient.dio.get(
       '/certifications/cert-state',
       queryParameters: {'festivalId': festivalId},
     );
-    final state = (response.data as Map<String, dynamic>)['certState'] as String?;
-    if (state == null || state == 'NONE') return null;
-    return CertStatus.fromValue(state);
+    final data = response.data as Map<String, dynamic>;
+    final state = data['certState'] as String?;
+    if (state == null || state == 'NONE') {
+      return (status: null, certId: null, myRating: null, myReview: null);
+    }
+    return (
+      status: CertStatus.fromValue(state),
+      certId: (data['certId'] as num?)?.toInt(),
+      myRating: (data['myRating'] as num?)?.toInt(),
+      myReview: data['myReview'] as String?,
+    );
   }
 
   /// 인증된 페스티벌에 별점 및 한줄 후기 제출

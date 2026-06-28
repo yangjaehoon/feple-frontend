@@ -464,7 +464,11 @@ class _RatingSheetState extends State<_RatingSheet> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return Padding(
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.backgroundMain,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -515,7 +519,7 @@ class _RatingSheetState extends State<_RatingSheet> {
                     hintStyle: TextStyle(color: colors.textSecondary),
                     counterStyle: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXxs),
                     filled: true,
-                    fillColor: colors.backgroundMain,
+                    fillColor: colors.surface,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
                       borderSide: BorderSide.none,

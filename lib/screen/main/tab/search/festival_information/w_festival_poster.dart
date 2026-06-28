@@ -17,6 +17,7 @@ import 'festival_poster_notifier.dart';
 import 'festival_poster_style.dart';
 import 'w_certification_bottom_sheet.dart';
 import 'w_festival_action_button.dart';
+import 'w_festival_reviews_sheet.dart';
 import 'w_weather_bottom_sheet.dart';
 
 class FestivalPoster extends StatefulWidget {
@@ -210,25 +211,48 @@ class FestivalPosterState extends State<FestivalPoster> {
     if (_notifier.ratingCount == 0) return const SizedBox.shrink();
     final stars = _notifier.averageRating;
     final count = _notifier.ratingCount;
-    return SizedBox(
-      width: _posterThumbnailWidth,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.star_rounded, color: Colors.amber, size: 14),
-          const SizedBox(width: 3),
-          Text(
-            stars.toStringAsFixed(1),
-            style: const TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w700, color: Colors.white),
-          ),
-          const SizedBox(width: 3),
-          Text(
-            '($count)',
-            style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: Colors.white.withValues(alpha: 0.65)),
-          ),
-        ],
+    return GestureDetector(
+      onTap: _showReviews,
+      child: SizedBox(
+        width: _posterThumbnailWidth,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.star_rounded, color: Colors.amber, size: 14),
+            const SizedBox(width: 3),
+            Text(
+              stars.toStringAsFixed(1),
+              style: const TextStyle(
+                fontSize: AppDimens.fontSizeSm,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+                decoration: TextDecoration.underline,
+                decorationColor: Colors.white54,
+              ),
+            ),
+            const SizedBox(width: 3),
+            Text(
+              '($count)',
+              style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: Colors.white.withValues(alpha: 0.65)),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  void _showReviews() {
+    if (_isSheetOpen) return;
+    _isSheetOpen = true;
+    showAppBottomSheet(
+      context,
+      builder: (_) => FestivalReviewsSheet(
+        festivalId: widget.poster.id,
+        certService: sl<CertificationService>(),
+      ),
+    ).whenComplete(() {
+      if (mounted) _isSheetOpen = false;
+    });
   }
 
   Widget _buildPosterThumbnail(AbstractThemeColors colors) {

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:feple/common/util/image_upload_helper.dart';
 import 'package:feple/model/certification_model.dart';
+import 'package:feple/model/festival_review.dart';
 import 'package:feple/network/dio_client.dart';
 
 class CertificationService {
@@ -53,6 +54,36 @@ class CertificationService {
     await DioClient.dio.put(
       '/certifications/$certId/rating',
       data: {'rating': rating, 'review': review},
+    );
+  }
+
+  /// 페스티벌 리뷰 목록 + 별점 통계 조회 (별점 시트용)
+  Future<({
+    double averageRating,
+    int ratingCount,
+    Map<int, int> distribution,
+    List<FestivalReview> reviews,
+    bool hasNext,
+  })> getFestivalReviews(int festivalId, {int page = 0}) async {
+    final response = await DioClient.dio.get(
+      '/certifications/festival/$festivalId/reviews',
+      queryParameters: {'page': page},
+    );
+    final data = response.data as Map<String, dynamic>;
+    final rawDist = data['distribution'] as Map<String, dynamic>;
+    final distribution = rawDist.map(
+      (k, v) => MapEntry(int.parse(k), (v as num).toInt()),
+    );
+    final reviews = (data['reviews'] as List)
+        .cast<Map<String, dynamic>>()
+        .map(FestivalReview.fromJson)
+        .toList();
+    return (
+      averageRating: (data['averageRating'] as num).toDouble(),
+      ratingCount: (data['ratingCount'] as num).toInt(),
+      distribution: distribution,
+      reviews: reviews,
+      hasNext: data['hasNext'] as bool,
     );
   }
 

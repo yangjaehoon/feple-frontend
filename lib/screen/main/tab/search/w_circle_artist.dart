@@ -267,18 +267,16 @@ class _ArtistContentState extends State<_ArtistContent> {
   }
 }
 
-String _genreLabel(String genre) {
-  switch (genre) {
-    case 'Band':    return 'genre_band'.tr();
-    case 'Hip-hop': return 'genre_hip_hop'.tr();
-    case 'Indie':   return 'genre_indie'.tr();
-    case 'Ballad':  return 'genre_ballad'.tr();
-    case 'R&B':     return 'genre_rnb'.tr();
-    case '댄스':     return 'genre_dance'.tr();
-    case '아이돌':   return 'genre_idol'.tr();
-    default:        return genre;
-  }
-}
+String _genreLabel(String genre) => switch (genre) {
+  'Band'   => 'genre_band'.tr(),
+  'Hip-hop'=> 'genre_hip_hop'.tr(),
+  'Indie'  => 'genre_indie'.tr(),
+  'Ballad' => 'genre_ballad'.tr(),
+  'R&B'    => 'genre_rnb'.tr(),
+  '댄스'   => 'genre_dance'.tr(),
+  '아이돌' => 'genre_idol'.tr(),
+  _        => genre,
+};
 
 class _ArtistSuggestionBanner extends StatelessWidget {
   const _ArtistSuggestionBanner();

@@ -14,6 +14,8 @@ class ArtistFollowNotifier extends SafeChangeNotifier {
   bool isLoading = false;
   bool initFailed = false;
 
+  String get followStatusKey => isFollowed ? 'follow_done' : 'follow_cancel';
+
   ArtistFollowNotifier({required this.artistId, required int initialFollowerCount}) {
     followCount = initialFollowerCount;
   }

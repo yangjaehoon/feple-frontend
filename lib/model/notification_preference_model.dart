@@ -33,4 +33,9 @@ class NotificationPreferenceModel {
       songRequestEnabled: songRequestEnabled ?? this.songRequestEnabled,
     );
   }
+
+  NotificationPreferenceModel toggleCert() => copyWith(certEnabled: !certEnabled);
+  NotificationPreferenceModel toggleComment() => copyWith(commentEnabled: !commentEnabled);
+  NotificationPreferenceModel toggleFestival() => copyWith(festivalEnabled: !festivalEnabled);
+  NotificationPreferenceModel toggleSongRequest() => copyWith(songRequestEnabled: !songRequestEnabled);
 }

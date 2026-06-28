@@ -1,18 +1,33 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
+import 'package:feple/model/cert_state.dart';
 import 'package:feple/model/festival_review.dart';
+import 'package:feple/screen/main/tab/my_page/w_rating_sheet.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:flutter/material.dart';
 
 class FestivalReviewsSheet extends StatefulWidget {
   final int festivalId;
   final CertificationService certService;
+  final CertState certState;
+  final String festivalTitle;
+  final int? certId;
+  final int? initialRating;
+  final String? initialReview;
+  final VoidCallback? onCertTap;
 
   const FestivalReviewsSheet({
     super.key,
     required this.festivalId,
     required this.certService,
+    this.certState = CertState.none,
+    this.festivalTitle = '',
+    this.certId,
+    this.initialRating,
+    this.initialReview,
+    this.onCertTap,
   });
 
   @override
@@ -31,10 +46,48 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
   int _page = 0;
   bool _hasNext = false;
 
+  int? _myRating;
+  String? _myReview;
+  bool _isSubmittingRating = false;
+
   @override
   void initState() {
     super.initState();
+    _myRating = widget.initialRating;
+    _myReview = widget.initialReview;
     _load(0);
+  }
+
+  void _openCertSheet() {
+    Navigator.pop(context);
+    widget.onCertTap?.call();
+  }
+
+  Future<void> _openRatingSheet() async {
+    final result = await showAppBottomSheet<({int rating, String? review})>(
+      context,
+      builder: (_) => RatingSheet(
+        festivalTitle: widget.festivalTitle,
+        initialRating: _myRating,
+        initialReview: _myReview,
+      ),
+    );
+    if (result == null) return;
+    setState(() => _isSubmittingRating = true);
+    try {
+      await widget.certService.submitRating(widget.certId!, result.rating, result.review);
+      if (!mounted) return;
+      setState(() {
+        _myRating = result.rating;
+        _myReview = result.review;
+        _isSubmittingRating = false;
+      });
+      _load(0);
+    } catch (e) {
+      debugPrint('[ReviewsSheet] rating submit error: $e');
+      if (!mounted) return;
+      setState(() => _isSubmittingRating = false);
+    }
   }
 
   Future<void> _load(int page) async {
@@ -165,8 +218,12 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
           bottom: MediaQuery.of(context).padding.bottom + 24,
         ),
         children: [
-          _buildSummary(colors),
-          if (_ratingCount > 0) Divider(color: colors.divider),
+          _buildMyRatingCta(colors),
+          if (_ratingCount > 0) ...[
+            Divider(color: colors.divider),
+            _buildSummary(colors),
+            Divider(color: colors.divider),
+          ],
           if (_reviews.isEmpty)
             _buildEmpty(colors)
           else ...[
@@ -182,8 +239,107 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
     );
   }
 
+  Widget _buildMyRatingCta(AbstractThemeColors colors) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+      ),
+      child: _buildCtaContent(colors),
+    );
+  }
+
+  Widget _buildCtaContent(AbstractThemeColors colors) {
+    if (widget.certState == CertState.pending) {
+      return Row(
+        children: [
+          Icon(Icons.hourglass_top_rounded, color: colors.textSecondary, size: 16),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'reviews_cert_pending'.tr(),
+              style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (widget.certState == CertState.none) {
+      return Row(
+        children: [
+          Icon(Icons.workspace_premium_outlined, color: colors.certRingColor, size: 16),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'reviews_cert_prompt'.tr(),
+              style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textTitle),
+            ),
+          ),
+          const SizedBox(width: 8),
+          TextButton(
+            onPressed: _openCertSheet,
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Text(
+              'reviews_cert_btn'.tr(),
+              style: TextStyle(color: colors.activate, fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeSm),
+            ),
+          ),
+        ],
+      );
+    }
+
+    // CertState.certified
+    if (_isSubmittingRating) {
+      return SizedBox(
+        height: 24,
+        child: Center(child: CircularProgressIndicator(color: colors.activate, strokeWidth: 2)),
+      );
+    }
+
+    return Row(
+      children: [
+        Icon(Icons.workspace_premium_rounded, color: colors.certRingColor, size: 16),
+        const SizedBox(width: 8),
+        Text(
+          'reviews_my_rating'.tr(),
+          style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w600, color: colors.textTitle),
+        ),
+        if (_myRating != null) ...[
+          const SizedBox(width: 8),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: List.generate(5, (i) => Icon(
+              i < _myRating! ? Icons.star_rounded : Icons.star_outline_rounded,
+              color: Colors.amber,
+              size: 14,
+            )),
+          ),
+        ],
+        const Spacer(),
+        TextButton(
+          onPressed: _openRatingSheet,
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          child: Text(
+            _myRating != null ? 'reviews_edit_rating'.tr() : 'reviews_leave_rating'.tr(),
+            style: TextStyle(color: colors.activate, fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeSm),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildSummary(AbstractThemeColors colors) {
-    if (_ratingCount == 0) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
       child: Row(

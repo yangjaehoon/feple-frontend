@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
@@ -9,7 +10,9 @@ import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/certification_model.dart';
+import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/service/certification_service.dart';
+import 'package:feple/service/festival_service.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
@@ -197,12 +200,30 @@ class _CertCardState extends State<_CertCard> {
   late int? _rating;
   late String? _review;
   bool _isSubmitting = false;
+  bool _isNavigating = false;
 
   @override
   void initState() {
     super.initState();
     _rating = widget.cert.rating;
     _review = widget.cert.userReview;
+  }
+
+  Future<void> _navigateToFestival() async {
+    if (_isNavigating) return;
+    _isNavigating = true;
+    try {
+      final festival = await sl<FestivalService>().fetchById(widget.cert.festivalId);
+      if (!mounted) return;
+      await Navigator.push(
+        context,
+        SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)),
+      );
+    } catch (e) {
+      debugPrint('[CertCard] 페스티벌 이동 실패: $e');
+    } finally {
+      if (mounted) _isNavigating = false;
+    }
   }
 
   Future<void> _openRatingSheet() async {
@@ -266,22 +287,25 @@ class _CertCardState extends State<_CertCard> {
   }
 
   Widget _buildPosterImage(String? posterUrl, AbstractThemeColors colors) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
-      child: SizedBox(
-        width: 90,
-        height: 90,
-        child: posterUrl != null
-            ? CachedNetworkImage(
-                imageUrl: posterUrl,
-                fit: BoxFit.cover,
-                memCacheWidth: 180,
-                fadeInDuration: AppDimens.animXFast,
-                fadeOutDuration: AppDimens.animTapFeedback,
-                placeholder: (_, __) => const SkeletonBox(height: double.infinity),
-                errorWidget: (_, __, ___) => _buildPhotoPlaceholder(colors),
-              )
-            : _buildPhotoPlaceholder(colors),
+    return GestureDetector(
+      onTap: _navigateToFestival,
+      child: ClipRRect(
+        borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
+        child: SizedBox(
+          width: 90,
+          height: 90,
+          child: posterUrl != null
+              ? CachedNetworkImage(
+                  imageUrl: posterUrl,
+                  fit: BoxFit.cover,
+                  memCacheWidth: 180,
+                  fadeInDuration: AppDimens.animXFast,
+                  fadeOutDuration: AppDimens.animTapFeedback,
+                  placeholder: (_, __) => const SkeletonBox(height: double.infinity),
+                  errorWidget: (_, __, ___) => _buildPhotoPlaceholder(colors),
+                )
+              : _buildPhotoPlaceholder(colors),
+        ),
       ),
     );
   }

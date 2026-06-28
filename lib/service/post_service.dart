@@ -120,13 +120,8 @@ class PostService {
       _createPost('/posts/artist/$artistId', title, content, anonymous: anonymous, imageObjectKey: imageObjectKey);
 
   /// 페스티벌 게시판 페이지 조회
-  Future<PostCursorPage> fetchFestivalPostsPage(int festivalId, {int? cursor, int size = 20}) async {
-    final response = await DioClient.dio.get('/posts/festival/$festivalId', queryParameters: {
-      if (cursor != null) 'cursor': cursor,
-      'size': size,
-    });
-    return PostCursorPage.fromJson(response.data as Map<String, dynamic>);
-  }
+  Future<PostCursorPage> fetchFestivalPostsPage(int festivalId, {int? cursor, int size = 20}) =>
+      _fetchCursorPage('/posts/festival/$festivalId', cursor: cursor, size: size);
 
   /// 페스티벌 게시판 글 작성
   Future<void> createFestivalPost({
@@ -143,13 +138,8 @@ class PostService {
       _fetchPostList('/posts/festival/$festivalId/popular');
 
   /// 동행구하기 게시판 페이지 조회
-  Future<PostCursorPage> fetchFestivalCompanionPostsPage(int festivalId, {int? cursor, int size = 20}) async {
-    final response = await DioClient.dio.get('/posts/festival/$festivalId/companion', queryParameters: {
-      if (cursor != null) 'cursor': cursor,
-      'size': size,
-    });
-    return PostCursorPage.fromJson(response.data as Map<String, dynamic>);
-  }
+  Future<PostCursorPage> fetchFestivalCompanionPostsPage(int festivalId, {int? cursor, int size = 20}) =>
+      _fetchCursorPage('/posts/festival/$festivalId/companion', cursor: cursor, size: size);
 
   /// 동행구하기 게시판 글 작성
   Future<void> createFestivalCompanionPost({
@@ -162,13 +152,8 @@ class PostService {
       _createPost('/posts/festival/$festivalId/companion', title, content, anonymous: anonymous, imageObjectKey: imageObjectKey);
 
   /// 티켓양도 게시판 페이지 조회
-  Future<PostCursorPage> fetchFestivalTicketPostsPage(int festivalId, {int? cursor, int size = 20}) async {
-    final response = await DioClient.dio.get('/posts/festival/$festivalId/ticket', queryParameters: {
-      if (cursor != null) 'cursor': cursor,
-      'size': size,
-    });
-    return PostCursorPage.fromJson(response.data as Map<String, dynamic>);
-  }
+  Future<PostCursorPage> fetchFestivalTicketPostsPage(int festivalId, {int? cursor, int size = 20}) =>
+      _fetchCursorPage('/posts/festival/$festivalId/ticket', cursor: cursor, size: size);
 
   /// 티켓양도 게시판 글 작성
   Future<void> createFestivalTicketPost({
@@ -204,6 +189,14 @@ class PostService {
 
   Future<void> incrementPostView(int postId) =>
       DioClient.dio.post('/posts/$postId/view');
+
+  Future<PostCursorPage> _fetchCursorPage(String endpoint, {int? cursor, int size = 20}) async {
+    final response = await DioClient.dio.get(endpoint, queryParameters: {
+      if (cursor != null) 'cursor': cursor,
+      'size': size,
+    });
+    return PostCursorPage.fromJson(response.data as Map<String, dynamic>);
+  }
 
   /// 게시판 내 키워드 검색
   Future<List<Post>> searchInBoard(String keyword, String boardType) async {

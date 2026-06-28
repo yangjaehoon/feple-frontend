@@ -139,18 +139,18 @@ class HomeStateNotifier extends SafeChangeNotifier {
 
   Future<void> saveArtistOrder(List<int> order) async {
     artistOrder = order;
-    safeNotify();
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(
-        _artistOrderKey, order.map((e) => e.toString()).toList());
+    await _persistOrder(_artistOrderKey, order);
   }
 
   Future<void> saveFestivalOrder(List<int> order) async {
     festivalOrder = order;
+    await _persistOrder(_festivalOrderKey, order);
+  }
+
+  Future<void> _persistOrder(String key, List<int> order) async {
     safeNotify();
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(
-        _festivalOrderKey, order.map((e) => e.toString()).toList());
+    await prefs.setStringList(key, order.map((e) => e.toString()).toList());
   }
 
   List<FollowedArtist>? get orderedArtists {

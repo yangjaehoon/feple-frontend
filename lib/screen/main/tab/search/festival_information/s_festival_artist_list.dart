@@ -7,7 +7,7 @@ import 'package:feple/common/widget/w_date_tab_bar.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
-import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
+import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
 import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/screen/main/tab/search/festival_information/festival_artists_notifier.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -97,7 +97,7 @@ class FestivalArtistListScreen extends StatelessWidget {
           Navigator.push(
             context,
             SlideRoute(
-              builder: (_) => ArtistPage(
+              builder: (_) => ArtistScreen(
                 artistId: artist.artistId,
                 artistName: artist.artistName,
                 followerCount: 0,

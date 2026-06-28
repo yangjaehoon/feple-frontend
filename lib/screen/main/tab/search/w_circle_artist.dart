@@ -16,7 +16,7 @@ import '../../../../model/artist_model.dart';
 import 'package:feple/injection.dart';
 import '../../../../service/artist_service.dart';
 import '../../../../service/artist_follow_service.dart';
-import 'artist_page/f_artist_page.dart';
+import 'artist_page/s_artist_page.dart';
 
 class CircleArtistWidget extends StatefulWidget {
   const CircleArtistWidget({super.key});
@@ -236,7 +236,7 @@ class _ArtistContentState extends State<_ArtistContent> {
                             Navigator.push(
                               context,
                               SlideRoute(
-                                builder: (context) => ArtistPage(
+                                builder: (context) => ArtistScreen(
                                   artistName: artists[index].name,
                                   artistId: artists[index].id,
                                   followerCount: artists[index].followerCount,

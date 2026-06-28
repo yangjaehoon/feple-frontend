@@ -2,7 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/timetable_colors.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/dart/extension/time_of_day_extension.dart';
-import 'package:feple/screen/main/tab/search/festival_information/w_timetable_user_entry.dart';
+import 'package:feple/model/user_entry.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 

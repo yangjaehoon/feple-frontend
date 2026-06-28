@@ -4,7 +4,7 @@ import 'package:feple/common/constant/timetable_colors.dart';
 import 'package:feple/common/dart/extension/time_of_day_extension.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_stage_cell.dart';
-import 'package:feple/screen/main/tab/search/festival_information/w_timetable_user_entry.dart';
+import 'package:feple/model/user_entry.dart';
 import 'package:flutter/material.dart';
 
 class TimetableFullscreenGrid extends StatefulWidget {

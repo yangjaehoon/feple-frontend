@@ -1,14 +1,14 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/screen/main/tab/home/f_followed_artists_by_genre.dart';
-import 'package:feple/screen/main/tab/home/f_liked_festivals.dart';
+import 'package:feple/screen/main/tab/home/s_followed_artists_by_genre.dart';
+import 'package:feple/screen/main/tab/home/s_liked_festivals.dart';
 import 'package:feple/screen/main/tab/home/home_state_notifier.dart';
 import 'package:feple/screen/main/tab/home/w_boards_section_skeleton.dart';
 import 'package:feple/screen/main/tab/home/w_favorite_boards_section.dart';
 import 'package:feple/screen/main/tab/home/w_home_artists_section.dart';
 import 'package:feple/screen/main/tab/home/w_home_festivals_section.dart';
 import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
-import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
+import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:feple/common/util/app_route.dart';
@@ -143,7 +143,7 @@ class _HomeFragmentState extends State<HomeFragment> {
               ? () => Navigator.push(
                     context,
                     SlideRoute(
-                      builder: (_) => FollowedArtistsByGenrePage(
+                      builder: (_) => FollowedArtistsByGenreScreen(
                         artists: orderedArtists ?? [],
                         onSaveOrder: _notifier.saveArtistOrder,
                       ),
@@ -159,7 +159,7 @@ class _HomeFragmentState extends State<HomeFragment> {
               ? () => Navigator.push(
                     context,
                     SlideRoute(
-                      builder: (_) => FollowedArtistsByGenrePage(
+                      builder: (_) => FollowedArtistsByGenreScreen(
                         artists: orderedArtists,
                         onSaveOrder: _notifier.saveArtistOrder,
                       ),
@@ -169,7 +169,7 @@ class _HomeFragmentState extends State<HomeFragment> {
           onTap: (artist) => Navigator.push(
             context,
             SlideRoute(
-              builder: (_) => ArtistPage(
+              builder: (_) => ArtistScreen(
                 artistId: artist.id,
                 artistName: artist.name,
                 followerCount: artist.followerCount,
@@ -185,7 +185,7 @@ class _HomeFragmentState extends State<HomeFragment> {
               ? () => Navigator.push(
                     context,
                     SlideRoute(
-                      builder: (_) => LikedFestivalsPage(
+                      builder: (_) => LikedFestivalsScreen(
                         festivals: orderedFestivals ?? [],
                         onSaveOrder: _notifier.saveFestivalOrder,
                       ),

@@ -5,18 +5,18 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/screen/main/tab/search/artist_page/image_collection/w_image_collection.dart';
 
-class ImgCollection extends StatefulWidget {
-  const ImgCollection(
+class ImageCollectionScreen extends StatefulWidget {
+  const ImageCollectionScreen(
       {super.key, required this.artistName, required this.artistId});
 
   final String artistName;
   final int artistId;
 
   @override
-  State<ImgCollection> createState() => _ImgCollectionState();
+  State<ImageCollectionScreen> createState() => _ImageCollectionScreenState();
 }
 
-class _ImgCollectionState extends State<ImgCollection> {
+class _ImageCollectionScreenState extends State<ImageCollectionScreen> {
   final GlobalKey<ImgCollectionWidgetState> _imgCollectionKey =
       GlobalKey<ImgCollectionWidgetState>();
 
@@ -62,5 +62,4 @@ class _ImgCollectionState extends State<ImgCollection> {
       child: const Icon(Icons.add_photo_alternate, color: Colors.white),
     );
   }
-
 }

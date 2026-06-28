@@ -6,7 +6,7 @@ import 'package:feple/common/constant/timetable_colors.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_entry_dialog.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_fullscreen_grid.dart';
-import 'package:feple/screen/main/tab/search/festival_information/w_timetable_user_entry.dart';
+import 'package:feple/model/user_entry.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

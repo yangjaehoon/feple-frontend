@@ -14,14 +14,14 @@ import 'package:provider/provider.dart';
 
 import '../../../../provider/festival_preview_provider.dart';
 
-class FestivalRegisterPage extends StatefulWidget {
-  const FestivalRegisterPage({super.key});
+class FestivalRegisterScreen extends StatefulWidget {
+  const FestivalRegisterScreen({super.key});
 
   @override
-  State<FestivalRegisterPage> createState() => _FestivalRegisterPageState();
+  State<FestivalRegisterScreen> createState() => _FestivalRegisterScreenState();
 }
 
-class _FestivalRegisterPageState extends State<FestivalRegisterPage> {
+class _FestivalRegisterScreenState extends State<FestivalRegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();

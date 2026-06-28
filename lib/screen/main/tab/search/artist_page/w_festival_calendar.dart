@@ -111,7 +111,7 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
       final end = s.endDate != null
           ? (DateTime.tryParse(s.endDate!) ?? start).add(const Duration(days: 1))
           : start.add(const Duration(days: 1));
-      final config = getEventTypeConfig(s.eventType, colors);
+      final config = s.eventType.config(colors);
       result.add(Appointment(
         startTime: start,
         endTime: end,

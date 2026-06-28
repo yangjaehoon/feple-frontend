@@ -33,7 +33,7 @@ class PostService {
 
   /// 게시글 목록 조회 (hot은 List 직접 반환, free/mate는 CursorPage에서 content 추출)
   Future<List<Post>> fetchPosts(String boardType) async {
-    if (boardType == BoardTypes.free || boardType == BoardTypes.mate) {
+    if (BoardTypes.isPaginated(boardType)) {
       final page = await fetchPostsPage(boardType);
       return page.content;
     }

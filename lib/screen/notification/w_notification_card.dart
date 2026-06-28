@@ -65,12 +65,12 @@ class NotificationCard extends StatelessWidget {
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        color: _iconColor(item.type, colors).withValues(alpha: 0.15),
+        color: (item.type?.iconColor(colors) ?? colors.certRingColor).withValues(alpha: 0.15),
         shape: BoxShape.circle,
       ),
       child: Icon(
           item.type?.iconData ?? Icons.festival_rounded,
-          color: _iconColor(item.type, colors), size: 20),
+          color: item.type?.iconColor(colors) ?? colors.certRingColor, size: 20),
     );
   }
 
@@ -123,17 +123,4 @@ class NotificationCard extends StatelessWidget {
     );
   }
 
-  Color _iconColor(NotificationType? type, AbstractThemeColors colors) {
-    switch (type) {
-      case NotificationType.certApproved:               return colors.certRingColor;
-      case NotificationType.certRejected:               return colors.textSecondary;
-      case NotificationType.newComment:                 return colors.activate;
-      case NotificationType.festivalReminder:           return AppColors.notificationReminder;
-      case NotificationType.songRequestApproved:        return colors.certRingColor;
-      case NotificationType.songRequestRejected:        return AppColors.errorRed;
-      case NotificationType.artistSuggestionProcessed: return colors.activate;
-      case NotificationType.adminBroadcast:             return colors.accentColor;
-      default:                                          return colors.certRingColor;
-    }
-  }
 }

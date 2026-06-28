@@ -47,7 +47,7 @@ class ScheduleListTile extends StatelessWidget {
   }
 
   Widget _buildPoster(AbstractThemeColors colors) {
-    final typeConfig = getEventTypeConfig(item.eventType, colors);
+    final typeConfig = item.eventType.config(colors);
     final hasPoster = item.posterUrl != null && item.posterUrl!.isNotEmpty;
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),

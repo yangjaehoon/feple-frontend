@@ -27,7 +27,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
   late String _stage;
   late TimeOfDay _start;
   late TimeOfDay _end;
-  late Color _color;
+  late Color _color; // UI-only: Color(entry.colorValue)로 초기화, 저장 시 toARGB32()
 
   @override
   void initState() {
@@ -36,7 +36,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
     _stage = widget.initial.stageName;
     _start = _parse(widget.initial.startTime);
     _end = _parse(widget.initial.endTime);
-    _color = widget.initial.color;
+    _color = Color(widget.initial.colorValue);
   }
 
   @override
@@ -80,7 +80,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
         label: _labelCtrl.text.trim(),
         startTime: _start.toHHmm,
         endTime: _end.toHHmm,
-        color: _color,
+        colorValue: _color.toARGB32(),
       );
 
   @override

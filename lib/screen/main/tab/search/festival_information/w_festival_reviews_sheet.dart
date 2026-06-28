@@ -404,7 +404,7 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
               const SizedBox(width: 6),
               Expanded(
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(AppDimens.barRadius),
                   child: LinearProgressIndicator(
                     value: ratio,
                     minHeight: 6,

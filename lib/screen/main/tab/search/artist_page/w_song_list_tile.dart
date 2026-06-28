@@ -93,7 +93,7 @@ class SongListTile extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
               color: colors.activate.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
             ),
             child: Text(
               'festival_performed_count'.tr(args: [song.festivalCount.toString()]),

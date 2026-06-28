@@ -14,8 +14,6 @@ import 'package:feple/service/festival_service.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
-import 'package:feple/common/widget/w_selectable_chip.dart';
-
 import 'cert_status_style.dart';
 import 'w_rating_sheet.dart';
 import 'w_submit_certification_sheet.dart';
@@ -136,32 +134,75 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
 
   Widget _buildFilterChips(AbstractThemeColors colors) {
     return SizedBox(
-      height: 44,
+      height: 48,
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children: [
-          SelectableChip(
+          _statusFilterChip(
+            colors: colors,
             label: 'filter_all'.tr(),
             selected: _filter == null,
-            onTap: () => setState(() => _filter = null),
+            selectedColor: colors.activate,
+            onSelected: (_) => setState(() => _filter = null),
           ),
-          SelectableChip(
+          _statusFilterChip(
+            colors: colors,
             label: 'cert_status_approved'.tr(),
             selected: _filter == CertStatus.approved,
-            onTap: () => setState(() => _filter = CertStatus.approved),
+            selectedColor: colors.certRingColor,
+            onSelected: (_) => setState(() => _filter = CertStatus.approved),
           ),
-          SelectableChip(
+          _statusFilterChip(
+            colors: colors,
             label: 'cert_status_pending'.tr(),
             selected: _filter == CertStatus.pending,
-            onTap: () => setState(() => _filter = CertStatus.pending),
+            selectedColor: AppColors.statusPending,
+            onSelected: (_) => setState(() => _filter = CertStatus.pending),
           ),
-          SelectableChip(
+          _statusFilterChip(
+            colors: colors,
             label: 'cert_status_rejected'.tr(),
             selected: _filter == CertStatus.rejected,
-            onTap: () => setState(() => _filter = CertStatus.rejected),
+            selectedColor: colors.textSecondary,
+            onSelected: (_) => setState(() => _filter = CertStatus.rejected),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _statusFilterChip({
+    required AbstractThemeColors colors,
+    required String label,
+    required bool selected,
+    required Color selectedColor,
+    required void Function(bool) onSelected,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: FilterChip(
+        label: Text(label),
+        selected: selected,
+        onSelected: onSelected,
+        selectedColor: selectedColor.withValues(alpha: 0.12),
+        checkmarkColor: selectedColor,
+        backgroundColor: colors.surface,
+        side: BorderSide(
+          color: selected
+              ? selectedColor
+              : colors.textSecondary.withValues(alpha: 0.28),
+          width: selected ? 1.5 : 1.0,
+        ),
+        labelStyle: TextStyle(
+          fontSize: AppDimens.fontSizeSm,
+          fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+          color: selected ? selectedColor : colors.textSecondary,
+        ),
+        shape: const StadiumBorder(),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        visualDensity: VisualDensity.compact,
       ),
     );
   }

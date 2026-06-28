@@ -37,7 +37,7 @@ class CircleArtistWidgetState extends State<CircleArtistWidget> {
   }
 
   void refresh() {
-    setState(() => _artistsFuture = sl<ArtistService>().fetchArtists());
+    setState(() { _artistsFuture = sl<ArtistService>().fetchArtists(); });
     _loadFollowedIds();
   }
 

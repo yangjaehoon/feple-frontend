@@ -58,7 +58,7 @@ class _FestivalSetlistFullScreenState extends State<FestivalSetlistFullScreen> {
     );
     if (result == true && mounted) {
       _changed = true;
-      setState(() => _future = _fetch());
+      setState(() { _future = _fetch(); });
     }
   }
 
@@ -99,7 +99,7 @@ class _FestivalSetlistFullScreenState extends State<FestivalSetlistFullScreen> {
     return AsyncContentBuilder<List<FestivalSetlistEntry>>(
       future: _future,
       loadingBuilder: (_) => _buildSkeleton(colors),
-      onRetry: () => setState(() => _future = _fetch()),
+      onRetry: () => setState(() { _future = _fetch(); }),
       emptyBuilder: (_) => Center(
         child: Text('no_setlist'.tr(), style: TextStyle(color: colors.textSecondary)),
       ),

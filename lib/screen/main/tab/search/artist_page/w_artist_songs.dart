@@ -41,7 +41,7 @@ class ArtistSongsState extends State<ArtistSongs> {
   Future<List<SongModel>> _fetchSongs() =>
       _songService.fetchSongs(widget.artistId);
 
-  void refresh() => setState(() => _songsFuture = _fetchSongs());
+  void refresh() => setState(() { _songsFuture = _fetchSongs(); });
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +111,7 @@ class ArtistSongsState extends State<ArtistSongs> {
     return AsyncContentBuilder<List<SongModel>>(
       future: _songsFuture,
       loadingBuilder: (_) => _buildSongSkeleton(),
-      onRetry: () => setState(() => _songsFuture = _fetchSongs()),
+      onRetry: () => setState(() { _songsFuture = _fetchSongs(); }),
       emptyBuilder: (_) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: EmptyState(icon: Icons.music_off_rounded, title: 'no_songs'.tr()),

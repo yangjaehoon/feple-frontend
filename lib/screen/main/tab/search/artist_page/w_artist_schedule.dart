@@ -41,7 +41,7 @@ class ArtistScheduleState extends State<ArtistSchedule> {
   Future<List<ArtistScheduleModel>> _fetchSchedule() =>
       _scheduleService.fetchSchedule(widget.artistId);
 
-  void refresh() => setState(() => _scheduleFuture = _fetchSchedule());
+  void refresh() => setState(() { _scheduleFuture = _fetchSchedule(); });
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +118,7 @@ class ArtistScheduleState extends State<ArtistSchedule> {
     return AsyncContentBuilder<List<ArtistScheduleModel>>(
       future: _scheduleFuture,
       loadingBuilder: (_) => _buildScheduleSkeleton(),
-      onRetry: () => setState(() => _scheduleFuture = _fetchSchedule()),
+      onRetry: () => setState(() { _scheduleFuture = _fetchSchedule(); }),
       isEmpty: (data) => data.every((item) => item.isPast),
       emptyBuilder: (_) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),

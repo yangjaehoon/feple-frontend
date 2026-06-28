@@ -288,7 +288,7 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
       errorBuilder: (_) => Center(
         child: ErrorState(
           message: 'onboarding_pick_load_failed'.tr(),
-          onRetry: () => setState(() => _artistsFuture = sl<ArtistService>().fetchArtists()),
+          onRetry: () => setState(() { _artistsFuture = sl<ArtistService>().fetchArtists(); }),
         ),
       ),
       isEmpty: (_) => false,

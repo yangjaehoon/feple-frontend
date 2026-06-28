@@ -8,13 +8,15 @@ class EventTypeConfig {
   const EventTypeConfig({required this.icon, required this.color});
 }
 
-EventTypeConfig getEventTypeConfig(EventType eventType, AbstractThemeColors colors) {
-  switch (eventType) {
-    case EventType.fanMeeting:
-      return EventTypeConfig(icon: Icons.favorite_rounded, color: AppColors.kawaiiPink);
-    case EventType.tvShow:
-      return EventTypeConfig(icon: Icons.tv_rounded, color: AppColors.kawaiiPurple);
-    case EventType.festival:
-      return EventTypeConfig(icon: Icons.music_note_rounded, color: colors.activate);
+extension EventTypeStyle on EventType {
+  EventTypeConfig config(AbstractThemeColors colors) {
+    switch (this) {
+      case EventType.fanMeeting:
+        return EventTypeConfig(icon: Icons.favorite_rounded, color: AppColors.kawaiiPink);
+      case EventType.tvShow:
+        return EventTypeConfig(icon: Icons.tv_rounded, color: AppColors.kawaiiPurple);
+      case EventType.festival:
+        return EventTypeConfig(icon: Icons.music_note_rounded, color: colors.activate);
+    }
   }
 }

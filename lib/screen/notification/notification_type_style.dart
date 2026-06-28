@@ -1,5 +1,6 @@
 export 'package:feple/model/notification_type.dart';
 
+import 'package:feple/common/theme/color/abs_theme_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/model/notification_type.dart';
 
@@ -18,6 +19,23 @@ extension NotificationTypeStyle on NotificationType {
       case NotificationType.songRequestRejected:        return Icons.music_off_rounded;
       case NotificationType.artistSuggestionProcessed:  return Icons.person_add_rounded;
       case NotificationType.adminBroadcast:             return Icons.campaign_rounded;
+    }
+  }
+
+  Color iconColor(AbstractThemeColors colors) {
+    switch (this) {
+      case NotificationType.certApproved:               return colors.certRingColor;
+      case NotificationType.certRejected:               return colors.textSecondary;
+      case NotificationType.newComment:                 return colors.activate;
+      case NotificationType.newReply:                   return colors.activate;
+      case NotificationType.postLiked:                  return colors.certRingColor;
+      case NotificationType.festivalReminder:           return AppColors.notificationReminder;
+      case NotificationType.newFestival:                return colors.certRingColor;
+      case NotificationType.songRequestApproved:        return colors.certRingColor;
+      case NotificationType.songRequestRejected:        return AppColors.errorRed;
+      case NotificationType.artistSuggestionProcessed:  return colors.activate;
+      case NotificationType.postDeletedByAdmin:         return colors.textSecondary;
+      case NotificationType.adminBroadcast:             return colors.accentColor;
     }
   }
 }

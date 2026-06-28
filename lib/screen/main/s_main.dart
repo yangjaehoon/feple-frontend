@@ -92,13 +92,15 @@ class MainScreenState extends State<MainScreen>
     return OfflineBanner(
       child: PopScope(
         canPop: false,
-        onPopInvokedWithResult: (didPop, result) async {
+        onPopInvokedWithResult: (didPop, result) {
           if (didPop) return;
           final navigator = _currentTabNavigationKey.currentState;
           if (navigator != null && navigator.canPop()) {
             navigator.pop();
           } else if (_currentTab != TabItem.home) {
             _changeTab(tabs.indexOf(TabItem.home));
+          } else {
+            SystemNavigator.pop();
           }
         },
         child: Scaffold(

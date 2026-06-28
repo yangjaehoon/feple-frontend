@@ -7,7 +7,7 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../../common/app_events.dart';
-import 'image_collection/f_image_collection.dart';
+import 'image_collection/s_image_collection.dart';
 
 class ArtistNameLike extends StatefulWidget {
   const ArtistNameLike({
@@ -134,7 +134,7 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
             if (_isNavigating) return;
             _isNavigating = true;
             Navigator.of(context, rootNavigator: true).push(
-              SlideRoute(builder: (context) => ImgCollection(artistName: widget.artistName, artistId: widget.artistId)),
+              SlideRoute(builder: (context) => ImageCollectionScreen(artistName: widget.artistName, artistId: widget.artistId)),
             ).whenComplete(() { if (mounted) _isNavigating = false; });
           },
         ),

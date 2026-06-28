@@ -6,7 +6,7 @@ import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
-import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
+import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/text_highlight.dart';
@@ -46,7 +46,7 @@ class SearchArtistTile extends StatelessWidget {
       onTap: () {
         if (ModalRoute.of(context)?.isCurrent != true) return;
         Navigator.push(context, SlideRoute(
-          builder: (_) => ArtistPage(
+          builder: (_) => ArtistScreen(
             artistName: data.name,
             artistId: data.id,
             followerCount: data.followerCount,

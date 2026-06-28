@@ -8,8 +8,8 @@ import 'package:feple/screen/main/tab/search/artist_page/w_artist_songs.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_main_image_swiper.dart';
 import 'package:flutter/material.dart';
 
-class ArtistPage extends StatefulWidget {
-  const ArtistPage({
+class ArtistScreen extends StatefulWidget {
+  const ArtistScreen({
     super.key,
     required this.artistName,
     required this.artistId,
@@ -23,10 +23,10 @@ class ArtistPage extends StatefulWidget {
   final String? profileImageUrl;
 
   @override
-  State<ArtistPage> createState() => _ArtistPageState();
+  State<ArtistScreen> createState() => _ArtistScreenState();
 }
 
-class _ArtistPageState extends State<ArtistPage> {
+class _ArtistScreenState extends State<ArtistScreen> {
   late final ArtistFollowNotifier _followNotifier;
   final _swiperKey = GlobalKey<MainImageSwiperState>();
   final _scheduleKey = GlobalKey<ArtistScheduleState>();

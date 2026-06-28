@@ -27,8 +27,8 @@ FestivalPreview _asPreview(FestivalModel f) => FestivalPreview(
       attendingCount: f.attendingCount,
     );
 
-class LikedFestivalsPage extends StatefulWidget {
-  const LikedFestivalsPage({
+class LikedFestivalsScreen extends StatefulWidget {
+  const LikedFestivalsScreen({
     super.key,
     required this.festivals,
     this.onSaveOrder,
@@ -38,10 +38,10 @@ class LikedFestivalsPage extends StatefulWidget {
   final Future<void> Function(List<int>)? onSaveOrder;
 
   @override
-  State<LikedFestivalsPage> createState() => _LikedFestivalsPageState();
+  State<LikedFestivalsScreen> createState() => _LikedFestivalsScreenState();
 }
 
-class _LikedFestivalsPageState extends State<LikedFestivalsPage> {
+class _LikedFestivalsScreenState extends State<LikedFestivalsScreen> {
   bool _showEnded = false;
   bool _isNavigating = false;
   bool _isSheetOpen = false;

@@ -8,12 +8,12 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/followed_artist.dart';
 import 'package:feple/screen/main/tab/home/w_reorder_sheet.dart';
-import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
+import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
-class FollowedArtistsByGenrePage extends StatefulWidget {
-  const FollowedArtistsByGenrePage({
+class FollowedArtistsByGenreScreen extends StatefulWidget {
+  const FollowedArtistsByGenreScreen({
     super.key,
     required this.artists,
     this.onSaveOrder,
@@ -23,12 +23,12 @@ class FollowedArtistsByGenrePage extends StatefulWidget {
   final Future<void> Function(List<int>)? onSaveOrder;
 
   @override
-  State<FollowedArtistsByGenrePage> createState() =>
-      _FollowedArtistsByGenrePageState();
+  State<FollowedArtistsByGenreScreen> createState() =>
+      _FollowedArtistsByGenreScreenState();
 }
 
-class _FollowedArtistsByGenrePageState
-    extends State<FollowedArtistsByGenrePage> {
+class _FollowedArtistsByGenreScreenState
+    extends State<FollowedArtistsByGenreScreen> {
   String? _selectedGenre;
   bool _isNavigating = false;
   bool _isSheetOpen = false;
@@ -148,7 +148,7 @@ class _FollowedArtistsByGenrePageState
               _isNavigating = true;
               Navigator.push(
                 context,
-                SlideRoute(builder: (_) => ArtistPage(
+                SlideRoute(builder: (_) => ArtistScreen(
                   artistId: artist.id,
                   artistName: artist.name,
                   followerCount: artist.followerCount,
@@ -220,4 +220,3 @@ class _FollowedArtistsByGenrePageState
     );
   }
 }
-

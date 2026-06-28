@@ -7,7 +7,7 @@ import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
-import 'package:feple/screen/main/tab/search/artist_page/f_artist_page.dart';
+import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_circle_image.dart';
 import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/screen/main/tab/search/festival_information/festival_artists_notifier.dart';
@@ -199,7 +199,7 @@ class FestivalArtistsState extends State<FestivalArtists> {
         _isNavigating = true;
         Navigator.push(
           context,
-          SlideRoute(builder: (_) => ArtistPage(
+          SlideRoute(builder: (_) => ArtistScreen(
             artistId: artist.artistId,
             artistName: artist.artistName,
             followerCount: 0,

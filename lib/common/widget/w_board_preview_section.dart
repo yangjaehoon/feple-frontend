@@ -40,7 +40,9 @@ class NamedBoardState extends State<NamedBoard> {
     _postsFuture = widget.fetchPosts();
   }
 
-  void refresh() => setState(() => _postsFuture = widget.fetchPosts());
+  void refresh() {
+    setState(() { _postsFuture = widget.fetchPosts(); });
+  }
 
   @override
   Widget build(BuildContext context) {

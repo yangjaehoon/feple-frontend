@@ -225,7 +225,7 @@ class FcmService {
         ? int.tryParse(festivalIdStr!)
         : null;
 
-    if (festivalId != null && _isFestivalLinked(type)) {
+    if (festivalId != null && (type?.hasFestivalNavigation ?? false)) {
       try {
         final festival = await sl<FestivalService>().fetchById(festivalId);
         nav.push(SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)));
@@ -237,11 +237,4 @@ class FcmService {
     nav.push(SlideRoute(builder: (_) => const NotificationScreen()));
   }
 
-  /// 페스티벌 ID로 직접 이동하는 알림 타입
-  bool _isFestivalLinked(NotificationType? type) {
-    return type == NotificationType.newFestival ||
-        type == NotificationType.festivalReminder ||
-        type == NotificationType.certApproved ||
-        type == NotificationType.certRejected;
-  }
 }

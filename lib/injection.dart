@@ -1,6 +1,8 @@
 import 'package:get_it/get_it.dart';
 
 import 'service/artist_follow_service.dart';
+import 'service/artist_photo_readable.dart';
+import 'service/artist_photo_uploadable.dart';
 import 'service/cache_prefetch_service.dart';
 import 'service/artist_photo_service.dart';
 import 'service/artist_schedule_service.dart';
@@ -35,6 +37,8 @@ void setupDependencies() {
   sl.registerLazySingleton<ArtistFollowService>(() => ArtistFollowService());
   sl.registerLazySingleton<ArtistSuggestionService>(() => ArtistSuggestionService());
   sl.registerLazySingleton<ArtistPhotoService>(() => ArtistPhotoService());
+  sl.registerLazySingleton<ArtistPhotoReadable>(() => sl<ArtistPhotoService>());
+  sl.registerLazySingleton<ArtistPhotoUploadable>(() => sl<ArtistPhotoService>());
   sl.registerLazySingleton<ArtistScheduleService>(() => ArtistScheduleService());
   sl.registerLazySingleton<ArtistService>(() => ArtistService());
   sl.registerLazySingleton<CertificationService>(() => CertificationService());

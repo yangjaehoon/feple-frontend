@@ -1,11 +1,11 @@
 import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/screen/main/tab/search/festival_information/timetable_notifier.dart';
 import 'package:feple/service/artist_follow_service.dart';
-import 'package:feple/service/festival_detail_service.dart';
+import 'package:feple/service/festival_timetable_fetcher.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockFestivalDetailService extends Mock implements FestivalDetailService {}
+class MockFestivalTimetableFetcher extends Mock implements FestivalTimetableFetcher {}
 class MockArtistFollowService extends Mock implements ArtistFollowService {}
 
 TimetableEntry _entry({
@@ -30,11 +30,11 @@ TimetableEntry _entry({
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  late MockFestivalDetailService mockDetailService;
+  late MockFestivalTimetableFetcher mockDetailService;
   late MockArtistFollowService mockFollowService;
 
   setUp(() {
-    mockDetailService = MockFestivalDetailService();
+    mockDetailService = MockFestivalTimetableFetcher();
     mockFollowService = MockArtistFollowService();
   });
 

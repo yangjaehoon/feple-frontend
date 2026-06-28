@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:feple/injection.dart';
-import 'package:feple/service/artist_photo_service.dart';
+import 'package:feple/service/artist_photo_uploadable.dart';
 
 import 'w_image_picker_box.dart';
 
@@ -26,7 +26,7 @@ class ImgUpload extends StatefulWidget {
 
 class _ImgUploadState extends State<ImgUpload> {
   final _formKey = GlobalKey<FormState>();
-  final _photoService = sl<ArtistPhotoService>();
+  final _photoService = sl<ArtistPhotoUploadable>();
   final _scheduleService = sl<ArtistScheduleService>();
 
   Uint8List? imageData;

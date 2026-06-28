@@ -1,13 +1,13 @@
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/service/artist_follow_service.dart';
-import 'package:feple/service/festival_detail_service.dart';
+import 'package:feple/service/festival_artists_fetcher.dart';
 import 'package:flutter/foundation.dart';
 
 class FestivalArtistsNotifier extends SafeChangeNotifier {
   final int festivalId;
   final int? userId;
-  final FestivalDetailService _festivalService;
+  final FestivalArtistsFetcher _festivalService;
   final ArtistFollowService _followService;
 
   List<FestivalArtistItem> artists = [];
@@ -22,7 +22,7 @@ class FestivalArtistsNotifier extends SafeChangeNotifier {
   FestivalArtistsNotifier({
     required this.festivalId,
     this.userId,
-    required FestivalDetailService festivalService,
+    required FestivalArtistsFetcher festivalService,
     required ArtistFollowService followService,
   })  : _festivalService = festivalService,
         _followService = followService;

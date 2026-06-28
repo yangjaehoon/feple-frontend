@@ -1,12 +1,12 @@
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_photo.dart';
-import 'package:feple/service/artist_photo_service.dart';
+import 'package:feple/service/artist_photo_readable.dart';
 import 'package:flutter/foundation.dart';
 
 class ArtistSwiperPhotosNotifier extends SafeChangeNotifier {
   final int artistId;
-  final _photoService = sl<ArtistPhotoService>();
+  final _photoService = sl<ArtistPhotoReadable>();
 
   List<ArtistPhotoResponse> photos = [];
   bool loaded = false;

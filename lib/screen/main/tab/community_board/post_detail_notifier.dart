@@ -228,19 +228,7 @@ class PostDetailNotifier extends SafeChangeNotifier {
     commentsVersion.value++;
     safeNotify();
     try {
-      final result = await _commentService.toggleCommentLike(commentId);
-      if (!isDisposed) {
-        // 서버 실제 값으로 동기화 — 빠른 연속 탭 시 불일치 방지
-        final commentIndex = comments.indexWhere((c) => c.id == commentId);
-        if (commentIndex != -1) {
-          _replaceCommentAt(commentIndex, comments[commentIndex].copyWith(
-            liked: result.liked,
-            likeCount: result.likeCount,
-          ));
-          commentsVersion.value++;
-          safeNotify();
-        }
-      }
+      await _commentService.toggleCommentLike(commentId);
     } catch (e) {
       if (!isDisposed) {
         final commentIndex = comments.indexWhere((c) => c.id == commentId);

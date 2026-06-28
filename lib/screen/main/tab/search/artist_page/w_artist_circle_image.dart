@@ -33,6 +33,7 @@ class ArtistCircleImage extends StatelessWidget {
         width: size,
         height: size,
         memCacheWidth: 110,
+        memCacheHeight: 110,
         fadeInDuration: AppDimens.animXFast,
         fadeOutDuration: AppDimens.animTapFeedback,
         placeholder: (_, __) => icon,

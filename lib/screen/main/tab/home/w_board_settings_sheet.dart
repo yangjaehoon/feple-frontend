@@ -191,6 +191,7 @@ class _BoardSettingsItem extends StatelessWidget {
                       height: 40,
                       fit: BoxFit.cover,
                       memCacheWidth: 80,
+                      memCacheHeight: 80,
                       fadeInDuration: AppDimens.animXFast,
                       fadeOutDuration: AppDimens.animTapFeedback,
                       placeholder: (_, __) => _placeholder(colors),

@@ -47,4 +47,22 @@ class CertificationService {
     if (state == null || state == 'NONE') return null;
     return CertStatus.fromValue(state);
   }
+
+  /// 인증된 페스티벌에 별점 및 한줄 후기 제출
+  Future<void> submitRating(int certId, int rating, String? review) async {
+    await DioClient.dio.put(
+      '/certifications/$certId/rating',
+      data: {'rating': rating, 'review': review},
+    );
+  }
+
+  /// 페스티벌의 평균 별점 및 평가 수 조회
+  Future<({double averageRating, int ratingCount})> getFestivalRating(int festivalId) async {
+    final response = await DioClient.dio.get('/certifications/festival/$festivalId/rating');
+    final data = response.data as Map<String, dynamic>;
+    return (
+      averageRating: (data['averageRating'] as num?)?.toDouble() ?? 0.0,
+      ratingCount: (data['ratingCount'] as num?)?.toInt() ?? 0,
+    );
+  }
 }

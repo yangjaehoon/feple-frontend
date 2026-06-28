@@ -186,6 +186,7 @@ class _FollowedArtistsByGenreScreenState
                   ? CachedNetworkImage(
                       imageUrl: artist.profileImageUrl!,
                       memCacheWidth: 200,
+                      memCacheHeight: 200,
                       fit: BoxFit.cover,
                       fadeInDuration: AppDimens.animXFast,
                       fadeOutDuration: AppDimens.animTapFeedback,

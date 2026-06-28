@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
+import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
@@ -151,7 +153,7 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
                       separatorBuilder: (_, __) => const SizedBox(height: 10),
                       itemBuilder: (context, index) {
                         final cert = _certifications[index];
-                        return _CertCard(cert: cert);
+                        return _CertCard(cert: cert, certService: _certService);
                       },
                     ),
     );
@@ -181,10 +183,87 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
   }
 }
 
-class _CertCard extends StatelessWidget {
+class _CertCard extends StatefulWidget {
   final CertificationModel cert;
+  final CertificationService certService;
 
-  const _CertCard({required this.cert});
+  const _CertCard({required this.cert, required this.certService});
+
+  @override
+  State<_CertCard> createState() => _CertCardState();
+}
+
+class _CertCardState extends State<_CertCard> {
+  late int? _rating;
+  late String? _review;
+  bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _rating = widget.cert.rating;
+    _review = widget.cert.userReview;
+  }
+
+  Future<void> _openRatingSheet() async {
+    if (_isSubmitting) return;
+    final result = await showAppBottomSheet<({int rating, String? review})>(
+      context,
+      builder: (_) => _RatingSheet(
+        festivalTitle: widget.cert.festivalTitle,
+        initialRating: _rating,
+        initialReview: _review,
+      ),
+    );
+    if (result == null) return;
+    setState(() { _isSubmitting = true; });
+    try {
+      await widget.certService.submitRating(widget.cert.id, result.rating, result.review);
+      if (mounted) {
+        setState(() {
+          _rating = result.rating;
+          _review = result.review;
+          _isSubmitting = false;
+        });
+        context.showInfoSnackbar('rating_submit_success'.tr());
+      }
+    } catch (e) {
+      debugPrint('[CertCard] 별점 저장 실패: $e');
+      if (mounted) {
+        setState(() { _isSubmitting = false; });
+        context.showErrorSnackbar('rating_submit_failed'.tr());
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final isApproved = widget.cert.status == CertStatus.approved;
+    final isPending = widget.cert.status == CertStatus.pending;
+    final statusColor = widget.cert.status.displayColor(colors);
+    final statusLabel = widget.cert.status.labelKey.tr();
+
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
+        boxShadow: [
+          BoxShadow(
+            color: colors.cardShadow.withValues(alpha: 0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          _buildPosterImage(widget.cert.posterUrl, colors),
+          _buildCardContent(colors, statusColor, statusLabel, isApproved, isPending),
+        ],
+      ),
+    );
+  }
 
   Widget _buildPosterImage(String? posterUrl, AbstractThemeColors colors) {
     return ClipRRect(
@@ -246,16 +325,70 @@ class _CertCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              cert.festivalTitle,
+              widget.cert.festivalTitle,
               style: TextStyle(fontSize: AppDimens.fontSizeLg, fontWeight: FontWeight.w700, color: colors.textTitle),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 6),
             _buildStatusBadge(statusColor, statusLabel),
-            _buildMeta(isPending, isApproved, cert.rejectionMessage, cert.formattedDate, colors),
+            _buildMeta(isPending, isApproved, widget.cert.rejectionMessage, widget.cert.formattedDate, colors),
+            if (isApproved) ...[
+              const SizedBox(height: 6),
+              _buildRatingSection(colors),
+            ],
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildRatingSection(AbstractThemeColors colors) {
+    if (_isSubmitting) {
+      return SizedBox(
+        height: 20,
+        width: 20,
+        child: CircularProgressIndicator(strokeWidth: 2, color: colors.activate),
+      );
+    }
+    if (_rating != null) {
+      return GestureDetector(
+        onTap: _openRatingSheet,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ...List.generate(5, (i) => Icon(
+              i < _rating! ? Icons.star_rounded : Icons.star_outline_rounded,
+              size: 16,
+              color: Colors.amber,
+            )),
+            if (_review != null && _review!.isNotEmpty) ...[
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  _review!,
+                  style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ],
+        ),
+      );
+    }
+    return GestureDetector(
+      onTap: _openRatingSheet,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.star_outline_rounded, size: 14, color: colors.activate),
+          const SizedBox(width: 4),
+          Text(
+            'rating_submit'.tr(),
+            style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: colors.activate),
+          ),
+        ],
       ),
     );
   }
@@ -281,40 +414,128 @@ class _CertCard extends StatelessWidget {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-    final isApproved = cert.status == CertStatus.approved;
-    final isPending = cert.status == CertStatus.pending;
-    final statusColor = cert.status.displayColor(colors);
-    final statusLabel = cert.status.labelKey.tr();
-
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-        boxShadow: [
-          BoxShadow(
-            color: colors.cardShadow.withValues(alpha: 0.08),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          _buildPosterImage(cert.posterUrl, colors),
-          _buildCardContent(colors, statusColor, statusLabel, isApproved, isPending),
-        ],
-      ),
-    );
-  }
-
   Widget _buildPhotoPlaceholder(AbstractThemeColors colors) {
     return Container(
       color: colors.certRingColor.withValues(alpha: 0.1),
       child: Icon(Icons.photo_rounded,
           color: colors.textSecondary.withValues(alpha: 0.4), size: 32),
+    );
+  }
+}
+
+class _RatingSheet extends StatefulWidget {
+  final String festivalTitle;
+  final int? initialRating;
+  final String? initialReview;
+
+  const _RatingSheet({
+    required this.festivalTitle,
+    this.initialRating,
+    this.initialReview,
+  });
+
+  @override
+  State<_RatingSheet> createState() => _RatingSheetState();
+}
+
+class _RatingSheetState extends State<_RatingSheet> {
+  int _selectedRating = 0;
+  late final TextEditingController _reviewController;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedRating = widget.initialRating ?? 0;
+    _reviewController = TextEditingController(text: widget.initialReview ?? '');
+  }
+
+  @override
+  void dispose() {
+    _reviewController.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (_selectedRating == 0) return;
+    final review = _reviewController.text.trim();
+    Navigator.pop(context, (rating: _selectedRating, review: review.isEmpty ? null : review));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const BottomSheetHandle(),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'rating_title'.tr(),
+                  style: TextStyle(fontSize: AppDimens.fontSizeXxl, fontWeight: FontWeight.w700, color: colors.textTitle),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  widget.festivalTitle,
+                  style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(5, (i) {
+                    return GestureDetector(
+                      onTap: () => setState(() => _selectedRating = i + 1),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        child: Icon(
+                          i < _selectedRating ? Icons.star_rounded : Icons.star_outline_rounded,
+                          color: Colors.amber,
+                          size: 40,
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _reviewController,
+                  maxLength: 100,
+                  maxLines: 2,
+                  style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textTitle),
+                  decoration: InputDecoration(
+                    hintText: 'rating_review_hint'.tr(),
+                    hintStyle: TextStyle(color: colors.textSecondary),
+                    counterStyle: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXxs),
+                    filled: true,
+                    fillColor: colors.backgroundMain,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                LoadingButton(
+                  label: 'done'.tr(),
+                  onPressed: _selectedRating > 0 ? _submit : null,
+                  isLoading: false,
+                  backgroundColor: colors.activate,
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

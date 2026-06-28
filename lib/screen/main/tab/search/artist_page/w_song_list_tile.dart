@@ -63,6 +63,7 @@ class SongListTile extends StatelessWidget {
         width: 52,
         height: 52,
         memCacheWidth: 104,
+        memCacheHeight: 104,
         fit: BoxFit.cover,
         fadeInDuration: AppDimens.animXFast,
         fadeOutDuration: AppDimens.animTapFeedback,

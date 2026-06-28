@@ -24,6 +24,8 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
   bool hasInitError = false;
   bool isTogglingLike = false;
   bool isTogglingAttend = false;
+  double averageRating = 0.0;
+  int ratingCount = 0;
 
   CertState get certState {
     if (isCertified) return CertState.certified;
@@ -42,7 +44,7 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
 
   Future<void> init() async {
     hasInitError = false;
-    await Future.wait([loadLikeState(), loadAttendingState(), loadDescState(), loadCertState()]);
+    await Future.wait([loadLikeState(), loadAttendingState(), loadDescState(), loadCertState(), loadRatingInfo()]);
   }
 
   Future<void> retryInit() => init();
@@ -93,6 +95,17 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
       debugPrint('[FestivalPoster] 인증 상태 로드 실패: $e');
       hasInitError = true;
       safeNotify();
+    }
+  }
+
+  Future<void> loadRatingInfo() async {
+    try {
+      final info = await certService.getFestivalRating(festivalId);
+      averageRating = info.averageRating;
+      ratingCount = info.ratingCount;
+      safeNotify();
+    } catch (e) {
+      debugPrint('[FestivalPoster] 별점 정보 로드 실패: $e');
     }
   }
 

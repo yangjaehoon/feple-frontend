@@ -52,6 +52,7 @@ class ArtistCard extends StatelessWidget {
                 child: CachedNetworkImage(
                   imageUrl: artist.profileImageUrl,
                   memCacheWidth: 200,
+                  memCacheHeight: 200,
                   fit: BoxFit.cover,
                   fadeInDuration: AppDimens.animXFast,
                   fadeOutDuration: AppDimens.animTapFeedback,

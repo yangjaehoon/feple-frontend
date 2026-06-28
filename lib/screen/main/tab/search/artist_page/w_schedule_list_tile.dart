@@ -57,6 +57,7 @@ class ScheduleListTile extends StatelessWidget {
               width: 42,
               height: 42,
               memCacheWidth: 84,
+              memCacheHeight: 84,
               fit: BoxFit.cover,
               // CachedNetworkImage color 파라미터로 alpha 적용 — Opacity 위젯(saveLayer) 불필요
               color: isPast ? Colors.white.withValues(alpha: _pastAlpha) : null,

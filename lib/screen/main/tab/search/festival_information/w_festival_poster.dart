@@ -231,19 +231,19 @@ class FestivalPosterState extends State<FestivalPoster> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.star_rounded, color: Colors.amber, size: 18),
+            ...List.generate(5, (i) {
+              final avg = _notifier.averageRating;
+              final filled = i < avg.floor();
+              final half = !filled && (avg - i) >= 0.5;
+              return Icon(
+                filled
+                    ? Icons.star_rounded
+                    : (half ? Icons.star_half_rounded : Icons.star_outline_rounded),
+                color: Colors.amber,
+                size: 18,
+              );
+            }),
             const SizedBox(width: 4),
-            Text(
-              _notifier.averageRating.toStringAsFixed(1),
-              style: const TextStyle(
-                fontSize: AppDimens.fontSizeLg,
-                fontWeight: FontWeight.w800,
-                color: Colors.white,
-                decoration: TextDecoration.underline,
-                decorationColor: Colors.white54,
-              ),
-            ),
-            const SizedBox(width: 3),
             Text(
               '(${_notifier.ratingCount})',
               style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: Colors.white.withValues(alpha: 0.65)),

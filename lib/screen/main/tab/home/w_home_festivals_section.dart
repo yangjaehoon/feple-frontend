@@ -103,7 +103,7 @@ class _FestivalItem extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               _buildImage(colors),
-              _buildTitleOverlay(context.locale.languageCode == 'en'),
+              _buildTitleOverlay(context.isEnglish),
             ],
           ),
         ),

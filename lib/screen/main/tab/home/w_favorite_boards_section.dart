@@ -146,7 +146,7 @@ class _BoardTile extends StatelessWidget {
   const _BoardTile({required this.board});
 
   void _navigate(BuildContext context) {
-    final isEnglish = context.locale.languageCode == 'en';
+    final isEnglish = context.isEnglish;
     final displayEntityName = board.entityDisplayName(isEnglish);
     final route = switch (board.type) {
       FavoriteBoardType.artist => SlideRoute(
@@ -190,7 +190,7 @@ class _BoardTile extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               ..._buildImageLayers(colors),
-              _buildNameOverlay(context.locale.languageCode == 'en'),
+              _buildNameOverlay(context.isEnglish),
             ],
           ),
         ),

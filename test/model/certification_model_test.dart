@@ -97,6 +97,7 @@ void main() {
   group('CertificationModel.formattedDate', () {
     test('createdAt null이면 null 반환', () {
       const model = CertificationModel(
+        id: 1,
         festivalId: 1,
         status: CertStatus.approved,
         festivalTitle: '페스티벌',
@@ -108,6 +109,7 @@ void main() {
 
     test('10자 이상이면 앞 10자(날짜 부분)만 반환', () {
       const model = CertificationModel(
+        id: 1,
         festivalId: 1,
         status: CertStatus.approved,
         festivalTitle: '페스티벌',
@@ -119,6 +121,7 @@ void main() {
 
     test('10자 미만이면 그대로 반환', () {
       const model = CertificationModel(
+        id: 1,
         festivalId: 1,
         status: CertStatus.approved,
         festivalTitle: '페스티벌',
@@ -130,6 +133,7 @@ void main() {
 
     test('정확히 10자이면 그대로 반환', () {
       const model = CertificationModel(
+        id: 1,
         festivalId: 1,
         status: CertStatus.approved,
         festivalTitle: '페스티벌',

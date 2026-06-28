@@ -188,9 +188,44 @@ class FestivalPosterState extends State<FestivalPoster> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildPosterThumbnail(colors),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildPosterThumbnail(colors),
+              const SizedBox(height: 8),
+              ListenableBuilder(
+                listenable: _notifier,
+                builder: (_, __) => _buildRatingBadge(),
+              ),
+            ],
+          ),
           const SizedBox(width: 16),
           Expanded(child: _buildInfoColumn(colors)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRatingBadge() {
+    if (_notifier.ratingCount == 0) return const SizedBox.shrink();
+    final stars = _notifier.averageRating;
+    final count = _notifier.ratingCount;
+    return SizedBox(
+      width: _posterThumbnailWidth,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.star_rounded, color: Colors.amber, size: 14),
+          const SizedBox(width: 3),
+          Text(
+            stars.toStringAsFixed(1),
+            style: const TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w700, color: Colors.white),
+          ),
+          const SizedBox(width: 3),
+          Text(
+            '($count)',
+            style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: Colors.white.withValues(alpha: 0.65)),
+          ),
         ],
       ),
     );

@@ -2,8 +2,11 @@ import 'dart:typed_data';
 import 'package:feple/common/util/image_upload_helper.dart';
 import 'package:feple/model/artist_photo.dart';
 import 'package:feple/network/dio_client.dart';
+import 'package:feple/service/artist_photo_readable.dart';
+import 'package:feple/service/artist_photo_uploadable.dart';
 
-class ArtistPhotoService {
+class ArtistPhotoService implements ArtistPhotoReadable, ArtistPhotoUploadable {
+  @override
   Future<List<ArtistPhotoResponse>> fetchPhotos(int artistId) async {
     final response = await DioClient.dio.get('/artists/$artistId/photos');
     return (response.data as List)
@@ -24,6 +27,7 @@ class ArtistPhotoService {
         data: {'title': title, 'description': description},
       );
 
+  @override
   Future<void> uploadPhoto({
     required int artistId,
     required Uint8List imageData,

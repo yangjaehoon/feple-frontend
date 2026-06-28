@@ -5,13 +5,17 @@ import 'package:feple/model/festival_setlist_entry.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/model/weather_model.dart';
 import 'package:feple/network/dio_client.dart';
+import 'package:feple/service/festival_artists_fetcher.dart';
 import 'package:feple/service/festival_cache_service.dart';
+import 'package:feple/service/festival_timetable_fetcher.dart';
 
-class FestivalDetailService {
+class FestivalDetailService
+    implements FestivalTimetableFetcher, FestivalArtistsFetcher {
   final FestivalCacheService _cache;
 
   FestivalDetailService(this._cache);
 
+  @override
   Future<List<FestivalArtistItem>> fetchFestivalArtists(int festivalId) async {
     try {
       final response =
@@ -47,6 +51,7 @@ class FestivalDetailService {
     }
   }
 
+  @override
   Future<List<TimetableEntry>> fetchTimetable(int festivalId) async {
     try {
       final response =

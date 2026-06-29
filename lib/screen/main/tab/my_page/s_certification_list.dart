@@ -362,6 +362,7 @@ class _CertCardState extends State<_CertCard> {
         ],
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _buildPosterImage(widget.cert.posterUrl, colors),
           _buildCardContent(colors, statusColor, statusLabel, isApproved, isPending),
@@ -377,7 +378,6 @@ class _CertCardState extends State<_CertCard> {
         borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
         child: SizedBox(
           width: 90,
-          height: 90,
           child: posterUrl != null
               ? CachedNetworkImage(
                   imageUrl: posterUrl,

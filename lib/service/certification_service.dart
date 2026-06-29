@@ -95,6 +95,12 @@ class CertificationService {
     );
   }
 
+  /// 리뷰 추천 토글 — true: 추천됨, false: 취소됨
+  Future<bool> toggleReviewLike(int reviewId) async {
+    final response = await DioClient.dio.post('/certifications/$reviewId/review-like');
+    return response.data['liked'] as bool;
+  }
+
   /// 페스티벌의 평균 별점 및 평가 수 조회
   Future<({double averageRating, int ratingCount})> getFestivalRating(int festivalId) async {
     final response = await DioClient.dio.get('/certifications/festival/$festivalId/rating');

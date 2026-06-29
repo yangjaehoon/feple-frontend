@@ -88,25 +88,25 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return ListenableBuilder(
-      listenable: _notifier,
-      builder: (context, _) => Scaffold(
-        backgroundColor: colors.backgroundMain,
-        floatingActionButton: _showScrollToTop
-            ? FloatingActionButton.small(
-                heroTag: 'notifScrollTop',
-                onPressed: () => _scrollController.animateTo(
-                  0,
-                  duration: AppDimens.animNormal,
-                  curve: Curves.easeOut,
-                ),
-                backgroundColor: colors.surface,
-                foregroundColor: colors.textTitle,
-                elevation: 2,
-                child: const Icon(Icons.arrow_upward_rounded, size: 20),
-              )
-            : null,
-        body: Column(
+    return Scaffold(
+      backgroundColor: colors.backgroundMain,
+      floatingActionButton: _showScrollToTop
+          ? FloatingActionButton.small(
+              heroTag: 'notifScrollTop',
+              onPressed: () => _scrollController.animateTo(
+                0,
+                duration: AppDimens.animNormal,
+                curve: Curves.easeOut,
+              ),
+              backgroundColor: colors.surface,
+              foregroundColor: colors.textTitle,
+              elevation: 2,
+              child: const Icon(Icons.arrow_upward_rounded, size: 20),
+            )
+          : null,
+      body: ListenableBuilder(
+        listenable: _notifier,
+        builder: (context, _) => Column(
           children: [
             _buildAppBar(colors),
             _buildFilterChips(colors),

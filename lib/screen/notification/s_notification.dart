@@ -11,6 +11,7 @@ import 'package:feple/model/notification_model.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/screen/notification/notification_notifier.dart';
 import 'package:feple/screen/notification/w_notification_card.dart';
+import 'package:feple/screen/settings/s_notification_settings.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:feple/common/util/app_route.dart';
@@ -171,6 +172,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   ),
                 ),
               ),
+            IconButton(
+              tooltip: 'notif_settings'.tr(),
+              icon: Icon(Icons.settings_rounded, color: colors.textTitle),
+              onPressed: () => Navigator.push(
+                context,
+                SlideRoute(builder: (_) => const NotificationSettingsScreen()),
+              ),
+            ),
           ],
         ),
       ),

@@ -203,6 +203,7 @@ class FestivalArtistsState extends State<FestivalArtists> {
             artistId: artist.artistId,
             artistName: artist.artistName,
             followerCount: 0,
+            profileImageUrl: artist.profileImageUrl,
           )),
         ).whenComplete(() { if (mounted) _isNavigating = false; });
       },

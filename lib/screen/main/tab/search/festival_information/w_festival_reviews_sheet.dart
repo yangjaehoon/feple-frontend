@@ -230,7 +230,11 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
           if (_reviews.isEmpty)
             _buildEmpty(colors)
           else ...[
-            ..._reviews.map((r) => _ReviewCard(review: r, colors: colors)),
+            ..._reviews.map((r) => _ReviewCard(
+                  review: r,
+                  colors: colors,
+                  certService: widget.certService,
+                )),
             if (_isLoadingMore)
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 16),
@@ -495,17 +499,67 @@ class _StarRow extends StatelessWidget {
   }
 }
 
-class _ReviewCard extends StatelessWidget {
+class _ReviewCard extends StatefulWidget {
   final FestivalReview review;
   final AbstractThemeColors colors;
+  final CertificationService certService;
 
-  const _ReviewCard({required this.review, required this.colors});
+  const _ReviewCard({
+    required this.review,
+    required this.colors,
+    required this.certService,
+  });
+
+  @override
+  State<_ReviewCard> createState() => _ReviewCardState();
+}
+
+class _ReviewCardState extends State<_ReviewCard> {
+  late int _likeCount;
+  late bool _likedByMe;
+  bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _likeCount = widget.review.likeCount;
+    _likedByMe = widget.review.likedByMe;
+  }
+
+  Future<void> _toggleLike() async {
+    if (_isSubmitting) return;
+    final wasLiked = _likedByMe;
+    setState(() {
+      _isSubmitting = true;
+      _likedByMe = !wasLiked;
+      _likeCount += wasLiked ? -1 : 1;
+    });
+    try {
+      final serverLiked =
+          await widget.certService.toggleReviewLike(widget.review.reviewId);
+      if (!mounted) return;
+      setState(() {
+        _likedByMe = serverLiked;
+        _isSubmitting = false;
+      });
+    } catch (e) {
+      debugPrint('[ReviewCard] like toggle error: $e');
+      if (!mounted) return;
+      setState(() {
+        _likedByMe = wasLiked;
+        _likeCount += wasLiked ? 1 : -1;
+        _isSubmitting = false;
+      });
+      context.showErrorSnackbar('like_failed'.tr());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final initial = review.nickname.isNotEmpty
-        ? review.nickname[0].toUpperCase()
-        : '?';
+    final colors = widget.colors;
+    final review = widget.review;
+    final initial =
+        review.nickname.isNotEmpty ? review.nickname[0].toUpperCase() : '?';
     final hasReviewText =
         review.userReview != null && review.userReview!.isNotEmpty;
 
@@ -517,7 +571,6 @@ class _ReviewCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 아바타
               CircleAvatar(
                 radius: 19,
                 backgroundColor: colors.surface,
@@ -578,10 +631,51 @@ class _ReviewCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 8),
+          _buildLikeButton(colors),
+          const SizedBox(height: 10),
           Divider(color: colors.divider, height: 1),
         ],
       ),
+    );
+  }
+
+  Widget _buildLikeButton(AbstractThemeColors colors) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        GestureDetector(
+          onTap: _toggleLike,
+          behavior: HitTestBehavior.opaque,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  _likedByMe
+                      ? Icons.thumb_up_rounded
+                      : Icons.thumb_up_outlined,
+                  size: 14,
+                  color: _likedByMe ? colors.activate : colors.textSecondary,
+                ),
+                if (_likeCount > 0) ...[
+                  const SizedBox(width: 4),
+                  Text(
+                    '$_likeCount',
+                    style: TextStyle(
+                      fontSize: AppDimens.fontSizeXxs,
+                      color:
+                          _likedByMe ? colors.activate : colors.textSecondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

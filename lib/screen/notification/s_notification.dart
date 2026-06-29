@@ -215,7 +215,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   void _dismissWithUndo(NotificationModel item) {
     _notifier.removeLocally(item);
-    ScaffoldMessenger.of(context)
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.hideCurrentSnackBar();
+    messenger
         .showSnackBar(SnackBar(
           content: Text('notification_dismissed'.tr()),
           duration: const Duration(seconds: 4),

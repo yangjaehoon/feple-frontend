@@ -10,7 +10,7 @@ class EventTypeIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 42,
-      height: 42,
+      height: 60,
       decoration: BoxDecoration(
         color: config.color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),

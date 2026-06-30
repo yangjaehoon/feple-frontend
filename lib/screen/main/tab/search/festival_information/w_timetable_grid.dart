@@ -176,24 +176,44 @@ class TimetableGrid extends StatelessWidget {
   }
 
   List<Widget> _buildPerformanceCards(double stageW) {
-    return filtered.map((entry) {
-      final stageIndex = stages.indexOf(entry.stageName);
-      if (stageIndex < 0) return const SizedBox.shrink();
+    final cards = <Widget>[];
+    for (final entry in filtered) {
       final rawTop = _toY(entry.startTime);
       final clampedH = (_toY(entry.endTime) - rawTop - 4).clamp(4.0, double.infinity);
-      return Positioned(
-        left: stageIndex * stageW + 3,
-        top: _topPad + rawTop + 2,
-        width: stageW - 6,
-        height: clampedH,
-        child: _PerformanceCard(
-          entry: entry,
-          color: _colorFor(entry.stageName),
-          cardHeight: clampedH,
-          isFollowed: entry.isFollowedBy(followedNames),
-        ),
-      );
-    }).toList();
+      if (entry.isOps) {
+        // 운영 항목: 별도 열 없이 모든 스테이지 열에 동일하게 표시
+        for (int i = 0; i < stages.length; i++) {
+          cards.add(Positioned(
+            left: i * stageW + 3,
+            top: _topPad + rawTop + 2,
+            width: stageW - 6,
+            height: clampedH,
+            child: _PerformanceCard(
+              entry: entry,
+              color: kOpsColor,
+              cardHeight: clampedH,
+              isFollowed: false,
+            ),
+          ));
+        }
+      } else {
+        final stageIndex = stages.indexOf(entry.stageName);
+        if (stageIndex < 0) continue;
+        cards.add(Positioned(
+          left: stageIndex * stageW + 3,
+          top: _topPad + rawTop + 2,
+          width: stageW - 6,
+          height: clampedH,
+          child: _PerformanceCard(
+            entry: entry,
+            color: _colorFor(entry.stageName),
+            cardHeight: clampedH,
+            isFollowed: entry.isFollowedBy(followedNames),
+          ),
+        ));
+      }
+    }
+    return cards;
   }
 }
 

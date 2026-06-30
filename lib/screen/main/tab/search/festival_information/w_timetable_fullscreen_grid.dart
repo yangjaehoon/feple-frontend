@@ -181,23 +181,39 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
                 );
               },
             ),
-            ..._range.filtered.map((entry) {
-              final stageIndex = _stages.indexOf(entry.stageName);
-              if (stageIndex < 0) return const SizedBox.shrink();
+            ..._range.filtered.expand<Widget>((entry) {
               final rawTop = _toY(entry.startTime, pxPerMin);
               final cardH = _toY(entry.endTime, pxPerMin) - rawTop;
-              return Positioned(
+              final clampedH = (cardH - 4).clamp(4.0, double.infinity);
+              if (entry.isOps) {
+                // 운영 항목: 모든 스테이지 열에 동일하게 표시
+                return List.generate(_stages.length, (i) => Positioned(
+                  left: i * stageW + 3,
+                  top: _topPad + rawTop + 2,
+                  width: stageW - 6,
+                  height: clampedH,
+                  child: _OfficialCard(
+                    entry: entry,
+                    color: kOpsColor,
+                    followed: false,
+                    cardH: cardH - 4,
+                  ),
+                ));
+              }
+              final stageIndex = _stages.indexOf(entry.stageName);
+              if (stageIndex < 0) return const <Widget>[];
+              return [Positioned(
                 left: stageIndex * stageW + 3,
                 top: _topPad + rawTop + 2,
                 width: stageW - 6,
-                height: (cardH - 4).clamp(4.0, double.infinity),
+                height: clampedH,
                 child: _OfficialCard(
                   entry: entry,
                   color: _stageColor(entry.stageName),
                   followed: entry.isFollowedBy(widget.followedNames),
                   cardH: cardH - 4,
                 ),
-              );
+              )];
             }),
             ...widget.userEntries.map((entry) {
               final stageIndex = _stages.indexOf(entry.stageName);

@@ -1,6 +1,9 @@
 import 'package:feple/common/common.dart';
 import 'package:flutter/material.dart';
 
+const String kOpsStage = '📢';
+const Color kOpsColor = Color(0xFF90A4AE); // 운영 항목 전용 색상
+
 const List<Color> kStageColors = [
   AppColors.skyBlue,
   AppColors.kawaiiPink,

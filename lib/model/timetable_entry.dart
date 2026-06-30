@@ -18,9 +18,10 @@ TimetableRange computeTimetableRange(List<TimetableEntry> entries, String? date)
       ? <TimetableEntry>[]
       : entries.where((e) => e.festivalDate == date).toList();
 
+  // 운영 항목(📢)은 별도 열 없이 모든 스테이지에 표시하므로 stages에서 제외
   final seen = <String, int>{};
   for (final e in filtered) {
-    seen.putIfAbsent(e.stageName, () => e.stageOrder);
+    if (!e.isOps) seen.putIfAbsent(e.stageName, () => e.stageOrder);
   }
   final stages = (seen.entries.toList()..sort((a, b) => a.value.compareTo(b.value)))
       .map((e) => e.key)
@@ -47,6 +48,8 @@ TimetableRange computeTimetableRange(List<TimetableEntry> entries, String? date)
 
 /// 타임테이블 항목 모델
 class TimetableEntry {
+  static const String _opsStage = '📢';
+
   final int id;
   final String stageName;
   final int stageOrder;
@@ -96,6 +99,8 @@ class TimetableEntry {
                 .toList() ??
             const [],
       );
+
+  bool get isOps => stageName == _opsStage;
 
   String get timeRange => '$startTime – $endTime';
 

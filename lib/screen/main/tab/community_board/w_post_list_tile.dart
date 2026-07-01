@@ -13,12 +13,14 @@ class PostListTile extends StatelessWidget {
   final Post post;
   final VoidCallback onTap;
   final String? highlightKeyword;
+  final VoidCallback? onAuthorTap;
 
   const PostListTile({
     super.key,
     required this.post,
     required this.onTap,
     this.highlightKeyword,
+    this.onAuthorTap,
   });
 
   Widget _buildTitle(AbstractThemeColors colors) {
@@ -43,12 +45,15 @@ class PostListTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ProfileAvatar(
-              imageUrl: post.profileImageUrl,
-              nickname: post.nickname,
-              certified: post.certified,
-              userRole: post.userRole,
-              anonymous: post.anonymous,
+            GestureDetector(
+              onTap: (!post.anonymous && onAuthorTap != null) ? onAuthorTap : null,
+              child: ProfileAvatar(
+                imageUrl: post.profileImageUrl,
+                nickname: post.nickname,
+                certified: post.certified,
+                userRole: post.userRole,
+                anonymous: post.anonymous,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(

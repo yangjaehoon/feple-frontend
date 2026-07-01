@@ -15,7 +15,8 @@ import 'package:flutter/material.dart';
 
 class MyPostsView extends StatefulWidget {
   final int userId;
-  const MyPostsView({super.key, required this.userId});
+  final String? title;
+  const MyPostsView({super.key, required this.userId, this.title});
 
   @override
   State<MyPostsView> createState() => _MyPostsViewState();
@@ -108,7 +109,7 @@ class _MyPostsViewState extends State<MyPostsView> {
       backgroundColor: colors.backgroundMain,
       body: Column(
         children: [
-          SecondaryAppBar(title: 'my_posts'.tr()),
+          SecondaryAppBar(title: widget.title ?? 'my_posts'.tr()),
           Expanded(
             child: RefreshIndicator(
               color: colors.activate,

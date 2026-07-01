@@ -18,6 +18,7 @@ class CommentSection extends StatelessWidget {
   final void Function(int commentId)? onToggleLike;
   final void Function(int commentId)? onDeleteComment;
   final void Function(int commentId, String currentContent)? onEditComment;
+  final void Function(int userId, String nickname, String? profileImageUrl)? onAuthorTap;
 
   const CommentSection({
     super.key,
@@ -29,6 +30,7 @@ class CommentSection extends StatelessWidget {
     this.onToggleLike,
     this.onDeleteComment,
     this.onEditComment,
+    this.onAuthorTap,
   });
 
   Widget _buildEmpty(AbstractThemeColors colors) {
@@ -60,6 +62,9 @@ class CommentSection extends StatelessWidget {
         onToggleLike: onToggleLike != null ? () => onToggleLike!(root.id) : null,
         onDelete: onDeleteComment != null ? () => onDeleteComment!(root.id) : null,
         onEdit: onEditComment != null ? () => onEditComment!(root.id, root.content) : null,
+        onAuthorTap: onAuthorTap != null && !root.anonymous
+            ? () => onAuthorTap!(root.userId, root.nickname, root.profileImageUrl)
+            : null,
       ));
 
       final replies = repliesMap[root.id] ?? [];
@@ -75,6 +80,9 @@ class CommentSection extends StatelessWidget {
             onToggleLike: onToggleLike != null ? () => onToggleLike!(reply.id) : null,
             onDelete: onDeleteComment != null ? () => onDeleteComment!(reply.id) : null,
             onEdit: onEditComment != null ? () => onEditComment!(reply.id, reply.content) : null,
+            onAuthorTap: onAuthorTap != null && !reply.anonymous
+                ? () => onAuthorTap!(reply.userId, reply.nickname, reply.profileImageUrl)
+                : null,
           ),
         ));
       }
@@ -97,6 +105,7 @@ class _CommentTile extends StatelessWidget {
   final VoidCallback? onToggleLike;
   final VoidCallback? onDelete;
   final VoidCallback? onEdit;
+  final VoidCallback? onAuthorTap;
 
   const _CommentTile({
     required this.comment,
@@ -107,6 +116,7 @@ class _CommentTile extends StatelessWidget {
     this.onToggleLike,
     this.onDelete,
     this.onEdit,
+    this.onAuthorTap,
   });
 
   @override
@@ -117,13 +127,16 @@ class _CommentTile extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ProfileAvatar(
-            imageUrl: comment.anonymous ? null : comment.profileImageUrl,
-            nickname: comment.nickname,
-            certified: comment.anonymous ? false : comment.certified,
-            userRole: comment.anonymous ? null : comment.userRole,
-            radius: isReply ? 13 : 16,
-            anonymous: comment.anonymous,
+          GestureDetector(
+            onTap: onAuthorTap,
+            child: ProfileAvatar(
+              imageUrl: comment.anonymous ? null : comment.profileImageUrl,
+              nickname: comment.nickname,
+              certified: comment.anonymous ? false : comment.certified,
+              userRole: comment.anonymous ? null : comment.userRole,
+              radius: isReply ? 13 : 16,
+              anonymous: comment.anonymous,
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(child: _buildBody(colors)),

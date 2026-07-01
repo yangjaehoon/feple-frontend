@@ -64,6 +64,7 @@
   "scrap_cancel": "Scrap removed.",
   "scrap_failed": "Failed to scrap post.",
   "my_posts": "My Posts",
+  "user_posts": "{}'s Posts",
   "no_posts": "No posts yet.",
   "my_comments": "My Comments",
   "no_comments": "No comments yet.",

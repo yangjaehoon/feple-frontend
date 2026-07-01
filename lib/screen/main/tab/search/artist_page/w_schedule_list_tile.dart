@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:feple/model/artist_schedule_model.dart';
 import 'package:feple/screen/main/tab/search/artist_page/event_type_style.dart';
+import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_event_type_icon.dart';
 import 'package:flutter/material.dart';
 
@@ -39,7 +41,7 @@ class ScheduleListTile extends StatelessWidget {
           children: [
             _buildPoster(colors),
             const SizedBox(width: 12),
-            Expanded(child: _buildContent(colors)),
+            Expanded(child: _buildContent(context, colors)),
           ],
         ),
       ),
@@ -71,7 +73,7 @@ class ScheduleListTile extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(AbstractThemeColors colors) {
+  Widget _buildContent(BuildContext context, AbstractThemeColors colors) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -105,13 +107,13 @@ class ScheduleListTile extends StatelessWidget {
         ],
         if (item.coArtists.isNotEmpty) ...[
           const SizedBox(height: 6),
-          _buildCoArtists(colors),
+          _buildCoArtists(context, colors),
         ],
       ],
     );
   }
 
-  Widget _buildCoArtists(AbstractThemeColors colors) {
+  Widget _buildCoArtists(BuildContext context, AbstractThemeColors colors) {
     return SizedBox(
       height: 28,
       child: ListView.builder(
@@ -123,15 +125,28 @@ class ScheduleListTile extends StatelessWidget {
             padding: const EdgeInsets.only(right: 4),
             child: Tooltip(
               message: coArtist.artistName,
-              child: CircleAvatar(
-                radius: 13,
-                backgroundColor: _c(colors.backgroundMain),
-                backgroundImage: (coArtist.profileImageUrl != null && coArtist.profileImageUrl!.isNotEmpty)
-                    ? CachedNetworkImageProvider(coArtist.profileImageUrl!, maxWidth: 52)
-                    : null,
-                child: (coArtist.profileImageUrl == null || coArtist.profileImageUrl!.isEmpty)
-                    ? Icon(Icons.person_rounded, size: 12, color: _c(colors.textSecondary))
-                    : null,
+              child: GestureDetector(
+                onTap: () => Navigator.push(
+                  context,
+                  SlideRoute(
+                    builder: (_) => ArtistScreen(
+                      artistId: coArtist.artistId,
+                      artistName: coArtist.artistName,
+                      followerCount: 0,
+                      profileImageUrl: coArtist.profileImageUrl,
+                    ),
+                  ),
+                ),
+                child: CircleAvatar(
+                  radius: 13,
+                  backgroundColor: _c(colors.backgroundMain),
+                  backgroundImage: (coArtist.profileImageUrl != null && coArtist.profileImageUrl!.isNotEmpty)
+                      ? CachedNetworkImageProvider(coArtist.profileImageUrl!, maxWidth: 52)
+                      : null,
+                  child: (coArtist.profileImageUrl == null || coArtist.profileImageUrl!.isEmpty)
+                      ? Icon(Icons.person_rounded, size: 12, color: _c(colors.textSecondary))
+                      : null,
+                ),
               ),
             ),
           );

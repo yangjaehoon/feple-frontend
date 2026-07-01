@@ -41,7 +41,7 @@ class _SearchFragmentState extends State<SearchFragment> {
   }
 
   Future<void> _onRefresh() async {
-    await context.read<FestivalPreviewProvider>().refresh();
+    await context.read<FestivalPreviewProvider>().refresh(force: true);
     _circleArtistKey.currentState?.refresh();
   }
 

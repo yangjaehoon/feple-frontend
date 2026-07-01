@@ -14,6 +14,7 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
+import 'package:feple/screen/main/tab/my_page/s_other_user_profile.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/model/post_model.dart';
@@ -243,6 +244,13 @@ class _CommunityPostState extends State<CommunityPost> {
             post: post,
             highlightKeyword: _searchController.text.trim(),
             onTap: () => _openPost(post),
+            onAuthorTap: () => navigateToUserProfile(
+              context,
+              userId: post.userId,
+              nickname: post.nickname,
+              profileImageUrl: post.profileImageUrl,
+              currentUserId: context.read<UserProvider>().currentUserId,
+            ),
           );
         },
         separatorBuilder: (_, __) => Divider(thickness: 1, color: colors.listDivider),
@@ -302,6 +310,13 @@ class _CommunityPostState extends State<CommunityPost> {
           child: PostListTile(
             post: post,
             onTap: () => _openPost(post),
+            onAuthorTap: () => navigateToUserProfile(
+              context,
+              userId: post.userId,
+              nickname: post.nickname,
+              profileImageUrl: post.profileImageUrl,
+              currentUserId: context.read<UserProvider>().currentUserId,
+            ),
           ),
         );
       },

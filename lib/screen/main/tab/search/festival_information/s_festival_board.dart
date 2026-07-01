@@ -9,8 +9,11 @@ import 'package:feple/injection.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
+import 'package:feple/screen/main/tab/my_page/s_other_user_profile.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../../../provider/user_provider.dart';
 
 class FestivalBoardScreen extends StatefulWidget {
   final int festivalId;
@@ -378,9 +381,17 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
             child: Center(child: CircularProgressIndicator.adaptive()),
           );
         }
+        final post = _posts[i];
         return PostListTile(
-          post: _posts[i],
-          onTap: () => _openPost(_posts[i]),
+          post: post,
+          onTap: () => _openPost(post),
+          onAuthorTap: () => navigateToUserProfile(
+            context,
+            userId: post.userId,
+            nickname: post.nickname,
+            profileImageUrl: post.profileImageUrl,
+            currentUserId: context.read<UserProvider>().currentUserId,
+          ),
         );
       },
       separatorBuilder: (_, __) => Divider(thickness: 1, color: colors.listDivider),

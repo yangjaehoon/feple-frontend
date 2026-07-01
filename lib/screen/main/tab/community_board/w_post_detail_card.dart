@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../provider/user_provider.dart';
+import '../my_page/s_other_user_profile.dart';
 import 'post_detail_notifier.dart';
 import 'w_comment_input_bar.dart';
 import 'w_comment_section.dart';
@@ -375,6 +376,14 @@ class _PostDetailCardState extends State<PostDetailCard> {
             await _notifier.updateComment(commentId, result);
           }
         },
+        onAuthorTap: (authorId, nickname, profileImageUrl) =>
+            navigateToUserProfile(
+              context,
+              userId: authorId,
+              nickname: nickname,
+              profileImageUrl: profileImageUrl,
+              currentUserId: userId,
+            ),
       ),
     );
   }

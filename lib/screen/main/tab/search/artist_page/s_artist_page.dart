@@ -6,6 +6,7 @@ import 'package:feple/screen/main/tab/search/artist_page/w_artist_board.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_schedule.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_songs.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_main_image_swiper.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_related_artists.dart';
 import 'package:flutter/material.dart';
 
 class ArtistScreen extends StatefulWidget {
@@ -32,6 +33,7 @@ class _ArtistScreenState extends State<ArtistScreen> {
   final _scheduleKey = GlobalKey<ArtistScheduleState>();
   final _boardKey = GlobalKey<NamedBoardState>();
   final _songsKey = GlobalKey<ArtistSongsState>();
+  final _relatedKey = GlobalKey<RelatedArtistsState>();
 
   @override
   void initState() {
@@ -53,6 +55,7 @@ class _ArtistScreenState extends State<ArtistScreen> {
     _scheduleKey.currentState?.refresh();
     _boardKey.currentState?.refresh();
     _songsKey.currentState?.refresh();
+    _relatedKey.currentState?.refresh();
     await _followNotifier.init();
   }
 
@@ -105,6 +108,10 @@ class _ArtistScreenState extends State<ArtistScreen> {
             key: _songsKey,
             artistId: widget.artistId,
             artistName: widget.artistName,
+          ),
+          RelatedArtists(
+            key: _relatedKey,
+            artistId: widget.artistId,
           ),
         ],
       ),

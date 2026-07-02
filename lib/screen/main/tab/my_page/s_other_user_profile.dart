@@ -36,6 +36,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
 
   User? _user;
   int? _postCount;
+  int? _certificationCount;
   bool _hasError = false;
   bool _isNavigating = false;
 
@@ -53,9 +54,11 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
         _activityService.fetchStats(widget.userId),
       ]);
       if (!mounted) return;
+      final stats = results[1] as UserStats;
       setState(() {
         _user = results[0] as User;
-        _postCount = (results[1] as UserStats).postCount;
+        _postCount = stats.postCount;
+        _certificationCount = stats.certificationCount;
       });
     } catch (_) {
       if (mounted) setState(() => _hasError = true);
@@ -103,6 +106,8 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
           _buildProfileHeader(colors),
           const SizedBox(height: 8),
           _buildPostsCard(colors),
+          const SizedBox(height: 8),
+          _buildCertificationCard(colors),
         ],
       ),
     );
@@ -278,6 +283,55 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
               Icon(Icons.chevron_right_rounded, color: colors.textSecondary, size: 20),
             ],
           ),
+        ),
+      ),
+    );
+  }
+  Widget _buildCertificationCard(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
+          border: Border.all(color: colors.listDivider),
+          boxShadow: [
+            BoxShadow(
+              color: colors.cardShadow.withValues(alpha: 0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.verified_rounded, color: colors.activate, size: 22),
+            const SizedBox(width: 12),
+            Text(
+              'certification_badge'.tr(),
+              style: TextStyle(
+                fontSize: AppDimens.fontSizeMd,
+                fontWeight: FontWeight.w600,
+                color: colors.textTitle,
+              ),
+            ),
+            const Spacer(),
+            _certificationCount == null
+                ? SkeletonBox(
+                    width: 28,
+                    height: 20,
+                    borderRadius: BorderRadius.circular(AppDimens.radiusXs),
+                  )
+                : Text(
+                    _certificationCount.toString(),
+                    style: TextStyle(
+                      fontSize: AppDimens.fontSizeXl,
+                      fontWeight: FontWeight.w800,
+                      color: colors.textTitle,
+                    ),
+                  ),
+          ],
         ),
       ),
     );

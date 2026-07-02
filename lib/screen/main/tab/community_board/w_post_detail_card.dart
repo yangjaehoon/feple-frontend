@@ -7,6 +7,7 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/popup_menu_item_builder.dart';
 import 'package:feple/common/widget/w_inline_badge.dart';
+import 'package:feple/common/widget/w_level_badge.dart';
 import 'package:feple/common/widget/w_profile_avatar.dart';
 import 'package:feple/common/widget/w_write_post.dart';
 import 'package:feple/model/post_model.dart';
@@ -43,6 +44,7 @@ class PostDetailCard extends StatefulWidget {
   final DateTime? updatedAt;
   final int? postUserId;
   final bool anonymous;
+  final String? authorLevel;
 
   const PostDetailCard({
     super.key,
@@ -61,6 +63,7 @@ class PostDetailCard extends StatefulWidget {
     this.updatedAt,
     this.postUserId,
     this.anonymous = false,
+    this.authorLevel,
   });
 
   PostDetailCard.fromPost({
@@ -80,7 +83,8 @@ class PostDetailCard extends StatefulWidget {
         createdAt = post.createdAt,
         updatedAt = post.updatedAt,
         postUserId = post.userId,
-        anonymous = post.anonymous;
+        anonymous = post.anonymous,
+        authorLevel = post.authorLevel;
 
   @override
   State<PostDetailCard> createState() => _PostDetailCardState();
@@ -306,6 +310,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
             certified: widget.certified,
             userRole: widget.userRole,
             anonymous: widget.anonymous,
+            authorLevel: widget.authorLevel,
             createdAt: widget.createdAt,
             updatedAt: _updatedAt,
             onAuthorTap: () => navigateToUserProfile(
@@ -497,6 +502,7 @@ class _PostHeaderSection extends StatelessWidget {
   final bool certified;
   final String? userRole;
   final bool anonymous;
+  final String? authorLevel;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final VoidCallback? onAuthorTap;
@@ -508,6 +514,7 @@ class _PostHeaderSection extends StatelessWidget {
     required this.certified,
     this.userRole,
     required this.anonymous,
+    this.authorLevel,
     this.createdAt,
     this.updatedAt,
     this.onAuthorTap,
@@ -557,6 +564,10 @@ class _PostHeaderSection extends StatelessWidget {
                     ),
                     InlineBadge(
                         userRole: userRole, certified: certified, size: 14),
+                    if (!anonymous) ...[
+                      const SizedBox(width: 5),
+                      LevelBadge(authorLevel: authorLevel, fontSize: 10),
+                    ],
                   ],
                 ),
                 if (createdAt != null)

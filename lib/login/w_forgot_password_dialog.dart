@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/service/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,6 +16,8 @@ class ForgotPasswordDialog extends StatefulWidget {
 }
 
 class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
+  static final _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+
   late final TextEditingController _emailCtrl;
   bool _isSending = false;
   String? _emailError;
@@ -37,17 +40,24 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
       setState(() => _emailError = 'enter_email'.tr());
       return;
     }
+    if (!_emailRegex.hasMatch(email)) {
+      setState(() => _emailError = 'enter_valid_email'.tr());
+      return;
+    }
     setState(() { _emailError = null; _isSending = true; });
     try {
       await AuthService.instance.sendPasswordReset(email);
       if (!mounted) return;
-      // ScaffoldMessenger는 MaterialApp 레벨이라 팝 전 호출 가능
       context.showSuccessSnackbar('password_reset_sent'.tr());
       Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
-      setState(() => _isSending = false);
       context.showErrorSnackbar(AuthService.instance.firebaseErrorMessage(e.code));
+    } catch (e) {
+      debugPrint('[ForgotPw] 예외: $e');
+      if (mounted) context.showErrorSnackbar('unknown_error'.tr());
+    } finally {
+      if (mounted) setState(() => _isSending = false);
     }
   }
 
@@ -63,16 +73,19 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
         'reset_password'.tr(),
         style: TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle),
       ),
-      content: TextField(
-        controller: _emailCtrl,
-        keyboardType: TextInputType.emailAddress,
-        onChanged: (_) {
-          if (_emailError != null) setState(() => _emailError = null);
-        },
-        decoration: InputDecoration(
+      content: AutofillGroup(
+        child: AppTextField(
+          controller: _emailCtrl,
           hintText: 'registered_email'.tr(),
-          border: const OutlineInputBorder(),
+          icon: Icons.mail_outline_rounded,
+          keyboardType: TextInputType.emailAddress,
+          autofillHints: const [AutofillHints.email],
+          textInputAction: TextInputAction.done,
+          onSubmitted: (_) => _onSend(),
           errorText: _emailError,
+          onChanged: (_) {
+            if (_emailError != null) setState(() => _emailError = null);
+          },
         ),
       ),
       actions: [

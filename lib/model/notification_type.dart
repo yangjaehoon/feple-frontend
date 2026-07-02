@@ -48,5 +48,8 @@ enum NotificationType {
       this == NotificationType.songRequestApproved ||
       this == NotificationType.songRequestRejected;
 
+  bool get isArtistNavigationType =>
+      isSongRequestType || this == NotificationType.artistSuggestionProcessed;
+
   bool get hasFestivalNavigation => isFestivalType || isCertType;
 }

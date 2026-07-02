@@ -73,7 +73,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       await _navigateToFestival(item.referenceId!);
     } else if (item.type!.isCommentType) {
       await _navigateToPost(item.referenceId!);
-    } else if (item.type!.isSongRequestType) {
+    } else if (item.type!.isArtistNavigationType) {
       await _navigateToArtist(item.referenceId!);
     }
   }

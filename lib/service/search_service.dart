@@ -22,10 +22,12 @@ class SearchService {
           final label = item['label'] as String? ?? '';
           final type = item['type'] as String? ?? '';
           final imageUrl = item['imageUrl'] as String?;
+          final labelEn = item['labelEn'] as String? ?? '';
           return SearchSuggestion(
             label,
             type == 'artist' ? SearchType.artist : SearchType.festival,
             id: id,
+            labelEn: labelEn,
             imageUrl: imageUrl,
           );
         })

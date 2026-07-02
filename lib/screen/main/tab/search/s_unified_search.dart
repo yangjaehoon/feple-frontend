@@ -392,7 +392,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
           ListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
             leading: _buildSuggestionLeading(suggestion, colors),
-            title: _buildHighlightedSuggestion(suggestion.label, _controller.text.trim(), colors),
+            title: _buildHighlightedSuggestion(suggestion.displayLabel(context.isEnglish), _controller.text.trim(), colors),
             trailing: Icon(Icons.north_west_rounded, size: 16, color: colors.textSecondary),
             onTap: () => _selectSuggestion(suggestion),
           ),

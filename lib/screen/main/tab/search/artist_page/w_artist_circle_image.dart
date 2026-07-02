@@ -34,10 +34,7 @@ class ArtistCircleImage extends StatelessWidget {
         child: CachedNetworkImage(
           imageUrl: imageUrl!,
           fit: BoxFit.cover,
-          width: size,
-          height: size,
-          memCacheWidth: 110,
-          memCacheHeight: 110,
+          memCacheWidth: 112,
           fadeInDuration: AppDimens.animXFast,
           fadeOutDuration: AppDimens.animTapFeedback,
           placeholder: (_, __) => fallback(colors),

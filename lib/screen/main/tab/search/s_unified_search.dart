@@ -1,13 +1,18 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_model.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/model/post_model.dart';
+import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
+import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/screen/main/tab/search/search_style.dart';
 import 'package:feple/screen/main/tab/search/w_search_result_tiles.dart';
+import 'package:feple/service/artist_service.dart';
+import 'package:feple/service/festival_service.dart';
 import 'package:feple/service/search_service.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,8 +30,11 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
   static const _maxRecent = 10;
 
   final _searchService = sl<SearchService>();
+  final _artistService = sl<ArtistService>();
+  final _festivalService = sl<FestivalService>();
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
+  bool _isNavigating = false;
   Timer? _debounce;
   late final TabController _tabController;
 
@@ -133,10 +141,46 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     }
   }
 
-  void _selectSuggestion(String label) {
-    _controller.text = label;
-    _controller.selection = TextSelection.collapsed(offset: label.length);
-    _search(label);
+  void _selectSuggestion(SearchSuggestion suggestion) {
+    _controller.text = suggestion.label;
+    _controller.selection = TextSelection.collapsed(offset: suggestion.label.length);
+    if (suggestion.id != null) {
+      _navigateDirectly(suggestion);
+    } else {
+      _search(suggestion.label);
+    }
+  }
+
+  Future<void> _navigateDirectly(SearchSuggestion suggestion) async {
+    if (_isNavigating) return;
+    _isNavigating = true;
+    _focusNode.unfocus();
+    await _addRecentSearch(suggestion.label.trim());
+    try {
+      if (suggestion.type == SearchType.artist) {
+        final artist = await _artistService.fetchArtistById(suggestion.id!);
+        if (!mounted) return;
+        await Navigator.push(context, SlideRoute(
+          builder: (_) => ArtistScreen(
+            artistId: artist.id,
+            artistName: artist.name,
+            followerCount: artist.followerCount,
+            profileImageUrl: artist.profileImageUrl,
+          ),
+        ));
+      } else {
+        final festival = await _festivalService.fetchById(suggestion.id!);
+        if (!mounted) return;
+        await Navigator.push(context, SlideRoute(
+          builder: (_) => FestivalInformationFragment(poster: festival),
+        ));
+      }
+    } catch (e) {
+      debugPrint('[Search] 직접 이동 실패: $e');
+      if (mounted) _search(suggestion.label);
+    } finally {
+      if (mounted) _isNavigating = false;
+    }
   }
 
   @override
@@ -327,7 +371,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
           ),
           title: _buildHighlightedSuggestion(suggestion.label, _controller.text.trim(), colors),
           trailing: Icon(Icons.north_west_rounded, size: 16, color: colors.textSecondary),
-          onTap: () => _selectSuggestion(suggestion.label),
+          onTap: () => _selectSuggestion(suggestion),
         );
       },
     );

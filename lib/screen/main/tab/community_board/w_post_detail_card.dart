@@ -308,6 +308,13 @@ class _PostDetailCardState extends State<PostDetailCard> {
             anonymous: widget.anonymous,
             createdAt: widget.createdAt,
             updatedAt: _updatedAt,
+            onAuthorTap: () => navigateToUserProfile(
+              context,
+              userId: widget.postUserId,
+              nickname: widget.nickname,
+              profileImageUrl: widget.profileImageUrl,
+              currentUserId: userId,
+            ),
           ),
           Divider(thickness: 1, height: 24, color: colors.listDivider),
           _PostContentSection(
@@ -492,6 +499,7 @@ class _PostHeaderSection extends StatelessWidget {
   final bool anonymous;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final VoidCallback? onAuthorTap;
 
   const _PostHeaderSection({
     required this.title,
@@ -502,6 +510,7 @@ class _PostHeaderSection extends StatelessWidget {
     required this.anonymous,
     this.createdAt,
     this.updatedAt,
+    this.onAuthorTap,
   });
 
   @override
@@ -521,13 +530,16 @@ class _PostHeaderSection extends StatelessWidget {
         const SizedBox(height: 12),
         Row(
           children: [
-            ProfileAvatar(
-              imageUrl: profileImageUrl,
-              nickname: nickname,
-              certified: certified,
-              userRole: userRole,
-              radius: 16,
-              anonymous: anonymous,
+            GestureDetector(
+              onTap: (!anonymous && onAuthorTap != null) ? onAuthorTap : null,
+              child: ProfileAvatar(
+                imageUrl: profileImageUrl,
+                nickname: nickname,
+                certified: certified,
+                userRole: userRole,
+                radius: 16,
+                anonymous: anonymous,
+              ),
             ),
             const SizedBox(width: 10),
             Column(

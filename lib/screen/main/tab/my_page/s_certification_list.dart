@@ -361,12 +361,14 @@ class _CertCardState extends State<_CertCard> {
           ),
         ],
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _buildPosterImage(widget.cert.posterUrl, colors),
-          _buildCardContent(colors, statusColor, statusLabel, isApproved, isPending),
-        ],
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildPosterImage(widget.cert.posterUrl, colors),
+            _buildCardContent(colors, statusColor, statusLabel, isApproved, isPending),
+          ],
+        ),
       ),
     );
   }

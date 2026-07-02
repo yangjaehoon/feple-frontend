@@ -21,10 +21,12 @@ class SearchService {
           final id = (item['id'] as num?)?.toInt();
           final label = item['label'] as String? ?? '';
           final type = item['type'] as String? ?? '';
+          final imageUrl = item['imageUrl'] as String?;
           return SearchSuggestion(
             label,
             type == 'artist' ? SearchType.artist : SearchType.festival,
             id: id,
+            imageUrl: imageUrl,
           );
         })
         .where((item) => item.label.isNotEmpty)

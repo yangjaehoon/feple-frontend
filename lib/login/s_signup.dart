@@ -160,6 +160,15 @@ class _SignupScreenState extends State<SignupScreen> {
     final themeColors = context.appColors;
     return Scaffold(
       backgroundColor: themeColors.backgroundMain,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_rounded, color: themeColors.textTitle, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: KeyboardDismiss(
         child: SafeArea(
           child: Center(

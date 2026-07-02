@@ -200,7 +200,6 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
           width: imageSize,
           height: imageSize,
           memCacheWidth: (imageSize * 2).round(),
-          memCacheHeight: (imageSize * 2).round(),
           fit: BoxFit.cover,
           fadeInDuration: AppDimens.animXFast,
           fadeOutDuration: AppDimens.animTapFeedback,

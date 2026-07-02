@@ -384,7 +384,6 @@ class _CertCardState extends State<_CertCard> {
                   imageUrl: posterUrl,
                   fit: BoxFit.cover,
                   memCacheWidth: 180,
-                  memCacheHeight: 270,
                   fadeInDuration: AppDimens.animXFast,
                   fadeOutDuration: AppDimens.animTapFeedback,
                   placeholder: (_, __) => const SkeletonBox(height: double.infinity),

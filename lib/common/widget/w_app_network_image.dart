@@ -42,7 +42,6 @@ class AppNetworkImage extends StatelessWidget {
         width: width,
         height: height,
         memCacheWidth: width != null ? (width! * 2).round() : 400,
-        memCacheHeight: height != null ? (height! * 2).round() : 600,
         fadeInDuration: AppDimens.animXFast,
         fadeOutDuration: AppDimens.animTapFeedback,
         placeholder: (context, url) => const SkeletonBox(

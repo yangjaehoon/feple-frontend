@@ -105,12 +105,10 @@ class _BoardSettingsSheetState extends State<BoardSettingsSheet> {
     final colors = context.appColors;
     final maxHeight = MediaQuery.of(context).size.height * 0.75;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      clipBehavior: Clip.hardEdge,
+    return Material(
+      color: colors.surface,
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      clipBehavior: Clip.antiAlias,
       child: ConstrainedBox(
         constraints: BoxConstraints(maxHeight: maxHeight),
         child: Column(

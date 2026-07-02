@@ -99,11 +99,11 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.backgroundMain,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+    return Material(
+      color: colors.backgroundMain,
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      clipBehavior: Clip.antiAlias,
+      child: Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom +
             kBottomNavigationBarHeight +
@@ -121,6 +121,7 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
           const SizedBox(height: 16),
           _buildSubmitButton(colors),
         ],
+      ),
       ),
     );
   }
@@ -274,12 +275,10 @@ class _FestivalSearchSheetState extends State<_FestivalSearchSheet> {
       minChildSize: 0.4,
       expand: false,
       builder: (ctx, scrollCtrl) {
-        return Container(
-          decoration: BoxDecoration(
-            color: colors.backgroundMain,
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(20)),
-          ),
+        return Material(
+          color: colors.backgroundMain,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          clipBehavior: Clip.antiAlias,
           child: Column(
             children: [
               const SizedBox(height: 12),

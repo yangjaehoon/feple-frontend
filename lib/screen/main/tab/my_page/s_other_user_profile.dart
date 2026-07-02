@@ -12,7 +12,9 @@ import 'package:feple/model/user_model.dart';
 import 'package:feple/model/user_stats_model.dart';
 import 'package:feple/screen/main/tab/my_page/cert_status_style.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_posts.dart';
+import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/service/certification_service.dart';
+import 'package:feple/service/festival_service.dart';
 import 'package:feple/service/user_activity_service.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +39,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
   final _userService = sl<UserService>();
   final _activityService = sl<UserActivityService>();
   final _certService = sl<CertificationService>();
+  final _festivalService = sl<FestivalService>();
 
   User? _user;
   int? _postCount;
@@ -381,53 +384,66 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
     );
   }
 
+  Future<void> _navigateToFestival(int festivalId) async {
+    try {
+      final festival = await _festivalService.fetchById(festivalId);
+      if (!mounted) return;
+      Navigator.push(context, SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)));
+    } catch (e) {
+      debugPrint('[OtherUserProfile] festival fetch error: $e');
+    }
+  }
+
   Widget _buildCertItem(CertificationModel cert, AbstractThemeColors colors) {
     final ringColor = CertStatus.approved.displayColor(colors);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(3),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: ringColor.withValues(alpha: 0.6),
-              boxShadow: [
-                BoxShadow(
-                  color: colors.cardShadow.withValues(alpha: 0.08),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+    return TapScale(
+      onTap: () => _navigateToFestival(cert.festivalId),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: ringColor.withValues(alpha: 0.6),
+                boxShadow: [
+                  BoxShadow(
+                    color: colors.cardShadow.withValues(alpha: 0.08),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(shape: BoxShape.circle, color: colors.surface),
+                child: CircleAvatar(
+                  radius: 44,
+                  backgroundColor: ringColor.withValues(alpha: 0.15),
+                  backgroundImage: cert.posterUrl != null
+                      ? CachedNetworkImageProvider(cert.posterUrl!, maxWidth: 132)
+                      : null,
+                  child: cert.posterUrl == null
+                      ? Icon(Icons.photo_rounded, size: 26, color: colors.textTitle.withValues(alpha: 0.3))
+                      : null,
                 ),
-              ],
-            ),
-            child: Container(
-              padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(shape: BoxShape.circle, color: colors.surface),
-              child: CircleAvatar(
-                radius: 44,
-                backgroundColor: ringColor.withValues(alpha: 0.15),
-                backgroundImage: cert.posterUrl != null
-                    ? CachedNetworkImageProvider(cert.posterUrl!, maxWidth: 132)
-                    : null,
-                child: cert.posterUrl == null
-                    ? Icon(Icons.photo_rounded, size: 26, color: colors.textTitle.withValues(alpha: 0.3))
-                    : null,
               ),
             ),
-          ),
-          const SizedBox(height: 6),
-          SizedBox(
-            width: 106,
-            child: Text(
-              cert.festivalTitle,
-              style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: colors.textTitle),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
+            const SizedBox(height: 6),
+            SizedBox(
+              width: 106,
+              child: Text(
+                cert.festivalTitle,
+                style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: colors.textTitle),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -32,6 +32,8 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _passwordError;   // 빈 필드 → 빨간 테두리
   String? _authError;       // 인증 실패 → 텍스트만, 테두리 없음
 
+  static final _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+
   @override
   void dispose() {
     emailController.dispose();
@@ -49,29 +51,35 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 28),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildHeader(themeColors),
-                  _buildForm(themeColors),
-                  const SizedBox(height: 24),
-                  IgnorePointer(
-                    ignoring: _isEmailLoading || _isKakaoLoading,
-                    child: Opacity(
-                      opacity: _isKakaoLoading ? 0.5 : 1.0,
-                      child: LoadingButton(
-                        label: 'login'.tr(),
-                        onPressed: _loginWithEmail,
-                        isLoading: _isEmailLoading,
-                        backgroundColor: themeColors.activate,
+              child: AutofillGroup(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildHeader(themeColors),
+                    _buildForm(themeColors),
+                    const SizedBox(height: 12),
+                    _buildForgotPassword(themeColors),
+                    const SizedBox(height: 20),
+                    IgnorePointer(
+                      ignoring: _isEmailLoading || _isKakaoLoading,
+                      child: Opacity(
+                        opacity: _isKakaoLoading ? 0.5 : 1.0,
+                        child: LoadingButton(
+                          label: 'login'.tr(),
+                          onPressed: _loginWithEmail,
+                          isLoading: _isEmailLoading,
+                          backgroundColor: themeColors.activate,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  _buildKakaoLoginButton(),
-                  const SizedBox(height: 28),
-                  _buildLinks(context, themeColors),
-                ],
+                    const SizedBox(height: 20),
+                    _buildOrDivider(themeColors),
+                    const SizedBox(height: 20),
+                    _buildKakaoLoginButton(),
+                    const SizedBox(height: 28),
+                    _buildSignupRow(context, themeColors),
+                  ],
+                ),
               ),
             ),
           ),
@@ -124,6 +132,8 @@ class _LoginScreenState extends State<LoginScreen> {
           hintText: 'email'.tr(),
           icon: Icons.mail_outline_rounded,
           textInputAction: TextInputAction.next,
+          keyboardType: TextInputType.emailAddress,
+          autofillHints: const [AutofillHints.username, AutofillHints.email],
           errorText: _emailError,
           onChanged: (_) {
             if (_emailError != null) setState(() => _emailError = null);
@@ -135,6 +145,8 @@ class _LoginScreenState extends State<LoginScreen> {
           hintText: 'password'.tr(),
           icon: Icons.lock_outline_rounded,
           obscureText: true,
+          keyboardType: TextInputType.visiblePassword,
+          autofillHints: const [AutofillHints.password],
           textInputAction: TextInputAction.done,
           onSubmitted: (_) => _loginWithEmail(),
           errorText: _passwordError,
@@ -169,55 +181,44 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildLinks(BuildContext context, AbstractThemeColors themeColors) {
-    return Column(
-      children: [
-        TextButton(
-          onPressed: _showForgotPasswordDialog,
-          style: TextButton.styleFrom(
-            foregroundColor: themeColors.activate,
-            padding: EdgeInsets.zero,
-            minimumSize: Size.zero,
-            tapTargetSize: MaterialTapTargetSize.padded,
-          ),
-          child: Text(
-            'forgot_password'.tr(),
-            style: const TextStyle(fontSize: AppDimens.fontSizeMd, fontWeight: FontWeight.w500),
-          ),
+  Widget _buildForgotPassword(AbstractThemeColors themeColors) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: TextButton(
+        onPressed: _showForgotPasswordDialog,
+        style: TextButton.styleFrom(
+          foregroundColor: themeColors.activate,
+          padding: EdgeInsets.zero,
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.padded,
         ),
-        const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'not_member_yet'.tr(),
-              style: TextStyle(color: themeColors.textSecondary, fontSize: AppDimens.fontSizeMd),
-            ),
-            TextButton(
-              onPressed: () {
-                if (_isNavigating) return;
-                _isNavigating = true;
-                Navigator.push(context, SlideRoute(builder: (_) => const SignupScreen()))
-                    .whenComplete(() { if (mounted) _isNavigating = false; });
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: themeColors.activate,
-                padding: EdgeInsets.zero,
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.padded,
-              ),
-              child: Text(
-                'signup'.tr(),
-                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeMd),
-              ),
-            ),
-          ],
+        child: Text(
+          'forgot_password'.tr(),
+          style: const TextStyle(fontSize: AppDimens.fontSizeMd, fontWeight: FontWeight.w500),
         ),
-      ],
+      ),
     );
   }
 
-  // _buildTextField 제거됨 → AppTextField 공통 위젯 사용
+  Widget _buildOrDivider(AbstractThemeColors themeColors) {
+    return Row(
+      children: [
+        Expanded(child: Divider(color: themeColors.divider, thickness: 1)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            'or'.tr(),
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeSm,
+              color: themeColors.textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        Expanded(child: Divider(color: themeColors.divider, thickness: 1)),
+      ],
+    );
+  }
 
   Widget _buildKakaoLoginButton() {
     return IgnorePointer(
@@ -232,6 +233,36 @@ class _LoginScreenState extends State<LoginScreen> {
           label: 'kakao_login_btn'.tr(),
         ),
       ),
+    );
+  }
+
+  Widget _buildSignupRow(BuildContext context, AbstractThemeColors themeColors) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'not_member_yet'.tr(),
+          style: TextStyle(color: themeColors.textSecondary, fontSize: AppDimens.fontSizeMd),
+        ),
+        TextButton(
+          onPressed: () {
+            if (_isNavigating) return;
+            _isNavigating = true;
+            Navigator.push(context, SlideRoute(builder: (_) => const SignupScreen()))
+                .whenComplete(() { if (mounted) _isNavigating = false; });
+          },
+          style: TextButton.styleFrom(
+            foregroundColor: themeColors.activate,
+            padding: EdgeInsets.zero,
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.padded,
+          ),
+          child: Text(
+            'signup'.tr(),
+            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeMd),
+          ),
+        ),
+      ],
     );
   }
 
@@ -251,7 +282,12 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = emailController.text.trim();
     final password = passwordController.text;
 
-    final emailErr = email.isEmpty ? 'enter_email'.tr() : null;
+    String? emailErr;
+    if (email.isEmpty) {
+      emailErr = 'enter_email'.tr();
+    } else if (!_emailRegex.hasMatch(email)) {
+      emailErr = 'enter_valid_email'.tr();
+    }
     final passwordErr = password.isEmpty ? 'enter_password'.tr() : null;
     if (emailErr != null || passwordErr != null) {
       setState(() { _emailError = emailErr; _passwordError = passwordErr; });

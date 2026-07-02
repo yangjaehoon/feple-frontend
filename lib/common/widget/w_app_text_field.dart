@@ -2,9 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
-/// 앱 전체에서 사용하는 공통 텍스트 필드 스타일.
-/// login / signup 등에서 중복 정의되던 스타일을 통합합니다.
-class AppTextField extends StatelessWidget {
+class AppTextField extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
   final IconData icon;
@@ -16,6 +14,7 @@ class AppTextField extends StatelessWidget {
   final ValueChanged<String>? onSubmitted;
   final String? semanticsLabel;
   final TextInputAction? textInputAction;
+  final Iterable<String>? autofillHints;
 
   const AppTextField({
     super.key,
@@ -30,13 +29,38 @@ class AppTextField extends StatelessWidget {
     this.onSubmitted,
     this.semanticsLabel,
     this.textInputAction,
+    this.autofillHints,
   });
+
+  @override
+  State<AppTextField> createState() => _AppTextFieldState();
+}
+
+class _AppTextFieldState extends State<AppTextField> {
+  late bool _isObscured;
+
+  @override
+  void initState() {
+    super.initState();
+    _isObscured = widget.obscureText;
+  }
 
   InputDecoration _buildInputDecoration(AbstractThemeColors colors) {
     return InputDecoration(
-      counterText: maxLength != null ? '' : null,
-      prefixIcon: Icon(icon, color: colors.activate, size: 22),
-      hintText: hintText,
+      counterText: widget.maxLength != null ? '' : null,
+      prefixIcon: Icon(widget.icon, color: colors.activate, size: 22),
+      suffixIcon: widget.obscureText
+          ? IconButton(
+              icon: Icon(
+                _isObscured ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                color: colors.textSecondary,
+                size: 20,
+              ),
+              onPressed: () => setState(() => _isObscured = !_isObscured),
+              splashRadius: 20,
+            )
+          : null,
+      hintText: widget.hintText,
       hintStyle: TextStyle(color: colors.hintText, fontSize: AppDimens.fontSizeLg),
       filled: true,
       fillColor: colors.surface,
@@ -48,7 +72,7 @@ class AppTextField extends StatelessWidget {
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
         borderSide: BorderSide(
-          color: errorText != null ? colors.error : colors.divider,
+          color: widget.errorText != null ? colors.error : colors.divider,
         ),
       ),
       focusedBorder: OutlineInputBorder(
@@ -65,24 +89,25 @@ class AppTextField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Semantics(
-          label: semanticsLabel ?? hintText,
+          label: widget.semanticsLabel ?? widget.hintText,
           child: TextField(
-            controller: controller,
-            obscureText: obscureText,
-            keyboardType: keyboardType,
-            textInputAction: textInputAction,
-            maxLength: maxLength,
-            onChanged: onChanged,
-            onSubmitted: onSubmitted,
+            controller: widget.controller,
+            obscureText: _isObscured,
+            keyboardType: widget.keyboardType,
+            textInputAction: widget.textInputAction,
+            maxLength: widget.maxLength,
+            onChanged: widget.onChanged,
+            onSubmitted: widget.onSubmitted,
+            autofillHints: widget.autofillHints,
             style: TextStyle(fontSize: AppDimens.fontSizeLg, color: colors.text),
             decoration: _buildInputDecoration(colors),
           ),
         ),
-        if (errorText != null)
+        if (widget.errorText != null)
           Padding(
             padding: const EdgeInsets.only(top: 6, left: 4),
             child: Text(
-              errorText!,
+              widget.errorText!,
               style: TextStyle(
                 fontSize: AppDimens.fontSizeXs,
                 color: colors.error,

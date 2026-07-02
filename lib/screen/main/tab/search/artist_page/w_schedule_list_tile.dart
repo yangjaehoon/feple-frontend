@@ -156,15 +156,25 @@ class ScheduleListTile extends StatelessWidget {
                     ),
                   ),
                 ),
-                child: CircleAvatar(
-                  radius: 13,
-                  backgroundColor: _c(colors.backgroundMain),
-                  backgroundImage: (coArtist.profileImageUrl != null && coArtist.profileImageUrl!.isNotEmpty)
-                      ? CachedNetworkImageProvider(coArtist.profileImageUrl!, maxWidth: 52)
-                      : null,
-                  child: (coArtist.profileImageUrl == null || coArtist.profileImageUrl!.isEmpty)
-                      ? Icon(Icons.person_rounded, size: 12, color: _c(colors.textSecondary))
-                      : null,
+                child: SizedBox(
+                  width: 26,
+                  height: 26,
+                  child: ClipOval(
+                    child: (coArtist.profileImageUrl != null && coArtist.profileImageUrl!.isNotEmpty)
+                        ? CachedNetworkImage(
+                            imageUrl: coArtist.profileImageUrl!,
+                            width: 26,
+                            height: 26,
+                            memCacheWidth: 52,
+                            fit: BoxFit.cover,
+                            color: isPast ? Colors.white.withValues(alpha: _pastAlpha) : null,
+                            colorBlendMode: isPast ? BlendMode.modulate : null,
+                          )
+                        : Container(
+                            color: _c(colors.backgroundMain),
+                            child: Icon(Icons.person_rounded, size: 12, color: _c(colors.textSecondary)),
+                          ),
+                  ),
                 ),
               ),
             ),

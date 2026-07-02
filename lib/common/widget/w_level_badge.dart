@@ -24,8 +24,8 @@ class LevelBadge extends StatelessWidget {
   }
 
   static String? _emoji(String? level) => switch (level) {
-        'SEED'     => '🌱',
-        'SPROUT'   => '🌿',
+        'SEED'     => '🌰',
+        'SPROUT'   => '🌱',
         'BLOOM'    => '🌸',
         'FESTIVAL' => '🎪',
         'LEGEND'   => '👑',

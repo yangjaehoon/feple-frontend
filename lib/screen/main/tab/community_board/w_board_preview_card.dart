@@ -146,24 +146,27 @@ class BoardPreviewCard extends StatelessWidget {
         return Column(
           children: [
             for (int i = 0; i < displayPosts.length; i++) ...[
-              ListTile(
-                dense: true,
-                visualDensity: const VisualDensity(vertical: -3),
-                minVerticalPadding: 0,
-                contentPadding: const EdgeInsets.symmetric(
-                    horizontal: AppDimens.paddingHorizontal, vertical: 0),
-                onTap: () => onPostTap(ctx, displayPosts[i]),
-                title: Text(
-                  displayPosts[i].title,
-                  style: TextStyle(
-                    color: colors.textTitle,
-                    fontWeight: FontWeight.w600,
-                    fontSize: AppDimens.fontSizeMd,
+              Material(
+                color: Colors.transparent,
+                child: ListTile(
+                  dense: true,
+                  visualDensity: const VisualDensity(vertical: -3),
+                  minVerticalPadding: 0,
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: AppDimens.paddingHorizontal, vertical: 0),
+                  onTap: () => onPostTap(ctx, displayPosts[i]),
+                  title: Text(
+                    displayPosts[i].title,
+                    style: TextStyle(
+                      color: colors.textTitle,
+                      fontWeight: FontWeight.w600,
+                      fontSize: AppDimens.fontSizeMd,
+                    ),
                   ),
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: (trailingBuilder ?? _defaultTrailing)(displayPosts[i], colors),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: (trailingBuilder ?? _defaultTrailing)(displayPosts[i], colors),
+                  ),
                 ),
               ),
               if (i < displayPosts.length - 1)

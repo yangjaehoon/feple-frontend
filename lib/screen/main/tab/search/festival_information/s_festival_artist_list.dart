@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_error_state.dart';
@@ -8,6 +7,7 @@ import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
+import 'package:feple/screen/main/tab/search/w_artist_card.dart';
 import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/screen/main/tab/search/festival_information/festival_artists_notifier.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -80,7 +80,7 @@ class FestivalArtistListScreen extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final artist = displayed[index];
                     final isFollowed = notifier.isFollowed(artist.artistId);
-                    return _buildArtistCard(context, index, artist, isFollowed, colors);
+                    return _buildArtistCard(context, index, artist, isFollowed);
                   },
                 ),
         ),
@@ -88,7 +88,7 @@ class FestivalArtistListScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildArtistCard(BuildContext context, int index, FestivalArtistItem artist, bool isFollowed, AbstractThemeColors colors) {
+  Widget _buildArtistCard(BuildContext context, int index, FestivalArtistItem artist, bool isFollowed) {
     return AnimatedListItem(
       index: index,
       child: TapScale(
@@ -107,70 +107,12 @@ class FestivalArtistListScreen extends StatelessWidget {
             ),
           );
         },
-        child: Column(
-          children: [
-            AspectRatio(
-              aspectRatio: 1.0,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-                  boxShadow: [
-                    BoxShadow(
-                      color: isFollowed
-                          ? colors.activate.withValues(alpha: 0.35)
-                          : colors.cardShadow.withValues(alpha: 0.15),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                foregroundDecoration: isFollowed
-                    ? BoxDecoration(
-                        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-                        border: Border.all(color: colors.activate, width: 2.5),
-                      )
-                    : null,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-                  child: artist.profileImageUrl != null && artist.profileImageUrl!.isNotEmpty
-                      ? CachedNetworkImage(
-                          imageUrl: artist.profileImageUrl!,
-                          memCacheWidth: 200,
-                          fit: BoxFit.cover,
-                          fadeInDuration: AppDimens.animXFast,
-                          fadeOutDuration: AppDimens.animTapFeedback,
-                          placeholder: (_, __) => const SkeletonBox(height: double.infinity),
-                          errorWidget: (_, __, ___) => _placeholderBox(colors),
-                        )
-                      : _placeholderBox(colors),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              artist.displayName(context.isEnglish),
-              style: TextStyle(
-                fontSize: AppDimens.fontSizeSm,
-                fontWeight: FontWeight.w600,
-                color: isFollowed ? colors.activate : colors.textTitle,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+        child: ArtistCard(
+          profileImageUrl: artist.profileImageUrl,
+          name: artist.displayName(context.isEnglish),
+          isFollowed: isFollowed,
         ),
       ),
-    );
-  }
-
-  Widget _placeholderBox(AbstractThemeColors colors) {
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.activate.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-      ),
-      child: Icon(Icons.person_rounded, color: colors.activate, size: 40),
     );
   }
 

@@ -2,19 +2,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
-import 'package:feple/model/artist_model.dart';
 import 'package:flutter/material.dart';
 
 class ArtistCard extends StatelessWidget {
-  final Artist artist;
+  final String? profileImageUrl;
+  final String name;
   final bool isFollowed;
-  final bool isEnglish;
 
   const ArtistCard({
     super.key,
-    required this.artist,
+    required this.profileImageUrl,
+    required this.name,
     required this.isFollowed,
-    required this.isEnglish,
   });
 
   @override
@@ -40,40 +39,29 @@ class ArtistCard extends StatelessWidget {
             ),
             foregroundDecoration: isFollowed
                 ? BoxDecoration(
-                    borderRadius:
-                        BorderRadius.circular(AppDimens.cardRadiusTiny),
+                    borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
                     border: Border.all(color: colors.activate, width: 2.5),
                   )
                 : null,
-            child: Hero(
-              tag: 'artist_image_${artist.id}',
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-                child: CachedNetworkImage(
-                  imageUrl: artist.profileImageUrl,
-                  memCacheWidth: 200,
-                  fit: BoxFit.cover,
-                  fadeInDuration: AppDimens.animXFast,
-                  fadeOutDuration: AppDimens.animTapFeedback,
-                  placeholder: (context, url) =>
-                      const SkeletonBox(height: double.infinity),
-                  errorWidget: (_, __, ___) => Container(
-                    decoration: BoxDecoration(
-                      color: colors.activate.withValues(alpha: 0.1),
-                      borderRadius:
-                          BorderRadius.circular(AppDimens.cardRadiusTiny),
-                    ),
-                    child: Icon(Icons.person_rounded,
-                        color: colors.activate, size: 40),
-                  ),
-                ),
-              ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+              child: (profileImageUrl != null && profileImageUrl!.isNotEmpty)
+                  ? CachedNetworkImage(
+                      imageUrl: profileImageUrl!,
+                      memCacheWidth: 200,
+                      fit: BoxFit.cover,
+                      fadeInDuration: AppDimens.animXFast,
+                      fadeOutDuration: AppDimens.animTapFeedback,
+                      placeholder: (_, __) => const SkeletonBox(height: double.infinity),
+                      errorWidget: (_, __, ___) => _buildPlaceholder(colors),
+                    )
+                  : _buildPlaceholder(colors),
             ),
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          artist.displayName(isEnglish),
+          name,
           style: TextStyle(
             fontSize: AppDimens.fontSizeSm,
             fontWeight: isFollowed ? FontWeight.w700 : FontWeight.w600,
@@ -84,6 +72,16 @@ class ArtistCard extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
       ],
+    );
+  }
+
+  Widget _buildPlaceholder(AbstractThemeColors colors) {
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.activate.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+      ),
+      child: Icon(Icons.person_rounded, color: colors.activate, size: 40),
     );
   }
 }

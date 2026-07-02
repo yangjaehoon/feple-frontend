@@ -251,9 +251,9 @@ class _ArtistContentState extends State<_ArtistContent> {
                              .whenComplete(() { if (mounted) _isNavigating = false; });
                           },
                           child: ArtistCard(
-                            artist: artists[index],
+                            profileImageUrl: artists[index].profileImageUrl,
+                            name: artists[index].displayName(context.isEnglish),
                             isFollowed: widget.followedIds.contains(artists[index].id),
-                            isEnglish: context.isEnglish,
                           ),
                         ),
                       ),

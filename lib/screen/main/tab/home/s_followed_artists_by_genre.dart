@@ -1,14 +1,13 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/widget/w_selectable_chip.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
-import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/followed_artist.dart';
 import 'package:feple/screen/main/tab/home/w_reorder_sheet.dart';
 import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
+import 'package:feple/screen/main/tab/search/w_artist_card.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
@@ -158,67 +157,15 @@ class _FollowedArtistsByGenreScreenState
                 )),
               ).whenComplete(() { if (mounted) _isNavigating = false; });
             },
-            child: _buildArtistCard(artist, context.isEnglish, colors),
+            child: ArtistCard(
+              profileImageUrl: artist.profileImageUrl,
+              name: artist.displayName(context.isEnglish),
+              isFollowed: false,
+            ),
           ),
         );
       },
     );
   }
 
-  Widget _buildArtistCard(FollowedArtist artist, bool isEnglish, AbstractThemeColors colors) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        AspectRatio(
-          aspectRatio: 1.0,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-              boxShadow: [
-                BoxShadow(
-                  color: colors.cardShadow.withValues(alpha: 0.15),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-              child: (artist.profileImageUrl?.isNotEmpty == true)
-                  ? CachedNetworkImage(
-                      imageUrl: artist.profileImageUrl!,
-                      memCacheWidth: 300,
-                      fit: BoxFit.cover,
-                      fadeInDuration: AppDimens.animXFast,
-                      fadeOutDuration: AppDimens.animTapFeedback,
-                      placeholder: (_, __) =>
-                          const SkeletonBox(height: double.infinity),
-                      errorWidget: (_, __, ___) => _buildPlaceholder(colors),
-                    )
-                  : _buildPlaceholder(colors),
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          artist.displayName(isEnglish),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeSm,
-            fontWeight: FontWeight.w600,
-            color: colors.textTitle,
-          ),
-          textAlign: TextAlign.center,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPlaceholder(AbstractThemeColors colors) {
-    return Container(
-      color: colors.activate.withValues(alpha: 0.1),
-      child: Icon(Icons.person_rounded, color: colors.activate, size: 40),
-    );
-  }
 }

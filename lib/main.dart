@@ -127,8 +127,12 @@ class _MyAppState extends State<MyApp> {
   Future<void> _tryAutoLogin(UserProvider userProvider) async {
     // connect(5s) + receive(12s) + 갱신 재시도(20s) + 여유 = 40s 상한
     // _plainDio 타임아웃 없음으로 인한 무한 대기 방지
+    // 최소 500ms 표시: 로그인이 빨리 끝나도 브랜드 인상을 위해 대기
     try {
-      await _doAutoLogin(userProvider).timeout(const Duration(seconds: 40));
+      await Future.wait([
+        _doAutoLogin(userProvider).timeout(const Duration(seconds: 40)),
+        Future.delayed(const Duration(milliseconds: 500)),
+      ]);
     } on TimeoutException {
       log('Auto login timed out');
     } finally {

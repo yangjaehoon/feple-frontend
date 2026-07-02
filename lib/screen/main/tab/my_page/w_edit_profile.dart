@@ -28,13 +28,17 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
   bool _isSaving = false;
   String _originalNickname = '';
   String _originalBio = '';
+  bool _isNicknameLocked = false;
+  int _nicknameDaysRemaining = 0;
 
   final _nicknameKey = GlobalKey<NicknameFieldState>();
   final _bioController = TextEditingController();
   String? _bioError;
 
   bool get _isDirty {
-    final currentNickname = _nicknameKey.currentState?.currentNickname ?? _originalNickname;
+    final currentNickname = _isNicknameLocked
+        ? _originalNickname
+        : (_nicknameKey.currentState?.currentNickname ?? _originalNickname);
     return _pickedImage != null ||
         currentNickname != _originalNickname ||
         _bioController.text.trim() != _originalBio;
@@ -48,6 +52,18 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
       _originalNickname = user.nickname;
       _originalBio = user.bio ?? '';
       _bioController.text = _originalBio;
+      _initNicknameLock(user.nicknameChangedAt);
+    }
+  }
+
+  void _initNicknameLock(DateTime? changedAt) {
+    if (changedAt == null) return;
+    final nextChange = changedAt.add(const Duration(days: 90));
+    final now = DateTime.now();
+    if (nextChange.isAfter(now)) {
+      final diffHours = nextChange.difference(now).inHours;
+      _isNicknameLocked = true;
+      _nicknameDaysRemaining = ((diffHours + 23) ~/ 24).clamp(1, 90);
     }
   }
 
@@ -72,25 +88,28 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
     if (user == null) return;
 
     final nicknameState = _nicknameKey.currentState;
-    final newNickname = nicknameState?.currentNickname ?? '';
-    if (newNickname.isEmpty) {
-      nicknameState?.showError('enter_nickname'.tr());
-      return;
-    }
-    if (newNickname.length < 2 || newNickname.length > 8) {
-      nicknameState?.showError('nickname_length_error'.tr());
-      return;
-    }
-
-    // 닉네임이 변경된 경우 중복 확인 필수
-    if (newNickname != _originalNickname) {
-      if (nicknameState?.available == null || nicknameState?.lastCheckedNickname != newNickname) {
-        nicknameState?.showError('nickname_check_req'.tr());
+    final newNickname = _isNicknameLocked
+        ? user.nickname
+        : (nicknameState?.currentNickname ?? '');
+    if (!_isNicknameLocked) {
+      if (newNickname.isEmpty) {
+        nicknameState?.showError('enter_nickname'.tr());
         return;
       }
-      if (nicknameState?.available == false) {
-        nicknameState?.showError('nickname_invalid'.tr());
+      if (newNickname.length < 2 || newNickname.length > 8) {
+        nicknameState?.showError('nickname_length_error'.tr());
         return;
+      }
+      // 닉네임이 변경된 경우 중복 확인 필수
+      if (newNickname != _originalNickname) {
+        if (nicknameState?.available == null || nicknameState?.lastCheckedNickname != newNickname) {
+          nicknameState?.showError('nickname_check_req'.tr());
+          return;
+        }
+        if (nicknameState?.available == false) {
+          nicknameState?.showError('nickname_invalid'.tr());
+          return;
+        }
       }
     }
 
@@ -282,10 +301,47 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
           style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w700, color: colors.textSecondary),
         ),
         const SizedBox(height: 8),
-        NicknameField(
-          key: _nicknameKey,
-          excludeUserId: userId,
-          initialValue: _originalNickname,
+        if (_isNicknameLocked) ...[
+          _buildLockedNicknameDisplay(colors),
+        ] else ...[
+          NicknameField(
+            key: _nicknameKey,
+            excludeUserId: userId,
+            initialValue: _originalNickname,
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildLockedNicknameDisplay(AbstractThemeColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          controller: TextEditingController(text: _originalNickname),
+          enabled: false,
+          style: TextStyle(fontSize: AppDimens.fontSizeLg, color: colors.text),
+          decoration: InputDecoration(
+            prefixIcon: Icon(Icons.lock_outline_rounded, color: colors.textSecondary, size: 22),
+            filled: true,
+            fillColor: colors.backgroundMain,
+            disabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+              borderSide: BorderSide(color: colors.listDivider),
+            ),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            Icon(Icons.info_outline_rounded, size: 14, color: colors.textSecondary),
+            const SizedBox(width: 4),
+            Text(
+              'nickname_next_change'.tr(args: [_nicknameDaysRemaining.toString()]),
+              style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
+            ),
+          ],
         ),
       ],
     );

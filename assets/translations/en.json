@@ -357,6 +357,7 @@
   "schedule_past": "Past Schedules",
   "artist_schedule_title": "{}'s Schedule",
   "artist_songs_title": "{}'s Songs",
+  "related_artists": "Artists You May Also Like",
   "no_songs": "No songs registered.",
   "youtube_open_failed": "Cannot open YouTube Music.",
   "link_open_failed": "Could not open the link.",

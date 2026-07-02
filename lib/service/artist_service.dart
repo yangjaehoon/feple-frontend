@@ -16,4 +16,14 @@ class ArtistService {
         .map((e) => Artist.fromJson(e))
         .toList();
   }
+
+  Future<List<Artist>> fetchRelatedArtists(int artistId) async {
+    final response = await DioClient.dio.get('/artists/$artistId/related');
+    final raw = response.data;
+    if (raw is! List) return [];
+    return raw
+        .whereType<Map<String, dynamic>>()
+        .map((e) => Artist.fromJson(e))
+        .toList();
+  }
 }

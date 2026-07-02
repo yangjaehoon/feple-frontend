@@ -2,7 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:feple/common/widget/w_app_network_image.dart';
 import 'package:flutter/material.dart';
 
 /// 순서 변경에 사용할 아이템
@@ -65,9 +65,8 @@ class _ReorderSheetState extends State<ReorderSheet> {
     return Flexible(
       child: ReorderableListView.builder(
         itemCount: _items.length,
-        onReorder: (oldIndex, newIndex) {
+        onReorderItem: (oldIndex, newIndex) {
           setState(() {
-            if (newIndex > oldIndex) newIndex--;
             final item = _items.removeAt(oldIndex);
             _items.insert(newIndex, item);
           });
@@ -89,22 +88,13 @@ class _ReorderSheetState extends State<ReorderSheet> {
                     child: Icon(Icons.drag_handle_rounded, color: colors.textSecondary, size: 22),
                   ),
                   const SizedBox(width: 12),
-                  ClipRRect(
+                  AppNetworkImage(
+                    imageUrl: item.imageUrl,
+                    width: 40,
+                    height: 40,
+                    errorIcon: Icons.forum_rounded,
+                    errorIconSize: 20,
                     borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-                    child: item.imageUrl != null && item.imageUrl!.isNotEmpty
-                        ? CachedNetworkImage(
-                            imageUrl: item.imageUrl!,
-                            width: 40,
-                            height: 40,
-                            fit: BoxFit.cover,
-                            memCacheWidth: 80,
-                            memCacheHeight: 80,
-                            fadeInDuration: AppDimens.animXFast,
-                            fadeOutDuration: AppDimens.animTapFeedback,
-                            placeholder: (_, __) => _placeholder(colors),
-                            errorWidget: (_, __, ___) => _placeholder(colors),
-                          )
-                        : _placeholder(colors),
                   ),
                 ],
               ),
@@ -165,12 +155,4 @@ class _ReorderSheetState extends State<ReorderSheet> {
     );
   }
 
-  Widget _placeholder(AbstractThemeColors colors) {
-    return Container(
-      width: 40,
-      height: 40,
-      color: colors.surface,
-      child: Icon(Icons.forum_rounded, color: colors.textSecondary, size: 20),
-    );
-  }
 }

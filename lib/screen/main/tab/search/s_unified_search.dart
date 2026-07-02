@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
@@ -364,17 +365,43 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
         final suggestion = _suggestions[index];
         return ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-          leading: Icon(
-            suggestion.type.icon,
-            color: colors.textSecondary,
-            size: 20,
-          ),
+          leading: _buildSuggestionLeading(suggestion, colors),
           title: _buildHighlightedSuggestion(suggestion.label, _controller.text.trim(), colors),
           trailing: Icon(Icons.north_west_rounded, size: 16, color: colors.textSecondary),
           onTap: () => _selectSuggestion(suggestion),
         );
       },
     );
+  }
+
+  Widget _buildSuggestionLeading(SearchSuggestion suggestion, AbstractThemeColors colors) {
+    final imageUrl = suggestion.imageUrl;
+    if (imageUrl == null || imageUrl.isEmpty) {
+      return Icon(suggestion.type.icon, color: colors.textSecondary, size: 20);
+    }
+    if (suggestion.type == SearchType.artist) {
+      return CircleAvatar(
+        radius: 20,
+        backgroundColor: colors.textSecondary.withValues(alpha: 0.2),
+        backgroundImage: CachedNetworkImageProvider(imageUrl),
+      );
+    } else {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(6),
+        child: CachedNetworkImage(
+          imageUrl: imageUrl,
+          width: 40,
+          height: 40,
+          fit: BoxFit.cover,
+          placeholder: (_, __) => Container(
+            width: 40,
+            height: 40,
+            color: colors.textSecondary.withValues(alpha: 0.2),
+          ),
+          errorWidget: (_, __, ___) => Icon(suggestion.type.icon, color: colors.textSecondary, size: 20),
+        ),
+      );
+    }
   }
 
   Widget _buildHighlightedSuggestion(String label, String query, AbstractThemeColors colors) {

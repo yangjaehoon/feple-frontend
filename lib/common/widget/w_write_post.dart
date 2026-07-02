@@ -248,7 +248,6 @@ class _WritePostState extends State<WritePost> {
                 onChanged: (v) => setState(() => _anonymous = v),
                 activeThumbColor: colors.activate,
                 activeTrackColor: colors.activate.withValues(alpha: 0.5),
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
               const SizedBox(width: 6),
               Text(

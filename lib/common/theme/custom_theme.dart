@@ -34,6 +34,26 @@ enum CustomTheme {
   Brightness get brightness => themeData.brightness;
 }
 
+// M3 Type Scale — Pretendard 폰트 기준
+// 색상은 ColorScheme에서 자동 적용되므로 size/weight/tracking만 정의
+const _m3TextTheme = TextTheme(
+  displayLarge:   TextStyle(fontSize: 57, fontWeight: FontWeight.w400, letterSpacing: -0.25),
+  displayMedium:  TextStyle(fontSize: 45, fontWeight: FontWeight.w400, letterSpacing: 0),
+  displaySmall:   TextStyle(fontSize: 36, fontWeight: FontWeight.w400, letterSpacing: 0),
+  headlineLarge:  TextStyle(fontSize: 32, fontWeight: FontWeight.w700, letterSpacing: -0.25),
+  headlineMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.w600, letterSpacing: 0),
+  headlineSmall:  TextStyle(fontSize: 24, fontWeight: FontWeight.w600, letterSpacing: 0),
+  titleLarge:     TextStyle(fontSize: 22, fontWeight: FontWeight.w600, letterSpacing: 0),
+  titleMedium:    TextStyle(fontSize: 16, fontWeight: FontWeight.w500, letterSpacing: 0.15),
+  titleSmall:     TextStyle(fontSize: 14, fontWeight: FontWeight.w500, letterSpacing: 0.1),
+  bodyLarge:      TextStyle(fontSize: 16, fontWeight: FontWeight.w400, letterSpacing: 0.5),
+  bodyMedium:     TextStyle(fontSize: 14, fontWeight: FontWeight.w400, letterSpacing: 0.25),
+  bodySmall:      TextStyle(fontSize: 12, fontWeight: FontWeight.w400, letterSpacing: 0.4),
+  labelLarge:     TextStyle(fontSize: 14, fontWeight: FontWeight.w500, letterSpacing: 0.1),
+  labelMedium:    TextStyle(fontSize: 12, fontWeight: FontWeight.w500, letterSpacing: 0.5),
+  labelSmall:     TextStyle(fontSize: 11, fontWeight: FontWeight.w500, letterSpacing: 0.5),
+);
+
 ThemeData lightTheme = ThemeData(
   useMaterial3: true,
   fontFamily: 'Pretendard',
@@ -44,10 +64,11 @@ ThemeData lightTheme = ThemeData(
     seedColor: AppColors.skyBlue,
     brightness: Brightness.light,
   ),
+  textTheme: _m3TextTheme,
   appBarTheme: const AppBarTheme(
     backgroundColor: Colors.transparent,
     elevation: 0,
-    scrolledUnderElevation: 0,
+    scrolledUnderElevation: 2, // M3 스크롤 시 레이어 구분
     foregroundColor: AppColors.textMain,
     systemOverlayStyle: SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -57,28 +78,30 @@ ThemeData lightTheme = ThemeData(
       fontSize: AppDimens.fontSizeTitle,
       fontWeight: FontWeight.w700,
       letterSpacing: -0.3,
+      color: AppColors.textMain,
     ),
   ),
   navigationBarTheme: NavigationBarThemeData(
     backgroundColor: AppColors.surfaceWhite,
     elevation: 0,
-    indicatorColor: AppColors.skyBlue.withValues(alpha: 0.15),
+    // M3 SecondaryContainer Tone 90 계열 — 명확한 선택 표시
+    indicatorColor: const Color(0xFFCCE9F8),
     iconTheme: WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
-        return const IconThemeData(color: AppColors.skyBlue);
+        return const IconThemeData(color: AppColors.skyBlueDark);
       }
       return const IconThemeData(color: AppColors.textMuted);
     }),
     labelTextStyle: WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
         return const TextStyle(
-          fontSize: 11,
+          fontSize: 12, // M3 Label Medium
           fontWeight: FontWeight.w700,
-          color: AppColors.skyBlue,
+          color: AppColors.skyBlueDark,
         );
       }
       return const TextStyle(
-        fontSize: 10,
+        fontSize: 12, // M3 Label Medium
         fontWeight: FontWeight.w500,
         color: AppColors.textMuted,
       );
@@ -86,16 +109,16 @@ ThemeData lightTheme = ThemeData(
   ),
   inputDecorationTheme: InputDecorationTheme(
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+      borderRadius: BorderRadius.circular(AppDimens.shapeInput),
       borderSide: const BorderSide(color: Color(0xFFDDE3E7)),
     ),
     enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+      borderRadius: BorderRadius.circular(AppDimens.shapeInput),
       borderSide: const BorderSide(color: Color(0xFFDDE3E7)),
     ),
     focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-      borderSide: const BorderSide(color: AppColors.skyBlue, width: 2),
+      borderRadius: BorderRadius.circular(AppDimens.shapeInput),
+      borderSide: const BorderSide(color: AppColors.skyBlueDark, width: 2),
     ),
     errorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(AppDimens.shapeInput),
@@ -112,7 +135,7 @@ ThemeData lightTheme = ThemeData(
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: AppColors.skyBlue,
+      backgroundColor: AppColors.skyBlueDark, // 대비비 ≥ 4.5:1
       foregroundColor: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDimens.shapeButton),
@@ -124,7 +147,7 @@ ThemeData lightTheme = ThemeData(
   ),
   filledButtonTheme: FilledButtonThemeData(
     style: FilledButton.styleFrom(
-      backgroundColor: AppColors.skyBlue,
+      backgroundColor: AppColors.skyBlueDark,
       foregroundColor: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDimens.shapeButton),
@@ -135,7 +158,8 @@ ThemeData lightTheme = ThemeData(
   ),
   cardTheme: CardThemeData(
     color: AppColors.surfaceWhite,
-    elevation: 0,
+    elevation: 1, // M3 Elevated Card — Surface Tint으로 레이어 구분
+    surfaceTintColor: AppColors.skyBlue,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(AppDimens.cardRadius),
     ),
@@ -150,8 +174,8 @@ ThemeData lightTheme = ThemeData(
     thickness: 1,
     space: 1,
   ),
-  chipTheme: ChipThemeData(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadius)),
+  chipTheme: const ChipThemeData(
+    shape: StadiumBorder(), // M3 Chip = Full shape
   ),
 );
 
@@ -168,10 +192,11 @@ ThemeData darkTheme = ThemeData(
     seedColor: AppColors.skyBlue,
     brightness: Brightness.dark,
   ),
+  textTheme: _m3TextTheme,
   appBarTheme: const AppBarTheme(
     backgroundColor: Colors.transparent,
     elevation: 0,
-    scrolledUnderElevation: 0,
+    scrolledUnderElevation: 2,
     foregroundColor: Color(0xFFE8EDF2),
     systemOverlayStyle: SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -181,12 +206,14 @@ ThemeData darkTheme = ThemeData(
       fontSize: AppDimens.fontSizeTitle,
       fontWeight: FontWeight.w700,
       letterSpacing: -0.3,
+      color: Color(0xFFE8EDF2),
     ),
   ),
   navigationBarTheme: NavigationBarThemeData(
     backgroundColor: _darkSurface,
     elevation: 0,
-    indicatorColor: AppColors.skyBlue.withValues(alpha: 0.20),
+    // M3 다크 모드 indicator — PrimaryContainer Tone 30 계열
+    indicatorColor: const Color(0xFF004D6B),
     iconTheme: WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
         return const IconThemeData(color: AppColors.skyBlueLight);
@@ -196,13 +223,13 @@ ThemeData darkTheme = ThemeData(
     labelTextStyle: WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
         return const TextStyle(
-          fontSize: 11,
+          fontSize: 12,
           fontWeight: FontWeight.w700,
           color: AppColors.skyBlueLight,
         );
       }
       return const TextStyle(
-        fontSize: 10,
+        fontSize: 12,
         fontWeight: FontWeight.w500,
         color: Color(0xFF8CA0B3),
       );
@@ -210,15 +237,15 @@ ThemeData darkTheme = ThemeData(
   ),
   inputDecorationTheme: InputDecorationTheme(
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+      borderRadius: BorderRadius.circular(AppDimens.shapeInput),
       borderSide: const BorderSide(color: Color(0xFF2A3F50)),
     ),
     enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+      borderRadius: BorderRadius.circular(AppDimens.shapeInput),
       borderSide: const BorderSide(color: Color(0xFF2A3F50)),
     ),
     focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+      borderRadius: BorderRadius.circular(AppDimens.shapeInput),
       borderSide: const BorderSide(color: AppColors.skyBlueLight, width: 2),
     ),
     errorBorder: OutlineInputBorder(
@@ -236,7 +263,7 @@ ThemeData darkTheme = ThemeData(
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: AppColors.skyBlue,
+      backgroundColor: AppColors.skyBlueDark,
       foregroundColor: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDimens.shapeButton),
@@ -248,7 +275,7 @@ ThemeData darkTheme = ThemeData(
   ),
   filledButtonTheme: FilledButtonThemeData(
     style: FilledButton.styleFrom(
-      backgroundColor: AppColors.skyBlue,
+      backgroundColor: AppColors.skyBlueDark,
       foregroundColor: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDimens.shapeButton),
@@ -259,7 +286,8 @@ ThemeData darkTheme = ThemeData(
   ),
   cardTheme: CardThemeData(
     color: _darkSurface,
-    elevation: 0,
+    elevation: 1,
+    surfaceTintColor: AppColors.skyBlue,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(AppDimens.cardRadius),
     ),
@@ -274,7 +302,7 @@ ThemeData darkTheme = ThemeData(
     thickness: 1,
     space: 1,
   ),
-  chipTheme: ChipThemeData(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadius)),
+  chipTheme: const ChipThemeData(
+    shape: StadiumBorder(),
   ),
 );

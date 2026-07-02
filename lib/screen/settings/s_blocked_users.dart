@@ -121,8 +121,8 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
           foregroundColor: colors.textSecondary,
           side: BorderSide(color: colors.listDivider),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-          minimumSize: Size.zero,
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          minimumSize: const Size(72, 36), // 최소 시각 크기
+          // tapTargetSize 기본값(padded=48dp) — M3 최소 터치 타겟 준수
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.radiusSmall)),
         ),
         child: Text('unblock'.tr(), style: const TextStyle(fontSize: AppDimens.fontSizeSm)),

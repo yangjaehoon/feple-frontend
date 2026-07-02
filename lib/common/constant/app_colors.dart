@@ -5,6 +5,8 @@ class AppColors {
 
   // Primary & Secondary
   static const Color skyBlue = Color(0xFF5CC0EB);
+  /// 버튼 배경 전용 — skyBlue보다 어두워 흰색 텍스트와 대비비 ≥ 4.5:1 (WCAG AA) 보장
+  static const Color skyBlueDark = Color(0xFF0C6F9A);
   static const Color skyBlueLight = Color(0xFFA1DDF5);
   static const Color sunnyYellow = Color(0xFFFDE74C);
   static const Color sunnyYellowLight = Color(0xFFFFE68C);

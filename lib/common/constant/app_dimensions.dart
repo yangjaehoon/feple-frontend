@@ -5,7 +5,7 @@ class AppDimens {
   AppDimens._(); // 인스턴스화 방지
 
   // ── AppBar ──
-  static const double appBarHeight = 50.0;
+  static const double appBarHeight = 64.0; // M3 Top App Bar 공식 높이
 
   // ── Scroll padding (Stack 레이아웃에서 앱바/탭바 가림 방지) ──
   static const double scrollPaddingTop = appBarHeight;
@@ -21,7 +21,7 @@ class AppDimens {
   static const double shapeSheet = 28.0;    // 바텀시트 상단 — Extra Large
 
   // ── Card / Container ──
-  static const double cardRadius = 20.0;
+  static const double cardRadius = 28.0; // M3 Extra Large
   static const double cardRadiusSmall = 16.0;
   static const double cardRadiusTiny = 12.0;
   static const double radiusSmall = 8.0;    // 작은 이미지 썸네일, 컴팩트 컨테이너
@@ -50,9 +50,9 @@ class AppDimens {
   // ── Font ──
   static const double fontSizeHero = 30.0;     // 아티스트 이름 등 히어로 텍스트
   static const double fontSizeDisplay = 24.0;  // 닉네임, 온보딩 타이틀
-  static const double fontSizeTiny = 10.0;
-  static const double fontSizeNano = 8.0;       // 타임테이블 멤버 서브텍스트
-  static const double fontSizeMini = 9.0;      // 밀집 UI 극소형 텍스트 (타임테이블, 댓글 메타)
+  static const double fontSizeTiny = 11.0;       // M3 Label Small (기존 10 → 상향, 가독성)
+  static const double fontSizeNano = 8.0;        // 타임테이블 셀 전용 — 고밀도 그리드 한정 예외
+  static const double fontSizeMini = 10.0;       // 밀집 UI (타임테이블, 댓글 메타) — 고밀도 전용
   static const double fontSizeXxs = 11.0;
   static const double fontSizeXs = 12.0;
   static const double fontSizeSm = 13.0;

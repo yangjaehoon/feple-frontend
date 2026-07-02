@@ -23,10 +23,10 @@ class LightAppColors extends AbstractThemeColors {
   Color get divider => const Color(0xFFEEEEEE);
 
   @override
-  Color get appBarBackground => AppColors.skyBlue;
+  Color get appBarBackground => AppColors.skyBlueDark;
 
   @override
-  Color get activate => AppColors.skyBlue;
+  Color get activate => AppColors.skyBlueDark;
 
   @override
   Color get badgeBg => AppColors.sunnyYellow;

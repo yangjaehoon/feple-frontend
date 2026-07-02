@@ -20,6 +20,7 @@ class Post {
   final DateTime? updatedAt;
   final int? userId;
   final int viewCount;
+  final String? authorLevel;
 
   Post({
     required this.id,
@@ -41,6 +42,7 @@ class Post {
     this.updatedAt,
     this.userId,
     this.viewCount = 0,
+    this.authorLevel,
   });
 
   bool get isAdmin => userRole == kRoleAdmin;
@@ -68,6 +70,7 @@ class Post {
       updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt'] as String) : null,
       userId: (json['userId'] as num?)?.toInt(),
       viewCount: (json['viewCount'] as num?)?.toInt() ?? 0,
+      authorLevel: json['authorLevel'] as String?,
     );
   }
 }

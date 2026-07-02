@@ -9,11 +9,13 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/notification_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
+import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/screen/notification/notification_notifier.dart';
 import 'package:feple/screen/notification/w_notification_card.dart';
 import 'package:feple/screen/settings/s_notification_settings.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/service/artist_service.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/common/util/app_route.dart';
@@ -27,6 +29,7 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
+  final _artistService = sl<ArtistService>();
   final _festivalService = sl<FestivalService>();
   final _postService = sl<PostService>();
   final _scrollController = ScrollController();
@@ -70,6 +73,32 @@ class _NotificationScreenState extends State<NotificationScreen> {
       await _navigateToFestival(item.referenceId!);
     } else if (item.type!.isCommentType) {
       await _navigateToPost(item.referenceId!);
+    } else if (item.type!.isSongRequestType) {
+      await _navigateToArtist(item.referenceId!);
+    }
+  }
+
+  Future<void> _navigateToArtist(int artistId) async {
+    if (_isNavigating) return;
+    _isNavigating = true;
+    try {
+      final artist = await _artistService.fetchArtistById(artistId);
+      if (!mounted) return;
+      await Navigator.push(
+        context,
+        SlideRoute(
+          builder: (_) => ArtistScreen(
+            artistId: artist.id,
+            artistName: artist.name,
+            followerCount: artist.followerCount,
+            profileImageUrl: artist.profileImageUrl,
+          ),
+        ),
+      );
+    } catch (e) {
+      debugPrint('[Notification] 아티스트 이동 실패: $e');
+    } finally {
+      if (mounted) _isNavigating = false;
     }
   }
 

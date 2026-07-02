@@ -151,7 +151,7 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
       items: [
         ..._festivals.map((f) => DropdownMenuItem(
               value: f,
-              child: Text(f.title, overflow: TextOverflow.ellipsis),
+              child: Text(f.displayTitle(context.isEnglish), overflow: TextOverflow.ellipsis),
             )),
         DropdownMenuItem(value: photoCategoryDaily, child: Text('photo_category_daily'.tr())),
         DropdownMenuItem(value: photoCategorySns, child: Text('photo_category_sns'.tr())),

@@ -180,12 +180,12 @@ class FtvCertificationWidgetState extends State<FtvCertificationWidget> {
       padding: const EdgeInsets.symmetric(horizontal: 12),
       itemCount: certs.length,
       itemBuilder: (context, index) {
-        return _buildCertItem(certs[index], colors);
+        return _buildCertItem(certs[index], context.isEnglish, colors);
       },
     );
   }
 
-  Widget _buildCertItem(CertificationModel cert, AbstractThemeColors colors) {
+  Widget _buildCertItem(CertificationModel cert, bool isEnglish, AbstractThemeColors colors) {
     final isApproved = cert.status == CertStatus.approved;
     final ringColor = cert.status.displayColor(colors);
 
@@ -201,7 +201,7 @@ class FtvCertificationWidgetState extends State<FtvCertificationWidget> {
             SizedBox(
               width: 106,
               child: Text(
-                cert.festivalTitle,
+                cert.displayFestivalTitle(isEnglish),
                 style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: colors.textTitle),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

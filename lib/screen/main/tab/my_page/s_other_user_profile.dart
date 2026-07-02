@@ -481,6 +481,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
   }
 
   Widget _buildCertItem(CertificationModel cert, AbstractThemeColors colors) {
+    final isEnglish = context.isEnglish;
     final ringColor = CertStatus.approved.displayColor(colors);
     return TapScale(
       onTap: () => _navigateToFestival(cert.festivalId),
@@ -521,7 +522,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
             SizedBox(
               width: 106,
               child: Text(
-                cert.festivalTitle,
+                cert.displayFestivalTitle(isEnglish),
                 style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: colors.textTitle),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

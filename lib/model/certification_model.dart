@@ -17,6 +17,7 @@ class CertificationModel {
   final int festivalId;
   final CertStatus status;
   final String festivalTitle;
+  final String festivalTitleEn;
   final String? posterUrl;
   final String? rejectionMessage;
   final String? createdAt;
@@ -28,6 +29,7 @@ class CertificationModel {
     required this.festivalId,
     required this.status,
     required this.festivalTitle,
+    this.festivalTitleEn = '',
     this.posterUrl,
     this.rejectionMessage,
     this.createdAt,
@@ -41,12 +43,16 @@ class CertificationModel {
         festivalId: (json['festivalId'] as num?)?.toInt() ?? 0,
         status: CertStatus.fromValue(json['status'] as String?),
         festivalTitle: json['festivalTitle'] as String? ?? '',
+        festivalTitleEn: json['festivalTitleEn'] as String? ?? '',
         posterUrl: json['festivalPosterUrl'] as String? ?? json['photoUrl'] as String?,
         rejectionMessage: json['rejectionMessage'] as String?,
         createdAt: json['createdAt'] as String?,
         rating: (json['rating'] as num?)?.toInt(),
         userReview: json['userReview'] as String?,
       );
+
+  String displayFestivalTitle(bool isEnglish) =>
+      isEnglish && festivalTitleEn.isNotEmpty ? festivalTitleEn : festivalTitle;
 
   String? get formattedDate {
     if (createdAt == null) return null;

@@ -197,7 +197,7 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
           ),
           isEmpty: _selectedFestival == null,
           child: Text(
-            _selectedFestival?.title ?? '',
+            _selectedFestival?.displayTitle(context.isEnglish) ?? '',
             style: const TextStyle(fontSize: AppDimens.fontSizeMd),
             overflow: TextOverflow.ellipsis,
           ),
@@ -256,7 +256,9 @@ class _FestivalSearchSheetState extends State<_FestivalSearchSheet> {
       if (mounted) {
         setState(() {
           _filtered = widget.festivals
-              .where((f) => f.title.toLowerCase().contains(query.toLowerCase()))
+              .where((f) =>
+                  f.title.toLowerCase().contains(query.toLowerCase()) ||
+                  f.titleEn.toLowerCase().contains(query.toLowerCase()))
               .toList();
         });
       }
@@ -328,7 +330,7 @@ class _FestivalSearchSheetState extends State<_FestivalSearchSheet> {
         final festival = _filtered[index];
         return ListTile(
           title: Text(
-            festival.title,
+            festival.displayTitle(context.isEnglish),
             style: const TextStyle(fontSize: AppDimens.fontSizeMd),
           ),
           onTap: () => Navigator.pop(ctx, festival),

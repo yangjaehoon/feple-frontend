@@ -315,7 +315,7 @@ class _CertCardState extends State<_CertCard> {
     final result = await showAppBottomSheet<({int rating, String? review})>(
       context,
       builder: (_) => RatingSheet(
-        festivalTitle: widget.cert.festivalTitle,
+        festivalTitle: widget.cert.displayFestivalTitle(context.isEnglish),
         initialRating: _rating,
         initialReview: _review,
       ),
@@ -433,7 +433,7 @@ class _CertCardState extends State<_CertCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.cert.festivalTitle,
+              widget.cert.displayFestivalTitle(context.isEnglish),
               style: TextStyle(fontSize: AppDimens.fontSizeLg, fontWeight: FontWeight.w700, color: colors.textTitle),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,

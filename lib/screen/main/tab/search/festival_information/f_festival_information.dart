@@ -79,7 +79,7 @@ class _FestivalInformationFragmentState
             FestivalBoard(
               boardKey: _boardKey,
               festivalId: widget.poster.id,
-              festivalName: widget.poster.title,
+              festivalName: widget.poster.displayTitle(context.isEnglish),
             ),
             FestivalTimetable(
               key: _timetableKey,

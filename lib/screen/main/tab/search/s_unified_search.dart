@@ -351,27 +351,55 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
 
   Widget _buildSuggestions(AbstractThemeColors colors) {
     if (_suggestions.isEmpty) return const SizedBox.shrink();
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: _suggestions.length,
-      separatorBuilder: (_, __) => Divider(
-        height: 1,
-        thickness: 1,
-        color: colors.listDivider,
-        indent: 56,
-        endIndent: 16,
-      ),
-      itemBuilder: (_, index) {
-        final suggestion = _suggestions[index];
-        return ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-          leading: _buildSuggestionLeading(suggestion, colors),
-          title: _buildHighlightedSuggestion(suggestion.label, _controller.text.trim(), colors),
-          trailing: Icon(Icons.north_west_rounded, size: 16, color: colors.textSecondary),
-          onTap: () => _selectSuggestion(suggestion),
-        );
-      },
+    final artists = _suggestions.where((s) => s.type == SearchType.artist).toList();
+    final festivals = _suggestions.where((s) => s.type == SearchType.festival).toList();
+    return ListView(
+      padding: const EdgeInsets.only(bottom: 8),
+      children: [
+        if (artists.isNotEmpty) ...[
+          _buildSuggestionGroupHeader('search_artists'.tr(), colors),
+          ..._buildSuggestionTiles(artists, colors),
+        ],
+        if (festivals.isNotEmpty) ...[
+          _buildSuggestionGroupHeader('search_festivals'.tr(), colors),
+          ..._buildSuggestionTiles(festivals, colors),
+        ],
+      ],
     );
+  }
+
+  Widget _buildSuggestionGroupHeader(String label, AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 2),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: AppDimens.fontSizeXs,
+          fontWeight: FontWeight.w700,
+          color: colors.textSecondary,
+          letterSpacing: 0.3,
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildSuggestionTiles(List<SearchSuggestion> items, AbstractThemeColors colors) {
+    return List.generate(items.length, (i) {
+      final suggestion = items[i];
+      return Column(
+        children: [
+          ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+            leading: _buildSuggestionLeading(suggestion, colors),
+            title: _buildHighlightedSuggestion(suggestion.label, _controller.text.trim(), colors),
+            trailing: Icon(Icons.north_west_rounded, size: 16, color: colors.textSecondary),
+            onTap: () => _selectSuggestion(suggestion),
+          ),
+          if (i < items.length - 1)
+            Divider(height: 1, thickness: 1, color: colors.listDivider, indent: 72, endIndent: 16),
+        ],
+      );
+    });
   }
 
   Widget _buildSuggestionLeading(SearchSuggestion suggestion, AbstractThemeColors colors) {
@@ -504,22 +532,32 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
   }
 
   Widget _buildAllTab(AbstractThemeColors colors, String keyword) {
+    final hasArtists = _artists.isNotEmpty;
+    final hasFestivals = _festivals.isNotEmpty;
+    final hasPosts = _posts.isNotEmpty;
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+      padding: const EdgeInsets.only(bottom: 32),
       children: [
-        if (_artists.isNotEmpty) ...[
-          _sectionHeader('search_artists'.tr(), _artists.length, colors),
-          ..._artists.map((d) => SearchArtistTile(data: d, highlightKeyword: keyword)),
-          const SizedBox(height: 16),
+        if (hasArtists) ...[
+          _sectionHeader('search_artists'.tr(), _artists.length, colors, isFirst: true),
+          ..._artists.map((d) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SearchArtistTile(data: d, highlightKeyword: keyword),
+          )),
         ],
-        if (_festivals.isNotEmpty) ...[
-          _sectionHeader('search_festivals'.tr(), _festivals.length, colors),
-          ..._festivals.map((d) => SearchFestivalTile(data: d, highlightKeyword: keyword)),
-          const SizedBox(height: 16),
+        if (hasFestivals) ...[
+          _sectionHeader('search_festivals'.tr(), _festivals.length, colors, isFirst: !hasArtists),
+          ..._festivals.map((d) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SearchFestivalTile(data: d, highlightKeyword: keyword),
+          )),
         ],
-        if (_posts.isNotEmpty) ...[
-          _sectionHeader('search_posts'.tr(), _posts.length, colors),
-          ..._posts.map((d) => SearchPostTile(data: d, highlightKeyword: keyword)),
+        if (hasPosts) ...[
+          _sectionHeader('search_posts'.tr(), _posts.length, colors, isFirst: !hasArtists && !hasFestivals),
+          ..._posts.map((d) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SearchPostTile(data: d, highlightKeyword: keyword),
+          )),
         ],
       ],
     );
@@ -542,27 +580,33 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     );
   }
 
-  Widget _sectionHeader(String title, int count, AbstractThemeColors colors) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          Container(
-            width: 3,
-            height: 18,
-            decoration: BoxDecoration(
-              color: colors.sectionBarColor,
-              borderRadius: BorderRadius.circular(AppDimens.barRadius),
-            ),
+  Widget _sectionHeader(String title, int count, AbstractThemeColors colors, {bool isFirst = false}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (!isFirst) Divider(height: 1, thickness: 1, color: colors.listDivider),
+        Padding(
+          padding: EdgeInsets.fromLTRB(16, isFirst ? 16 : 20, 16, 8),
+          child: Row(
+            children: [
+              Container(
+                width: 3,
+                height: 18,
+                decoration: BoxDecoration(
+                  color: colors.sectionBarColor,
+                  borderRadius: BorderRadius.circular(AppDimens.barRadius),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(title,
+                  style: TextStyle(
+                      fontSize: AppDimens.fontSizeLg, fontWeight: FontWeight.w800, color: colors.textTitle)),
+              const SizedBox(width: 6),
+              Text('($count)', style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary)),
+            ],
           ),
-          const SizedBox(width: 8),
-          Text(title,
-              style: TextStyle(
-                  fontSize: AppDimens.fontSizeLg, fontWeight: FontWeight.w800, color: colors.textTitle)),
-          const SizedBox(width: 6),
-          Text('($count)', style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary)),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

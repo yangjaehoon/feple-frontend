@@ -22,13 +22,16 @@ class BoardCardHeader extends StatelessWidget {
       children: [
         Icon(icon, color: headerColor, size: 22),
         const SizedBox(width: 8),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeXxl,
-            color: colors.textTitle,
-            fontWeight: FontWeight.w700,
-            letterSpacing: -0.3,
+        Flexible(
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeXxl,
+              color: colors.textTitle,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.3,
+            ),
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
@@ -70,7 +73,7 @@ class BoardCardHeader extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildLeading(colors),
+                Expanded(child: _buildLeading(colors)),
                 _buildMore(colors),
               ],
             ),

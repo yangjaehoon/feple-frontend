@@ -32,7 +32,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
     // 100px ResizeImage는 늘릴 때 자연스럽게 흐려짐 — BackdropFilter GPU offscreen 불필요
     return ClipRect(
       child: SizedBox(
-        height: 300,
+        height: 330,
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -49,7 +49,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
 
   Widget _buildSwiperContent(AbstractThemeColors colors, List<FestivalPreview> items) {
     return SizedBox(
-      height: 300,
+      height: 330,
       child: Swiper(
         onIndexChanged: _onPageChanged,
         viewportFraction: 0.8,
@@ -157,10 +157,10 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
 
   Widget _buildSkeleton() {
     return SizedBox(
-      height: 300,
+      height: 330,
       child: Stack(
         children: [
-          SkeletonBox(height: 300, borderRadius: BorderRadius.zero),
+          SkeletonBox(height: 330, borderRadius: BorderRadius.zero),
           Center(
             child: SkeletonBox(
               width: 180,

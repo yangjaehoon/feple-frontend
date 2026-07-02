@@ -4,7 +4,6 @@ import 'package:feple/common/util/text_highlight.dart';
 import 'package:feple/common/widget/w_profile_avatar.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/post_model.dart';
-import 'package:feple/common/widget/w_level_badge.dart';
 import 'package:feple/screen/main/tab/community_board/w_like_comment_row.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
@@ -48,21 +47,12 @@ class PostListTile extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: (!post.anonymous && onAuthorTap != null) ? onAuthorTap : null,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ProfileAvatar(
-                    imageUrl: post.profileImageUrl,
-                    nickname: post.nickname,
-                    certified: post.certified,
-                    userRole: post.userRole,
-                    anonymous: post.anonymous,
-                  ),
-                  if (!post.anonymous) ...[
-                    const SizedBox(height: 3),
-                    LevelBadge(authorLevel: post.authorLevel, fontSize: 9),
-                  ],
-                ],
+              child: ProfileAvatar(
+                imageUrl: post.profileImageUrl,
+                nickname: post.nickname,
+                certified: post.certified,
+                userRole: post.userRole,
+                anonymous: post.anonymous,
               ),
             ),
             const SizedBox(width: 12),

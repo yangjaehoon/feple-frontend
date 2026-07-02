@@ -1,0 +1,79 @@
+import 'package:feple/common/safe_change_notifier.dart';
+import 'package:feple/injection.dart';
+import 'package:feple/model/artist_photo.dart';
+import 'package:feple/service/artist_photo_manageable.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+
+class ArtistPhotoNotifier extends SafeChangeNotifier {
+  final int artistId;
+  final _photoService = sl<ArtistPhotoManageable>();
+
+  List<ArtistPhotoResponse> _photos = [];
+  List<ArtistPhotoResponse> get photos => List.unmodifiable(_photos);
+  bool isLoading = true;
+  String? errorKey;
+
+  void clearError() {
+    errorKey = null;
+  }
+
+  ArtistPhotoNotifier({required this.artistId});
+
+  Future<void> loadPhotos() async {
+    isLoading = true;
+    errorKey = null;
+    safeNotify();
+    try {
+      _photos = await _photoService.fetchPhotos(artistId);
+    } catch (e) {
+      debugPrint('load photos error: $e');
+      errorKey = 'err_fetch_data';
+    } finally {
+      isLoading = false;
+      safeNotify();
+    }
+  }
+
+  Future<void> toggleLike(int photoId) async {
+    final index = _photos.indexWhere((p) => p.photoId == photoId);
+    if (index == -1) return;
+    HapticFeedback.lightImpact();
+    final original = _photos[index];
+    _photos[index] = original.copyWith(
+      likeCount: original.isLiked ? original.likeCount - 1 : original.likeCount + 1,
+      isLiked: !original.isLiked,
+    );
+    safeNotify();
+    try {
+      await _photoService.toggleLike(artistId, photoId);
+    } catch (e) {
+      _photos[index] = original;
+      errorKey = 'like_failed';
+      safeNotify();
+      debugPrint('toggle like error: $e');
+    }
+  }
+
+  Future<void> deletePhoto(int photoId) async {
+    try {
+      await _photoService.deletePhoto(artistId, photoId);
+      await loadPhotos();
+    } catch (e) {
+      debugPrint('delete error: $e');
+      errorKey = 'photo_delete_failed';
+      safeNotify();
+    }
+  }
+
+  Future<void> updatePhoto(int photoId, String title, String description) async {
+    try {
+      await _photoService.updatePhoto(artistId, photoId, title, description);
+      await loadPhotos();
+    } catch (e) {
+      debugPrint('update error: $e');
+      errorKey = 'photo_update_failed';
+      safeNotify();
+    }
+  }
+}

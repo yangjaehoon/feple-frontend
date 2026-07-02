@@ -264,6 +264,7 @@ class _SignupScreenState extends State<SignupScreen> {
           onChanged: (_) {
             setState(() { _emailError = null; _generalError = null; });
           },
+          onSubmitted: (_) => FocusScope.of(context).nextFocus(),
         ),
         const SizedBox(height: 14),
         NicknameField(

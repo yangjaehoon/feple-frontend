@@ -146,6 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
           onChanged: (_) {
             if (_emailError != null) setState(() => _emailError = null);
           },
+          onSubmitted: (_) => FocusScope.of(context).nextFocus(),
         ),
         const SizedBox(height: 14),
         AppTextField(

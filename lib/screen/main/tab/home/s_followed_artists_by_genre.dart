@@ -46,8 +46,9 @@ class _FollowedArtistsByGenreScreenState
   void _openSettings() {
     if (_isSheetOpen) return;
     _isSheetOpen = true;
+    final isEnglish = context.isEnglish;
     final items = widget.artists
-        .map((a) => ReorderItem(id: a.id, name: a.name, imageUrl: a.profileImageUrl))
+        .map((a) => ReorderItem(id: a.id, name: a.displayName(isEnglish), imageUrl: a.profileImageUrl))
         .toList();
     showAppBottomSheet(
       context,
@@ -157,14 +158,14 @@ class _FollowedArtistsByGenreScreenState
                 )),
               ).whenComplete(() { if (mounted) _isNavigating = false; });
             },
-            child: _buildArtistCard(artist, colors),
+            child: _buildArtistCard(artist, context.isEnglish, colors),
           ),
         );
       },
     );
   }
 
-  Widget _buildArtistCard(FollowedArtist artist, AbstractThemeColors colors) {
+  Widget _buildArtistCard(FollowedArtist artist, bool isEnglish, AbstractThemeColors colors) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -200,7 +201,7 @@ class _FollowedArtistsByGenreScreenState
         ),
         const SizedBox(height: 8),
         Text(
-          artist.name,
+          artist.displayName(isEnglish),
           style: TextStyle(
             fontSize: AppDimens.fontSizeSm,
             fontWeight: FontWeight.w600,

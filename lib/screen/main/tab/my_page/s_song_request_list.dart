@@ -255,7 +255,7 @@ class SongRequestItem extends StatelessWidget {
         children: [
           Icon(Icons.music_note_rounded, size: 20, color: colors.activate),
           const SizedBox(width: 12),
-          Expanded(child: _buildInfoColumn(colors)),
+          Expanded(child: _buildInfoColumn(context.isEnglish, colors)),
           const SizedBox(width: 8),
           _buildStatusBadge(statusColor, statusLabel),
         ],
@@ -263,7 +263,8 @@ class SongRequestItem extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoColumn(AbstractThemeColors colors) {
+  Widget _buildInfoColumn(bool isEnglish, AbstractThemeColors colors) {
+    final artistDisplay = req.displayArtistName(isEnglish);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -277,8 +278,8 @@ class SongRequestItem extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        if (req.artistName != null)
-          Text(req.artistName!, style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary)),
+        if (artistDisplay != null)
+          Text(artistDisplay, style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary)),
         if (req.formattedDate != null)
           Text(req.formattedDate!, style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary)),
       ],

@@ -8,6 +8,7 @@ class SongRequestModel {
   final String? createdAt;
   final int? artistId;
   final String? artistName;
+  final String artistNameEn;
 
   const SongRequestModel({
     required this.id,
@@ -17,7 +18,13 @@ class SongRequestModel {
     this.createdAt,
     this.artistId,
     this.artistName,
+    this.artistNameEn = '',
   });
+
+  String? displayArtistName(bool isEnglish) {
+    if (isEnglish && artistNameEn.isNotEmpty) return artistNameEn;
+    return artistName;
+  }
 
   bool get isPending => status == SongRequestStatus.pending;
   bool get isApproved => status == SongRequestStatus.approved;
@@ -42,6 +49,7 @@ class SongRequestModel {
       createdAt: json['createdAt'] as String?,
       artistId: json['artistId'] as int?,
       artistName: json['artistName'] as String?,
+      artistNameEn: json['artistNameEn'] as String? ?? '',
     );
   }
 

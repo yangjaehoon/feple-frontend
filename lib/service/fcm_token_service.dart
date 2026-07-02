@@ -9,23 +9,24 @@ class FcmTokenService {
 
   FcmTokenService(this._messaging);
 
-  Future<void> register() async {
+  Future<void> register({String language = 'ko'}) async {
     try {
       if (Platform.isIOS) {
         await _messaging.getAPNSToken();
       }
       final token = await _messaging.getToken();
-      if (token != null) await sendToServer(token);
+      if (token != null) await sendToServer(token, language: language);
     } catch (e) {
       debugPrint('[FCM] 토큰 등록 실패: $e');
     }
   }
 
-  Future<void> sendToServer(String token) async {
+  Future<void> sendToServer(String token, {String language = 'ko'}) async {
     try {
       await DioClient.dio.post('/users/device-token', data: {
         'token': token,
         'platform': Platform.isIOS ? 'ios' : 'android',
+        'language': language,
       });
       debugPrint('[FCM] 토큰 서버 등록 완료');
     } catch (e) {

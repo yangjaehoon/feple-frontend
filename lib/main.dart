@@ -6,6 +6,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/provider/user_provider.dart';
+import 'package:feple/service/festival_cache_service.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/login/s_login.dart';
@@ -140,6 +141,15 @@ class _MyAppState extends State<MyApp> {
       final token = await TokenStore.readAccessToken();
       if (token != null) {
         await userProvider.fetchUserFromToken(token);
+        // 로그인 성공 시 홈 데이터를 미리 캐싱 (최대 2초 대기)
+        // → HomeFragment 진입 시 스켈레톤 없이 즉시 표시
+        final userId = userProvider.currentUserId;
+        if (userId != null) {
+          await _prefetchHomeData(userId).timeout(
+            const Duration(seconds: 2),
+            onTimeout: () {},
+          );
+        }
       }
     } on DioException catch (e) {
       if (e.response == null) {
@@ -186,5 +196,23 @@ class _MyAppState extends State<MyApp> {
         }
       ),
     );
+  }
+}
+
+// 스플래시 중 홈 데이터를 FestivalCacheService에 저장
+// HomeStateNotifier가 캐시 우선 표시 전략으로 즉시 렌더링할 수 있게 함
+Future<void> _prefetchHomeData(int userId) async {
+  try {
+    final (artists, festivals) = await (
+      sl<UserService>().fetchFollowingArtists(userId),
+      sl<UserService>().fetchLikedFestivals(userId),
+    ).wait;
+    await Future.wait([
+      sl<FestivalCacheService>().saveHomeArtists(userId, artists),
+      sl<FestivalCacheService>().saveHomeFestivals(userId, festivals),
+    ]);
+    log('Home pre-fetch: ${artists.length} artists, ${festivals.length} festivals');
+  } catch (e) {
+    log('Home pre-fetch failed (ignored): $e');
   }
 }

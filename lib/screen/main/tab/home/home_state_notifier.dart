@@ -55,6 +55,10 @@ class HomeStateNotifier extends SafeChangeNotifier {
     if (artistOrd != null) artistOrder = artistOrd;
     if (festivalOrd != null) festivalOrder = festivalOrd;
 
+    // 1단계: 캐시가 있으면 즉시 표시 (스플래시 프리패치 활용)
+    await _showFromCacheIfAvailable(id);
+
+    // 2단계: 네트워크에서 최신 데이터 갱신
     try {
       final (fetchedArtists, fetchedFestivals) = await (
         _fetchArtists(id),
@@ -75,21 +79,22 @@ class HomeStateNotifier extends SafeChangeNotifier {
     } catch (e) {
       if (userId != id) return;
       debugPrint('[Home] 데이터 로드 실패: $e');
-      if (artists == null) {
-        // 네트워크 오류 시 캐시 폴백
-        final (cachedFestivals, cachedArtists) = await (
-          _cacheService.loadHomeFestivals(id),
-          _cacheService.loadHomeArtists(id),
-        ).wait;
-        if (cachedFestivals != null || cachedArtists != null) {
-          festivals = cachedFestivals ?? [];
-          artists = cachedArtists ?? [];
-          boards = _buildBoards(artists!, festivals!);
-        } else {
-          hasError = true;
-        }
-      }
+      // 캐시에서 이미 표시 중이면 에러 표시 안 함
+      if (artists == null) hasError = true;
     }
+    safeNotify();
+  }
+
+  // 프리패치된 캐시가 있으면 즉시 렌더링 후 notify
+  Future<void> _showFromCacheIfAvailable(int id) async {
+    final (cachedFestivals, cachedArtists) = await (
+      _cacheService.loadHomeFestivals(id),
+      _cacheService.loadHomeArtists(id),
+    ).wait;
+    if (cachedFestivals == null || cachedArtists == null) return;
+    festivals = cachedFestivals;
+    artists = cachedArtists;
+    boards = _buildBoards(cachedArtists, cachedFestivals);
     safeNotify();
   }
 

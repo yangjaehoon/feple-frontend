@@ -165,6 +165,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
           builder: (_) => ArtistScreen(
             artistId: artist.id,
             artistName: artist.name,
+            artistNameEn: artist.nameEn,
             followerCount: artist.followerCount,
             profileImageUrl: artist.profileImageUrl,
           ),

@@ -48,6 +48,7 @@ class SearchArtistTile extends StatelessWidget {
         Navigator.push(context, SlideRoute(
           builder: (_) => ArtistScreen(
             artistName: data.name,
+            artistNameEn: data.nameEn,
             artistId: data.id,
             followerCount: data.followerCount,
             profileImageUrl: data.profileImageUrl,

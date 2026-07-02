@@ -241,6 +241,7 @@ class _ArtistContentState extends State<_ArtistContent> {
                               SlideRoute(
                                 builder: (context) => ArtistScreen(
                                   artistName: artists[index].name,
+                                  artistNameEn: artists[index].nameEn,
                                   artistId: artists[index].id,
                                   followerCount: artists[index].followerCount,
                                   profileImageUrl: artists[index].profileImageUrl,

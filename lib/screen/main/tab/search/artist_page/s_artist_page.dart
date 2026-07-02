@@ -13,12 +13,14 @@ class ArtistScreen extends StatefulWidget {
   const ArtistScreen({
     super.key,
     required this.artistName,
+    this.artistNameEn = '',
     required this.artistId,
     required this.followerCount,
     this.profileImageUrl,
   });
 
   final String artistName;
+  final String artistNameEn;
   final int artistId;
   final int followerCount;
   final String? profileImageUrl;
@@ -62,18 +64,21 @@ class _ArtistScreenState extends State<ArtistScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final displayName = context.isEnglish && widget.artistNameEn.isNotEmpty
+        ? widget.artistNameEn
+        : widget.artistName;
     return Scaffold(
       backgroundColor: colors.backgroundMain,
       body: Column(
         children: [
-          SecondaryAppBar(title: widget.artistName),
+          SecondaryAppBar(title: displayName),
           Expanded(
             child: SafeArea(
               top: false,
               child: RefreshIndicator(
                 color: colors.activate,
                 onRefresh: _onRefresh,
-                child: _buildScrollBody(),
+                child: _buildScrollBody(displayName),
               ),
             ),
           ),
@@ -82,14 +87,14 @@ class _ArtistScreenState extends State<ArtistScreen> {
     );
   }
 
-  Widget _buildScrollBody() {
+  Widget _buildScrollBody(String displayName) {
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
       child: Column(
         children: [
           MainImageSwiper(
             key: _swiperKey,
-            artistName: widget.artistName,
+            artistName: displayName,
             artistId: widget.artistId,
             followNotifier: _followNotifier,
             profileImageUrl: (widget.profileImageUrl?.isNotEmpty ?? false) ? widget.profileImageUrl : null,
@@ -97,17 +102,17 @@ class _ArtistScreenState extends State<ArtistScreen> {
           ArtistSchedule(
             key: _scheduleKey,
             artistId: widget.artistId,
-            artistName: widget.artistName,
+            artistName: displayName,
           ),
           ArtistBoard(
             boardKey: _boardKey,
             artistId: widget.artistId,
-            artistName: widget.artistName,
+            artistName: displayName,
           ),
           ArtistSongs(
             key: _songsKey,
             artistId: widget.artistId,
-            artistName: widget.artistName,
+            artistName: displayName,
           ),
           RelatedArtists(
             key: _relatedKey,

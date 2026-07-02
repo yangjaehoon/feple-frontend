@@ -143,7 +143,7 @@ class ScheduleListTile extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.only(right: 4),
             child: Tooltip(
-              message: coArtist.artistName,
+              message: coArtist.displayName(context.isEnglish),
               child: GestureDetector(
                 onTap: () => Navigator.push(
                   context,
@@ -151,6 +151,7 @@ class ScheduleListTile extends StatelessWidget {
                     builder: (_) => ArtistScreen(
                       artistId: coArtist.artistId,
                       artistName: coArtist.artistName,
+                      artistNameEn: coArtist.artistNameEn,
                       followerCount: 0,
                       profileImageUrl: coArtist.profileImageUrl,
                     ),

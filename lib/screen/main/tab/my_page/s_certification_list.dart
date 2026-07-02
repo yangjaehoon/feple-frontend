@@ -361,14 +361,12 @@ class _CertCardState extends State<_CertCard> {
           ),
         ],
       ),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildPosterImage(widget.cert.posterUrl, colors),
-            _buildCardContent(colors, statusColor, statusLabel, isApproved, isPending),
-          ],
-        ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildPosterImage(widget.cert.posterUrl, colors),
+          _buildCardContent(colors, statusColor, statusLabel, isApproved, isPending),
+        ],
       ),
     );
   }
@@ -380,11 +378,13 @@ class _CertCardState extends State<_CertCard> {
         borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
         child: SizedBox(
           width: 90,
+          height: 135,
           child: posterUrl != null
               ? CachedNetworkImage(
                   imageUrl: posterUrl,
                   fit: BoxFit.cover,
                   memCacheWidth: 180,
+                  memCacheHeight: 270,
                   fadeInDuration: AppDimens.animXFast,
                   fadeOutDuration: AppDimens.animTapFeedback,
                   placeholder: (_, __) => const SkeletonBox(height: double.infinity),
@@ -432,6 +432,7 @@ class _CertCardState extends State<_CertCard> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(

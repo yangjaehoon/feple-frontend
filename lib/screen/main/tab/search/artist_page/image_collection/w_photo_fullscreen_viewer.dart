@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -22,6 +24,15 @@ class PhotoFullscreenViewer extends StatefulWidget {
 class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
   bool _uiVisible = true;
   final _transformController = TransformationController();
+  late bool _isLiked;
+  late int _likeCount;
+
+  @override
+  void initState() {
+    super.initState();
+    _isLiked = widget.photo.isLiked;
+    _likeCount = widget.photo.likeCount;
+  }
 
   @override
   void dispose() {
@@ -30,6 +41,14 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
   }
 
   void _toggleUi() => setState(() => _uiVisible = !_uiVisible);
+
+  void _handleLike() {
+    setState(() {
+      _likeCount = _isLiked ? max(0, _likeCount - 1) : _likeCount + 1;
+      _isLiked = !_isLiked;
+    });
+    widget.onLike();
+  }
 
   void _handleDoubleTap(TapDownDetails details) {
     if (_transformController.value != Matrix4.identity()) {
@@ -180,18 +199,18 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
 
   Widget _buildLikeRow(ArtistPhotoResponse photo) {
     return GestureDetector(
-      onTap: widget.onLike,
+      onTap: _handleLike,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            photo.isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-            color: photo.isLiked ? const Color(0xFFFF6B8A) : Colors.white70,
+            _isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+            color: _isLiked ? const Color(0xFFFF6B8A) : Colors.white70,
             size: 22,
           ),
           const SizedBox(width: 6),
           Text(
-            '${photo.likeCount}',
+            '$_likeCount',
             style: const TextStyle(color: Colors.white70, fontSize: AppDimens.fontSizeMd, fontWeight: FontWeight.w600),
           ),
         ],

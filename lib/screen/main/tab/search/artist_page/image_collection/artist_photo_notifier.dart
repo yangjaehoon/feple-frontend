@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_photo.dart';
@@ -41,7 +43,7 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
     HapticFeedback.lightImpact();
     final original = _photos[index];
     _photos[index] = original.copyWith(
-      likeCount: original.isLiked ? original.likeCount - 1 : original.likeCount + 1,
+      likeCount: original.isLiked ? max(0, original.likeCount - 1) : original.likeCount + 1,
       isLiked: !original.isLiked,
     );
     safeNotify();

@@ -204,6 +204,8 @@
   "verify_email_cancel_title": "Cancel sign up?",
   "verify_email_cancel_content": "Your account will be deleted if you leave now.\nYou can sign up again with the same email later.",
   "verify_email_cancel_confirm": "Cancel and leave",
+  "verify_email_wrong_email": "Wrong email?",
+  "verify_email_change_email": "Change it",
   "auth_err_invalid_credential": "Invalid email or password.",
   "auth_err_too_many_requests": "Too many login attempts. Please try again later.",
   "auth_err_account_disabled": "This account is disabled.",

@@ -22,6 +22,8 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
+  static final _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool _isLoading = false;
@@ -39,7 +41,7 @@ class _SignupScreenState extends State<SignupScreen> {
   bool get _isFormComplete {
     final email = emailController.text.trim();
     final password = passwordController.text;
-    return email.isNotEmpty &&
+    return _emailRegex.hasMatch(email) &&
         password.isNotEmpty &&
         PasswordValidator.validate(password) == null &&
         _nicknameAvailable;
@@ -64,6 +66,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
     if (email.isEmpty) {
       emailError = 'enter_email'.tr();
+      hasError = true;
+    } else if (!_emailRegex.hasMatch(email)) {
+      emailError = 'enter_valid_email'.tr();
       hasError = true;
     }
     if (password.isEmpty) {
@@ -159,38 +164,40 @@ class _SignupScreenState extends State<SignupScreen> {
           child: Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 28),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildHeader(themeColors),
-                  _buildForm(themeColors),
-                  const SizedBox(height: 28),
-                  if (_generalError != null)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: Text(
-                        _generalError!,
-                        style: TextStyle(
-                          fontSize: AppDimens.fontSizeSm,
-                          color: themeColors.error,
-                          fontWeight: FontWeight.w500,
+              child: AutofillGroup(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildHeader(themeColors),
+                    _buildForm(themeColors),
+                    const SizedBox(height: 28),
+                    if (_generalError != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Text(
+                          _generalError!,
+                          style: TextStyle(
+                            fontSize: AppDimens.fontSizeSm,
+                            color: themeColors.error,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
+                      ),
+                    AnimatedOpacity(
+                      opacity: _isFormComplete ? 1.0 : 0.5,
+                      duration: AppDimens.animNormal,
+                      child: LoadingButton(
+                        label: 'register'.tr(),
+                        onPressed: _register,
+                        isLoading: _isLoading,
+                        backgroundColor: themeColors.activate,
                       ),
                     ),
-                  AnimatedOpacity(
-                    opacity: _isFormComplete ? 1.0 : 0.5,
-                    duration: AppDimens.animNormal,
-                    child: LoadingButton(
-                      label: 'register'.tr(),
-                      onPressed: _register,
-                      isLoading: _isLoading,
-                      backgroundColor: themeColors.activate,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  _buildLoginLink(themeColors),
-                ],
+                    const SizedBox(height: 24),
+                    _buildLoginLink(themeColors),
+                  ],
+                ),
               ),
             ),
           ),
@@ -240,6 +247,7 @@ class _SignupScreenState extends State<SignupScreen> {
           icon: Icons.mail_outline_rounded,
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
+          autofillHints: const [AutofillHints.newUsername, AutofillHints.email],
           errorText: _emailError,
           onChanged: (_) {
             setState(() { _emailError = null; _generalError = null; });
@@ -258,7 +266,9 @@ class _SignupScreenState extends State<SignupScreen> {
           hintText: 'password'.tr(),
           icon: Icons.lock_outline_rounded,
           obscureText: true,
+          keyboardType: TextInputType.visiblePassword,
           textInputAction: TextInputAction.done,
+          autofillHints: const [AutofillHints.newPassword],
           errorText: _passwordError,
           onChanged: (v) {
             setState(() {

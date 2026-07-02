@@ -116,6 +116,7 @@ class NicknameFieldState extends State<NicknameField> {
       controller: controller,
       maxLength: NicknameCheckResult.maxLength,
       onChanged: _onTextChanged,
+      autofillHints: const [AutofillHints.nickname],
       style: TextStyle(fontSize: AppDimens.fontSizeLg, color: colors.text),
       decoration: InputDecoration(
         counterText: '',

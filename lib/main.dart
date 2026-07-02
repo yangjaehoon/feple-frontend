@@ -179,7 +179,6 @@ class _MyAppState extends State<MyApp> {
       child: Builder(
         builder: (context) {
           return MaterialApp(
-            key: ValueKey(context.locale),
             debugShowCheckedModeBanner: false,
             theme: context.themeType.themeData,
             home: Consumer<UserProvider>(

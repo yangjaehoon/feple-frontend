@@ -371,6 +371,8 @@
   "no_songs": "등록된 곡이 없습니다.",
   "youtube_open_failed": "YouTube Music을 열 수 없습니다.",
   "link_open_failed": "링크를 열 수 없습니다.",
+  "login_trouble": "로그인에 문제가 있으신가요?",
+  "contact_support": "고객센터 문의",
   "festival_performed_count": "{}회 공연",
   "follower_count": "팔로워 {}",
   "booth_map_title": "부스 지도",

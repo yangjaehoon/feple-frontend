@@ -28,7 +28,7 @@ class FcmNotificationHandler {
       iOS: DarwinInitializationSettings(),
     );
     await _plugin.initialize(
-      initSettings,
+      settings: initSettings,
       onDidReceiveNotificationResponse: _onTap,
     );
   }
@@ -37,10 +37,10 @@ class FcmNotificationHandler {
     final notification = message.notification;
     if (notification == null) return;
     _plugin.show(
-      notification.hashCode,
-      notification.title,
-      notification.body,
-      NotificationDetails(
+      id: notification.hashCode,
+      title: notification.title,
+      body: notification.body,
+      notificationDetails: NotificationDetails(
         android: AndroidNotificationDetails(
           _channelId,
           'fcm_channel_name'.tr(),

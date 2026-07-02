@@ -1,6 +1,6 @@
 import 'secret_loader.dart';
 
-Future<String> getApiKey(apiName) async {
+Future<String> getApiKey(String apiName) async {
   try {
     final secret =
     await SecretLoader(secretPath: 'assets/secrets.json').load();

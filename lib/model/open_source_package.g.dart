@@ -6,7 +6,7 @@ part of 'open_source_package.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Package _$$_PackageFromJson(Map<String, dynamic> json) => _$_Package(
+_Package _$PackageFromJson(Map<String, dynamic> json) => _Package(
       name: json['name'] as String,
       description: json['description'] as String,
       homepage: json['homepage'] as String?,
@@ -20,8 +20,7 @@ _$_Package _$$_PackageFromJson(Map<String, dynamic> json) => _$_Package(
       isDirectDependency: json['isDirectDependency'] as bool,
     );
 
-Map<String, dynamic> _$$_PackageToJson(_$_Package instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$PackageToJson(_Package instance) => <String, dynamic>{
       'name': instance.name,
       'description': instance.description,
       'homepage': instance.homepage,

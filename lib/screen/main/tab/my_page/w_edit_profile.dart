@@ -309,6 +309,17 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
             excludeUserId: userId,
             initialValue: _originalNickname,
           ),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              Icon(Icons.info_outline_rounded, size: 14, color: colors.textSecondary),
+              const SizedBox(width: 4),
+              Text(
+                'nickname_cooldown_info'.tr(),
+                style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
+              ),
+            ],
+          ),
         ],
       ],
     );

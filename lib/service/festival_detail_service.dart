@@ -99,10 +99,18 @@ class FestivalDetailService
     }
   }
 
-  Future<void> updateSetlist(
-          int festivalId, int artistFestivalId, List<int> songIds) =>
-      DioClient.dio.put(
-        '/festivals/$festivalId/artists/$artistFestivalId/setlist',
-        data: songIds,
+  Future<void> submitSetlistRequest({
+    required int festivalId,
+    required int artistFestivalId,
+    required String artistName,
+    required String message,
+  }) =>
+      DioClient.dio.post(
+        '/festivals/$festivalId/setlist-requests',
+        data: {
+          'artistFestivalId': artistFestivalId,
+          'artistName': artistName,
+          'message': message,
+        },
       );
 }

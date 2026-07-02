@@ -10,7 +10,6 @@ import 'package:feple/injection.dart';
 import 'package:feple/model/festival_setlist_entry.dart';
 import 'package:feple/model/song_model.dart';
 import 'package:feple/service/festival_detail_service.dart';
-import 'package:feple/service/song_service.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -26,7 +25,6 @@ class FestivalSetlistFullScreen extends StatefulWidget {
 class _FestivalSetlistFullScreenState extends State<FestivalSetlistFullScreen> {
   late Future<List<FestivalSetlistEntry>> _future;
   final Set<int> _expanded = {};
-  bool _changed = false;
 
   @override
   void initState() {
@@ -44,33 +42,23 @@ class _FestivalSetlistFullScreenState extends State<FestivalSetlistFullScreen> {
     }
   }
 
-  Future<void> _openEditSheet(FestivalSetlistEntry entry) async {
-    final result = await showAppBottomSheet<bool>(
+  Future<void> _openRequestSheet(FestivalSetlistEntry entry) async {
+    await showAppBottomSheet<void>(
       context,
-      builder: (_) => SetlistEditSheet(
+      builder: (_) => SetlistRequestSheet(
         festivalId: widget.festivalId,
         entry: entry,
       ),
     );
-    if (result == true && mounted) {
-      _changed = true;
-      setState(() { _future = _fetch(); });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) Navigator.pop(context, _changed);
-      },
-      child: Scaffold(
-        backgroundColor: colors.backgroundMain,
-        appBar: _buildAppBar(colors),
-        body: _buildBody(colors),
-      ),
+    return Scaffold(
+      backgroundColor: colors.backgroundMain,
+      appBar: _buildAppBar(colors),
+      body: _buildBody(colors),
     );
   }
 
@@ -81,7 +69,7 @@ class _FestivalSetlistFullScreenState extends State<FestivalSetlistFullScreen> {
       leading: IconButton(
         tooltip: 'back'.tr(),
         icon: Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: colors.textTitle),
-        onPressed: () => Navigator.pop(context, _changed),
+        onPressed: () => Navigator.pop(context),
       ),
       title: Text(
         'setlist'.tr(),
@@ -116,7 +104,7 @@ class _FestivalSetlistFullScreenState extends State<FestivalSetlistFullScreen> {
             }
           }),
           onSongTap: _openYoutubeMusic,
-          onEdit: () => _openEditSheet(entries[i]),
+          onRequest: () => _openRequestSheet(entries[i]),
         ),
       ),
     );
@@ -150,14 +138,14 @@ class _ArtistFullTile extends StatelessWidget {
   final bool isExpanded;
   final VoidCallback onToggle;
   final void Function(String url) onSongTap;
-  final VoidCallback onEdit;
+  final VoidCallback onRequest;
 
   const _ArtistFullTile({
     required this.entry,
     required this.isExpanded,
     required this.onToggle,
     required this.onSongTap,
-    required this.onEdit,
+    required this.onRequest,
   });
 
   @override
@@ -217,10 +205,10 @@ class _ArtistFullTile extends StatelessWidget {
           ),
         ),
         GestureDetector(
-          onTap: onEdit,
+          onTap: onRequest,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            child: Icon(Icons.edit_rounded, size: 16, color: colors.activate),
+            child: Icon(Icons.edit_note_rounded, size: 18, color: colors.activate),
           ),
         ),
       ],
@@ -358,46 +346,46 @@ class _ArtistFullTile extends StatelessWidget {
   }
 }
 
-// 카드뷰와 전체보기 페이지 양쪽에서 사용하는 셋리스트 편집 바텀시트
-class SetlistEditSheet extends StatefulWidget {
+class SetlistRequestSheet extends StatefulWidget {
   final int festivalId;
   final FestivalSetlistEntry entry;
 
-  const SetlistEditSheet({super.key, required this.festivalId, required this.entry});
+  const SetlistRequestSheet({super.key, required this.festivalId, required this.entry});
 
   @override
-  State<SetlistEditSheet> createState() => _SetlistEditSheetState();
+  State<SetlistRequestSheet> createState() => _SetlistRequestSheetState();
 }
 
-class _SetlistEditSheetState extends State<SetlistEditSheet> {
-  late Future<List<SongModel>> _songsFuture;
-  late Set<int> _selectedIds;
-  bool _saving = false;
+class _SetlistRequestSheetState extends State<SetlistRequestSheet> {
+  final _controller = TextEditingController();
+  bool _submitting = false;
 
   @override
-  void initState() {
-    super.initState();
-    _selectedIds = widget.entry.songIds;
-    _songsFuture = sl<SongService>().fetchSongs(widget.entry.artistId);
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
-  Future<void> _save() async {
-    setState(() => _saving = true);
+  Future<void> _submit() async {
+    final message = _controller.text.trim();
+    if (message.isEmpty) return;
+    setState(() => _submitting = true);
     try {
-      await sl<FestivalDetailService>().updateSetlist(
-        widget.festivalId,
-        widget.entry.artistFestivalId,
-        _selectedIds.toList(),
+      await sl<FestivalDetailService>().submitSetlistRequest(
+        festivalId: widget.festivalId,
+        artistFestivalId: widget.entry.artistFestivalId,
+        artistName: widget.entry.artistName,
+        message: message,
       );
       if (mounted) {
-        context.showSuccessSnackbar('setlist_saved'.tr());
-        Navigator.pop(context, true);
+        context.showSuccessSnackbar('setlist_request_sent'.tr());
+        Navigator.pop(context);
       }
     } catch (e) {
-      debugPrint('[Setlist] 저장 실패: $e');
-      if (mounted) context.showErrorSnackbar('setlist_save_failed'.tr());
+      debugPrint('[Setlist] 요청 전송 실패: $e');
+      if (mounted) context.showErrorSnackbar('setlist_request_failed'.tr());
     } finally {
-      if (mounted) setState(() => _saving = false);
+      if (mounted) setState(() => _submitting = false);
     }
   }
 
@@ -405,9 +393,9 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return DraggableScrollableSheet(
-      initialChildSize: 0.75,
+      initialChildSize: 0.55,
       minChildSize: 0.4,
-      maxChildSize: 0.92,
+      maxChildSize: 0.8,
       builder: (_, controller) => Material(
         color: colors.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
@@ -416,8 +404,14 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
           children: [
             const SizedBox(height: 12),
             const BottomSheetHandle(),
-            _buildSheetHeader(colors),
-            Expanded(child: _buildSongList(colors, controller)),
+            _buildHeader(colors),
+            Expanded(
+              child: SingleChildScrollView(
+                controller: controller,
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                child: _buildTextField(colors),
+              ),
+            ),
             _buildFooter(colors),
           ],
         ),
@@ -425,96 +419,52 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
     );
   }
 
-  Widget _buildSongList(AbstractThemeColors colors, ScrollController controller) {
-    return AsyncContentBuilder<List<SongModel>>(
-      future: _songsFuture,
-      loadingBuilder: (_) => const Center(child: CircularProgressIndicator.adaptive()),
-      errorBuilder: (_) => Center(
-        child: Text('err_fetch_data'.tr(), style: TextStyle(color: colors.textSecondary)),
-      ),
-      emptyBuilder: (_) => Center(
-        child: Text('no_setlist'.tr(), style: TextStyle(color: colors.textSecondary)),
-      ),
-      useListViewForEmptyState: false,
-      builder: (_, songs) => ListView.separated(
-        controller: controller,
-        itemCount: songs.length,
-        separatorBuilder: (_, __) => Divider(height: 1, color: colors.listDivider, indent: 16, endIndent: 16),
-        itemBuilder: (_, i) {
-          final song = songs[i];
-          final checked = _selectedIds.contains(song.id);
-          return CheckboxListTile(
-            value: checked,
-            onChanged: (_) => setState(() {
-              if (checked) {
-                _selectedIds.remove(song.id);
-              } else {
-                _selectedIds.add(song.id);
-              }
-            }),
-            activeColor: colors.activate,
-            checkColor: colors.surface,
-            title: Text(
-              song.title,
-              style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w500, color: colors.textTitle),
+  Widget _buildHeader(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+      child: Row(
+        children: [
+          Flexible(
+            child: Text(
+              widget.entry.displayName(context.isEnglish),
+              style: TextStyle(fontSize: AppDimens.fontSizeXl, fontWeight: FontWeight.w700, color: colors.textTitle),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            secondary: song.thumbnailUrl != null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-                    child: CachedNetworkImage(
-                      imageUrl: song.thumbnailUrl!,
-                      width: 40,
-                      height: 40,
-                      memCacheWidth: 80,
-                      fit: BoxFit.cover,
-                      fadeInDuration: AppDimens.animXFast,
-                      fadeOutDuration: AppDimens.animTapFeedback,
-                      errorWidget: (_, __, ___) => _thumbPlaceholder(colors),
-                    ),
-                  )
-                : _thumbPlaceholder(colors),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          );
-        },
+          ),
+          const SizedBox(width: 6),
+          Text(
+            'setlist_request'.tr(),
+            style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildSheetHeader(AbstractThemeColors colors) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 12),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
-            children: [
-              Flexible(
-                child: Text(
-                  widget.entry.displayName(context.isEnglish),
-                  style: TextStyle(fontSize: AppDimens.fontSizeXl, fontWeight: FontWeight.w700, color: colors.textTitle),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const SizedBox(width: 6),
-              Text(
-                'edit_setlist'.tr(),
-                style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
-              ),
-            ],
-          ),
+  Widget _buildTextField(AbstractThemeColors colors) {
+    return TextField(
+      controller: _controller,
+      maxLines: 6,
+      maxLength: 500,
+      decoration: InputDecoration(
+        hintText: 'setlist_request_hint'.tr(),
+        hintStyle: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeSm, height: 1.5),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
+          borderSide: BorderSide(color: colors.listDivider),
         ),
-        const SizedBox(height: 6),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            'select_songs_hint'.tr(),
-            style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
-          ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
+          borderSide: BorderSide(color: colors.listDivider),
         ),
-        const SizedBox(height: 12),
-      ],
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
+          borderSide: BorderSide(color: colors.activate, width: 1.5),
+        ),
+        contentPadding: const EdgeInsets.all(14),
+      ),
+      style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textTitle, height: 1.5),
     );
   }
 
@@ -526,7 +476,7 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
           children: [
             Expanded(
               child: OutlinedButton(
-                onPressed: _saving ? null : () => Navigator.pop(context),
+                onPressed: _submitting ? null : () => Navigator.pop(context),
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(color: colors.activate),
                   foregroundColor: colors.activate,
@@ -539,27 +489,15 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
             const SizedBox(width: 12),
             Expanded(
               child: LoadingButton(
-                label: 'save'.tr(),
-                onPressed: _save,
-                isLoading: _saving,
+                label: 'setlist_request_submit'.tr(),
+                onPressed: _submit,
+                isLoading: _submitting,
                 backgroundColor: colors.activate,
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _thumbPlaceholder(AbstractThemeColors colors) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: colors.backgroundMain,
-        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-      ),
-      child: Icon(Icons.music_note_rounded, size: 16, color: colors.textSecondary),
     );
   }
 }

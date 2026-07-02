@@ -38,15 +38,12 @@ class FestivalSetlistState extends State<FestivalSetlist> {
   void refresh() => setState(() { _future = _fetch(); });
 
   Future<void> _openFullPage() async {
-    final changed = await Navigator.push<bool>(
+    await Navigator.push<void>(
       context,
       SlideRoute(
         builder: (_) => FestivalSetlistFullScreen(festivalId: widget.festivalId),
       ),
     );
-    if (changed == true && mounted) {
-      setState(() { _future = _fetch(); });
-    }
   }
 
   @override

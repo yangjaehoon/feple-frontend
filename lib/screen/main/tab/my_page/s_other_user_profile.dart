@@ -14,10 +14,12 @@ import 'package:feple/model/user_stats_model.dart';
 import 'package:feple/screen/main/tab/my_page/cert_status_style.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_posts.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
+import 'package:feple/service/block_service.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:feple/service/user_activity_service.dart';
 import 'package:feple/service/user_service.dart';
+import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:flutter/material.dart';
 
 class OtherUserProfileScreen extends StatefulWidget {
@@ -41,12 +43,15 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
   final _activityService = sl<UserActivityService>();
   final _certService = sl<CertificationService>();
   final _festivalService = sl<FestivalService>();
+  final _blockService = sl<BlockService>();
 
   User? _user;
   int? _postCount;
   List<CertificationModel>? _certifications;
   bool _hasError = false;
   bool _isNavigating = false;
+  bool _isBlocked = false;
+  bool _isBlockLoading = false;
 
   @override
   void initState() {
@@ -61,16 +66,54 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
         _userService.fetchUser(widget.userId),
         _activityService.fetchStats(widget.userId),
         _certService.getPublicCertifications(widget.userId),
+        _blockService.getBlockedUsers(),
       ]);
       if (!mounted) return;
       final stats = results[1] as UserStats;
+      final blockedList = results[3] as List;
       setState(() {
         _user = results[0] as User;
         _postCount = stats.postCount;
         _certifications = results[2] as List<CertificationModel>;
+        _isBlocked = blockedList.any((u) => u.userId == widget.userId);
       });
     } catch (_) {
       if (mounted) setState(() => _hasError = true);
+    }
+  }
+
+  Future<void> _toggleBlock() async {
+    final willBlock = !_isBlocked;
+    if (willBlock) {
+      final confirmed = await showConfirmDialog(
+        context,
+        title: 'block_title'.tr(),
+        content: 'block_confirm'.tr(args: [_user?.nickname ?? widget.nickname]),
+        confirmLabel: 'block'.tr(),
+      );
+      if (!confirmed || !mounted) return;
+    }
+
+    setState(() => _isBlockLoading = true);
+    try {
+      if (willBlock) {
+        await _blockService.blockUser(widget.userId);
+      } else {
+        await _blockService.unblockUser(widget.userId);
+      }
+      if (!mounted) return;
+      setState(() => _isBlocked = willBlock);
+      final nickname = _user?.nickname ?? widget.nickname;
+      context.showSuccessSnackbar(
+        willBlock
+            ? 'block_success'.tr(args: [nickname])
+            : 'unblock_success'.tr(args: [nickname]),
+      );
+      if (willBlock) Navigator.pop(context);
+    } catch (_) {
+      if (mounted) context.showErrorSnackbar(willBlock ? 'block_failed'.tr() : 'unblock_failed'.tr());
+    } finally {
+      if (mounted) setState(() => _isBlockLoading = false);
     }
   }
 
@@ -81,7 +124,10 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
       backgroundColor: colors.backgroundMain,
       body: Column(
         children: [
-          SecondaryAppBar(title: _user?.nickname ?? widget.nickname),
+          SecondaryAppBar(
+            title: _user?.nickname ?? widget.nickname,
+            actions: [_buildBlockButton(colors)],
+          ),
           Expanded(
             child: RefreshIndicator(
               color: colors.activate,
@@ -90,6 +136,57 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildBlockButton(AbstractThemeColors colors) {
+    if (_isBlockLoading) {
+      return Padding(
+        padding: const EdgeInsets.only(right: 12),
+        child: SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+        ),
+      );
+    }
+    return IconButton(
+      tooltip: _isBlocked ? 'unblock'.tr() : 'block'.tr(),
+      icon: Icon(
+        _isBlocked ? Icons.block_rounded : Icons.more_vert_rounded,
+        color: Colors.white,
+        size: 22,
+      ),
+      onPressed: _isBlocked ? _toggleBlock : _showBlockMenu,
+    );
+  }
+
+  void _showBlockMenu() {
+    final colors = context.appColors;
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: colors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(Icons.block_rounded, color: colors.error),
+              title: Text(
+                'block'.tr(),
+                style: TextStyle(color: colors.error, fontWeight: FontWeight.w500),
+              ),
+              onTap: () {
+                Navigator.pop(ctx);
+                _toggleBlock();
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

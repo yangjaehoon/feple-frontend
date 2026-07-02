@@ -9,6 +9,7 @@ import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/my_page/w_edit_profile.dart';
 import 'package:feple/screen/opensource/s_opensource.dart';
 import 'package:feple/screen/settings/s_notification_settings.dart';
+import 'package:feple/screen/settings/s_blocked_users.dart';
 import 'package:feple/common/data/preference/prefs.dart';
 import 'package:feple/screen/onboarding/s_onboarding.dart';
 import 'package:flutter/foundation.dart';
@@ -142,6 +143,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
           if (_isNavigating) return;
           _isNavigating = true;
           Navigator.push(context, SlideRoute(builder: (_) => const EditProfileWidget()))
+              .whenComplete(() { if (mounted) _isNavigating = false; });
+        },
+      ),
+      const _ItemDivider(),
+      _SettingsItem(
+        icon: Icons.block_rounded,
+        label: 'blocked_users'.tr(),
+        onTap: () {
+          if (_isNavigating) return;
+          _isNavigating = true;
+          Navigator.push(context, SlideRoute(builder: (_) => const BlockedUsersScreen()))
               .whenComplete(() { if (mounted) _isNavigating = false; });
         },
       ),

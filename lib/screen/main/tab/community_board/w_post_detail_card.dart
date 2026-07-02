@@ -14,6 +14,7 @@ import 'package:feple/model/post_model.dart';
 import 'package:feple/common/widget/w_report_sheet.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/service/block_service.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/service/report_service.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -93,6 +94,7 @@ class PostDetailCard extends StatefulWidget {
 class _PostDetailCardState extends State<PostDetailCard> {
   final _postService = sl<PostService>();
   final _reportService = sl<ReportService>();
+  final _blockService = sl<BlockService>();
   final _commentController = TextEditingController();
   late final PostDetailNotifier _notifier;
   int? _replyToCommentId;
@@ -227,6 +229,8 @@ class _PostDetailCardState extends State<PostDetailCard> {
         item('share', Icons.share_outlined, 'share'.tr()),
         const PopupMenuDivider(height: 1),
         item('report', Icons.flag_outlined, 'report_post'.tr(), danger: true),
+        const PopupMenuDivider(height: 1),
+        item('block', Icons.block_rounded, 'block_user'.tr(), danger: true),
       ];
     }
   }
@@ -239,6 +243,8 @@ class _PostDetailCardState extends State<PostDetailCard> {
         await _onDeletePost();
       case 'report':
         _onReportPost();
+      case 'block':
+        await _onBlockUser();
       case 'share':
         SharePlus.instance.share(ShareParams(text: '$_title\n\n$_content'));
     }
@@ -295,6 +301,27 @@ class _PostDetailCardState extends State<PostDetailCard> {
           _reportService.submitReport(widget.id, reason, detail: detail),
       duplicateErrorKey: 'report_duplicate',
     );
+  }
+
+  Future<void> _onBlockUser() async {
+    final authorId = widget.postUserId;
+    if (authorId == null) return;
+    final nickname = widget.nickname;
+    final confirmed = await showConfirmDialog(
+      context,
+      title: 'block_title'.tr(),
+      content: 'block_confirm'.tr(args: [nickname]),
+      confirmLabel: 'block'.tr(),
+    );
+    if (!confirmed || !mounted) return;
+    try {
+      await _blockService.blockUser(authorId);
+      if (!mounted) return;
+      context.showSuccessSnackbar('block_success'.tr(args: [nickname]));
+      Navigator.pop(context);
+    } catch (_) {
+      if (mounted) context.showErrorSnackbar('block_failed'.tr());
+    }
   }
 
   Widget _buildScrollContent(AbstractThemeColors colors, int? userId) {

@@ -110,6 +110,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    context.locale; // Subscribe to locale changes so labels re-translate immediately
     final colors = context.appColors;
     final isDark = context.themeType == CustomTheme.dark;
     return Scaffold(

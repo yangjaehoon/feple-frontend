@@ -72,6 +72,7 @@ class _HomeFragmentState extends State<HomeFragment> {
 
   @override
   Widget build(BuildContext context) {
+    context.locale; // Subscribe to locale changes so section titles re-translate immediately
     final colors = context.appColors;
     return Stack(
       children: [

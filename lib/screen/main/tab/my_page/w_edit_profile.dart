@@ -314,9 +314,11 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
             children: [
               Icon(Icons.info_outline_rounded, size: 14, color: colors.textSecondary),
               const SizedBox(width: 4),
-              Text(
-                'nickname_cooldown_info'.tr(),
-                style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
+              Expanded(
+                child: Text(
+                  'nickname_cooldown_info'.tr(),
+                  style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
+                ),
               ),
             ],
           ),

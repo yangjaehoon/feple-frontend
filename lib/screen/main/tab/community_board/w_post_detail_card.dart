@@ -240,7 +240,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
       case 'report':
         _onReportPost();
       case 'share':
-        Share.share('$_title\n\n$_content');
+        SharePlus.instance.share(ShareParams(text: '$_title\n\n$_content'));
     }
   }
 

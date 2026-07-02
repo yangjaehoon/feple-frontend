@@ -86,7 +86,7 @@ class FestivalPosterState extends State<FestivalPoster> {
   }
 
   void _shareFestival() {
-    Share.share('${widget.poster.displayTitle(context.isEnglish)}\n${widget.poster.location}\n${widget.poster.startDate}');
+    SharePlus.instance.share(ShareParams(text: '${widget.poster.displayTitle(context.isEnglish)}\n${widget.poster.location}\n${widget.poster.startDate}'));
   }
 
   void _showWeather() {

@@ -8,7 +8,7 @@ part 'open_source_package.freezed.dart';
 part 'open_source_package.g.dart';
 
 @freezed
-class Package with _$Package{
+sealed class Package with _$Package {
 
    factory Package({
     required String name,

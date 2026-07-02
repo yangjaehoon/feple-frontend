@@ -5,7 +5,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/login/s_signup.dart';
 import 'package:feple/login/s_verify_email.dart';
-import 'package:feple/login/w_forgot_password_dialog.dart';
+import 'package:feple/login/s_forgot_password.dart';
 import 'package:feple/service/auth_service.dart';
 import 'package:feple/service/fcm_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -323,10 +323,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _showForgotPasswordDialog() async {
-    await showDialog<void>(
-      context: context,
-      builder: (_) => ForgotPasswordDialog(
-        initialEmail: emailController.text.trim(),
+    await Navigator.push(
+      context,
+      SlideRoute(
+        builder: (_) => ForgotPasswordScreen(
+          initialEmail: emailController.text.trim(),
+        ),
       ),
     );
   }

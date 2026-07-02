@@ -149,6 +149,7 @@
   "enter_valid_email": "올바른 이메일 형식을 입력해주세요.",
   "login_failed_detail": "로그인 실패: {}",
   "kakao_login_btn": "카카오 로그인",
+  "apple_login_btn": "Apple로 로그인",
   "kakao_login_success": "카카오 로그인 성공",
   "kakao_login_failed": "카카오 로그인 실패: {}",
   "not_member_yet": "아직 회원이 아니신가요?",

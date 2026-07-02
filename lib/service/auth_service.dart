@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../auth/token_store.dart';
 import '../model/user_model.dart' as app;
@@ -115,6 +116,38 @@ class AuthService {
       token = await UserApi.instance.loginWithKakaoAccount();
     }
     return _exchangeKakaoToken(token.accessToken);
+  }
+
+  // ── Apple 로그인 ──
+
+  Future<app.User> loginWithApple() async {
+    final appleCredential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+    );
+
+    final oauthCredential = OAuthProvider('apple.com').credential(
+      idToken: appleCredential.identityToken,
+      accessToken: appleCredential.authorizationCode,
+    );
+
+    final userCredential = await FirebaseAuth.instance
+        .signInWithCredential(oauthCredential);
+    final idToken = await userCredential.user!.getIdToken();
+
+    // Apple은 최초 로그인 시에만 이름을 제공, 반환 사용자는 null
+    final givenName = appleCredential.givenName;
+    final familyName = appleCredential.familyName;
+    final fullName = [givenName, familyName]
+        .where((s) => s != null && s.isNotEmpty)
+        .join(' ');
+
+    return _exchangeFirebaseToken(
+      idToken!,
+      nickname: fullName.isNotEmpty ? fullName : null,
+    );
   }
 
   // ── 비밀번호 재설정 ──

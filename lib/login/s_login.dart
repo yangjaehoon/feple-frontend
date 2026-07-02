@@ -14,6 +14,8 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:feple/common/theme/custom_theme.dart';
 import '../provider/user_provider.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -28,6 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final passwordController = TextEditingController();
   bool _isEmailLoading = false;
   bool _isKakaoLoading = false;
+  bool _isAppleLoading = false;
   bool _isNavigating = false;
   String? _emailError;
   String? _passwordError;   // 빈 필드 → 빨간 테두리
@@ -62,9 +65,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     _buildForgotPassword(themeColors),
                     const SizedBox(height: 20),
                     IgnorePointer(
-                      ignoring: _isEmailLoading || _isKakaoLoading,
+                      ignoring: _isAnyLoading,
                       child: Opacity(
-                        opacity: _isKakaoLoading ? 0.5 : 1.0,
+                        opacity: (_isKakaoLoading || _isAppleLoading) ? 0.5 : 1.0,
                         child: LoadingButton(
                           label: 'login'.tr(),
                           onPressed: _loginWithEmail,
@@ -77,6 +80,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     _buildOrDivider(themeColors),
                     const SizedBox(height: 20),
                     _buildKakaoLoginButton(),
+                    const SizedBox(height: 12),
+                    _buildAppleLoginButton(),
                     const SizedBox(height: 28),
                     _buildSignupRow(context, themeColors),
                     const SizedBox(height: 32),
@@ -223,11 +228,13 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  bool get _isAnyLoading => _isEmailLoading || _isKakaoLoading || _isAppleLoading;
+
   Widget _buildKakaoLoginButton() {
     return IgnorePointer(
-      ignoring: _isEmailLoading || _isKakaoLoading,
+      ignoring: _isAnyLoading,
       child: Opacity(
-        opacity: _isEmailLoading ? 0.5 : 1.0,
+        opacity: (_isEmailLoading || _isAppleLoading) ? 0.5 : 1.0,
         child: LoadingButton(
           isLoading: _isKakaoLoading,
           backgroundColor: AppColors.kakaoYellow,
@@ -235,6 +242,31 @@ class _LoginScreenState extends State<LoginScreen> {
           onPressed: signInWithKakao,
           label: 'kakao_login_btn'.tr(),
         ),
+      ),
+    );
+  }
+
+  Widget _buildAppleLoginButton() {
+    final isDark = context.themeType == CustomTheme.dark;
+    return IgnorePointer(
+      ignoring: _isAnyLoading,
+      child: Opacity(
+        opacity: (_isEmailLoading || _isKakaoLoading) ? 0.5 : 1.0,
+        child: _isAppleLoading
+            ? LoadingButton(
+                isLoading: true,
+                backgroundColor: isDark ? Colors.white : Colors.black,
+                foregroundColor: isDark ? Colors.black : Colors.white,
+                onPressed: () {},
+                label: 'apple_login_btn'.tr(),
+              )
+            : SignInWithAppleButton(
+                style: isDark
+                    ? SignInWithAppleButtonStyle.white
+                    : SignInWithAppleButtonStyle.black,
+                text: 'apple_login_btn'.tr(),
+                onPressed: signInWithApple,
+              ),
       ),
     );
   }
@@ -370,6 +402,27 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> signInWithApple() async {
+    if (_isAnyLoading) return;
+    final userProvider = context.read<UserProvider>();
+    setState(() { _isAppleLoading = true; _clearErrors(); });
+    try {
+      final user = await AuthService.instance.loginWithApple();
+      await userProvider.setUser(user);
+      FcmService.instance.initWithRationale().catchError((e) => debugPrint('[FCM] init failed: $e'));
+    } on SignInWithAppleAuthorizationException catch (e) {
+      debugPrint('[Auth] Apple 로그인 취소/실패: $e');
+      if (e.code != AuthorizationErrorCode.canceled && mounted) {
+        setState(() => _authError = 'login_failed'.tr());
+      }
+    } catch (e) {
+      debugPrint('[Auth] Apple 로그인 실패: $e');
+      if (mounted) setState(() => _authError = 'login_failed'.tr());
+    } finally {
+      if (mounted) setState(() => _isAppleLoading = false);
+    }
   }
 
   Future<void> signInWithKakao() async {

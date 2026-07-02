@@ -149,6 +149,7 @@
   "enter_valid_email": "Please enter a valid email address.",
   "login_failed_detail": "Login failed: {}",
   "kakao_login_btn": "Kakao Login",
+  "apple_login_btn": "Sign in with Apple",
   "kakao_login_success": "Kakao login success",
   "kakao_login_failed": "Kakao login failed: {}",
   "not_member_yet": "Not a member yet?",

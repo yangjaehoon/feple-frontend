@@ -67,6 +67,12 @@ class PostService {
     }
   }
 
+  /// 게시글 단건 조회
+  Future<Post> fetchPost(int postId) async {
+    final response = await DioClient.dio.get('/posts/$postId');
+    return Post.fromJson(response.data as Map<String, dynamic>);
+  }
+
   /// 게시글 좋아요·스크랩 수 조회 (query only)
   Future<({int likeCount, int scrapCount})> fetchCounts(int postId) async {
     final response = await DioClient.dio.get('/posts/$postId');

@@ -32,7 +32,7 @@ class FestivalPoster extends StatefulWidget {
 
 class FestivalPosterState extends State<FestivalPoster> {
   static const double _posterThumbnailWidth = 120.0;
-  static const double _posterThumbnailHeight = 160.0;
+  static const double _posterThumbnailHeight = 180.0;
 
   late final FestivalPosterNotifier _notifier;
   bool _isSheetOpen = false;

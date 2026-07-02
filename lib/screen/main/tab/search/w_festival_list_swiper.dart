@@ -96,7 +96,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
                   child: CachedNetworkImage(
                     imageUrl: item.posterUrl,
                     memCacheWidth: 360,
-                    fit: BoxFit.fill,
+                    fit: BoxFit.cover,
                     fadeInDuration: AppDimens.animXFast,
                     fadeOutDuration: AppDimens.animTapFeedback,
                     placeholder: (context, url) => const SkeletonBox(height: double.infinity),
@@ -123,7 +123,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
             const Offset(370.0, -20.0),
           ]),
         itemWidth: 180,
-        itemHeight: 254.5,
+        itemHeight: 270,
       ),
     );
   }
@@ -164,7 +164,7 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
           Center(
             child: SkeletonBox(
               width: 180,
-              height: 254.5,
+              height: 270,
               borderRadius: BorderRadius.circular(AppDimens.cardRadius),
             ),
           ),

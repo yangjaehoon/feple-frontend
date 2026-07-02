@@ -43,7 +43,7 @@ class FestivalPreviewCard extends StatelessWidget {
           children: [
             AppNetworkImage(
               imageUrl: festival.posterUrl,
-              fit: BoxFit.fill,
+              fit: BoxFit.cover,
               width: posterWidth,
             ),
             if (festival.isEnded) ...[

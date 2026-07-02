@@ -33,7 +33,7 @@ class HomeFestivalsSection extends StatelessWidget {
 
     if (festivals == null) {
       return SizedBox(
-        height: 190,
+        height: 195,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -43,7 +43,7 @@ class HomeFestivalsSection extends StatelessWidget {
             padding: const EdgeInsets.only(right: 12),
             child: SkeletonBox(
               width: 130,
-              height: 190,
+              height: 195,
               borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
             ),
           ),
@@ -57,7 +57,7 @@ class HomeFestivalsSection extends StatelessWidget {
       );
     }
     return SizedBox(
-      height: 190,
+      height: 195,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),

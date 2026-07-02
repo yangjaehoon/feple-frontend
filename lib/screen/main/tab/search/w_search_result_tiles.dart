@@ -74,13 +74,13 @@ class SearchFestivalTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
         child: SizedBox(
           width: 44,
-          height: 56,
+          height: 66,
           child: data.posterUrl.isNotEmpty
               ? CachedNetworkImage(
                   imageUrl: data.posterUrl,
                   fit: BoxFit.cover,
-                  memCacheWidth: 88, // 44px * 2 (Retina)
-                  memCacheHeight: 112, // 56px * 2 (Retina)
+                  memCacheWidth: 88,
+                  memCacheHeight: 132,
                   fadeInDuration: AppDimens.animXFast,
                   fadeOutDuration: AppDimens.animTapFeedback,
                   placeholder: (_, __) => _placeholder(colors),

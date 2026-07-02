@@ -299,7 +299,7 @@ class _PerformanceCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            entry.artistName,
+            entry.displayName(context.isEnglish),
             style: TextStyle(
                 color: isFollowed ? Colors.white : color,
                 fontSize: AppDimens.fontSizeXxs,
@@ -310,7 +310,7 @@ class _PerformanceCard extends StatelessWidget {
           ),
           if (entry.memberArtistNames.isNotEmpty && cardHeight > 36)
             Text(
-              entry.memberArtistNames.join(' · '),
+              entry.memberDisplayNames(context.isEnglish).join(' · '),
               style: TextStyle(
                   color: isFollowed ? Colors.white70 : color.withValues(alpha: 0.7),
                   fontSize: AppDimens.fontSizeNano,

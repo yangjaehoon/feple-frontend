@@ -291,7 +291,7 @@ class _OfficialCard extends StatelessWidget {
                     SizedBox(width: nameFontSize > 8 ? 4 : 2),
                     Expanded(
                       child: Text(
-                        entry.artistName,
+                        entry.displayName(context.isEnglish),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: nameColor,
@@ -312,7 +312,7 @@ class _OfficialCard extends StatelessWidget {
                 ),
                 if (entry.memberArtistNames.isNotEmpty && availH > nameFontSize * 1.25 + 10)
                   Text(
-                    entry.memberArtistNames.join(' · '),
+                    entry.memberDisplayNames(context.isEnglish).join(' · '),
                     style: TextStyle(color: subColor, fontSize: subFontSize * 0.9, height: 1.2),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

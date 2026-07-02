@@ -207,7 +207,7 @@ class _ArtistCompactRow extends StatelessWidget {
             children: [
               _buildAvatar(colors),
               const SizedBox(width: 12),
-              Expanded(child: _buildTextColumn(topSong, colors)),
+              Expanded(child: _buildTextColumn(topSong, context.isEnglish, colors)),
             ],
           ),
         ),
@@ -217,12 +217,12 @@ class _ArtistCompactRow extends StatelessWidget {
     );
   }
 
-  Widget _buildTextColumn(SongModel? topSong, AbstractThemeColors colors) {
+  Widget _buildTextColumn(SongModel? topSong, bool isEnglish, AbstractThemeColors colors) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          entry.artistName,
+          entry.displayName(isEnglish),
           style: TextStyle(
             fontSize: AppDimens.fontSizeMd,
             fontWeight: FontWeight.w600,

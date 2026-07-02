@@ -163,6 +163,7 @@ class _ArtistFullTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final isEnglish = context.isEnglish;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
@@ -178,7 +179,7 @@ class _ArtistFullTile extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _buildHeaderRow(colors),
+          _buildHeaderRow(isEnglish, colors),
           if (isExpanded) ...[
             Divider(height: 1, color: colors.listDivider),
             _buildSongList(colors),
@@ -188,7 +189,7 @@ class _ArtistFullTile extends StatelessWidget {
     );
   }
 
-  Widget _buildHeaderRow(AbstractThemeColors colors) {
+  Widget _buildHeaderRow(bool isEnglish, AbstractThemeColors colors) {
     return Row(
       children: [
         Expanded(
@@ -204,7 +205,7 @@ class _ArtistFullTile extends StatelessWidget {
                 children: [
                   _buildAvatar(colors),
                   const SizedBox(width: 12),
-                  Expanded(child: _buildArtistInfo(colors)),
+                  Expanded(child: _buildArtistInfo(isEnglish, colors)),
                   AnimatedRotation(
                     turns: isExpanded ? 0.5 : 0,
                     duration: AppDimens.animXFast,
@@ -226,12 +227,12 @@ class _ArtistFullTile extends StatelessWidget {
     );
   }
 
-  Widget _buildArtistInfo(AbstractThemeColors colors) {
+  Widget _buildArtistInfo(bool isEnglish, AbstractThemeColors colors) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          entry.artistName,
+          entry.displayName(isEnglish),
           style: TextStyle(
             fontSize: AppDimens.fontSizeMd,
             fontWeight: FontWeight.w600,
@@ -491,7 +492,7 @@ class _SetlistEditSheetState extends State<SetlistEditSheet> {
             children: [
               Flexible(
                 child: Text(
-                  widget.entry.artistName,
+                  widget.entry.displayName(context.isEnglish),
                   style: TextStyle(fontSize: AppDimens.fontSizeXl, fontWeight: FontWeight.w700, color: colors.textTitle),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

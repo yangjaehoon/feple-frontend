@@ -4,6 +4,7 @@ class FestivalSetlistEntry {
   final int artistFestivalId;
   final int artistId;
   final String artistName;
+  final String artistNameEn;
   final String? profileImageUrl;
   final List<SongModel> songs;
 
@@ -11,9 +12,13 @@ class FestivalSetlistEntry {
     required this.artistFestivalId,
     required this.artistId,
     required this.artistName,
+    this.artistNameEn = '',
     this.profileImageUrl,
     required this.songs,
   });
+
+  String displayName(bool isEnglish) =>
+      isEnglish && artistNameEn.isNotEmpty ? artistNameEn : artistName;
 
   Set<int> get songIds => songs.map((s) => s.id).toSet();
 
@@ -21,6 +26,7 @@ class FestivalSetlistEntry {
         'artistFestivalId': artistFestivalId,
         'artistId': artistId,
         'artistName': artistName,
+        'artistNameEn': artistNameEn,
         'profileImageUrl': profileImageUrl,
         'songs': songs.map((s) => s.toJson()).toList(),
       };
@@ -30,6 +36,7 @@ class FestivalSetlistEntry {
       artistFestivalId: (json['artistFestivalId'] as num).toInt(),
       artistId: (json['artistId'] as num).toInt(),
       artistName: json['artistName'] as String,
+      artistNameEn: json['artistNameEn'] as String? ?? '',
       profileImageUrl: json['profileImageUrl'] as String?,
       songs: ((json['songs'] as List?) ?? [])
           .map((e) => SongModel.fromJson(e as Map<String, dynamic>))

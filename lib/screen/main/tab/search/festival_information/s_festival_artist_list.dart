@@ -141,7 +141,7 @@ class FestivalArtistListScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              artist.artistName,
+              artist.displayName(context.isEnglish),
               style: TextStyle(
                 fontSize: AppDimens.fontSizeSm,
                 fontWeight: FontWeight.w600,

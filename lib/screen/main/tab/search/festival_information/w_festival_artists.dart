@@ -217,7 +217,7 @@ class FestivalArtistsState extends State<FestivalArtists> {
             ),
             const SizedBox(height: 6),
             Text(
-              artist.artistName,
+              artist.displayName(context.isEnglish),
               style: TextStyle(
                 fontSize: AppDimens.fontSizeXxs,
                 fontWeight: FontWeight.w600,

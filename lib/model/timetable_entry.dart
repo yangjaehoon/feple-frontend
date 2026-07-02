@@ -54,21 +54,33 @@ class TimetableEntry {
   final String stageName;
   final int stageOrder;
   final String artistName;
+  final String artistNameEn;
   final String festivalDate;
   final String startTime;
   final String endTime;
   final List<String> memberArtistNames;
+  final List<String> memberArtistNameEnList;
 
   const TimetableEntry({
     required this.id,
     required this.stageName,
     required this.stageOrder,
     required this.artistName,
+    this.artistNameEn = '',
     required this.festivalDate,
     required this.startTime,
     required this.endTime,
     this.memberArtistNames = const [],
+    this.memberArtistNameEnList = const [],
   });
+
+  String displayName(bool isEnglish) =>
+      isEnglish && artistNameEn.isNotEmpty ? artistNameEn : artistName;
+
+  List<String> memberDisplayNames(bool isEnglish) =>
+      isEnglish && memberArtistNameEnList.isNotEmpty
+          ? memberArtistNameEnList
+          : memberArtistNames;
 
   bool isFollowedBy(Set<String> followedNames) {
     if (followedNames.contains(artistName)) return true;
@@ -80,10 +92,12 @@ class TimetableEntry {
         'stageName': stageName,
         'stageOrder': stageOrder,
         'artistName': artistName,
+        'artistNameEn': artistNameEn,
         'festivalDate': festivalDate,
         'startTime': startTime,
         'endTime': endTime,
         'memberArtistNames': memberArtistNames,
+        'memberArtistNameEnList': memberArtistNameEnList,
       };
 
   factory TimetableEntry.fromJson(Map<String, dynamic> j) => TimetableEntry(
@@ -91,10 +105,15 @@ class TimetableEntry {
         stageName: j['stageName'] as String? ?? '',
         stageOrder: (j['stageOrder'] as num?)?.toInt() ?? 999,
         artistName: j['artistName'] as String? ?? '',
+        artistNameEn: j['artistNameEn'] as String? ?? '',
         festivalDate: j['festivalDate'] as String? ?? '',
         startTime: _toHHmm(j['startTime']),
         endTime: _toHHmm(j['endTime']),
         memberArtistNames: (j['memberArtistNames'] as List<dynamic>?)
+                ?.map((e) => e as String)
+                .toList() ??
+            const [],
+        memberArtistNameEnList: (j['memberArtistNameEnList'] as List<dynamic>?)
                 ?.map((e) => e as String)
                 .toList() ??
             const [],

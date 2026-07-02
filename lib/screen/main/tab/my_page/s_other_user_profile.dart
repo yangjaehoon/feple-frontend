@@ -7,9 +7,12 @@ import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/model/certification_model.dart';
 import 'package:feple/model/user_model.dart';
 import 'package:feple/model/user_stats_model.dart';
+import 'package:feple/screen/main/tab/my_page/cert_status_style.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_posts.dart';
+import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/user_activity_service.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
@@ -33,10 +36,11 @@ class OtherUserProfileScreen extends StatefulWidget {
 class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
   final _userService = sl<UserService>();
   final _activityService = sl<UserActivityService>();
+  final _certService = sl<CertificationService>();
 
   User? _user;
   int? _postCount;
-  int? _certificationCount;
+  List<CertificationModel>? _certifications;
   bool _hasError = false;
   bool _isNavigating = false;
 
@@ -52,13 +56,14 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
       final results = await Future.wait([
         _userService.fetchUser(widget.userId),
         _activityService.fetchStats(widget.userId),
+        _certService.getPublicCertifications(widget.userId),
       ]);
       if (!mounted) return;
       final stats = results[1] as UserStats;
       setState(() {
         _user = results[0] as User;
         _postCount = stats.postCount;
-        _certificationCount = stats.certificationCount;
+        _certifications = results[2] as List<CertificationModel>;
       });
     } catch (_) {
       if (mounted) setState(() => _hasError = true);
@@ -106,8 +111,8 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
           _buildProfileHeader(colors),
           const SizedBox(height: 8),
           _buildPostsCard(colors),
-          const SizedBox(height: 8),
-          _buildCertificationCard(colors),
+          const SizedBox(height: 16),
+          _buildCertificationSection(colors),
         ],
       ),
     );
@@ -287,52 +292,142 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
       ),
     );
   }
-  Widget _buildCertificationCard(AbstractThemeColors colors) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-          border: Border.all(color: colors.listDivider),
-          boxShadow: [
-            BoxShadow(
-              color: colors.cardShadow.withValues(alpha: 0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
+  Widget _buildCertificationSection(AbstractThemeColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            children: [
+              Icon(Icons.verified_rounded, color: colors.activate, size: 18),
+              const SizedBox(width: 6),
+              Text(
+                'certification_badge'.tr(),
+                style: TextStyle(
+                  fontSize: AppDimens.fontSizeMd,
+                  fontWeight: FontWeight.w700,
+                  color: colors.textTitle,
+                ),
+              ),
+              if (_certifications != null) ...[
+                const SizedBox(width: 6),
+                Text(
+                  '${_certifications!.length}',
+                  style: TextStyle(
+                    fontSize: AppDimens.fontSizeSm,
+                    fontWeight: FontWeight.w600,
+                    color: colors.textSecondary,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 150,
+          child: _certifications == null
+              ? _buildCertSkeleton()
+              : _certifications!.isEmpty
+                  ? _buildCertEmpty(colors)
+                  : _buildCertList(colors),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCertSkeleton() {
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      itemCount: 3,
+      itemBuilder: (_, __) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            SkeletonBox(width: 98, height: 98, borderRadius: BorderRadius.all(Radius.circular(49))),
+            SizedBox(height: 6),
+            SkeletonBox(width: 72, height: 11),
           ],
         ),
-        child: Row(
-          children: [
-            Icon(Icons.verified_rounded, color: colors.activate, size: 22),
-            const SizedBox(width: 12),
-            Text(
-              'certification_badge'.tr(),
-              style: TextStyle(
-                fontSize: AppDimens.fontSizeMd,
-                fontWeight: FontWeight.w600,
-                color: colors.textTitle,
+      ),
+    );
+  }
+
+  Widget _buildCertEmpty(AbstractThemeColors colors) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.workspace_premium_outlined, size: 32, color: colors.activate.withValues(alpha: 0.4)),
+          const SizedBox(height: 8),
+          Text(
+            'no_certification'.tr(),
+            style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCertList(AbstractThemeColors colors) {
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      itemCount: _certifications!.length,
+      itemBuilder: (_, i) => _buildCertItem(_certifications![i], colors),
+    );
+  }
+
+  Widget _buildCertItem(CertificationModel cert, AbstractThemeColors colors) {
+    final ringColor = CertStatus.approved.displayColor(colors);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: ringColor.withValues(alpha: 0.6),
+              boxShadow: [
+                BoxShadow(
+                  color: colors.cardShadow.withValues(alpha: 0.08),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(shape: BoxShape.circle, color: colors.surface),
+              child: CircleAvatar(
+                radius: 44,
+                backgroundColor: ringColor.withValues(alpha: 0.15),
+                backgroundImage: cert.posterUrl != null
+                    ? CachedNetworkImageProvider(cert.posterUrl!, maxWidth: 132)
+                    : null,
+                child: cert.posterUrl == null
+                    ? Icon(Icons.photo_rounded, size: 26, color: colors.textTitle.withValues(alpha: 0.3))
+                    : null,
               ),
             ),
-            const Spacer(),
-            _certificationCount == null
-                ? SkeletonBox(
-                    width: 28,
-                    height: 20,
-                    borderRadius: BorderRadius.circular(AppDimens.radiusXs),
-                  )
-                : Text(
-                    _certificationCount.toString(),
-                    style: TextStyle(
-                      fontSize: AppDimens.fontSizeXl,
-                      fontWeight: FontWeight.w800,
-                      color: colors.textTitle,
-                    ),
-                  ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 6),
+          SizedBox(
+            width: 106,
+            child: Text(
+              cert.festivalTitle,
+              style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: colors.textTitle),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
       ),
     );
   }

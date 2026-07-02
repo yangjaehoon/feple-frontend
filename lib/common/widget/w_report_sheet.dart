@@ -26,11 +26,10 @@ Future<void> showReportSheet(
     builder: (ctx) {
       return StatefulBuilder(builder: (ctx, setModalState) {
         final colors = ctx.appColors;
-        return Container(
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          ),
+        return Material(
+          color: colors.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          clipBehavior: Clip.antiAlias,
           child: Padding(
           padding: EdgeInsets.only(
             left: 20,

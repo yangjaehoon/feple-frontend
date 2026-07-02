@@ -145,6 +145,8 @@
   "login": "Login",
   "enter_email_password": "Please enter email and password.",
   "login_failed": "Login failed",
+  "or": "or",
+  "enter_valid_email": "Please enter a valid email address.",
   "login_failed_detail": "Login failed: {}",
   "kakao_login_btn": "Kakao Login",
   "kakao_login_success": "Kakao login success",

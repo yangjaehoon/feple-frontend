@@ -160,7 +160,7 @@ class _FollowedArtistsByGenreScreenState
             child: ArtistCard(
               profileImageUrl: artist.profileImageUrl,
               name: artist.displayName(context.isEnglish),
-              isFollowed: false,
+              isFollowed: true,
             ),
           ),
         );

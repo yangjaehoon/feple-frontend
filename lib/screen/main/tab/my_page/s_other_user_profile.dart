@@ -4,6 +4,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
+import 'package:feple/common/widget/w_level_badge.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/injection.dart';
@@ -163,24 +164,10 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
             ),
           ],
           const SizedBox(height: 4),
-          if (level != null)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: colors.levelBadgeBg.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(AppDimens.cardRadius),
-              ),
-              child: Text(
-                'Lv.$level',
-                style: TextStyle(
-                  fontSize: AppDimens.fontSizeSm,
-                  fontWeight: FontWeight.w700,
-                  color: colors.levelBadgeText,
-                ),
-              ),
-            )
+          if (_user != null)
+            LevelBadge(authorLevel: level, fontSize: 22)
           else
-            SkeletonBox(width: 56, height: 26,
+            SkeletonBox(width: 40, height: 28,
                 borderRadius: BorderRadius.circular(AppDimens.cardRadius)),
         ],
       ),

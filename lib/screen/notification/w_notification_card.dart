@@ -8,11 +8,13 @@ import 'package:flutter/material.dart';
 class NotificationCard extends StatelessWidget {
   final NotificationModel item;
   final VoidCallback onTap;
+  final bool isLoading;
 
   const NotificationCard({
     super.key,
     required this.item,
     required this.onTap,
+    this.isLoading = false,
   });
 
   @override
@@ -20,7 +22,7 @@ class NotificationCard extends StatelessWidget {
     final colors = context.appColors;
 
     return TapScale(
-      onTap: onTap,
+      onTap: isLoading ? null : onTap,
       child: AnimatedContainer(
         duration: AppDimens.animQuick,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -31,7 +33,20 @@ class NotificationCard extends StatelessWidget {
             _buildIconBadge(colors),
             const SizedBox(width: 12),
             Expanded(child: _buildTextContent(context, colors)),
-            if (!item.read) _buildUnreadDot(colors),
+            if (isLoading)
+              Padding(
+                padding: const EdgeInsets.only(top: 2, left: 8),
+                child: SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: colors.activate,
+                  ),
+                ),
+              )
+            else if (!item.read)
+              _buildUnreadDot(colors),
           ],
         ),
       ),
@@ -69,8 +84,10 @@ class NotificationCard extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       child: Icon(
-          item.type?.iconData ?? Icons.festival_rounded,
-          color: item.type?.iconColor(colors) ?? colors.certRingColor, size: 20),
+        item.type?.iconData ?? Icons.festival_rounded,
+        color: item.type?.iconColor(colors) ?? colors.certRingColor,
+        size: 20,
+      ),
     );
   }
 
@@ -97,16 +114,14 @@ class NotificationCard extends StatelessWidget {
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
-        if (item.formattedDate != null) ...[
-          const SizedBox(height: 4),
-          Text(
-            item.formattedDate!,
-            style: TextStyle(
-              fontSize: AppDimens.fontSizeXxs,
-              color: colors.textSecondary.withValues(alpha: 0.6),
-            ),
+        const SizedBox(height: 4),
+        Text(
+          item.relativeTime(!isEnglish),
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeXxs,
+            color: colors.textSecondary.withValues(alpha: 0.6),
           ),
-        ],
+        ),
       ],
     );
   }
@@ -122,5 +137,4 @@ class NotificationCard extends StatelessWidget {
       ),
     );
   }
-
 }

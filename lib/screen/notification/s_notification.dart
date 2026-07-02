@@ -7,6 +7,7 @@ import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
+import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/model/notification_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
@@ -21,6 +22,19 @@ import 'package:feple/service/post_service.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
+// 섹션 헤더 또는 알림 카드를 구분하는 sealed class
+sealed class _ListItem {}
+
+class _SectionHeader extends _ListItem {
+  final String label;
+  _SectionHeader(this.label);
+}
+
+class _NotifItem extends _ListItem {
+  final NotificationModel model;
+  _NotifItem(this.model);
+}
+
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
 
@@ -34,7 +48,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   final _postService = sl<PostService>();
   final _scrollController = ScrollController();
   late final NotificationNotifier _notifier;
-  bool _isNavigating = false;
+  int? _navigatingId;
   bool _showScrollToTop = false;
 
   @override
@@ -67,22 +81,22 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   Future<void> _onTap(NotificationModel item) async {
+    if (_navigatingId != null) return;
     await _notifier.markRead(item);
     if (item.type == null || item.referenceId == null) return;
     if (item.type!.hasFestivalNavigation) {
-      await _navigateToFestival(item.referenceId!);
+      await _navigateToFestival(item);
     } else if (item.type!.isCommentType) {
-      await _navigateToPost(item.referenceId!);
+      await _navigateToPost(item);
     } else if (item.type!.isArtistNavigationType) {
-      await _navigateToArtist(item.referenceId!);
+      await _navigateToArtist(item);
     }
   }
 
-  Future<void> _navigateToArtist(int artistId) async {
-    if (_isNavigating) return;
-    _isNavigating = true;
+  Future<void> _navigateToArtist(NotificationModel item) async {
+    setState(() => _navigatingId = item.id);
     try {
-      final artist = await _artistService.fetchArtistById(artistId);
+      final artist = await _artistService.fetchArtistById(item.referenceId!);
       if (!mounted) return;
       await Navigator.push(
         context,
@@ -98,15 +112,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
     } catch (e) {
       debugPrint('[Notification] 아티스트 이동 실패: $e');
     } finally {
-      if (mounted) _isNavigating = false;
+      if (mounted) setState(() => _navigatingId = null);
     }
   }
 
-  Future<void> _navigateToPost(int postId) async {
-    if (_isNavigating) return;
-    _isNavigating = true;
+  Future<void> _navigateToPost(NotificationModel item) async {
+    setState(() => _navigatingId = item.id);
     try {
-      final post = await _postService.fetchPost(postId);
+      final post = await _postService.fetchPost(item.referenceId!);
       if (!mounted) return;
       await Navigator.push(
         context,
@@ -117,15 +130,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
     } catch (e) {
       debugPrint('[Notification] 게시글 이동 실패: $e');
     } finally {
-      if (mounted) _isNavigating = false;
+      if (mounted) setState(() => _navigatingId = null);
     }
   }
 
-  Future<void> _navigateToFestival(int festivalId) async {
-    if (_isNavigating) return;
-    _isNavigating = true;
+  Future<void> _navigateToFestival(NotificationModel item) async {
+    setState(() => _navigatingId = item.id);
     try {
-      final festival = await _festivalService.fetchById(festivalId);
+      final festival = await _festivalService.fetchById(item.referenceId!);
       if (!mounted) return;
       await Navigator.push(
         context,
@@ -136,7 +148,21 @@ class _NotificationScreenState extends State<NotificationScreen> {
     } catch (e) {
       debugPrint('[Notification] 페스티벌 이동 실패: $e');
     } finally {
-      if (mounted) _isNavigating = false;
+      if (mounted) setState(() => _navigatingId = null);
+    }
+  }
+
+  Future<void> _onDeleteAll() async {
+    final confirmed = await showConfirmDialog(
+      context,
+      title: context.isEnglish ? 'Delete all notifications?' : '알림을 모두 삭제할까요?',
+      content: context.isEnglish
+          ? 'This cannot be undone.'
+          : '삭제한 알림은 복구할 수 없습니다.',
+      confirmLabel: context.isEnglish ? 'Delete all' : '모두 삭제',
+    );
+    if (confirmed == true) {
+      await _notifier.deleteAll();
     }
   }
 
@@ -169,7 +195,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
               child: RefreshIndicator(
                 onRefresh: () async {
                   try {
-                    await _notifier.refresh();
+                    await _notifier.refresh(force: true);
                   } catch (_) {
                     if (context.mounted) context.showErrorSnackbar('refresh_failed'.tr());
                   }
@@ -225,6 +251,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+              ),
+            if (_notifier.items.isNotEmpty)
+              IconButton(
+                tooltip: context.isEnglish ? 'Delete all' : '모두 삭제',
+                icon: Icon(Icons.delete_sweep_rounded, color: colors.textSecondary),
+                onPressed: _onDeleteAll,
               ),
             IconButton(
               tooltip: 'notif_settings'.tr(),
@@ -298,51 +330,94 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   Widget _buildNotificationList(AbstractThemeColors colors) {
-    final displayed = _notifier.filtered;
-    if (displayed.isEmpty) {
+    final isEnglish = context.isEnglish;
+    final sectioned = _buildSectionedItems(_notifier.items, !isEnglish);
+
+    if (sectioned.isEmpty) {
       return _buildScrollable(
-        EmptyState(
-          icon: Icons.notifications_none_rounded,
-          title: 'no_notifications'.tr(),
-        ),
+        EmptyState(icon: Icons.notifications_none_rounded, title: 'no_notifications'.tr()),
       );
     }
-    return ListView.separated(
+
+    return ListView.builder(
       controller: _scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-      itemCount: displayed.length + (_notifier.isLoadingMore ? 1 : 0),
-      separatorBuilder: (_, index) => index < displayed.length - 1 ? const SizedBox(height: 8) : const SizedBox.shrink(),
+      itemCount: sectioned.length + (_notifier.isLoadingMore ? 1 : 0),
       itemBuilder: (_, index) {
-        if (index == displayed.length) {
+        if (index == sectioned.length) {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: Center(child: CircularProgressIndicator(color: colors.activate)),
           );
         }
-        final item = displayed[index];
-        return AnimatedListItem(
-          index: index,
-          child: Dismissible(
-            key: ValueKey(item.id),
-            direction: DismissDirection.endToStart,
-            onDismissed: (_) => _dismissWithUndo(item),
-            background: Container(
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.only(right: 20),
-              decoration: BoxDecoration(
-                color: colors.error,
-                borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
+
+        final listItem = sectioned[index];
+
+        if (listItem is _SectionHeader) {
+          return Padding(
+            padding: const EdgeInsets.only(top: 16, bottom: 8),
+            child: Text(
+              listItem.label,
+              style: TextStyle(
+                fontSize: AppDimens.fontSizeSm,
+                fontWeight: FontWeight.w700,
+                color: colors.textSecondary,
               ),
-              child: const Icon(Icons.delete_rounded, color: Colors.white, size: 22),
             ),
-            child: TapScale(
-              child: NotificationCard(item: item, onTap: () => _onTap(item)),
+          );
+        }
+
+        final item = (listItem as _NotifItem).model;
+        // 알림 인덱스 계산 (헤더 제외)
+        final notifIndex = sectioned
+            .take(index + 1)
+            .whereType<_NotifItem>()
+            .length - 1;
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: AnimatedListItem(
+            index: notifIndex,
+            child: Dismissible(
+              key: ValueKey(item.id),
+              direction: DismissDirection.endToStart,
+              onDismissed: (_) => _dismissWithUndo(item),
+              background: Container(
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.only(right: 20),
+                decoration: BoxDecoration(
+                  color: colors.error,
+                  borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
+                ),
+                child: const Icon(Icons.delete_rounded, color: Colors.white, size: 22),
+              ),
+              child: TapScale(
+                child: NotificationCard(
+                  item: item,
+                  isLoading: _navigatingId == item.id,
+                  onTap: () => _onTap(item),
+                ),
+              ),
             ),
           ),
         );
       },
     );
+  }
+
+  List<_ListItem> _buildSectionedItems(List<NotificationModel> items, bool isKorean) {
+    final result = <_ListItem>[];
+    String? lastLabel;
+    for (final item in items) {
+      final label = item.sectionLabel(isKorean);
+      if (label != lastLabel) {
+        result.add(_SectionHeader(label));
+        lastLabel = label;
+      }
+      result.add(_NotifItem(item));
+    }
+    return result;
   }
 
   Widget _buildScrollable(Widget child) {

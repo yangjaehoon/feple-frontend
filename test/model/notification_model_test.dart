@@ -199,40 +199,40 @@ void main() {
     });
   });
 
-  group('NotificationModel.formattedDate', () {
-    test('createdAt null이면 null 반환', () {
+  group('NotificationModel.createdAtDate', () {
+    test('createdAt null이면 createdAtDate가 null', () {
       final model = NotificationModel(
         id: 1, type: null, title: '', body: '', read: false, createdAt: null,
       );
 
-      expect(model.formattedDate, isNull);
+      expect(model.createdAtDate, isNull);
     });
 
-    test('createdAt 길이 10 이상이면 앞 10자리만 반환', () {
+    test('ISO 8601 문자열을 DateTime으로 파싱', () {
       final model = NotificationModel(
         id: 1, type: null, title: '', body: '', read: false,
         createdAt: '2025-05-01T10:00:00',
       );
 
-      expect(model.formattedDate, '2025-05-01');
+      expect(model.createdAtDate, DateTime(2025, 5, 1, 10, 0, 0));
     });
 
-    test('createdAt 길이 정확히 10이면 그대로 반환', () {
+    test('날짜만 있는 문자열도 파싱 가능', () {
       final model = NotificationModel(
         id: 1, type: null, title: '', body: '', read: false,
         createdAt: '2025-05-01',
       );
 
-      expect(model.formattedDate, '2025-05-01');
+      expect(model.createdAtDate, isNotNull);
     });
 
-    test('createdAt 길이 10 미만이면 그대로 반환', () {
+    test('relativeTime이 빈 문자열 반환하지 않음 (createdAt 있을 때)', () {
       final model = NotificationModel(
         id: 1, type: null, title: '', body: '', read: false,
-        createdAt: '2025-05',
+        createdAt: '2025-05-01T10:00:00',
       );
 
-      expect(model.formattedDate, '2025-05');
+      expect(model.relativeTime(true), isNotEmpty);
     });
   });
 

@@ -5,7 +5,7 @@ import 'package:feple/model/notification_type.dart';
 import 'package:feple/service/notification_feedable.dart';
 import 'package:flutter/foundation.dart';
 
-enum NotifFilter { all, cert, comment, festival }
+export 'package:feple/service/notification_feedable.dart' show NotifFilter;
 
 class NotificationNotifier extends SafeChangeNotifier {
   final _service = sl<NotificationFeedable>();
@@ -18,6 +18,9 @@ class NotificationNotifier extends SafeChangeNotifier {
   int _page = 0;
   NotifFilter filter = NotifFilter.all;
 
+  // 원위치 복원용: id → 제거 전 인덱스
+  final Map<int, int> _savedPositions = {};
+
   DateTime? _loadedAt;
   static const _staleAfter = Duration(minutes: 3);
   bool get _isStale =>
@@ -26,29 +29,16 @@ class NotificationNotifier extends SafeChangeNotifier {
   List<NotificationModel> get items => List.unmodifiable(_items);
   bool get hasUnread => _items.any((n) => !n.read);
 
-  List<NotificationModel> get filtered {
-    if (filter == NotifFilter.all) return _items;
-    return _items.where((n) {
-      final t = n.type;
-      if (t == null) return false;
-      return switch (filter) {
-        NotifFilter.cert     => t.isCertType,
-        NotifFilter.comment  => t.isCommentType,
-        NotifFilter.festival => t.isFestivalFilterType,
-        NotifFilter.all      => true,
-      };
-    }).toList();
-  }
-
   Future<void> load() async {
     isLoading = true;
     hasError = false;
     _page = 0;
     _hasMore = true;
     _items = [];
+    _savedPositions.clear();
     safeNotify();
     try {
-      final result = await _service.fetchPage(0);
+      final result = await _service.fetchPage(0, filter: filter);
       _items = result.items;
       _hasMore = result.hasMore;
       _page = 1;
@@ -61,10 +51,9 @@ class NotificationNotifier extends SafeChangeNotifier {
     }
   }
 
-  /// [force] true면 항상 재요청. false면 stale 기준 이내 데이터가 있으면 skip.
   Future<void> refresh({bool force = false}) async {
     if (!force && _items.isNotEmpty && !_isStale) return;
-    final result = await _service.fetchPage(0);
+    final result = await _service.fetchPage(0, filter: filter);
     _items = result.items;
     _hasMore = result.hasMore;
     _page = 1;
@@ -78,7 +67,7 @@ class NotificationNotifier extends SafeChangeNotifier {
     isLoadingMore = true;
     safeNotify();
     try {
-      final result = await _service.fetchPage(_page);
+      final result = await _service.fetchPage(_page, filter: filter);
       _items = [..._items, ...result.items];
       _hasMore = result.hasMore;
       _page++;
@@ -93,7 +82,7 @@ class NotificationNotifier extends SafeChangeNotifier {
   void setFilter(NotifFilter f) {
     if (filter == f) return;
     filter = f;
-    safeNotify();
+    load();
   }
 
   Future<void> markRead(NotificationModel item) async {
@@ -119,38 +108,43 @@ class NotificationNotifier extends SafeChangeNotifier {
     }
   }
 
-  Future<void> dismiss(NotificationModel item) async {
+  // 실행취소 지원: 로컬에서 제거하고 원래 인덱스 저장
+  void removeLocally(NotificationModel item) {
     final index = _items.indexWhere((n) => n.id == item.id);
     if (index < 0) return;
+    _savedPositions[item.id] = index;
     _items.removeAt(index);
-    safeNotify();
-    // adminBroadcast는 개별 read API 대상이 아님 — 로컬에서만 제거
-    if (item.type == NotificationType.adminBroadcast) return;
-    try {
-      await _service.markRead(item.id);
-    } catch (e) {
-      debugPrint('[Notification] markRead 실패: $e');
-    }
-  }
-
-  // 실행취소 지원 분리 메서드 — UI에서 직접 사용
-  void removeLocally(NotificationModel item) {
-    _items.removeWhere((n) => n.id == item.id);
     safeNotify();
   }
 
   void undoDismiss(NotificationModel item) {
     if (_items.any((n) => n.id == item.id)) return;
-    _items.insert(0, item);
+    final savedIndex = _savedPositions.remove(item.id);
+    final insertAt = (savedIndex != null && savedIndex <= _items.length)
+        ? savedIndex
+        : 0;
+    _items.insert(insertAt, item);
     safeNotify();
   }
 
   Future<void> confirmDismiss(NotificationModel item) async {
+    _savedPositions.remove(item.id);
     if (item.type == NotificationType.adminBroadcast) return;
     try {
-      await _service.markRead(item.id);
+      await _service.delete(item.id);
     } catch (e) {
-      debugPrint('[Notification] markRead 실패: $e');
+      debugPrint('[Notification] delete 실패: $e');
+    }
+  }
+
+  Future<void> deleteAll() async {
+    _items = [];
+    _savedPositions.clear();
+    safeNotify();
+    try {
+      await _service.deleteAll();
+    } catch (e) {
+      debugPrint('[Notification] deleteAll 실패: $e');
     }
   }
 }

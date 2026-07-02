@@ -8,12 +8,14 @@ import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/notification_model.dart';
+import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/screen/notification/notification_notifier.dart';
 import 'package:feple/screen/notification/w_notification_card.dart';
 import 'package:feple/screen/settings/s_notification_settings.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/festival_service.dart';
+import 'package:feple/service/post_service.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 
@@ -26,6 +28,7 @@ class NotificationScreen extends StatefulWidget {
 
 class _NotificationScreenState extends State<NotificationScreen> {
   final _festivalService = sl<FestivalService>();
+  final _postService = sl<PostService>();
   final _scrollController = ScrollController();
   late final NotificationNotifier _notifier;
   bool _isNavigating = false;
@@ -62,8 +65,30 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   Future<void> _onTap(NotificationModel item) async {
     await _notifier.markRead(item);
-    if (item.type != null && item.type!.isFestivalType && item.referenceId != null) {
+    if (item.type == null || item.referenceId == null) return;
+    if (item.type!.hasFestivalNavigation) {
       await _navigateToFestival(item.referenceId!);
+    } else if (item.type!.isCommentType) {
+      await _navigateToPost(item.referenceId!);
+    }
+  }
+
+  Future<void> _navigateToPost(int postId) async {
+    if (_isNavigating) return;
+    _isNavigating = true;
+    try {
+      final post = await _postService.fetchPost(postId);
+      if (!mounted) return;
+      await Navigator.push(
+        context,
+        SlideRoute(
+          builder: (_) => PostDetailCard.fromPost(boardName: post.boardDisplayName, post: post),
+        ),
+      );
+    } catch (e) {
+      debugPrint('[Notification] 게시글 이동 실패: $e');
+    } finally {
+      if (mounted) _isNavigating = false;
     }
   }
 

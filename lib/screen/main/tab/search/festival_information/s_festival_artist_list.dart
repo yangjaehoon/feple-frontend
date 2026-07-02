@@ -109,23 +109,29 @@ class FestivalArtistListScreen extends StatelessWidget {
         },
         child: Column(
           children: [
-            Expanded(
+            AspectRatio(
+              aspectRatio: 1.0,
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(AppDimens.cardRadius),
-                  border: isFollowed
-                      ? Border.all(color: colors.activate, width: 2.5)
-                      : null,
+                  borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
                   boxShadow: [
                     BoxShadow(
-                      color: colors.cardShadow.withValues(alpha: 0.15),
+                      color: isFollowed
+                          ? colors.activate.withValues(alpha: 0.35)
+                          : colors.cardShadow.withValues(alpha: 0.15),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
                   ],
                 ),
+                foregroundDecoration: isFollowed
+                    ? BoxDecoration(
+                        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+                        border: Border.all(color: colors.activate, width: 2.5),
+                      )
+                    : null,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(isFollowed ? 17.5 : 20.0),
+                  borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
                   child: artist.profileImageUrl != null && artist.profileImageUrl!.isNotEmpty
                       ? CachedNetworkImage(
                           imageUrl: artist.profileImageUrl!,
@@ -162,7 +168,7 @@ class FestivalArtistListScreen extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: colors.activate.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(AppDimens.cardRadius),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
       ),
       child: Icon(Icons.person_rounded, color: colors.activate, size: 40),
     );
@@ -180,10 +186,11 @@ class FestivalArtistListScreen extends StatelessWidget {
       ),
       itemBuilder: (_, __) => const Column(
         children: [
-          Expanded(
+          AspectRatio(
+            aspectRatio: 1.0,
             child: SkeletonBox(
               height: double.infinity,
-              borderRadius: BorderRadius.all(Radius.circular(20)),
+              borderRadius: BorderRadius.all(Radius.circular(AppDimens.cardRadiusTiny)),
             ),
           ),
           SizedBox(height: 8),

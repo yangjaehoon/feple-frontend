@@ -71,9 +71,8 @@ class _BoardSettingsSheetState extends State<BoardSettingsSheet> {
     return Flexible(
       child: ReorderableListView.builder(
         itemCount: _orderedBoards.length,
-        onReorder: (oldIndex, newIndex) {
+        onReorderItem: (oldIndex, newIndex) {
           setState(() {
-            if (newIndex > oldIndex) newIndex--;
             final item = _orderedBoards.removeAt(oldIndex);
             _orderedBoards.insert(newIndex, item);
           });

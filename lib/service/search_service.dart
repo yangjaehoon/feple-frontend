@@ -18,9 +18,14 @@ class SearchService {
     final list = response.data as List? ?? [];
     return list
         .map((item) {
+          final id = (item['id'] as num?)?.toInt();
           final label = item['label'] as String? ?? '';
           final type = item['type'] as String? ?? '';
-          return SearchSuggestion(label, type == 'artist' ? SearchType.artist : SearchType.festival);
+          return SearchSuggestion(
+            label,
+            type == 'artist' ? SearchType.artist : SearchType.festival,
+            id: id,
+          );
         })
         .where((item) => item.label.isNotEmpty)
         .toList();

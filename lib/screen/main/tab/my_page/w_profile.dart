@@ -67,7 +67,15 @@ class ProfileWidgetState extends State<ProfileWidget> {
         children: [
           _buildProfileImage(user, colors),
           const SizedBox(height: 16),
-          _buildNicknameText(user, colors),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildNicknameText(user, colors),
+              const SizedBox(width: 6),
+              _buildLevelBadge(user, colors),
+            ],
+          ),
           if (user.bio != null && user.bio!.isNotEmpty) ...[
             const SizedBox(height: 8),
             Padding(
@@ -85,8 +93,6 @@ class ProfileWidgetState extends State<ProfileWidget> {
               ),
             ),
           ],
-          const SizedBox(height: 4),
-          _buildLevelBadge(user, colors),
           const SizedBox(height: 16),
           _buildActionButton(
             colors,

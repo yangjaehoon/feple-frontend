@@ -137,14 +137,22 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
           _user == null
               ? SkeletonBox(width: 120, height: AppDimens.fontSizeDisplay + 4,
                   borderRadius: BorderRadius.circular(AppDimens.radiusXs))
-              : Text(
-                  nickname,
-                  style: TextStyle(
-                    fontSize: AppDimens.fontSizeDisplay,
-                    fontWeight: FontWeight.w800,
-                    color: colors.textTitle,
-                    letterSpacing: -0.5,
-                  ),
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      nickname,
+                      style: TextStyle(
+                        fontSize: AppDimens.fontSizeDisplay,
+                        fontWeight: FontWeight.w800,
+                        color: colors.textTitle,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    LevelBadge(authorLevel: level, fontSize: 22),
+                  ],
                 ),
           if (bio != null && bio.isNotEmpty) ...[
             const SizedBox(height: 8),
@@ -163,12 +171,6 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
               ),
             ),
           ],
-          const SizedBox(height: 4),
-          if (_user != null)
-            LevelBadge(authorLevel: level, fontSize: 22)
-          else
-            SkeletonBox(width: 40, height: 28,
-                borderRadius: BorderRadius.circular(AppDimens.cardRadius)),
         ],
       ),
     );

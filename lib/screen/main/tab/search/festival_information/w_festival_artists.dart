@@ -163,6 +163,7 @@ class FestivalArtistsState extends State<FestivalArtists> {
       child: SizedBox(
         width: 64,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
               width: 56,
@@ -211,6 +212,7 @@ class FestivalArtistsState extends State<FestivalArtists> {
       child: SizedBox(
         width: 64,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ArtistCircleImage(
               imageUrl: artist.profileImageUrl,
@@ -245,6 +247,7 @@ class FestivalArtistsState extends State<FestivalArtists> {
         itemBuilder: (_, __) => const SizedBox(
           width: 64,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SkeletonBox(
                 width: 56,

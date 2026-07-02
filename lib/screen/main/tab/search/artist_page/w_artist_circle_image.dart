@@ -21,26 +21,31 @@ class ArtistCircleImage extends StatelessWidget {
   }
 
   Widget _buildAvatarContent(AbstractThemeColors colors, double size) {
-    final icon = Icon(
-      Icons.person_rounded,
-      color: colors.activate,
-      size: 26,
-    );
+    Widget fallback(AbstractThemeColors c) => SizedBox.square(
+          dimension: size,
+          child: ColoredBox(
+            color: c.activate.withValues(alpha: 0.08),
+            child: Icon(Icons.person_rounded, color: c.activate, size: size * 0.46),
+          ),
+        );
     if (imageUrl != null && imageUrl!.isNotEmpty) {
-      return CachedNetworkImage(
-        imageUrl: imageUrl!,
-        fit: BoxFit.cover,
-        width: size,
-        height: size,
-        memCacheWidth: 110,
-        memCacheHeight: 110,
-        fadeInDuration: AppDimens.animXFast,
-        fadeOutDuration: AppDimens.animTapFeedback,
-        placeholder: (_, __) => icon,
-        errorWidget: (context, url, error) => icon,
+      return SizedBox.square(
+        dimension: size,
+        child: CachedNetworkImage(
+          imageUrl: imageUrl!,
+          fit: BoxFit.cover,
+          width: size,
+          height: size,
+          memCacheWidth: 110,
+          memCacheHeight: 110,
+          fadeInDuration: AppDimens.animXFast,
+          fadeOutDuration: AppDimens.animTapFeedback,
+          placeholder: (_, __) => fallback(colors),
+          errorWidget: (_, __, ___) => fallback(colors),
+        ),
       );
     }
-    return icon;
+    return fallback(colors);
   }
 
   Widget _buildPlainImage(AbstractThemeColors colors) {

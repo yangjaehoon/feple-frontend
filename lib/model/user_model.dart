@@ -2,14 +2,14 @@ class User {
   final int id;
   final String nickname;
   final String? profileImageUrl;
-  final int level;
+  final String? level;
   final String? bio;
 
   User({
     required this.id,
     String? nickname,
     this.profileImageUrl,
-    this.level = 0,
+    this.level,
     this.bio,
   }) : nickname = (nickname != null && nickname.isNotEmpty) ? nickname : 'guest';
 
@@ -19,7 +19,7 @@ class User {
       nickname: json['nickname'] as String?,
       profileImageUrl: json['profileImageUrl'] as String?,
       bio: json['bio'] as String?,
-      level: json['level'] as int? ?? 0,
+      level: json['level'] is String ? json['level'] as String : null,
     );
   }
 

@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_level_badge.dart';
 import 'package:feple/screen/main/tab/my_page/w_edit_profile.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -153,21 +154,7 @@ class ProfileWidgetState extends State<ProfileWidget> {
   }
 
   Widget _buildLevelBadge(User user, AbstractThemeColors colors) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        color: colors.levelBadgeBg.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(AppDimens.cardRadius),
-      ),
-      child: Text(
-        'Lv.${user.level}',
-        style: TextStyle(
-          fontSize: AppDimens.fontSizeSm,
-          fontWeight: FontWeight.w700,
-          color: colors.levelBadgeText,
-        ),
-      ),
-    );
+    return LevelBadge(authorLevel: user.level, fontSize: 22);
   }
 
   Widget _buildActionButton(

@@ -30,7 +30,8 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:label="FEPLE"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        android:roundIcon="@mipmap/ic_launcher_round">
 
 
         <!-- 카카오 로그인 커스텀 URL 스킴 설정 -->
@@ -82,5 +83,9 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- FCM 알림 기본 색상 — HTTPS 전환 후 ic_notification 드로어블 추가 시 아이콘 메타데이터도 추가 필요 -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/notification_color"/>
     </application>
 </manifest>

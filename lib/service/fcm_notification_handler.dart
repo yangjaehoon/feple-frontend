@@ -22,8 +22,9 @@ class FcmNotificationHandler {
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
 
+    // ic_notification: 흰색 모노크롬 PNG — Android Studio Image Asset으로 생성 후 drawable/ 에 추가 필요
     const initSettings = InitializationSettings(
-      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      android: AndroidInitializationSettings('@drawable/ic_notification'),
       iOS: DarwinInitializationSettings(),
     );
     await _plugin.initialize(
@@ -46,7 +47,7 @@ class FcmNotificationHandler {
           channelDescription: 'fcm_channel_desc'.tr(),
           importance: Importance.high,
           priority: Priority.high,
-          icon: '@mipmap/ic_launcher',
+          icon: '@drawable/ic_notification',
         ),
         iOS: const DarwinNotificationDetails(),
       ),

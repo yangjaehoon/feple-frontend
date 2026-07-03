@@ -116,7 +116,7 @@ class _LoadingButtonState extends State<LoadingButton>
     if (widget.isSuccess) {
       return ScaleTransition(
         scale: _checkScale,
-        child: const Icon(Icons.check_rounded, color: Colors.white, size: 26),
+        child: Icon(Icons.check_rounded, color: fgColor, size: 26),
       );
     }
     if (widget.isLoading) {

@@ -194,31 +194,40 @@ class _FestivalRegisterScreenState extends State<FestivalRegisterScreen> {
       children: [
         FestivalSectionLabel('label_region'.tr()),
         const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-            border: Border.all(color: colors.listDivider),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: _selectedRegion,
-              hint: Text('label_region'.tr(),
-                  style: TextStyle(color: colors.textSecondary)),
-              isExpanded: true,
-              dropdownColor: colors.surface,
-              items: kRegionOptions.map((opt) {
-                final (value, label) = opt;
-                return DropdownMenuItem(
-                  value: value,
-                  child: Text(label.tr(),
-                      style: TextStyle(color: colors.textTitle)),
-                );
-              }).toList(),
-              onChanged: (v) => setState(() => _selectedRegion = v),
+        DropdownMenu<String>(
+          initialSelection: _selectedRegion,
+          hintText: 'label_region'.tr(),
+          expandedInsets: EdgeInsets.zero,
+          enableFilter: false,
+          requestFocusOnTap: false,
+          textStyle: TextStyle(color: colors.textTitle, fontSize: AppDimens.fontSizeMd),
+          inputDecorationTheme: InputDecorationTheme(
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            filled: true,
+            fillColor: colors.surface,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppDimens.shapeInput),
+              borderSide: BorderSide(color: colors.listDivider),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppDimens.shapeInput),
+              borderSide: BorderSide(color: colors.listDivider),
             ),
           ),
+          menuStyle: MenuStyle(
+            backgroundColor: WidgetStatePropertyAll(colors.surface),
+            shape: WidgetStatePropertyAll(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppDimens.shapeDialog),
+              ),
+            ),
+          ),
+          dropdownMenuEntries: kRegionOptions.map((opt) {
+            final (value, label) = opt;
+            return DropdownMenuEntry<String>(value: value, label: label.tr());
+          }).toList(),
+          onSelected: (v) => setState(() => _selectedRegion = v),
         ),
       ],
     );

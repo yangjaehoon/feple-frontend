@@ -163,14 +163,36 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
       children: [
         _Label('timetable_stage'.tr()),
         const SizedBox(height: 6),
-        DropdownButton<String>(
-          value: _stage,
-          isExpanded: true,
-          dropdownColor: colors.surface,
-          style: TextStyle(color: colors.textTitle, fontSize: AppDimens.fontSizeMd),
-          underline: Container(height: 1, color: colors.listDivider),
-          items: widget.stages.map((stage) => DropdownMenuItem(value: stage, child: Text(stage))).toList(),
-          onChanged: (stage) {
+        DropdownMenu<String>(
+          initialSelection: _stage,
+          expandedInsets: EdgeInsets.zero,
+          enableFilter: false,
+          requestFocusOnTap: false,
+          textStyle: TextStyle(color: colors.textTitle, fontSize: AppDimens.fontSizeMd),
+          inputDecorationTheme: InputDecorationTheme(
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppDimens.shapeInput),
+              borderSide: BorderSide(color: colors.listDivider),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppDimens.shapeInput),
+              borderSide: BorderSide(color: colors.listDivider),
+            ),
+          ),
+          menuStyle: MenuStyle(
+            backgroundColor: WidgetStatePropertyAll(colors.surface),
+            shape: WidgetStatePropertyAll(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppDimens.shapeDialog),
+              ),
+            ),
+          ),
+          dropdownMenuEntries: widget.stages
+              .map((stage) => DropdownMenuEntry<String>(value: stage, label: stage))
+              .toList(),
+          onSelected: (stage) {
             if (stage != null) setState(() => _stage = stage);
           },
         ),

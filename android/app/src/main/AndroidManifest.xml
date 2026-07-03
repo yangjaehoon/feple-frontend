@@ -30,6 +30,7 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:label="FEPLE"
+        android:allowBackup="false"
         android:usesCleartextTraffic="true"
         android:roundIcon="@mipmap/ic_launcher_round">
 

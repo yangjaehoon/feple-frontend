@@ -13,7 +13,7 @@ import 'package:feple/login/s_login.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
 import 'app.dart';
-import 'auth/api_key_loader.dart';
+import 'auth/keys.dart';
 import 'auth/token_store.dart';
 import 'common/data/preference/app_preferences.dart';
 import 'common/data/preference/prefs.dart';
@@ -43,8 +43,8 @@ void main() async {
   await ApiCacheStore.init();
 
   KakaoSdk.init(
-    nativeAppKey: await getApiKey("kakao_native_app_key"),
-    javaScriptAppKey: await getApiKey("kakao_javaScript_app_key"),
+    nativeAppKey: kakaoNativeAppKey,
+    javaScriptAppKey: kakaoJsAppKey,
   );
 
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;

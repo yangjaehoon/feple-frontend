@@ -129,13 +129,16 @@ class _CommentTile extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: onAuthorTap,
-            child: ProfileAvatar(
-              imageUrl: comment.anonymous ? null : comment.profileImageUrl,
-              nickname: comment.nickname,
-              certified: comment.anonymous ? false : comment.certified,
-              userRole: comment.anonymous ? null : comment.userRole,
-              radius: isReply ? 13 : 16,
-              anonymous: comment.anonymous,
+            child: Padding(
+              padding: EdgeInsets.all(isReply ? 11.0 : 8.0),
+              child: ProfileAvatar(
+                imageUrl: comment.anonymous ? null : comment.profileImageUrl,
+                nickname: comment.nickname,
+                certified: comment.anonymous ? false : comment.certified,
+                userRole: comment.anonymous ? null : comment.userRole,
+                radius: isReply ? 13 : 16,
+                anonymous: comment.anonymous,
+              ),
             ),
           ),
           const SizedBox(width: 10),
@@ -188,31 +191,37 @@ class _CommentTile extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: onToggleLike,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                comment.liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                size: 13,
-                color: comment.liked ? colors.likeActiveColor : colors.textSecondary,
-              ),
-              if (comment.likeCount > 0) ...[
-                const SizedBox(width: 3),
-                Text(
-                  comment.likeCount.toString(),
-                  style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  comment.liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                  size: 13,
+                  color: comment.liked ? colors.likeActiveColor : colors.textSecondary,
                 ),
+                if (comment.likeCount > 0) ...[
+                  const SizedBox(width: 3),
+                  Text(
+                    comment.likeCount.toString(),
+                    style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
         if (!isReply && onReply != null) ...[
-          const SizedBox(width: 12),
+          const SizedBox(width: 4),
           GestureDetector(
             onTap: onReply,
-            child: Text(
-              'reply_comment'.tr(),
-              style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary, fontWeight: FontWeight.w500),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+              child: Text(
+                'reply_comment'.tr(),
+                style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary, fontWeight: FontWeight.w500),
+              ),
             ),
           ),
         ],
@@ -225,9 +234,9 @@ class _CommentTile extends StatelessWidget {
       return PopupMenuButton<String>(
         icon: Icon(Icons.more_vert, size: 16, color: colors.textSecondary),
         color: colors.surface,
-        elevation: 6,
+        elevation: 3,
         shadowColor: colors.cardShadow.withValues(alpha: 0.18),
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(AppDimens.shapeDialog))),
         position: PopupMenuPosition.under,
         onSelected: (value) async {
           if (value == 'edit') {
@@ -266,9 +275,9 @@ class _CommentTile extends StatelessWidget {
       return PopupMenuButton<String>(
         icon: Icon(Icons.more_vert, size: 16, color: colors.textSecondary),
         color: colors.surface,
-        elevation: 6,
+        elevation: 3,
         shadowColor: colors.cardShadow.withValues(alpha: 0.18),
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(AppDimens.shapeDialog))),
         position: PopupMenuPosition.under,
         onSelected: (value) {
           if (value == 'report') onReport!();

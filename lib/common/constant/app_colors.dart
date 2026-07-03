@@ -98,4 +98,14 @@ class AppColors {
   static const Color markerGray     = Color(0xFF555555); // 지도 마커 폴백
   static const Color onboardingPink = Color(0xFFFFE4EF); // 온보딩 카드 핑크
   static const Color onboardingMint = Color(0xFFD4F5EC); // 온보딩 카드 민트
+
+  // === Skeleton Loading ===
+  static const Color skeletonBaseDark       = Color(0xFF2C2C2C);
+  static const Color skeletonHighlightDark  = Color(0xFF3E3E3E);
+  static const Color skeletonBaseLight      = Color(0xFFE0E0E0);
+  static const Color skeletonHighlightLight = Color(0xFFF0F0F0);
+
+  // === Mode Switch Track ===
+  static const Color modeSwitchTrackDark  = Color.fromARGB(255, 0, 9, 27);
+  static const Color modeSwitchTrackLight = Color.fromARGB(255, 106, 158, 255);
 }

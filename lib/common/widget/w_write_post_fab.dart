@@ -16,9 +16,9 @@ class WritePostFab extends StatelessWidget {
         onPressed: onPressed,
         label: Text(
           'write_post'.tr(),
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.w700),
         ),
-        icon: const Icon(Icons.edit_rounded, color: Colors.white),
+        icon: Icon(Icons.edit_rounded, color: Theme.of(context).colorScheme.onPrimary),
       ),
     );
   }

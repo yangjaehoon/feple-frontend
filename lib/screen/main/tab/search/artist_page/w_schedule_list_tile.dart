@@ -56,24 +56,27 @@ class ScheduleListTile extends StatelessWidget {
     final hasPoster = item.posterUrl != null && item.posterUrl!.isNotEmpty;
     return GestureDetector(
       onTap: () => _navigateToFestival(context),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-        child: hasPoster
-            ? CachedNetworkImage(
-                imageUrl: item.posterUrl!,
-                width: 42,
-                height: 63,
-                memCacheWidth: 84,
-                fit: BoxFit.cover,
-                // CachedNetworkImage color 파라미터로 alpha 적용 — Opacity 위젯(saveLayer) 불필요
-                color: isPast ? Colors.white.withValues(alpha: _pastAlpha) : null,
-                colorBlendMode: isPast ? BlendMode.modulate : null,
-                fadeInDuration: AppDimens.animXFast,
-                fadeOutDuration: AppDimens.animTapFeedback,
-                placeholder: (_, __) => EventTypeIcon(config: typeConfig),
-                errorWidget: (_, __, ___) => EventTypeIcon(config: typeConfig),
-              )
-            : EventTypeIcon(config: typeConfig),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 3),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+          child: hasPoster
+              ? CachedNetworkImage(
+                  imageUrl: item.posterUrl!,
+                  width: 42,
+                  height: 63,
+                  memCacheWidth: 84,
+                  fit: BoxFit.cover,
+                  // CachedNetworkImage color 파라미터로 alpha 적용 — Opacity 위젯(saveLayer) 불필요
+                  color: isPast ? Colors.white.withValues(alpha: _pastAlpha) : null,
+                  colorBlendMode: isPast ? BlendMode.modulate : null,
+                  fadeInDuration: AppDimens.animXFast,
+                  fadeOutDuration: AppDimens.animTapFeedback,
+                  placeholder: (_, __) => EventTypeIcon(config: typeConfig),
+                  errorWidget: (_, __, ___) => EventTypeIcon(config: typeConfig),
+                )
+              : EventTypeIcon(config: typeConfig),
+        ),
       ),
     );
   }
@@ -133,7 +136,7 @@ class ScheduleListTile extends StatelessWidget {
 
   Widget _buildCoArtists(BuildContext context, AbstractThemeColors colors) {
     return SizedBox(
-      height: 28,
+      height: 48,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: item.coArtists.length,
@@ -156,24 +159,27 @@ class ScheduleListTile extends StatelessWidget {
                     ),
                   ),
                 ),
-                child: SizedBox(
-                  width: 26,
-                  height: 26,
-                  child: ClipOval(
-                    child: (coArtist.profileImageUrl != null && coArtist.profileImageUrl!.isNotEmpty)
-                        ? CachedNetworkImage(
-                            imageUrl: coArtist.profileImageUrl!,
-                            width: 26,
-                            height: 26,
-                            memCacheWidth: 52,
-                            fit: BoxFit.cover,
-                            color: isPast ? Colors.white.withValues(alpha: _pastAlpha) : null,
-                            colorBlendMode: isPast ? BlendMode.modulate : null,
-                          )
-                        : Container(
-                            color: _c(colors.backgroundMain),
-                            child: Icon(Icons.person_rounded, size: 12, color: _c(colors.textSecondary)),
-                          ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 11),
+                  child: SizedBox(
+                    width: 26,
+                    height: 26,
+                    child: ClipOval(
+                      child: (coArtist.profileImageUrl != null && coArtist.profileImageUrl!.isNotEmpty)
+                          ? CachedNetworkImage(
+                              imageUrl: coArtist.profileImageUrl!,
+                              width: 26,
+                              height: 26,
+                              memCacheWidth: 52,
+                              fit: BoxFit.cover,
+                              color: isPast ? Colors.white.withValues(alpha: _pastAlpha) : null,
+                              colorBlendMode: isPast ? BlendMode.modulate : null,
+                            )
+                          : Container(
+                              color: _c(colors.backgroundMain),
+                              child: Icon(Icons.person_rounded, size: 12, color: _c(colors.textSecondary)),
+                            ),
+                    ),
                   ),
                 ),
               ),

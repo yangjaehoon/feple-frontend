@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'w_transparent_scaffold.dart';
 
@@ -17,7 +18,7 @@ class BottomDialogScaffold extends StatelessWidget {
           decoration: BoxDecoration(
               color: context.backgroundColor,
               borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(15), topRight: Radius.circular(15))),
+                  topLeft: Radius.circular(AppDimens.shapeSheet), topRight: Radius.circular(AppDimens.shapeSheet))),
           child: body,
         ),
       ),

@@ -34,8 +34,8 @@ class DayBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: const TextStyle(
-          color: Colors.white,
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onPrimary,
           fontSize: AppDimens.fontSizeTiny,
           fontWeight: FontWeight.w800,
           letterSpacing: 0.5,

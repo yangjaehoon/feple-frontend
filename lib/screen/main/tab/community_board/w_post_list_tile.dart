@@ -47,12 +47,15 @@ class PostListTile extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: (!post.anonymous && onAuthorTap != null) ? onAuthorTap : null,
-              child: ProfileAvatar(
-                imageUrl: post.profileImageUrl,
-                nickname: post.nickname,
-                certified: post.certified,
-                userRole: post.userRole,
-                anonymous: post.anonymous,
+              child: Padding(
+                padding: const EdgeInsets.all(4),
+                child: ProfileAvatar(
+                  imageUrl: post.profileImageUrl,
+                  nickname: post.nickname,
+                  certified: post.certified,
+                  userRole: post.userRole,
+                  anonymous: post.anonymous,
+                ),
               ),
             ),
             const SizedBox(width: 12),

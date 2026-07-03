@@ -27,7 +27,7 @@ class ProfileAvatar extends StatelessWidget {
     return url != null && !url.contains('feple_logo');
   }
 
-  Widget _buildAvatar(AbstractThemeColors colors) {
+  Widget _buildAvatar(BuildContext context, AbstractThemeColors colors) {
     if (anonymous) {
       return CircleAvatar(
         radius: radius,
@@ -51,8 +51,8 @@ class ProfileAvatar extends StatelessWidget {
       backgroundColor: colors.activate,
       child: Text(
         nickname.isNotEmpty ? nickname[0] : '?',
-        style: const TextStyle(
-          color: Colors.white,
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onPrimary,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -108,7 +108,7 @@ class ProfileAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final avatar = _buildAvatar(colors);
+    final avatar = _buildAvatar(context, colors);
 
     final isAdmin = userRole == kRoleAdmin;
     final isArtist = userRole == kRoleArtist;

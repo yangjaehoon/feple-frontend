@@ -227,7 +227,7 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
       child: GestureDetector(
         onTap: () => _notifier.toggleLike(photo.photoId),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
           decoration: BoxDecoration(
             color: Colors.black.withValues(alpha: 0.45),
             borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
@@ -333,9 +333,9 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
     return PopupMenuButton<String>(
       icon: Icon(Icons.more_vert_rounded, color: colors.textSecondary, size: 20),
       color: colors.surface,
-      elevation: 6,
+      elevation: 3,
       shadowColor: colors.cardShadow.withValues(alpha: 0.18),
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(AppDimens.shapeDialog))),
       position: PopupMenuPosition.under,
       onSelected: (value) {
         if (value == 'edit') {

@@ -26,9 +26,7 @@ class ModeSwitch extends StatelessWidget {
   Widget _buildTrack() {
     return AnimatedContainer(
       decoration: BoxDecoration(
-        color: value
-            ? const Color.fromARGB(255, 0, 9, 27)
-            : const Color.fromARGB(255, 106, 158, 255),
+        color: value ? AppColors.modeSwitchTrackDark : AppColors.modeSwitchTrackLight,
         borderRadius: BorderRadius.circular(height / 2),
       ),
       duration: AppDimens.animQuick,

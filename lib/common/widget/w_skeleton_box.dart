@@ -1,3 +1,4 @@
+import 'package:feple/common/constant/app_colors.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
@@ -43,10 +44,8 @@ class _SkeletonBoxState extends State<SkeletonBox>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final base =
-        isDark ? const Color(0xFF2C2C2C) : const Color(0xFFE0E0E0);
-    final highlight =
-        isDark ? const Color(0xFF3E3E3E) : const Color(0xFFF0F0F0);
+    final base      = isDark ? AppColors.skeletonBaseDark      : AppColors.skeletonBaseLight;
+    final highlight = isDark ? AppColors.skeletonHighlightDark : AppColors.skeletonHighlightLight;
 
     return AnimatedBuilder(
       animation: _shimmer,

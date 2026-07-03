@@ -98,18 +98,21 @@ class LikeCommentRow extends StatelessWidget {
           HapticFeedback.lightImpact();
           onLikeTap();
         },
-        child: Row(
-          children: [
-            Icon(
-              data.liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-              color: colors.likeActiveColor,
-            ),
-            const SizedBox(width: 4),
-            Text(
-              data.heartCount.toString(),
-              style: TextStyle(fontSize: AppDimens.fontSizeXl, color: colors.textTitle, fontWeight: FontWeight.w600),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Row(
+            children: [
+              Icon(
+                data.liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                color: colors.likeActiveColor,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                data.heartCount.toString(),
+                style: TextStyle(fontSize: AppDimens.fontSizeXl, color: colors.textTitle, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -124,19 +127,22 @@ class LikeCommentRow extends StatelessWidget {
           HapticFeedback.lightImpact();
           onScrapTap();
         },
-        child: Row(
-          children: [
-            Icon(
-              data.scraped ? Icons.star_rounded : Icons.star_border_rounded,
-              color: colors.accentColor,
-              size: 24,
-            ),
-            const SizedBox(width: 4),
-            Text(
-              data.scrapCount.toString(),
-              style: TextStyle(fontSize: AppDimens.fontSizeXl, color: colors.textTitle, fontWeight: FontWeight.w600),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Row(
+            children: [
+              Icon(
+                data.scraped ? Icons.star_rounded : Icons.star_border_rounded,
+                color: colors.accentColor,
+                size: 24,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                data.scrapCount.toString(),
+                style: TextStyle(fontSize: AppDimens.fontSizeXl, color: colors.textTitle, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
         ),
       ),
     );

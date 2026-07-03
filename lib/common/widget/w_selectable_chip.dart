@@ -39,7 +39,7 @@ class SelectableChip extends StatelessWidget {
           style: TextStyle(
             fontSize: AppDimens.fontSizeSm,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-            color: selected ? Colors.white : (unselectedTextColor ?? colors.textSecondary),
+            color: selected ? Theme.of(context).colorScheme.onPrimary : (unselectedTextColor ?? colors.textSecondary),
           ),
         ),
       ),

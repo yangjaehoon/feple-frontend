@@ -386,7 +386,7 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
         childAspectRatio: 0.72,
       ),
       itemCount: 9,
-      itemBuilder: (_, __) => Column(
+      itemBuilder: (_, _) => Column(
         children: const [
           AspectRatio(
             aspectRatio: 1.0,
@@ -482,8 +482,8 @@ class _ArtistSelectCard extends StatelessWidget {
                   imageUrl: artist.profileImageUrl,
                   fit: BoxFit.cover,
                   memCacheWidth: 200,
-                  placeholder: (_, __) => const SkeletonBox(height: double.infinity),
-                  errorWidget: (_, __, ___) => Container(
+                  placeholder: (_, _) => const SkeletonBox(height: double.infinity),
+                  errorWidget: (_, _, _) => Container(
                     color: colors.activate.withValues(alpha: 0.08),
                     child: Icon(Icons.person_rounded, color: colors.activate, size: 36),
                   ),

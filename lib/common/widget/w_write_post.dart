@@ -196,8 +196,8 @@ class _WritePostState extends State<WritePost> {
           fit: BoxFit.cover,
           fadeInDuration: AppDimens.animXFast,
           fadeOutDuration: AppDimens.animTapFeedback,
-          placeholder: (_, __) => Container(width: 72, height: 72, color: Colors.grey.shade200),
-          errorWidget: (_, __, ___) => Container(
+          placeholder: (_, _) => Container(width: 72, height: 72, color: Colors.grey.shade200),
+          errorWidget: (_, _, _) => Container(
             width: 72, height: 72, color: Colors.grey.shade200,
             child: const Icon(Icons.broken_image_rounded, color: Colors.grey),
           ),

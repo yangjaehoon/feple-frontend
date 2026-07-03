@@ -146,7 +146,7 @@ class FestivalPosterState extends State<FestivalPoster> {
                 if (hasDescription)
                   ListenableBuilder(
                     listenable: _notifier,
-                    builder: (_, __) => Column(
+                    builder: (_, _) => Column(
                       mainAxisSize: MainAxisSize.min,
                       children: _buildDescriptionSection(colors),
                     ),
@@ -169,8 +169,8 @@ class FestivalPosterState extends State<FestivalPoster> {
               fit: BoxFit.cover,
               fadeInDuration: AppDimens.animXFast,
               fadeOutDuration: AppDimens.animTapFeedback,
-              placeholder: (_, __) => const ColoredBox(color: Colors.black26),
-              errorWidget: (_, __, ___) => const ColoredBox(color: Colors.black26),
+              placeholder: (_, _) => const ColoredBox(color: Colors.black26),
+              errorWidget: (_, _, _) => const ColoredBox(color: Colors.black26),
             ),
           ),
         ),
@@ -196,7 +196,7 @@ class FestivalPosterState extends State<FestivalPoster> {
               const SizedBox(height: 8),
               ListenableBuilder(
                 listenable: _notifier,
-                builder: (_, __) => _buildRatingBadge(),
+                builder: (_, _) => _buildRatingBadge(),
               ),
             ],
           ),
@@ -299,7 +299,7 @@ class FestivalPosterState extends State<FestivalPoster> {
           memCacheWidth: 300,
           fit: BoxFit.cover,
           placeholder: (context, url) => const SkeletonBox(height: double.infinity),
-          errorWidget: (_, __, ___) => Container(
+          errorWidget: (_, _, _) => Container(
             color: colors.surface,
             child: Icon(Icons.broken_image_rounded, size: 32, color: colors.textSecondary.withValues(alpha: 0.4)),
           ),
@@ -354,7 +354,7 @@ class FestivalPosterState extends State<FestivalPoster> {
         const SizedBox(height: 8),
         ListenableBuilder(
           listenable: _notifier,
-          builder: (_, __) => _buildInfoColumnBottom(colors),
+          builder: (_, _) => _buildInfoColumnBottom(colors),
         ),
       ],
     );

@@ -126,7 +126,7 @@ class FestivalArtistListScreen extends StatelessWidget {
         crossAxisSpacing: 12,
         childAspectRatio: 0.75,
       ),
-      itemBuilder: (_, __) => const Column(
+      itemBuilder: (_, _) => const Column(
         children: [
           AspectRatio(
             aspectRatio: 1.0,

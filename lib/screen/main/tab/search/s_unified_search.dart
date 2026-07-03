@@ -422,12 +422,12 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
           width: 40,
           height: 40,
           fit: BoxFit.cover,
-          placeholder: (_, __) => Container(
+          placeholder: (_, _) => Container(
             width: 40,
             height: 40,
             color: colors.textSecondary.withValues(alpha: 0.2),
           ),
-          errorWidget: (_, __, ___) => Icon(suggestion.type.icon, color: colors.textSecondary, size: 20),
+          errorWidget: (_, _, _) => Icon(suggestion.type.icon, color: colors.textSecondary, size: 20),
         ),
       );
     }
@@ -577,7 +577,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
       itemCount: items.length,
       itemBuilder: (_, i) => builder(items[i]),
-      separatorBuilder: (_, __) => Divider(height: 1, color: colors.listDivider),
+      separatorBuilder: (_, _) => Divider(height: 1, color: colors.listDivider),
     );
   }
 

@@ -46,7 +46,7 @@ class PostService {
   Future<PostCursorPage> fetchPostsPage(String boardType, {int? cursor, int size = 20, String sort = 'latest'}) async {
     final endpoint = _endpointFor(boardType);
     final response = await DioClient.dio.get(endpoint, queryParameters: {
-      if (cursor != null) 'cursor': cursor,
+      'cursor': ?cursor,
       'size': size,
       'sort': sort,
     });
@@ -59,7 +59,7 @@ class PostService {
         'title': title,
         'content': content,
         'anonymous': anonymous,
-        if (imageObjectKey != null) 'imageUrl': imageObjectKey,
+        'imageUrl': ?imageObjectKey,
       });
     } on DioException catch (e) {
       throwIfBannedWord(e);
@@ -105,7 +105,7 @@ class PostService {
   /// 아티스트 게시판 페이지 조회
   Future<PostCursorPage> fetchArtistPostsPage(int artistId, {int? cursor, int size = 20}) async {
     final response = await DioClient.dio.get('/posts/artist/$artistId', queryParameters: {
-      if (cursor != null) 'cursor': cursor,
+      'cursor': ?cursor,
       'size': size,
     });
     return PostCursorPage.fromJson(response.data as Map<String, dynamic>);
@@ -198,7 +198,7 @@ class PostService {
 
   Future<PostCursorPage> _fetchCursorPage(String endpoint, {int? cursor, int size = 20}) async {
     final response = await DioClient.dio.get(endpoint, queryParameters: {
-      if (cursor != null) 'cursor': cursor,
+      'cursor': ?cursor,
       'size': size,
     });
     return PostCursorPage.fromJson(response.data as Map<String, dynamic>);

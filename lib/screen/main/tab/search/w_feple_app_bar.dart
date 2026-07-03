@@ -55,7 +55,7 @@ class _FepleAppBarState extends State<FepleAppBar> {
           _buildSearchButton(context),
           ListenableBuilder(
             listenable: _countNotifier,
-            builder: (_, __) => _buildNotificationButton(colors),
+            builder: (_, _) => _buildNotificationButton(colors),
           ),
         ],
       ),

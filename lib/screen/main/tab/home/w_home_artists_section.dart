@@ -73,7 +73,7 @@ class HomeArtistsSection extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemCount: 5,
-        itemBuilder: (_, __) => Padding(
+        itemBuilder: (_, _) => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Column(
             children: [

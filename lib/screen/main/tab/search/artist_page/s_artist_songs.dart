@@ -106,7 +106,7 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.only(top: 8, bottom: 24),
       itemCount: songs.length,
-      separatorBuilder: (_, __) => Divider(
+      separatorBuilder: (_, _) => Divider(
         height: 1,
         thickness: 1,
         color: colors.listDivider,

@@ -208,8 +208,8 @@ class MainImageSwiperState extends State<MainImageSwiper> {
           memCacheWidth: 300,
           fadeInDuration: AppDimens.animXFast,
           fadeOutDuration: AppDimens.animTapFeedback,
-          placeholder: (_, __) => const ColoredBox(color: Colors.black26),
-          errorWidget: (_, __, ___) => const ColoredBox(
+          placeholder: (_, _) => const ColoredBox(color: Colors.black26),
+          errorWidget: (_, _, _) => const ColoredBox(
             color: Colors.black26,
             child: Center(
               child: Icon(Icons.broken_image_rounded, color: Colors.white38, size: 36),
@@ -233,8 +233,8 @@ class MainImageSwiperState extends State<MainImageSwiper> {
             memCacheWidth: 600,
             fadeInDuration: AppDimens.animXFast,
             fadeOutDuration: AppDimens.animTapFeedback,
-            placeholder: (_, __) => const ColoredBox(color: Colors.black54),
-            errorWidget: (_, __, ___) => const ColoredBox(color: Colors.black54),
+            placeholder: (_, _) => const ColoredBox(color: Colors.black54),
+            errorWidget: (_, _, _) => const ColoredBox(color: Colors.black54),
           ),
         );
       }

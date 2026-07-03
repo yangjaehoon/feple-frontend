@@ -77,8 +77,8 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       itemCount: 5,
-      separatorBuilder: (_, __) => Divider(height: 1, color: colors.listDivider),
-      itemBuilder: (_, __) => Padding(
+      separatorBuilder: (_, _) => Divider(height: 1, color: colors.listDivider),
+      itemBuilder: (_, _) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 14),
         child: Row(
           children: const [
@@ -212,7 +212,7 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                       itemCount: displayed.length,
-                      separatorBuilder: (_, __) =>
+                      separatorBuilder: (_, _) =>
                           Divider(height: 1, color: colors.listDivider),
                       itemBuilder: (_, index) =>
                           SongRequestItem(req: displayed[index]),

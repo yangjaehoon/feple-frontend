@@ -78,8 +78,8 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       itemCount: 3,
-      separatorBuilder: (_, __) => const SizedBox(height: 10),
-      itemBuilder: (_, __) => Container(
+      separatorBuilder: (_, _) => const SizedBox(height: 10),
+      itemBuilder: (_, _) => Container(
         decoration: BoxDecoration(
           color: colors.surface,
           borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
@@ -232,7 +232,7 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                       itemCount: displayed.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 10),
+                      separatorBuilder: (_, _) => const SizedBox(height: 10),
                       itemBuilder: (context, index) {
                         return _CertCard(cert: displayed[index], certService: _certService);
                       },
@@ -385,8 +385,8 @@ class _CertCardState extends State<_CertCard> {
                   memCacheWidth: 180,
                   fadeInDuration: AppDimens.animXFast,
                   fadeOutDuration: AppDimens.animTapFeedback,
-                  placeholder: (_, __) => const SkeletonBox(height: double.infinity),
-                  errorWidget: (_, __, ___) => _buildPhotoPlaceholder(colors),
+                  placeholder: (_, _) => const SkeletonBox(height: double.infinity),
+                  errorWidget: (_, _, _) => _buildPhotoPlaceholder(colors),
                 )
               : _buildPhotoPlaceholder(colors),
         ),

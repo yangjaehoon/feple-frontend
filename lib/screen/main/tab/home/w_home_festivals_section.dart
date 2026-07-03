@@ -39,7 +39,7 @@ class HomeFestivalsSection extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           itemExtent: 142, // 130px item + 12px right margin
           itemCount: 4,
-          itemBuilder: (_, __) => Padding(
+          itemBuilder: (_, _) => Padding(
             padding: const EdgeInsets.only(right: 12),
             child: SkeletonBox(
               width: 130,
@@ -118,8 +118,8 @@ class _FestivalItem extends StatelessWidget {
       fit: BoxFit.cover,
       fadeInDuration: AppDimens.animXFast,
       fadeOutDuration: AppDimens.animTapFeedback,
-      placeholder: (_, __) => Container(color: colors.surface),
-      errorWidget: (_, __, ___) => Container(
+      placeholder: (_, _) => Container(color: colors.surface),
+      errorWidget: (_, _, _) => Container(
         color: colors.surface,
         child: Icon(Icons.image_not_supported_rounded, color: colors.textSecondary),
       ),

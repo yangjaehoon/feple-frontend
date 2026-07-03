@@ -163,7 +163,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
       PageRouteBuilder(
         opaque: false,
         barrierColor: Colors.black87,
-        pageBuilder: (_, __, ___) => GestureDetector(
+        pageBuilder: (_, _, _) => GestureDetector(
           onTap: () => Navigator.of(context).pop(),
           child: Scaffold(
             backgroundColor: Colors.transparent,
@@ -175,10 +175,10 @@ class _PostDetailCardState extends State<PostDetailCard> {
                   imageUrl: imageUrl,
                   fadeInDuration: AppDimens.animXFast,
                   fadeOutDuration: AppDimens.animTapFeedback,
-                  placeholder: (_, __) => const Center(
+                  placeholder: (_, _) => const Center(
                     child: CircularProgressIndicator(color: Colors.white54, strokeWidth: 2),
                   ),
-                  errorWidget: (_, __, ___) => const Center(
+                  errorWidget: (_, _, _) => const Center(
                     child: Icon(Icons.broken_image_rounded, color: Colors.white38, size: 56),
                   ),
                 ),
@@ -370,7 +370,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
   Widget _buildInteractionArea(AbstractThemeColors colors, int? userId) {
     return ListenableBuilder(
       listenable: _notifier,
-      builder: (_, __) => Column(
+      builder: (_, _) => Column(
         children: [
           LikeCommentRow(
             data: PostInteractionData(
@@ -394,7 +394,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
   Widget _buildCommentArea(int? userId) {
     return ListenableBuilder(
       listenable: _notifier.commentsVersion,
-      builder: (_, __) => CommentSection(
+      builder: (_, _) => CommentSection(
         rootComments: _notifier.rootComments,
         repliesMap: _notifier.repliesMap,
         currentUserId: userId,
@@ -446,7 +446,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
   Widget _buildBottomBar(int? userId) {
     return ListenableBuilder(
       listenable: _notifier,
-      builder: (_, __) => CommentInputBar(
+      builder: (_, _) => CommentInputBar(
         controller: _commentController,
         isSubmitting: _notifier.isSubmitting,
         onSubmit: (anonymous) {
@@ -667,11 +667,11 @@ class _PostContentSection extends StatelessWidget {
                 memCacheWidth: 800, // 최대 스크린 너비 기준
                 fadeInDuration: AppDimens.animXFast,
                 fadeOutDuration: AppDimens.animTapFeedback,
-                placeholder: (_, __) => Container(
+                placeholder: (_, _) => Container(
                   height: 200,
                   color: colors.listDivider,
                 ),
-                errorWidget: (_, __, ___) => Container(
+                errorWidget: (_, _, _) => Container(
                   height: 120,
                   color: colors.listDivider,
                   child: Center(

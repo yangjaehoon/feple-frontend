@@ -96,7 +96,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
       onRefresh: _load,
       child: ListView.separated(
         itemCount: _list!.length,
-        separatorBuilder: (_, __) => Divider(height: 1, color: colors.listDivider),
+        separatorBuilder: (_, _) => Divider(height: 1, color: colors.listDivider),
         itemBuilder: (_, i) => _buildItem(_list![i], colors),
       ),
     );

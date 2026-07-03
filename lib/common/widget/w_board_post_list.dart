@@ -214,7 +214,7 @@ class _BoardPostListState extends State<BoardPostList> {
           ),
         );
       },
-      separatorBuilder: (_, __) => Divider(thickness: 1, color: colors.listDivider),
+      separatorBuilder: (_, _) => Divider(thickness: 1, color: colors.listDivider),
     );
   }
 

@@ -206,8 +206,8 @@ class _BoardTile extends StatelessWidget {
             memCacheWidth: 220,
             fadeInDuration: AppDimens.animXFast,
             fadeOutDuration: AppDimens.animTapFeedback,
-            placeholder: (_, __) => _buildPlaceholder(colors),
-            errorWidget: (_, __, ___) => _buildPlaceholder(colors),
+            placeholder: (_, _) => _buildPlaceholder(colors),
+            errorWidget: (_, _, _) => _buildPlaceholder(colors),
           )
         else
           _buildPlaceholder(colors),

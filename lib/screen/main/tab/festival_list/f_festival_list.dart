@@ -349,7 +349,7 @@ class _LoadMoreIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<FestivalPreviewProvider>(
-      builder: (_, p, __) {
+      builder: (_, p, _) {
         if (p.isLoadingMore) {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 20),

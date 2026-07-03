@@ -9,7 +9,7 @@ class SlideRoute<T> extends PageRouteBuilder<T> {
 
   SlideRoute({required this.builder, super.settings})
       : super(
-          pageBuilder: (context, _, __) => builder(context),
+          pageBuilder: (context, _, _) => builder(context),
           transitionDuration: AppDimens.animSlideIn,
           reverseTransitionDuration: AppDimens.animSlideOut,
           transitionsBuilder: (context, animation, secondaryAnimation, child) {

@@ -72,8 +72,8 @@ class ScheduleListTile extends StatelessWidget {
                   colorBlendMode: isPast ? BlendMode.modulate : null,
                   fadeInDuration: AppDimens.animXFast,
                   fadeOutDuration: AppDimens.animTapFeedback,
-                  placeholder: (_, __) => EventTypeIcon(config: typeConfig),
-                  errorWidget: (_, __, ___) => EventTypeIcon(config: typeConfig),
+                  placeholder: (_, _) => EventTypeIcon(config: typeConfig),
+                  errorWidget: (_, _, _) => EventTypeIcon(config: typeConfig),
                 )
               : EventTypeIcon(config: typeConfig),
         ),

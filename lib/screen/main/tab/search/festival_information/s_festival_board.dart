@@ -310,8 +310,8 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
     return ListView.separated(
       physics: const NeverScrollableScrollPhysics(),
       itemCount: 6,
-      separatorBuilder: (_, __) => Divider(height: 1, color: colors.divider),
-      itemBuilder: (_, __) => Padding(
+      separatorBuilder: (_, _) => Divider(height: 1, color: colors.divider),
+      itemBuilder: (_, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -394,7 +394,7 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
           ),
         );
       },
-      separatorBuilder: (_, __) => Divider(thickness: 1, color: colors.listDivider),
+      separatorBuilder: (_, _) => Divider(thickness: 1, color: colors.listDivider),
     );
   }
 }

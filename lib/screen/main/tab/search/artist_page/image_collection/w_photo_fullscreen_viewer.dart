@@ -96,10 +96,10 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
             fit: BoxFit.contain,
             fadeInDuration: AppDimens.animXFast,
             fadeOutDuration: AppDimens.animTapFeedback,
-            placeholder: (_, __) => const Center(
+            placeholder: (_, _) => const Center(
               child: CircularProgressIndicator(color: Colors.white54, strokeWidth: 2),
             ),
-            errorWidget: (_, __, ___) => const Center(
+            errorWidget: (_, _, _) => const Center(
               child: Icon(Icons.broken_image_rounded, color: Colors.white38, size: 48),
             ),
           ),

@@ -198,7 +198,7 @@ class _CommunityPostState extends State<CommunityPost> {
     return ListView.separated(
       padding: const EdgeInsets.only(bottom: 80),
       itemCount: 8,
-      itemBuilder: (_, __) => Padding(
+      itemBuilder: (_, _) => Padding(
         padding: const EdgeInsets.symmetric(
             horizontal: AppDimens.paddingHorizontal, vertical: 10),
         child: Row(
@@ -218,7 +218,7 @@ class _CommunityPostState extends State<CommunityPost> {
           ],
         ),
       ),
-      separatorBuilder: (_, __) => const Divider(height: 1, thickness: 1, indent: 16, endIndent: 16),
+      separatorBuilder: (_, _) => const Divider(height: 1, thickness: 1, indent: 16, endIndent: 16),
     );
   }
 
@@ -253,7 +253,7 @@ class _CommunityPostState extends State<CommunityPost> {
             ),
           );
         },
-        separatorBuilder: (_, __) => Divider(thickness: 1, color: colors.listDivider),
+        separatorBuilder: (_, _) => Divider(thickness: 1, color: colors.listDivider),
       );
     }
 
@@ -320,7 +320,7 @@ class _CommunityPostState extends State<CommunityPost> {
           ),
         );
       },
-      separatorBuilder: (_, __) => Divider(
+      separatorBuilder: (_, _) => Divider(
         thickness: 1,
         color: colors.listDivider,
       ),

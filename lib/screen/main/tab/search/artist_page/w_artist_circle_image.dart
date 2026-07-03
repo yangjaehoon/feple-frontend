@@ -37,8 +37,8 @@ class ArtistCircleImage extends StatelessWidget {
           memCacheWidth: 112,
           fadeInDuration: AppDimens.animXFast,
           fadeOutDuration: AppDimens.animTapFeedback,
-          placeholder: (_, __) => fallback(colors),
-          errorWidget: (_, __, ___) => fallback(colors),
+          placeholder: (_, _) => fallback(colors),
+          errorWidget: (_, _, _) => fallback(colors),
         ),
       );
     }

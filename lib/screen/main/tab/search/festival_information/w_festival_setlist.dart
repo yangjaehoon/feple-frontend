@@ -254,7 +254,7 @@ class _ArtistCompactRow extends StatelessWidget {
                 fit: BoxFit.cover,
                 fadeInDuration: AppDimens.animXFast,
                 fadeOutDuration: AppDimens.animTapFeedback,
-                errorWidget: (_, __, ___) => const SizedBox.shrink(),
+                errorWidget: (_, _, _) => const SizedBox.shrink(),
               ),
             ),
           ),
@@ -288,8 +288,8 @@ class _ArtistCompactRow extends StatelessWidget {
           fit: BoxFit.cover,
           fadeInDuration: AppDimens.animXFast,
           fadeOutDuration: AppDimens.animTapFeedback,
-          placeholder: (_, __) => _placeholder(size, colors),
-          errorWidget: (_, __, ___) => _placeholder(size, colors),
+          placeholder: (_, _) => _placeholder(size, colors),
+          errorWidget: (_, _, _) => _placeholder(size, colors),
         ),
       );
     }

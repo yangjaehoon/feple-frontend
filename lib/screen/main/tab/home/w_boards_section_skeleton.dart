@@ -30,7 +30,7 @@ class BoardsSectionSkeleton extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: 4,
-            itemBuilder: (_, __) => Padding(
+            itemBuilder: (_, _) => Padding(
               padding: const EdgeInsets.only(right: 12),
               child: SkeletonBox(
                 width: 110,

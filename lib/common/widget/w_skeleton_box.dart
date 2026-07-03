@@ -49,7 +49,7 @@ class _SkeletonBoxState extends State<SkeletonBox>
 
     return AnimatedBuilder(
       animation: _shimmer,
-      builder: (_, __) {
+      builder: (_, _) {
         final shimmerValue = _shimmer.value;
         return Container(
           width: widget.width,

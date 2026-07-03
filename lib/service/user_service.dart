@@ -73,7 +73,7 @@ class UserService {
       '/users/check-nickname',
       queryParameters: {
         'nickname': nickname,
-        if (excludeUserId != null) 'excludeUserId': excludeUserId,
+        'excludeUserId': ?excludeUserId,
       },
     );
     return NicknameCheckResult.fromJson(response.data as Map<String, dynamic>);

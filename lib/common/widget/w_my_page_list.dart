@@ -129,7 +129,7 @@ class _MyPageListState<T> extends State<MyPageList<T>> {
                           : ListView.separated(
                               physics: const AlwaysScrollableScrollPhysics(),
                               itemCount: _items.length,
-                              separatorBuilder: (_, __) =>
+                              separatorBuilder: (_, _) =>
                                   Divider(thickness: 1, color: colors.listDivider),
                               itemBuilder: (context, index) => AnimatedListItem(
                                 index: index,

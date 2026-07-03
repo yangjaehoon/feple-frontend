@@ -6,7 +6,7 @@ import 'package:feple/network/dio_client.dart';
 class UserActivityService {
   Future<PostCursorPage> fetchPostsPage(int userId, {int? cursor, int size = 20}) async {
     final response = await DioClient.dio.get('/users/$userId/posts', queryParameters: {
-      if (cursor != null) 'cursor': cursor,
+      'cursor': ?cursor,
       'size': size,
     });
     return PostCursorPage.fromJson(response.data as Map<String, dynamic>);

@@ -137,7 +137,7 @@ class FestivalArtistsState extends State<FestivalArtists> {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: visible.length + (hasMore ? 1 : 0),
-        separatorBuilder: (_, __) => const SizedBox(width: 16),
+        separatorBuilder: (_, _) => const SizedBox(width: 16),
         itemBuilder: (context, index) {
           if (hasMore && index == visible.length) {
             return _buildMoreItem(colors);
@@ -243,8 +243,8 @@ class FestivalArtistsState extends State<FestivalArtists> {
         scrollDirection: Axis.horizontal,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: 4,
-        separatorBuilder: (_, __) => const SizedBox(width: 16),
-        itemBuilder: (_, __) => const SizedBox(
+        separatorBuilder: (_, _) => const SizedBox(width: 16),
+        itemBuilder: (_, _) => const SizedBox(
           width: 64,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

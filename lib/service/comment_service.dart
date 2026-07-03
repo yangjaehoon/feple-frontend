@@ -28,7 +28,7 @@ class CommentService {
       await DioClient.dio.post('/comments', data: {
         'content': content,
         'postId': postId,
-        if (parentId != null) 'parentId': parentId,
+        'parentId': ?parentId,
         'anonymous': anonymous,
       });
     } on DioException catch (e) {

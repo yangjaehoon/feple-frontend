@@ -91,7 +91,7 @@ class _FestivalSetlistFullScreenState extends State<FestivalSetlistFullScreen> {
       builder: (_, entries) => ListView.separated(
         padding: const EdgeInsets.symmetric(vertical: 12),
         itemCount: entries.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 8),
+        separatorBuilder: (_, _) => const SizedBox(height: 8),
         itemBuilder: (_, i) => _ArtistFullTile(
           entry: entries[i],
           isExpanded: _expanded.contains(entries[i].artistId),
@@ -114,8 +114,8 @@ class _FestivalSetlistFullScreenState extends State<FestivalSetlistFullScreen> {
     return ListView.separated(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       itemCount: 4,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
-      itemBuilder: (_, __) => Container(
+      separatorBuilder: (_, _) => const SizedBox(height: 8),
+      itemBuilder: (_, _) => Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: colors.surface,
@@ -249,8 +249,8 @@ class _ArtistFullTile extends StatelessWidget {
           fit: BoxFit.cover,
           fadeInDuration: AppDimens.animXFast,
           fadeOutDuration: AppDimens.animTapFeedback,
-          placeholder: (_, __) => _avatarPlaceholder(size, colors),
-          errorWidget: (_, __, ___) => _avatarPlaceholder(size, colors),
+          placeholder: (_, _) => _avatarPlaceholder(size, colors),
+          errorWidget: (_, _, _) => _avatarPlaceholder(size, colors),
         ),
       );
     }
@@ -311,7 +311,7 @@ class _ArtistFullTile extends StatelessWidget {
                   fit: BoxFit.cover,
                   fadeInDuration: AppDimens.animXFast,
                   fadeOutDuration: AppDimens.animTapFeedback,
-                  errorWidget: (_, __, ___) => _thumbPlaceholder(colors),
+                  errorWidget: (_, _, _) => _thumbPlaceholder(colors),
                 ),
               )
             else

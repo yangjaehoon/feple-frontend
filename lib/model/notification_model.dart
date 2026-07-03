@@ -10,6 +10,7 @@ class NotificationModel {
   final int? referenceId;
   final bool read;
   final String? createdAt;
+  final String? imageUrl;
 
   NotificationModel({
     required this.id,
@@ -21,6 +22,7 @@ class NotificationModel {
     this.referenceId,
     required this.read,
     this.createdAt,
+    this.imageUrl,
   });
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
@@ -36,6 +38,7 @@ class NotificationModel {
           : null,
       read: json['read'] as bool? ?? false,
       createdAt: json['createdAt'] as String?,
+      imageUrl: json['imageUrl'] as String?,
     );
   }
 
@@ -93,5 +96,6 @@ class NotificationModel {
         referenceId: referenceId,
         read: true,
         createdAt: createdAt,
+        imageUrl: imageUrl,
       );
 }

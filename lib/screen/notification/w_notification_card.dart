@@ -76,6 +76,21 @@ class NotificationCard extends StatelessWidget {
   }
 
   Widget _buildIconBadge(AbstractThemeColors colors) {
+    if (item.imageUrl != null) {
+      return ClipOval(
+        child: Image.network(
+          item.imageUrl!,
+          width: 40,
+          height: 40,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, _) => _buildIconFallback(colors),
+        ),
+      );
+    }
+    return _buildIconFallback(colors);
+  }
+
+  Widget _buildIconFallback(AbstractThemeColors colors) {
     return Container(
       width: 40,
       height: 40,

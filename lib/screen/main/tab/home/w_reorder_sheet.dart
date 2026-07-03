@@ -95,6 +95,7 @@ class _ReorderSheetState extends State<ReorderSheet> {
                     errorIcon: Icons.forum_rounded,
                     errorIconSize: 20,
                     borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+                    excludeFromSemantics: true,
                   ),
                 ],
               ),

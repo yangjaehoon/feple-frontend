@@ -186,6 +186,7 @@ class _BoardSettingsItem extends StatelessWidget {
               errorIcon: Icons.forum_rounded,
               errorIconSize: 20,
               borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+              excludeFromSemantics: true,
             ),
           ],
         ),

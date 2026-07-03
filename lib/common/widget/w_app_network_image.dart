@@ -15,6 +15,7 @@ class AppNetworkImage extends StatelessWidget {
   final IconData errorIcon;
   final double errorIconSize;
   final String? semanticsLabel;
+  final bool excludeFromSemantics;
 
   const AppNetworkImage({
     super.key,
@@ -26,6 +27,7 @@ class AppNetworkImage extends StatelessWidget {
     this.errorIcon = Icons.broken_image_rounded,
     this.errorIconSize = 28,
     this.semanticsLabel,
+    this.excludeFromSemantics = false,
   });
 
   @override
@@ -51,7 +53,9 @@ class AppNetworkImage extends StatelessWidget {
       );
     }
 
-    if (semanticsLabel != null) {
+    if (excludeFromSemantics) {
+      child = ExcludeSemantics(child: child);
+    } else if (semanticsLabel != null) {
       child = Semantics(label: semanticsLabel, image: true, child: child);
     }
     if (borderRadius != null) {

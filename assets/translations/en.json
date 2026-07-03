@@ -142,6 +142,8 @@
   "login_subtitle": "Enjoy festivals with Feple",
   "email": "Email",
   "password": "Password",
+  "show_password": "Show password",
+  "hide_password": "Hide password",
   "login": "Login",
   "enter_email_password": "Please enter email and password.",
   "login_failed": "Login failed",

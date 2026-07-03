@@ -45,6 +45,7 @@ class FestivalPreviewCard extends StatelessWidget {
               imageUrl: festival.posterUrl,
               fit: BoxFit.cover,
               width: posterWidth,
+              excludeFromSemantics: true,
             ),
             if (festival.isEnded) ...[
               Container(color: Colors.black.withValues(alpha: 0.5)),

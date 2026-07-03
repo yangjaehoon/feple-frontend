@@ -142,6 +142,8 @@
   "login_subtitle": "페플과 함께 축제를 즐겨보세요",
   "email": "이메일",
   "password": "비밀번호",
+  "show_password": "비밀번호 표시",
+  "hide_password": "비밀번호 숨기기",
   "login": "로그인",
   "enter_email_password": "이메일과 비밀번호를 입력해주세요.",
   "login_failed": "로그인 실패",

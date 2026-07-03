@@ -216,6 +216,7 @@ class _GridBoardTile extends StatelessWidget {
                 fit: BoxFit.cover,
                 errorIcon: Icons.forum_rounded,
                 errorIconSize: 48,
+                excludeFromSemantics: true,
               ),
               _buildNameOverlay(context.isEnglish),
             ],

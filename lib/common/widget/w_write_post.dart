@@ -167,12 +167,12 @@ class _WritePostState extends State<WritePost> {
                 child: SizedBox(
                   width: 20,
                   height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Theme.of(context).colorScheme.onPrimary),
+                  child: CircularProgressIndicator(strokeWidth: 2, color: context.appColors.appBarIconColor),
                 ),
               )
             : Text(
                 'done'.tr(),
-                style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.w700),
+                style: TextStyle(color: context.appColors.appBarIconColor, fontWeight: FontWeight.w700),
               ),
       ),
     );

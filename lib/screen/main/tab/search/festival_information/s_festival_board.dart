@@ -143,14 +143,14 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
                 children: [
                   IconButton(
                     tooltip: 'back'.tr(),
-                    icon: Icon(Icons.arrow_back_ios_rounded, color: Theme.of(context).colorScheme.onPrimary),
+                    icon: Icon(Icons.arrow_back_ios_rounded, color: colors.appBarIconColor),
                     onPressed: () => Navigator.pop(context),
                   ),
                   Expanded(
                     child: Text(
                       widget.festivalName,
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary,
+                        color: colors.appBarIconColor,
                         fontSize: AppDimens.fontSizeTitle,
                         fontWeight: FontWeight.w500,
                       ),
@@ -162,9 +162,9 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
             ),
             TabBar(
               controller: _tabController,
-              labelColor: Theme.of(context).colorScheme.onPrimary,
-              unselectedLabelColor: Colors.white54,
-              indicatorColor: Theme.of(context).colorScheme.onPrimary,
+              labelColor: colors.appBarIconColor,
+              unselectedLabelColor: colors.appBarIconColor.withValues(alpha: 0.54),
+              indicatorColor: colors.appBarIconColor,
               indicatorWeight: 2.5,
               labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeMd),
               unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: AppDimens.fontSizeMd),

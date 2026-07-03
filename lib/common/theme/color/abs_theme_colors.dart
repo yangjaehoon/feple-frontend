@@ -46,6 +46,10 @@ abstract class AbstractThemeColors {
 
   Color get appBarColor => AppColors.skyBlue;
 
+  /// Icon/text color on top of appBarColor.
+  /// Light: white on primary (skyBlue), Dark: light text on dark surface.
+  Color get appBarIconColor => Colors.white;
+
   /// Bottom nav background
   Color get bottomNavBg => AppColors.surfaceWhite;
 

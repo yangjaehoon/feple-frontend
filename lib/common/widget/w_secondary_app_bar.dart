@@ -21,7 +21,7 @@ class SecondaryAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final onAppBar = Theme.of(context).colorScheme.onPrimary;
+    final onAppBar = colors.appBarIconColor;
     return SafeArea(
       bottom: false,
       child: Container(

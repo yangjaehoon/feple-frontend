@@ -63,6 +63,9 @@ class DarkAppColors extends AbstractThemeColors {
   Color get appBarColor => _darkSurface;
 
   @override
+  Color get appBarIconColor => _darkTextPrimary;
+
+  @override
   Color get bottomNavBg => _darkSurface;
 
   @override

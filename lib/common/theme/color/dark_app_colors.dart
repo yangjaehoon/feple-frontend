@@ -13,7 +13,7 @@ class DarkAppColors extends AbstractThemeColors {
   static const Color _darkDivider = Color(0xFF2E4050);
 
   @override
-  Color get activate => AppColors.skyBlueDark;
+  Color get activate => AppColors.skyBlue;
 
   @override
   Color get badgeBg => AppColors.sunnyYellow;

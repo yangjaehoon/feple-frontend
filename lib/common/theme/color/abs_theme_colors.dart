@@ -16,8 +16,7 @@ abstract class AbstractThemeColors {
 
   Color get inActivate => const Color.fromARGB(255, 200, 207, 220);
 
-  /// 버튼·인터랙티브 요소 색상 — 흰색 텍스트와 대비비 ≥ 4.5:1 (WCAG AA)
-  Color get activate => AppColors.skyBlueDark;
+  Color get activate => AppColors.skyBlue;
 
   Color get badgeBg => AppColors.sunnyYellow;
 
@@ -35,7 +34,7 @@ abstract class AbstractThemeColors {
 
   Color get snackbarBgColor => AppColors.skyBlue;
 
-  Color get appBarBackground => AppColors.skyBlueDark;
+  Color get appBarBackground => AppColors.skyBlue;
 
   // === Theme-aware UI colors ===
 
@@ -45,8 +44,7 @@ abstract class AbstractThemeColors {
   /// Card/surface background
   Color get surface => AppColors.surfaceWhite;
 
-  /// App bar solid color (no gradient) — 흰색 타이틀과 대비비 ≥ 4.5:1
-  Color get appBarColor => AppColors.skyBlueDark;
+  Color get appBarColor => AppColors.skyBlue;
 
   /// Bottom nav background
   Color get bottomNavBg => AppColors.surfaceWhite;

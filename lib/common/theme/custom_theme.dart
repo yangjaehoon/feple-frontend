@@ -88,7 +88,7 @@ ThemeData lightTheme = ThemeData(
     indicatorColor: const Color(0xFFCCE9F8),
     iconTheme: WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
-        return const IconThemeData(color: AppColors.skyBlueDark);
+        return const IconThemeData(color: AppColors.skyBlue);
       }
       return const IconThemeData(color: AppColors.textMuted);
     }),
@@ -97,7 +97,7 @@ ThemeData lightTheme = ThemeData(
         return const TextStyle(
           fontSize: 12, // M3 Label Medium
           fontWeight: FontWeight.w700,
-          color: AppColors.skyBlueDark,
+          color: AppColors.skyBlue,
         );
       }
       return const TextStyle(
@@ -118,7 +118,7 @@ ThemeData lightTheme = ThemeData(
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(AppDimens.shapeInput),
-      borderSide: const BorderSide(color: AppColors.skyBlueDark, width: 2),
+      borderSide: const BorderSide(color: AppColors.skyBlue, width: 2),
     ),
     errorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(AppDimens.shapeInput),
@@ -135,7 +135,7 @@ ThemeData lightTheme = ThemeData(
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: AppColors.skyBlueDark, // 대비비 ≥ 4.5:1
+      backgroundColor: AppColors.skyBlue,
       foregroundColor: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDimens.shapeButton),
@@ -147,7 +147,7 @@ ThemeData lightTheme = ThemeData(
   ),
   filledButtonTheme: FilledButtonThemeData(
     style: FilledButton.styleFrom(
-      backgroundColor: AppColors.skyBlueDark,
+      backgroundColor: AppColors.skyBlue,
       foregroundColor: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDimens.shapeButton),
@@ -263,7 +263,7 @@ ThemeData darkTheme = ThemeData(
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: AppColors.skyBlueDark,
+      backgroundColor: AppColors.skyBlue,
       foregroundColor: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDimens.shapeButton),
@@ -275,7 +275,7 @@ ThemeData darkTheme = ThemeData(
   ),
   filledButtonTheme: FilledButtonThemeData(
     style: FilledButton.styleFrom(
-      backgroundColor: AppColors.skyBlueDark,
+      backgroundColor: AppColors.skyBlue,
       foregroundColor: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDimens.shapeButton),

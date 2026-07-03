@@ -9,6 +9,7 @@ import 'package:feple/provider/user_provider.dart';
 import 'package:feple/service/festival_cache_service.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:feple/login/s_login.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +27,7 @@ import 'screen/onboarding/s_onboarding.dart';
 
 void main() async {
   final bindings = WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   setupDependencies();
 
   // 기본 ImageCache: 1000개 / 100MB — 고해상도 포스터가 많은 페스티벌 앱 특성상
@@ -181,6 +183,19 @@ class _MyAppState extends State<MyApp> {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             theme: context.themeType.themeData,
+            // 시스템 폰트 크기 설정이 큰 경우 고정 높이 컨테이너의 텍스트 잘림 방지
+            builder: (context, child) {
+              final mq = MediaQuery.of(context);
+              return MediaQuery(
+                data: mq.copyWith(
+                  textScaler: mq.textScaler.clamp(
+                    minScaleFactor: 1.0,
+                    maxScaleFactor: 1.3,
+                  ),
+                ),
+                child: child!,
+              );
+            },
             home: Consumer<UserProvider>(
               builder: (context, userProvider, _) {
                 if (userProvider.user == null) {

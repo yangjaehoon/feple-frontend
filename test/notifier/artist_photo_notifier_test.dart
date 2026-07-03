@@ -1,11 +1,11 @@
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_photo.dart';
 import 'package:feple/screen/main/tab/search/artist_page/image_collection/artist_photo_notifier.dart';
-import 'package:feple/service/artist_photo_service.dart';
+import 'package:feple/service/artist_photo_manageable.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockArtistPhotoService extends Mock implements ArtistPhotoService {}
+class MockArtistPhotoService extends Mock implements ArtistPhotoManageable {}
 
 ArtistPhotoResponse _photo({
   int id = 1,
@@ -26,20 +26,22 @@ ArtistPhotoResponse _photo({
     );
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late MockArtistPhotoService mockService;
   late ArtistPhotoNotifier notifier;
 
   setUp(() {
     mockService = MockArtistPhotoService();
-    if (sl.isRegistered<ArtistPhotoService>()) {
-      sl.unregister<ArtistPhotoService>();
+    if (sl.isRegistered<ArtistPhotoManageable>()) {
+      sl.unregister<ArtistPhotoManageable>();
     }
-    sl.registerSingleton<ArtistPhotoService>(mockService);
+    sl.registerSingleton<ArtistPhotoManageable>(mockService);
     notifier = ArtistPhotoNotifier(artistId: 1);
   });
 
   tearDown(() {
-    sl.unregister<ArtistPhotoService>();
+    sl.unregister<ArtistPhotoManageable>();
   });
 
   group('loadPhotos', () {

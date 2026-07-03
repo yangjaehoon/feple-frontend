@@ -25,6 +25,8 @@ CommentDetail _comment({int id = 1, int likeCount = 0, bool liked = false}) =>
     );
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late MockPostService mockPostService;
   late MockCommentService mockCommentService;
   late MockScrapService mockScrapService;

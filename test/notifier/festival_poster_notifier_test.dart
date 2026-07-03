@@ -10,6 +10,8 @@ class MockCertificationService extends Mock implements CertificationService {}
 class MockFestivalInteractionService extends Mock implements FestivalInteractionService {}
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late MockCertificationService mockCertService;
   late MockFestivalInteractionService mockFestivalInteractionService;
 

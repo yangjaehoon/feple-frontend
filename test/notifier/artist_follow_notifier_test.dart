@@ -1,9 +1,11 @@
+import 'package:feple/common/data/preference/app_preferences.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/follow_status.dart';
 import 'package:feple/screen/main/tab/search/artist_page/artist_follow_notifier.dart';
 import 'package:feple/service/artist_follow_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MockArtistFollowService extends Mock implements ArtistFollowService {}
 
@@ -11,6 +13,11 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late MockArtistFollowService mockService;
   late ArtistFollowNotifier notifier;
+
+  setUpAll(() async {
+    SharedPreferences.setMockInitialValues({});
+    await AppPreferences.init();
+  });
 
   setUp(() {
     mockService = MockArtistFollowService();

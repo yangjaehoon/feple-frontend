@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:feple/network/api_cache_store.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/service/comment_service.dart';
 import 'package:flutter/services.dart';
@@ -20,6 +21,8 @@ void main() {
     await server.start();
     DioClient.dio.options.baseUrl = 'http://127.0.0.1:${server.port}';
   });
+
+  setUp(() => ApiCacheStore.clearForTesting());
 
   tearDownAll(() => server.shutdown());
 

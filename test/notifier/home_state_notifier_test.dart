@@ -1,14 +1,36 @@
+import 'package:feple/injection.dart';
 import 'package:feple/screen/main/tab/home/home_state_notifier.dart';
+import 'package:feple/service/cache_prefetch_service.dart';
+import 'package:feple/service/festival_cache_service.dart';
+import 'package:feple/service/user_service.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+class MockUserService extends Mock implements UserService {}
+class MockFestivalCacheService extends Mock implements FestivalCacheService {}
+class MockCachePrefetchService extends Mock implements CachePrefetchService {}
 
 void main() {
   late HomeStateNotifier notifier;
 
   setUp(() {
+    if (sl.isRegistered<UserService>()) sl.unregister<UserService>();
+    if (sl.isRegistered<FestivalCacheService>()) sl.unregister<FestivalCacheService>();
+    if (sl.isRegistered<CachePrefetchService>()) sl.unregister<CachePrefetchService>();
+
+    sl.registerSingleton<UserService>(MockUserService());
+    sl.registerSingleton<FestivalCacheService>(MockFestivalCacheService());
+    sl.registerSingleton<CachePrefetchService>(MockCachePrefetchService());
+
     notifier = HomeStateNotifier();
   });
 
-  // applyOrder는 sl에 접근하지 않는 순수 메서드이므로 DI 설정 불필요
+  tearDown(() {
+    sl.unregister<UserService>();
+    sl.unregister<FestivalCacheService>();
+    sl.unregister<CachePrefetchService>();
+  });
+
   group('HomeStateNotifier.applyOrder', () {
     int id(int item) => item;
 

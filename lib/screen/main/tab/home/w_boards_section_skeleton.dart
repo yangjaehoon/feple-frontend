@@ -7,6 +7,10 @@ class BoardsSectionSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    // 기준 390px: 카드 110(0.282), 리스트 높이 120(0.308)
+    final cardSize = screenWidth * 0.282;
+    final listHeight = screenWidth * 0.308;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -25,7 +29,7 @@ class BoardsSectionSkeleton extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 120,
+          height: listHeight,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -33,8 +37,8 @@ class BoardsSectionSkeleton extends StatelessWidget {
             itemBuilder: (_, _) => Padding(
               padding: const EdgeInsets.only(right: 12),
               child: SkeletonBox(
-                width: 110,
-                height: 110,
+                width: cardSize,
+                height: cardSize,
                 borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
               ),
             ),

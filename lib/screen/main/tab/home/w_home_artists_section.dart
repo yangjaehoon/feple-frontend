@@ -35,7 +35,7 @@ class HomeArtistsSection extends StatelessWidget {
       );
     }
 
-    if (artists == null) return _buildSkeleton();
+    if (artists == null) return _buildSkeleton(context);
     if (artists!.isEmpty) {
       return EmptyState(
         icon: Icons.people_outline_rounded,
@@ -45,8 +45,10 @@ class HomeArtistsSection extends StatelessWidget {
     final preview = artists!.take(maxPreview).toList();
     final remaining = artists!.length - maxPreview;
     final showMoreItem = remaining > 0 && onShowMore != null;
+    // 기준 390px: 아티스트 섹션 높이 110(0.282) — avatar 74 + text 12 + 간격 24
+    final listHeight = MediaQuery.sizeOf(context).width * 0.282;
     return SizedBox(
-      height: 110,
+      height: listHeight,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -65,10 +67,12 @@ class HomeArtistsSection extends StatelessWidget {
     );
   }
 
-  Widget _buildSkeleton() {
+  Widget _buildSkeleton(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final listHeight = screenWidth * 0.282;
     const avatarSize = 74.0;
     return SizedBox(
-      height: 110,
+      height: listHeight,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),

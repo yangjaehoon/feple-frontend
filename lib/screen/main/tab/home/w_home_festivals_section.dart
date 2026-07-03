@@ -31,19 +31,25 @@ class HomeFestivalsSection extends StatelessWidget {
       );
     }
 
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    // 기준 390px: 카드 너비 130(1/3), 카드 높이 195(0.5)
+    final cardWidth = screenWidth / 3;
+    final cardHeight = screenWidth * 0.5;
+    final itemExtent = cardWidth + 12;
+
     if (festivals == null) {
       return SizedBox(
-        height: 195,
+        height: cardHeight,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemExtent: 142, // 130px item + 12px right margin
+          itemExtent: itemExtent,
           itemCount: 4,
           itemBuilder: (_, _) => Padding(
             padding: const EdgeInsets.only(right: 12),
             child: SkeletonBox(
-              width: 130,
-              height: 195,
+              width: cardWidth,
+              height: cardHeight,
               borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
             ),
           ),
@@ -57,11 +63,11 @@ class HomeFestivalsSection extends StatelessWidget {
       );
     }
     return SizedBox(
-      height: 195,
+      height: cardHeight,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemExtent: 142, // 130px item + 12px right margin
+        itemExtent: itemExtent,
         itemCount: festivals!.length,
         itemBuilder: (_, index) => _FestivalItem(
           key: ValueKey(festivals![index].id),
@@ -82,10 +88,11 @@ class _FestivalItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final cardWidth = MediaQuery.sizeOf(context).width / 3;
     return TapScale(
       onTap: () => onTap(festival),
       child: Container(
-        width: 130,
+        width: cardWidth,
         margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),

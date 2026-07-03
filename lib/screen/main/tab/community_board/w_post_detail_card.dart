@@ -646,6 +646,7 @@ class _PostContentSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final screenWidth = MediaQuery.sizeOf(context).width;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -667,12 +668,13 @@ class _PostContentSection extends StatelessWidget {
                 memCacheWidth: 800, // 최대 스크린 너비 기준
                 fadeInDuration: AppDimens.animXFast,
                 fadeOutDuration: AppDimens.animTapFeedback,
+                // 기준 390px: 로딩 0.513(200px), 에러 0.308(120px)
                 placeholder: (_, _) => Container(
-                  height: 200,
+                  height: screenWidth * 0.513,
                   color: colors.listDivider,
                 ),
                 errorWidget: (_, _, _) => Container(
-                  height: 120,
+                  height: screenWidth * 0.308,
                   color: colors.listDivider,
                   child: Center(
                     child: Icon(Icons.broken_image_rounded, color: colors.textSecondary, size: 36),

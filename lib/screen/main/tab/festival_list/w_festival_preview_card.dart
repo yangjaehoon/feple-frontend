@@ -16,13 +16,17 @@ class FestivalPreviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    // 기준 390px: 카드 높이 140(0.359), 포스터 높이 120(0.308)
+    final cardHeight = screenWidth * 0.359;
+    final posterHeight = screenWidth * 0.308;
 
     return SurfaceCard(
       child: SizedBox(
-        height: 140,
+        height: cardHeight,
         child: Row(
           children: [
-            _buildPoster(),
+            _buildPoster(posterHeight),
             Expanded(child: _buildInfo(colors, context.isEnglish)),
           ],
         ),
@@ -30,10 +34,8 @@ class FestivalPreviewCard extends StatelessWidget {
     );
   }
 
-  Widget _buildPoster() {
-    // 컨테이너 height=120, aspect ratio=2:3 → 렌더 width=80px
-    // memCacheWidth를 80*2=160(Retina) 으로 고정해 기본값 400에서 오는 불필요한 메모리 절약
-    const double posterWidth = 80.0;
+  Widget _buildPoster(double posterHeight) {
+    // aspect ratio 2:3 → 너비는 posterHeight * (2/3)으로 자동 계산됨
     final inner = ClipRRect(
       borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
       child: AspectRatio(
@@ -44,7 +46,6 @@ class FestivalPreviewCard extends StatelessWidget {
             AppNetworkImage(
               imageUrl: festival.posterUrl,
               fit: BoxFit.cover,
-              width: posterWidth,
               excludeFromSemantics: true,
             ),
             if (festival.isEnded) ...[
@@ -73,7 +74,7 @@ class FestivalPreviewCard extends StatelessWidget {
     );
 
     return Container(
-      height: 120,
+      height: posterHeight,
       margin: const EdgeInsets.all(10),
       child: heroTag != null ? Hero(tag: heroTag!, child: inner) : inner,
     );

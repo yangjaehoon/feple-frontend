@@ -94,10 +94,16 @@ class _FestivalListSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    // FestivalPreviewCard와 동일한 비율 사용
+    final cardHeight = screenWidth * 0.359;
+    final posterHeight = screenWidth * 0.308;
+    // aspect ratio 2:3 → posterWidth = posterHeight * (2/3)
+    final posterWidth = posterHeight * 2 / 3;
     return Column(
       children: List.generate(4, (_) {
         return Container(
-          height: 140,
+          height: cardHeight,
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
             color: colors.surface,
@@ -115,8 +121,8 @@ class _FestivalListSkeleton extends StatelessWidget {
               Container(
                 margin: const EdgeInsets.all(10),
                 child: SkeletonBox(
-                  width: 80,
-                  height: 120,
+                  width: posterWidth,
+                  height: posterHeight,
                   borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
                 ),
               ),

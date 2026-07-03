@@ -112,21 +112,23 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
           title: 'favorite_boards'.tr(),
           onExpand: widget.allBoards.isNotEmpty ? _openAllBoards : null,
         ),
-        _buildBoardList(selectedBoards, colors),
+        _buildBoardList(selectedBoards, colors, MediaQuery.sizeOf(context).width),
       ],
     );
   }
 
   Widget _buildBoardList(
-      List<FavoriteBoard> selectedBoards, AbstractThemeColors colors) {
+      List<FavoriteBoard> selectedBoards, AbstractThemeColors colors, double screenWidth) {
     if (selectedBoards.isEmpty) {
       return EmptyState(
         icon: Icons.view_list_rounded,
         title: 'select_boards_prompt'.tr(),
       );
     }
+    // 기준 390px: 리스트 높이 120(0.308)
+    final listHeight = screenWidth * 0.308;
     return SizedBox(
-      height: 120,
+      height: listHeight,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -168,11 +170,13 @@ class _BoardTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    // 기준 390px: 보드 카드 110(0.282)
+    final cardSize = MediaQuery.sizeOf(context).width * 0.282;
     return TapScale(
       onTap: () => _navigate(context),
       child: Container(
-        width: 110,
-        height: 110,
+        width: cardSize,
+        height: cardSize,
         margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),

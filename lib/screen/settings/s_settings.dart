@@ -366,13 +366,25 @@ class _SettingsItem extends StatelessWidget {
   }
 }
 
-class _LanguageItem extends StatelessWidget {
+class _LanguageItem extends StatefulWidget {
   const _LanguageItem();
+
+  @override
+  State<_LanguageItem> createState() => _LanguageItemState();
+}
+
+class _LanguageItemState extends State<_LanguageItem> {
+  late Language _selected;
+
+  @override
+  void initState() {
+    super.initState();
+    _selected = currentLanguage;
+  }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final lang = currentLanguage;
     return Container(
       color: colors.surface,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
@@ -390,17 +402,18 @@ class _LanguageItem extends StatelessWidget {
               ),
             ),
           ),
-          _buildLanguageDropdown(context, lang, colors),
+          _buildLanguageDropdown(context, colors),
         ],
       ),
     );
   }
 
-  Widget _buildLanguageDropdown(BuildContext context, Language lang, AbstractThemeColors colors) {
+  Widget _buildLanguageDropdown(BuildContext context, AbstractThemeColors colors) {
     return DropdownMenu<Language>(
-      initialSelection: lang,
+      initialSelection: _selected,
       enableFilter: false,
       requestFocusOnTap: false,
+      leadingIcon: Image.asset(_selected.flagPath, width: 20),
       textStyle: TextStyle(
         fontSize: AppDimens.fontSizeMd,
         fontWeight: FontWeight.w600,
@@ -435,6 +448,7 @@ class _LanguageItem extends StatelessWidget {
       }).toList(),
       onSelected: (value) async {
         if (value == null) return;
+        setState(() => _selected = value);
         await context.setLocale(value.locale);
       },
     );

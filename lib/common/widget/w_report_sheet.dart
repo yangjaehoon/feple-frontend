@@ -28,7 +28,7 @@ Future<void> showReportSheet(
         final colors = ctx.appColors;
         return Material(
           color: colors.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
           clipBehavior: Clip.antiAlias,
           child: Padding(
           padding: EdgeInsets.only(

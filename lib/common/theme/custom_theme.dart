@@ -83,7 +83,7 @@ ThemeData lightTheme = ThemeData(
   ),
   navigationBarTheme: NavigationBarThemeData(
     backgroundColor: AppColors.surfaceWhite,
-    elevation: 0,
+    elevation: 3, // M3 spec
     // M3 SecondaryContainer Tone 90 계열 — 명확한 선택 표시
     indicatorColor: const Color(0xFFCCE9F8),
     iconTheme: WidgetStateProperty.resolveWith((states) {
@@ -140,7 +140,7 @@ ThemeData lightTheme = ThemeData(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDimens.shapeButton),
       ),
-      elevation: 0,
+      elevation: 1, // M3 ElevatedButton 기본값
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       textStyle: const TextStyle(fontWeight: FontWeight.w700),
     ),
@@ -211,7 +211,7 @@ ThemeData darkTheme = ThemeData(
   ),
   navigationBarTheme: NavigationBarThemeData(
     backgroundColor: _darkSurface,
-    elevation: 0,
+    elevation: 3,
     // M3 다크 모드 indicator — PrimaryContainer Tone 30 계열
     indicatorColor: const Color(0xFF004D6B),
     iconTheme: WidgetStateProperty.resolveWith((states) {
@@ -268,7 +268,7 @@ ThemeData darkTheme = ThemeData(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDimens.shapeButton),
       ),
-      elevation: 0,
+      elevation: 1, // M3 ElevatedButton 기본값
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       textStyle: const TextStyle(fontWeight: FontWeight.w700),
     ),

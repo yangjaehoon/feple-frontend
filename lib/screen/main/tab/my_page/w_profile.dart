@@ -95,6 +95,7 @@ class ProfileWidgetState extends State<ProfileWidget> {
           ],
           const SizedBox(height: 16),
           _buildActionButton(
+            context,
             colors,
             label: 'edit_profile'.tr(),
             icon: Icons.edit_rounded,
@@ -164,6 +165,7 @@ class ProfileWidgetState extends State<ProfileWidget> {
   }
 
   Widget _buildActionButton(
+    BuildContext context,
     AbstractThemeColors colors, {
     required String label,
     required IconData icon,
@@ -191,14 +193,14 @@ class ProfileWidgetState extends State<ProfileWidget> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(icon, size: 16, color: Colors.white),
+                Icon(icon, size: 16, color: Theme.of(context).colorScheme.onPrimary),
                 const SizedBox(width: 6),
                 Text(
                   label,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: AppDimens.fontSizeSm,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onPrimary,
                   ),
                 ),
               ],

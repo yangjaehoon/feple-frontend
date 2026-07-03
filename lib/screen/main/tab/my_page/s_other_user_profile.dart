@@ -126,7 +126,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
         children: [
           SecondaryAppBar(
             title: _user?.nickname ?? widget.nickname,
-            actions: [_buildBlockButton(colors)],
+            actions: [_buildBlockButton(context, colors)],
           ),
           Expanded(
             child: RefreshIndicator(
@@ -140,14 +140,15 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
     );
   }
 
-  Widget _buildBlockButton(AbstractThemeColors colors) {
+  Widget _buildBlockButton(BuildContext context, AbstractThemeColors colors) {
+    final onAppBar = Theme.of(context).colorScheme.onPrimary;
     if (_isBlockLoading) {
       return Padding(
         padding: const EdgeInsets.only(right: 12),
         child: SizedBox(
           width: 20,
           height: 20,
-          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+          child: CircularProgressIndicator(strokeWidth: 2, color: onAppBar),
         ),
       );
     }
@@ -155,7 +156,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
       tooltip: _isBlocked ? 'unblock'.tr() : 'block'.tr(),
       icon: Icon(
         _isBlocked ? Icons.block_rounded : Icons.more_vert_rounded,
-        color: Colors.white,
+        color: onAppBar,
         size: 22,
       ),
       onPressed: _isBlocked ? _toggleBlock : _showBlockMenu,
@@ -306,8 +307,8 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
                 backgroundColor: colors.activate,
                 child: Text(
                   nickname.isNotEmpty ? nickname[0] : '?',
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
                     fontWeight: FontWeight.w700,
                     fontSize: 32,
                   ),

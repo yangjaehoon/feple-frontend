@@ -21,6 +21,7 @@ class SecondaryAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final onAppBar = Theme.of(context).colorScheme.onPrimary;
     return SafeArea(
       bottom: false,
       child: Container(
@@ -30,14 +31,14 @@ class SecondaryAppBar extends StatelessWidget implements PreferredSizeWidget {
           children: [
             IconButton(
               tooltip: 'back'.tr(),
-              icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+              icon: Icon(Icons.arrow_back_ios_rounded, color: onAppBar),
               onPressed: () => Navigator.pop(context),
             ),
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: onAppBar,
                   fontSize: AppDimens.fontSizeTitle,
                   fontWeight: FontWeight.w500,
                 ),
@@ -46,7 +47,7 @@ class SecondaryAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             if (actions != null)
               IconTheme(
-                data: const IconThemeData(color: Colors.white),
+                data: IconThemeData(color: onAppBar),
                 child: Row(mainAxisSize: MainAxisSize.min, children: actions!),
               ),
           ],

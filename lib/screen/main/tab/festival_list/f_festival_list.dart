@@ -180,7 +180,7 @@ class _FilterPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildHeader(colors, p.clearFilters),
+          _buildHeader(context, colors, p.clearFilters),
           if (expanded) ...[
             Divider(height: 1, color: colors.listDivider),
             _buildBody(colors, p),
@@ -190,7 +190,7 @@ class _FilterPanel extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(AbstractThemeColors colors, VoidCallback onClearFilters) {
+  Widget _buildHeader(BuildContext context, AbstractThemeColors colors, VoidCallback onClearFilters) {
     return InkWell(
       onTap: onToggle,
       borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
@@ -218,8 +218,8 @@ class _FilterPanel extends StatelessWidget {
                 ),
                 child: Text(
                   '$_activeFilterCount',
-                  style: const TextStyle(
-                      color: Colors.white, fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary, fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w700),
                 ),
               ),
             ],
@@ -302,23 +302,23 @@ class _FilterSection extends StatelessWidget {
           style: TextStyle(fontSize: AppDimens.fontSizeXs, fontWeight: FontWeight.w700, color: colors.textSecondary),
         ),
         const SizedBox(height: 8),
-        _buildChips(colors),
+        _buildChips(context, colors),
       ],
     );
   }
 
-  Widget _buildChips(AbstractThemeColors colors) {
+  Widget _buildChips(BuildContext context, AbstractThemeColors colors) {
     return Wrap(
       spacing: 8,
       runSpacing: 6,
       children: items.map((item) {
         final (value, displayName) = item;
-        return _buildChip(colors, value, displayName, selected.contains(value));
+        return _buildChip(context, colors, value, displayName, selected.contains(value));
       }).toList(),
     );
   }
 
-  Widget _buildChip(AbstractThemeColors colors, String value, String displayName, bool isSelected) {
+  Widget _buildChip(BuildContext context, AbstractThemeColors colors, String value, String displayName, bool isSelected) {
     return GestureDetector(
       onTap: () => onToggle(value),
       child: AnimatedContainer(
@@ -334,7 +334,7 @@ class _FilterSection extends StatelessWidget {
           style: TextStyle(
             fontSize: AppDimens.fontSizeSm,
             fontWeight: FontWeight.w600,
-            color: isSelected ? Colors.white : colors.textTitle,
+            color: isSelected ? Theme.of(context).colorScheme.onPrimary : colors.textTitle,
           ),
         ),
       ),

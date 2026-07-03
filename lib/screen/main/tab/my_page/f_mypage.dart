@@ -75,7 +75,7 @@ class _MypageFragmentState extends State<MypageFragment> {
   Widget _buildSettingsButton(BuildContext context) {
     return IconButton(
       tooltip: 'settings'.tr(),
-      icon: const Icon(Icons.settings_rounded, color: Colors.white),
+      icon: Icon(Icons.settings_rounded, color: Theme.of(context).colorScheme.onPrimary),
       onPressed: () {
         if (_isNavigating) return;
         _isNavigating = true;

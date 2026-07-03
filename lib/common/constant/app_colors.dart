@@ -86,4 +86,16 @@ class AppColors {
   static const Color ageRatingGreen = Color(0xFF4CAF50);      // AGE_12
   static const Color ageRatingOrange = statusPending;         // AGE_15
   static const Color ageRatingRed = Color(0xFFF44336);        // AGE_19
+
+  // === Weather Colors (강수 확률 단계) ===
+  static const Color rainProbHigh   = Color(0xFF1565C0); // 70% 이상
+  static const Color rainProbMedium = Color(0xFF42A5F5); // 40–69%
+  static const Color rainProbLow    = Color(0xFF90CAF9); // 40% 미만
+
+  // === UI Misc ===
+  static const Color hotPink        = Color(0xFFFF6B8A); // 사진 뷰어 좋아요 하트
+  static const Color badgeDefaultBg = Color(0xFFE3ECFF); // TextBadge 기본 배경
+  static const Color markerGray     = Color(0xFF555555); // 지도 마커 폴백
+  static const Color onboardingPink = Color(0xFFFFE4EF); // 온보딩 카드 핑크
+  static const Color onboardingMint = Color(0xFFD4F5EC); // 온보딩 카드 민트
 }

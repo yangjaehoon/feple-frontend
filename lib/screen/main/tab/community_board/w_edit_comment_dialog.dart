@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 class EditCommentDialog extends StatefulWidget {
@@ -31,7 +32,7 @@ class _EditCommentDialogState extends State<EditCommentDialog> {
     return AlertDialog(
       backgroundColor: colors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(16)),
+        borderRadius: BorderRadius.all(Radius.circular(AppDimens.shapeDialog)),
       ),
       title: Text(
         'edit_comment'.tr(),

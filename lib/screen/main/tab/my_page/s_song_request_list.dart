@@ -179,7 +179,6 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
         ),
         shape: const StadiumBorder(),
         padding: const EdgeInsets.symmetric(horizontal: 4),
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         visualDensity: VisualDensity.compact,
       ),
     );

@@ -54,7 +54,7 @@ class ErrorState extends StatelessWidget {
                 label: Text('retry'.tr()),
                 style: FilledButton.styleFrom(
                   backgroundColor: colors.activate,
-                  foregroundColor: Colors.white,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
                   shape: RoundedRectangleBorder(

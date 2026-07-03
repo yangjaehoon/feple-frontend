@@ -44,7 +44,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       subtitleKey: 'onboarding_subtitle_2',
       icon: Icons.favorite_rounded,
       primaryColor: AppColors.kawaiiPink,
-      bgColor: const Color(0xFFFFE4EF),
+      bgColor: AppColors.onboardingPink,
       accentColor: AppColors.kawaiiPurple,
     ),
     _PageData(
@@ -52,7 +52,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       subtitleKey: 'onboarding_subtitle_3',
       icon: Icons.forum_rounded,
       primaryColor: AppColors.kawaiiMint,
-      bgColor: const Color(0xFFD4F5EC),
+      bgColor: AppColors.onboardingMint,
       accentColor: colors.accentColor,
     ),
   ];
@@ -461,7 +461,7 @@ class _ArtistSelectCard extends StatelessWidget {
     required this.onTap,
   });
 
-  Widget _buildCardImage(AbstractThemeColors colors) {
+  Widget _buildCardImage(BuildContext context, AbstractThemeColors colors) {
     return AspectRatio(
       aspectRatio: 1.0,
       child: Stack(
@@ -499,7 +499,7 @@ class _ArtistSelectCard extends StatelessWidget {
                 width: 22,
                 height: 22,
                 decoration: BoxDecoration(color: colors.activate, shape: BoxShape.circle),
-                child: const Icon(Icons.check_rounded, color: Colors.white, size: 14),
+                child: Icon(Icons.check_rounded, color: Theme.of(context).colorScheme.onPrimary, size: 14),
               ),
             ),
         ],
@@ -514,7 +514,7 @@ class _ArtistSelectCard extends StatelessWidget {
       onTap: onTap,
       child: Column(
         children: [
-          _buildCardImage(colors),
+          _buildCardImage(context, colors),
           const SizedBox(height: 6),
           Text(
             artist.name,

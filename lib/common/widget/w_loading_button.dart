@@ -72,6 +72,7 @@ class _LoadingButtonState extends State<LoadingButton>
   @override
   Widget build(BuildContext context) {
     final bg = widget.backgroundColor ?? Theme.of(context).colorScheme.primary;
+    final fg = widget.foregroundColor ?? Theme.of(context).colorScheme.onPrimary;
     const successColor = AppColors.successGreen;
 
     return SizedBox(
@@ -91,12 +92,12 @@ class _LoadingButtonState extends State<LoadingButton>
             backgroundColor: Colors.transparent,
             disabledBackgroundColor: Colors.transparent,
             shadowColor: Colors.transparent,
-            foregroundColor: widget.foregroundColor ?? Colors.white,
+            foregroundColor: fg,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(widget.borderRadius),
             ),
           ),
-          child: _buildChild(),
+          child: _buildChild(fg),
         ),
       ),
     );
@@ -111,7 +112,7 @@ class _LoadingButtonState extends State<LoadingButton>
     };
   }
 
-  Widget _buildChild() {
+  Widget _buildChild(Color fgColor) {
     if (widget.isSuccess) {
       return ScaleTransition(
         scale: _checkScale,
@@ -119,12 +120,12 @@ class _LoadingButtonState extends State<LoadingButton>
       );
     }
     if (widget.isLoading) {
-      return const SizedBox(
+      return SizedBox(
         width: 22,
         height: 22,
         child: CircularProgressIndicator(
           strokeWidth: 2.5,
-          color: Colors.white,
+          color: fgColor,
         ),
       );
     }

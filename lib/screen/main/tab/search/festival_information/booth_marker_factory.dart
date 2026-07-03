@@ -40,7 +40,7 @@ class BoothMarkerFactory {
 
       const w = 80.0, imgH = 60.0, tailH = 12.0;
       const totalH = imgH + tailH;
-      final color = _boothColorValues[booth.boothType] ?? const Color(0xFF555555);
+      final color = _boothColorValues[booth.boothType] ?? AppColors.markerGray;
 
       ui.Codec? codec;
       ui.Image? img;

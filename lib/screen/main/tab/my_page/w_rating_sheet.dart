@@ -51,7 +51,7 @@ class _RatingSheetState extends State<RatingSheet> {
     return Container(
       decoration: BoxDecoration(
         color: colors.backgroundMain,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
       ),
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom,

@@ -131,7 +131,7 @@ class _ReorderSheetState extends State<ReorderSheet> {
 
     return Material(
       color: colors.surface,
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
       clipBehavior: Clip.antiAlias,
       child: ConstrainedBox(
         constraints: BoxConstraints(maxHeight: maxHeight),

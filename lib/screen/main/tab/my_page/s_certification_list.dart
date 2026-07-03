@@ -201,7 +201,6 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
         ),
         shape: const StadiumBorder(),
         padding: const EdgeInsets.symmetric(horizontal: 4),
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         visualDensity: VisualDensity.compact,
       ),
     );

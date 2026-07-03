@@ -64,7 +64,7 @@ class _PermissionSheet extends StatelessWidget {
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
       ),
       child: SafeArea(
         child: Padding(

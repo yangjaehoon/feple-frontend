@@ -57,7 +57,7 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
     return Container(
       decoration: BoxDecoration(
         color: colors.backgroundMain,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
       ),
       padding: EdgeInsets.fromLTRB(24, 12, 24, 16 + bottomInset),
       child: Column(
@@ -133,7 +133,7 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
             _InfoChip(
               icon: Icons.thermostat_rounded,
               label: 'weather_temp_range'.tr(args: [minT, maxT]),
-              color: const Color(0xFFFF7043),
+              color: AppColors.notificationReminder,
             ),
             const SizedBox(width: 12),
             _InfoChip(

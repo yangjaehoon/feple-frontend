@@ -101,7 +101,7 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
 
     return Material(
       color: colors.backgroundMain,
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
       clipBehavior: Clip.antiAlias,
       child: Padding(
       padding: EdgeInsets.only(
@@ -277,7 +277,7 @@ class _FestivalSearchSheetState extends State<_FestivalSearchSheet> {
       builder: (ctx, scrollCtrl) {
         return Material(
           color: colors.backgroundMain,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
           clipBehavior: Clip.antiAlias,
           child: Column(
             children: [

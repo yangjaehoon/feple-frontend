@@ -94,16 +94,11 @@ class _CommentInputBarState extends State<CommentInputBar> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
-              width: 20,
-              height: 20,
-              child: Checkbox(
-                value: _anonymous,
-                onChanged: (v) => setState(() => _anonymous = v ?? false),
-                visualDensity: VisualDensity.compact,
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                activeColor: colors.activate,
-              ),
+            Checkbox(
+              value: _anonymous,
+              onChanged: (v) => setState(() => _anonymous = v ?? false),
+              visualDensity: VisualDensity.compact,
+              activeColor: colors.activate,
             ),
             const SizedBox(width: 6),
             Text(

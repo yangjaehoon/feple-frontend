@@ -88,7 +88,7 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
     return Container(
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
       ),
       child: Padding(
         padding: EdgeInsets.fromLTRB(

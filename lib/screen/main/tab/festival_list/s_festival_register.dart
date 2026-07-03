@@ -144,7 +144,7 @@ class _FestivalRegisterScreenState extends State<FestivalRegisterScreen> {
     );
   }
 
-  Widget _buildGenreSelector(AbstractThemeColors colors) {
+  Widget _buildGenreSelector(BuildContext context, AbstractThemeColors colors) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -177,7 +177,7 @@ class _FestivalRegisterScreenState extends State<FestivalRegisterScreen> {
                   style: TextStyle(
                     fontSize: AppDimens.fontSizeMd,
                     fontWeight: FontWeight.w600,
-                    color: selected ? Colors.white : colors.textTitle,
+                    color: selected ? Theme.of(context).colorScheme.onPrimary : colors.textTitle,
                   ),
                 ),
               ),
@@ -281,7 +281,7 @@ class _FestivalRegisterScreenState extends State<FestivalRegisterScreen> {
     const SizedBox(height: 16),
     _buildDateRow(),
     const SizedBox(height: 20),
-    _buildGenreSelector(colors),
+    _buildGenreSelector(context, colors),
     const SizedBox(height: 20),
     _buildRegionDropdown(colors),
     const SizedBox(height: 32),

@@ -145,7 +145,7 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
       builder: (_, scrollController) => Container(
         decoration: BoxDecoration(
           color: colors.backgroundMain,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
         ),
         child: Column(
           children: [
@@ -292,8 +292,6 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
         onPressed: _openCertSheet,
         style: TextButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          minimumSize: Size.zero,
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
         child: Text(
           'reviews_cert_btn'.tr(),
@@ -332,8 +330,6 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
         onPressed: _openRatingSheet,
         style: TextButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          minimumSize: Size.zero,
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
         child: Text(
           _myRating != null ? 'reviews_edit_rating'.tr() : 'reviews_leave_rating'.tr(),

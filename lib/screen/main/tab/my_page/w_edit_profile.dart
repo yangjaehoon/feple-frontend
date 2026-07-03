@@ -182,7 +182,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
         children: [
           SecondaryAppBar(
             title: 'edit_profile'.tr(),
-            actions: [_buildSaveAction()],
+            actions: [_buildSaveAction(context)],
           ),
           Expanded(
             child: SingleChildScrollView(
@@ -211,18 +211,19 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
     );
   }
 
-  Widget _buildSaveAction() {
+  Widget _buildSaveAction(BuildContext context) {
+    final onAppBar = Theme.of(context).colorScheme.onPrimary;
     return TextButton(
       onPressed: _isSaving ? null : _save,
       child: _isSaving
-          ? const SizedBox(
+          ? SizedBox(
               width: 18,
               height: 18,
-              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+              child: CircularProgressIndicator(strokeWidth: 2, color: onAppBar),
             )
           : Text(
               'save'.tr(),
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+              style: TextStyle(color: onAppBar, fontWeight: FontWeight.w700),
             ),
     );
   }
@@ -288,7 +289,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
         shape: BoxShape.circle,
         border: Border.all(color: colors.surface, width: 2),
       ),
-      child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 15),
+      child: Icon(Icons.camera_alt_rounded, color: Theme.of(context).colorScheme.onPrimary, size: 15),
     );
   }
 

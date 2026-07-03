@@ -42,7 +42,7 @@ class TextBadgeTheme {
   final Color borderColor;
 
   const TextBadgeTheme._({
-    this.backgroundColor = const Color(0xffE3ECFF),
+    this.backgroundColor = AppColors.badgeDefaultBg,
     required this.textColor,
     required this.fontSize,
     required this.borderRadius,

@@ -1,10 +1,11 @@
+import 'package:feple/common/constant/app_colors.dart';
 import 'package:feple/model/weather_model.dart';
 import 'package:flutter/material.dart';
 
 Color rainProbColor(int prob) {
-  if (prob >= 70) return const Color(0xFF1565C0);
-  if (prob >= 40) return const Color(0xFF42A5F5);
-  return const Color(0xFF90CAF9);
+  if (prob >= 70) return AppColors.rainProbHigh;
+  if (prob >= 40) return AppColors.rainProbMedium;
+  return AppColors.rainProbLow;
 }
 
 extension WeatherConditionIcon on WeatherModel {

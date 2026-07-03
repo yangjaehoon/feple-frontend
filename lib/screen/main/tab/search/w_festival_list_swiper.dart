@@ -28,11 +28,12 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
     setState(() => _currentPage = newPage);
   }
 
-  Widget _buildBlurBackground(AbstractThemeColors colors, String posterUrl) {
+  Widget _buildBlurBackground(
+      AbstractThemeColors colors, String posterUrl, double swiperHeight) {
     // 100px ResizeImage는 늘릴 때 자연스럽게 흐려짐 — BackdropFilter GPU offscreen 불필요
     return ClipRect(
       child: SizedBox(
-        height: 330,
+        height: swiperHeight,
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -47,9 +48,16 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
     );
   }
 
-  Widget _buildSwiperContent(AbstractThemeColors colors, List<FestivalPreview> items) {
+  Widget _buildSwiperContent(
+    AbstractThemeColors colors,
+    List<FestivalPreview> items,
+    double swiperHeight,
+    double itemWidth,
+    double itemHeight,
+    double translateOffset,
+  ) {
     return SizedBox(
-      height: 330,
+      height: swiperHeight,
       child: Swiper(
         onIndexChanged: _onPageChanged,
         viewportFraction: 0.8,
@@ -118,12 +126,12 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
         customLayoutOption: CustomLayoutOption(startIndex: -1, stateCount: 3)
           ..addRotate([-45.0 / 180, 0.0, 45.0 / 180])
           ..addTranslate([
-            const Offset(-370.0, -20.0),
+            Offset(-translateOffset, -20.0),
             const Offset(0.0, 0.0),
-            const Offset(370.0, -20.0),
+            Offset(translateOffset, -20.0),
           ]),
-        itemWidth: 180,
-        itemHeight: 270,
+        itemWidth: itemWidth,
+        itemHeight: itemHeight,
       ),
     );
   }
@@ -138,33 +146,45 @@ class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
         (p) => p.items);
     final colors = context.appColors;
 
-    if (isLoadingEmpty) return _buildSkeleton();
+    if (isLoadingEmpty) return _buildSkeleton(context);
     if (isErrorEmpty) return _buildError(context);
 
     final items = allItems.where((f) => !f.isEnded).toList();
     if (items.isEmpty) return _buildEmpty(colors);
+
+    final size = MediaQuery.sizeOf(context);
+    // 화면 높이의 39% — iPhone SE(667px)→260, 기준(844px)→330, Pro Max(932px)→364
+    final swiperHeight = size.height * 0.39;
+    final itemWidth = size.width * 0.46;
+    final itemHeight = swiperHeight * 0.818;
+    // 카드 옆에 숨은 카드 위치: 화면 너비만큼 밀어냄
+    final translateOffset = size.width * 0.95;
 
     final safeCurrentPage = _currentPage.clamp(0, items.length - 1);
 
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        _buildBlurBackground(colors, items[safeCurrentPage].posterUrl),
-        _buildSwiperContent(colors, items),
+        _buildBlurBackground(colors, items[safeCurrentPage].posterUrl, swiperHeight),
+        _buildSwiperContent(colors, items, swiperHeight, itemWidth, itemHeight, translateOffset),
       ],
     );
   }
 
-  Widget _buildSkeleton() {
+  Widget _buildSkeleton(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+    final swiperHeight = size.height * 0.39;
+    final itemWidth = size.width * 0.46;
+    final itemHeight = swiperHeight * 0.818;
     return SizedBox(
-      height: 330,
+      height: swiperHeight,
       child: Stack(
         children: [
-          SkeletonBox(height: 330, borderRadius: BorderRadius.zero),
+          SkeletonBox(height: swiperHeight, borderRadius: BorderRadius.zero),
           Center(
             child: SkeletonBox(
-              width: 180,
-              height: 270,
+              width: itemWidth,
+              height: itemHeight,
               borderRadius: BorderRadius.circular(AppDimens.cardRadius),
             ),
           ),

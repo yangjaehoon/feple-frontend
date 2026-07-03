@@ -317,6 +317,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
         .showSnackBar(SnackBar(
           content: Text('notification_dismissed'.tr()),
           duration: const Duration(seconds: 4),
+          // Flutter 3.x: action != null이면 persist 기본값이 true → 타이머가 실행되도
+          // 스낵바를 닫지 않음. 실행취소 버튼이 있어도 4초 후 자동 닫히도록 명시
+          persist: false,
           action: SnackBarAction(
             label: 'undo'.tr(),
             onPressed: () => _notifier.undoDismiss(item),

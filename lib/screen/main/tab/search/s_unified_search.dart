@@ -221,14 +221,14 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
           children: [
             IconButton(
               tooltip: 'back'.tr(),
-              icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+              icon: Icon(Icons.arrow_back_ios_rounded, color: Theme.of(context).colorScheme.onPrimary),
               onPressed: () => Navigator.pop(context),
             ),
             Expanded(
               child: TextField(
                 controller: _controller,
                 focusNode: _focusNode,
-                style: const TextStyle(color: Colors.white, fontSize: AppDimens.fontSizeXl),
+                style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontSize: AppDimens.fontSizeXl),
                 cursorColor: Colors.white70,
                 decoration: InputDecoration(
                   hintText: 'search_hint'.tr(),
@@ -243,7 +243,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
             ),
             IconButton(
               tooltip: 'search'.tr(),
-              icon: const Icon(Icons.search_rounded, color: Colors.white),
+              icon: Icon(Icons.search_rounded, color: Theme.of(context).colorScheme.onPrimary),
               onPressed: () => _search(_controller.text),
             ),
           ],

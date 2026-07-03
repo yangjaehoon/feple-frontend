@@ -66,7 +66,7 @@ class _FepleAppBarState extends State<FepleAppBar> {
     if (widget.showBackButton) {
       return IconButton(
         tooltip: 'back'.tr(),
-        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+        icon: Icon(Icons.arrow_back_ios_new_rounded, color: Theme.of(context).colorScheme.onPrimary),
         onPressed: () => Navigator.of(context).pop(),
       );
     }
@@ -92,7 +92,7 @@ class _FepleAppBarState extends State<FepleAppBar> {
             const SizedBox(width: 2),
             Text(
               widget.appbarTitle,
-              style: titleStyle?.copyWith(color: Colors.white),
+              style: titleStyle?.copyWith(color: Theme.of(context).colorScheme.onPrimary),
             ),
           ],
         ),
@@ -103,7 +103,7 @@ class _FepleAppBarState extends State<FepleAppBar> {
   Widget _buildSearchButton(BuildContext context) {
     return IconButton(
       tooltip: 'search'.tr(),
-      icon: const Icon(Icons.search_rounded, color: Colors.white),
+      icon: Icon(Icons.search_rounded, color: Theme.of(context).colorScheme.onPrimary),
       onPressed: () {
         if (_isNavigating) return;
         _isNavigating = true;
@@ -119,7 +119,7 @@ class _FepleAppBarState extends State<FepleAppBar> {
       children: [
         IconButton(
           tooltip: 'notifications'.tr(),
-          icon: const Icon(Icons.notifications_rounded, color: Colors.white),
+          icon: Icon(Icons.notifications_rounded, color: Theme.of(context).colorScheme.onPrimary),
           onPressed: _openNotifications,
         ),
         if (count > 0)

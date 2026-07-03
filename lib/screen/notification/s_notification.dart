@@ -182,7 +182,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
               ),
               backgroundColor: colors.surface,
               foregroundColor: colors.textTitle,
-              elevation: 2,
+              elevation: 6,
               child: const Icon(Icons.arrow_upward_rounded, size: 20),
             )
           : null,

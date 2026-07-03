@@ -121,9 +121,9 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
           onPressed: () => _openWrite(_tabController.index),
           label: Text(
             'write_post'.tr(),
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+            style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.w700),
           ),
-          icon: const Icon(Icons.edit_rounded, color: Colors.white),
+          icon: Icon(Icons.edit_rounded, color: Theme.of(context).colorScheme.onPrimary),
         ),
       ),
     );
@@ -143,14 +143,14 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
                 children: [
                   IconButton(
                     tooltip: 'back'.tr(),
-                    icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+                    icon: Icon(Icons.arrow_back_ios_rounded, color: Theme.of(context).colorScheme.onPrimary),
                     onPressed: () => Navigator.pop(context),
                   ),
                   Expanded(
                     child: Text(
                       widget.festivalName,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary,
                         fontSize: AppDimens.fontSizeTitle,
                         fontWeight: FontWeight.w500,
                       ),
@@ -162,9 +162,9 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
             ),
             TabBar(
               controller: _tabController,
-              labelColor: Colors.white,
+              labelColor: Theme.of(context).colorScheme.onPrimary,
               unselectedLabelColor: Colors.white54,
-              indicatorColor: Colors.white,
+              indicatorColor: Theme.of(context).colorScheme.onPrimary,
               indicatorWeight: 2.5,
               labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeMd),
               unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: AppDimens.fontSizeMd),

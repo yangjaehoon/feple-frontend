@@ -144,14 +144,14 @@ class _ImgUploadState extends State<ImgUpload> {
           children: [
             IconButton(
               tooltip: 'back'.tr(),
-              icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+              icon: Icon(Icons.arrow_back_ios_rounded, color: Theme.of(context).colorScheme.onPrimary),
               onPressed: () => Navigator.pop(context),
             ),
             Expanded(
               child: Text(
                 'photo_upload_title'.tr(),
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: AppDimens.fontSizeTitle,
                   fontWeight: FontWeight.w500,
                 ),
@@ -162,11 +162,11 @@ class _ImgUploadState extends State<ImgUpload> {
               tooltip: 'submit'.tr(),
               onPressed: isUploading ? null : _submit,
               icon: isUploading
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : const Icon(Icons.send_rounded, color: Colors.white),
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Theme.of(context).colorScheme.onPrimary))
+                  : Icon(Icons.send_rounded, color: Theme.of(context).colorScheme.onPrimary),
             ),
           ],
         ),

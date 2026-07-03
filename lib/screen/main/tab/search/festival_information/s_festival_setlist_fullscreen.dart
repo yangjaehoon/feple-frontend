@@ -398,7 +398,7 @@ class _SetlistRequestSheetState extends State<SetlistRequestSheet> {
       maxChildSize: 0.8,
       builder: (_, controller) => Material(
         color: colors.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
         clipBehavior: Clip.antiAlias,
         child: Column(
           children: [

@@ -163,16 +163,16 @@ class _WritePostState extends State<WritePost> {
       child: TextButton(
         onPressed: _isSubmitting ? null : _submit,
         child: _isSubmitting
-            ? const Center(
+            ? Center(
                 child: SizedBox(
                   width: 20,
                   height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                  child: CircularProgressIndicator(strokeWidth: 2, color: Theme.of(context).colorScheme.onPrimary),
                 ),
               )
             : Text(
                 'done'.tr(),
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.w700),
               ),
       ),
     );

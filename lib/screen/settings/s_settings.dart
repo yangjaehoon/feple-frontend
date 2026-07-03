@@ -397,41 +397,46 @@ class _LanguageItem extends StatelessWidget {
   }
 
   Widget _buildLanguageDropdown(BuildContext context, Language lang, AbstractThemeColors colors) {
-    return DropdownButtonHideUnderline(
-      child: DropdownButton<String>(
-        value: lang.name.capitalizeFirst,
-        dropdownColor: colors.surface,
-        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-        style: TextStyle(
-          fontSize: AppDimens.fontSizeMd,
-          fontWeight: FontWeight.w600,
-          color: colors.textTitle,
-        ),
-        items: Language.values.map((l) {
-          return DropdownMenuItem(
-            value: l.name.capitalizeFirst,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Image.asset(l.flagPath, width: 20),
-                const SizedBox(width: 8),
-                Text(
-                  l.name.capitalizeFirst!,
-                  style: TextStyle(
-                    fontSize: AppDimens.fontSizeMd,
-                    fontWeight: FontWeight.w600,
-                    color: colors.textTitle,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }).toList(),
-        onChanged: (value) async {
-          if (value == null) return;
-          await context.setLocale(Language.find(value.toLowerCase()).locale);
-        },
+    return DropdownMenu<Language>(
+      initialSelection: lang,
+      enableFilter: false,
+      requestFocusOnTap: false,
+      textStyle: TextStyle(
+        fontSize: AppDimens.fontSizeMd,
+        fontWeight: FontWeight.w600,
+        color: colors.textTitle,
       ),
+      inputDecorationTheme: InputDecorationTheme(
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppDimens.shapeInput),
+          borderSide: BorderSide(color: colors.listDivider),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppDimens.shapeInput),
+          borderSide: BorderSide(color: colors.listDivider),
+        ),
+      ),
+      menuStyle: MenuStyle(
+        backgroundColor: WidgetStatePropertyAll(colors.surface),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppDimens.shapeDialog),
+          ),
+        ),
+      ),
+      dropdownMenuEntries: Language.values.map((l) {
+        return DropdownMenuEntry<Language>(
+          value: l,
+          label: l.name.capitalizeFirst!,
+          leadingIcon: Image.asset(l.flagPath, width: 20),
+        );
+      }).toList(),
+      onSelected: (value) async {
+        if (value == null) return;
+        await context.setLocale(value.locale);
+      },
     );
   }
 }

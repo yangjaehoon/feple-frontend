@@ -59,7 +59,7 @@ class _ImageCollectionScreenState extends State<ImageCollectionScreen> {
           _imgCollectionKey.currentState?.refresh();
         }
       },
-      child: const Icon(Icons.add_photo_alternate, color: Colors.white),
+      child: Icon(Icons.add_photo_alternate, color: Theme.of(context).colorScheme.onPrimary),
     );
   }
 }

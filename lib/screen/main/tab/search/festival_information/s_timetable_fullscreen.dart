@@ -236,7 +236,7 @@ class _TimetableFullscreenScreenState extends State<TimetableFullscreenScreen> {
                 style: TextStyle(
                   fontSize: AppDimens.fontSizeXs,
                   fontWeight: FontWeight.w600,
-                  color: selected ? Colors.white : colors.textTitle,
+                  color: selected ? Theme.of(context).colorScheme.onPrimary : colors.textTitle,
                 ),
               ),
             ),

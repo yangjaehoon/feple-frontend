@@ -169,7 +169,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
       context: context,
       backgroundColor: colors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
       ),
       builder: (ctx) => SafeArea(
         child: Column(

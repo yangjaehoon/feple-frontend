@@ -19,8 +19,10 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Restore keys.dart
-        run: echo "${{ secrets.KEYS_DART }}" > lib/auth/keys.dart
+      - name: Restore secret files
+        run: |
+          echo "${{ secrets.KEYS_DART }}" > lib/auth/keys.dart
+          echo "${{ secrets.CONFIG_DART }}" > lib/config.dart
 
       - run: flutter pub get
 
@@ -38,8 +40,10 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Restore keys.dart
-        run: echo "${{ secrets.KEYS_DART }}" > lib/auth/keys.dart
+      - name: Restore secret files
+        run: |
+          echo "${{ secrets.KEYS_DART }}" > lib/auth/keys.dart
+          echo "${{ secrets.CONFIG_DART }}" > lib/config.dart
 
       - run: flutter pub get
 
@@ -59,8 +63,10 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Restore keys.dart
-        run: echo "${{ secrets.KEYS_DART }}" > lib/auth/keys.dart
+      - name: Restore secret files
+        run: |
+          echo "${{ secrets.KEYS_DART }}" > lib/auth/keys.dart
+          echo "${{ secrets.CONFIG_DART }}" > lib/config.dart
 
       - name: Restore google-services.json
         run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > android/app/google-services.json

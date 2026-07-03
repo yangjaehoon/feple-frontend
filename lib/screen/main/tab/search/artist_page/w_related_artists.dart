@@ -127,9 +127,9 @@ class RelatedArtistsState extends State<RelatedArtists> {
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
             ),
-            if (artist.genre.isNotEmpty)
+            if (artist.genres.isNotEmpty)
               Text(
-                artist.genre.split(', ').first,
+                artist.genres.first,
                 style: TextStyle(
                   fontSize: AppDimens.fontSizeTiny,
                   color: colors.textSecondary,

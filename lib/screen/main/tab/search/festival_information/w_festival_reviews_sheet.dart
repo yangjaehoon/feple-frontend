@@ -207,6 +207,10 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
       );
     }
 
+    // 헤더 항목: CTA(1) + 요약 있을 때 구분선·요약·구분선(3)
+    final headerCount = _ratingCount > 0 ? 4 : 1;
+    final reviewCount = _reviews.isEmpty ? 1 : _reviews.length + (_isLoadingMore ? 1 : 0);
+
     return NotificationListener<ScrollNotification>(
       onNotification: (n) {
         if (n is ScrollEndNotification &&
@@ -215,33 +219,33 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
         }
         return false;
       },
-      child: ListView(
+      child: ListView.builder(
         controller: scrollController,
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).padding.bottom + 24,
         ),
-        children: [
-          _buildMyRatingCta(colors),
-          if (_ratingCount > 0) ...[
-            Divider(color: colors.divider),
-            _buildSummary(colors),
-            Divider(color: colors.divider),
-          ],
-          if (_reviews.isEmpty)
-            _buildEmpty(colors)
-          else ...[
-            ..._reviews.map((r) => _ReviewCard(
-                  review: r,
-                  colors: colors,
-                  certService: widget.certService,
-                )),
-            if (_isLoadingMore)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child: Center(child: CircularProgressIndicator()),
-              ),
-          ],
-        ],
+        itemCount: headerCount + reviewCount,
+        itemBuilder: (context, index) {
+          if (index == 0) return _buildMyRatingCta(colors);
+          if (_ratingCount > 0) {
+            if (index == 1) return Divider(color: colors.divider);
+            if (index == 2) return _buildSummary(colors);
+            if (index == 3) return Divider(color: colors.divider);
+          }
+          final reviewIndex = index - headerCount;
+          if (_reviews.isEmpty) return _buildEmpty(colors);
+          if (reviewIndex < _reviews.length) {
+            return _ReviewCard(
+              review: _reviews[reviewIndex],
+              colors: colors,
+              certService: widget.certService,
+            );
+          }
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        },
       ),
     );
   }

@@ -177,7 +177,7 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
     }
     if (_hasError) {
       return SizedBox(
-        height: 200,
+        height: MediaQuery.sizeOf(context).width * 0.513, // 200/390
         child: ErrorState(message: 'load_error'.tr(), onRetry: _fetchBooths),
       );
     }
@@ -194,11 +194,12 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
   }
 
   Widget _buildSkeleton() {
+    final skeletonHeight = MediaQuery.sizeOf(context).width * 0.769; // 300/390
     return SizedBox(
-      height: 300,
+      height: skeletonHeight,
       child: Stack(
         children: [
-          const SkeletonBox(height: 300, borderRadius: BorderRadius.zero),
+          SkeletonBox(height: skeletonHeight, borderRadius: BorderRadius.zero),
           const Positioned(
             top: 70, left: 60,
             child: SkeletonBox(width: 32, height: 32, borderRadius: BorderRadius.all(Radius.circular(16))),
@@ -218,7 +219,7 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
 
   Widget _buildMap() {
     return SizedBox(
-      height: 340,
+      height: MediaQuery.sizeOf(context).width * 0.872, // 340/390
       child: GoogleMap(
         initialCameraPosition: CameraPosition(
           target: _initialPosition,

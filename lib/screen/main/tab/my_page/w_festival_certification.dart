@@ -85,7 +85,7 @@ class FtvCertificationWidgetState extends State<FtvCertificationWidget> {
           ErrorState(message: 'load_error'.tr(), onRetry: _load)
         else
           SizedBox(
-            height: 150,
+            height: MediaQuery.sizeOf(context).width * 0.385, // 150/390
             child: _loading
                 ? _buildSkeletonList()
                 : _certifications == null || _certifications!.isEmpty
@@ -199,7 +199,7 @@ class FtvCertificationWidgetState extends State<FtvCertificationWidget> {
             _buildCertRing(cert.posterUrl, ringColor, isApproved, colors),
             const SizedBox(height: 4),
             SizedBox(
-              width: 106,
+              width: MediaQuery.sizeOf(context).width * 0.272, // 106/390
               child: Text(
                 cert.displayFestivalTitle(isEnglish),
                 style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: colors.textTitle),
@@ -243,9 +243,8 @@ class FtvCertificationWidgetState extends State<FtvCertificationWidget> {
         padding: const EdgeInsets.all(2),
         decoration: BoxDecoration(shape: BoxShape.circle, color: colors.surface),
         child: CircleAvatar(
-          radius: 44,
+          radius: MediaQuery.sizeOf(context).width * 0.113, // 44/390
           backgroundColor: ringColor.withValues(alpha: 0.15),
-          // radius 44 → diameter 88px, *1.5 = 132 (고DPI 여유분)
           backgroundImage: imageUrl != null ? CachedNetworkImageProvider(imageUrl, maxWidth: 132) : null,
           child: imageUrl == null
               ? Icon(Icons.photo_rounded, size: 26, color: colors.textTitle.withValues(alpha: 0.3))

@@ -94,8 +94,8 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
         child: Row(
           children: [
             SkeletonBox(
-              width: 90,
-              height: 90,
+              width: MediaQuery.sizeOf(context).width * 0.231, // 90/390
+              height: MediaQuery.sizeOf(context).width * 0.231,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(16),
                 bottomLeft: Radius.circular(16),
@@ -371,13 +371,14 @@ class _CertCardState extends State<_CertCard> {
   }
 
   Widget _buildPosterImage(String? posterUrl, AbstractThemeColors colors) {
+    final posterWidth = MediaQuery.sizeOf(context).width * 0.231; // 90/390
     return GestureDetector(
       onTap: _navigateToFestival,
       child: ClipRRect(
         borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
         child: SizedBox(
-          width: 90,
-          height: 135,
+          width: posterWidth,
+          height: posterWidth * 1.5, // 135/90 = 1.5 (2:3 비율)
           child: posterUrl != null
               ? CachedNetworkImage(
                   imageUrl: posterUrl,

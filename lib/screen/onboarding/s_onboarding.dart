@@ -569,7 +569,7 @@ class _PageContent extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _buildIllustration(),
+          _buildIllustration(context),
           const SizedBox(height: 52),
           Text(
             page.titleKey.tr(),
@@ -597,10 +597,11 @@ class _PageContent extends StatelessWidget {
     );
   }
 
-  Widget _buildIllustration() {
+  Widget _buildIllustration(BuildContext context) {
+    final outerSize = MediaQuery.sizeOf(context).width * 0.564; // 220/390
     return SizedBox(
-      width: 220,
-      height: 220,
+      width: outerSize,
+      height: outerSize,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -608,8 +609,8 @@ class _PageContent extends StatelessWidget {
             right: 4,
             bottom: 4,
             child: Container(
-              width: 150,
-              height: 150,
+              width: outerSize * 0.682, // 150/220
+              height: outerSize * 0.682,
               decoration: BoxDecoration(
                 color: page.bgColor.withValues(alpha: 0.45),
                 shape: BoxShape.circle,
@@ -620,8 +621,8 @@ class _PageContent extends StatelessWidget {
             left: 4,
             top: 8,
             child: Container(
-              width: 60,
-              height: 60,
+              width: outerSize * 0.273, // 60/220
+              height: outerSize * 0.273,
               decoration: BoxDecoration(
                 color: page.accentColor.withValues(alpha: 0.55),
                 shape: BoxShape.circle,
@@ -629,8 +630,8 @@ class _PageContent extends StatelessWidget {
             ),
           ),
           Container(
-            width: 136,
-            height: 136,
+            width: outerSize * 0.618, // 136/220
+            height: outerSize * 0.618,
             decoration: BoxDecoration(
               color: page.primaryColor.withValues(alpha: 0.12),
               shape: BoxShape.circle,
@@ -639,7 +640,7 @@ class _PageContent extends StatelessWidget {
                 width: 2,
               ),
             ),
-            child: Icon(page.icon, size: 68, color: page.primaryColor),
+            child: Icon(page.icon, size: outerSize * 0.309, color: page.primaryColor), // 68/220
           ),
         ],
       ),

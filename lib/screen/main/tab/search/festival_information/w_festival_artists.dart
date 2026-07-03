@@ -132,8 +132,9 @@ class FestivalArtistsState extends State<FestivalArtists> {
     }
     final hasMore = displayed.length > _maxVisible;
     final visible = hasMore ? displayed.sublist(0, _maxVisible) : displayed;
+    final rowHeight = MediaQuery.sizeOf(context).width * 0.205; // 80/390
     return SizedBox(
-      height: 80,
+      height: rowHeight,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: visible.length + (hasMore ? 1 : 0),
@@ -238,7 +239,7 @@ class FestivalArtistsState extends State<FestivalArtists> {
 
   Widget _buildSkeletonRow() {
     return SizedBox(
-      height: 80,
+      height: MediaQuery.sizeOf(context).width * 0.205, // 80/390
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const NeverScrollableScrollPhysics(),

@@ -57,7 +57,7 @@ class RelatedArtistsState extends State<RelatedArtists> {
           _buildHeader(colors),
           Divider(height: 1, thickness: 1, color: colors.listDivider),
           SizedBox(
-            height: 120,
+            height: MediaQuery.sizeOf(context).width * 0.308, // 120/390
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),

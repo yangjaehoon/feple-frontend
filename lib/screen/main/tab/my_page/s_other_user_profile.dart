@@ -278,9 +278,10 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
     final validImageUrl = (imageUrl != null && imageUrl.isNotEmpty && !imageUrl.contains('feple_logo'))
         ? imageUrl
         : null;
+    final avatarSize = MediaQuery.sizeOf(context).width * 0.282; // 110/390
     return Container(
-      width: 110,
-      height: 110,
+      width: avatarSize,
+      height: avatarSize,
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
@@ -298,12 +299,12 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
         decoration: BoxDecoration(shape: BoxShape.circle, color: colors.surface),
         child: validImageUrl != null
             ? CircleAvatar(
-                radius: 48,
+                radius: (avatarSize - 12) / 2,
                 backgroundImage: CachedNetworkImageProvider(validImageUrl, maxWidth: 144),
                 backgroundColor: colors.backgroundMain,
               )
             : CircleAvatar(
-                radius: 48,
+                radius: (avatarSize - 12) / 2,
                 backgroundColor: colors.activate,
                 child: Text(
                   nickname.isNotEmpty ? nickname[0] : '?',
@@ -416,7 +417,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
         ),
         const SizedBox(height: 12),
         SizedBox(
-          height: 150,
+          height: MediaQuery.sizeOf(context).width * 0.385, // 150/390
           child: _certifications == null
               ? _buildCertSkeleton()
               : _certifications!.isEmpty
@@ -508,7 +509,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
                 padding: const EdgeInsets.all(2),
                 decoration: BoxDecoration(shape: BoxShape.circle, color: colors.surface),
                 child: CircleAvatar(
-                  radius: 44,
+                  radius: MediaQuery.sizeOf(context).width * 0.113, // 44/390
                   backgroundColor: ringColor.withValues(alpha: 0.15),
                   backgroundImage: cert.posterUrl != null
                       ? CachedNetworkImageProvider(cert.posterUrl!, maxWidth: 132)
@@ -521,7 +522,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
             ),
             const SizedBox(height: 6),
             SizedBox(
-              width: 106,
+              width: MediaQuery.sizeOf(context).width * 0.272, // 106/390
               child: Text(
                 cert.displayFestivalTitle(isEnglish),
                 style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: colors.textTitle),

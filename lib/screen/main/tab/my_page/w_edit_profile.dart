@@ -247,9 +247,10 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
   }
 
   Widget _buildAvatarRing(String? profileImageUrl, AbstractThemeColors colors) {
+    final avatarSize = MediaQuery.sizeOf(context).width * 0.282; // 110/390
     return Container(
-      width: 110,
-      height: 110,
+      width: avatarSize,
+      height: avatarSize,
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
@@ -266,12 +267,11 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
         padding: const EdgeInsets.all(3),
         decoration: BoxDecoration(shape: BoxShape.circle, color: colors.surface),
         child: CircleAvatar(
-          radius: 48,
+          radius: (avatarSize - 12) / 2,
           backgroundColor: colors.backgroundMain,
           backgroundImage: _pickedImage != null
               ? FileImage(File(_pickedImage!.path)) as ImageProvider
               : (profileImageUrl != null && profileImageUrl.isNotEmpty)
-                  // radius 48 → diameter 96px, *1.5 = 144
                   ? CachedNetworkImageProvider(profileImageUrl, maxWidth: 144) as ImageProvider
                   : const AssetImage('assets/image/feple_logo.png'),
           child: null,

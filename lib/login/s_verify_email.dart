@@ -278,14 +278,15 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   }
 
   Widget _buildIcon(AbstractThemeColors colors) {
+    final size = MediaQuery.sizeOf(context).width * 0.226; // 88/390
     return Container(
-      width: 88,
-      height: 88,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         color: colors.activate.withValues(alpha: 0.12),
         shape: BoxShape.circle,
       ),
-      child: Icon(Icons.mark_email_unread_rounded, size: 44, color: colors.activate),
+      child: Icon(Icons.mark_email_unread_rounded, size: size * 0.5, color: colors.activate),
     );
   }
 

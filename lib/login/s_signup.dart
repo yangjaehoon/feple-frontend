@@ -219,16 +219,17 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Widget _buildHeader(AbstractThemeColors themeColors) {
+    final containerSize = MediaQuery.sizeOf(context).width * 0.205; // 80/390
     return Column(
       children: [
         Container(
-          width: 80,
-          height: 80,
+          width: containerSize,
+          height: containerSize,
           decoration: BoxDecoration(
             color: themeColors.activate.withValues(alpha: 0.12),
             shape: BoxShape.circle,
           ),
-          child: Icon(Icons.person_add_rounded, size: 40, color: themeColors.activate),
+          child: Icon(Icons.person_add_rounded, size: containerSize * 0.5, color: themeColors.activate),
         ),
         const SizedBox(height: 24),
         Text(

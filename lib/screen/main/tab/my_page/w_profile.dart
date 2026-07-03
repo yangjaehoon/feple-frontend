@@ -113,9 +113,10 @@ class ProfileWidgetState extends State<ProfileWidget> {
   }
 
   Widget _buildProfileImage(User user, AbstractThemeColors colors) {
+    final avatarSize = MediaQuery.sizeOf(context).width * 0.282; // 110/390
     return Container(
-      width: 110,
-      height: 110,
+      width: avatarSize,
+      height: avatarSize,
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
@@ -135,10 +136,9 @@ class ProfileWidgetState extends State<ProfileWidget> {
           color: colors.surface,
         ),
         child: CircleAvatar(
-          radius: 48,
+          radius: (avatarSize - 12) / 2,
           backgroundImage: (user.profileImageUrl != null &&
                   user.profileImageUrl!.isNotEmpty)
-              // radius 48 → diameter 96px, *1.5 = 144 (고DPI 여유분)
               ? CachedNetworkImageProvider(user.profileImageUrl!,
                   maxWidth: 144) as ImageProvider
               : const AssetImage('assets/image/feple_logo.png'),

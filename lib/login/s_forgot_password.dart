@@ -211,14 +211,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   Widget _buildIconCircle(AbstractThemeColors colors, IconData icon) {
+    final size = MediaQuery.sizeOf(context).width * 0.226; // 88/390
     return Container(
-      width: 88,
-      height: 88,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         color: colors.activate.withValues(alpha: 0.12),
         shape: BoxShape.circle,
       ),
-      child: Icon(icon, size: 44, color: colors.activate),
+      child: Icon(icon, size: size * 0.5, color: colors.activate),
     );
   }
 }

@@ -97,14 +97,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildHeader(AbstractThemeColors themeColors) {
+    final logoSize = MediaQuery.sizeOf(context).width * 0.308; // 120/390
     return Column(
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(AppDimens.cardRadius),
           child: Image.asset(
             'assets/image/login/feple_logo.png',
-            width: 120,
-            height: 120,
+            width: logoSize,
+            height: logoSize,
             fit: BoxFit.contain,
           ),
         ),

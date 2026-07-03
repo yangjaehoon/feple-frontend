@@ -68,6 +68,7 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
 
   @override
   Widget build(BuildContext context) {
+    context.locale; // Subscribe to locale changes so AppBar title re-translates immediately
     final colors = context.appColors;
     // 각 필터 Set을 개별 구독 — 로딩·목록 변경 시 재빌드 없음
     final selectedGenres = context.select<FestivalPreviewProvider, Set<String>>(

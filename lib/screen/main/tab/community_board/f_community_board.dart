@@ -15,6 +15,7 @@ class CommunityBoardFragment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    context.locale; // Subscribe to locale changes so AppBar title re-translates immediately
     final colors = context.appColors;
     return ColoredBox(
       color: colors.backgroundMain,

@@ -31,10 +31,11 @@ class _CommentInputBarState extends State<CommentInputBar> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final bottom = MediaQuery.of(context).viewInsets.bottom;
+    final keyboardBottom = MediaQuery.of(context).viewInsets.bottom;
+    final safeBottom = MediaQuery.of(context).padding.bottom;
     return Container(
       color: colors.backgroundMain,
-      padding: EdgeInsets.fromLTRB(16, 8, 16, bottom > 0 ? bottom + 8 : 16),
+      padding: EdgeInsets.fromLTRB(16, 8, 16, keyboardBottom > 0 ? keyboardBottom + 8 : safeBottom + 8),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,

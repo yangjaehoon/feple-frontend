@@ -117,6 +117,7 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
       builder: (context, _) => Padding(
         padding: const EdgeInsets.only(bottom: AppDimens.fabBottomPadding),
         child: FloatingActionButton.extended(
+          heroTag: null,
           backgroundColor: colors.activate,
           onPressed: () => _openWrite(_tabController.index),
           label: Text(

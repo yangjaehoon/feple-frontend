@@ -12,6 +12,7 @@ class WritePostFab extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 80),
       child: FloatingActionButton.extended(
+        heroTag: null,
         backgroundColor: colors.activate,
         onPressed: onPressed,
         label: Text(

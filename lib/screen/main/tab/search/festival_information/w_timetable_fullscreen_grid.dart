@@ -71,30 +71,38 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return LayoutBuilder(builder: (_, constraints) {
-      final gridH = constraints.maxHeight - _stageHeaderH;
-      final totalMins = (_endHour - _startHour) * 60;
-      final pxPerMin = (gridH - _topPad - _bottomPad) / totalMins.clamp(1, 99999);
-      final stageW = _stages.isEmpty
-          ? constraints.maxWidth - _timeColW
-          : (constraints.maxWidth - _timeColW) / _stages.length;
+    // 셀 높이가 분 단위 픽셀 환산으로 고정돼 있어(_toY) 텍스트 배율이 커지면
+    // 카드 안 텍스트가 넘침 → 이 그리드 안에서만 배율을 별도로 제한
+    final mq = MediaQuery.of(context);
+    return MediaQuery(
+      data: mq.copyWith(
+        textScaler: mq.textScaler.clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+      ),
+      child: LayoutBuilder(builder: (_, constraints) {
+        final gridH = constraints.maxHeight - _stageHeaderH;
+        final totalMins = (_endHour - _startHour) * 60;
+        final pxPerMin = (gridH - _topPad - _bottomPad) / totalMins.clamp(1, 99999);
+        final stageW = _stages.isEmpty
+            ? constraints.maxWidth - _timeColW
+            : (constraints.maxWidth - _timeColW) / _stages.length;
 
-      return Column(
-        children: [
-          _buildStageHeader(stageW),
-          SizedBox(
-            height: gridH,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildTimeColumn(gridH, pxPerMin, colors),
-                _buildGridContent(gridH, pxPerMin, stageW, colors),
-              ],
+        return Column(
+          children: [
+            _buildStageHeader(stageW),
+            SizedBox(
+              height: gridH,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildTimeColumn(gridH, pxPerMin, colors),
+                  _buildGridContent(gridH, pxPerMin, stageW, colors),
+                ],
+              ),
             ),
-          ),
-        ],
-      );
-    });
+          ],
+        );
+      }),
+    );
   }
 
   Widget _buildStageHeader(double stageW) {

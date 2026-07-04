@@ -4,14 +4,19 @@ import 'package:flutter/material.dart';
 
 /// 에러 발생 시 아이콘 + 메시지 + 재시도 버튼을 보여주는 공용 위젯.
 /// [onRetry]를 넘기지 않으면 재시도 버튼이 표시되지 않습니다.
+/// [icon]을 넘기지 않으면 원인을 특정하지 않는 중립 아이콘을 사용합니다.
+/// 네트워크 오프라인이 원인임을 알 때는 `dio_error_helper.dart`의 `isOffline(e)`로
+/// 판별해 `Icons.wifi_off_rounded`를 넘겨주세요.
 class ErrorState extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
+  final IconData icon;
 
   const ErrorState({
     super.key,
     required this.message,
     this.onRetry,
+    this.icon = Icons.error_outline_rounded,
   });
 
   @override
@@ -32,7 +37,7 @@ class ErrorState extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
             Icon(
-              Icons.wifi_off_rounded,
+              icon,
               size: 52,
               color: colors.textSecondary.withValues(alpha: 0.4),
             ),

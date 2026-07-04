@@ -68,11 +68,19 @@ class TimetableGrid extends StatelessWidget {
     final totalW = stages.isEmpty ? stageW : stages.length * stageW;
     final totalH = (endHour - startHour) * 60 * _minPx + _topPad + _bottomPad;
 
-    return Column(
-      children: [
-        _buildStageHeader(stageW),
-        _buildBody(colors, stageW, totalW, totalH),
-      ],
+    // 셀 높이가 분 단위 픽셀 환산으로 고정돼 있어(_toY) 텍스트 배율이 커지면
+    // 카드 안 텍스트가 넘침 → 이 그리드 안에서만 배율을 별도로 제한
+    final mq = MediaQuery.of(context);
+    return MediaQuery(
+      data: mq.copyWith(
+        textScaler: mq.textScaler.clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+      ),
+      child: Column(
+        children: [
+          _buildStageHeader(stageW),
+          _buildBody(colors, stageW, totalW, totalH),
+        ],
+      ),
     );
   }
 
@@ -100,19 +108,22 @@ class TimetableGrid extends StatelessWidget {
   }
 
   Widget _buildBody(AbstractThemeColors colors, double stageW, double totalW, double totalH) {
+    // 콘텐츠가 뷰포트보다 짧으면 세로 스크롤을 아예 비활성화 —
+    // 불필요한 세로 드래그 제스처가 페이지 스크롤과 경쟁하는 것을 방지
+    final needsVScroll = totalH > _viewH;
     return SizedBox(
       height: _viewH,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildTimeColumn(colors, totalH),
-          Expanded(child: _buildGridContent(colors, stageW, totalW, totalH)),
+          _buildTimeColumn(colors, totalH, needsVScroll),
+          Expanded(child: _buildGridContent(colors, stageW, totalW, totalH, needsVScroll)),
         ],
       ),
     );
   }
 
-  Widget _buildTimeColumn(AbstractThemeColors colors, double totalH) {
+  Widget _buildTimeColumn(AbstractThemeColors colors, double totalH, bool needsVScroll) {
     return SizedBox(
       width: _timeColW,
       child: SingleChildScrollView(
@@ -140,35 +151,40 @@ class TimetableGrid extends StatelessWidget {
     );
   }
 
-  Widget _buildGridContent(AbstractThemeColors colors, double stageW, double totalW, double totalH) {
+  Widget _buildGridContent(AbstractThemeColors colors, double stageW, double totalW, double totalH, bool needsVScroll) {
     return SingleChildScrollView(
       controller: scrollControllers.hContent,
       scrollDirection: Axis.horizontal,
-      child: SingleChildScrollView(
+      child: Scrollbar(
         controller: scrollControllers.vContent,
-        child: SizedBox(
-          width: totalW,
-          height: totalH,
-          child: Stack(
-            children: [
-              // 수십~수백 개의 Positioned Container 대신 CustomPaint 1개로 처리
-              Positioned.fill(
-                child: RepaintBoundary(
-                  child: CustomPaint(
-                    painter: _TimetableGridPainter(
-                      dividerColor: colors.listDivider,
-                      stages: stages,
-                      stageW: stageW,
-                      topPad: _topPad,
-                      minPx: _minPx,
-                      startHour: startHour,
-                      endHour: endHour,
+        thumbVisibility: needsVScroll,
+        child: SingleChildScrollView(
+          controller: scrollControllers.vContent,
+          physics: needsVScroll ? null : const NeverScrollableScrollPhysics(),
+          child: SizedBox(
+            width: totalW,
+            height: totalH,
+            child: Stack(
+              children: [
+                // 수십~수백 개의 Positioned Container 대신 CustomPaint 1개로 처리
+                Positioned.fill(
+                  child: RepaintBoundary(
+                    child: CustomPaint(
+                      painter: _TimetableGridPainter(
+                        dividerColor: colors.listDivider,
+                        stages: stages,
+                        stageW: stageW,
+                        topPad: _topPad,
+                        minPx: _minPx,
+                        startHour: startHour,
+                        endHour: endHour,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              ..._buildPerformanceCards(stageW),
-            ],
+                ..._buildPerformanceCards(stageW),
+              ],
+            ),
           ),
         ),
       ),

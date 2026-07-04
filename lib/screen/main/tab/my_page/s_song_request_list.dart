@@ -3,6 +3,7 @@ import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/common/widget/w_status_filter_chip.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/song_request_model.dart';
 import 'package:feple/provider/user_provider.dart';
@@ -117,69 +118,31 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children: [
-          _statusFilterChip(
-            colors: colors,
+          StatusFilterChip(
             label: 'filter_all'.tr(),
             selected: _filter == null,
             selectedColor: colors.activate,
             onSelected: (_) => setState(() => _filter = null),
           ),
-          _statusFilterChip(
-            colors: colors,
+          StatusFilterChip(
             label: 'song_status_pending'.tr(),
             selected: _filter == SongRequestStatus.pending,
             selectedColor: colors.textSecondary,
             onSelected: (_) => setState(() => _filter = SongRequestStatus.pending),
           ),
-          _statusFilterChip(
-            colors: colors,
+          StatusFilterChip(
             label: 'song_status_approved'.tr(),
             selected: _filter == SongRequestStatus.approved,
             selectedColor: colors.activate,
             onSelected: (_) => setState(() => _filter = SongRequestStatus.approved),
           ),
-          _statusFilterChip(
-            colors: colors,
+          StatusFilterChip(
             label: 'song_status_rejected'.tr(),
             selected: _filter == SongRequestStatus.rejected,
             selectedColor: AppColors.errorRed,
             onSelected: (_) => setState(() => _filter = SongRequestStatus.rejected),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _statusFilterChip({
-    required AbstractThemeColors colors,
-    required String label,
-    required bool selected,
-    required Color selectedColor,
-    required void Function(bool) onSelected,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: FilterChip(
-        label: Text(label),
-        selected: selected,
-        onSelected: onSelected,
-        selectedColor: selectedColor.withValues(alpha: 0.12),
-        checkmarkColor: selectedColor,
-        backgroundColor: colors.surface,
-        side: BorderSide(
-          color: selected
-              ? selectedColor
-              : colors.textSecondary.withValues(alpha: 0.28),
-          width: selected ? 1.5 : 1.0,
-        ),
-        labelStyle: TextStyle(
-          fontSize: AppDimens.fontSizeSm,
-          fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-          color: selected ? selectedColor : colors.textSecondary,
-        ),
-        shape: const StadiumBorder(),
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        visualDensity: VisualDensity.compact,
       ),
     );
   }

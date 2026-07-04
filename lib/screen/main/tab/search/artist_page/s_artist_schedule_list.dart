@@ -10,6 +10,7 @@ import 'package:feple/screen/main/tab/search/artist_page/w_schedule_list_tile.da
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/service/artist_schedule_service.dart';
 import 'package:feple/service/festival_service.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_schedule_list_skeleton.dart';
 import 'package:flutter/material.dart';
 
 class ArtistScheduleListScreen extends StatefulWidget {
@@ -87,7 +88,7 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
 
   Widget _buildBody(AsyncSnapshot<List<ArtistScheduleModel>> snapshot, AbstractThemeColors colors) {
     if (snapshot.connectionState == ConnectionState.waiting) {
-      return const Center(child: CircularProgressIndicator.adaptive());
+      return const ScheduleListSkeleton(itemCount: 6);
     }
     if (snapshot.hasError) {
       return ErrorState(message: 'err_fetch_data'.tr(), onRetry: _refresh);

@@ -97,20 +97,22 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
   }
 
   Future<void> _buildMarkers() async {
-    final markers = <Marker>{};
-    for (final booth in _booths) {
-      final icon = await BoothMarkerFactory.create(booth);
-      markers.add(Marker(
-        markerId: MarkerId('booth_${booth.id}'),
-        position: LatLng(booth.latitude, booth.longitude),
-        icon: icon,
-        infoWindow: InfoWindow(
-          title: booth.name,
-          snippet: booth.boothTypeName +
-              (booth.description != null ? ' · ${booth.description}' : ''),
+    // 부스마다 이미지 다운로드+마커 생성이 독립적이므로 병렬로 처리 —
+    // 순차 await는 부스 수만큼 네트워크 왕복 시간이 그대로 누적됨
+    final icons = await Future.wait(_booths.map(BoothMarkerFactory.create));
+    final markers = <Marker>{
+      for (var i = 0; i < _booths.length; i++)
+        Marker(
+          markerId: MarkerId('booth_${_booths[i].id}'),
+          position: LatLng(_booths[i].latitude, _booths[i].longitude),
+          icon: icons[i],
+          infoWindow: InfoWindow(
+            title: _booths[i].name,
+            snippet: _booths[i].boothTypeName +
+                (_booths[i].description != null ? ' · ${_booths[i].description}' : ''),
+          ),
         ),
-      ));
-    }
+    };
     if (mounted) setState(() => _markers = markers);
   }
 

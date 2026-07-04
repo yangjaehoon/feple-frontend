@@ -4,12 +4,12 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
-import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/song_model.dart';
 import 'package:feple/service/song_service.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_card_header.dart';
 import 'package:feple/screen/main/tab/search/artist_page/s_artist_songs.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_song_list_skeleton.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_song_list_tile.dart';
 import 'package:flutter/material.dart';
 
@@ -74,43 +74,10 @@ class ArtistSongsState extends State<ArtistSongs> {
     );
   }
 
-  Widget _buildSongSkeleton() {
-    return Column(
-      children: List.generate(3, (index) {
-        return Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimens.paddingHorizontal, vertical: 12),
-              child: const Row(
-                children: [
-                  SkeletonBox(width: 52, height: 52, borderRadius: BorderRadius.all(Radius.circular(4))),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SkeletonBox(height: 13),
-                        SizedBox(height: 6),
-                        SkeletonBox(width: 80, height: 11),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (index < 2)
-              const Divider(height: 1, thickness: 1, indent: 16, endIndent: 16),
-          ],
-        );
-      }),
-    );
-  }
-
   Widget _buildSongList(AbstractThemeColors colors) {
     return AsyncContentBuilder<List<SongModel>>(
       future: _songsFuture,
-      loadingBuilder: (_) => _buildSongSkeleton(),
+      loadingBuilder: (_) => const SongListSkeleton(),
       onRetry: () => setState(() { _songsFuture = _fetchSongs(); }),
       emptyBuilder: (_) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),

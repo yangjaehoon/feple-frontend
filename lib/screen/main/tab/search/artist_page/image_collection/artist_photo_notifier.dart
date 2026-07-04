@@ -14,6 +14,11 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
   bool isLoading = true;
   String? errorKey;
 
+  // 연타로 인한 중복 요청 방지 (photoId 단위 — 서로 다른 사진끼리는 막지 않음)
+  final Set<int> _pendingLikeToggles = {};
+  final Set<int> _pendingDeletes = {};
+  final Set<int> _pendingUpdates = {};
+
   void clearError() {
     errorKey = null;
   }
@@ -36,26 +41,32 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
   }
 
   Future<void> toggleLike(int photoId) async {
-    final index = _photos.indexWhere((p) => p.photoId == photoId);
-    if (index == -1) return;
-    HapticFeedback.lightImpact();
-    final original = _photos[index];
-    _photos[index] = original.copyWith(
-      likeCount: original.isLiked ? original.likeCount - 1 : original.likeCount + 1,
-      isLiked: !original.isLiked,
-    );
-    safeNotify();
+    if (!_pendingLikeToggles.add(photoId)) return;
     try {
-      await _photoService.toggleLike(artistId, photoId);
-    } catch (e) {
-      _photos[index] = original;
-      errorKey = 'like_failed';
+      final index = _photos.indexWhere((p) => p.photoId == photoId);
+      if (index == -1) return;
+      HapticFeedback.lightImpact();
+      final original = _photos[index];
+      _photos[index] = original.copyWith(
+        likeCount: original.isLiked ? original.likeCount - 1 : original.likeCount + 1,
+        isLiked: !original.isLiked,
+      );
       safeNotify();
-      debugPrint('toggle like error: $e');
+      try {
+        await _photoService.toggleLike(artistId, photoId);
+      } catch (e) {
+        _photos[index] = original;
+        errorKey = 'like_failed';
+        safeNotify();
+        debugPrint('toggle like error: $e');
+      }
+    } finally {
+      _pendingLikeToggles.remove(photoId);
     }
   }
 
   Future<void> deletePhoto(int photoId) async {
+    if (!_pendingDeletes.add(photoId)) return;
     try {
       await _photoService.deletePhoto(artistId, photoId);
       await loadPhotos();
@@ -63,10 +74,13 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
       debugPrint('delete error: $e');
       errorKey = 'photo_delete_failed';
       safeNotify();
+    } finally {
+      _pendingDeletes.remove(photoId);
     }
   }
 
   Future<void> updatePhoto(int photoId, String title, String description) async {
+    if (!_pendingUpdates.add(photoId)) return;
     try {
       await _photoService.updatePhoto(artistId, photoId, title, description);
       await loadPhotos();
@@ -74,6 +88,8 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
       debugPrint('update error: $e');
       errorKey = 'photo_update_failed';
       safeNotify();
+    } finally {
+      _pendingUpdates.remove(photoId);
     }
   }
 }

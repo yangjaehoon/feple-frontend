@@ -126,10 +126,9 @@ class _FepleAppBarState extends State<FepleAppBar> {
           Positioned(
             top: 8,
             right: 8,
-            child: GestureDetector(
-              onTap: _openNotifications,
-              child: _buildUnreadBadge(count, colors),
-            ),
+            // 탭은 아래 48x48 IconButton이 이미 처리 — 여기 별도 GestureDetector를
+            // 두면 16x16짜리 중복·미달 터치 타겟만 추가될 뿐이라 제거
+            child: IgnorePointer(child: _buildUnreadBadge(count, colors)),
           ),
       ],
     );

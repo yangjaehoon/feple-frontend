@@ -4,6 +4,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_model.dart';
 import 'package:feple/model/festival_preview.dart';
@@ -271,12 +272,36 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
   }
 
   Widget _buildContent(AbstractThemeColors colors) {
-    if (_loading) {
-      return Center(child: CircularProgressIndicator(color: colors.loadingIndicator));
-    }
+    if (_loading) return _buildLoadingSkeleton(colors);
     if (_searched) return _hasError ? _buildError() : _buildResults(colors);
     if (_controller.text.isEmpty) return _buildRecentSearches(colors);
     return _buildSuggestions(colors);
+  }
+
+  Widget _buildLoadingSkeleton(AbstractThemeColors colors) {
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: 6,
+      itemBuilder: (_, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Row(
+          children: [
+            const SkeletonBox(width: 40, height: 40, borderRadius: BorderRadius.all(Radius.circular(20))),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  SkeletonBox(height: 14, width: 160),
+                  SizedBox(height: 6),
+                  SkeletonBox(height: 12, width: 100),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildRecentSearches(AbstractThemeColors colors) {

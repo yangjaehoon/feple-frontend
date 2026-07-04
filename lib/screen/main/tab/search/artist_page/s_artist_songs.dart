@@ -6,6 +6,7 @@ import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/song_model.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_song_list_skeleton.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_song_list_tile.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_song_request_sheet.dart';
 import 'package:feple/service/song_service.dart';
@@ -87,7 +88,7 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
 
   Widget _buildBody(AsyncSnapshot<List<SongModel>> snapshot, AbstractThemeColors colors) {
     if (snapshot.connectionState == ConnectionState.waiting) {
-      return const Center(child: CircularProgressIndicator.adaptive());
+      return const SongListSkeleton(itemCount: 6);
     }
     if (snapshot.hasError) {
       return ErrorState(message: 'err_fetch_data'.tr(), onRetry: _refresh);

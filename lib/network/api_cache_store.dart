@@ -170,8 +170,8 @@ class ApiCacheStore {
     // 댓글 작성/삭제
     if (url.contains('/comments')) return ['/comments'];
 
-    // 알림 읽음 처리
-    if (url.contains('/notifications')) return ['/notifications/my'];
+    // 알림 읽음/삭제
+    if (url.contains('/notifications')) return ['/notifications'];
 
     // 인증
     if (url.contains('/certifications')) return ['/certifications'];

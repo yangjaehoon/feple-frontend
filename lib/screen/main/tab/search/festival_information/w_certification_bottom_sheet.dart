@@ -131,6 +131,21 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
     );
   }
 
+  // 사진 선택 후에도 다시 탭해서 바꿀 수 있다는 어포던스가 없어 추가 —
+  // ImagePickerBox(image_collection)와 동일한 패턴
+  Widget _buildChangeBadge(AbstractThemeColors colors) {
+    return Container(
+      width: 32,
+      height: 32,
+      decoration: BoxDecoration(
+        color: colors.activate,
+        shape: BoxShape.circle,
+        border: Border.all(color: colors.surface, width: 2),
+      ),
+      child: const Icon(Icons.edit_rounded, color: Colors.white, size: 16),
+    );
+  }
+
   Widget _buildPhotoArea(AbstractThemeColors colors) {
     return GestureDetector(
       onTap: _submitting ? null : _pickImage,
@@ -150,7 +165,17 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
         child: _imageBytes != null
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-                child: Image.memory(_imageBytes!, fit: BoxFit.cover),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.memory(_imageBytes!, fit: BoxFit.cover),
+                    Positioned(
+                      right: 8,
+                      bottom: 8,
+                      child: _buildChangeBadge(colors),
+                    ),
+                  ],
+                ),
               )
             : Column(
                 mainAxisAlignment: MainAxisAlignment.center,

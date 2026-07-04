@@ -455,6 +455,7 @@
   "timetable_end": "종료",
   "timetable_color": "색상",
   "timetable_hint": "빈 공간을 탭해 내 일정 추가 · 내 일정 카드를 탭해 수정",
+  "timetable_invalid_time_range": "종료 시간은 시작 시간보다 늦어야 해요.",
   "no_booth": "등록된 부스가 없습니다.",
   "photo_add": "사진 추가",
   "song_request_button": "노래 요청하기",

@@ -49,13 +49,38 @@ class ImagePickerBox extends StatelessWidget {
                     ? _buildPlaceholder(colors)
                     : ClipRRect(
                         borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-                        child: Image.memory(imageData!, fit: BoxFit.cover),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Image.memory(imageData!, fit: BoxFit.cover),
+                            Positioned(
+                              right: 8,
+                              bottom: 8,
+                              child: _buildChangeBadge(colors),
+                            ),
+                          ],
+                        ),
                       ),
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  // 사진 선택 후에도 다시 탭해서 바꿀 수 있다는 어포던스가 없어 추가 —
+  // 프로필 사진 수정(w_edit_profile.dart)의 카메라 뱃지와 동일한 패턴
+  Widget _buildChangeBadge(AbstractThemeColors colors) {
+    return Container(
+      width: 32,
+      height: 32,
+      decoration: BoxDecoration(
+        color: colors.activate,
+        shape: BoxShape.circle,
+        border: Border.all(color: colors.surface, width: 2),
+      ),
+      child: const Icon(Icons.edit_rounded, color: Colors.white, size: 16),
     );
   }
 

@@ -105,6 +105,14 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
             _buildStageDropdown(colors),
             const SizedBox(height: 16),
             _buildTimeRow(colors),
+            if (_labelCtrl.text.trim().isNotEmpty && _toMins(_end) <= _toMins(_start))
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  'timetable_invalid_time_range'.tr(),
+                  style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.error),
+                ),
+              ),
             const SizedBox(height: 16),
             _buildColorPicker(colors),
           ],

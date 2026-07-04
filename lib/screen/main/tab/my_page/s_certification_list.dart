@@ -214,10 +214,12 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
         actions: [
           TextButton.icon(
             onPressed: _openSubmitSheet,
-            icon: Icon(Icons.add_photo_alternate_rounded, color: colors.certRingColor, size: 20),
+            // certRingColor(skyBlue)는 appBarColor와 동일한 색이라 앱바 위에서 안 보임 —
+            // 앱바 텍스트/아이콘 전용 색상 사용
+            icon: Icon(Icons.add_photo_alternate_rounded, color: colors.appBarIconColor, size: 20),
             label: Text(
               'cert_submit'.tr(),
-              style: TextStyle(color: colors.certRingColor, fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeSm),
+              style: TextStyle(color: colors.appBarIconColor, fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeSm),
             ),
           ),
         ],

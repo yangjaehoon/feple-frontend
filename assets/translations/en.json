@@ -455,6 +455,7 @@
   "timetable_end": "End",
   "timetable_color": "Color",
   "timetable_hint": "Tap empty space to add · Tap card to edit",
+  "timetable_invalid_time_range": "End time must be after start time.",
   "no_booth": "No booths registered.",
   "photo_add": "Add photo",
   "song_request_button": "Request a Song",

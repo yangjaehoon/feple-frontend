@@ -1,20 +1,21 @@
-import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:collection/collection.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/model/artist_photo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'artist_photo_notifier.dart';
+
 class PhotoFullscreenViewer extends StatefulWidget {
-  final ArtistPhotoResponse photo;
-  final VoidCallback onLike;
+  final int photoId;
+  final ArtistPhotoNotifier notifier;
 
   const PhotoFullscreenViewer({
     super.key,
-    required this.photo,
-    required this.onLike,
+    required this.photoId,
+    required this.notifier,
   });
 
   @override
@@ -24,15 +25,11 @@ class PhotoFullscreenViewer extends StatefulWidget {
 class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
   bool _uiVisible = true;
   final _transformController = TransformationController();
-  late bool _isLiked;
-  late int _likeCount;
 
-  @override
-  void initState() {
-    super.initState();
-    _isLiked = widget.photo.isLiked;
-    _likeCount = widget.photo.likeCount;
-  }
+  // 좋아요 상태는 로컬로 복제하지 않고 notifier를 그대로 구독 —
+  // toggleLike 실패 시 notifier가 롤백하면 화면도 자동으로 정확한 값을 반영함
+  ArtistPhotoResponse? get _photo =>
+      widget.notifier.photos.firstWhereOrNull((p) => p.photoId == widget.photoId);
 
   @override
   void dispose() {
@@ -42,13 +39,7 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
 
   void _toggleUi() => setState(() => _uiVisible = !_uiVisible);
 
-  void _handleLike() {
-    setState(() {
-      _likeCount = _isLiked ? max(0, _likeCount - 1) : _likeCount + 1;
-      _isLiked = !_isLiked;
-    });
-    widget.onLike();
-  }
+  void _handleLike() => widget.notifier.toggleLike(widget.photoId);
 
   void _handleDoubleTap(TapDownDetails details) {
     if (_transformController.value != Matrix4.identity()) {
@@ -63,24 +54,37 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light,
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        body: Stack(
-          children: [
-            _buildImageArea(),
-            if (_uiVisible) ...[
-              _buildTopBar(),
-              _buildBottomInfo(),
-            ],
-          ],
-        ),
-      ),
+    return ListenableBuilder(
+      listenable: widget.notifier,
+      builder: (context, _) {
+        final photo = _photo;
+        if (photo == null) {
+          // 보는 도중 다른 화면에서 삭제된 경우 — 다음 프레임에 닫기
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) Navigator.pop(context);
+          });
+          return const SizedBox.shrink();
+        }
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle.light,
+          child: Scaffold(
+            backgroundColor: Colors.black,
+            body: Stack(
+              children: [
+                _buildImageArea(photo),
+                if (_uiVisible) ...[
+                  _buildTopBar(),
+                  _buildBottomInfo(photo),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildImageArea() {
+  Widget _buildImageArea(ArtistPhotoResponse photo) {
     return GestureDetector(
       onTap: _toggleUi,
       onDoubleTapDown: _handleDoubleTap,
@@ -91,8 +95,8 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
           minScale: 0.5,
           maxScale: 4.0,
           child: CachedNetworkImage(
-            imageUrl: widget.photo.url,
-            cacheKey: 'artist-photo-${widget.photo.photoId}',
+            imageUrl: photo.url,
+            cacheKey: 'artist-photo-${photo.photoId}',
             fit: BoxFit.contain,
             fadeInDuration: AppDimens.animXFast,
             fadeOutDuration: AppDimens.animTapFeedback,
@@ -128,8 +132,7 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
     );
   }
 
-  Widget _buildBottomInfo() {
-    final photo = widget.photo;
+  Widget _buildBottomInfo(ArtistPhotoResponse photo) {
     return Positioned(
       left: 0,
       right: 0,
@@ -204,13 +207,13 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            _isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-            color: _isLiked ? AppColors.hotPink : Colors.white70,
+            photo.isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+            color: photo.isLiked ? AppColors.hotPink : Colors.white70,
             size: 22,
           ),
           const SizedBox(width: 6),
           Text(
-            '$_likeCount',
+            '${photo.likeCount}',
             style: const TextStyle(color: Colors.white70, fontSize: AppDimens.fontSizeMd, fontWeight: FontWeight.w600),
           ),
         ],

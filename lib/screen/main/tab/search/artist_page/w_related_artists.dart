@@ -38,10 +38,13 @@ class RelatedArtistsState extends State<RelatedArtists> {
     return FutureBuilder<List<Artist>>(
       future: _future,
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          debugPrint('related artists fetch error: ${snapshot.error}');
+          return const SizedBox.shrink();
+        }
         if (!snapshot.hasData || (snapshot.data?.isEmpty ?? true)) {
           return const SizedBox.shrink();
         }
-        if (snapshot.hasError) return const SizedBox.shrink();
         return _buildSection(context, snapshot.data!);
       },
     );

@@ -177,8 +177,8 @@ class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
       context,
       MaterialPageRoute(
         builder: (_) => PhotoFullscreenViewer(
-          photo: photo,
-          onLike: () => _notifier.toggleLike(photo.photoId),
+          photoId: photo.photoId,
+          notifier: _notifier,
         ),
         fullscreenDialog: true,
       ),

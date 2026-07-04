@@ -12,6 +12,7 @@
   "opensource": "Open Source",
   "clear_cache": "Clear Cache",
   "clear_cache_done": "Cache has been cleared.",
+  "clear_cache_failed": "Failed to clear cache.",
   "close": "Close",
   "done": "Done",
   "submit": "Submit",

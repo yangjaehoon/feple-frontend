@@ -12,6 +12,7 @@
   "opensource": "오픈소스",
   "clear_cache": "캐시 지우기",
   "clear_cache_done": "캐시가 삭제되었습니다.",
+  "clear_cache_failed": "캐시 삭제에 실패했습니다.",
   "close": "닫기",
   "done": "완료",
   "submit": "제출",

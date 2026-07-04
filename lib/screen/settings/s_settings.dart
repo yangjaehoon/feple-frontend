@@ -99,13 +99,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _clearCache() async {
     setState(() => _clearingCache = true);
-    await Future.wait([
-      DefaultCacheManager().emptyCache(),
-      sl<FestivalCacheService>().clearAll(),
-    ]);
-    if (!mounted) return;
-    setState(() => _clearingCache = false);
-    context.showSuccessSnackbar('clear_cache_done'.tr());
+    try {
+      await Future.wait([
+        DefaultCacheManager().emptyCache(),
+        sl<FestivalCacheService>().clearAll(),
+      ]);
+      if (!mounted) return;
+      context.showSuccessSnackbar('clear_cache_done'.tr());
+    } catch (e) {
+      debugPrint('clear cache error: $e');
+      if (mounted) context.showErrorSnackbar('clear_cache_failed'.tr());
+    } finally {
+      if (mounted) setState(() => _clearingCache = false);
+    }
   }
 
   @override

@@ -72,7 +72,13 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
 
   Future<void> _savePrefs(List<String> orderedSelected) async {
     final allIds = widget.allBoards.map((b) => b.boardId).toList();
-    await _prefs.save(orderedSelected, allIds);
+    try {
+      await _prefs.save(orderedSelected, allIds);
+    } catch (e) {
+      // 화면에 반영된 선택은 이미 유효하므로 재로드 전까지는 문제없음 —
+      // 다음 실행 시 선택이 저장 전으로 되돌아갈 수 있음을 로그로만 남김
+      debugPrint('favorite boards persist error: $e');
+    }
   }
 
   void _openAllBoards() {

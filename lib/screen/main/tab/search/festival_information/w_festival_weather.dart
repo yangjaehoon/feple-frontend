@@ -34,6 +34,10 @@ class _FestivalWeatherState extends State<FestivalWeather> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return _buildSkeleton(colors);
         }
+        if (snapshot.hasError) {
+          debugPrint('festival weather fetch error: ${snapshot.error}');
+          return const SizedBox.shrink();
+        }
         final data = snapshot.data;
         if (data == null) return const SizedBox.shrink();
 

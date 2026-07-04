@@ -156,8 +156,14 @@ class HomeStateNotifier extends SafeChangeNotifier {
 
   Future<void> _persistOrder(String key, List<int> order) async {
     safeNotify();
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(key, order.map((e) => e.toString()).toList());
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList(key, order.map((e) => e.toString()).toList());
+    } catch (e) {
+      // 화면에 반영된 순서는 이미 유효하므로 재로드 전까지는 문제없음 —
+      // 다음 실행 시 순서가 저장 전으로 되돌아갈 수 있음을 로그로만 남김
+      debugPrint('order persist error ($key): $e');
+    }
   }
 
   List<FollowedArtist>? get orderedArtists {

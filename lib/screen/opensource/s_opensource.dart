@@ -25,11 +25,13 @@ class _OpensourceScreenState extends State<OpensourceScreen> {
   }
 
   Future<void> initData() async {
-    final list = await LocalJson.getObjectList<Package>("json/licenses.json");
-    if (!mounted) return;
-    setState(() {
-      packageList = list;
-    });
+    try {
+      final list = await LocalJson.getObjectList<Package>("json/licenses.json");
+      if (!mounted) return;
+      setState(() => packageList = list);
+    } catch (e) {
+      debugPrint('opensource license load error: $e');
+    }
   }
 
   @override

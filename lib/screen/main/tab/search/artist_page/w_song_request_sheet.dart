@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
+import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/injection.dart';
@@ -140,35 +141,29 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
   List<Widget> _buildFormFields() => [
     Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: TextField(
+      child: AppTextField(
         controller: _titleCtrl,
+        icon: Icons.music_note_rounded,
+        hintText: 'song_request_song_title_hint'.tr(),
+        semanticsLabel: 'song_request_song_title'.tr(),
         autofocus: true,
         textInputAction: TextInputAction.next,
         onChanged: (_) { if (_titleError != null) setState(() => _titleError = null); },
-        decoration: InputDecoration(
-          labelText: 'song_request_song_title'.tr(),
-          hintText: 'song_request_song_title_hint'.tr(),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny)),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          errorText: _titleError,
-        ),
+        errorText: _titleError,
       ),
     ),
     const SizedBox(height: 12),
     Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: TextField(
+      child: AppTextField(
         controller: _urlCtrl,
+        icon: Icons.link_rounded,
+        hintText: 'song_request_youtube_url_hint'.tr(),
+        semanticsLabel: 'song_request_youtube_url'.tr(),
         keyboardType: TextInputType.url,
         textInputAction: TextInputAction.done,
         onChanged: (_) { if (_urlError != null) setState(() => _urlError = null); },
-        decoration: InputDecoration(
-          labelText: 'song_request_youtube_url'.tr(),
-          hintText: 'song_request_youtube_url_hint'.tr(),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny)),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          errorText: _urlError,
-        ),
+        errorText: _urlError,
       ),
     ),
   ];

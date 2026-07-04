@@ -15,6 +15,7 @@ class AppTextField extends StatefulWidget {
   final String? semanticsLabel;
   final TextInputAction? textInputAction;
   final Iterable<String>? autofillHints;
+  final bool autofocus;
 
   const AppTextField({
     super.key,
@@ -30,6 +31,7 @@ class AppTextField extends StatefulWidget {
     this.semanticsLabel,
     this.textInputAction,
     this.autofillHints,
+    this.autofocus = false,
   });
 
   @override
@@ -96,6 +98,7 @@ class _AppTextFieldState extends State<AppTextField> {
             obscureText: _isObscured,
             keyboardType: widget.keyboardType,
             textInputAction: widget.textInputAction,
+            autofocus: widget.autofocus,
             maxLength: widget.maxLength,
             onChanged: widget.onChanged,
             onSubmitted: widget.onSubmitted,

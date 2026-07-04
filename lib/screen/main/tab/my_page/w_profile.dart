@@ -35,11 +35,19 @@ class ProfileWidgetState extends State<ProfileWidget> {
   void refresh() => _fetchUser();
 
   Future<void> _fetchUser() async {
+    final hadCachedUser = context.read<UserProvider>().user != null;
     setState(() => _hasError = false);
     try {
       await context.read<UserProvider>().fetchUser(widget.userId);
-    } catch (_) {
-      if (mounted) setState(() => _hasError = true);
+    } catch (e) {
+      if (!mounted) return;
+      debugPrint('profile fetch error: $e');
+      // 캐시된 프로필이 이미 있으면 화면을 에러로 덮지 않고 토스트로만 알림
+      if (hadCachedUser) {
+        context.showErrorSnackbar('refresh_failed'.tr());
+      } else {
+        setState(() => _hasError = true);
+      }
     }
   }
 

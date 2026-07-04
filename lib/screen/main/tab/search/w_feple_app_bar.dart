@@ -126,7 +126,10 @@ class _FepleAppBarState extends State<FepleAppBar> {
           Positioned(
             top: 8,
             right: 8,
-            child: _buildUnreadBadge(count, colors),
+            child: GestureDetector(
+              onTap: _openNotifications,
+              child: _buildUnreadBadge(count, colors),
+            ),
           ),
       ],
     );

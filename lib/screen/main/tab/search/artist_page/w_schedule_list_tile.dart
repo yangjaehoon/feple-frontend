@@ -160,7 +160,7 @@ class ScheduleListTile extends StatelessWidget {
                   ),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 11),
+                  padding: const EdgeInsets.symmetric(vertical: 11),
                   child: SizedBox(
                     width: 26,
                     height: 26,

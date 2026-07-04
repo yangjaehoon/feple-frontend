@@ -37,10 +37,14 @@ class MyLikedPostsView extends StatelessWidget {
           title: Text(
             post.title,
             style: TextStyle(color: colors.textTitle, fontWeight: FontWeight.w600),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
           subtitle: Text(
             post.boardDisplayName,
             style: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXs),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           trailing: PostStatRow(
             likeCount: post.likeCount,

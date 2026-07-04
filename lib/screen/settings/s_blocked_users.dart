@@ -114,6 +114,8 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
           fontSize: AppDimens.fontSizeMd,
           color: colors.textTitle,
         ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
       trailing: OutlinedButton(
         onPressed: () => _unblock(user),

@@ -239,13 +239,17 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      nickname,
-                      style: TextStyle(
-                        fontSize: AppDimens.fontSizeDisplay,
-                        fontWeight: FontWeight.w800,
-                        color: colors.textTitle,
-                        letterSpacing: -0.5,
+                    Flexible(
+                      child: Text(
+                        nickname,
+                        style: TextStyle(
+                          fontSize: AppDimens.fontSizeDisplay,
+                          fontWeight: FontWeight.w800,
+                          color: colors.textTitle,
+                          letterSpacing: -0.5,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     const SizedBox(width: 6),

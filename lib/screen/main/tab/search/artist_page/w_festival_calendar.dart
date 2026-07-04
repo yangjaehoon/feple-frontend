@@ -1,11 +1,14 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_schedule_model.dart';
 import 'package:feple/screen/main/tab/search/artist_page/event_type_style.dart';
+import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/service/artist_schedule_service.dart';
+import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -25,6 +28,7 @@ class FestivalCalendar extends StatefulWidget {
 
 class _FestivalCalendarState extends State<FestivalCalendar> {
   final _scheduleService = sl<ArtistScheduleService>();
+  final _festivalService = sl<FestivalService>();
   List<ArtistScheduleModel> _schedules = [];
   bool _isLoading = true;
   bool _hasError = false;
@@ -86,6 +90,7 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
       monthViewSettings: const MonthViewSettings(
         appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
       ),
+      onTap: _onCalendarTap,
       backgroundColor: colors.backgroundMain,
       todayHighlightColor: colors.activate,
       headerStyle: CalendarHeaderStyle(
@@ -100,6 +105,26 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
         dayTextStyle: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXs),
       ),
     );
+  }
+
+  Future<void> _onCalendarTap(CalendarTapDetails details) async {
+    if (details.targetElement != CalendarElement.appointment) return;
+    final appointments = details.appointments;
+    if (appointments == null || appointments.isEmpty) return;
+    final tapped = appointments.first;
+    final festivalId = tapped is Appointment ? tapped.id as int? : null;
+    if (festivalId == null) return;
+    try {
+      final festival = await _festivalService.fetchById(festivalId);
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)),
+      );
+    } catch (e) {
+      debugPrint('[FestivalCalendar] festival fetch error: $e');
+      if (mounted) context.showErrorSnackbar('err_fetch_data'.tr());
+    }
   }
 
   List<Appointment> _buildAppointments(AbstractThemeColors colors) {
@@ -118,6 +143,7 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
         subject: s.title,
         color: config.color,
         isAllDay: true,
+        id: s.festivalId,
       ));
     }
     return result;

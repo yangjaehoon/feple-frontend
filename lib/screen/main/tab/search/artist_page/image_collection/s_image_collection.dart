@@ -45,6 +45,7 @@ class _ImageCollectionScreenState extends State<ImageCollectionScreen> {
   Widget _buildFab(AbstractThemeColors colors) {
     return FloatingActionButton(
       heroTag: null,
+      tooltip: 'photo_add'.tr(),
       backgroundColor: colors.activate,
       onPressed: () async {
         final result = await Navigator.push(

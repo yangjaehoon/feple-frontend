@@ -79,7 +79,7 @@ class ProfileWidgetState extends State<ProfileWidget> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _buildNicknameText(user, colors),
+              Flexible(child: _buildNicknameText(user, colors)),
               const SizedBox(width: 6),
               _buildLevelBadge(user, colors),
             ],
@@ -165,6 +165,8 @@ class ProfileWidgetState extends State<ProfileWidget> {
         color: colors.textTitle,
         letterSpacing: -0.5,
       ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
     );
   }
 

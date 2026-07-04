@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
+import 'package:feple/common/widget/w_expandable_text.dart';
 import 'package:feple/model/cert_state.dart';
 import 'package:feple/model/festival_review.dart';
 import 'package:feple/screen/main/tab/my_page/w_rating_sheet.dart';
@@ -598,6 +599,7 @@ class _ReviewCardState extends State<_ReviewCard> {
                               fontWeight: FontWeight.w600,
                               color: colors.textTitle,
                             ),
+                            maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -617,13 +619,14 @@ class _ReviewCardState extends State<_ReviewCard> {
                     _StarRow(rating: review.rating.toDouble(), size: 13),
                     if (hasReviewText) ...[
                       const SizedBox(height: 6),
-                      Text(
-                        review.userReview!,
+                      ExpandableText(
+                        text: review.userReview!,
                         style: TextStyle(
                           fontSize: AppDimens.fontSizeMd,
                           color: colors.textTitle,
                           height: 1.5,
                         ),
+                        maxLines: 4,
                       ),
                     ],
                   ],

@@ -105,12 +105,16 @@ class ScheduleListTile extends StatelessWidget {
             fontWeight: FontWeight.w700,
             color: _c(colors.textTitle),
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         if (item.location != null && item.location!.isNotEmpty) ...[
           const SizedBox(height: 2),
           Text(
             item.location!,
             style: TextStyle(fontSize: AppDimens.fontSizeXs, color: _c(colors.textSecondary)),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
         if (item.startDate != null) ...[

@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
@@ -100,7 +101,7 @@ class SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
     if (_hasError) return _buildError();
 
     final items = _requests ?? [];
-    if (items.isEmpty) return _buildEmpty(colors);
+    if (items.isEmpty) return _buildEmpty();
 
     final preview = items.take(_previewCount).toList();
     return Column(
@@ -154,24 +155,8 @@ class SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
     );
   }
 
-  Widget _buildEmpty(AbstractThemeColors colors) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.music_off_rounded, size: 32,
-                color: colors.textSecondary.withValues(alpha: 0.4)),
-            const SizedBox(height: 8),
-            Text(
-              'song_request_no_history'.tr(),
-              style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
-            ),
-          ],
-        ),
-      ),
-    );
+  Widget _buildEmpty() {
+    return EmptyState(icon: Icons.music_off_rounded, title: 'song_request_no_history'.tr());
   }
 
   Widget _buildSkeleton() {

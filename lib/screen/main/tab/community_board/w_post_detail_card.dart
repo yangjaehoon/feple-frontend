@@ -581,12 +581,16 @@ class _PostHeaderSection extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text(
-                      nickname,
-                      style: TextStyle(
-                        fontSize: AppDimens.fontSizeSm,
-                        color: colors.textSecondary,
-                        fontWeight: FontWeight.w600,
+                    Flexible(
+                      child: Text(
+                        nickname,
+                        style: TextStyle(
+                          fontSize: AppDimens.fontSizeSm,
+                          color: colors.textSecondary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     InlineBadge(

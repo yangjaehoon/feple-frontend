@@ -178,6 +178,8 @@ class MyPostCommentWidgetState extends State<MyPostCommentWidget> {
                 fontWeight: FontWeight.w600,
                 color: colors.textSecondary,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 2),
             Text(
@@ -187,6 +189,8 @@ class MyPostCommentWidgetState extends State<MyPostCommentWidget> {
                 fontWeight: FontWeight.w800,
                 color: colors.textTitle,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

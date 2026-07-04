@@ -71,8 +71,9 @@ class NotificationNotifier extends SafeChangeNotifier {
       _items = [..._items, ...result.items];
       _hasMore = result.hasMore;
       _page++;
-    } catch (_) {
+    } catch (e) {
       // 추가 로드 실패는 무시 — 다음 스크롤 시 재시도
+      debugPrint('notification loadMore error: $e');
     } finally {
       isLoadingMore = false;
       safeNotify();

@@ -31,6 +31,7 @@ class AppDimens {
   static const double barRadius = 2.0;      // 섹션 바 액센트, 드래그 핸들
   static const double boardCardHeight = 280.0;
   static const double boardHeaderHeight = 35.0;
+  static const double minTouchTarget = 44.0; // HIG/M3 최소 터치 타겟
 
   // ── Spacing (8px 그리드) ──
   static const double paddingHorizontal = 16.0;

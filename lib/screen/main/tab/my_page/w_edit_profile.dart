@@ -182,7 +182,6 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
         children: [
           SecondaryAppBar(
             title: 'edit_profile'.tr(),
-            actions: [_buildSaveAction(context)],
           ),
           Expanded(
             child: SingleChildScrollView(
@@ -208,23 +207,6 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
         ],
       ),
       ),
-    );
-  }
-
-  Widget _buildSaveAction(BuildContext context) {
-    final onAppBar = Theme.of(context).colorScheme.onPrimary;
-    return TextButton(
-      onPressed: _isSaving ? null : _save,
-      child: _isSaving
-          ? SizedBox(
-              width: 18,
-              height: 18,
-              child: CircularProgressIndicator(strokeWidth: 2, color: onAppBar),
-            )
-          : Text(
-              'save'.tr(),
-              style: TextStyle(color: onAppBar, fontWeight: FontWeight.w700),
-            ),
     );
   }
 

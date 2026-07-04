@@ -5,6 +5,7 @@ import 'package:feple/screen/main/tab/home/s_liked_festivals.dart';
 import 'package:feple/screen/main/tab/home/home_state_notifier.dart';
 import 'package:feple/screen/main/tab/home/w_boards_section_skeleton.dart';
 import 'package:feple/screen/main/tab/home/w_favorite_boards_section.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/screen/main/tab/home/w_home_artists_section.dart';
 import 'package:feple/screen/main/tab/home/w_home_festivals_section.dart';
 import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
@@ -206,7 +207,10 @@ class _HomeFragmentState extends State<HomeFragment> {
         ),
         const SizedBox(height: 8),
         if (_notifier.hasError)
-          const SizedBox.shrink()
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: ErrorState(message: 'err_fetch_data'.tr(), onRetry: _notifier.retry),
+          )
         else if (_notifier.boards == null)
           const BoardsSectionSkeleton()
         else

@@ -6,6 +6,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/service/certification_service.dart';
@@ -156,8 +157,8 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
   Widget _buildFestivalSelector(AbstractThemeColors colors) {
     if (_loadingFestivals) {
       return const Padding(
-        padding: EdgeInsets.all(20),
-        child: Center(child: CircularProgressIndicator.adaptive()),
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: SkeletonBox(height: 50, borderRadius: BorderRadius.all(Radius.circular(AppDimens.cardRadiusTiny))),
       );
     }
     if (_festivalLoadError) {

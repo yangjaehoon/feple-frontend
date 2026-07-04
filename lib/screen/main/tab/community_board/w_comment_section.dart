@@ -189,38 +189,56 @@ class _CommentTile extends StatelessWidget {
   Widget _buildActions(AbstractThemeColors colors) {
     return Row(
       children: [
-        GestureDetector(
-          onTap: onToggleLike,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  comment.liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                  size: 13,
-                  color: comment.liked ? colors.likeActiveColor : colors.textSecondary,
+        Semantics(
+          button: true,
+          label: 'like'.tr(),
+          child: SizedBox(
+            height: AppDimens.minTouchTarget,
+            child: GestureDetector(
+              onTap: onToggleLike,
+              behavior: HitTestBehavior.opaque,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      comment.liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                      size: 13,
+                      color: comment.liked ? colors.likeActiveColor : colors.textSecondary,
+                    ),
+                    if (comment.likeCount > 0) ...[
+                      const SizedBox(width: 3),
+                      Text(
+                        comment.likeCount.toString(),
+                        style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
+                      ),
+                    ],
+                  ],
                 ),
-                if (comment.likeCount > 0) ...[
-                  const SizedBox(width: 3),
-                  Text(
-                    comment.likeCount.toString(),
-                    style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
-                  ),
-                ],
-              ],
+              ),
             ),
           ),
         ),
         if (!isReply && onReply != null) ...[
           const SizedBox(width: 4),
-          GestureDetector(
-            onTap: onReply,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-              child: Text(
-                'reply_comment'.tr(),
-                style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary, fontWeight: FontWeight.w500),
+          Semantics(
+            button: true,
+            label: 'reply_comment'.tr(),
+            child: SizedBox(
+              height: AppDimens.minTouchTarget,
+              child: GestureDetector(
+                onTap: onReply,
+                behavior: HitTestBehavior.opaque,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Center(
+                    child: Text(
+                      'reply_comment'.tr(),
+                      style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary, fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),

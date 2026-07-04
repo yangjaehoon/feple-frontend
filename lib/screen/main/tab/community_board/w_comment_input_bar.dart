@@ -74,9 +74,16 @@ class _CommentInputBarState extends State<CommentInputBar> {
           Semantics(
             button: true,
             label: 'cancel_reply'.tr(),
-            child: GestureDetector(
-              onTap: widget.onCancelReply,
-              child: Icon(Icons.close, size: 14, color: colors.textSecondary),
+            child: SizedBox(
+              width: AppDimens.minTouchTarget,
+              height: AppDimens.minTouchTarget,
+              child: GestureDetector(
+                onTap: widget.onCancelReply,
+                behavior: HitTestBehavior.opaque,
+                child: Center(
+                  child: Icon(Icons.close, size: 14, color: colors.textSecondary),
+                ),
+              ),
             ),
           ),
         ],

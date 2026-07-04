@@ -148,14 +148,19 @@ class MainImageSwiperState extends State<MainImageSwiper> {
 
   Widget _buildPhotoPageView() {
     final n = _photosNotifier.photos.length;
-    return SizedBox(
-      height: _pageViewHeight,
-      child: PageView.builder(
-        onPageChanged: _onPageChanged,
-        controller: _pageController,
-        itemCount: n * _loopMultiplier,
-        itemBuilder: (context, virtualIndex) =>
-            _buildPhotoItem(virtualIndex, virtualIndex % n),
+    // 무한 루프 구현을 위해 itemCount를 n*_loopMultiplier로 부풀려서 쓰기 때문에
+    // 스크린리더가 "수만 개 중 n번째"로 안내하는 것을 막기 위해 시맨틱스에서 제외.
+    // 자동 재생되는 장식용 캐러셀이며, 동일 사진은 접근 가능한 다른 화면에서도 노출됨.
+    return ExcludeSemantics(
+      child: SizedBox(
+        height: _pageViewHeight,
+        child: PageView.builder(
+          onPageChanged: _onPageChanged,
+          controller: _pageController,
+          itemCount: n * _loopMultiplier,
+          itemBuilder: (context, virtualIndex) =>
+              _buildPhotoItem(virtualIndex, virtualIndex % n),
+        ),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/popup_menu_item_builder.dart';
+import 'package:feple/common/widget/w_expandable_text.dart';
 import 'package:feple/common/widget/w_inline_badge.dart';
 import 'package:feple/common/widget/w_profile_avatar.dart';
 import 'package:feple/model/comment_detail.dart';
@@ -179,7 +180,7 @@ class _CommentTile extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 2),
-        Text(comment.content, style: TextStyle(color: colors.textTitle)),
+        ExpandableText(text: comment.content, style: TextStyle(color: colors.textTitle)),
         const SizedBox(height: 4),
         _buildActions(colors),
       ],

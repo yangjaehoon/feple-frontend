@@ -5,6 +5,7 @@ import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
+import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
@@ -285,7 +286,7 @@ class _FestivalSearchSheetState extends State<_FestivalSearchSheet> {
               const SizedBox(height: 12),
               const BottomSheetHandle(),
               _buildSearchField(colors),
-              Expanded(child: _buildFestivalList(ctx, scrollCtrl, colors)),
+              Expanded(child: _buildFestivalList(ctx, scrollCtrl)),
             ],
           ),
         );
@@ -313,15 +314,9 @@ class _FestivalSearchSheetState extends State<_FestivalSearchSheet> {
     );
   }
 
-  Widget _buildFestivalList(BuildContext ctx,
-      ScrollController scrollCtrl, AbstractThemeColors colors) {
+  Widget _buildFestivalList(BuildContext ctx, ScrollController scrollCtrl) {
     if (_filtered.isEmpty) {
-      return Center(
-        child: Text(
-          'search_no_result'.tr(),
-          style: TextStyle(color: colors.textSecondary),
-        ),
-      );
+      return EmptyState(icon: Icons.search_off_rounded, title: 'search_no_result'.tr());
     }
     return ListView.builder(
       controller: scrollCtrl,

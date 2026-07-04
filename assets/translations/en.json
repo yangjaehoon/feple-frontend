@@ -144,6 +144,8 @@
   "password": "Password",
   "show_password": "Show password",
   "hide_password": "Hide password",
+  "show_more": "Show more",
+  "show_less": "Show less",
   "login": "Login",
   "enter_email_password": "Please enter email and password.",
   "login_failed": "Login failed",

@@ -108,7 +108,8 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
   }
 
   Future<void> _onCalendarTap(CalendarTapDetails details) async {
-    if (details.targetElement != CalendarElement.appointment) return;
+    // Month 뷰에서는 약속(appointment)을 직접 탭해도 targetElement가
+    // calendarCell로 리포트됨 — appointments 목록 유무로만 판단
     final appointments = details.appointments;
     if (appointments == null || appointments.isEmpty) return;
     final tapped = appointments.first;

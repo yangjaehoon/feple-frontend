@@ -576,7 +576,8 @@ class _PostHeaderSection extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
-            Column(
+            Expanded(
+              child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
@@ -628,6 +629,7 @@ class _PostHeaderSection extends StatelessWidget {
                     ],
                   ),
               ],
+              ),
             ),
           ],
         ),

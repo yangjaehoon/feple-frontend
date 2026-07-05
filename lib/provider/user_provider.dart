@@ -80,18 +80,42 @@ class UserProvider with ChangeNotifier {
     if (_isLoggingOut) return;
     _isLoggingOut = true;
     try {
+      // 각 정리 단계가 실패해도 나머지 단계는 계속 진행 — 하나라도 예외가
+      // 전파되면 _user가 초기화되지 않아 로그아웃이 로컬 화면에 반영되지 않음
       // 서버 리프레시 토큰 취소 — TokenStore.clear() 전에 호출해야 토큰을 읽을 수 있음
       try {
         final refreshToken = await TokenStore.readRefreshToken();
         if (refreshToken != null) {
           await AuthService.instance.revokeRefreshToken(refreshToken);
         }
-      } catch (_) {}
-      await FcmService.instance.stop();
-      await AuthService.instance.signOut();
-      await TokenStore.clear();
-      await _storage.delete(key: _kUserJson);
-      await Prefs.onboardingCompleted.set(false);
+      } catch (e) {
+        debugPrint('[UserProvider] 리프레시 토큰 취소 실패: $e');
+      }
+      try {
+        await FcmService.instance.stop();
+      } catch (e) {
+        debugPrint('[UserProvider] FCM 정리 실패: $e');
+      }
+      try {
+        await AuthService.instance.signOut();
+      } catch (e) {
+        debugPrint('[UserProvider] signOut 실패: $e');
+      }
+      try {
+        await TokenStore.clear();
+      } catch (e) {
+        debugPrint('[UserProvider] 토큰 삭제 실패: $e');
+      }
+      try {
+        await _storage.delete(key: _kUserJson);
+      } catch (e) {
+        debugPrint('[UserProvider] 유저 캐시 삭제 실패: $e');
+      }
+      try {
+        await Prefs.onboardingCompleted.set(false);
+      } catch (e) {
+        debugPrint('[UserProvider] onboarding 초기화 실패: $e');
+      }
       _user = null;
       notifyListeners();
     } finally {

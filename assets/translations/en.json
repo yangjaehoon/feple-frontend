@@ -443,6 +443,7 @@
   "report_detail_hint": "Add details (optional)",
   "report_submit": "Submit Report",
   "report_success": "Report submitted.",
+  "report_failed": "Failed to submit report.",
   "report_duplicate": "You have already reported this post.",
   "report_comment_duplicate": "You have already reported this comment.",
   "report_cancel": "Cancel",
@@ -541,6 +542,9 @@
   "notif_comment": "Comment notifications",
   "notif_festival": "Festival notifications",
   "notif_song_request": "Song request notifications",
+  "notif_delete_all_title": "Delete all notifications?",
+  "notif_delete_all_content": "This cannot be undone.",
+  "notif_delete_all_confirm": "Delete all",
   "privacy_policy": "Privacy Policy",
   "terms_of_service": "Terms of Service",
   "app_version": "App Version",
@@ -580,5 +584,10 @@
   "no_festival_filter_hint": "No festivals match your filters",
   "filter_reset_action": "Reset filters",
   "timetable_delete_title": "Delete entry",
-  "timetable_delete_confirm": "Delete this timetable entry?"
+  "timetable_delete_confirm": "Delete this timetable entry?",
+  "level_seed": "Seed",
+  "level_sprout": "Sprout",
+  "level_bloom": "Bloom",
+  "level_festival": "Festivalgoer",
+  "level_legend": "Legend"
 }

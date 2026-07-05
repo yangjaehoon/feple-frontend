@@ -35,9 +35,10 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   bool _isVerifying = false;
   bool _isCanceling = false;
   bool _isChangingEmail = false;
+  bool _isResending = false;
   String? _errorMessage;
 
-  bool get _busy => _isVerifying || _isCanceling || _isChangingEmail;
+  bool get _busy => _isVerifying || _isCanceling || _isChangingEmail || _isResending;
 
   @override
   void initState() {
@@ -116,13 +117,17 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   }
 
   Future<void> _onResendTapped() async {
+    setState(() => _isResending = true);
     try {
       await AuthService.instance.resendVerificationEmail();
+      if (!mounted) return;
       _startResendCooldown();
-      if (mounted) context.showSuccessSnackbar('verification_email_resent'.tr());
+      context.showSuccessSnackbar('verification_email_resent'.tr());
     } catch (e) {
       debugPrint('[VerifyEmail] 재발송 실패: $e');
       if (mounted) context.showErrorSnackbar('unknown_error'.tr());
+    } finally {
+      if (mounted) setState(() => _isResending = false);
     }
   }
 

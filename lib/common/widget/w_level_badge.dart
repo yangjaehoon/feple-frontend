@@ -1,3 +1,4 @@
+import 'package:feple/common/common.dart';
 import 'package:flutter/material.dart';
 
 /// 닉네임 옆에 표시하는 사용자 레벨 이모티콘.
@@ -33,11 +34,11 @@ class LevelBadge extends StatelessWidget {
       };
 
   static String _label(String? level) => switch (level) {
-        'SEED'     => '씨앗',
-        'SPROUT'   => '새싹',
-        'BLOOM'    => '꽃',
-        'FESTIVAL' => '페스티버',
-        'LEGEND'   => '레전드',
+        'SEED'     => 'level_seed'.tr(),
+        'SPROUT'   => 'level_sprout'.tr(),
+        'BLOOM'    => 'level_bloom'.tr(),
+        'FESTIVAL' => 'level_festival'.tr(),
+        'LEGEND'   => 'level_legend'.tr(),
         _          => '',
       };
 }

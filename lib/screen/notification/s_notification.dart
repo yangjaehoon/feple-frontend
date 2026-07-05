@@ -156,11 +156,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Future<void> _onDeleteAll() async {
     final confirmed = await showConfirmDialog(
       context,
-      title: context.isEnglish ? 'Delete all notifications?' : '알림을 모두 삭제할까요?',
-      content: context.isEnglish
-          ? 'This cannot be undone.'
-          : '삭제한 알림은 복구할 수 없습니다.',
-      confirmLabel: context.isEnglish ? 'Delete all' : '모두 삭제',
+      title: 'notif_delete_all_title'.tr(),
+      content: 'notif_delete_all_content'.tr(),
+      confirmLabel: 'notif_delete_all_confirm'.tr(),
     );
     if (confirmed == true) {
       await _notifier.deleteAll();
@@ -255,7 +253,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
               ),
             if (_notifier.items.isNotEmpty)
               IconButton(
-                tooltip: context.isEnglish ? 'Delete all' : '모두 삭제',
+                tooltip: 'notif_delete_all_confirm'.tr(),
                 icon: Icon(Icons.delete_sweep_rounded, color: colors.textSecondary),
                 onPressed: _onDeleteAll,
               ),

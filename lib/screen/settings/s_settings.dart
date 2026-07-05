@@ -403,7 +403,7 @@ class _LanguageItemState extends State<_LanguageItem> {
       initialSelection: _selected,
       enableFilter: false,
       requestFocusOnTap: false,
-      leadingIcon: Image.asset(_selected.flagPath, width: 20),
+      leadingIcon: Image.asset(_selected.flagPath, width: 16, height: 16),
       textStyle: TextStyle(
         fontSize: AppDimens.fontSizeMd,
         fontWeight: FontWeight.w600,
@@ -433,7 +433,7 @@ class _LanguageItemState extends State<_LanguageItem> {
         return DropdownMenuEntry<Language>(
           value: l,
           label: l.name.capitalizeFirst!,
-          leadingIcon: Image.asset(l.flagPath, width: 20),
+          leadingIcon: Image.asset(l.flagPath, width: 16, height: 16),
         );
       }).toList(),
       onSelected: (value) async {

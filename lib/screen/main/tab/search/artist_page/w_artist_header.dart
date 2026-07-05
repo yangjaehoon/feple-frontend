@@ -4,6 +4,7 @@ import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/artist_page/artist_follow_notifier.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_festival_calendar.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../../common/app_events.dart';
@@ -26,9 +27,8 @@ class ArtistNameLike extends StatefulWidget {
 }
 
 class _ArtistNameLikeState extends State<ArtistNameLike>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, NavigationGuard {
   late AnimationController _heartController;
-  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -115,26 +115,18 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
         _buildActionIcon(
           icon: Icons.calendar_month_rounded,
           label: 'action_schedule'.tr(),
-          onTap: () {
-            if (_isNavigating) return;
-            _isNavigating = true;
-            Navigator.push(
-              context,
-              SlideRoute(builder: (context) => FestivalCalendar(artistId: widget.artistId, artistName: widget.artistName)),
-            ).whenComplete(() { if (mounted) _isNavigating = false; });
-          },
+          onTap: () => guardedNavigate(() => Navigator.push(
+            context,
+            SlideRoute(builder: (context) => FestivalCalendar(artistId: widget.artistId, artistName: widget.artistName)),
+          )),
         ),
         const SizedBox(width: 4),
         _buildActionIcon(
           icon: Icons.photo_library_rounded,
           label: 'action_gallery'.tr(),
-          onTap: () {
-            if (_isNavigating) return;
-            _isNavigating = true;
-            Navigator.of(context, rootNavigator: true).push(
-              SlideRoute(builder: (context) => ImageCollectionScreen(artistName: widget.artistName, artistId: widget.artistId)),
-            ).whenComplete(() { if (mounted) _isNavigating = false; });
-          },
+          onTap: () => guardedNavigate(() => Navigator.of(context, rootNavigator: true).push(
+            SlideRoute(builder: (context) => ImageCollectionScreen(artistName: widget.artistName, artistId: widget.artistId)),
+          )),
         ),
       ],
     );

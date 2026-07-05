@@ -38,7 +38,7 @@ void setupDependencies() {
   sl.registerLazySingleton<AuthService>(() => AuthService.instance);
   sl.registerLazySingleton<FcmService>(() => FcmService.instance);
 
-  sl.registerLazySingleton<ArtistFollowService>(() => ArtistFollowService());
+  sl.registerLazySingleton<ArtistFollowService>(() => ArtistFollowService(userService: sl<UserService>()));
   sl.registerLazySingleton<ArtistSuggestionService>(() => ArtistSuggestionService());
   sl.registerLazySingleton<ArtistPhotoService>(() => ArtistPhotoService());
   sl.registerLazySingleton<ArtistPhotoReadable>(() => sl<ArtistPhotoService>());

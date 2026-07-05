@@ -8,6 +8,7 @@ import 'package:feple/common/constant/board_types.dart';
 import 'package:feple/common/app_events.dart';
 import 'package:feple/model/post_changed_event.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -32,7 +33,7 @@ class CommunityPost extends StatefulWidget {
   State<CommunityPost> createState() => _CommunityPostState();
 }
 
-class _CommunityPostState extends State<CommunityPost> {
+class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
   static const _pageSize = 20;
   static const _sortLatest = 'latest';
   static const _sortPopular = 'popular';
@@ -52,7 +53,6 @@ class _CommunityPostState extends State<CommunityPost> {
   bool _isSearching = false;
   List<Post>? _searchResults;
   bool _showScrollTop = false;
-  bool _isNavigating = false;
   Timer? _searchDebounce;
 
   String get _serviceBoardType => widget.boardType;
@@ -98,15 +98,9 @@ class _CommunityPostState extends State<CommunityPost> {
   }
 
   Future<void> _openPost(Post post) async {
-    if (_isNavigating) return;
-    _isNavigating = true;
-    try {
-      await Navigator.of(context, rootNavigator: true).push(
-        SlideRoute(builder: (_) => PostDetailCard.fromPost(boardName: widget.boardName, post: post)),
-      );
-    } finally {
-      if (mounted) _isNavigating = false;
-    }
+    await guardedNavigate(() => Navigator.of(context, rootNavigator: true).push(
+      SlideRoute(builder: (_) => PostDetailCard.fromPost(boardName: widget.boardName, post: post)),
+    ));
   }
 
   Future<void> _load() async {

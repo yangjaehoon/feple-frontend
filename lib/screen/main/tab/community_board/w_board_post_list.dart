@@ -13,7 +13,7 @@ import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
 import 'package:feple/screen/main/tab/my_page/s_other_user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../provider/user_provider.dart';
+import 'package:feple/provider/user_provider.dart';
 
 class BoardPostList extends StatefulWidget {
   final String boardName;

@@ -5,6 +5,7 @@ import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/festival_information/s_timetable_fullscreen.dart';
@@ -32,13 +33,12 @@ class FestivalTimetable extends StatefulWidget {
   State<FestivalTimetable> createState() => FestivalTimetableState();
 }
 
-class FestivalTimetableState extends State<FestivalTimetable> {
+class FestivalTimetableState extends State<FestivalTimetable> with NavigationGuard {
   final _vContent = ScrollController();
   final _vTime = ScrollController();
   final _hContent = ScrollController();
   final _hHeader = ScrollController();
   bool _isVerticalScrollLocked = false, _isHorizontalScrollLocked = false;
-  bool _isNavigating = false;
 
   late final TimetableNotifier _notifier;
 
@@ -129,20 +129,16 @@ class FestivalTimetableState extends State<FestivalTimetable> {
           const Spacer(),
           if (!_notifier.isLoading && _notifier.error == null && _notifier.hasEntries)
             GestureDetector(
-              onTap: () {
-                if (_isNavigating) return;
-                _isNavigating = true;
-                Navigator.push(
-                  context,
-                  SlideRoute(builder: (_) => TimetableFullscreenScreen(
-                    festivalId: widget.festivalId,
-                    entries: _notifier.entries,
-                    followedNames: _notifier.followedNames,
-                    dates: _notifier.dates,
-                    initialDate: _notifier.selectedDate,
-                  )),
-                ).whenComplete(() { if (mounted) _isNavigating = false; });
-              },
+              onTap: () => guardedNavigate(() => Navigator.push(
+                context,
+                SlideRoute(builder: (_) => TimetableFullscreenScreen(
+                  festivalId: widget.festivalId,
+                  entries: _notifier.entries,
+                  followedNames: _notifier.followedNames,
+                  dates: _notifier.dates,
+                  initialDate: _notifier.selectedDate,
+                )),
+              )),
               child: Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(

@@ -196,6 +196,9 @@ class PostDetailNotifier extends SafeChangeNotifier {
 
   Future<void> deleteComment(int commentId) async {
     final originalComments = List<CommentDetail>.from(comments);
+    // 부모 댓글을 지우면 그 답글들도 화면에서 함께 제거 — 부모 없는 답글이
+    // 고아 상태로 남아 보이는 것을 막기 위함 (다른 mutator와 달리 단일 항목이
+    // 아닌 이유). 서버 delete가 실패하면 아래 catch에서 답글까지 함께 복원됨
     comments = comments
         .where((c) => c.id != commentId && c.parentId != commentId)
         .toList();
@@ -265,19 +268,14 @@ class PostDetailNotifier extends SafeChangeNotifier {
     if (isScrapping || userId == null) return;
     isScrapping = true;
     HapticFeedback.lightImpact();
-    // 낙관적 업데이트 (TDA: 서버 응답 bool을 받아 결정하는 대신, 바로 토글 지시)
-    final wasScraped = scraped;
-    scraped = !scraped;
-    scrapCount += scraped ? 1 : -1;
-    safeNotify();
     try {
-      await _scrapService.toggleScrap(postId);
-      onSuccess?.call(scraped ? 'scrap_done' : 'scrap_cancel');
-    } catch (e) {
-      scraped = wasScraped;
-      scrapCount += wasScraped ? 1 : -1;
-      debugPrint('toggleScrap error: $e');
-      onError?.call('scrap_failed');
+      await optimisticToggle(
+        scraped,
+        apply: (v) { scraped = v; scrapCount += v ? 1 : -1; },
+        action: () => _scrapService.toggleScrap(postId),
+        onSuccess: (v) => onSuccess?.call(v ? 'scrap_done' : 'scrap_cancel'),
+        onError: () => onError?.call('scrap_failed'),
+      );
     } finally {
       isScrapping = false;
       safeNotify();

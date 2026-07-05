@@ -6,6 +6,7 @@ import 'package:feple/screen/notification/s_notification.dart';
 import 'package:feple/screen/main/tab/search/s_unified_search.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:flutter/material.dart';
 
 class FepleAppBar extends StatefulWidget {
@@ -19,9 +20,8 @@ class FepleAppBar extends StatefulWidget {
   State<FepleAppBar> createState() => _FepleAppBarState();
 }
 
-class _FepleAppBarState extends State<FepleAppBar> {
+class _FepleAppBarState extends State<FepleAppBar> with NavigationGuard {
   final _countNotifier = sl<NotificationCountNotifier>();
-  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -104,12 +104,8 @@ class _FepleAppBarState extends State<FepleAppBar> {
     return IconButton(
       tooltip: 'search'.tr(),
       icon: Icon(Icons.search_rounded, color: context.appColors.appBarIconColor),
-      onPressed: () {
-        if (_isNavigating) return;
-        _isNavigating = true;
-        Navigator.push(context, SlideRoute(builder: (_) => const UnifiedSearchScreen()))
-            .whenComplete(() { if (mounted) _isNavigating = false; });
-      },
+      onPressed: () => guardedNavigate(() =>
+          Navigator.push(context, SlideRoute(builder: (_) => const UnifiedSearchScreen()))),
     );
   }
 

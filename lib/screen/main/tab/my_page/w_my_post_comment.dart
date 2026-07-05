@@ -11,6 +11,7 @@ import 'package:feple/screen/main/tab/my_page/w_my_liked_posts.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_posts.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_scraps.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
@@ -22,9 +23,8 @@ class MyPostCommentWidget extends StatefulWidget {
   State<MyPostCommentWidget> createState() => MyPostCommentWidgetState();
 }
 
-class MyPostCommentWidgetState extends State<MyPostCommentWidget> {
+class MyPostCommentWidgetState extends State<MyPostCommentWidget> with NavigationGuard {
   late Future<UserStats> _statsFuture;
-  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -37,15 +37,8 @@ class MyPostCommentWidgetState extends State<MyPostCommentWidget> {
 
   void refresh() => setState(() { _statsFuture = _fetchStats(); });
 
-  Future<void> _navigate(Widget screen) async {
-    if (_isNavigating) return;
-    setState(() => _isNavigating = true);
-    try {
-      await Navigator.push(context, SlideRoute(builder: (_) => screen));
-    } finally {
-      if (mounted) setState(() => _isNavigating = false);
-    }
-  }
+  Future<void> _navigate(Widget screen) =>
+      guardedNavigate(() => Navigator.push(context, SlideRoute(builder: (_) => screen)));
 
   @override
   Widget build(BuildContext context) {

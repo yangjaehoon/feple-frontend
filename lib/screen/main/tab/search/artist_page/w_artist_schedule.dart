@@ -11,6 +11,7 @@ import 'package:feple/screen/main/tab/search/artist_page/s_artist_schedule_list.
 import 'package:feple/screen/main/tab/search/artist_page/w_schedule_list_skeleton.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_schedule_list_tile.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:flutter/material.dart';
 
 class ArtistSchedule extends StatefulWidget {
@@ -27,10 +28,9 @@ class ArtistSchedule extends StatefulWidget {
   State<ArtistSchedule> createState() => ArtistScheduleState();
 }
 
-class ArtistScheduleState extends State<ArtistSchedule> {
+class ArtistScheduleState extends State<ArtistSchedule> with NavigationGuard {
   final _scheduleService = sl<ArtistScheduleService>();
   late Future<List<ArtistScheduleModel>> _scheduleFuture;
-  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -54,19 +54,15 @@ class ArtistScheduleState extends State<ArtistSchedule> {
             icon: Icons.calendar_month_rounded,
             title: 'artist_schedule_title'.tr(args: [widget.artistName]),
             headerColor: colors.activate,
-            onTap: () {
-              if (_isNavigating) return;
-              _isNavigating = true;
-              Navigator.push(
-                context,
-                SlideRoute(
-                  builder: (_) => ArtistScheduleListScreen(
-                    artistId: widget.artistId,
-                    artistName: widget.artistName,
-                  ),
+            onTap: () => guardedNavigate(() => Navigator.push(
+              context,
+              SlideRoute(
+                builder: (_) => ArtistScheduleListScreen(
+                  artistId: widget.artistId,
+                  artistName: widget.artistName,
                 ),
-              ).whenComplete(() { if (mounted) _isNavigating = false; });
-            },
+              ),
+            )),
           ),
           _buildScheduleList(colors),
         ],

@@ -11,6 +11,7 @@ import 'package:feple/service/auth_service.dart';
 import 'package:feple/service/fcm_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -25,13 +26,12 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool _isEmailLoading = false;
   bool _isKakaoLoading = false;
   bool _isAppleLoading = false;
-  bool _isNavigating = false;
   String? _emailError;
   String? _passwordError;   // 빈 필드 → 빨간 테두리
   String? _authError;       // 인증 실패 → 텍스트만, 테두리 없음
@@ -282,12 +282,8 @@ class _LoginScreenState extends State<LoginScreen> {
           style: TextStyle(color: themeColors.textSecondary, fontSize: AppDimens.fontSizeMd),
         ),
         TextButton(
-          onPressed: () {
-            if (_isNavigating) return;
-            _isNavigating = true;
-            Navigator.push(context, SlideRoute(builder: (_) => const SignupScreen()))
-                .whenComplete(() { if (mounted) _isNavigating = false; });
-          },
+          onPressed: () => guardedNavigate(() =>
+              Navigator.push(context, SlideRoute(builder: (_) => const SignupScreen()))),
           style: TextButton.styleFrom(
             foregroundColor: themeColors.activate,
             padding: EdgeInsets.zero,

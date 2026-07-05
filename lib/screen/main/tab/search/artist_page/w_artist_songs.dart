@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
@@ -27,10 +28,9 @@ class ArtistSongs extends StatefulWidget {
   State<ArtistSongs> createState() => ArtistSongsState();
 }
 
-class ArtistSongsState extends State<ArtistSongs> {
+class ArtistSongsState extends State<ArtistSongs> with NavigationGuard {
   final _songService = sl<SongService>();
   late Future<List<SongModel>> _songsFuture;
-  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -54,19 +54,15 @@ class ArtistSongsState extends State<ArtistSongs> {
             icon: Icons.music_note_rounded,
             title: 'artist_songs_title'.tr(args: [widget.artistName]),
             headerColor: colors.activate,
-            onTap: () {
-              if (_isNavigating) return;
-              _isNavigating = true;
-              Navigator.push(
-                context,
-                SlideRoute(
-                  builder: (_) => ArtistSongsScreen(
-                    artistId: widget.artistId,
-                    artistName: widget.artistName,
-                  ),
+            onTap: () => guardedNavigate(() => Navigator.push(
+              context,
+              SlideRoute(
+                builder: (_) => ArtistSongsScreen(
+                  artistId: widget.artistId,
+                  artistName: widget.artistName,
                 ),
-              ).whenComplete(() { if (mounted) _isNavigating = false; });
-            },
+              ),
+            )),
           ),
           _buildSongList(colors),
         ],

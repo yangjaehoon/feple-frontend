@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_level_badge.dart';
@@ -10,7 +11,6 @@ import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/certification_model.dart';
 import 'package:feple/model/user_model.dart';
-import 'package:feple/model/user_stats_model.dart';
 import 'package:feple/screen/main/tab/my_page/cert_status_style.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_posts.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
@@ -38,7 +38,7 @@ class OtherUserProfileScreen extends StatefulWidget {
   State<OtherUserProfileScreen> createState() => _OtherUserProfileScreenState();
 }
 
-class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
+class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with NavigationGuard {
   final _userService = sl<UserService>();
   final _activityService = sl<UserActivityService>();
   final _certService = sl<CertificationService>();
@@ -49,7 +49,6 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
   int? _postCount;
   List<CertificationModel>? _certifications;
   bool _hasError = false;
-  bool _isNavigating = false;
   bool _isBlocked = false;
   bool _isBlockLoading = false;
 
@@ -62,19 +61,17 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
   Future<void> _load() async {
     setState(() { _hasError = false; });
     try {
-      final results = await Future.wait([
+      final (user, stats, certifications, blockedList) = await (
         _userService.fetchUser(widget.userId),
         _activityService.fetchStats(widget.userId),
         _certService.getPublicCertifications(widget.userId),
         _blockService.getBlockedUsers(),
-      ]);
+      ).wait;
       if (!mounted) return;
-      final stats = results[1] as UserStats;
-      final blockedList = results[3] as List;
       setState(() {
-        _user = results[0] as User;
+        _user = user;
         _postCount = stats.postCount;
-        _certifications = results[2] as List<CertificationModel>;
+        _certifications = certifications;
         _isBlocked = blockedList.any((u) => u.userId == widget.userId);
       });
     } catch (_) {
@@ -328,10 +325,8 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: TapScale(
         onTap: () {
-          if (_isNavigating) return;
-          _isNavigating = true;
           final nickname = _user?.nickname ?? widget.nickname;
-          Navigator.push(
+          guardedNavigate(() => Navigator.push(
             context,
             SlideRoute(
               builder: (_) => MyPostsView(
@@ -339,7 +334,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> {
                 title: 'user_posts'.tr(args: [nickname]),
               ),
             ),
-          ).whenComplete(() { if (mounted) _isNavigating = false; });
+          ));
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),

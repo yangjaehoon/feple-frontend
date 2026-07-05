@@ -4,6 +4,7 @@ import 'package:feple/common/theme/theme_util.dart';
 import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/my_page/w_edit_profile.dart';
@@ -30,9 +31,8 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
   bool _clearingCache = false;
-  bool _isNavigating = false;
   String _appVersion = '';
 
   @override
@@ -146,23 +146,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _SettingsItem(
         icon: Icons.edit_rounded,
         label: 'edit_profile'.tr(),
-        onTap: () {
-          if (_isNavigating) return;
-          _isNavigating = true;
-          Navigator.push(context, SlideRoute(builder: (_) => const EditProfileWidget()))
-              .whenComplete(() { if (mounted) _isNavigating = false; });
-        },
+        onTap: () => guardedNavigate(() =>
+            Navigator.push(context, SlideRoute(builder: (_) => const EditProfileWidget()))),
       ),
       const _ItemDivider(),
       _SettingsItem(
         icon: Icons.block_rounded,
         label: 'blocked_users'.tr(),
-        onTap: () {
-          if (_isNavigating) return;
-          _isNavigating = true;
-          Navigator.push(context, SlideRoute(builder: (_) => const BlockedUsersScreen()))
-              .whenComplete(() { if (mounted) _isNavigating = false; });
-        },
+        onTap: () => guardedNavigate(() =>
+            Navigator.push(context, SlideRoute(builder: (_) => const BlockedUsersScreen()))),
       ),
       const _ItemDivider(),
       _SettingsItem(
@@ -212,12 +204,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _SettingsItem(
         icon: Icons.notifications_rounded,
         label: 'notif_settings'.tr(),
-        onTap: () {
-          if (_isNavigating) return;
-          _isNavigating = true;
-          Navigator.push(context, SlideRoute(builder: (_) => const NotificationSettingsScreen()))
-              .whenComplete(() { if (mounted) _isNavigating = false; });
-        },
+        onTap: () => guardedNavigate(() =>
+            Navigator.push(context, SlideRoute(builder: (_) => const NotificationSettingsScreen()))),
       ),
     ];
   }
@@ -256,12 +244,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _SettingsItem(
         icon: Icons.code_rounded,
         label: 'opensource'.tr(),
-        onTap: () {
-          if (_isNavigating) return;
-          _isNavigating = true;
-          Navigator.push(context, SlideRoute(builder: (_) => const OpensourceScreen()))
-              .whenComplete(() { if (mounted) _isNavigating = false; });
-        },
+        onTap: () => guardedNavigate(() =>
+            Navigator.push(context, SlideRoute(builder: (_) => const OpensourceScreen()))),
       ),
       const _ItemDivider(),
       _VersionItem(version: _appVersion),

@@ -15,6 +15,7 @@ import 'package:feple/screen/main/tab/search/festival_information/s_festival_art
 import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -27,9 +28,8 @@ class FestivalArtists extends StatefulWidget {
   State<FestivalArtists> createState() => FestivalArtistsState();
 }
 
-class FestivalArtistsState extends State<FestivalArtists> {
+class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
   late final FestivalArtistsNotifier _notifier;
-  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -71,14 +71,10 @@ class FestivalArtistsState extends State<FestivalArtists> {
       icon: Icons.music_note_rounded,
       title: 'participating_artists'.tr(),
       headerColor: colors.activate,
-      onTap: () {
-        if (_isNavigating) return;
-        _isNavigating = true;
-        Navigator.push(
-          context,
-          SlideRoute(builder: (_) => FestivalArtistListScreen(notifier: _notifier)),
-        ).whenComplete(() { if (mounted) _isNavigating = false; });
-      },
+      onTap: () => guardedNavigate(() => Navigator.push(
+        context,
+        SlideRoute(builder: (_) => FestivalArtistListScreen(notifier: _notifier)),
+      )),
     );
   }
 
@@ -153,14 +149,10 @@ class FestivalArtistsState extends State<FestivalArtists> {
 
   Widget _buildMoreItem(AbstractThemeColors colors) {
     return GestureDetector(
-      onTap: () {
-        if (_isNavigating) return;
-        _isNavigating = true;
-        Navigator.push(
-          context,
-          SlideRoute(builder: (_) => FestivalArtistListScreen(notifier: _notifier)),
-        ).whenComplete(() { if (mounted) _isNavigating = false; });
-      },
+      onTap: () => guardedNavigate(() => Navigator.push(
+        context,
+        SlideRoute(builder: (_) => FestivalArtistListScreen(notifier: _notifier)),
+      )),
       child: SizedBox(
         width: 64,
         child: Column(
@@ -196,20 +188,16 @@ class FestivalArtistsState extends State<FestivalArtists> {
 
   Widget _buildArtistItem(BuildContext context, FestivalArtistItem artist, bool isFollowed, AbstractThemeColors colors) {
     return GestureDetector(
-      onTap: () {
-        if (_isNavigating) return;
-        _isNavigating = true;
-        Navigator.push(
-          context,
-          SlideRoute(builder: (_) => ArtistScreen(
-            artistId: artist.artistId,
-            artistName: artist.artistName,
-            artistNameEn: artist.artistNameEn,
-            followerCount: 0,
-            profileImageUrl: artist.profileImageUrl,
-          )),
-        ).whenComplete(() { if (mounted) _isNavigating = false; });
-      },
+      onTap: () => guardedNavigate(() => Navigator.push(
+        context,
+        SlideRoute(builder: (_) => ArtistScreen(
+          artistId: artist.artistId,
+          artistName: artist.artistName,
+          artistNameEn: artist.artistNameEn,
+          followerCount: 0,
+          profileImageUrl: artist.profileImageUrl,
+        )),
+      )),
       child: SizedBox(
         width: 64,
         child: Column(

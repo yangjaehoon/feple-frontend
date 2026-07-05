@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/screen/main/tab/my_page/w_festival_certification.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_post_comment.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_song_requests.dart';
@@ -18,12 +19,11 @@ class MypageFragment extends StatefulWidget {
   State<MypageFragment> createState() => _MypageFragmentState();
 }
 
-class _MypageFragmentState extends State<MypageFragment> {
+class _MypageFragmentState extends State<MypageFragment> with NavigationGuard {
   final _profileKey = GlobalKey<ProfileWidgetState>();
   final _statsKey = GlobalKey<MyPostCommentWidgetState>();
   final _certKey = GlobalKey<FtvCertificationWidgetState>();
   final _songsKey = GlobalKey<SongRequestHistoryWidgetState>();
-  bool _isNavigating = false;
 
   Future<void> _onRefresh() async {
     _profileKey.currentState?.refresh();
@@ -76,12 +76,8 @@ class _MypageFragmentState extends State<MypageFragment> {
     return IconButton(
       tooltip: 'settings'.tr(),
       icon: Icon(Icons.settings_rounded, color: context.appColors.appBarIconColor),
-      onPressed: () {
-        if (_isNavigating) return;
-        _isNavigating = true;
-        Navigator.push(context, SlideRoute(builder: (_) => const SettingsScreen()))
-            .whenComplete(() { if (mounted) _isNavigating = false; });
-      },
+      onPressed: () => guardedNavigate(() =>
+          Navigator.push(context, SlideRoute(builder: (_) => const SettingsScreen()))),
     );
   }
 }

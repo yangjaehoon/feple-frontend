@@ -21,11 +21,14 @@ abstract class SafeChangeNotifier extends ChangeNotifier {
     required void Function(bool) apply,
     required Future<void> Function() action,
     void Function()? onError,
+    void Function(bool newValue)? onSuccess,
   }) async {
-    apply(!current);
+    final newValue = !current;
+    apply(newValue);
     safeNotify();
     try {
       await action();
+      onSuccess?.call(newValue);
     } catch (_) {
       apply(current);
       safeNotify();

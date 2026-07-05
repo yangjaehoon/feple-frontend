@@ -1,7 +1,12 @@
 import 'package:feple/model/follow_status.dart';
 import 'package:feple/network/dio_client.dart';
+import 'package:feple/service/user_service.dart';
 
 class ArtistFollowService {
+  final UserService userService;
+
+  ArtistFollowService({required this.userService});
+
   Future<void> follow(int artistId) =>
       DioClient.dio.post('/artists/$artistId/follow');
 
@@ -13,18 +18,15 @@ class ArtistFollowService {
     return FollowStatus.fromJson(response.data as Map<String, dynamic>);
   }
 
+  // UserService.fetchFollowingArtists와 같은 /users/{id}/following 엔드포인트를
+  // 각자 파싱하던 중복을 없애고 하나의 결과에서 파생시킴
   Future<Set<int>> getFollowingIds(int userId) async {
-    final data = await _fetchFollowing(userId);
-    return data.map((a) => (a['id'] as num).toInt()).toSet();
+    final artists = await userService.fetchFollowingArtists(userId);
+    return artists.map((a) => a.id).toSet();
   }
 
   Future<Set<String>> fetchFollowedArtistNames(int userId) async {
-    final data = await _fetchFollowing(userId);
-    return data.map((a) => a['name'] as String? ?? '').where((n) => n.isNotEmpty).toSet();
-  }
-
-  Future<List<Map<String, dynamic>>> _fetchFollowing(int userId) async {
-    final response = await DioClient.dio.get('/users/$userId/following');
-    return (response.data as List).whereType<Map<String, dynamic>>().toList();
+    final artists = await userService.fetchFollowingArtists(userId);
+    return artists.map((a) => a.name).where((n) => n.isNotEmpty).toSet();
   }
 }

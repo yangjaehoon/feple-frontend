@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -27,7 +28,7 @@ class UnifiedSearchScreen extends StatefulWidget {
 }
 
 class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, NavigationGuard {
   static const _prefsKey = 'feple_recent_searches';
   static const _maxRecent = 10;
 
@@ -36,7 +37,6 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
   final _festivalService = sl<FestivalService>();
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
-  bool _isNavigating = false;
   Timer? _debounce;
   late final TabController _tabController;
 
@@ -154,36 +154,34 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
   }
 
   Future<void> _navigateDirectly(SearchSuggestion suggestion) async {
-    if (_isNavigating) return;
-    _isNavigating = true;
-    _focusNode.unfocus();
-    await _addRecentSearch(suggestion.label.trim());
-    try {
-      if (suggestion.type == SearchType.artist) {
-        final artist = await _artistService.fetchArtistById(suggestion.id!);
-        if (!mounted) return;
-        await Navigator.push(context, SlideRoute(
-          builder: (_) => ArtistScreen(
-            artistId: artist.id,
-            artistName: artist.name,
-            artistNameEn: artist.nameEn,
-            followerCount: artist.followerCount,
-            profileImageUrl: artist.profileImageUrl,
-          ),
-        ));
-      } else {
-        final festival = await _festivalService.fetchById(suggestion.id!);
-        if (!mounted) return;
-        await Navigator.push(context, SlideRoute(
-          builder: (_) => FestivalInformationFragment(poster: festival),
-        ));
+    await guardedNavigate(() async {
+      _focusNode.unfocus();
+      await _addRecentSearch(suggestion.label.trim());
+      try {
+        if (suggestion.type == SearchType.artist) {
+          final artist = await _artistService.fetchArtistById(suggestion.id!);
+          if (!mounted) return;
+          await Navigator.push(context, SlideRoute(
+            builder: (_) => ArtistScreen(
+              artistId: artist.id,
+              artistName: artist.name,
+              artistNameEn: artist.nameEn,
+              followerCount: artist.followerCount,
+              profileImageUrl: artist.profileImageUrl,
+            ),
+          ));
+        } else {
+          final festival = await _festivalService.fetchById(suggestion.id!);
+          if (!mounted) return;
+          await Navigator.push(context, SlideRoute(
+            builder: (_) => FestivalInformationFragment(poster: festival),
+          ));
+        }
+      } catch (e) {
+        debugPrint('[Search] 직접 이동 실패: $e');
+        if (mounted) _search(suggestion.label);
       }
-    } catch (e) {
-      debugPrint('[Search] 직접 이동 실패: $e');
-      if (mounted) _search(suggestion.label);
-    } finally {
-      if (mounted) _isNavigating = false;
-    }
+    });
   }
 
   @override

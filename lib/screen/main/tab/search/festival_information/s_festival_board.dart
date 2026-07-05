@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -197,14 +198,13 @@ class _FestivalBoardTabContent extends StatefulWidget {
 }
 
 class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin, NavigationGuard {
   final _scrollController = ScrollController();
   List<Post> _posts = [];
   bool _isLoading = true;
   bool _hasError = false;
   bool _isLoadingMore = false;
   bool _hasMore = true;
-  bool _isNavigating = false;
   int? _nextCursor;
 
   @override
@@ -281,9 +281,7 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
   }
 
   Future<void> _openPost(Post post) async {
-    if (_isNavigating) return;
-    _isNavigating = true;
-    try {
+    await guardedNavigate(() async {
       await Navigator.of(context, rootNavigator: true).push(
         SlideRoute(
           builder: (_) => PostDetailCard.fromPost(boardName: widget.tab.name, post: post),
@@ -291,9 +289,7 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
       );
       if (!mounted) return;
       _refresh();
-    } finally {
-      if (mounted) _isNavigating = false;
-    }
+    });
   }
 
   @override

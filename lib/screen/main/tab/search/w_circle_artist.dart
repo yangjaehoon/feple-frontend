@@ -6,6 +6,7 @@ import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/w_artist_card.dart';
 import 'package:feple/screen/main/tab/search/w_artist_suggestion_sheet.dart';
@@ -165,9 +166,8 @@ class _ArtistContent extends StatefulWidget {
   State<_ArtistContent> createState() => _ArtistContentState();
 }
 
-class _ArtistContentState extends State<_ArtistContent> {
+class _ArtistContentState extends State<_ArtistContent> with NavigationGuard {
   String? _selectedGenre;
-  bool _isNavigating = false;
 
   @override
   Widget build(BuildContext context) {
@@ -233,23 +233,18 @@ class _ArtistContentState extends State<_ArtistContent> {
                       child: AnimatedListItem(
                         index: index,
                         child: TapScale(
-                          onTap: () {
-                            if (_isNavigating) return;
-                            _isNavigating = true;
-                            Navigator.push(
-                              context,
-                              SlideRoute(
-                                builder: (context) => ArtistScreen(
-                                  artistName: artists[index].name,
-                                  artistNameEn: artists[index].nameEn,
-                                  artistId: artists[index].id,
-                                  followerCount: artists[index].followerCount,
-                                  profileImageUrl: artists[index].profileImageUrl,
-                                ),
+                          onTap: () => guardedNavigate(() => Navigator.push(
+                            context,
+                            SlideRoute(
+                              builder: (context) => ArtistScreen(
+                                artistName: artists[index].name,
+                                artistNameEn: artists[index].nameEn,
+                                artistId: artists[index].id,
+                                followerCount: artists[index].followerCount,
+                                profileImageUrl: artists[index].profileImageUrl,
                               ),
-                            ).then((_) { if (mounted) widget.onRefreshFollowedIds(); })
-                             .whenComplete(() { if (mounted) _isNavigating = false; });
-                          },
+                            ),
+                          ).then((_) { if (mounted) widget.onRefreshFollowedIds(); })),
                           child: ArtistCard(
                             profileImageUrl: artists[index].profileImageUrl,
                             name: artists[index].displayName(context.isEnglish),

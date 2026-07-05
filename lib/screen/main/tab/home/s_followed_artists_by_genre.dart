@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/widget/w_selectable_chip.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/followed_artist.dart';
@@ -27,9 +28,8 @@ class FollowedArtistsByGenreScreen extends StatefulWidget {
 }
 
 class _FollowedArtistsByGenreScreenState
-    extends State<FollowedArtistsByGenreScreen> {
+    extends State<FollowedArtistsByGenreScreen> with NavigationGuard {
   String? _selectedGenre;
-  bool _isNavigating = false;
   bool _isSheetOpen = false;
 
   List<String> get _genres => widget.artists
@@ -143,20 +143,16 @@ class _FollowedArtistsByGenreScreenState
         return AnimatedListItem(
           index: index,
           child: TapScale(
-            onTap: () {
-              if (_isNavigating) return;
-              _isNavigating = true;
-              Navigator.push(
-                context,
-                SlideRoute(builder: (_) => ArtistScreen(
-                  artistId: artist.id,
-                  artistName: artist.name,
-                  artistNameEn: artist.nameEn,
-                  followerCount: artist.followerCount,
-                  profileImageUrl: artist.profileImageUrl,
-                )),
-              ).whenComplete(() { if (mounted) _isNavigating = false; });
-            },
+            onTap: () => guardedNavigate(() => Navigator.push(
+              context,
+              SlideRoute(builder: (_) => ArtistScreen(
+                artistId: artist.id,
+                artistName: artist.name,
+                artistNameEn: artist.nameEn,
+                followerCount: artist.followerCount,
+                profileImageUrl: artist.profileImageUrl,
+              )),
+            )),
             child: ArtistCard(
               profileImageUrl: artist.profileImageUrl,
               name: artist.displayName(context.isEnglish),

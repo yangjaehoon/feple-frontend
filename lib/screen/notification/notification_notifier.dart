@@ -95,17 +95,25 @@ class NotificationNotifier extends SafeChangeNotifier {
       await _service.markRead(item.id);
     } catch (e) {
       debugPrint('markRead error: $e');
+      final rollbackIndex = _items.indexWhere((n) => n.id == item.id);
+      if (rollbackIndex >= 0) {
+        _items[rollbackIndex] = item;
+        safeNotify();
+      }
     }
   }
 
   Future<void> markAllRead() async {
     if (_items.every((n) => n.read)) return;
+    final original = List<NotificationModel>.from(_items);
     _items = _items.map((n) => n.read ? n : n.copyWithRead()).toList();
     safeNotify();
     try {
       await _service.markAllRead();
     } catch (e) {
       debugPrint('[Notification] markAllRead error: $e');
+      _items = original;
+      safeNotify();
     }
   }
 
@@ -139,6 +147,7 @@ class NotificationNotifier extends SafeChangeNotifier {
   }
 
   Future<void> deleteAll() async {
+    final original = List<NotificationModel>.from(_items);
     _items = [];
     _savedPositions.clear();
     safeNotify();
@@ -146,6 +155,8 @@ class NotificationNotifier extends SafeChangeNotifier {
       await _service.deleteAll();
     } catch (e) {
       debugPrint('[Notification] deleteAll 실패: $e');
+      _items = original;
+      safeNotify();
     }
   }
 }

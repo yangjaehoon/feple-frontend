@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/festival_model.dart';
@@ -41,9 +42,8 @@ class LikedFestivalsScreen extends StatefulWidget {
   State<LikedFestivalsScreen> createState() => _LikedFestivalsScreenState();
 }
 
-class _LikedFestivalsScreenState extends State<LikedFestivalsScreen> {
+class _LikedFestivalsScreenState extends State<LikedFestivalsScreen> with NavigationGuard {
   bool _showEnded = false;
-  bool _isNavigating = false;
   bool _isSheetOpen = false;
 
   void _openSettings() {
@@ -164,14 +164,10 @@ class _LikedFestivalsScreenState extends State<LikedFestivalsScreen> {
         return AnimatedListItem(
           index: index,
           child: TapScale(
-            onTap: () {
-              if (_isNavigating) return;
-              _isNavigating = true;
-              Navigator.push(
-                context,
-                SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)),
-              ).whenComplete(() { if (mounted) _isNavigating = false; });
-            },
+            onTap: () => guardedNavigate(() => Navigator.push(
+              context,
+              SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)),
+            )),
             child: FestivalPreviewCard(festival: _asPreview(festival)),
           ),
         );

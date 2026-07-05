@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
@@ -197,7 +198,8 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
                       itemCount: displayed.length,
                       separatorBuilder: (_, _) => const SizedBox(height: 10),
                       itemBuilder: (context, index) {
-                        return _CertCard(cert: displayed[index], certService: _certService);
+                        final cert = displayed[index];
+                        return _CertCard(key: ValueKey(cert.id), cert: cert, certService: _certService);
                       },
                     ),
     );
@@ -238,17 +240,16 @@ class _CertCard extends StatefulWidget {
   final CertificationModel cert;
   final CertificationService certService;
 
-  const _CertCard({required this.cert, required this.certService});
+  const _CertCard({super.key, required this.cert, required this.certService});
 
   @override
   State<_CertCard> createState() => _CertCardState();
 }
 
-class _CertCardState extends State<_CertCard> {
+class _CertCardState extends State<_CertCard> with NavigationGuard {
   late int? _rating;
   late String? _review;
   bool _isSubmitting = false;
-  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -258,20 +259,18 @@ class _CertCardState extends State<_CertCard> {
   }
 
   Future<void> _navigateToFestival() async {
-    if (_isNavigating) return;
-    _isNavigating = true;
-    try {
-      final festival = await sl<FestivalService>().fetchById(widget.cert.festivalId);
-      if (!mounted) return;
-      await Navigator.push(
-        context,
-        SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)),
-      );
-    } catch (e) {
-      debugPrint('[CertCard] 페스티벌 이동 실패: $e');
-    } finally {
-      if (mounted) _isNavigating = false;
-    }
+    await guardedNavigate(() async {
+      try {
+        final festival = await sl<FestivalService>().fetchById(widget.cert.festivalId);
+        if (!mounted) return;
+        await Navigator.push(
+          context,
+          SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)),
+        );
+      } catch (e) {
+        debugPrint('[CertCard] 페스티벌 이동 실패: $e');
+      }
+    });
   }
 
   Future<void> _openRatingSheet() async {

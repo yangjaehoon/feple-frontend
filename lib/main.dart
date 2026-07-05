@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_text_scale_clamp.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/service/festival_cache_service.dart';
@@ -183,20 +184,7 @@ class _MyAppState extends State<MyApp> {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             theme: context.themeType.themeData,
-            // WCAG 1.4.4: 텍스트 200%까지 확대 지원. 픽셀 고정 레이아웃(타임테이블 그리드)만
-            // 별도로 자체 상한을 두어 대응 — TimetableGrid, TimetableFullscreenGrid 참고
-            builder: (context, child) {
-              final mq = MediaQuery.of(context);
-              return MediaQuery(
-                data: mq.copyWith(
-                  textScaler: mq.textScaler.clamp(
-                    minScaleFactor: 1.0,
-                    maxScaleFactor: 2.0,
-                  ),
-                ),
-                child: child!,
-              );
-            },
+            builder: clampTextScaleBuilder,
             home: Consumer<UserProvider>(
               builder: (context, userProvider, _) {
                 if (userProvider.user == null) {

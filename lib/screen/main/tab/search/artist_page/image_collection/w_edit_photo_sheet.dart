@@ -164,6 +164,8 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
   Widget _buildSaveButton(AbstractThemeColors colors) {
     return LoadingButton(
       label: 'save'.tr(),
+      // 시트를 즉시 닫고 실제 저장은 onSave 콜백에서 비동기로 처리하는 구조라
+      // (아래 참고) 이 버튼 자체가 로딩 상태를 가질 일이 없음 — 항상 false가 맞음
       isLoading: false,
       onPressed: () {
         final newTitle = _titleCtrl.text.trim();

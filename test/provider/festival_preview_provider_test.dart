@@ -374,6 +374,37 @@ void main() {
             ageRestrictions: any(named: 'ageRestrictions'),
           )).called(1);
     });
+
+    test('진행 중인 요청 응답보다 필터 변경이 먼저 끝나도 필터 결과가 최종 반영됨', () async {
+      // 첫 fetchNext(생성자 refresh)는 느리게, 필터 변경 후 fetchNext는 빠르게 응답
+      var callCount = 0;
+      when(() => mockService.fetchPreviews(
+            page: any(named: 'page'),
+            size: any(named: 'size'),
+            includeEnded: any(named: 'includeEnded'),
+            genres: any(named: 'genres'),
+            regions: any(named: 'regions'),
+            ageRestrictions: any(named: 'ageRestrictions'),
+          )).thenAnswer((invocation) async {
+        final isFirstCall = callCount++ == 0;
+        if (isFirstCall) {
+          await Future.delayed(const Duration(milliseconds: 500));
+          return _pages(3); // 필터 적용 전(느리게 도착)
+        }
+        return [_preview(99)]; // 필터 적용 후(빠르게 도착)
+      });
+
+      final provider = FestivalPreviewProvider(mockService);
+      // 생성자의 첫 fetchNext가 아직 진행 중일 때 필터 변경
+      await Future.delayed(const Duration(milliseconds: 10));
+      provider.toggleGenre('록');
+      await Future.delayed(const Duration(milliseconds: 450)); // debounce + 필터 응답 완료
+      await Future.delayed(const Duration(milliseconds: 200)); // 느린 첫 응답도 도착
+
+      // 필터 응답(1개, id=99)이 최종 반영되어야 하고, 느리게 도착한 첫 응답(3개)에 덮어써지면 안 됨
+      expect(provider.items.length, 1);
+      expect(provider.items.first.id, 99);
+    });
   });
 
   // ───────────────────────────────────────────────────

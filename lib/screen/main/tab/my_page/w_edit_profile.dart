@@ -33,6 +33,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
 
   final _nicknameKey = GlobalKey<NicknameFieldState>();
   final _bioController = TextEditingController();
+  final _lockedNicknameController = TextEditingController();
   String? _bioError;
 
   bool get _isDirty {
@@ -52,6 +53,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
       _originalNickname = user.nickname;
       _originalBio = user.bio ?? '';
       _bioController.text = _originalBio;
+      _lockedNicknameController.text = _originalNickname;
       _initNicknameLock(user.nicknameChangedAt);
     }
   }
@@ -70,6 +72,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
   @override
   void dispose() {
     _bioController.dispose();
+    _lockedNicknameController.dispose();
     super.dispose();
   }
 
@@ -315,7 +318,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextField(
-          controller: TextEditingController(text: _originalNickname),
+          controller: _lockedNicknameController,
           enabled: false,
           style: TextStyle(fontSize: AppDimens.fontSizeLg, color: colors.text),
           decoration: InputDecoration(

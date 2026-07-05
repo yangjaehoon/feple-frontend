@@ -182,6 +182,10 @@ class ApiCacheStore {
     // 인증
     if (url.contains('/certifications')) return ['/certifications'];
 
+    // 유저 차단/차단 해제
+    m = RegExp(r'/users/(\d+)/block').firstMatch(url);
+    if (m != null) return ['/users/${m.group(1)!}', '/users/blocked'];
+
     // 유저 프로필 수정
     m = RegExp(r'/users/(me|\d+)').firstMatch(url);
     if (m != null) return ['/users/${m.group(1)!}'];

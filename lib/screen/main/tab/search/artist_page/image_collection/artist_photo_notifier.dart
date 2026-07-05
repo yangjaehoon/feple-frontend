@@ -55,7 +55,10 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
       try {
         await _photoService.toggleLike(artistId, photoId);
       } catch (e) {
-        _photos[index] = original;
+        // await 도중 loadPhotos()로 _photos가 통째로 교체됐을 수 있으므로
+        // 캡처해둔 index가 아니라 photoId로 다시 찾아서 롤백
+        final rollbackIndex = _photos.indexWhere((p) => p.photoId == photoId);
+        if (rollbackIndex != -1) _photos[rollbackIndex] = original;
         errorKey = 'like_failed';
         safeNotify();
         debugPrint('toggle like error: $e');

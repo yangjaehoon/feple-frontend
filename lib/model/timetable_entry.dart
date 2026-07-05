@@ -127,8 +127,10 @@ class TimetableEntry {
     try {
       final startParts = startTime.split(':');
       final endParts = endTime.split(':');
-      return (int.parse(endParts[0]) * 60 + int.parse(endParts[1])) -
-          (int.parse(startParts[0]) * 60 + int.parse(startParts[1]));
+      final start = int.parse(startParts[0]) * 60 + int.parse(startParts[1]);
+      final end = int.parse(endParts[0]) * 60 + int.parse(endParts[1]);
+      // 자정을 넘기는 공연(예: 23:30~00:30) 대응 — 종료가 시작보다 빠르면 다음날로 간주
+      return end >= start ? end - start : (end + 24 * 60) - start;
     } catch (_) {
       return 0;
     }

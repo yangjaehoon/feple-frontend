@@ -87,8 +87,8 @@ void main() {
       expect(_entry(startTime: '09:00', endTime: '09:00').durationMinutes, 0);
     });
 
-    test('종료가 시작보다 이르면 음수 반환', () {
-      expect(_entry(startTime: '10:00', endTime: '09:00').durationMinutes, -60);
+    test('자정을 넘기는 공연은 다음날로 간주해 계산', () {
+      expect(_entry(startTime: '23:30', endTime: '00:30').durationMinutes, 60);
     });
 
     test('잘못된 시간 포맷이면 0 반환', () {

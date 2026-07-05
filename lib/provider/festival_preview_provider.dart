@@ -54,6 +54,9 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
   Timer? _filterDebounce;
   static const _filterDebounceDelay = Duration(milliseconds: 400);
 
+  // 필터 변경으로 무효화된 요청의 응답이 늦게 도착해 최신 결과를 덮어쓰지 않도록 가드
+  int _generation = 0;
+
   void _toggleInSet(Set<String> current, String value, void Function(Set<String>) assign) {
     final updated = current.contains(value)
         ? current.where((e) => e != value).toSet()
@@ -84,11 +87,16 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
 
   // 필터 변경 확정 후: 즉시 목록 비우고 재요청
   void _clearAndFetch() {
+    // 이전 세대(진행 중이던 요청)를 무효화 — 그 응답이 나중에 와도 결과를 반영하지 않음
+    _generation++;
     _items.clear();
     _cachedItems = const [];
     _page = 0;
     _hasMore = true;
     _error = null;
+    // 진행 중이던 요청의 busy 플래그를 리셋해 새 요청이 가드에 막히지 않게 함
+    _isLoading = false;
+    _isLoadingMore = false;
     safeNotify();
     fetchNext();
   }
@@ -109,6 +117,7 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
     if (!_hasMore) return;
 
     final wasFirstPage = _page == 0;
+    final myGeneration = _generation;
 
     // 아이템이 없을 때만 전체 로딩 스피너 표시 (items가 있으면 기존 데이터 유지)
     if (wasFirstPage) {
@@ -128,6 +137,8 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
         regions: _selectedRegions.toList(),
         ageRestrictions: _selectedAgeRestrictions.toList(),
       );
+      // 응답 도착 전 필터가 바뀌어 이 요청이 무효화됐으면 결과를 버림
+      if (myGeneration != _generation) return;
 
       // page 0이면 기존 데이터를 새 데이터로 교체
       if (wasFirstPage) {
@@ -140,6 +151,7 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
       _page += 1;
       if (wasFirstPage) _loadedAt = DateTime.now();
     } catch (e) {
+      if (myGeneration != _generation) return;
       debugPrint('festival preview error: $e');
       if (_items.isEmpty) {
         _error = 'err_fetch_data'.tr();
@@ -148,9 +160,11 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
         _refreshError = 'err_fetch_data'.tr();
       }
     } finally {
-      _isLoading = false;
-      _isLoadingMore = false;
-      safeNotify();
+      if (myGeneration == _generation) {
+        _isLoading = false;
+        _isLoadingMore = false;
+        safeNotify();
+      }
     }
   }
 

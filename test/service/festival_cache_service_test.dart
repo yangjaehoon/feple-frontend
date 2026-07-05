@@ -2,6 +2,7 @@ import 'package:feple/model/booth_model.dart';
 import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/festival_preview.dart';
+import 'package:feple/model/festival_setlist_entry.dart';
 import 'package:feple/model/followed_artist.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/service/festival_cache_service.dart';
@@ -31,6 +32,13 @@ TimetableEntry _entry() => const TimetableEntry(
       festivalDate: '2099-01-01',
       startTime: '14:00',
       endTime: '15:00',
+    );
+
+FestivalSetlistEntry _setlistEntry() => const FestivalSetlistEntry(
+      artistFestivalId: 1,
+      artistId: 1,
+      artistName: 'Artist A',
+      songs: [],
     );
 
 BoothModel _booth() => BoothModel(
@@ -63,56 +71,8 @@ void main() {
     cache = FestivalCacheService();
   });
 
-  group('isStale', () {
-    test('저장된 타임스탬프 없으면 stale', () async {
-      expect(await cache.isStale(1), true);
-    });
-
-    test('saveFestival 직후에는 stale 아님', () async {
-      await cache.saveFestival(1, _festival(1));
-      expect(await cache.isStale(1), false);
-    });
-
-    test('타임스탬프가 25시간 전이면 stale', () async {
-      final pastTs = DateTime.now()
-          .subtract(const Duration(hours: 25))
-          .millisecondsSinceEpoch;
-      SharedPreferences.setMockInitialValues({'fc_time_1': pastTs});
-      cache = FestivalCacheService();
-      expect(await cache.isStale(1), true);
-    });
-  });
-
-  group('festival round-trip', () {
-    test('save 후 load하면 같은 festival 반환', () async {
-      await cache.saveFestival(1, _festival(1));
-      final loaded = await cache.loadFestival(1);
-
-      expect(loaded, isNotNull);
-      expect(loaded!.id, 1);
-      expect(loaded.title, 'Festival 1');
-    });
-
-    test('stale 상태에서 load하면 null 반환', () async {
-      final pastTs = DateTime.now()
-          .subtract(const Duration(hours: 25))
-          .millisecondsSinceEpoch;
-      SharedPreferences.setMockInitialValues({'fc_time_1': pastTs});
-      cache = FestivalCacheService();
-
-      final loaded = await cache.loadFestival(1);
-      expect(loaded, isNull);
-    });
-
-    test('저장 없이 load하면 null 반환', () async {
-      final loaded = await cache.loadFestival(99);
-      expect(loaded, isNull);
-    });
-  });
-
   group('artists round-trip', () {
     test('save 후 load하면 동일 아티스트 목록 반환', () async {
-      await cache.saveFestival(1, _festival(1));
       await cache.saveArtists(1, [_artist()]);
       final loaded = await cache.loadArtists(1);
 
@@ -121,11 +81,15 @@ void main() {
       expect(loaded.first.artistName, 'Artist A');
     });
 
+    test('저장 없이 load하면 null 반환', () async {
+      expect(await cache.loadArtists(99), isNull);
+    });
+
     test('stale 상태에서 loadArtists는 null 반환', () async {
       final pastTs = DateTime.now()
           .subtract(const Duration(hours: 25))
           .millisecondsSinceEpoch;
-      SharedPreferences.setMockInitialValues({'fc_time_1': pastTs});
+      SharedPreferences.setMockInitialValues({'fc_artists_time_1': pastTs});
       cache = FestivalCacheService();
       final loaded = await cache.loadArtists(1);
       expect(loaded, isNull);
@@ -134,23 +98,58 @@ void main() {
 
   group('timetable round-trip', () {
     test('save 후 load하면 동일 엔트리 반환', () async {
-      await cache.saveFestival(1, _festival(1));
       await cache.saveTimetable(1, [_entry()]);
       final loaded = await cache.loadTimetable(1);
 
       expect(loaded, isNotNull);
       expect(loaded!.first.startTime, '14:00');
     });
+
+    test('stale 상태에서 loadTimetable은 null 반환', () async {
+      final pastTs = DateTime.now()
+          .subtract(const Duration(hours: 25))
+          .millisecondsSinceEpoch;
+      SharedPreferences.setMockInitialValues({'fc_timetable_time_1': pastTs});
+      cache = FestivalCacheService();
+      expect(await cache.loadTimetable(1), isNull);
+    });
+  });
+
+  group('setlist round-trip', () {
+    test('save 후 load하면 동일 세트리스트 반환', () async {
+      await cache.saveSetlist(1, [_setlistEntry()]);
+      final loaded = await cache.loadSetlist(1);
+
+      expect(loaded, isNotNull);
+      expect(loaded!.first.artistName, 'Artist A');
+    });
+
+    test('stale 상태에서 loadSetlist는 null 반환', () async {
+      final pastTs = DateTime.now()
+          .subtract(const Duration(hours: 25))
+          .millisecondsSinceEpoch;
+      SharedPreferences.setMockInitialValues({'fc_setlist_time_1': pastTs});
+      cache = FestivalCacheService();
+      expect(await cache.loadSetlist(1), isNull);
+    });
   });
 
   group('booth round-trip', () {
     test('save 후 load하면 동일 부스 목록 반환', () async {
-      await cache.saveFestival(1, _festival(1));
       await cache.saveBooths(1, [_booth()]);
       final loaded = await cache.loadBooths(1);
 
       expect(loaded, isNotNull);
       expect(loaded!.first.name, 'Food Booth');
+    });
+
+    test('stale 상태에서 loadBooths는 null 반환', () async {
+      final pastTs = DateTime.now()
+          .subtract(const Duration(hours: 25))
+          .millisecondsSinceEpoch;
+      SharedPreferences.setMockInitialValues({'fc_booths_time_1': pastTs});
+      cache = FestivalCacheService();
+      expect(await cache.loadBooths(1), isNull);
     });
   });
 
@@ -205,35 +204,34 @@ void main() {
   });
 
   group('clear', () {
-    test('clear(id) 후 해당 festival은 stale', () async {
-      await cache.saveFestival(1, _festival(1));
-      expect(await cache.isStale(1), false);
+    test('clear(id) 후 해당 festival 캐시는 모두 비워짐', () async {
+      await cache.saveArtists(1, [_artist()]);
+      expect(await cache.loadArtists(1), isNotNull);
 
       await cache.clear(1);
 
-      expect(await cache.isStale(1), true);
-      expect(await cache.loadFestival(1), isNull);
+      expect(await cache.loadArtists(1), isNull);
     });
 
     test('clearAll 후 모든 캐시 키 제거', () async {
-      await cache.saveFestival(1, _festival(1));
-      await cache.saveFestival(2, _festival(2));
+      await cache.saveArtists(1, [_artist()]);
+      await cache.saveArtists(2, [_artist()]);
       await cache.savePreviewList([_preview(1)]);
 
       await cache.clearAll();
 
-      expect(await cache.isStale(1), true);
-      expect(await cache.isStale(2), true);
+      expect(await cache.loadArtists(1), isNull);
+      expect(await cache.loadArtists(2), isNull);
       expect(await cache.loadPreviewList(), isNull);
     });
 
     test('clear(id)는 다른 festivalId 캐시에 영향 없음', () async {
-      await cache.saveFestival(1, _festival(1));
-      await cache.saveFestival(2, _festival(2));
+      await cache.saveArtists(1, [_artist()]);
+      await cache.saveArtists(2, [_artist()]);
 
       await cache.clear(1);
 
-      expect(await cache.loadFestival(2), isNotNull);
+      expect(await cache.loadArtists(2), isNotNull);
     });
   });
 }

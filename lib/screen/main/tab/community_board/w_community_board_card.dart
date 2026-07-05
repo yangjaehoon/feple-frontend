@@ -70,22 +70,7 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
     final userProvider = context.read<UserProvider>();
     final userId = userProvider.currentUserId;
     if (userId == null) {
-      context.showInfoSnackbar(
-        'no_login_info'.tr(),
-        extraButton: GestureDetector(
-          onTap: () => userProvider.logout(),
-          child: Text(
-            'login'.tr(),
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-              fontSize: AppDimens.fontSizeSm,
-              decoration: TextDecoration.underline,
-              decorationColor: Colors.white,
-            ),
-          ),
-        ),
-      );
+      context.showInfoSnackbar('no_login_info'.tr());
       return;
     }
     await Navigator.push(

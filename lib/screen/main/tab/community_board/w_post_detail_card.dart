@@ -451,23 +451,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
         isSubmitting: _notifier.isSubmitting,
         onSubmit: (anonymous) {
           if (userId == null) {
-            final userProvider = context.read<UserProvider>();
-            context.showInfoSnackbar(
-              'no_login_info'.tr(),
-              extraButton: GestureDetector(
-                onTap: () => userProvider.logout(),
-                child: Text(
-                  'login'.tr(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: AppDimens.fontSizeSm,
-                    decoration: TextDecoration.underline,
-                    decorationColor: Colors.white,
-                  ),
-                ),
-              ),
-            );
+            context.showInfoSnackbar('no_login_info'.tr());
             return;
           }
           _notifier.submitComment(

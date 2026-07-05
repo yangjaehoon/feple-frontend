@@ -43,6 +43,9 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
   bool _isLoading = false;
   bool _searched = false;
   bool _hasError = false;
+  // 응답이 늦게 도착했을 때 이미 지나간 키워드로 최신 결과를 덮어쓰지 않도록 가드
+  int _suggestionsRequestId = 0;
+  int _searchRequestId = 0;
 
   List<Artist> _artists = [];
   List<FestivalPreview> _festivals = [];
@@ -107,9 +110,12 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
   }
 
   Future<void> _fetchSuggestions(String keyword) async {
+    final requestId = ++_suggestionsRequestId;
     try {
       final results = await _searchService.suggestions(keyword);
-      if (mounted) setState(() => _suggestions = results);
+      if (mounted && requestId == _suggestionsRequestId) {
+        setState(() => _suggestions = results);
+      }
     } catch (e) {
       debugPrint('[Search] 자동완성 로드 실패: $e');
     }
@@ -117,6 +123,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
 
   Future<void> _search(String keyword) async {
     if (keyword.trim().isEmpty) return;
+    final requestId = ++_searchRequestId;
     _debounce?.cancel();
     _focusNode.unfocus();
     setState(() {
@@ -128,7 +135,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     await _addRecentSearch(keyword.trim());
     try {
       final result = await _searchService.search(keyword);
-      if (mounted) {
+      if (mounted && requestId == _searchRequestId) {
         _tabController.animateTo(0);
         setState(() {
           _artists = result.artists;
@@ -139,7 +146,9 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
       }
     } catch (e) {
       debugPrint('[Search] 검색 실패: $e');
-      if (mounted) setState(() { _isLoading = false; _hasError = true; });
+      if (mounted && requestId == _searchRequestId) {
+        setState(() { _isLoading = false; _hasError = true; });
+      }
     }
   }
 

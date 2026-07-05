@@ -30,9 +30,6 @@ class FestivalCacheService {
 
   // ── 유효성 ──────────────────────────────────────────────────────
 
-  Future<bool> isStale(int festivalId) async =>
-      _isKeyStale('${_p}_time_$festivalId');
-
   Future<bool> _isKeyStale(String tsKey) async {
     final sp = await _sp;
     final ts = sp.getInt(tsKey);
@@ -48,38 +45,18 @@ class FestivalCacheService {
     await sp.setInt(tsKey, DateTime.now().millisecondsSinceEpoch);
   }
 
-  // ── festival detail ──────────────────────────────────────────────
-
-  Future<void> saveFestival(int id, FestivalModel model) async {
-    final sp = await _sp;
-    await sp.setString('${_p}_festival_$id', jsonEncode(model.toJson()));
-    await _touch('${_p}_time_$id');
-  }
-
-  Future<FestivalModel?> loadFestival(int id) async {
-    final sp = await _sp;
-    if (await isStale(id)) return null;
-    final s = sp.getString('${_p}_festival_$id');
-    if (s == null) return null;
-    try {
-      return FestivalModel.fromJson(jsonDecode(s) as Map<String, dynamic>);
-    } catch (e) {
-      debugPrint('[Cache] festival 로드 실패: $e');
-      return null;
-    }
-  }
-
   // ── artists ─────────────────────────────────────────────────────
 
   Future<void> saveArtists(int id, List<FestivalArtistItem> items) async {
     final sp = await _sp;
     await sp.setString(
         '${_p}_artists_$id', jsonEncode(items.map((e) => e.toJson()).toList()));
+    await _touch('${_p}_artists_time_$id');
   }
 
   Future<List<FestivalArtistItem>?> loadArtists(int id) async {
+    if (await _isKeyStale('${_p}_artists_time_$id')) return null;
     final sp = await _sp;
-    if (await isStale(id)) return null;
     final s = sp.getString('${_p}_artists_$id');
     if (s == null) return null;
     try {
@@ -98,11 +75,12 @@ class FestivalCacheService {
     final sp = await _sp;
     await sp.setString('${_p}_timetable_$id',
         jsonEncode(entries.map((e) => e.toJson()).toList()));
+    await _touch('${_p}_timetable_time_$id');
   }
 
   Future<List<TimetableEntry>?> loadTimetable(int id) async {
+    if (await _isKeyStale('${_p}_timetable_time_$id')) return null;
     final sp = await _sp;
-    if (await isStale(id)) return null;
     final s = sp.getString('${_p}_timetable_$id');
     if (s == null) return null;
     try {
@@ -121,11 +99,12 @@ class FestivalCacheService {
     final sp = await _sp;
     await sp.setString('${_p}_setlist_$id',
         jsonEncode(entries.map((e) => e.toJson()).toList()));
+    await _touch('${_p}_setlist_time_$id');
   }
 
   Future<List<FestivalSetlistEntry>?> loadSetlist(int id) async {
+    if (await _isKeyStale('${_p}_setlist_time_$id')) return null;
     final sp = await _sp;
-    if (await isStale(id)) return null;
     final s = sp.getString('${_p}_setlist_$id');
     if (s == null) return null;
     try {
@@ -145,11 +124,12 @@ class FestivalCacheService {
     final sp = await _sp;
     await sp.setString(
         '${_p}_booths_$id', jsonEncode(booths.map((e) => e.toJson()).toList()));
+    await _touch('${_p}_booths_time_$id');
   }
 
   Future<List<BoothModel>?> loadBooths(int id) async {
+    if (await _isKeyStale('${_p}_booths_time_$id')) return null;
     final sp = await _sp;
-    if (await isStale(id)) return null;
     final s = sp.getString('${_p}_booths_$id');
     if (s == null) return null;
     try {
@@ -237,12 +217,14 @@ class FestivalCacheService {
   Future<void> clear(int festivalId) async {
     final sp = await _sp;
     await Future.wait([
-      sp.remove('${_p}_festival_$festivalId'),
       sp.remove('${_p}_artists_$festivalId'),
+      sp.remove('${_p}_artists_time_$festivalId'),
       sp.remove('${_p}_timetable_$festivalId'),
+      sp.remove('${_p}_timetable_time_$festivalId'),
       sp.remove('${_p}_setlist_$festivalId'),
+      sp.remove('${_p}_setlist_time_$festivalId'),
       sp.remove('${_p}_booths_$festivalId'),
-      sp.remove('${_p}_time_$festivalId'),
+      sp.remove('${_p}_booths_time_$festivalId'),
     ]);
   }
 

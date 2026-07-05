@@ -8,6 +8,7 @@ import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
+import 'package:feple/common/util/popup_menu_item_builder.dart';
 import 'package:feple/model/notification_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
@@ -165,6 +166,39 @@ class _NotificationScreenState extends State<NotificationScreen> {
     }
   }
 
+  void _onMenuSelected(String value) {
+    switch (value) {
+      case 'settings':
+        Navigator.push(
+          context,
+          SlideRoute(builder: (_) => const NotificationSettingsScreen()),
+        );
+      case 'delete_all':
+        _onDeleteAll();
+    }
+  }
+
+  List<PopupMenuEntry<String>> _buildMenuItems(AbstractThemeColors colors) {
+    return [
+      buildPopupMenuItem(
+        value: 'settings',
+        icon: Icons.settings_outlined,
+        label: 'notif_settings'.tr(),
+        colors: colors,
+      ),
+      if (_notifier.items.isNotEmpty) ...[
+        const PopupMenuDivider(height: 1),
+        buildPopupMenuItem(
+          value: 'delete_all',
+          icon: Icons.delete_outline_rounded,
+          label: 'notif_delete_all_confirm'.tr(),
+          colors: colors,
+          danger: true,
+        ),
+      ],
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -239,31 +273,27 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            if (_notifier.hasUnread)
-              TextButton(
-                onPressed: _notifier.markAllRead,
-                child: Text(
-                  'mark_all_read'.tr(),
-                  style: TextStyle(
-                    color: colors.activate,
-                    fontSize: AppDimens.fontSizeSm,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            if (_notifier.items.isNotEmpty)
-              IconButton(
-                tooltip: 'notif_delete_all_confirm'.tr(),
-                icon: Icon(Icons.delete_sweep_rounded, color: colors.textSecondary),
-                onPressed: _onDeleteAll,
-              ),
             IconButton(
+              tooltip: 'mark_all_read'.tr(),
+              icon: Icon(
+                Icons.done_all_rounded,
+                color: _notifier.hasUnread
+                    ? colors.activate
+                    : colors.textSecondary.withValues(alpha: 0.3),
+              ),
+              onPressed: _notifier.hasUnread ? _notifier.markAllRead : null,
+            ),
+            PopupMenuButton<String>(
               tooltip: 'notif_settings'.tr(),
               icon: Icon(Icons.settings_rounded, color: colors.textTitle),
-              onPressed: () => Navigator.push(
-                context,
-                SlideRoute(builder: (_) => const NotificationSettingsScreen()),
-              ),
+              onSelected: _onMenuSelected,
+              itemBuilder: (_) => _buildMenuItems(colors),
+              color: colors.surface,
+              shadowColor: colors.cardShadow.withValues(alpha: 0.18),
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppDimens.shapeDialog)),
+              position: PopupMenuPosition.under,
             ),
           ],
         ),

@@ -6,15 +6,16 @@ import 'package:feple/screen/main/tab/search/f_search.dart';
 import 'package:flutter/material.dart';
 import 'my_page/f_mypage.dart';
 
+// 선언 순서 = 하단 탭 바 실제 표시 순서 (MainScreenState.tabs와 반드시 일치시킬 것)
 enum TabItem {
   search(Icons.search_rounded, 'tab_search', SearchFragment(),
       inActiveIcon: Icons.search_outlined),
+  communityBoard(Icons.forum_rounded, 'tab_board', CommunityBoardFragment(),
+      inActiveIcon: Icons.forum_outlined),
   home(Icons.home_rounded, 'tab_home', HomeFragment(),
       inActiveIcon: Icons.home_outlined),
   concertList(Icons.queue_music_rounded, 'tab_concert', ConcertListFragment(),
       inActiveIcon: Icons.queue_music_outlined),
-  communityBoard(Icons.forum_rounded, 'tab_board', CommunityBoardFragment(),
-      inActiveIcon: Icons.forum_outlined),
   favorite(Icons.person_rounded, 'tab_my', MypageFragment(),
       inActiveIcon: Icons.person_outlined);
 

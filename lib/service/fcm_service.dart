@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/app.dart';
+import 'package:feple/common/language/language.dart';
 import 'package:feple/common/util/permission_rationale.dart';
 import 'package:feple/service/fcm_navigation_handler.dart';
 import 'package:feple/service/fcm_notification_handler.dart';
@@ -61,15 +61,10 @@ class FcmService {
     await _setup();
   }
 
+  String _currentLanguage() => currentLanguage.locale.languageCode;
+
   // 로그아웃 시 호출 — 서버에서 토큰 삭제 후 구독 해제
   // JWT가 아직 유효한 시점에 호출해야 함 (TokenStore.clear() 전)
-  String _currentLanguage() {
-    final ctx = App.navigatorKey.currentContext;
-    if (ctx == null) return 'ko';
-    // ignore: use_build_context_synchronously
-    return EasyLocalization.of(ctx)?.locale.languageCode ?? 'ko';
-  }
-
   Future<void> stop() async {
     await _tokenService.unregister();
     await _messageSubscription?.cancel();

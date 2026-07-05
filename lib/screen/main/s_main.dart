@@ -27,6 +27,7 @@ class MainScreenState extends State<MainScreen>
     with SingleTickerProviderStateMixin {
   TabItem _currentTab = TabItem.home;
   final Set<int> _visitedTabs = {};
+  // TabItem enum 선언 순서와 반드시 일치시킬 것 (하단 탭 바 표시 순서)
   final tabs = [
     TabItem.search,
     TabItem.communityBoard,
@@ -45,9 +46,9 @@ class MainScreenState extends State<MainScreen>
   GlobalKey<NavigatorState> get _currentTabNavigationKey =>
       navigatorKeys[_currentIndex];
 
-  bool get extendBody => true;
+  static const bool extendBody = true;
 
-  static double get bottomNavigationBarBorderRadius => 30.0;
+  static const double bottomNavigationBarBorderRadius = 30.0;
 
   @override
   void initState() {

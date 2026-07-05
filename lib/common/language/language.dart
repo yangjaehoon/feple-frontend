@@ -19,6 +19,8 @@ enum Language {
   }
 }
 
-Language get currentLanguage => App.navigatorKey.currentContext!.isEnglish
-    ? Language.english
-    : Language.korean;
+Language get currentLanguage {
+  final ctx = App.navigatorKey.currentContext;
+  if (ctx == null) return Language.korean;
+  return ctx.isEnglish ? Language.english : Language.korean;
+}

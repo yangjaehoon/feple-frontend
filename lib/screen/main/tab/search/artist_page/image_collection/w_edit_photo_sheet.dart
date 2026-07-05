@@ -1,9 +1,9 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/constant/photo_category.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/festival_preview.dart';
+import 'package:feple/model/photo_destination.dart';
 import 'package:feple/service/artist_schedule_service.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +31,7 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
   final _scheduleService = sl<ArtistScheduleService>();
   late final TextEditingController _titleCtrl;
   List<FestivalPreview> _festivals = [];
-  FestivalPreview? _selectedFestival;
+  PhotoDestination? _selectedDestination;
   bool _loadingFestivals = true;
 
   @override
@@ -52,28 +52,13 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
       final festivals = await _scheduleService.fetchFestivals(widget.artistId);
 
       // 현재 description 기준으로 초기 선택값 결정
-      final desc = widget.photo.description;
-      FestivalPreview? preSelected;
-      if (desc == photoCategoryDaily.title) {
-        preSelected = photoCategoryDaily;
-      } else if (desc == photoCategorySns.title) {
-        preSelected = photoCategorySns;
-      } else if (desc.isEmpty) {
-        preSelected = photoCategoryOther;
-      } else {
-        for (final f in festivals) {
-          if (f.title == desc) {
-            preSelected = f;
-            break;
-          }
-        }
-        preSelected ??= photoCategoryOther;
-      }
+      final preSelected =
+          PhotoDestination.fromDescription(widget.photo.description, festivals);
 
       if (mounted) {
         setState(() {
           _festivals = festivals;
-          _selectedFestival = preSelected;
+          _selectedDestination = preSelected;
           _loadingFestivals = false;
         });
       }
@@ -134,8 +119,8 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
   }
 
   Widget _buildFestivalDropdown(AbstractThemeColors colors) {
-    return DropdownButtonFormField<FestivalPreview>(
-      initialValue: _selectedFestival,
+    return DropdownButtonFormField<PhotoDestination>(
+      initialValue: _selectedDestination,
       decoration: InputDecoration(
         labelText: 'festival_label'.tr(),
         labelStyle: TextStyle(color: colors.textSecondary),
@@ -150,14 +135,15 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
           : Text('select_festival_hint'.tr()),
       items: [
         ..._festivals.map((f) => DropdownMenuItem(
-              value: f,
+              value: FestivalDestination(f),
               child: Text(f.displayTitle(context.isEnglish), overflow: TextOverflow.ellipsis),
             )),
-        DropdownMenuItem(value: photoCategoryDaily, child: Text('photo_category_daily'.tr())),
-        DropdownMenuItem(value: photoCategorySns, child: Text('photo_category_sns'.tr())),
-        DropdownMenuItem(value: photoCategoryOther, child: Text('photo_category_other'.tr())),
+        ...PhotoDestination.categories.map((c) => DropdownMenuItem(
+              value: c,
+              child: Text(c.labelKey.tr()),
+            )),
       ],
-      onChanged: (f) => setState(() => _selectedFestival = f),
+      onChanged: (d) => setState(() => _selectedDestination = d),
     );
   }
 
@@ -170,9 +156,7 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
       onPressed: () {
         final newTitle = _titleCtrl.text.trim();
         if (newTitle.isEmpty) return;
-        final newDesc = _selectedFestival?.id == photoCategoryOther.id
-            ? ''
-            : (_selectedFestival?.title ?? '');
+        final newDesc = _selectedDestination?.description ?? '';
         Navigator.pop(context);
         widget.onSave(newTitle, newDesc);
       },

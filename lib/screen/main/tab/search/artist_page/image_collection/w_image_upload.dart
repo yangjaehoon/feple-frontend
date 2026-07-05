@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/common/constant/photo_category.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/model/festival_preview.dart';
+import 'package:feple/model/photo_destination.dart';
 import 'package:feple/service/artist_schedule_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,7 +31,7 @@ class _ImgUploadState extends State<ImgUpload> {
 
   Uint8List? imageData;
   final TextEditingController _titleCtrl = TextEditingController();
-  FestivalPreview? _selectedFestival;
+  PhotoDestination? _selectedDestination;
   late final Future<List<FestivalPreview>> _festivalsFuture;
   bool isUploading = false;
   bool _isAnonymous = false;
@@ -70,15 +70,15 @@ class _ImgUploadState extends State<ImgUpload> {
     setState(() => _imageError = null);
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
-    final festival = _selectedFestival;
-    if (festival == null) return;
+    final destination = _selectedDestination;
+    if (destination == null) return;
     setState(() => isUploading = true);
     try {
       await _photoService.uploadPhoto(
         artistId: widget.artistId,
         imageData: imageData!,
         title: _titleCtrl.text,
-        description: festival.id == photoCategoryOther.id ? '' : festival.title,
+        description: destination.description,
         isAnonymous: _isAnonymous,
       );
       if (!mounted) return;
@@ -196,8 +196,8 @@ class _ImgUploadState extends State<ImgUpload> {
       future: _festivalsFuture,
       builder: (context, snapshot) {
         final festivals = snapshot.data ?? [];
-        return DropdownButtonFormField<FestivalPreview>(
-          initialValue: _selectedFestival,
+        return DropdownButtonFormField<PhotoDestination>(
+          initialValue: _selectedDestination,
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny)),
             focusedBorder: OutlineInputBorder(
@@ -212,15 +212,16 @@ class _ImgUploadState extends State<ImgUpload> {
               : Text('select_festival_hint'.tr()),
           items: [
             ...festivals.map((f) => DropdownMenuItem(
-                  value: f,
+                  value: FestivalDestination(f),
                   child: Text(f.displayTitle(context.isEnglish), overflow: TextOverflow.ellipsis),
                 )),
-            DropdownMenuItem(value: photoCategoryDaily, child: Text('photo_category_daily'.tr())),
-            DropdownMenuItem(value: photoCategorySns, child: Text('photo_category_sns'.tr())),
-            DropdownMenuItem(value: photoCategoryOther, child: Text('photo_category_other'.tr())),
+            ...PhotoDestination.categories.map((c) => DropdownMenuItem(
+                  value: c,
+                  child: Text(c.labelKey.tr()),
+                )),
           ],
-          onChanged: (f) => setState(() => _selectedFestival = f),
-          validator: (_) => _selectedFestival == null ? 'select_festival_required'.tr() : null,
+          onChanged: (d) => setState(() => _selectedDestination = d),
+          validator: (_) => _selectedDestination == null ? 'select_festival_required'.tr() : null,
         );
       },
     );

@@ -42,7 +42,7 @@ class _CommunityPostState extends State<CommunityPost> {
   final TextEditingController _searchController = TextEditingController();
 
   final List<Post> _posts = [];
-  bool _loading = true;
+  bool _isLoading = true;
   bool _loadingMore = false;
   bool _hasMore = true;
   bool _hasError = false;
@@ -111,7 +111,7 @@ class _CommunityPostState extends State<CommunityPost> {
 
   Future<void> _load() async {
     final myId = ++_loadId;
-    setState(() { _loading = true; _hasError = false; _posts.clear(); _cursor = null; _hasMore = true; });
+    setState(() { _isLoading = true; _hasError = false; _posts.clear(); _cursor = null; _hasMore = true; });
     try {
       if (_isPaginated) {
         final page = await _postService.fetchPostsPage(_serviceBoardType, cursor: null, size: _pageSize, sort: _sort);
@@ -120,16 +120,16 @@ class _CommunityPostState extends State<CommunityPost> {
           _posts.addAll(page.content);
           _cursor = page.nextCursor;
           _hasMore = page.hasNext;
-          _loading = false;
+          _isLoading = false;
         });
       } else {
         final items = await _postService.fetchPosts(_serviceBoardType);
         if (!mounted || _loadId != myId) return;
-        setState(() { _posts.addAll(items); _loading = false; });
+        setState(() { _posts.addAll(items); _isLoading = false; });
       }
     } catch (e) {
       debugPrint('[CommunityPost] 게시글 로드 실패: $e');
-      if (mounted && _loadId == myId) setState(() { _loading = false; _hasError = true; });
+      if (mounted && _loadId == myId) setState(() { _isLoading = false; _hasError = true; });
     }
   }
 
@@ -457,7 +457,7 @@ class _CommunityPostState extends State<CommunityPost> {
             child: RefreshIndicator(
               color: colors.activate,
               onRefresh: _refresh,
-              child: _loading ? _buildSkeletonList() : _buildList(colors),
+              child: _isLoading ? _buildSkeletonList() : _buildList(colors),
             ),
           ),
         ],

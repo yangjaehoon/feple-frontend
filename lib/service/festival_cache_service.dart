@@ -10,8 +10,15 @@ import 'package:feple/model/timetable_entry.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// 페스티벌 관련 데이터를 SharedPreferences에 JSON으로 저장하는 캐시.
-/// 유효 시간: 24시간. 만료된 경우 null 반환.
+/// 페스티벌 상세 화면 전용 타입 스냅샷 캐시 (모델 객체 단위, TTL 24시간 고정).
+///
+/// [ApiCacheStore](../network/api_cache_store.dart)와는 역할이 다르다:
+/// - [ApiCacheStore]는 Dio 인터셉터에 연결되어 모든 GET 요청을 URL 단위로
+///   자동 캐싱하는 범용 인프라 캐시 (엔드포인트별 TTL, 호출부 수정 불필요).
+/// - 이 클래스는 스플래시 프리패치/오프라인 폴백을 위해 특정 화면(홈, 페스티벌
+///   상세)이 명시적으로 호출해 타입 있는 모델을 저장·조회하는 전용 캐시다.
+///   같은 엔드포인트 데이터가 두 캐시에 동시에 존재할 수 있으며, 이는 각각
+///   다른 소비자(인터셉터 vs 특정 화면)를 위한 것이라 정상이다.
 class FestivalCacheService {
   static const _ttlHours = 24;
   static const _p = 'fc';
@@ -207,11 +214,11 @@ class FestivalCacheService {
     final sp = await _sp;
     await sp.setString('${_p}_home_artists_$userId',
         jsonEncode(items.map((e) => e.toJson()).toList()));
-    // TTL은 saveFestivals와 공유 (홈 데이터는 함께 저장됨)
+    await _touch('${_p}_home_artists_time_$userId');
   }
 
   Future<List<FollowedArtist>?> loadHomeArtists(int userId) async {
-    if (await _isKeyStale('${_p}_home_time_$userId')) return null;
+    if (await _isKeyStale('${_p}_home_artists_time_$userId')) return null;
     final sp = await _sp;
     final s = sp.getString('${_p}_home_artists_$userId');
     if (s == null) return null;

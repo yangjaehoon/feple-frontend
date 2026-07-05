@@ -2,10 +2,16 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// GET 응답 캐시.
+/// DioClient 인터셉터에 연결되는 범용 GET 응답 캐시 (URL 문자열 → raw JSON).
+/// 모든 GET 요청에 자동 적용되며 호출부 수정이 필요 없다 (SWR 스타일).
 /// - 1차: 앱 메모리 (동기 조회, 앱 재시작 시 초기화)
 /// - 2차: SharedPreferences 인스턴스 (init() 후 동기 조회 가능 — 내부가 메모리 맵)
 /// - 3차: SharedPreferences 비동기 (init() 전 fallback)
+///
+/// [FestivalCacheService](../service/festival_cache_service.dart)와는 다른
+/// 캐시다 — 그쪽은 페스티벌 화면이 프리패치/오프라인 폴백을 위해 명시적으로
+/// 호출하는 타입 있는 모델 캐시이고, 이 클래스는 인터셉터가 자동으로 관리하는
+/// 범용 캐시다. 같은 데이터가 양쪽에 중복 저장될 수 있으며 의도된 것이다.
 class ApiCacheStore {
   static const _prefix = 'api_cache_';
 

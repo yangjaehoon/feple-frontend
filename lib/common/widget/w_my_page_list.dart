@@ -67,7 +67,7 @@ class MyPageList<T> extends StatefulWidget {
 
 class _MyPageListState<T> extends State<MyPageList<T>> {
   List<T> _items = [];
-  bool _loading = true;
+  bool _isLoading = true;
   bool _hasError = false;
 
   @override
@@ -78,14 +78,14 @@ class _MyPageListState<T> extends State<MyPageList<T>> {
 
   Future<void> _load() async {
     setState(() {
-      _loading = true;
+      _isLoading = true;
       _hasError = false;
     });
     try {
       final data = await widget.loader();
-      if (mounted) setState(() { _items = data; _loading = false; });
+      if (mounted) setState(() { _items = data; _isLoading = false; });
     } catch (_) {
-      if (mounted) setState(() { _loading = false; _hasError = true; });
+      if (mounted) setState(() { _isLoading = false; _hasError = true; });
     }
   }
 
@@ -110,7 +110,7 @@ class _MyPageListState<T> extends State<MyPageList<T>> {
             child: RefreshIndicator(
               color: colors.activate,
               onRefresh: _refresh,
-              child: _loading
+              child: _isLoading
                   ? widget.skeletonBuilder(colors)
                   : _hasError
                       ? _buildScrollable(

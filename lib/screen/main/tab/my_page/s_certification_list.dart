@@ -30,7 +30,7 @@ class CertificationListScreen extends StatefulWidget {
 class _CertificationListScreenState extends State<CertificationListScreen> {
   final _certService = sl<CertificationService>();
   List<CertificationModel> _certifications = [];
-  bool _loading = true;
+  bool _isLoading = true;
   bool _hasError = false;
   CertStatus? _filter; // null = 전체
 
@@ -45,12 +45,12 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
   }
 
   Future<void> _load() async {
-    setState(() { _loading = true; _hasError = false; });
+    setState(() { _isLoading = true; _hasError = false; });
     try {
       final list = await _certService.getMyCertifications();
-      if (mounted) setState(() { _certifications = list; _loading = false; });
+      if (mounted) setState(() { _certifications = list; _isLoading = false; });
     } catch (_) {
-      if (mounted) setState(() { _certifications = []; _loading = false; _hasError = true; });
+      if (mounted) setState(() { _certifications = []; _isLoading = false; _hasError = true; });
     }
   }
 
@@ -174,7 +174,7 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
     return RefreshIndicator(
       onRefresh: _refresh,
       color: colors.activate,
-      child: _loading
+      child: _isLoading
           ? _buildSkeleton(colors)
           : _hasError
               ? _buildScrollable(

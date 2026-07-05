@@ -40,7 +40,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
   Timer? _debounce;
   late final TabController _tabController;
 
-  bool _loading = false;
+  bool _isLoading = false;
   bool _searched = false;
   bool _hasError = false;
 
@@ -120,7 +120,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     _debounce?.cancel();
     _focusNode.unfocus();
     setState(() {
-      _loading = true;
+      _isLoading = true;
       _searched = true;
       _hasError = false;
       _suggestions = [];
@@ -134,12 +134,12 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
           _artists = result.artists;
           _festivals = result.festivals;
           _posts = result.posts;
-          _loading = false;
+          _isLoading = false;
         });
       }
     } catch (e) {
       debugPrint('[Search] 검색 실패: $e');
-      if (mounted) setState(() { _loading = false; _hasError = true; });
+      if (mounted) setState(() { _isLoading = false; _hasError = true; });
     }
   }
 
@@ -272,7 +272,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
   }
 
   Widget _buildContent(AbstractThemeColors colors) {
-    if (_loading) return _buildLoadingSkeleton(colors);
+    if (_isLoading) return _buildLoadingSkeleton(colors);
     if (_searched) return _hasError ? _buildError() : _buildResults(colors);
     if (_controller.text.isEmpty) return _buildRecentSearches(colors);
     return _buildSuggestions(colors);

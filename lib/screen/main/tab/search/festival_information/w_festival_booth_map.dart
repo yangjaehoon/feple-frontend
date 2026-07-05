@@ -33,7 +33,7 @@ class FestivalBoothMap extends StatefulWidget {
 class FestivalBoothMapState extends State<FestivalBoothMap> {
   void refresh() => _fetchBooths();
   List<BoothModel> _booths = [];
-  bool _loading = true;
+  bool _isLoading = true;
   bool _hasError = false;
   GoogleMapController? _mapController;
   Position? _userPosition;
@@ -47,14 +47,14 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
   }
 
   Future<void> _fetchBooths() async {
-    if (mounted) setState(() { _loading = true; _hasError = false; });
+    if (mounted) setState(() { _isLoading = true; _hasError = false; });
     try {
       final list = await sl<FestivalDetailService>().fetchBooths(widget.festivalId);
       debugPrint('[BoothMap] 부스 ${list.length}개 로드됨 (festivalId=${widget.festivalId})');
       if (mounted) {
         setState(() {
           _booths = list;
-          _loading = false;
+          _isLoading = false;
         });
         try {
           await _buildMarkers();
@@ -64,7 +64,7 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
       }
     } catch (e) {
       debugPrint('[BoothMap] API 오류: $e');
-      if (mounted) setState(() { _loading = false; _hasError = true; });
+      if (mounted) setState(() { _isLoading = false; _hasError = true; });
     }
   }
 
@@ -174,7 +174,7 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
   }
 
   Widget _buildBody(AbstractThemeColors colors) {
-    if (_loading) {
+    if (_isLoading) {
       return _buildSkeleton();
     }
     if (_hasError) {

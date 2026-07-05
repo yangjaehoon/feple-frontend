@@ -19,6 +19,11 @@ bool _isNetworkError(DioException e) {
           e.type == DioExceptionType.unknown);
 }
 
+/// dio.interceptors 등록 순서 (중요 — 순서를 바꾸면 인증/캐시 흐름이 조용히 깨짐):
+/// 1. [_AuthAndSwrInterceptor] — JWT 첨부, SWR 캐시 즉시 반환(요청 단축), 401 리프레시
+/// 2. [_ResponseCacheInterceptor] — 응답 캐시 저장/무효화, 오프라인 폴백
+/// 3. [PerformanceInterceptor] — 실제 네트워크 응답시간 측정 (SWR로 단축된
+///    요청까지 측정하면 안 되므로 반드시 1번 뒤에 위치)
 class DioClient {
   DioClient._();
 
@@ -103,120 +108,134 @@ class DioClient {
       receiveTimeout: const Duration(seconds: 12),
       contentType: 'application/json',
     ),
-  )..interceptors.add(
-    InterceptorsWrapper(
-      onRequest: (options, handler) async {
-        // per-request Authorization이 이미 있으면 덮어쓰지 않음 (예: 카카오 액세스 토큰)
-        if (!options.headers.containsKey('Authorization')) {
-          final jwt = await TokenStore.readAccessToken();
-          if (jwt != null && jwt.isNotEmpty) {
-            options.headers['Authorization'] = 'Bearer $jwt';
-          }
-        }
+  )..interceptors.add(_AuthAndSwrInterceptor())
+   ..interceptors.add(_ResponseCacheInterceptor())
+   ..interceptors.add(PerformanceInterceptor());
+}
 
-        // SWR: GET 요청에 메모리 캐시가 있으면 즉시 반환 + 백그라운드 갱신
-        // 첫 방문(캐시 없음)이나 오프라인 fallback은 아래 캐시 인터셉터가 처리
-        if (options.method == 'GET') {
-          final cached = ApiCacheStore.getSync(options.uri.toString());
-          if (cached != null) {
-            _bgRefresh(options);
-            return handler.resolve(Response(
-              requestOptions: options,
-              data: cached,
-              statusCode: 200,
-              extra: const {'fromCache': true},
-            ));
-          }
-        }
+/// 등록 순서 1번 — JWT 첨부, SWR 캐시 즉시 반환, 401 리프레시.
+/// [DioClient]와 같은 파일에 두는 이유: refresh 상태(`_isRefreshing`,
+/// `_refreshWaiters`)와 `_plainDio`/`_refreshAccessToken`을 공유해야 함.
+class _AuthAndSwrInterceptor extends Interceptor {
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+    // per-request Authorization이 이미 있으면 덮어쓰지 않음 (예: 카카오 액세스 토큰)
+    if (!options.headers.containsKey('Authorization')) {
+      final jwt = await TokenStore.readAccessToken();
+      if (jwt != null && jwt.isNotEmpty) {
+        options.headers['Authorization'] = 'Bearer $jwt';
+      }
+    }
 
-        handler.next(options);
-      },
-      onError: (error, handler) async {
-        if (error.response?.statusCode == 403) {
-          final data = error.response?.data;
-          if (data is Map && data['error'] == 'banned') {
-            onUserBanned?.call();
-          }
-          return handler.next(error);
-        }
+    // SWR: GET 요청에 메모리 캐시가 있으면 즉시 반환 + 백그라운드 갱신
+    // 첫 방문(캐시 없음)이나 오프라인 fallback은 _ResponseCacheInterceptor가 처리
+    if (options.method == 'GET') {
+      final cached = ApiCacheStore.getSync(options.uri.toString());
+      if (cached != null) {
+        DioClient._bgRefresh(options);
+        return handler.resolve(Response(
+          requestOptions: options,
+          data: cached,
+          statusCode: 200,
+          extra: const {'fromCache': true},
+        ));
+      }
+    }
 
-        if (error.response?.statusCode != 401) {
-          return handler.next(error);
-        }
+    handler.next(options);
+  }
 
-        // refresh 진행 중이면 완료될 때까지 대기
-        if (_isRefreshing) {
-          final completer = Completer<String?>();
-          _refreshWaiters.add(completer);
-          final newToken = await completer.future;
-          if (newToken == null) return handler.next(error);
-          final opts = error.requestOptions;
-          opts.headers['Authorization'] = 'Bearer $newToken';
-          try {
-            return handler.resolve(await _plainDio.fetch(opts));
-          } on DioException catch (retryErr) {
-            return handler.next(retryErr);
-          }
-        }
+  @override
+  void onError(DioException error, ErrorInterceptorHandler handler) async {
+    if (error.response?.statusCode == 403) {
+      final data = error.response?.data;
+      if (data is Map && data['error'] == 'banned') {
+        DioClient.onUserBanned?.call();
+      }
+      return handler.next(error);
+    }
 
-        _isRefreshing = true;
-        String? newToken;
-        try {
-          newToken = await _refreshAccessToken();
-        } catch (_) {
-          // refresh 엔드포인트 오류 — newToken remains null
-        } finally {
-          _isRefreshing = false;
-          for (final c in _refreshWaiters) {
-            c.complete(newToken);
-          }
-          _refreshWaiters.clear();
-        }
+    if (error.response?.statusCode != 401) {
+      return handler.next(error);
+    }
 
-        // refresh 토큰 없음(null 반환) 또는 refresh 실패(예외) — 두 경우 모두 정리
-        if (newToken == null) {
-          await TokenStore.clear();
-          onSessionExpired?.call();
-          return handler.next(error);
-        }
-        final opts = error.requestOptions;
-        opts.headers['Authorization'] = 'Bearer $newToken';
-        try {
-          return handler.resolve(await _plainDio.fetch(opts));
-        } on DioException catch (retryErr) {
-          return handler.next(retryErr);
-        }
-      },
-    ),
-  )..interceptors.add(
-    InterceptorsWrapper(
-      onResponse: (response, handler) async {
-        final method = response.requestOptions.method;
-        final url = response.requestOptions.uri.toString();
-        if (method == 'GET' && response.statusCode == 200) {
-          await ApiCacheStore.put(url, response.data);
-        } else if (method != 'GET') {
-          await ApiCacheStore.invalidateFor(url);
-        }
-        handler.next(response);
-      },
-      onError: (error, handler) async {
-        // 네트워크 에러 + 메모리 캐시도 없을 때 → SharedPreferences에서 복구
-        if (_isNetworkError(error) &&
-            error.requestOptions.method == 'GET') {
-          final url = error.requestOptions.uri.toString();
-          final cached = await ApiCacheStore.get(url);
-          if (cached != null) {
-            return handler.resolve(Response(
-              requestOptions: error.requestOptions,
-              data: cached,
-              statusCode: 200,
-              extra: const {'fromCache': true},
-            ));
-          }
-        }
-        handler.next(error);
-      },
-    ),
-  )..interceptors.add(PerformanceInterceptor());
+    // refresh 진행 중이면 완료될 때까지 대기
+    if (DioClient._isRefreshing) {
+      final completer = Completer<String?>();
+      DioClient._refreshWaiters.add(completer);
+      final newToken = await completer.future;
+      if (newToken == null) return handler.next(error);
+      final opts = error.requestOptions;
+      opts.headers['Authorization'] = 'Bearer $newToken';
+      try {
+        return handler.resolve(await DioClient._plainDio.fetch(opts));
+      } on DioException catch (retryErr) {
+        return handler.next(retryErr);
+      }
+    }
+
+    DioClient._isRefreshing = true;
+    String? newToken;
+    try {
+      newToken = await DioClient._refreshAccessToken();
+    } catch (_) {
+      // refresh 엔드포인트 오류 — newToken remains null
+    } finally {
+      DioClient._isRefreshing = false;
+      for (final c in DioClient._refreshWaiters) {
+        c.complete(newToken);
+      }
+      DioClient._refreshWaiters.clear();
+    }
+
+    // refresh 토큰 없음(null 반환) 또는 refresh 실패(예외) — 두 경우 모두 정리
+    if (newToken == null) {
+      await TokenStore.clear();
+      DioClient.onSessionExpired?.call();
+      return handler.next(error);
+    }
+    final opts = error.requestOptions;
+    opts.headers['Authorization'] = 'Bearer $newToken';
+    try {
+      return handler.resolve(await DioClient._plainDio.fetch(opts));
+    } on DioException catch (retryErr) {
+      return handler.next(retryErr);
+    }
+  }
+}
+
+/// 등록 순서 2번 — 응답 캐시 저장/무효화, 오프라인 폴백.
+/// 반드시 [_AuthAndSwrInterceptor] 뒤에 등록되어야 함: SWR 단축 응답은 이미
+/// 캐시된 데이터이므로 여기서 다시 저장할 필요가 없고, 이 인터셉터는 실제
+/// 네트워크 응답에 대해서만 캐시 쓰기/무효화를 수행한다.
+class _ResponseCacheInterceptor extends Interceptor {
+  @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) async {
+    final method = response.requestOptions.method;
+    final url = response.requestOptions.uri.toString();
+    if (method == 'GET' && response.statusCode == 200) {
+      await ApiCacheStore.put(url, response.data);
+    } else if (method != 'GET') {
+      await ApiCacheStore.invalidateFor(url);
+    }
+    handler.next(response);
+  }
+
+  @override
+  void onError(DioException error, ErrorInterceptorHandler handler) async {
+    // 네트워크 에러 + 메모리 캐시도 없을 때 → SharedPreferences에서 복구
+    if (_isNetworkError(error) && error.requestOptions.method == 'GET') {
+      final url = error.requestOptions.uri.toString();
+      final cached = await ApiCacheStore.get(url);
+      if (cached != null) {
+        return handler.resolve(Response(
+          requestOptions: error.requestOptions,
+          data: cached,
+          statusCode: 200,
+          extra: const {'fromCache': true},
+        ));
+      }
+    }
+    handler.next(error);
+  }
 }

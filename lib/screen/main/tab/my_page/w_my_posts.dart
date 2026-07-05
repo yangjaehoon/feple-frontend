@@ -26,7 +26,7 @@ class _MyPostsViewState extends State<MyPostsView> {
   final _service = sl<UserActivityService>();
   final _scrollController = ScrollController();
   List<Post> _posts = [];
-  bool _loading = true;
+  bool _isLoading = true;
   bool _hasError = false;
   bool _isLoadingMore = false;
   bool _hasMore = true;
@@ -54,7 +54,7 @@ class _MyPostsViewState extends State<MyPostsView> {
   }
 
   Future<void> _load() async {
-    setState(() { _loading = true; _hasError = false; _posts = []; _hasMore = true; _nextCursor = null; });
+    setState(() { _isLoading = true; _hasError = false; _posts = []; _hasMore = true; _nextCursor = null; });
     try {
       final result = await _service.fetchPostsPage(widget.userId, size: 20);
       if (mounted) {
@@ -62,11 +62,11 @@ class _MyPostsViewState extends State<MyPostsView> {
           _posts = result.content;
           _hasMore = result.hasNext;
           _nextCursor = result.nextCursor;
-          _loading = false;
+          _isLoading = false;
         });
       }
     } catch (_) {
-      if (mounted) setState(() { _loading = false; _hasError = true; });
+      if (mounted) setState(() { _isLoading = false; _hasError = true; });
     }
   }
 
@@ -85,7 +85,7 @@ class _MyPostsViewState extends State<MyPostsView> {
   }
 
   Future<void> _loadMore() async {
-    if (_isLoadingMore || !_hasMore || _loading) return;
+    if (_isLoadingMore || !_hasMore || _isLoading) return;
     setState(() => _isLoadingMore = true);
     try {
       final result = await _service.fetchPostsPage(widget.userId, cursor: _nextCursor, size: 20);
@@ -148,7 +148,7 @@ class _MyPostsViewState extends State<MyPostsView> {
   }
 
   Widget _buildContent(AbstractThemeColors colors) {
-    if (_loading) {
+    if (_isLoading) {
       return _buildSkeleton(colors);
     }
     if (_hasError) {

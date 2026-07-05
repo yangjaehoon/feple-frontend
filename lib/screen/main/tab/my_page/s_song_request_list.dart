@@ -23,7 +23,7 @@ class SongRequestListScreen extends StatefulWidget {
 class _SongRequestListScreenState extends State<SongRequestListScreen> {
   final _service = sl<SongRequestService>();
   List<SongRequestModel> _requests = [];
-  bool _loading = true;
+  bool _isLoading = true;
   bool _hasError = false;
   int? _userId;
   SongRequestStatus? _filter; // null = 전체
@@ -44,12 +44,12 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
 
   Future<void> _load() async {
     if (_userId == null) return;
-    setState(() { _loading = true; _hasError = false; });
+    setState(() { _isLoading = true; _hasError = false; });
     try {
       final list = await _service.fetchAllMyRequests(_userId!);
-      if (mounted) setState(() { _requests = list; _loading = false; });
+      if (mounted) setState(() { _requests = list; _isLoading = false; });
     } catch (_) {
-      if (mounted) setState(() { _loading = false; _hasError = true; });
+      if (mounted) setState(() { _isLoading = false; _hasError = true; });
     }
   }
 
@@ -152,7 +152,7 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
     return RefreshIndicator(
       onRefresh: _refresh,
       color: colors.activate,
-      child: _loading
+      child: _isLoading
           ? _buildSkeleton(colors)
           : _hasError
               ? _buildScrollable(

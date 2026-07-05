@@ -23,7 +23,7 @@ class FtvCertificationWidget extends StatefulWidget {
 class FtvCertificationWidgetState extends State<FtvCertificationWidget> {
   final _certService = sl<CertificationService>();
   List<CertificationModel>? _certifications;
-  bool _loading = true;
+  bool _isLoading = true;
   bool _hasError = false;
 
   @override
@@ -35,13 +35,13 @@ class FtvCertificationWidgetState extends State<FtvCertificationWidget> {
   void refresh() => _load();
 
   Future<void> _load() async {
-    setState(() { _loading = true; _hasError = false; });
+    setState(() { _isLoading = true; _hasError = false; });
     try {
       final list = await _certService.getMyCertifications();
-      if (mounted) setState(() { _certifications = list; _loading = false; });
+      if (mounted) setState(() { _certifications = list; _isLoading = false; });
     } catch (e) {
       debugPrint('[Certification] 인증 목록 로드 실패: $e');
-      if (mounted) setState(() { _hasError = true; _loading = false; });
+      if (mounted) setState(() { _hasError = true; _isLoading = false; });
     }
   }
 
@@ -63,7 +63,7 @@ class FtvCertificationWidgetState extends State<FtvCertificationWidget> {
         HomeSectionHeader(
           title: 'festival_certification'.tr(),
           trailing: TextButton(
-            onPressed: _loading ? null : _openDetail,
+            onPressed: _isLoading ? null : _openDetail,
             style: TextButton.styleFrom(
               minimumSize: Size.zero,
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -86,7 +86,7 @@ class FtvCertificationWidgetState extends State<FtvCertificationWidget> {
         else
           SizedBox(
             height: MediaQuery.sizeOf(context).width * 0.385, // 150/390
-            child: _loading
+            child: _isLoading
                 ? _buildSkeletonList()
                 : _certifications == null || _certifications!.isEmpty
                     ? _buildEmptyState(colors)

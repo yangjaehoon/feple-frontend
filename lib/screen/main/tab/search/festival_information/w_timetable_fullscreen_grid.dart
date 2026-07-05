@@ -191,11 +191,16 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
             ),
             ..._range.filtered.expand<Widget>((entry) {
               final rawTop = _toY(entry.startTime, pxPerMin);
-              final cardH = _toY(entry.endTime, pxPerMin) - rawTop;
+              // 자정을 넘기는 공연은 _toY 차이가 음수가 될 수 있으므로
+              // 랩어라운드를 이미 보정한 durationMinutes로 계산
+              final cardH = entry.durationMinutes * pxPerMin;
               final clampedH = (cardH - 4).clamp(4.0, double.infinity);
               if (entry.isOps) {
-                // 운영 항목: 모든 스테이지 열에 동일하게 표시
-                return List.generate(_stages.length, (i) => Positioned(
+                // 운영 항목: 모든 스테이지 열에 동일하게 표시.
+                // 실제 공연 없이 운영 항목만 있는 날은 _stages가 비어있을 수
+                // 있으므로 그 경우에도 최소 1칸은 그림 (stageW 폴백과 동일 전제)
+                final columnCount = _stages.isEmpty ? 1 : _stages.length;
+                return List.generate(columnCount, (i) => Positioned(
                   left: i * stageW + 3,
                   top: _topPad + rawTop + 2,
                   width: stageW - 6,
@@ -227,6 +232,10 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
               final stageIndex = _stages.indexOf(entry.stageName);
               if (stageIndex < 0) return const SizedBox.shrink();
               final rawTop = _toY(entry.startTime, pxPerMin);
+              // UserEntry는 w_timetable_entry_dialog.dart에서 종료 시각이 시작
+              // 시각보다 뒤여야만 저장 가능하도록 막혀있어(자정 교차 불가)
+              // _toY 차이가 음수가 될 일이 없음 — TimetableEntry(공식 항목)와
+              // 달리 durationMinutes 게터가 없는 별도 모델이라 그대로 유지
               final cardH = _toY(entry.endTime, pxPerMin) - rawTop;
               return Positioned(
                 left: stageIndex * stageW + 3,

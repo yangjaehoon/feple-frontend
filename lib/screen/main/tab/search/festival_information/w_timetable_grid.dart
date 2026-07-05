@@ -195,10 +195,16 @@ class TimetableGrid extends StatelessWidget {
     final cards = <Widget>[];
     for (final entry in filtered) {
       final rawTop = _toY(entry.startTime);
-      final clampedH = (_toY(entry.endTime) - rawTop - 4).clamp(4.0, double.infinity);
+      // 자정을 넘기는 공연은 endTime의 시각이 startTime보다 작아 _toY 차이가
+      // 음수가 될 수 있으므로, 랩어라운드를 이미 보정한 durationMinutes로 계산
+      final clampedH = (entry.durationMinutes * _minPx - 4).clamp(4.0, double.infinity);
       if (entry.isOps) {
-        // 운영 항목: 별도 열 없이 모든 스테이지 열에 동일하게 표시
-        for (int i = 0; i < stages.length; i++) {
+        // 운영 항목: 별도 열 없이 모든 스테이지 열에 동일하게 표시.
+        // 그날 실제 공연 없이 운영 항목만 있으면 stages가 비어있을 수 있으므로
+        // 그 경우에도 최소 1칸은 그려서 카드가 사라지지 않게 함 (stageW의
+        // 폴백 계산과 동일한 전제)
+        final columnCount = stages.isEmpty ? 1 : stages.length;
+        for (int i = 0; i < columnCount; i++) {
           cards.add(Positioned(
             left: i * stageW + 3,
             top: _topPad + rawTop + 2,

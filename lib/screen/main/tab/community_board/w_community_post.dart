@@ -105,7 +105,15 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
 
   Future<void> _load() async {
     final myId = ++_loadId;
-    setState(() { _isLoading = true; _hasError = false; _posts.clear(); _cursor = null; _hasMore = true; });
+    // 진행 중이던 loadMore를 무효화 — 그 결과가 나중에 와도 _loadId 가드로 버려짐
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+      _posts.clear();
+      _cursor = null;
+      _hasMore = true;
+      _loadingMore = false;
+    });
     try {
       if (_isPaginated) {
         final page = await _postService.fetchPostsPage(_serviceBoardType, cursor: null, size: _pageSize, sort: _sort);
@@ -129,6 +137,8 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
 
   Future<void> _refresh() async {
     final myId = ++_loadId;
+    // 진행 중이던 loadMore를 무효화 — 그 결과가 나중에 와도 _loadId 가드로 버려짐
+    if (_loadingMore) setState(() => _loadingMore = false);
     try {
       if (_isPaginated) {
         final page = await _postService.fetchPostsPage(_serviceBoardType, cursor: null, size: _pageSize, sort: _sort);
@@ -152,10 +162,12 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
 
   Future<void> _loadMore() async {
     if (!_hasMore || _loadingMore) return;
+    // load/refresh가 진행 중에 끼어들면 그 결과로 이 loadMore 응답이 stale해짐
+    final myId = _loadId;
     setState(() => _loadingMore = true);
     try {
       final page = await _postService.fetchPostsPage(_serviceBoardType, cursor: _cursor, size: _pageSize, sort: _sort);
-      if (!mounted) return;
+      if (!mounted || _loadId != myId) return;
       setState(() {
         _posts.addAll(page.content);
         _cursor = page.nextCursor;
@@ -164,7 +176,7 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
       });
     } catch (e) {
       debugPrint('[CommunityPost] 추가 로드 실패: $e');
-      if (mounted) setState(() => _loadingMore = false);
+      if (mounted && _loadId == myId) setState(() => _loadingMore = false);
     }
   }
 

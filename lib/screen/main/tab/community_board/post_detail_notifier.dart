@@ -169,7 +169,12 @@ class PostDetailNotifier extends SafeChangeNotifier {
 
   Future<void> updateComment(int commentId, String newContent) async {
     final index = comments.indexWhere((c) => c.id == commentId);
-    if (index == -1) return;
+    if (index == -1) {
+      // 수정 다이얼로그가 열려있는 동안 댓글이 이미 삭제된 경우 —
+      // 조용히 무시하면 사용자는 "완료"를 눌러도 반응이 없다고 오해함
+      onError?.call('comment_update_failed');
+      return;
+    }
     final originalComment = comments[index];
     _replaceCommentAt(index, originalComment.copyWith(content: newContent, updatedAt: DateTime.now()));
     commentsVersion.value++;
@@ -178,14 +183,20 @@ class PostDetailNotifier extends SafeChangeNotifier {
       await _commentService.updateComment(commentId, newContent);
     } on BannedWordException {
       if (!isDisposed) {
-        _replaceCommentAt(index, originalComment);
+        // await 도중 comments가 통째로 교체됐을 수 있으므로 캡처해둔 index가
+        // 아니라 commentId로 다시 찾아서 롤백 (toggleCommentLike와 동일 패턴)
+        final rollbackIndex = comments.indexWhere((c) => c.id == commentId);
+        if (rollbackIndex != -1) _replaceCommentAt(rollbackIndex, originalComment);
         commentsVersion.value++;
-        commentError = 'comment_banned_word';
         safeNotify();
       }
+      // commentError는 하단 "새 댓글 작성" 입력창 전용 — 댓글 수정은 별도
+      // 다이얼로그(이미 닫힌 상태)에서 일어나므로 스낵바로 알림
+      onError?.call('comment_banned_word');
     } catch (e) {
       if (!isDisposed) {
-        _replaceCommentAt(index, originalComment);
+        final rollbackIndex = comments.indexWhere((c) => c.id == commentId);
+        if (rollbackIndex != -1) _replaceCommentAt(rollbackIndex, originalComment);
         commentsVersion.value++;
         safeNotify();
       }
@@ -195,10 +206,10 @@ class PostDetailNotifier extends SafeChangeNotifier {
   }
 
   Future<void> deleteComment(int commentId) async {
-    final originalComments = List<CommentDetail>.from(comments);
     // 부모 댓글을 지우면 그 답글들도 화면에서 함께 제거 — 부모 없는 답글이
     // 고아 상태로 남아 보이는 것을 막기 위함 (다른 mutator와 달리 단일 항목이
     // 아닌 이유). 서버 delete가 실패하면 아래 catch에서 답글까지 함께 복원됨
+    final removed = comments.where((c) => c.id == commentId || c.parentId == commentId).toList();
     comments = comments
         .where((c) => c.id != commentId && c.parentId != commentId)
         .toList();
@@ -208,7 +219,11 @@ class PostDetailNotifier extends SafeChangeNotifier {
       await _commentService.deleteComment(commentId);
     } catch (e) {
       if (!isDisposed) {
-        comments = originalComments;
+        // 삭제 시도 전체를 스냅샷으로 되돌리면 대기 중 fetchComments()로 반영된
+        // 다른 변경사항(예: 새 댓글)을 덮어쓸 수 있으므로, 삭제하려던 항목만
+        // 현재 목록에 다시 합침
+        final currentIds = comments.map((c) => c.id).toSet();
+        comments = [...comments, ...removed.where((c) => !currentIds.contains(c.id))];
         commentsVersion.value++;
         safeNotify();
       }

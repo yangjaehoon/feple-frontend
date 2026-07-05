@@ -31,6 +31,8 @@ class _MyPostsViewState extends State<MyPostsView> {
   bool _isLoadingMore = false;
   bool _hasMore = true;
   int? _nextCursor;
+  // load/refresh와 loadMore가 겹칠 때 늦게 도착한 stale 응답을 버리기 위한 가드
+  int _loadId = 0;
 
   @override
   void initState() {
@@ -54,10 +56,19 @@ class _MyPostsViewState extends State<MyPostsView> {
   }
 
   Future<void> _load() async {
-    setState(() { _isLoading = true; _hasError = false; _posts = []; _hasMore = true; _nextCursor = null; });
+    final myId = ++_loadId;
+    // 진행 중이던 loadMore를 무효화 — 그 결과가 나중에 와도 _loadId 가드로 버려짐
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+      _posts = [];
+      _hasMore = true;
+      _nextCursor = null;
+      _isLoadingMore = false;
+    });
     try {
       final result = await _service.fetchPostsPage(widget.userId, size: 20);
-      if (mounted) {
+      if (mounted && _loadId == myId) {
         setState(() {
           _posts = result.content;
           _hasMore = result.hasNext;
@@ -66,14 +77,16 @@ class _MyPostsViewState extends State<MyPostsView> {
         });
       }
     } catch (_) {
-      if (mounted) setState(() { _isLoading = false; _hasError = true; });
+      if (mounted && _loadId == myId) setState(() { _isLoading = false; _hasError = true; });
     }
   }
 
   Future<void> _refresh() async {
+    final myId = ++_loadId;
+    if (_isLoadingMore) setState(() => _isLoadingMore = false);
     try {
       final result = await _service.fetchPostsPage(widget.userId, size: 20);
-      if (mounted) {
+      if (mounted && _loadId == myId) {
         setState(() {
           _posts = result.content;
           _hasMore = result.hasNext;
@@ -86,10 +99,11 @@ class _MyPostsViewState extends State<MyPostsView> {
 
   Future<void> _loadMore() async {
     if (_isLoadingMore || !_hasMore || _isLoading) return;
+    final myId = _loadId;
     setState(() => _isLoadingMore = true);
     try {
       final result = await _service.fetchPostsPage(widget.userId, cursor: _nextCursor, size: 20);
-      if (mounted) {
+      if (mounted && _loadId == myId) {
         setState(() {
           _posts = [..._posts, ...result.content];
           _hasMore = result.hasNext;
@@ -98,7 +112,7 @@ class _MyPostsViewState extends State<MyPostsView> {
         });
       }
     } catch (_) {
-      if (mounted) setState(() => _isLoadingMore = false);
+      if (mounted && _loadId == myId) setState(() => _isLoadingMore = false);
     }
   }
 

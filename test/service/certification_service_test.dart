@@ -27,7 +27,7 @@ void main() {
 
   tearDownAll(() => server.shutdown());
 
-  const _certJson = '{"id":1,"festivalId":10,"status":"APPROVED",'
+  const certJson = '{"id":1,"festivalId":10,"status":"APPROVED",'
       '"festivalTitle":"RockFest","festivalTitleEn":"RockFest"}';
 
   group('CertificationService', () {
@@ -35,7 +35,7 @@ void main() {
 
     test('getPublicCertifications parses certification list', () async {
       server.enqueue(
-        body: '[$_certJson]',
+        body: '[$certJson]',
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -60,7 +60,7 @@ void main() {
 
     test('getMyCertifications parses certification list', () async {
       server.enqueue(
-        body: '[$_certJson]',
+        body: '[$certJson]',
         headers: {'Content-Type': 'application/json'},
       );
 

@@ -26,7 +26,7 @@ void main() {
 
   tearDownAll(() => server.shutdown());
 
-  const _postJson =
+  const postJson =
       '{"id":1,"title":"My Post","content":"Content","likeCount":0,"nickname":"user1"}';
 
   group('UserActivityService', () {
@@ -34,7 +34,7 @@ void main() {
 
     test('fetchPostsPage parses PostCursorPage with content', () async {
       server.enqueue(
-        body: '{"content":[$_postJson],"nextCursor":5,"hasNext":true}',
+        body: '{"content":[$postJson],"nextCursor":5,"hasNext":true}',
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -64,7 +64,7 @@ void main() {
 
     test('fetchPosts parses Post list', () async {
       server.enqueue(
-        body: '[$_postJson]',
+        body: '[$postJson]',
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -116,7 +116,7 @@ void main() {
 
     test('fetchLikedPosts parses Post list', () async {
       server.enqueue(
-        body: '[$_postJson]',
+        body: '[$postJson]',
         headers: {'Content-Type': 'application/json'},
       );
 

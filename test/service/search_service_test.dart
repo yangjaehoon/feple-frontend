@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:feple/model/search_suggestion.dart';
 import 'package:feple/network/api_cache_store.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/service/search_service.dart';
@@ -28,12 +27,12 @@ void main() {
   tearDownAll(() => server.shutdown());
 
   // Artist requires genre and profileImageUrl (non-nullable String fields)
-  const _artistJson =
+  const artistJson =
       '{"id":1,"name":"IU","nameEn":"IU","genre":"Pop","profileImageUrl":"https://img.example.com/iu.jpg","followerCount":5000}';
-  const _festivalJson =
+  const festivalJson =
       '{"id":5,"title":"Rock Fest","titleEn":"Rock Fest","location":"Seoul",'
       '"posterUrl":"https://img.example.com/poster.jpg","startDate":"2025-06-01"}';
-  const _postJson =
+  const postJson =
       '{"id":10,"title":"Post","content":"Body","likeCount":3,"nickname":"user1"}';
 
   group('SearchService', () {
@@ -41,7 +40,7 @@ void main() {
 
     test('search parses artists, festivals, and posts', () async {
       server.enqueue(
-        body: '{"artists":[$_artistJson],"festivals":[$_festivalJson],"posts":[$_postJson]}',
+        body: '{"artists":[$artistJson],"festivals":[$festivalJson],"posts":[$postJson]}',
         headers: {'Content-Type': 'application/json'},
       );
 

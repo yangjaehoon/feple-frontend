@@ -232,31 +232,34 @@ class PostDetailNotifier extends SafeChangeNotifier {
     }
   }
 
-  Future<void> toggleCommentLike(int commentId, int? userId) async {
-    if (userId == null) return;
-    if (_togglingCommentIds.contains(commentId)) return;
+  // 댓글 하나의 좋아요만 바뀌므로 commentsVersion을 올리지 않는다 — 올리면
+  // CommentSection 전체(모든 댓글 타일)가 다시 빌드된다. 대신 _LikeButton이
+  // 로컬 optimistic 상태로 즉시 표시하고, 이 메서드는 성공 여부만 반환해
+  // 실패 시 버튼 스스로 되돌리게 한다. comments 리스트 자체는 항상 갱신되므로
+  // (다른 이유로) 전체가 재빌드될 때도 최신 상태가 반영된다.
+  Future<bool> toggleCommentLike(int commentId, int? userId) async {
+    if (userId == null) return false;
+    if (_togglingCommentIds.contains(commentId)) return false;
     final index = comments.indexWhere((c) => c.id == commentId);
-    if (index == -1) return;
+    if (index == -1) return false;
     final originalComment = comments[index];
     _togglingCommentIds.add(commentId);
     _replaceCommentAt(index, originalComment.copyWith(
       liked: !originalComment.liked,
       likeCount: originalComment.likeCount + (!originalComment.liked ? 1 : -1),
     ));
-    commentsVersion.value++;
-    safeNotify();
     try {
       await _commentService.toggleCommentLike(commentId);
+      return true;
     } catch (e) {
       if (!isDisposed) {
         final commentIndex = comments.indexWhere((c) => c.id == commentId);
         if (commentIndex != -1) {
           _replaceCommentAt(commentIndex, originalComment);
-          commentsVersion.value++;
-          safeNotify();
         }
       }
       debugPrint('toggleCommentLike error: $e');
+      return false;
     } finally {
       _togglingCommentIds.remove(commentId);
     }

@@ -390,7 +390,8 @@ class _PostDetailCardState extends State<PostDetailCard> {
     );
   }
 
-  // commentsVersion이 바뀔 때만 리빌드 — 댓글 좋아요가 상호작용 영역을 리빌드하지 않음
+  // commentsVersion은 댓글 추가/수정/삭제 시에만 증가 — 좋아요 토글은
+  // CommentSection의 _LikeButton이 로컬 상태로 처리하므로 이 리빌드에 관여하지 않음
   Widget _buildCommentArea(int? userId) {
     return ListenableBuilder(
       listenable: _notifier.commentsVersion,

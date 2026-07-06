@@ -16,7 +16,7 @@ class CommentSection extends StatelessWidget {
   final int? currentUserId;
   final void Function(int commentId)? onReport;
   final void Function(int commentId, String nickname)? onReply;
-  final void Function(int commentId)? onToggleLike;
+  final Future<bool> Function(int commentId)? onToggleLike;
   final void Function(int commentId)? onDeleteComment;
   final void Function(int commentId, String currentContent)? onEditComment;
   final void Function(int userId, String nickname, String? profileImageUrl)? onAuthorTap;
@@ -103,7 +103,7 @@ class _CommentTile extends StatelessWidget {
   final bool isReply;
   final VoidCallback? onReport;
   final VoidCallback? onReply;
-  final VoidCallback? onToggleLike;
+  final Future<bool> Function()? onToggleLike;
   final VoidCallback? onDelete;
   final VoidCallback? onEdit;
   final VoidCallback? onAuthorTap;
@@ -190,36 +190,10 @@ class _CommentTile extends StatelessWidget {
   Widget _buildActions(AbstractThemeColors colors) {
     return Row(
       children: [
-        Semantics(
-          button: true,
-          label: 'like'.tr(),
-          child: SizedBox(
-            height: AppDimens.minTouchTarget,
-            child: GestureDetector(
-              onTap: onToggleLike,
-              behavior: HitTestBehavior.opaque,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      comment.liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                      size: 13,
-                      color: comment.liked ? colors.likeActiveColor : colors.textSecondary,
-                    ),
-                    if (comment.likeCount > 0) ...[
-                      const SizedBox(width: 3),
-                      Text(
-                        comment.likeCount.toString(),
-                        style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ),
-          ),
+        _LikeButton(
+          liked: comment.liked,
+          likeCount: comment.likeCount,
+          onToggle: onToggleLike,
         ),
         if (!isReply && onReply != null) ...[
           const SizedBox(width: 4),
@@ -314,5 +288,93 @@ class _CommentTile extends StatelessWidget {
       );
     }
     return const SizedBox.shrink();
+  }
+}
+
+/// 댓글 좋아요 버튼.
+/// 탭 즉시 로컬 상태로 낙관적 반영하고 [onToggle] 결과가 실패면 되돌린다.
+/// 상위 [CommentSection]의 commentsVersion을 올리지 않아, 댓글 하나를 좋아요
+/// 눌러도 전체 댓글 리스트가 다시 빌드되지 않는다.
+class _LikeButton extends StatefulWidget {
+  final bool liked;
+  final int likeCount;
+  final Future<bool> Function()? onToggle;
+
+  const _LikeButton({required this.liked, required this.likeCount, this.onToggle});
+
+  @override
+  State<_LikeButton> createState() => _LikeButtonState();
+}
+
+class _LikeButtonState extends State<_LikeButton> {
+  late bool _liked = widget.liked;
+  late int _likeCount = widget.likeCount;
+
+  @override
+  void didUpdateWidget(covariant _LikeButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // 댓글 수정/삭제 등 다른 이유로 부모가 새 comment 데이터를 내려주면 동기화
+    if (oldWidget.liked != widget.liked || oldWidget.likeCount != widget.likeCount) {
+      _liked = widget.liked;
+      _likeCount = widget.likeCount;
+    }
+  }
+
+  Future<void> _handleTap() async {
+    final onToggle = widget.onToggle;
+    if (onToggle == null) return;
+    setState(() {
+      _liked = !_liked;
+      _likeCount += _liked ? 1 : -1;
+    });
+    final success = await onToggle();
+    if (!success && mounted) {
+      setState(() {
+        _liked = !_liked;
+        _likeCount += _liked ? 1 : -1;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    return Semantics(
+      button: true,
+      label: 'like'.tr(),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          minWidth: AppDimens.minTouchTarget,
+          minHeight: AppDimens.minTouchTarget,
+        ),
+        child: GestureDetector(
+          onTap: _handleTap,
+          behavior: HitTestBehavior.opaque,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    _liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                    size: 13,
+                    color: _liked ? colors.likeActiveColor : colors.textSecondary,
+                  ),
+                  if (_likeCount > 0) ...[
+                    const SizedBox(width: 3),
+                    Text(
+                      _likeCount.toString(),
+                      style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

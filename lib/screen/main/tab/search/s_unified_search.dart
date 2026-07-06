@@ -453,7 +453,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
       return CircleAvatar(
         radius: 20,
         backgroundColor: colors.textSecondary.withValues(alpha: 0.2),
-        backgroundImage: CachedNetworkImageProvider(imageUrl),
+        backgroundImage: CachedNetworkImageProvider(imageUrl, maxWidth: 80),
       );
     } else {
       return ClipRRect(
@@ -462,6 +462,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
           imageUrl: imageUrl,
           width: 40,
           height: 40,
+          memCacheWidth: 80,
           fit: BoxFit.cover,
           placeholder: (_, _) => Container(
             width: 40,

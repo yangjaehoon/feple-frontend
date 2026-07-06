@@ -166,15 +166,38 @@ class HomeStateNotifier extends SafeChangeNotifier {
     }
   }
 
+  // artists/artistOrder(또는 festivals/festivalOrder) 레퍼런스가 바뀔 때만
+  // 재계산 — 홈 화면 전체가 하나의 ListenableBuilder라서 한쪽만 바뀌어도
+  // notifyListeners()가 두 getter를 모두 호출하기 때문에 캐싱이 필요함
+  List<FollowedArtist>? _cachedArtistsSource;
+  List<int>? _cachedArtistOrderSource;
+  List<FollowedArtist>? _cachedOrderedArtists;
+
+  List<FestivalModel>? _cachedFestivalsSource;
+  List<int>? _cachedFestivalOrderSource;
+  List<FestivalModel>? _cachedOrderedFestivals;
+
   List<FollowedArtist>? get orderedArtists {
     if (artists == null) return null;
-    return applyOrder(artists!, artistOrder, (x) => x.id);
+    if (identical(_cachedArtistsSource, artists) &&
+        identical(_cachedArtistOrderSource, artistOrder)) {
+      return _cachedOrderedArtists;
+    }
+    _cachedArtistsSource = artists;
+    _cachedArtistOrderSource = artistOrder;
+    return _cachedOrderedArtists = applyOrder(artists!, artistOrder, (x) => x.id);
   }
 
   List<FestivalModel>? get orderedFestivals {
     if (festivals == null) return null;
+    if (identical(_cachedFestivalsSource, festivals) &&
+        identical(_cachedFestivalOrderSource, festivalOrder)) {
+      return _cachedOrderedFestivals;
+    }
+    _cachedFestivalsSource = festivals;
+    _cachedFestivalOrderSource = festivalOrder;
     final ordered = applyOrder(festivals!, festivalOrder, (x) => x.id);
-    return [
+    return _cachedOrderedFestivals = [
       ...ordered.where((f) => !f.isEnded),
       ...ordered.where((f) => f.isEnded),
     ];

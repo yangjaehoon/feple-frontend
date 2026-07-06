@@ -36,7 +36,8 @@ class InlineBadge extends StatelessWidget {
       tooltip = 'badge_artist_certified'.tr();
     } else {
       color = AppColors.badgeCertified;
-      icon = Icons.verified_rounded;
+      // artist 배지와 아이콘이 같으면 색약 사용자가 색상만으로 구분해야 함 — 아이콘도 다르게
+      icon = Icons.local_activity_rounded;
       tooltip = 'badge_festival_certified'.tr();
     }
 

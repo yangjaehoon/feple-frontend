@@ -19,7 +19,6 @@ import 'package:flutter/material.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/festival_cache_service.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:get/get_utils/src/extensions/string_extensions.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -432,7 +431,7 @@ class _LanguageItemState extends State<_LanguageItem> {
       dropdownMenuEntries: Language.values.map((l) {
         return DropdownMenuEntry<Language>(
           value: l,
-          label: l.name.capitalizeFirst!,
+          label: l.name[0].toUpperCase() + l.name.substring(1),
           leadingIcon: Image.asset(l.flagPath, width: 16, height: 16),
         );
       }).toList(),

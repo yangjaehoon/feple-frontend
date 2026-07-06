@@ -61,21 +61,27 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
   Future<void> _load() async {
     setState(() { _hasError = false; });
     try {
-      final (user, stats, certifications, blockedList) = await (
+      final (user, stats, certifications) = await (
         _userService.fetchUser(widget.userId),
         _activityService.fetchStats(widget.userId),
         _certService.getPublicCertifications(widget.userId),
-        _blockService.getBlockedUsers(),
       ).wait;
       if (!mounted) return;
       setState(() {
         _user = user;
         _postCount = stats.postCount;
         _certifications = certifications;
-        _isBlocked = blockedList.any((u) => u.userId == widget.userId);
       });
     } catch (_) {
       if (mounted) setState(() => _hasError = true);
+      return;
+    }
+    // 차단 여부는 부가 정보 — 조회 실패로 프로필 전체를 에러 화면으로 만들지 않음
+    try {
+      final blockedList = await _blockService.getBlockedUsers();
+      if (mounted) setState(() => _isBlocked = blockedList.any((u) => u.userId == widget.userId));
+    } catch (e) {
+      debugPrint('[OtherUserProfile] blocked list fetch failed: $e');
     }
   }
 

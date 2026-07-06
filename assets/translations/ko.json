@@ -564,6 +564,7 @@
   "onboarding_pick_skip": "나중에 선택하기",
   "onboarding_pick_load_failed": "아티스트를 불러오지 못했습니다",
   "onboarding_pick_retry": "다시 시도",
+  "onboarding_follow_failed": "아티스트 팔로우에 실패했습니다. 다시 시도해주세요",
   "onboarding_replay": "온보딩 다시 보기",
   "perm_notif_title": "알림을 받아보세요",
   "perm_notif_desc": "팔로우한 아티스트의 새 페스티벌 소식, 인증 결과, 답글 등\n중요한 업데이트를 놓치지 마세요.",
@@ -589,5 +590,8 @@
   "level_sprout": "새싹",
   "level_bloom": "꽃",
   "level_festival": "페스티버",
-  "level_legend": "레전드"
+  "level_legend": "레전드",
+  "add_to_calendar": "달력에 저장",
+  "add_to_calendar_success": "달력 앱이 열렸습니다.",
+  "add_to_calendar_no_date": "날짜 정보가 없어 저장할 수 없습니다."
 }

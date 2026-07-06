@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/asset_json_loader.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/model/open_source_package.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ class OpensourceScreen extends StatefulWidget {
 
 class _OpensourceScreenState extends State<OpensourceScreen> {
   List<Package> packageList = [];
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -25,12 +27,14 @@ class _OpensourceScreenState extends State<OpensourceScreen> {
   }
 
   Future<void> initData() async {
+    setState(() => _hasError = false);
     try {
       final list = await LocalJson.getPackages("json/licenses.json");
       if (!mounted) return;
       setState(() => packageList = list);
     } catch (e) {
       debugPrint('opensource license load error: $e');
+      if (mounted) setState(() => _hasError = true);
     }
   }
 
@@ -43,14 +47,16 @@ class _OpensourceScreenState extends State<OpensourceScreen> {
         children: [
           SecondaryAppBar(title: 'opensource'.tr()),
           Expanded(
-            child: ListView.separated(
-              itemBuilder: (context, index) => OpensourceItem(packageList[index]),
-              itemCount: packageList.length,
-              separatorBuilder: (context, index) => const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Line(),
-              ),
-            ),
+            child: _hasError
+                ? Center(child: ErrorState(message: 'load_error'.tr(), onRetry: initData))
+                : ListView.separated(
+                    itemBuilder: (context, index) => OpensourceItem(packageList[index]),
+                    itemCount: packageList.length,
+                    separatorBuilder: (context, index) => const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Line(),
+                    ),
+                  ),
           ),
         ],
       ),

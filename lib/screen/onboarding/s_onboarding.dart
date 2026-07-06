@@ -201,6 +201,11 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
       );
     } catch (e) {
       debugPrint('[Onboarding] artist follow failed: $e');
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+        context.showErrorSnackbar('onboarding_follow_failed'.tr());
+      }
+      return;
     }
     if (!mounted) return;
     try {

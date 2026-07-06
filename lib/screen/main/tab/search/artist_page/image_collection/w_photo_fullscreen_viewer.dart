@@ -201,22 +201,26 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
   }
 
   Widget _buildLikeRow(ArtistPhotoResponse photo) {
-    return GestureDetector(
-      onTap: _handleLike,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            photo.isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-            color: photo.isLiked ? AppColors.hotPink : Colors.white70,
-            size: 22,
-          ),
-          const SizedBox(width: 6),
-          Text(
-            '${photo.likeCount}',
-            style: const TextStyle(color: Colors.white70, fontSize: AppDimens.fontSizeMd, fontWeight: FontWeight.w600),
-          ),
-        ],
+    return Semantics(
+      button: true,
+      label: 'like'.tr(),
+      child: GestureDetector(
+        onTap: _handleLike,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              photo.isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+              color: photo.isLiked ? AppColors.hotPink : Colors.white70,
+              size: 22,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              '${photo.likeCount}',
+              style: const TextStyle(color: Colors.white70, fontSize: AppDimens.fontSizeMd, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
       ),
     );
   }

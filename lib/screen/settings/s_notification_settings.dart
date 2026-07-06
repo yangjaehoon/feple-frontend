@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
@@ -16,6 +17,8 @@ class NotificationSettingsScreen extends StatefulWidget {
 
 class _NotificationSettingsScreenState extends State<NotificationSettingsScreen> {
   NotificationPreferenceModel? _prefs;
+  bool _hasError = false;
+  bool _saving = false;
 
   @override
   void initState() {
@@ -24,25 +27,26 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   }
 
   Future<void> _loadPrefs() async {
+    setState(() => _hasError = false);
     try {
       final prefs = await sl<NotificationPreferenceService>().getPreferences();
       if (mounted) setState(() => _prefs = prefs);
     } catch (e) {
+      // 실제 서버 상태를 모르는 채 가짜 기본값을 채우면 이후 토글 시 전체
+      // 스냅샷을 PUT하는 _togglePref가 서버의 다른 항목 값을 덮어쓸 수 있음
+      // → 기본값 대체 대신 재시도를 요구
       debugPrint('[NotifSettings] prefs load failed: $e');
-      if (mounted) {
-        setState(() => _prefs = const NotificationPreferenceModel(
-          certEnabled: true,
-          commentEnabled: true,
-          festivalEnabled: true,
-          songRequestEnabled: true,
-        ));
-      }
+      if (mounted) setState(() => _hasError = true);
     }
   }
 
   Future<void> _togglePref(NotificationPreferenceModel newPrefs) async {
+    if (_saving) return;
     final old = _prefs;
-    setState(() => _prefs = newPrefs);
+    setState(() {
+      _prefs = newPrefs;
+      _saving = true;
+    });
     try {
       await sl<NotificationPreferenceService>().updatePreferences(newPrefs);
     } catch (_) {
@@ -50,6 +54,8 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
         setState(() => _prefs = old);
         context.showErrorSnackbar('save_failed'.tr());
       }
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
   }
 
@@ -63,45 +69,51 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
         children: [
           SecondaryAppBar(title: 'notif_settings'.tr()),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.only(top: 16, bottom: 40),
-              children: [
-                if (_prefs == null)
-                  const _NotifSkeleton()
-                else ...[
-                  _NotifItem(
-                    icon: Icons.verified_rounded,
-                    label: 'notif_cert'.tr(),
-                    value: _prefs!.certEnabled,
-                    onChanged: (_) => _togglePref(_prefs!.toggleCert()),
-                  ),
-                  const _Divider(),
-                  _NotifItem(
-                    icon: Icons.chat_bubble_rounded,
-                    label: 'notif_comment'.tr(),
-                    value: _prefs!.commentEnabled,
-                    onChanged: (_) => _togglePref(_prefs!.toggleComment()),
-                  ),
-                  const _Divider(),
-                  _NotifItem(
-                    icon: Icons.festival_rounded,
-                    label: 'notif_festival'.tr(),
-                    value: _prefs!.festivalEnabled,
-                    onChanged: (_) => _togglePref(_prefs!.toggleFestival()),
-                  ),
-                  const _Divider(),
-                  _NotifItem(
-                    icon: Icons.music_note_rounded,
-                    label: 'notif_song_request'.tr(),
-                    value: _prefs!.songRequestEnabled,
-                    onChanged: (_) => _togglePref(_prefs!.toggleSongRequest()),
-                  ),
-                ],
-              ],
-            ),
+            child: _hasError
+                ? Center(child: ErrorState(message: 'load_error'.tr(), onRetry: _loadPrefs))
+                : _buildList(),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildList() {
+    return ListView(
+      padding: const EdgeInsets.only(top: 16, bottom: 40),
+      children: [
+        if (_prefs == null)
+          const _NotifSkeleton()
+        else ...[
+          _NotifItem(
+            icon: Icons.verified_rounded,
+            label: 'notif_cert'.tr(),
+            value: _prefs!.certEnabled,
+            onChanged: _saving ? null : (_) => _togglePref(_prefs!.toggleCert()),
+          ),
+          const _Divider(),
+          _NotifItem(
+            icon: Icons.chat_bubble_rounded,
+            label: 'notif_comment'.tr(),
+            value: _prefs!.commentEnabled,
+            onChanged: _saving ? null : (_) => _togglePref(_prefs!.toggleComment()),
+          ),
+          const _Divider(),
+          _NotifItem(
+            icon: Icons.festival_rounded,
+            label: 'notif_festival'.tr(),
+            value: _prefs!.festivalEnabled,
+            onChanged: _saving ? null : (_) => _togglePref(_prefs!.toggleFestival()),
+          ),
+          const _Divider(),
+          _NotifItem(
+            icon: Icons.music_note_rounded,
+            label: 'notif_song_request'.tr(),
+            value: _prefs!.songRequestEnabled,
+            onChanged: _saving ? null : (_) => _togglePref(_prefs!.toggleSongRequest()),
+          ),
+        ],
+      ],
     );
   }
 }
@@ -110,7 +122,7 @@ class _NotifItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool value;
-  final ValueChanged<bool> onChanged;
+  final ValueChanged<bool>? onChanged;
 
   const _NotifItem({
     required this.icon,

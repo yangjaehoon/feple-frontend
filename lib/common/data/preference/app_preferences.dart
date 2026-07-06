@@ -3,9 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'item/preference_item.dart';
 
-export 'package:get/get_rx/get_rx.dart';
-export 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-
 class AppPreferences {
   static const String prefix = 'AppPreference.';
 

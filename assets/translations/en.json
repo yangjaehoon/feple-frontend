@@ -564,6 +564,7 @@
   "onboarding_pick_skip": "Skip for now",
   "onboarding_pick_load_failed": "Failed to load artists",
   "onboarding_pick_retry": "Try again",
+  "onboarding_follow_failed": "Failed to follow artists. Please try again",
   "onboarding_replay": "Replay Onboarding",
   "perm_notif_title": "Stay in the loop",
   "perm_notif_desc": "Get notified about new festivals from artists you follow,\ncertification results, and replies.",
@@ -589,5 +590,8 @@
   "level_sprout": "Sprout",
   "level_bloom": "Bloom",
   "level_festival": "Festivalgoer",
-  "level_legend": "Legend"
+  "level_legend": "Legend",
+  "add_to_calendar": "Add to Calendar",
+  "add_to_calendar_success": "Calendar app opened.",
+  "add_to_calendar_no_date": "Cannot save: no date information."
 }

@@ -76,7 +76,8 @@ class ProfileAvatar extends StatelessWidget {
       badgeTooltip = 'badge_artist_certified'.tr();
     } else {
       badgeColor = AppColors.badgeCertified;
-      badgeIcon = Icons.verified_rounded;
+      // artist 배지와 아이콘이 같으면 색약 사용자가 색상만으로 구분해야 함 — 아이콘도 다르게
+      badgeIcon = Icons.local_activity_rounded;
       badgeTooltip = 'badge_festival_certified'.tr();
     }
 

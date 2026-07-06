@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_schedule_model.dart';
 import 'package:feple/screen/main/tab/search/artist_page/event_type_style.dart';
@@ -11,7 +12,7 @@ import 'package:feple/screen/main/tab/search/festival_information/f_festival_inf
 import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
 
-class ScheduleListTile extends StatelessWidget {
+class ScheduleListTile extends StatefulWidget {
   final ArtistScheduleModel item;
   final VoidCallback? onTap;
   final bool isPast;
@@ -23,6 +24,14 @@ class ScheduleListTile extends StatelessWidget {
     this.isPast = false,
   });
 
+  @override
+  State<ScheduleListTile> createState() => _ScheduleListTileState();
+}
+
+class _ScheduleListTileState extends State<ScheduleListTile> with NavigationGuard {
+  ArtistScheduleModel get item => widget.item;
+  bool get isPast => widget.isPast;
+
   // 지난 일정에 적용하는 투명도 — Opacity 위젯으로 전체를 감싸면 saveLayer()가 발생해
   // 리스트 항목마다 GPU offscreen buffer가 생긴다. 색상에 직접 alpha를 녹여 방지한다.
   static const double _pastAlpha = 0.55;
@@ -33,7 +42,7 @@ class ScheduleListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return InkWell(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: AppDimens.paddingHorizontal,
@@ -55,7 +64,7 @@ class ScheduleListTile extends StatelessWidget {
     final typeConfig = item.eventType.config(colors);
     final hasPoster = item.posterUrl != null && item.posterUrl!.isNotEmpty;
     return GestureDetector(
-      onTap: () => _navigateToFestival(context),
+      onTap: _navigateToFestival,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 3),
         child: ClipRRect(
@@ -81,17 +90,20 @@ class ScheduleListTile extends StatelessWidget {
     );
   }
 
-  Future<void> _navigateToFestival(BuildContext context) async {
-    try {
-      final festival = await sl<FestivalService>().fetchById(item.festivalId);
-      if (!context.mounted) return;
-      Navigator.push(
-        context,
-        SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)),
-      );
-    } catch (e) {
-      debugPrint('[ScheduleListTile] festival fetch error: $e');
-    }
+  Future<void> _navigateToFestival() async {
+    await guardedNavigate(() async {
+      try {
+        final festival = await sl<FestivalService>().fetchById(item.festivalId);
+        if (!mounted) return;
+        await Navigator.push(
+          context,
+          SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)),
+        );
+      } catch (e) {
+        debugPrint('[ScheduleListTile] festival fetch error: $e');
+        if (mounted) context.showErrorSnackbar('err_fetch_data'.tr());
+      }
+    });
   }
 
   Widget _buildContent(BuildContext context, AbstractThemeColors colors) {

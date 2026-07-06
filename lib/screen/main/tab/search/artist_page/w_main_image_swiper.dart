@@ -66,7 +66,12 @@ class MainImageSwiperState extends State<MainImageSwiper> {
       );
       _pageOffset.value = _virtualPage.toDouble();
       controller.addListener(_onPageScroll);
+      // load()가 겹쳐서(예: 연속 pull-to-refresh) _onPhotosLoaded가 두 번
+      // 연달아 실행돼도 이전 컨트롤러가 새어나가지 않도록 교체 전 해제
+      final previousController = _pageController;
       setState(() => _pageController = controller);
+      previousController?.removeListener(_onPageScroll);
+      previousController?.dispose();
       _startTimer();
     } else {
       setState(() {});
@@ -83,6 +88,9 @@ class MainImageSwiperState extends State<MainImageSwiper> {
   }
 
   void _startTimer() {
+    // _onPhotosLoaded가 겹쳐 호출되면 이전 Timer가 참조를 잃고 계속 살아남아
+    // 새 컨트롤러를 동시에 조작할 수 있으므로 새로 시작하기 전에 반드시 취소
+    _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 3), (_) {
       if (!mounted || _pageController == null || !_pageController!.hasClients ||
           _photosNotifier.photos.isEmpty || _isUserScrolling) {

@@ -52,6 +52,9 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
   List<Post> _posts = [];
   List<SearchSuggestion> _suggestions = [];
   List<String> _recentSearches = [];
+  // add/remove/clear가 겹쳐 호출되면 서로 stale한 _recentSearches 스냅샷을
+  // 기준으로 저장해 앞선 변경이 유실될 수 있으므로 순차 실행되도록 체이닝
+  Future<void> _recentSearchQueue = Future.value();
 
   @override
   void initState() {
@@ -71,27 +74,33 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     if (mounted) setState(() => _recentSearches = prefs.getStringList(_prefsKey) ?? []);
   }
 
-  Future<void> _addRecentSearch(String keyword) async {
-    if (keyword.trim().isEmpty) return;
-    final prefs = await SharedPreferences.getInstance();
-    final list = List<String>.from(_recentSearches)..remove(keyword);
-    list.insert(0, keyword);
-    if (list.length > _maxRecent) list.removeLast();
-    await prefs.setStringList(_prefsKey, list);
-    if (mounted) setState(() => _recentSearches = list);
+  Future<void> _addRecentSearch(String keyword) {
+    if (keyword.trim().isEmpty) return Future.value();
+    return _recentSearchQueue = _recentSearchQueue.then((_) async {
+      final prefs = await SharedPreferences.getInstance();
+      final list = List<String>.from(_recentSearches)..remove(keyword);
+      list.insert(0, keyword);
+      if (list.length > _maxRecent) list.removeLast();
+      await prefs.setStringList(_prefsKey, list);
+      if (mounted) setState(() => _recentSearches = list);
+    });
   }
 
-  Future<void> _removeRecentSearch(String keyword) async {
-    final prefs = await SharedPreferences.getInstance();
-    final list = List<String>.from(_recentSearches)..remove(keyword);
-    await prefs.setStringList(_prefsKey, list);
-    if (mounted) setState(() => _recentSearches = list);
+  Future<void> _removeRecentSearch(String keyword) {
+    return _recentSearchQueue = _recentSearchQueue.then((_) async {
+      final prefs = await SharedPreferences.getInstance();
+      final list = List<String>.from(_recentSearches)..remove(keyword);
+      await prefs.setStringList(_prefsKey, list);
+      if (mounted) setState(() => _recentSearches = list);
+    });
   }
 
-  Future<void> _clearRecentSearches() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_prefsKey);
-    if (mounted) setState(() => _recentSearches = []);
+  Future<void> _clearRecentSearches() {
+    return _recentSearchQueue = _recentSearchQueue.then((_) async {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_prefsKey);
+      if (mounted) setState(() => _recentSearches = []);
+    });
   }
 
   // ── search ────────────────────────────────────────────────────────────────

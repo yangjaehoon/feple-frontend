@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/exception/banned_word_exception.dart';
@@ -12,6 +10,7 @@ import 'package:feple/service/app_review_service.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 class WritePost extends StatefulWidget {
@@ -85,15 +84,20 @@ class _WritePostState extends State<WritePost> {
   }
 
   Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final picked = await picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 1080,
-      imageQuality: 85,
-    );
-    if (picked == null) return;
-    final bytes = await picked.readAsBytes();
-    if (mounted) setState(() => _selectedImage = bytes);
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1080,
+        imageQuality: 85,
+      );
+      if (picked == null) return;
+      final bytes = await picked.readAsBytes();
+      if (mounted) setState(() => _selectedImage = bytes);
+    } on PlatformException catch (e) {
+      debugPrint('image pick error: $e');
+      if (mounted) context.showErrorSnackbar('photo_pick_failed'.tr());
+    }
   }
 
   Future<void> _submit() async {

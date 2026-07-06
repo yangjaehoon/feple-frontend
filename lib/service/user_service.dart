@@ -29,14 +29,10 @@ class UserService {
     await DioClient.dio.delete('/users/$userId');
   }
 
-  Future<List<dynamic>> fetchFollowing(int userId) async {
-    final response = await DioClient.dio.get('/users/$userId/following');
-    return response.data as List;
-  }
-
   Future<List<FollowedArtist>> fetchFollowingArtists(int userId) async {
-    final raw = await fetchFollowing(userId);
-    return raw.map((json) => FollowedArtist.fromJson(json as Map<String, dynamic>)).toList();
+    final response = await DioClient.dio.get('/users/$userId/following');
+    final raw = response.data as List;
+    return raw.map((e) => FollowedArtist.fromJson(e as Map<String, dynamic>)).toList();
   }
 
   Future<List<FestivalModel>> fetchLikedFestivals(int userId) async {

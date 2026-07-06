@@ -1,5 +1,3 @@
-import 'package:feple/common/constant/user_roles.dart';
-
 class Post {
   final int id;
   final String title;
@@ -44,9 +42,6 @@ class Post {
     this.viewCount = 0,
     this.authorLevel,
   });
-
-  bool get isAdmin => userRole == kRoleAdmin;
-  bool get isArtist => userRole == kRoleArtist;
 
   // JSON에서 객체로 변환
   factory Post.fromJson(Map<String, dynamic> json) {

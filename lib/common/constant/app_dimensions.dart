@@ -8,7 +8,6 @@ class AppDimens {
   static const double appBarHeight = 64.0; // M3 Top App Bar 공식 높이
 
   // ── Scroll padding (Stack 레이아웃에서 앱바/탭바 가림 방지) ──
-  static const double scrollPaddingTop = appBarHeight;
   static const double scrollPaddingBottom = 80.0;
   static const double scrollPaddingBottomLarge = 120.0;
   static const double fabBottomPadding = 80.0;
@@ -30,23 +29,16 @@ class AppDimens {
   static const double radiusXs = 4.0;       // 매우 작은 요소 (코드 블록 등)
   static const double barRadius = 2.0;      // 섹션 바 액센트, 드래그 핸들
   static const double boardCardHeight = 280.0;
-  static const double boardHeaderHeight = 35.0;
   static const double minTouchTarget = 44.0; // HIG/M3 최소 터치 타겟
 
   // ── Spacing (8px 그리드) ──
   static const double paddingHorizontal = 16.0;
   static const double paddingVertical = 8.0;
-  static const double space4 = 4.0;
   static const double space8 = 8.0;
-  static const double space12 = 12.0;
-  static const double space16 = 16.0;
-  static const double space20 = 20.0;
-  static const double space24 = 24.0;
 
   // ── Icon ──
   static const double iconSizeSm = 14.0;
   static const double iconSizeMd = 16.0;
-  static const double iconSizeLg = 18.0;
 
   // ── Font ──
   static const double fontSizeHero = 30.0;     // 아티스트 이름 등 히어로 텍스트
@@ -70,7 +62,6 @@ class AppDimens {
   static const Duration animQuick = Duration(milliseconds: 250);
   static const Duration animNormal = Duration(milliseconds: 300);
   static const Duration animSlow = Duration(milliseconds: 350);
-  static const Duration animRefresh = Duration(milliseconds: 400);
   static const Duration animVerySlow = Duration(milliseconds: 500);
   static const Duration animSuccessDelay = Duration(milliseconds: 700);
   static const Duration animBoardRefresh = Duration(milliseconds: 800);

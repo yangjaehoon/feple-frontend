@@ -30,13 +30,6 @@ class FcmService {
   StreamSubscription? _tokenSubscription;
   StreamSubscription? _openedAppSubscription;
 
-  Future<void> init() async {
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    final settings = await _messaging.requestPermission(alert: true, badge: true, sound: true);
-    debugPrint('[FCM] 권한 상태: ${settings.authorizationStatus}');
-    await _setup();
-  }
-
   /// 알림 권한을 처음 요청하는 경우 사전 설명 바텀시트를 먼저 표시.
   /// 이미 권한이 결정된 경우(허용/거부)에는 바텀시트 없이 바로 진행.
   Future<void> initWithRationale() async {

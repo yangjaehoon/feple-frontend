@@ -5,11 +5,8 @@ class AppColors {
 
   // Primary & Secondary
   static const Color skyBlue = Color(0xFF5CC0EB);
-  /// 버튼 배경 전용 — skyBlue보다 어두워 흰색 텍스트와 대비비 ≥ 4.5:1 (WCAG AA) 보장
-  static const Color skyBlueDark = Color(0xFF0C6F9A);
   static const Color skyBlueLight = Color(0xFFA1DDF5);
   static const Color sunnyYellow = Color(0xFFFDE74C);
-  static const Color sunnyYellowLight = Color(0xFFFFE68C);
 
   // Kawaii Accents
   static const Color kawaiiPink = Color(0xFFFFB7D2);
@@ -20,31 +17,11 @@ class AppColors {
 
   // Backgrounds
   static const Color backgroundLight = Color(0xFFF6F7F8);
-  static const Color backgroundCreamy = Color(0xFFFFFDFA);
   static const Color surfaceWhite = Color(0xFFFFFFFF);
 
   // Text Colors
   static const Color textMain = Color(0xFF2D3748);
   static const Color textMuted = Color(0xFF718096);
-  static const Color textDark = Color(0xFF0E171B);
-  static const Color textBlueMuted = Color(0xFF4F8196);
-
-  // Legacy (kept for backward compat)
-  static const Color veryDarkGrey = Color.fromARGB(255, 18, 18, 18);
-  static const Color darkGrey = Color.fromARGB(255, 45, 45, 45);
-  static const Color grey = Color.fromARGB(255, 139, 139, 139);
-  static const Color middleGrey = Color.fromARGB(255, 171, 171, 171);
-  static const Color brightGrey = Color.fromARGB(255, 228, 228, 228);
-  static const Color blueGreen = Color.fromARGB(255, 0, 185, 206);
-  static const Color green = Color.fromARGB(255, 132, 206, 191);
-  static const Color darkGreen = Color.fromARGB(255, 101, 160, 149);
-  static const Color blue = Color.fromARGB(255, 0, 125, 203);
-  static const Color darkBlue = Color.fromARGB(255, 0, 70, 111);
-  static const Color mediumBlue = Color.fromARGB(255, 60, 140, 180);
-  static const Color darkOrange = Color.fromARGB(255, 222, 112, 48);
-  static const Color faleBlue = Color.fromARGB(255, 160, 206, 222);
-  static const Color brightBlue = Color.fromARGB(255, 123, 182, 212);
-  static const Color salmon = Color(0xffff6666);
 
   // === Semantic UI Colors ===
 
@@ -93,9 +70,8 @@ class AppColors {
   static const Color rainProbLow    = Color(0xFF90CAF9); // 40% 미만
 
   // === UI Misc ===
-  static const Color hotPink        = Color(0xFFFF6B8A); // 사진 뷰어 좋아요 하트
-  static const Color badgeDefaultBg = Color(0xFFE3ECFF); // TextBadge 기본 배경
-  static const Color markerGray     = Color(0xFF555555); // 지도 마커 폴백
+  static const Color hotPink    = Color(0xFFFF6B8A); // 사진 뷰어 좋아요 하트
+  static const Color markerGray = Color(0xFF555555); // 지도 마커 폴백
   static const Color onboardingPink = Color(0xFFFFE4EF); // 온보딩 카드 핑크
   static const Color onboardingMint = Color(0xFFD4F5EC); // 온보딩 카드 민트
 
@@ -105,7 +81,4 @@ class AppColors {
   static const Color skeletonBaseLight      = Color(0xFFE0E0E0);
   static const Color skeletonHighlightLight = Color(0xFFF0F0F0);
 
-  // === Mode Switch Track ===
-  static const Color modeSwitchTrackDark  = Color.fromARGB(255, 0, 9, 27);
-  static const Color modeSwitchTrackLight = Color.fromARGB(255, 106, 158, 255);
 }

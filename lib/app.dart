@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 class App extends StatefulWidget {
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
-  static bool isForeground = true;
   /// 앱이 포그라운드로 복귀할 때마다 값이 증가 — 구독 측에서 refresh 트리거용
   static final resumeEvent = ValueNotifier<int>(0);
 
@@ -50,13 +49,11 @@ class AppState extends State<App> with Nav, WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.resumed:
-        App.isForeground = true;
         App.resumeEvent.value++;
         break;
       case AppLifecycleState.inactive:
         break;
       case AppLifecycleState.paused:
-        App.isForeground = false;
         break;
       case AppLifecycleState.detached:
         break;

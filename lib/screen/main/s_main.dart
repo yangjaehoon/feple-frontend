@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_offline_banner.dart';
 import 'package:feple/screen/main/tab/tab_item.dart';
@@ -160,7 +161,7 @@ class MainScreenState extends State<MainScreen>
   Widget get pages => IndexedStack(
       index: _currentIndex,
       children: tabs
-          .mapIndexed((tab, index) => Offstage(
+          .mapIndexed((index, tab) => Offstage(
                 offstage: _currentTab != tab,
                 child: _visitedTabs.contains(index)
                     ? TabNavigator(

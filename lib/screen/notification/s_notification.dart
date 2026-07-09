@@ -407,31 +407,36 @@ class _NotificationScreenState extends State<NotificationScreen> {
             .whereType<_NotifItem>()
             .length - 1;
 
+        final card = TapScale(
+          child: NotificationCard(
+            item: item,
+            isLoading: _navigatingId == item.id,
+            onTap: () => _onTap(item),
+          ),
+        );
+        final isDismissible = item.type?.isDismissible ?? true;
+
         return Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: AnimatedListItem(
             index: notifIndex,
-            child: Dismissible(
-              key: ValueKey(item.id),
-              direction: DismissDirection.endToStart,
-              onDismissed: (_) => _dismissWithUndo(item),
-              background: Container(
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.only(right: 20),
-                decoration: BoxDecoration(
-                  color: colors.error,
-                  borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-                ),
-                child: const Icon(Icons.delete_rounded, color: Colors.white, size: 22),
-              ),
-              child: TapScale(
-                child: NotificationCard(
-                  item: item,
-                  isLoading: _navigatingId == item.id,
-                  onTap: () => _onTap(item),
-                ),
-              ),
-            ),
+            child: isDismissible
+                ? Dismissible(
+                    key: ValueKey(item.id),
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (_) => _dismissWithUndo(item),
+                    background: Container(
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.only(right: 20),
+                      decoration: BoxDecoration(
+                        color: colors.error,
+                        borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
+                      ),
+                      child: const Icon(Icons.delete_rounded, color: Colors.white, size: 22),
+                    ),
+                    child: card,
+                  )
+                : card,
           ),
         );
       },

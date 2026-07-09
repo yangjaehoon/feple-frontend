@@ -1,7 +1,6 @@
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/notification_model.dart';
-import 'package:feple/model/notification_type.dart';
 import 'package:feple/service/notification_feedable.dart';
 import 'package:flutter/foundation.dart';
 
@@ -138,7 +137,6 @@ class NotificationNotifier extends SafeChangeNotifier {
 
   Future<void> confirmDismiss(NotificationModel item) async {
     _savedPositions.remove(item.id);
-    if (item.type == NotificationType.adminBroadcast) return;
     try {
       await _service.delete(item.id);
     } catch (e) {

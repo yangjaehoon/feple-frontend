@@ -312,14 +312,22 @@ void main() {
       verify(() => mockService.delete(1)).called(1);
     });
 
-    test('adminBroadcast 타입은 서비스 delete 호출 안 함', () async {
+    test('adminBroadcast 타입도 서비스 delete 호출 — UI에서 스와이프 자체를 막으므로 도달 시 동일하게 삭제', () async {
       final broadcastItem =
           _item(99, type: NotificationType.adminBroadcast);
+      when(() => mockService.delete(99)).thenAnswer((_) async {});
       notifier.removeLocally(broadcastItem);
 
       await notifier.confirmDismiss(broadcastItem);
 
-      verifyNever(() => mockService.delete(any()));
+      verify(() => mockService.delete(99)).called(1);
+    });
+  });
+
+  group('NotificationType.isDismissible', () {
+    test('adminBroadcast는 false, 그 외 타입은 true', () {
+      expect(NotificationType.adminBroadcast.isDismissible, isFalse);
+      expect(NotificationType.newComment.isDismissible, isTrue);
     });
   });
 

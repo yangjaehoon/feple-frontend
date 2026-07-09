@@ -52,4 +52,8 @@ enum NotificationType {
       isSongRequestType || this == NotificationType.artistSuggestionProcessed;
 
   bool get hasFestivalNavigation => isFestivalType || isCertType;
+
+  // 관리자 공지는 개별 삭제를 지원하지 않음 — 스와이프 삭제 UI 자체를 막아서
+  // "삭제했는데 다시 나타나는" 혼란을 방지 (서버가 삭제를 반영하지 않기 때문)
+  bool get isDismissible => this != NotificationType.adminBroadcast;
 }

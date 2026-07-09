@@ -81,9 +81,12 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
 
   void _onPostChanged() {
     final event = AppEvents.postChanged.value;
-    // refreshAll(null) 또는 현재 목록에 있는 게시글이 변경된 경우만 재로드
+    // refreshAll(null) 또는 현재 목록에 있는 게시글이 변경된 경우만 재로드.
+    // _load()가 아닌 _refresh() 사용 — 이 화면을 보고 있지 않을 때도(IndexedStack
+    // 백그라운드 탭) 전역 이벤트로 호출될 수 있어, 스켈레톤 플래시·스크롤 위치
+    // 초기화 없이 조용히 최신화해야 함
     if (event?.postId == null || _posts.any((p) => p.id == event!.postId)) {
-      _load();
+      _refresh(silent: true);
     }
   }
 
@@ -135,7 +138,9 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
     }
   }
 
-  Future<void> _refresh() async {
+  /// [silent] true면 실패해도 스낵바를 띄우지 않음 — 전역 이벤트로 화면이
+  /// 보이지 않는 상태(백그라운드 탭)에서 호출될 수 있는 [_onPostChanged]용
+  Future<void> _refresh({bool silent = false}) async {
     final myId = ++_loadId;
     // 진행 중이던 loadMore를 무효화 — 그 결과가 나중에 와도 _loadId 가드로 버려짐
     if (_loadingMore) setState(() => _loadingMore = false);
@@ -155,7 +160,7 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
         setState(() { _posts..clear()..addAll(items); _hasError = false; });
       }
     } catch (_) {
-      if (!context.mounted || _loadId != myId) return;
+      if (!context.mounted || _loadId != myId || silent) return;
       context.showErrorSnackbar('refresh_failed'.tr());
     }
   }

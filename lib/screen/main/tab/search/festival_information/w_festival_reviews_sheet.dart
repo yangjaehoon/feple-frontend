@@ -236,8 +236,10 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
           final reviewIndex = index - headerCount;
           if (_reviews.isEmpty) return _buildEmpty(colors);
           if (reviewIndex < _reviews.length) {
+            final review = _reviews[reviewIndex];
             return _ReviewCard(
-              review: _reviews[reviewIndex],
+              key: ValueKey(review.reviewId),
+              review: review,
               colors: colors,
               certService: widget.certService,
             );
@@ -506,6 +508,7 @@ class _ReviewCard extends StatefulWidget {
   final CertificationService certService;
 
   const _ReviewCard({
+    super.key,
     required this.review,
     required this.colors,
     required this.certService,

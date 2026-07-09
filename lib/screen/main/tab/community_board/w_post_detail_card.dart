@@ -268,11 +268,20 @@ class _PostDetailCardState extends State<PostDetailCard> {
               imageObjectKey: img,
             );
             AppEvents.postChanged.value = PostChangedEvent.specific(widget.id);
+            // updatePost는 응답 바디가 없어 서버가 계산한 imageUrl을 알 수 없음 —
+            // 새 이미지를 올린 경우 img는 CDN URL이 아닌 S3 objectKey라 그대로 쓰면
+            // 화면에 깨진 이미지가 보이므로 갱신된 게시글을 다시 조회해 교체한다
+            String? resolvedImageUrl = _imageUrl;
+            try {
+              resolvedImageUrl = (await _postService.fetchPost(widget.id)).imageUrl;
+            } catch (e) {
+              debugPrint('post refetch after update error: $e');
+            }
             if (mounted) {
               setState(() {
                 _title = t;
                 _content = c;
-                _imageUrl = img;
+                _imageUrl = resolvedImageUrl;
                 _updatedAt = DateTime.now();
               });
               context.showSuccessSnackbar('post_updated'.tr());

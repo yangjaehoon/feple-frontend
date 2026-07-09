@@ -182,9 +182,13 @@ class ApiCacheStore {
     // 인증
     if (url.contains('/certifications')) return ['/certifications'];
 
-    // 유저 차단/차단 해제
+    // 유저 차단/차단 해제 — 서버는 차단된 유저의 글/댓글을 걸러서 내려주므로
+    // 캐시된 게시글·댓글 목록도 함께 무효화해야 함 (안 그러면 차단 전에 캐시된
+    // 목록이 TTL 동안 그대로 남아 차단한 유저의 콘텐츠가 계속 보임)
     m = RegExp(r'/users/(\d+)/block').firstMatch(url);
-    if (m != null) return ['/users/${m.group(1)!}', '/users/blocked'];
+    if (m != null) {
+      return ['/users/${m.group(1)!}', '/users/blocked', '/posts', '/comments'];
+    }
 
     // 유저 프로필 수정
     m = RegExp(r'/users/(me|\d+)').firstMatch(url);

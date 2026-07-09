@@ -258,6 +258,22 @@ void main() {
       expect(ApiCacheStore.getSync('http://api/certifications/my'), isNull);
     });
 
+    test('유저 차단 → 유저 캐시뿐 아니라 posts/comments 캐시도 삭제', () async {
+      await ApiCacheStore.put('http://api/users/10', {'nickname': '차단대상'});
+      await ApiCacheStore.put('http://api/users/blocked', []);
+      await ApiCacheStore.put('http://api/posts/board/free', [{'title': '글'}]);
+      await ApiCacheStore.put('http://api/comments/post/10', []);
+      await ApiCacheStore.put('http://api/festivals/1', {'title': '페스'}); // 무관
+
+      await ApiCacheStore.invalidateFor('http://api/users/10/block');
+
+      expect(ApiCacheStore.getSync('http://api/users/10'), isNull);
+      expect(ApiCacheStore.getSync('http://api/users/blocked'), isNull);
+      expect(ApiCacheStore.getSync('http://api/posts/board/free'), isNull);
+      expect(ApiCacheStore.getSync('http://api/comments/post/10'), isNull);
+      expect(ApiCacheStore.getSync('http://api/festivals/1'), isNotNull); // 유지
+    });
+
     test('프로필 수정 → 해당 유저 캐시 삭제', () async {
       await ApiCacheStore.put('http://api/users/10', {'nickname': '구닉네임'});
       await ApiCacheStore.put('http://api/users/20', {'nickname': '다른유저'}); // 무관

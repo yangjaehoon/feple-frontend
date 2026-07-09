@@ -191,6 +191,7 @@ class _CommentTile extends StatelessWidget {
     return Row(
       children: [
         _LikeButton(
+          key: ValueKey(comment.id),
           liked: comment.liked,
           likeCount: comment.likeCount,
           onToggle: onToggleLike,
@@ -300,7 +301,7 @@ class _LikeButton extends StatefulWidget {
   final int likeCount;
   final Future<bool> Function()? onToggle;
 
-  const _LikeButton({required this.liked, required this.likeCount, this.onToggle});
+  const _LikeButton({super.key, required this.liked, required this.likeCount, this.onToggle});
 
   @override
   State<_LikeButton> createState() => _LikeButtonState();

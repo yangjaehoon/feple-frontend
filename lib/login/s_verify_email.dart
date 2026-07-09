@@ -36,6 +36,12 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   bool _isCanceling = false;
   bool _isChangingEmail = false;
   bool _isResending = false;
+  // 폴링과 수동 "인증 완료 확인" 탭이 동시에 completeVerifiedLogin()을 호출하면
+  // /auth/firebase 토큰 교환이 두 번 일어남 — 백엔드는 유저당 리프레시 토큰을
+  // 1개만 유지하므로 두 응답 중 나중에 TokenStore에 저장되는 쪽이 서버가 이미
+  // 무효화한 토큰일 수 있어 로그인 직후 세션이 깨질 수 있음. _isVerifying(버튼
+  // 로딩 표시)과 별개로 이 플래그로 두 경로를 상호 배제한다.
+  bool _isCheckingVerification = false;
   String? _errorMessage;
 
   bool get _busy => _isVerifying || _isCanceling || _isChangingEmail || _isResending;
@@ -74,38 +80,30 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   }
 
   Future<void> _tryComplete({bool silent = false}) async {
+    if (_isCheckingVerification) return;
+    _isCheckingVerification = true;
+    if (!silent) setState(() { _isVerifying = true; _errorMessage = null; });
     try {
       final user = await AuthService.instance.completeVerifiedLogin();
-      if (user == null) return;
-      _pollTimer?.cancel();
       if (!mounted) return;
+      if (user == null) {
+        if (!silent) setState(() => _errorMessage = 'verify_email_not_yet'.tr());
+        return;
+      }
+      _pollTimer?.cancel();
       await _navigateToApp(user);
     } catch (e) {
       debugPrint('[VerifyEmail] completeVerifiedLogin 실패: $e');
       if (!silent && mounted) {
         setState(() => _errorMessage = 'verify_email_not_yet'.tr());
       }
+    } finally {
+      _isCheckingVerification = false;
+      if (!silent && mounted) setState(() => _isVerifying = false);
     }
   }
 
-  Future<void> _onVerifyTapped() async {
-    setState(() { _isVerifying = true; _errorMessage = null; });
-    try {
-      final user = await AuthService.instance.completeVerifiedLogin();
-      if (!mounted) return;
-      if (user == null) {
-        setState(() => _errorMessage = 'verify_email_not_yet'.tr());
-      } else {
-        _pollTimer?.cancel();
-        await _navigateToApp(user);
-      }
-    } catch (e) {
-      debugPrint('[VerifyEmail] 인증 확인 실패: $e');
-      if (mounted) setState(() => _errorMessage = 'verify_email_not_yet'.tr());
-    } finally {
-      if (mounted) setState(() => _isVerifying = false);
-    }
-  }
+  Future<void> _onVerifyTapped() => _tryComplete(silent: false);
 
   Future<void> _navigateToApp(dynamic user) async {
     // setUser 전에 스택 정리 — LoginScreen→SignupScreen→VerifyEmailScreen가 쌓인 상태에서

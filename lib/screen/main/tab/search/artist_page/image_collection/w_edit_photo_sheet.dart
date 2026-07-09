@@ -33,6 +33,9 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
   List<FestivalPreview> _festivals = [];
   PhotoDestination? _selectedDestination;
   bool _loadingFestivals = true;
+  // 로딩 중 사용자가 드롭다운을 직접 조작했으면 true — 이후 fetch 완료 시
+  // preSelected로 덮어쓰지 않기 위한 가드
+  bool _userChangedDestination = false;
 
   @override
   void initState() {
@@ -58,7 +61,8 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
       if (mounted) {
         setState(() {
           _festivals = festivals;
-          _selectedDestination = preSelected;
+          // 로딩 중 사용자가 이미 선택을 마쳤다면 그 선택을 유지
+          if (!_userChangedDestination) _selectedDestination = preSelected;
           _loadingFestivals = false;
         });
       }
@@ -143,7 +147,10 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
               child: Text(c.labelKey.tr()),
             )),
       ],
-      onChanged: (d) => setState(() => _selectedDestination = d),
+      onChanged: (d) => setState(() {
+        _selectedDestination = d;
+        _userChangedDestination = true;
+      }),
     );
   }
 
@@ -156,7 +163,9 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
       onPressed: () {
         final newTitle = _titleCtrl.text.trim();
         if (newTitle.isEmpty) return;
-        final newDesc = _selectedDestination?.description ?? '';
+        // fetch 실패 등으로 선택값이 없으면 기존 description을 그대로 유지 —
+        // 빈 문자열로 저장해 페스티벌 태그를 지워버리는 것을 방지
+        final newDesc = _selectedDestination?.description ?? widget.photo.description;
         Navigator.pop(context);
         widget.onSave(newTitle, newDesc);
       },

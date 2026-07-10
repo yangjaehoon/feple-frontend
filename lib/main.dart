@@ -183,6 +183,13 @@ class _MyAppState extends State<MyApp> {
         builder: (context) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
+            // App.navigatorKey는 FCM 딥링크·계정 정지 다이얼로그·언어 조회 등에서
+            // 로그인/온보딩 화면에서도 쓰여야 해서 유일한 MaterialApp에 붙임 —
+            // 예전엔 App 위젯(로그인+온보딩 완료 후에만 생성됨)이 별도 MaterialApp을
+            // 또 만들어 그 안에 navigatorKey를 붙였던 탓에, 로그인/온보딩 중에는
+            // 이 키가 null이라 딥링크·정지 다이얼로그가 조용히 무시됐음
+            navigatorKey: App.navigatorKey,
+            title: 'Feple',
             theme: context.themeType.themeData,
             builder: clampTextScaleBuilder,
             home: Consumer<UserProvider>(

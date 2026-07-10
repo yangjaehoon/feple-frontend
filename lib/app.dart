@@ -1,5 +1,3 @@
-import 'package:feple/common/common.dart';
-import 'package:feple/common/widget/w_text_scale_clamp.dart';
 import 'package:feple/screen/main/s_main.dart';
 import 'package:flutter/material.dart';
 
@@ -29,17 +27,7 @@ class AppState extends State<App> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      navigatorKey: App.navigatorKey,
-      localizationsDelegates: context.localizationDelegates,
-      supportedLocales: context.supportedLocales,
-      locale: context.locale,
-      title: 'Feple',
-      theme: context.themeType.themeData,
-      builder: clampTextScaleBuilder,
-      home: const MainScreen(),
-    );
+    return const MainScreen();
   }
 
   @override

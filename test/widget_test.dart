@@ -102,6 +102,8 @@ void main() {
 }
 
 Future<void> pumpApp(WidgetTester tester) async {
+  // App은 더 이상 자체 MaterialApp을 만들지 않음(main.dart의 단일 MaterialApp에
+  // navigatorKey가 붙음) — 실제 앱 구조와 동일하게 MaterialApp으로 감싸서 테스트
   await tester.pumpWidget(EasyLocalization(
       supportedLocales: const [
         Locale('ko'),
@@ -117,6 +119,17 @@ Future<void> pumpApp(WidgetTester tester) async {
           ChangeNotifierProvider(
               create: (_) => FestivalPreviewProvider(sl<FestivalService>())),
         ],
-        child: const CustomThemeApp(child: App()),
+        child: CustomThemeApp(
+          child: Builder(
+            builder: (context) => MaterialApp(
+              navigatorKey: App.navigatorKey,
+              theme: context.themeType.themeData,
+              localizationsDelegates: context.localizationDelegates,
+              supportedLocales: context.supportedLocales,
+              locale: context.locale,
+              home: const App(),
+            ),
+          ),
+        ),
       )));
 }

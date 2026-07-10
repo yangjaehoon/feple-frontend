@@ -16,27 +16,36 @@ class SearchFragment extends StatefulWidget {
 
 class _SearchFragmentState extends State<SearchFragment> {
   final _circleArtistKey = GlobalKey<CircleArtistWidgetState>();
+  FestivalPreviewProvider? _festivalPreviewProvider;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // dispose()에서 context.read()로 다시 조회하면, 트리 해체(예: 로그아웃) 중
+    // 이미 deactivate된 ancestor를 조회하려다 예외가 발생할 수 있어 미리 저장해둠
+    _festivalPreviewProvider = context.read<FestivalPreviewProvider>();
+  }
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<FestivalPreviewProvider>().addListener(_onProviderChange);
+      _festivalPreviewProvider?.addListener(_onProviderChange);
     });
   }
 
   @override
   void dispose() {
-    context.read<FestivalPreviewProvider>().removeListener(_onProviderChange);
+    _festivalPreviewProvider?.removeListener(_onProviderChange);
     super.dispose();
   }
 
   void _onProviderChange() {
     if (!mounted) return;
-    final provider = context.read<FestivalPreviewProvider>();
-    final err = provider.refreshError;
+    final provider = _festivalPreviewProvider;
+    final err = provider?.refreshError;
     if (err == null) return;
-    provider.clearRefreshError();
+    provider!.clearRefreshError();
     context.showErrorSnackbar(err);
   }
 

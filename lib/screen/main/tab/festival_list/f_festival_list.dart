@@ -20,6 +20,15 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
   bool _filterExpanded = false;
   bool _showScrollToTop = false;
   late final ScrollController _scrollController = ScrollController();
+  FestivalPreviewProvider? _festivalPreviewProvider;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // dispose()에서 context.read()로 다시 조회하면, 트리 해체(예: 로그아웃) 중
+    // 이미 deactivate된 ancestor를 조회하려다 예외가 발생할 수 있어 미리 저장해둠
+    _festivalPreviewProvider = context.read<FestivalPreviewProvider>();
+  }
 
   @override
   void initState() {
@@ -27,22 +36,22 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
     _scrollController.addListener(_onScroll);
     App.resumeEvent.addListener(_onAppResumed);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<FestivalPreviewProvider>().addListener(_onProviderChange);
+      _festivalPreviewProvider?.addListener(_onProviderChange);
     });
   }
 
   void _onProviderChange() {
     if (!mounted) return;
-    final provider = context.read<FestivalPreviewProvider>();
-    final err = provider.refreshError;
+    final provider = _festivalPreviewProvider;
+    final err = provider?.refreshError;
     if (err == null) return;
-    provider.clearRefreshError();
+    provider!.clearRefreshError();
     context.showErrorSnackbar(err);
   }
 
   @override
   void dispose() {
-    context.read<FestivalPreviewProvider>().removeListener(_onProviderChange);
+    _festivalPreviewProvider?.removeListener(_onProviderChange);
     App.resumeEvent.removeListener(_onAppResumed);
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();

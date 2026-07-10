@@ -118,8 +118,9 @@ class _ReorderSheetState extends State<ReorderSheet> {
         isLoading: false,
         backgroundColor: colors.activate,
         onPressed: () {
-          widget.onSave(_items.map((e) => e.id).toList());
-          Navigator.of(context).pop();
+          final newOrder = _items.map((e) => e.id).toList();
+          widget.onSave(newOrder);
+          Navigator.of(context).pop(newOrder);
         },
       ),
     );

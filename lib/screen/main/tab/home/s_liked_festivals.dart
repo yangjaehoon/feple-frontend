@@ -45,16 +45,23 @@ class LikedFestivalsScreen extends StatefulWidget {
 class _LikedFestivalsScreenState extends State<LikedFestivalsScreen> with NavigationGuard {
   bool _showEnded = false;
   bool _isSheetOpen = false;
+  late List<FestivalModel> _festivals;
 
-  void _openSettings() {
+  @override
+  void initState() {
+    super.initState();
+    _festivals = widget.festivals;
+  }
+
+  void _openSettings() async {
     if (_isSheetOpen) return;
     _isSheetOpen = true;
     final isEnglish = context.isEnglish;
-    final items = widget.festivals
+    final items = _festivals
         .where((f) => !f.isEnded)
         .map((f) => ReorderItem(id: f.id, name: f.displayTitle(isEnglish), imageUrl: f.posterUrl))
         .toList();
-    showAppBottomSheet(
+    final newOrder = await showAppBottomSheet<List<int>>(
       context,
       builder: (_) => ReorderSheet(
         title: 'liked_festivals'.tr(),
@@ -62,11 +69,26 @@ class _LikedFestivalsScreenState extends State<LikedFestivalsScreen> with Naviga
         items: items,
         onSave: widget.onSaveOrder ?? (_) {},
       ),
-    ).whenComplete(() { if (mounted) _isSheetOpen = false; });
+    );
+    if (mounted) _isSheetOpen = false;
+    // 저장 성공 여부와 무관하게 화면에 방금 지정한 순서를 즉시 반영 —
+    // widget.festivals는 화면 진입 시점의 스냅샷이라 onSaveOrder가 상위
+    // notifier를 갱신해도 이 화면 자체는 재진입 전까지 반영되지 않았음
+    if (newOrder != null && mounted) {
+      setState(() => _festivals = _reordered(_festivals, newOrder));
+    }
+  }
+
+  List<FestivalModel> _reordered(List<FestivalModel> source, List<int> order) {
+    final map = {for (final f in source) f.id: f};
+    final ordered = order.where(map.containsKey).map((id) => map[id]!).toList();
+    final orderedIds = order.toSet();
+    final rest = source.where((f) => !orderedIds.contains(f.id)).toList();
+    return [...ordered, ...rest];
   }
 
   List<FestivalModel> get _filtered =>
-      widget.festivals.where((f) => f.isEnded == _showEnded).toList();
+      _festivals.where((f) => f.isEnded == _showEnded).toList();
 
   @override
   Widget build(BuildContext context) {

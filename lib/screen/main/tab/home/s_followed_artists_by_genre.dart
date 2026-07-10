@@ -31,25 +31,32 @@ class _FollowedArtistsByGenreScreenState
     extends State<FollowedArtistsByGenreScreen> with NavigationGuard {
   String? _selectedGenre;
   bool _isSheetOpen = false;
+  late List<FollowedArtist> _artists;
 
-  List<String> get _genres => widget.artists
+  @override
+  void initState() {
+    super.initState();
+    _artists = widget.artists;
+  }
+
+  List<String> get _genres => _artists
       .expand((a) => a.genres)
       .toSet()
       .toList()
     ..sort();
 
   List<FollowedArtist> get _filteredArtists => _selectedGenre == null
-      ? widget.artists
-      : widget.artists.where((a) => a.genres.contains(_selectedGenre)).toList();
+      ? _artists
+      : _artists.where((a) => a.genres.contains(_selectedGenre)).toList();
 
-  void _openSettings() {
+  void _openSettings() async {
     if (_isSheetOpen) return;
     _isSheetOpen = true;
     final isEnglish = context.isEnglish;
-    final items = widget.artists
+    final items = _artists
         .map((a) => ReorderItem(id: a.id, name: a.displayName(isEnglish), imageUrl: a.profileImageUrl))
         .toList();
-    showAppBottomSheet(
+    final newOrder = await showAppBottomSheet<List<int>>(
       context,
       builder: (_) => ReorderSheet(
         title: 'followed_artists'.tr(),
@@ -57,7 +64,21 @@ class _FollowedArtistsByGenreScreenState
         items: items,
         onSave: widget.onSaveOrder ?? (_) {},
       ),
-    ).whenComplete(() { if (mounted) _isSheetOpen = false; });
+    );
+    if (mounted) _isSheetOpen = false;
+    // widget.artists는 화면 진입 시점의 스냅샷이라 onSaveOrder가 상위 notifier를
+    // 갱신해도 이 화면 자체는 재진입 전까지 반영되지 않았음 — 즉시 반영
+    if (newOrder != null && mounted) {
+      setState(() => _artists = _reordered(_artists, newOrder));
+    }
+  }
+
+  List<FollowedArtist> _reordered(List<FollowedArtist> source, List<int> order) {
+    final map = {for (final a in source) a.id: a};
+    final ordered = order.where(map.containsKey).map((id) => map[id]!).toList();
+    final orderedIds = order.toSet();
+    final rest = source.where((a) => !orderedIds.contains(a.id)).toList();
+    return [...ordered, ...rest];
   }
 
   @override

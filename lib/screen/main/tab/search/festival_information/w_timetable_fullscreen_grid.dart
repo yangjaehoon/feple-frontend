@@ -322,7 +322,7 @@ class _OfficialCard extends StatelessWidget {
                     ),
                     SizedBox(width: nameFontSize > 8 ? 4 : 2),
                     Text(
-                      '${entry.durationMinutes}분',
+                      'duration_minutes'.tr(args: ['${entry.durationMinutes}']),
                       style: TextStyle(color: subColor, fontSize: subFontSize, height: 1.25),
                     ),
                   ],

@@ -132,6 +132,11 @@ class _SignupScreenState extends State<SignupScreen> {
       if (!mounted) return;
       final msg = AuthService.instance.firebaseErrorMessage(e.code);
       setState(() {
+        // 필드를 고치지 않고 바로 재시도하면 onChanged로 지워지지 않으므로,
+        // 이전 시도의 에러가 새 에러와 함께 남지 않도록 항상 셋 다 먼저 초기화
+        _emailError = null;
+        _passwordError = null;
+        _generalError = null;
         switch (e.code) {
           case 'email-already-in-use':
           case 'invalid-email':
@@ -148,6 +153,8 @@ class _SignupScreenState extends State<SignupScreen> {
       debugPrint('[Signup] unexpected error: $e');
       if (!mounted) return;
       setState(() {
+        _emailError = null;
+        _passwordError = null;
         _generalError = 'unknown_error'.tr();
       });
     } finally {

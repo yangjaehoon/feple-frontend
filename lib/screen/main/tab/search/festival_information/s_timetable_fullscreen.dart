@@ -117,23 +117,27 @@ class _TimetableFullscreenScreenState extends State<TimetableFullscreenScreen> {
       endTime: '${(_range.startHour + 1).clamp(0, 23).toString().padLeft(2, '0')}:00',
       colorValue: _nextColor(),
     );
-    final result = await showDialog<MyTimetableEntry>(
+    final result = await showDialog<TimetableEntryDialogResult>(
       context: context,
       builder: (_) => TimetableEntryDialog(stages: _range.stages, initial: blank, isEditing: false),
     );
-    if (result != null && mounted) await _upsert(result);
+    if (!mounted) return;
+    if (result case TimetableEntrySaved(:final entry)) await _upsert(entry);
   }
 
   Future<void> _openEdit(MyTimetableEntry entry) async {
-    final result = await showDialog<dynamic>(
+    final result = await showDialog<TimetableEntryDialogResult>(
       context: context,
       builder: (_) => TimetableEntryDialog(stages: _range.stages, initial: entry, isEditing: true),
     );
     if (!mounted) return;
-    if (result is MyTimetableEntry) {
-      await _upsert(result);
-    } else if (result == 'delete') {
-      await _remove(entry.id);
+    switch (result) {
+      case TimetableEntrySaved(:final entry):
+        await _upsert(entry);
+      case TimetableEntryDeleted():
+        await _remove(entry.id);
+      case null:
+        break;
     }
   }
 

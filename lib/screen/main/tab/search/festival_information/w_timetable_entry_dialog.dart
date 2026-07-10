@@ -6,6 +6,21 @@ import 'package:feple/model/my_timetable_entry.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
+/// [TimetableEntryDialog]가 반환하는 결과 — 저장(entry 포함) 또는 삭제.
+/// dynamic + 매직 스트링('delete') 대신 타입으로 구분한다.
+sealed class TimetableEntryDialogResult {
+  const TimetableEntryDialogResult();
+}
+
+class TimetableEntrySaved extends TimetableEntryDialogResult {
+  final MyTimetableEntry entry;
+  const TimetableEntrySaved(this.entry);
+}
+
+class TimetableEntryDeleted extends TimetableEntryDialogResult {
+  const TimetableEntryDeleted();
+}
+
 class TimetableEntryDialog extends StatefulWidget {
   final List<String> stages;
   final MyTimetableEntry initial;
@@ -128,7 +143,9 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
                 content: 'timetable_delete_confirm'.tr(),
                 confirmLabel: 'msg_delete'.tr(),
               );
-              if (confirmed && context.mounted) Navigator.pop(context, 'delete');
+              if (confirmed && context.mounted) {
+                Navigator.pop(context, const TimetableEntryDeleted());
+              }
             },
             child: Text('msg_delete'.tr(), style: TextStyle(color: colors.error)),
           ),
@@ -137,7 +154,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
           child: Text('cancel'.tr(), style: TextStyle(color: colors.textSecondary)),
         ),
         FilledButton(
-          onPressed: valid ? () => Navigator.pop(context, _result) : null,
+          onPressed: valid ? () => Navigator.pop(context, TimetableEntrySaved(_result)) : null,
           style: FilledButton.styleFrom(
             backgroundColor: colors.activate,
             foregroundColor: Colors.white,

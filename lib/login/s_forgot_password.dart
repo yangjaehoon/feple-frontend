@@ -54,9 +54,17 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       setState(() => _sent = true);
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
+      // user-not-found를 별도 처리하면 "다음 화면으로 넘어가는지"가 그 자체로
+      // 계정 존재 여부를 노출하는 신호가 됨(계정 목록 탐지) — 가입된 이메일과
+      // 동일하게 전송 완료 화면으로 넘긴다. invalid-email은 형식 오류일 뿐
+      // 계정 존재 여부와 무관하므로 그대로 필드 에러로 표시
+      if (e.code == 'user-not-found') {
+        setState(() => _sent = true);
+        return;
+      }
       final msg = AuthService.instance.firebaseErrorMessage(e.code);
       setState(() {
-        if (e.code == 'invalid-email' || e.code == 'user-not-found') {
+        if (e.code == 'invalid-email') {
           _emailError = msg;
         } else {
           _errorMessage = msg;

@@ -4,7 +4,7 @@ import 'package:feple/model/notification_model.dart';
 import 'package:feple/service/notification_feedable.dart';
 import 'package:flutter/foundation.dart';
 
-export 'package:feple/service/notification_feedable.dart' show NotifFilter;
+export 'package:feple/service/notification_feedable.dart' show NotificationFilter;
 
 class NotificationNotifier extends SafeChangeNotifier {
   final _service = sl<NotificationFeedable>();
@@ -15,7 +15,7 @@ class NotificationNotifier extends SafeChangeNotifier {
   bool isLoadingMore = false;
   bool _hasMore = true;
   int _page = 0;
-  NotifFilter filter = NotifFilter.all;
+  NotificationFilter filter = NotificationFilter.all;
 
   // 원위치 복원용: id → 제거 전 인덱스
   final Map<int, int> _savedPositions = {};
@@ -79,9 +79,9 @@ class NotificationNotifier extends SafeChangeNotifier {
     }
   }
 
-  void setFilter(NotifFilter f) {
-    if (filter == f) return;
-    filter = f;
+  void setFilter(NotificationFilter filter) {
+    if (this.filter == filter) return;
+    this.filter = filter;
     load();
   }
 

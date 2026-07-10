@@ -27,7 +27,7 @@ void main() {
   late NotificationNotifier notifier;
 
   setUpAll(() {
-    registerFallbackValue(NotifFilter.all);
+    registerFallbackValue(NotificationFilter.all);
   });
 
   setUp(() {
@@ -171,11 +171,11 @@ void main() {
           .thenAnswer((_) async => _page([]));
       await notifier.load();
 
-      notifier.setFilter(NotifFilter.comment);
+      notifier.setFilter(NotificationFilter.comment);
       await Future.delayed(Duration.zero); // load() 완료 대기
 
       verify(() => mockService.fetchPage(0, filter: any(named: 'filter'))).called(2);
-      expect(notifier.filter, NotifFilter.comment);
+      expect(notifier.filter, NotificationFilter.comment);
     });
 
     test('동일 filter 재설정 시 load 안 함', () async {
@@ -183,7 +183,7 @@ void main() {
           .thenAnswer((_) async => _page([]));
       await notifier.load();
 
-      notifier.setFilter(NotifFilter.all);
+      notifier.setFilter(NotificationFilter.all);
 
       verify(() => mockService.fetchPage(0, filter: any(named: 'filter'))).called(1);
     });

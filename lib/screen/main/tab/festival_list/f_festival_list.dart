@@ -9,14 +9,14 @@ import 'package:provider/provider.dart';
 import '../../../../app.dart';
 import '../../../../provider/festival_preview_provider.dart';
 
-class ConcertListFragment extends StatefulWidget {
-  const ConcertListFragment({super.key});
+class FestivalListFragment extends StatefulWidget {
+  const FestivalListFragment({super.key});
 
   @override
-  State<ConcertListFragment> createState() => _ConcertListFragmentState();
+  State<FestivalListFragment> createState() => _FestivalListFragmentState();
 }
 
-class _ConcertListFragmentState extends State<ConcertListFragment> {
+class _FestivalListFragmentState extends State<FestivalListFragment> {
   bool _filterExpanded = false;
   bool _showScrollToTop = false;
   late final ScrollController _scrollController = ScrollController();
@@ -116,7 +116,7 @@ class _ConcertListFragmentState extends State<ConcertListFragment> {
                           selectedRegions: selectedRegions,
                           selectedAgeRestrictions: selectedAgeRestrictions,
                         ),
-                        const ConcertListWidget(),
+                        const FestivalListWidget(),
                         const _LoadMoreIndicator(),
                       ]),
                     ),

@@ -33,7 +33,7 @@ class MainScreenState extends State<MainScreen>
     TabItem.search,
     TabItem.communityBoard,
     TabItem.home,
-    TabItem.concertList,
+    TabItem.festivalList,
     TabItem.favorite,
   ];
   final List<GlobalKey<NavigatorState>> navigatorKeys =

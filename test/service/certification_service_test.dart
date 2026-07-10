@@ -72,7 +72,7 @@ void main() {
 
     // ── getCertState ───────────────────────────────────────────────────────
 
-    test('getCertState NONE returns CertStateResult.none', () async {
+    test('getCertState NONE returns MyCertificationStatus.none', () async {
       server.enqueue(
         body: '{"certState":"NONE"}',
         headers: {'Content-Type': 'application/json'},

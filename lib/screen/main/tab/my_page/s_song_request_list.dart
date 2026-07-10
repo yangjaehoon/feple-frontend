@@ -35,9 +35,9 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final uid = context.read<UserProvider>().currentUserId;
-    if (uid != null && uid != _userId) {
-      _userId = uid;
+    final userId = context.read<UserProvider>().currentUserId;
+    if (userId != null && userId != _userId) {
+      _userId = userId;
       _load();
     }
   }

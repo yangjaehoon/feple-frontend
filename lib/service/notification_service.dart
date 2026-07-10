@@ -10,7 +10,7 @@ class NotificationService implements NotificationCountable, NotificationFeedable
   static const int _pageSize = 20;
 
   @override
-  Future<NotificationPage> fetchPage(int page, {NotifFilter filter = NotifFilter.all}) async {
+  Future<NotificationPage> fetchPage(int page, {NotificationFilter filter = NotificationFilter.all}) async {
     final params = <String, dynamic>{'page': page, 'size': _pageSize};
     final group = filter.typeGroup;
     if (group != null) params['typeGroup'] = group;

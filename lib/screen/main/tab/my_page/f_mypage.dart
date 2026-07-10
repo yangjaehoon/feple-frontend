@@ -23,7 +23,7 @@ class _MypageFragmentState extends State<MypageFragment> with NavigationGuard {
   final _profileKey = GlobalKey<ProfileWidgetState>();
   final _statsKey = GlobalKey<MyPostCommentWidgetState>();
   final _certKey = GlobalKey<FtvCertificationWidgetState>();
-  final _songsKey = GlobalKey<SongRequestHistoryWidgetState>();
+  final _songsKey = GlobalKey<MySongRequestsWidgetState>();
 
   Future<void> _onRefresh() async {
     _profileKey.currentState?.refresh();
@@ -61,7 +61,7 @@ class _MypageFragmentState extends State<MypageFragment> with NavigationGuard {
                       ProfileWidget(key: _profileKey, userId: userId),
                       MyPostCommentWidget(key: _statsKey, userId: userId),
                       FtvCertificationWidget(key: _certKey),
-                      SongRequestHistoryWidget(key: _songsKey),
+                      MySongRequestsWidget(key: _songsKey),
                     ],
                   ),
                 ),

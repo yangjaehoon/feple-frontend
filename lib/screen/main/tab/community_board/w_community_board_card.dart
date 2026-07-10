@@ -78,13 +78,13 @@ class _CommunityBoardCardState extends State<CommunityBoardCard> {
       SlideRoute(
         builder: (_) => WritePost(
           title: 'write_post'.tr(),
-          onSubmit: (t, c, a, img) async {
+          onSubmit: (title, content, anonymous, imageObjectKey) async {
             await _postService.createPost(
               boardType: widget.serviceBoardType,
-              title: t,
-              content: c,
-              anonymous: a,
-              imageObjectKey: img,
+              title: title,
+              content: content,
+              anonymous: anonymous,
+              imageObjectKey: imageObjectKey,
             );
             AppEvents.postChanged.value = PostChangedEvent.refreshAll();
           },

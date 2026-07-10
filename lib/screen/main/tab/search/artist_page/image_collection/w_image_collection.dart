@@ -17,18 +17,18 @@ import 'artist_photo_notifier.dart';
 import 'w_edit_photo_sheet.dart';
 import 'w_photo_fullscreen_viewer.dart';
 
-class ImgCollectionWidget extends StatefulWidget {
-  const ImgCollectionWidget(
+class ImageCollectionWidget extends StatefulWidget {
+  const ImageCollectionWidget(
       {super.key, required this.artistId, required this.artistName});
 
   final int artistId;
   final String artistName;
 
   @override
-  State<ImgCollectionWidget> createState() => ImgCollectionWidgetState();
+  State<ImageCollectionWidget> createState() => ImageCollectionWidgetState();
 }
 
-class ImgCollectionWidgetState extends State<ImgCollectionWidget> {
+class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
   late final ArtistPhotoNotifier _notifier;
   final _reportService = sl<ReportService>();
   bool _isSheetOpen = false;

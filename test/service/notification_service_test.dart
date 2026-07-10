@@ -73,7 +73,7 @@ void main() {
         headers: {'Content-Type': 'application/json'},
       );
 
-      final page = await service.fetchPage(0, filter: NotifFilter.cert);
+      final page = await service.fetchPage(0, filter: NotificationFilter.cert);
 
       expect(page.items, isEmpty);
       expect(page.hasMore, false);
@@ -85,7 +85,7 @@ void main() {
         headers: {'Content-Type': 'application/json'},
       );
 
-      final page = await service.fetchPage(0, filter: NotifFilter.comment);
+      final page = await service.fetchPage(0, filter: NotificationFilter.comment);
 
       expect(page.hasMore, true);
     });

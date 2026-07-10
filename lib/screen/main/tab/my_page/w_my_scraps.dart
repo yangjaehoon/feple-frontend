@@ -5,7 +5,7 @@ import 'package:feple/common/widget/w_my_page_list.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
-import 'package:feple/screen/main/tab/community_board/w_like_comment_row.dart';
+import 'package:feple/screen/main/tab/community_board/w_post_stat_row.dart';
 import 'package:feple/service/scrap_service.dart';
 import 'package:flutter/material.dart';
 

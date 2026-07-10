@@ -13,18 +13,18 @@ import 'package:feple/service/artist_photo_uploadable.dart';
 
 import 'w_image_picker_box.dart';
 
-class ImgUpload extends StatefulWidget {
-  const ImgUpload(
+class ImageUpload extends StatefulWidget {
+  const ImageUpload(
       {super.key, required this.artistId, required this.artistName});
 
   final int artistId;
   final String artistName;
 
   @override
-  State<ImgUpload> createState() => _ImgUploadState();
+  State<ImageUpload> createState() => _ImageUploadState();
 }
 
-class _ImgUploadState extends State<ImgUpload> {
+class _ImageUploadState extends State<ImageUpload> {
   final _formKey = GlobalKey<FormState>();
   final _photoService = sl<ArtistPhotoUploadable>();
   final _scheduleService = sl<ArtistScheduleService>();

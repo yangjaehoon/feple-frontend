@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import 'package:feple/common/util/image_upload_helper.dart';
-import 'package:feple/model/cert_state_result.dart';
+import 'package:feple/model/my_certification_status.dart';
 import 'package:feple/model/certification_model.dart';
 import 'package:feple/model/festival_rating_summary.dart';
 import 'package:feple/model/festival_review_page.dart';
@@ -44,12 +44,12 @@ class CertificationService {
   }
 
   /// 특정 페스티벌의 인증 상태 및 내 별점 정보 단건 조회
-  Future<CertStateResult> getCertState(int festivalId) async {
+  Future<MyCertificationStatus> getCertState(int festivalId) async {
     final response = await DioClient.dio.get(
       '/certifications/cert-state',
       queryParameters: {'festivalId': festivalId},
     );
-    return CertStateResult.fromJson(response.data as Map<String, dynamic>);
+    return MyCertificationStatus.fromJson(response.data as Map<String, dynamic>);
   }
 
   /// 인증된 페스티벌에 별점 및 한줄 후기 제출

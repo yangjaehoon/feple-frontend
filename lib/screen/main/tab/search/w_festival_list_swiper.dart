@@ -13,15 +13,15 @@ import 'package:provider/provider.dart';
 import '../../../../provider/festival_preview_provider.dart';
 import '../../../../model/festival_preview.dart';
 
-class ConcertListSwiperWidget extends StatefulWidget {
-  const ConcertListSwiperWidget({super.key});
+class FestivalListSwiperWidget extends StatefulWidget {
+  const FestivalListSwiperWidget({super.key});
 
   @override
-  State<ConcertListSwiperWidget> createState() =>
-      _ConcertListSwiperWidgetState();
+  State<FestivalListSwiperWidget> createState() =>
+      _FestivalListSwiperWidgetState();
 }
 
-class _ConcertListSwiperWidgetState extends State<ConcertListSwiperWidget> {
+class _FestivalListSwiperWidgetState extends State<FestivalListSwiperWidget> {
   int _currentPage = 0;
 
   void _onPageChanged(int newPage) {

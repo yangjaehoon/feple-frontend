@@ -1,4 +1,4 @@
-import 'package:feple/model/cert_state_result.dart';
+import 'package:feple/model/my_certification_status.dart';
 import 'package:feple/model/certification_model.dart';
 import 'package:feple/screen/main/tab/search/festival_information/festival_poster_notifier.dart';
 import 'package:feple/service/certification_service.dart';
@@ -31,7 +31,7 @@ void main() {
   group('loadCertState', () {
     test('해당 페스티벌에 APPROVED 인증 있으면 isCertified true', () async {
       when(() => mockCertService.getCertState(5)).thenAnswer((_) async =>
-          CertStateResult(status: CertStatus.approved, certId: 1, myRating: null, myReview: null));
+          MyCertificationStatus(status: CertStatus.approved, certId: 1, myRating: null, myReview: null));
 
       final notifier = make(5);
       await notifier.loadCertState();
@@ -42,7 +42,7 @@ void main() {
 
     test('해당 페스티벌에 PENDING 인증 있으면 isPending true', () async {
       when(() => mockCertService.getCertState(5)).thenAnswer((_) async =>
-          CertStateResult(status: CertStatus.pending, certId: null, myRating: null, myReview: null));
+          MyCertificationStatus(status: CertStatus.pending, certId: null, myRating: null, myReview: null));
 
       final notifier = make(5);
       await notifier.loadCertState();
@@ -53,7 +53,7 @@ void main() {
 
     test('인증 없으면 둘 다 false', () async {
       when(() => mockCertService.getCertState(5)).thenAnswer((_) async =>
-          CertStateResult(status: null, certId: null, myRating: null, myReview: null));
+          MyCertificationStatus(status: null, certId: null, myRating: null, myReview: null));
 
       final notifier = make(5);
       await notifier.loadCertState();
@@ -64,7 +64,7 @@ void main() {
 
     test('REJECTED 인증이면 둘 다 false', () async {
       when(() => mockCertService.getCertState(5)).thenAnswer((_) async =>
-          CertStateResult(status: CertStatus.rejected, certId: null, myRating: null, myReview: null));
+          MyCertificationStatus(status: CertStatus.rejected, certId: null, myRating: null, myReview: null));
 
       final notifier = make(5);
       await notifier.loadCertState();
@@ -85,7 +85,7 @@ void main() {
 
     test('인증 없는 경우 isCertified false, isPending false', () async {
       when(() => mockCertService.getCertState(5)).thenAnswer((_) async =>
-          CertStateResult(status: null, certId: null, myRating: null, myReview: null));
+          MyCertificationStatus(status: null, certId: null, myRating: null, myReview: null));
 
       final notifier = make(5);
       await notifier.loadCertState();
@@ -96,7 +96,7 @@ void main() {
 
     test('APPROVED 상태에서 isCertified true, isPending false 동시 검증', () async {
       when(() => mockCertService.getCertState(5)).thenAnswer((_) async =>
-          CertStateResult(status: CertStatus.approved, certId: 1, myRating: 4, myReview: '좋아요'));
+          MyCertificationStatus(status: CertStatus.approved, certId: 1, myRating: 4, myReview: '좋아요'));
 
       final notifier = make(5);
       await notifier.loadCertState();

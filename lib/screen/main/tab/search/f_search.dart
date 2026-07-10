@@ -71,7 +71,7 @@ class _SearchFragmentState extends State<SearchFragment> {
                 padding: EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
                 child: Column(
                   children: [
-                    const ConcertListSwiperWidget(),
+                    const FestivalListSwiperWidget(),
                     CircleArtistWidget(key: _circleArtistKey),
                   ],
                 ),

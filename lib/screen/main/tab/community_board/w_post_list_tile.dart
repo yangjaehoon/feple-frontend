@@ -4,7 +4,7 @@ import 'package:feple/common/util/text_highlight.dart';
 import 'package:feple/common/widget/w_profile_avatar.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/post_model.dart';
-import 'package:feple/screen/main/tab/community_board/w_like_comment_row.dart';
+import 'package:feple/screen/main/tab/community_board/w_post_stat_row.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 

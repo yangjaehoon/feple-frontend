@@ -14,8 +14,8 @@ import 'package:provider/provider.dart';
 
 import '../../../../provider/festival_preview_provider.dart';
 
-class ConcertListWidget extends StatelessWidget {
-  const ConcertListWidget({super.key});
+class FestivalListWidget extends StatelessWidget {
+  const FestivalListWidget({super.key});
 
   Widget _buildFestivalItem(BuildContext context, FestivalPreview item, int index) {
     return AnimatedListItem(
@@ -38,7 +38,7 @@ class ConcertListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // isLoadingMore(추가 로딩) 변경 시 ConcertListWidget이 불필요하게 리빌드되지 않도록
+    // isLoadingMore(추가 로딩) 변경 시 FestivalListWidget이 불필요하게 리빌드되지 않도록
     // 실제로 사용하는 필드만 선택적으로 구독
     final isLoading = context.select<FestivalPreviewProvider, bool>(
         (p) => p.isLoading && p.items.isEmpty);

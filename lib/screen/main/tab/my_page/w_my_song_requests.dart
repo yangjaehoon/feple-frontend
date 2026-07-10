@@ -15,14 +15,14 @@ import 'package:provider/provider.dart';
 
 const _previewCount = 3;
 
-class SongRequestHistoryWidget extends StatefulWidget {
-  const SongRequestHistoryWidget({super.key});
+class MySongRequestsWidget extends StatefulWidget {
+  const MySongRequestsWidget({super.key});
 
   @override
-  State<SongRequestHistoryWidget> createState() => SongRequestHistoryWidgetState();
+  State<MySongRequestsWidget> createState() => MySongRequestsWidgetState();
 }
 
-class SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
+class MySongRequestsWidgetState extends State<MySongRequestsWidget> {
   final _service = sl<SongRequestService>();
   List<SongRequestModel>? _requests;
   bool _isLoading = true;
@@ -34,9 +34,9 @@ class SongRequestHistoryWidgetState extends State<SongRequestHistoryWidget> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final uid = context.read<UserProvider>().currentUserId;
-    if (uid != null && uid != _userId) {
-      _userId = uid;
+    final userId = context.read<UserProvider>().currentUserId;
+    if (userId != null && userId != _userId) {
+      _userId = userId;
       _load();
     }
   }

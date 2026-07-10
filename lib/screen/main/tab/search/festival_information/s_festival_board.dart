@@ -44,22 +44,22 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
         name: 'name_board'.tr(args: [widget.festivalName]),
         fetchPage: ({int? cursor, int size = 20}) =>
             postService.fetchFestivalPostsPage(widget.festivalId, cursor: cursor, size: size),
-        submit: (t, c, a, img) => postService.createFestivalPost(
-            festivalId: widget.festivalId, title: t, content: c, anonymous: a, imageObjectKey: img),
+        submit: (title, content, anonymous, imageObjectKey) => postService.createFestivalPost(
+            festivalId: widget.festivalId, title: title, content: content, anonymous: anonymous, imageObjectKey: imageObjectKey),
       ),
       _BoardTab(
         name: 'companion_board'.tr(),
         fetchPage: ({int? cursor, int size = 20}) =>
             postService.fetchFestivalCompanionPostsPage(widget.festivalId, cursor: cursor, size: size),
-        submit: (t, c, a, img) => postService.createFestivalCompanionPost(
-            festivalId: widget.festivalId, title: t, content: c, anonymous: a, imageObjectKey: img),
+        submit: (title, content, anonymous, imageObjectKey) => postService.createFestivalCompanionPost(
+            festivalId: widget.festivalId, title: title, content: content, anonymous: anonymous, imageObjectKey: imageObjectKey),
       ),
       _BoardTab(
         name: 'ticket_board'.tr(),
         fetchPage: ({int? cursor, int size = 20}) =>
             postService.fetchFestivalTicketPostsPage(widget.festivalId, cursor: cursor, size: size),
-        submit: (t, c, a, img) => postService.createFestivalTicketPost(
-            festivalId: widget.festivalId, title: t, content: c, anonymous: a, imageObjectKey: img),
+        submit: (title, content, anonymous, imageObjectKey) => postService.createFestivalTicketPost(
+            festivalId: widget.festivalId, title: title, content: content, anonymous: anonymous, imageObjectKey: imageObjectKey),
       ),
     ];
     _tabController = TabController(length: _tabs.length, vsync: this);

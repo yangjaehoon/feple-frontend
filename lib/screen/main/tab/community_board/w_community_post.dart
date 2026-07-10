@@ -368,9 +368,9 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
               SlideRoute(
                 builder: (_) => WritePost(
                   title: 'write_post'.tr(),
-                  onSubmit: (t, c, a, img) async {
+                  onSubmit: (title, content, anonymous, imageObjectKey) async {
                     await _postService.createPost(
-                        boardType: _serviceBoardType, title: t, content: c, anonymous: a, imageObjectKey: img);
+                        boardType: _serviceBoardType, title: title, content: content, anonymous: anonymous, imageObjectKey: imageObjectKey);
                     AppEvents.postChanged.value = PostChangedEvent.refreshAll();
                   },
                 ),

@@ -10,8 +10,8 @@ import 'package:provider/provider.dart';
 import '../../../../../common/app_events.dart';
 import 'image_collection/s_image_collection.dart';
 
-class ArtistNameLike extends StatefulWidget {
-  const ArtistNameLike({
+class ArtistFollowHeader extends StatefulWidget {
+  const ArtistFollowHeader({
     super.key,
     required this.artistName,
     required this.artistId,
@@ -23,10 +23,10 @@ class ArtistNameLike extends StatefulWidget {
   final ArtistFollowNotifier followNotifier;
 
   @override
-  State<ArtistNameLike> createState() => _ArtistNameLikeState();
+  State<ArtistFollowHeader> createState() => _ArtistFollowHeaderState();
 }
 
-class _ArtistNameLikeState extends State<ArtistNameLike>
+class _ArtistFollowHeaderState extends State<ArtistFollowHeader>
     with SingleTickerProviderStateMixin, NavigationGuard {
   late AnimationController _heartController;
 

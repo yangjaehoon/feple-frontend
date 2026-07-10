@@ -14,7 +14,7 @@ enum TabItem {
       inActiveIcon: Icons.forum_outlined),
   home(Icons.home_rounded, 'tab_home', HomeFragment(),
       inActiveIcon: Icons.home_outlined),
-  concertList(Icons.queue_music_rounded, 'tab_concert', ConcertListFragment(),
+  festivalList(Icons.queue_music_rounded, 'tab_concert', FestivalListFragment(),
       inActiveIcon: Icons.queue_music_outlined),
   favorite(Icons.person_rounded, 'tab_my', MypageFragment(),
       inActiveIcon: Icons.person_outlined);
@@ -32,7 +32,7 @@ enum TabItem {
 
   String get appbarTitle => switch (this) {
     TabItem.communityBoard => 'board'.tr(),
-    TabItem.concertList    => 'festival_schedule'.tr(),
+    TabItem.festivalList    => 'festival_schedule'.tr(),
     _                      => 'Feple',
   };
 

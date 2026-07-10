@@ -1,18 +1,18 @@
 import 'package:feple/model/notification_page.dart';
 
-enum NotifFilter { all, cert, comment, festival }
+enum NotificationFilter { all, cert, comment, festival }
 
-extension NotifFilterApi on NotifFilter {
+extension NotificationFilterApi on NotificationFilter {
   String? get typeGroup => switch (this) {
-    NotifFilter.all      => null,
-    NotifFilter.cert     => 'cert',
-    NotifFilter.comment  => 'comment',
-    NotifFilter.festival => 'festival',
+    NotificationFilter.all      => null,
+    NotificationFilter.cert     => 'cert',
+    NotificationFilter.comment  => 'comment',
+    NotificationFilter.festival => 'festival',
   };
 }
 
 abstract class NotificationFeedable {
-  Future<NotificationPage> fetchPage(int page, {NotifFilter filter = NotifFilter.all});
+  Future<NotificationPage> fetchPage(int page, {NotificationFilter filter = NotificationFilter.all});
   Future<void> markRead(int id);
   Future<void> markAllRead();
   Future<void> delete(int id);

@@ -17,8 +17,8 @@ class ImageCollectionScreen extends StatefulWidget {
 }
 
 class _ImageCollectionScreenState extends State<ImageCollectionScreen> {
-  final GlobalKey<ImgCollectionWidgetState> _imgCollectionKey =
-      GlobalKey<ImgCollectionWidgetState>();
+  final GlobalKey<ImageCollectionWidgetState> _imgCollectionKey =
+      GlobalKey<ImageCollectionWidgetState>();
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class _ImageCollectionScreenState extends State<ImageCollectionScreen> {
         slivers: [
           SliverPadding(
             padding: const EdgeInsets.all(16),
-            sliver: ImgCollectionWidget(
+            sliver: ImageCollectionWidget(
               key: _imgCollectionKey,
               artistName: widget.artistName,
               artistId: widget.artistId,
@@ -51,7 +51,7 @@ class _ImageCollectionScreenState extends State<ImageCollectionScreen> {
         final result = await Navigator.push(
           context,
           SlideRoute(
-            builder: (context) => ImgUpload(
+            builder: (context) => ImageUpload(
               artistName: widget.artistName,
               artistId: widget.artistId,
             ),

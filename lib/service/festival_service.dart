@@ -73,24 +73,4 @@ class FestivalService {
     return response.toModelList(FestivalModel.fromJson);
   }
 
-  Future<void> submitFestival({
-    required String title,
-    required String description,
-    required String location,
-    required String startDate,
-    required String endDate,
-    required String posterUrl,
-    required List<String> genres,
-    required String region,
-  }) =>
-      DioClient.dio.post('/festivals', data: {
-        'title': title,
-        'description': description,
-        'location': location,
-        'startDate': startDate,
-        'endDate': endDate,
-        'posterUrl': posterUrl,
-        'genres': genres,
-        'region': region,
-      });
 }

@@ -181,6 +181,31 @@ void main() {
       expect(notifier.isLoading, false);
     });
 
+    test('더 불러오기(page>0) 실패 → error=null, refreshError 설정', () async {
+      var callCount = 0;
+      when(() => mockService.fetchPreviews(
+            page: any(named: 'page'),
+            size: any(named: 'size'),
+            includeEnded: any(named: 'includeEnded'),
+            genres: any(named: 'genres'),
+            regions: any(named: 'regions'),
+            ageRestrictions: any(named: 'ageRestrictions'),
+          )).thenAnswer((_) async {
+        if (callCount++ == 0) return _pages(20);
+        throw Exception('network error');
+      });
+
+      final notifier = await make();
+      expect(notifier.items.length, 20);
+
+      await notifier.fetchNext();
+
+      expect(notifier.items.length, 20); // 기존 아이템 유지
+      expect(notifier.error, isNull); // 전체 화면 에러 없음
+      expect(notifier.refreshError, isNotNull); // snackbar용 에러 설정
+      expect(notifier.isLoadingMore, false);
+    });
+
     test('clearRefreshError 후 refreshError=null', () async {
       var callCount = 0;
       when(() => mockService.fetchPreviews(

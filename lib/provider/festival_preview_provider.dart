@@ -155,8 +155,10 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
       debugPrint('festival preview error: $e');
       if (_items.isEmpty) {
         _error = 'err_fetch_data'.tr();
-      } else if (wasFirstPage) {
-        // 기존 데이터 유지, 새로고침 실패 알림 (snackbar용 일회성 플래그)
+      } else {
+        // 기존 데이터 유지, 새로고침/더 불러오기 실패 알림 (snackbar용 일회성 플래그)
+        // — wasFirstPage 여부와 무관하게 항상 알려야 "더 불러오기"만 조용히
+        // 실패하는 비대칭을 피할 수 있음
         _refreshError = 'err_fetch_data'.tr();
       }
     } finally {

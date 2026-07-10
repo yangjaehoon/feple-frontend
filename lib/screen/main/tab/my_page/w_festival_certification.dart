@@ -13,14 +13,14 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-class FtvCertificationWidget extends StatefulWidget {
-  const FtvCertificationWidget({super.key});
+class FestivalCertificationWidget extends StatefulWidget {
+  const FestivalCertificationWidget({super.key});
 
   @override
-  State<FtvCertificationWidget> createState() => FtvCertificationWidgetState();
+  State<FestivalCertificationWidget> createState() => FestivalCertificationWidgetState();
 }
 
-class FtvCertificationWidgetState extends State<FtvCertificationWidget> {
+class FestivalCertificationWidgetState extends State<FestivalCertificationWidget> {
   final _certService = sl<CertificationService>();
   List<CertificationModel>? _certifications;
   bool _isLoading = true;

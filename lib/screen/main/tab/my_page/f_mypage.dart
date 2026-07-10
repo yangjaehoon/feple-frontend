@@ -22,7 +22,7 @@ class MypageFragment extends StatefulWidget {
 class _MypageFragmentState extends State<MypageFragment> with NavigationGuard {
   final _profileKey = GlobalKey<ProfileWidgetState>();
   final _statsKey = GlobalKey<MyPostCommentWidgetState>();
-  final _certKey = GlobalKey<FtvCertificationWidgetState>();
+  final _certKey = GlobalKey<FestivalCertificationWidgetState>();
   final _songsKey = GlobalKey<MySongRequestsWidgetState>();
 
   Future<void> _onRefresh() async {
@@ -60,7 +60,7 @@ class _MypageFragmentState extends State<MypageFragment> with NavigationGuard {
                     children: [
                       ProfileWidget(key: _profileKey, userId: userId),
                       MyPostCommentWidget(key: _statsKey, userId: userId),
-                      FtvCertificationWidget(key: _certKey),
+                      FestivalCertificationWidget(key: _certKey),
                       MySongRequestsWidget(key: _songsKey),
                     ],
                   ),

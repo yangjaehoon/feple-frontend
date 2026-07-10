@@ -56,7 +56,7 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
       loadLikeState(),
       loadAttendingState(),
       loadDescState(),
-      loadCertState(),
+      loadMyCertificationStatus(),
       loadRatingInfo(),
     ]);
   }
@@ -99,9 +99,9 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
     await prefs.setBool(_descPrefKey, expanded);
   }
 
-  Future<void> loadCertState() async {
+  Future<void> loadMyCertificationStatus() async {
     try {
-      final detail = await certService.getCertState(festivalId);
+      final detail = await certService.getMyCertificationStatus(festivalId);
       isCertified = detail.status == CertStatus.approved;
       isPending = detail.status == CertStatus.pending;
       certId = detail.certId;

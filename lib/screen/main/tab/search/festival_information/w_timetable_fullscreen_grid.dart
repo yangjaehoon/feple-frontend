@@ -4,15 +4,15 @@ import 'package:feple/common/constant/timetable_colors.dart';
 import 'package:feple/common/dart/extension/time_of_day_extension.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_stage_cell.dart';
-import 'package:feple/model/user_entry.dart';
+import 'package:feple/model/my_timetable_entry.dart';
 import 'package:flutter/material.dart';
 
 class TimetableFullscreenGrid extends StatefulWidget {
   final TimetableRange range;
-  final List<UserEntry> userEntries;
+  final List<MyTimetableEntry> userEntries;
   final Set<String> followedNames;
   final void Function(String stage, String startTime) onTapGrid;
-  final void Function(UserEntry entry) onTapUserEntry;
+  final void Function(MyTimetableEntry entry) onTapMyTimetableEntry;
 
   const TimetableFullscreenGrid({
     super.key,
@@ -20,7 +20,7 @@ class TimetableFullscreenGrid extends StatefulWidget {
     required this.userEntries,
     required this.followedNames,
     required this.onTapGrid,
-    required this.onTapUserEntry,
+    required this.onTapMyTimetableEntry,
   });
 
   @override
@@ -234,7 +234,7 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
               final stageIndex = _stages.indexOf(entry.stageName);
               if (stageIndex < 0) return const SizedBox.shrink();
               final rawTop = _toY(entry.startTime, pxPerMin);
-              // UserEntry는 w_timetable_entry_dialog.dart에서 종료 시각이 시작
+              // MyTimetableEntry는 w_timetable_entry_dialog.dart에서 종료 시각이 시작
               // 시각보다 뒤여야만 저장 가능하도록 막혀있어(자정 교차 불가)
               // _toY 차이가 음수가 될 일이 없음 — TimetableEntry(공식 항목)와
               // 달리 durationMinutes 게터가 없는 별도 모델이라 그대로 유지
@@ -246,7 +246,7 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
                 height: (cardH - 4).clamp(4.0, double.infinity),
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onTap: () => widget.onTapUserEntry(entry),
+                  onTap: () => widget.onTapMyTimetableEntry(entry),
                   child: _UserCard(entry: entry, cardH: cardH - 4),
                 ),
               );
@@ -343,7 +343,7 @@ class _OfficialCard extends StatelessWidget {
 }
 
 class _UserCard extends StatelessWidget {
-  final UserEntry entry;
+  final MyTimetableEntry entry;
   final double cardH;
 
   const _UserCard({required this.entry, required this.cardH});

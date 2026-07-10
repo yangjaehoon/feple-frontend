@@ -70,27 +70,27 @@ void main() {
       expect(certs.first.status, CertStatus.approved);
     });
 
-    // ── getCertState ───────────────────────────────────────────────────────
+    // ── getMyCertificationStatus ───────────────────────────────────────────────────────
 
-    test('getCertState NONE returns MyCertificationStatus.none', () async {
+    test('getMyCertificationStatus NONE returns MyCertificationStatus.none', () async {
       server.enqueue(
         body: '{"certState":"NONE"}',
         headers: {'Content-Type': 'application/json'},
       );
 
-      final result = await service.getCertState(10);
+      final result = await service.getMyCertificationStatus(10);
 
       expect(result.status, isNull);
       expect(result.certId, isNull);
     });
 
-    test('getCertState APPROVED parses certId and rating', () async {
+    test('getMyCertificationStatus APPROVED parses certId and rating', () async {
       server.enqueue(
         body: '{"certState":"APPROVED","certId":42,"myRating":4,"myReview":"great"}',
         headers: {'Content-Type': 'application/json'},
       );
 
-      final result = await service.getCertState(10);
+      final result = await service.getMyCertificationStatus(10);
 
       expect(result.status, CertStatus.approved);
       expect(result.certId, 42);
@@ -98,13 +98,13 @@ void main() {
       expect(result.myReview, 'great');
     });
 
-    test('getCertState null certState treated as NONE', () async {
+    test('getMyCertificationStatus null certState treated as NONE', () async {
       server.enqueue(
         body: '{}',
         headers: {'Content-Type': 'application/json'},
       );
 
-      final result = await service.getCertState(10);
+      final result = await service.getMyCertificationStatus(10);
 
       expect(result.status, isNull);
     });

@@ -20,7 +20,7 @@ class ArtistFollowService {
 
   // UserService.fetchFollowingArtists와 같은 /users/{id}/following 엔드포인트를
   // 각자 파싱하던 중복을 없애고 하나의 결과에서 파생시킴
-  Future<Set<int>> getFollowingIds(int userId) async {
+  Future<Set<int>> fetchFollowingIds(int userId) async {
     final artists = await userService.fetchFollowingArtists(userId);
     return artists.map((a) => a.id).toSet();
   }

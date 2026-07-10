@@ -32,7 +32,7 @@ void main() {
       final artists = [_artist(1, 'A'), _artist(2, 'B'), _artist(3, 'C')];
       when(() => mockFestivalArtistsFetcher.fetchFestivalArtists(10))
           .thenAnswer((_) async => artists);
-      when(() => mockFollowService.getFollowingIds(99))
+      when(() => mockFollowService.fetchFollowingIds(99))
           .thenAnswer((_) async => {2, 3});
 
       final notifier = make(userId: 99);
@@ -44,14 +44,14 @@ void main() {
       expect(notifier.isLoading, false);
     });
 
-    test('userId null이면 getFollowingIds 호출 안 함', () async {
+    test('userId null이면 fetchFollowingIds 호출 안 함', () async {
       when(() => mockFestivalArtistsFetcher.fetchFestivalArtists(10))
           .thenAnswer((_) async => [_artist(1, 'A')]);
 
       final notifier = make(userId: null);
       await notifier.fetch();
 
-      verifyNever(() => mockFollowService.getFollowingIds(any()));
+      verifyNever(() => mockFollowService.fetchFollowingIds(any()));
       expect(notifier.followedIds, isEmpty);
     });
 
@@ -71,7 +71,7 @@ void main() {
       final artists = [_artist(1, 'A'), _artist(2, 'B')];
       when(() => mockFestivalArtistsFetcher.fetchFestivalArtists(10))
           .thenAnswer((_) async => artists);
-      when(() => mockFollowService.getFollowingIds(99))
+      when(() => mockFollowService.fetchFollowingIds(99))
           .thenAnswer((_) async => {});
 
       final notifier = make(userId: 99);
@@ -83,7 +83,7 @@ void main() {
     test('아티스트 목록이 빈 배열이면 artists 비어있고 isLoading false', () async {
       when(() => mockFestivalArtistsFetcher.fetchFestivalArtists(10))
           .thenAnswer((_) async => []);
-      when(() => mockFollowService.getFollowingIds(99))
+      when(() => mockFollowService.fetchFollowingIds(99))
           .thenAnswer((_) async => {});
 
       final notifier = make(userId: 99);
@@ -97,7 +97,7 @@ void main() {
       final artists = [_artist(1, 'A'), _artist(2, 'B'), _artist(3, 'C')];
       when(() => mockFestivalArtistsFetcher.fetchFestivalArtists(10))
           .thenAnswer((_) async => artists);
-      when(() => mockFollowService.getFollowingIds(99))
+      when(() => mockFollowService.fetchFollowingIds(99))
           .thenAnswer((_) async => {1, 2, 3});
 
       final notifier = make(userId: 99);
@@ -107,10 +107,10 @@ void main() {
       expect(notifier.followedIds, {1, 2, 3});
     });
 
-    test('getFollowingIds 예외 시 아티스트 데이터도 버려지고 hasError true', () async {
+    test('fetchFollowingIds 예외 시 아티스트 데이터도 버려지고 hasError true', () async {
       when(() => mockFestivalArtistsFetcher.fetchFestivalArtists(10))
           .thenAnswer((_) async => [_artist(1, 'A')]);
-      when(() => mockFollowService.getFollowingIds(99))
+      when(() => mockFollowService.fetchFollowingIds(99))
           .thenThrow(Exception('network'));
 
       final notifier = make(userId: 99);

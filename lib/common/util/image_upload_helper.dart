@@ -11,8 +11,8 @@ abstract final class ImageUploadHelper {
 
   /// 이미지를 압축 → presigned URL 요청 → S3 업로드 순서로 처리.
   /// [presignEndpoint] 서버의 presign 발급 엔드포인트.
-  /// 반환값으로 objectKey 등 이후 서버 등록에 필요한 [PresignResponse]를 제공.
-  static Future<PresignResponse> compressAndUpload({
+  /// 반환값으로 objectKey 등 이후 서버 등록에 필요한 [PresignResult]를 제공.
+  static Future<PresignResult> compressAndUpload({
     required String presignEndpoint,
     required Uint8List imageData,
   }) async {
@@ -26,7 +26,7 @@ abstract final class ImageUploadHelper {
       presignEndpoint,
       data: {'contentType': _contentType, 'extension': _ext},
     );
-    final presign = PresignResponse.fromJson(presignResponse.data);
+    final presign = PresignResult.fromJson(presignResponse.data);
 
     final putResponse = await http.put(
       Uri.parse(presign.uploadUrl),

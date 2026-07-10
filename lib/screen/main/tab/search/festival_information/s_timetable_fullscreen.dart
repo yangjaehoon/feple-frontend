@@ -6,7 +6,7 @@ import 'package:feple/common/constant/timetable_colors.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_entry_dialog.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_fullscreen_grid.dart';
-import 'package:feple/model/user_entry.dart';
+import 'package:feple/model/my_timetable_entry.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -33,7 +33,7 @@ class TimetableFullscreenScreen extends StatefulWidget {
 class _TimetableFullscreenScreenState extends State<TimetableFullscreenScreen> {
   late String? _selectedDate;
 
-  final Map<String, List<UserEntry>> _userEntriesMap = {};
+  final Map<String, List<MyTimetableEntry>> _userEntriesMap = {};
   int _colorCursor = 0;
 
   late TimetableRange _range;
@@ -57,7 +57,7 @@ class _TimetableFullscreenScreenState extends State<TimetableFullscreenScreen> {
       final map = decoded.map(
         (k, v) => MapEntry(
           k,
-          (v as List).map((e) => UserEntry.fromJson(e as Map<String, dynamic>)).toList(),
+          (v as List).map((e) => MyTimetableEntry.fromJson(e as Map<String, dynamic>)).toList(),
         ),
       );
       setState(() => _userEntriesMap.addAll(map));
@@ -74,7 +74,7 @@ class _TimetableFullscreenScreenState extends State<TimetableFullscreenScreen> {
     await prefs.setString(_prefKey, encoded);
   }
 
-  List<UserEntry> get _currentUserEntries =>
+  List<MyTimetableEntry> get _currentUserEntries =>
       _userEntriesMap[_selectedDate ?? ''] ?? [];
 
   int _nextColor() {
@@ -83,10 +83,10 @@ class _TimetableFullscreenScreenState extends State<TimetableFullscreenScreen> {
     return color.toARGB32();
   }
 
-  Future<void> _upsert(UserEntry entry) async {
+  Future<void> _upsert(MyTimetableEntry entry) async {
     setState(() {
       final key = _selectedDate ?? '';
-      final list = List<UserEntry>.from(_userEntriesMap[key] ?? []);
+      final list = List<MyTimetableEntry>.from(_userEntriesMap[key] ?? []);
       final idx = list.indexWhere((e) => e.id == entry.id);
       if (idx >= 0) {
         list[idx] = entry;
@@ -109,7 +109,7 @@ class _TimetableFullscreenScreenState extends State<TimetableFullscreenScreen> {
 
   Future<void> _openAdd({String? stage, String? startTime}) async {
     if (_range.stages.isEmpty) return;
-    final blank = UserEntry(
+    final blank = MyTimetableEntry(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       stageName: stage ?? _range.stages.first,
       label: '',
@@ -117,20 +117,20 @@ class _TimetableFullscreenScreenState extends State<TimetableFullscreenScreen> {
       endTime: '${(_range.startHour + 1).clamp(0, 23).toString().padLeft(2, '0')}:00',
       colorValue: _nextColor(),
     );
-    final result = await showDialog<UserEntry>(
+    final result = await showDialog<MyTimetableEntry>(
       context: context,
       builder: (_) => TimetableEntryDialog(stages: _range.stages, initial: blank, isEditing: false),
     );
     if (result != null && mounted) await _upsert(result);
   }
 
-  Future<void> _openEdit(UserEntry entry) async {
+  Future<void> _openEdit(MyTimetableEntry entry) async {
     final result = await showDialog<dynamic>(
       context: context,
       builder: (_) => TimetableEntryDialog(stages: _range.stages, initial: entry, isEditing: true),
     );
     if (!mounted) return;
-    if (result is UserEntry) {
+    if (result is MyTimetableEntry) {
       await _upsert(result);
     } else if (result == 'delete') {
       await _remove(entry.id);
@@ -258,7 +258,7 @@ class _TimetableFullscreenScreenState extends State<TimetableFullscreenScreen> {
       userEntries: _currentUserEntries,
       followedNames: widget.followedNames,
       onTapGrid: (stage, start) => _openAdd(stage: stage, startTime: start),
-      onTapUserEntry: _openEdit,
+      onTapMyTimetableEntry: _openEdit,
     );
   }
 

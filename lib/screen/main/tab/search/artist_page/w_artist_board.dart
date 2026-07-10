@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class ArtistBoard extends StatelessWidget {
   final int artistId;
   final String artistName;
-  final GlobalKey<NamedBoardState>? boardKey;
+  final GlobalKey<BoardPreviewSectionState>? boardKey;
 
   final _postService = sl<PostService>();
 
@@ -20,7 +20,7 @@ class ArtistBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NamedBoard(
+    return BoardPreviewSection(
       key: boardKey,
       name: artistName,
       headerIcon: Icons.forum_rounded,

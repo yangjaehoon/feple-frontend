@@ -45,7 +45,7 @@ void main() {
     sl.registerSingleton<CommentService>(mockCommentService);
     sl.registerSingleton<ScrapService>(mockScrapService);
 
-    notifier = PostDetailNotifier(postId: 1, initialHeartCount: 10, initialViewCount: 0);
+    notifier = PostDetailNotifier(postId: 1, initialLikeCount: 10, initialViewCount: 0);
   });
 
   tearDown(() {
@@ -96,7 +96,7 @@ void main() {
 
       String? posted;
       final n = PostDetailNotifier(
-        postId: 1, initialHeartCount: 10, initialViewCount: 0,
+        postId: 1, initialLikeCount: 10, initialViewCount: 0,
         onSuccess: (key) => posted = key,
       );
       await n.submitComment('내용');
@@ -131,7 +131,7 @@ void main() {
 
       String? errorKey;
       final n = PostDetailNotifier(
-        postId: 1, initialHeartCount: 10, initialViewCount: 0,
+        postId: 1, initialLikeCount: 10, initialViewCount: 0,
         onError: (key) => errorKey = key,
       );
       await n.submitComment('내용');
@@ -160,24 +160,24 @@ void main() {
       verify(() => mockPostService.toggleLike(1)).called(1);
     });
 
-    test('liked=false → true 낙관적 업데이트, heartCount+1', () async {
+    test('liked=false → true 낙관적 업데이트, likeCount+1', () async {
       when(() => mockPostService.toggleLike(1)).thenAnswer((_) async {});
       notifier.liked = false;
-      notifier.heartCount = 10;
+      notifier.likeCount = 10;
 
       await notifier.toggleLike(1);
 
       expect(notifier.liked, true);
-      expect(notifier.heartCount, 11);
+      expect(notifier.likeCount, 11);
       expect(notifier.isToggling, false);
     });
 
-    test('서비스 예외 시 liked·heartCount 롤백', () async {
+    test('서비스 예외 시 liked·likeCount 롤백', () async {
       when(() => mockPostService.toggleLike(1)).thenThrow(Exception('err'));
 
       String? errorKey;
       final n = PostDetailNotifier(
-        postId: 1, initialHeartCount: 10, initialViewCount: 0,
+        postId: 1, initialLikeCount: 10, initialViewCount: 0,
         onError: (key) => errorKey = key,
       );
       n.liked = false;
@@ -185,7 +185,7 @@ void main() {
       await n.toggleLike(1);
 
       expect(n.liked, false);
-      expect(n.heartCount, 10);
+      expect(n.likeCount, 10);
       expect(n.isToggling, false);
       expect(errorKey, 'like_failed');
       n.dispose();
@@ -226,7 +226,7 @@ void main() {
 
       String? errorKey;
       final n = PostDetailNotifier(
-        postId: 1, initialHeartCount: 10, initialViewCount: 0,
+        postId: 1, initialLikeCount: 10, initialViewCount: 0,
         onError: (key) => errorKey = key,
       );
       n.scraped = false;

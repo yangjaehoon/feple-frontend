@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 ///
 /// [fetchPosts] 로 데이터를 가져오고, 헤더 탭 시 [postListScreenFactory] 로 생성된
 /// 전체 목록 화면으로 이동합니다.
-class NamedBoard extends StatefulWidget {
+class BoardPreviewSection extends StatefulWidget {
   final String name;
   final String? boardName;
   final IconData headerIcon;
@@ -17,7 +17,7 @@ class NamedBoard extends StatefulWidget {
   final Widget Function() postListScreenFactory;
   final VoidCallback? onWriteTap;
 
-  const NamedBoard({
+  const BoardPreviewSection({
     super.key,
     required this.name,
     this.boardName,
@@ -28,10 +28,10 @@ class NamedBoard extends StatefulWidget {
   });
 
   @override
-  State<NamedBoard> createState() => NamedBoardState();
+  State<BoardPreviewSection> createState() => BoardPreviewSectionState();
 }
 
-class NamedBoardState extends State<NamedBoard> {
+class BoardPreviewSectionState extends State<BoardPreviewSection> {
   late Future<List<Post>> _postsFuture;
 
   @override

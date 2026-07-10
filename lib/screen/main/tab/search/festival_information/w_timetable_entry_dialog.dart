@@ -2,13 +2,13 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/timetable_colors.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/dart/extension/time_of_day_extension.dart';
-import 'package:feple/model/user_entry.dart';
+import 'package:feple/model/my_timetable_entry.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 class TimetableEntryDialog extends StatefulWidget {
   final List<String> stages;
-  final UserEntry initial;
+  final MyTimetableEntry initial;
   final bool isEditing;
 
   const TimetableEntryDialog({
@@ -74,7 +74,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
 
   int _toMins(TimeOfDay t) => t.hour * 60 + t.minute;
 
-  UserEntry get _result => UserEntry(
+  MyTimetableEntry get _result => MyTimetableEntry(
         id: widget.initial.id,
         stageName: _stage,
         label: _labelCtrl.text.trim(),

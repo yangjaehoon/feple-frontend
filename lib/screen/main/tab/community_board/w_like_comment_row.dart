@@ -5,14 +5,14 @@ import 'package:flutter/services.dart';
 
 class PostInteractionData {
   final bool liked;
-  final int heartCount;
+  final int likeCount;
   final int commentCount;
   final bool scraped;
   final int scrapCount;
 
   const PostInteractionData({
     required this.liked,
-    required this.heartCount,
+    required this.likeCount,
     required this.commentCount,
     required this.scraped,
     required this.scrapCount,
@@ -51,7 +51,7 @@ class LikeCommentRow extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                data.heartCount.toString(),
+                data.likeCount.toString(),
                 style: TextStyle(fontSize: AppDimens.fontSizeXl, color: colors.textTitle, fontWeight: FontWeight.w600),
               ),
             ],

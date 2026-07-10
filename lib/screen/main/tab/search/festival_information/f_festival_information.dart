@@ -27,7 +27,7 @@ class _FestivalInformationFragmentState
     extends State<FestivalInformationFragment> {
   final _posterKey = GlobalKey<FestivalPosterState>();
   final _artistsKey = GlobalKey<FestivalArtistsState>();
-  final _boardKey = GlobalKey<NamedBoardState>();
+  final _boardKey = GlobalKey<BoardPreviewSectionState>();
   final _timetableKey = GlobalKey<FestivalTimetableState>();
   final _setlistKey = GlobalKey<FestivalSetlistState>();
   final _mapKey = GlobalKey<FestivalBoothMapState>();

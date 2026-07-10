@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class FestivalBoard extends StatelessWidget {
   final int festivalId;
   final String festivalName;
-  final GlobalKey<NamedBoardState>? boardKey;
+  final GlobalKey<BoardPreviewSectionState>? boardKey;
 
   const FestivalBoard({
     super.key,
@@ -19,7 +19,7 @@ class FestivalBoard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final postService = sl<PostService>();
-    return NamedBoard(
+    return BoardPreviewSection(
       key: boardKey,
       name: festivalName,
       headerIcon: Icons.local_fire_department_rounded,

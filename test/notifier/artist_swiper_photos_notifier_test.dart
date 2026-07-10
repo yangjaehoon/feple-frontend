@@ -1,6 +1,6 @@
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_photo.dart';
-import 'package:feple/screen/main/tab/search/artist_page/artist_background_photos_notifier.dart';
+import 'package:feple/screen/main/tab/search/artist_page/artist_swiper_photos_notifier.dart';
 import 'package:feple/service/artist_photo_readable.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

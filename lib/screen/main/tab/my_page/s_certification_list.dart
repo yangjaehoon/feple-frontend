@@ -254,8 +254,8 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
   @override
   void initState() {
     super.initState();
-    _rating = widget.cert.rating;
-    _review = widget.cert.userReview;
+    _rating = widget.cert.myRating;
+    _review = widget.cert.myReview;
   }
 
   Future<void> _navigateToFestival() async {

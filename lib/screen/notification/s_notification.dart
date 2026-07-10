@@ -31,9 +31,9 @@ class _SectionHeader extends _ListItem {
   _SectionHeader(this.label);
 }
 
-class _NotifItem extends _ListItem {
+class _NotificationItem extends _ListItem {
   final NotificationModel model;
-  _NotifItem(this.model);
+  _NotificationItem(this.model);
 }
 
 class NotificationScreen extends StatefulWidget {
@@ -400,11 +400,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
           );
         }
 
-        final item = (listItem as _NotifItem).model;
+        final item = (listItem as _NotificationItem).model;
         // 알림 인덱스 계산 (헤더 제외)
         final notifIndex = sectioned
             .take(index + 1)
-            .whereType<_NotifItem>()
+            .whereType<_NotificationItem>()
             .length - 1;
 
         final card = TapScale(
@@ -452,7 +452,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         result.add(_SectionHeader(label));
         lastLabel = label;
       }
-      result.add(_NotifItem(item));
+      result.add(_NotificationItem(item));
     }
     return result;
   }

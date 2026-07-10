@@ -50,7 +50,7 @@ class CircleArtistWidgetState extends State<CircleArtistWidget> {
     final userId = context.read<UserProvider>().currentUserId;
     if (userId == null) return;
     try {
-      final ids = await _followService.getFollowingIds(userId);
+      final ids = await _followService.fetchFollowingIds(userId);
       if (mounted) setState(() => _followedIds = ids);
     } catch (e) {
       debugPrint('[CircleArtist] follow ids load failed: $e');

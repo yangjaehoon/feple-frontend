@@ -1,11 +1,11 @@
-class PresignResponse {
+class PresignResult {
   final String uploadUrl;
   final String objectKey;
 
-  PresignResponse({required this.uploadUrl, required this.objectKey});
+  PresignResult({required this.uploadUrl, required this.objectKey});
 
-  factory PresignResponse.fromJson(Map<String, dynamic> json) {
-    return PresignResponse(
+  factory PresignResult.fromJson(Map<String, dynamic> json) {
+    return PresignResult(
       uploadUrl: json['uploadUrl'] as String,
       objectKey: json['objectKey'] as String,
     );

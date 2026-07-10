@@ -1,4 +1,4 @@
-class UserEntry {
+class MyTimetableEntry {
   final String id;
   final String stageName;
   final String label;
@@ -6,7 +6,7 @@ class UserEntry {
   final String endTime;
   final int colorValue;
 
-  UserEntry({
+  MyTimetableEntry({
     required this.id,
     required this.stageName,
     required this.label,
@@ -17,14 +17,14 @@ class UserEntry {
 
   String get timeRange => '$startTime – $endTime';
 
-  UserEntry copyWith({
+  MyTimetableEntry copyWith({
     String? stageName,
     String? label,
     String? startTime,
     String? endTime,
     int? colorValue,
   }) =>
-      UserEntry(
+      MyTimetableEntry(
         id: id,
         stageName: stageName ?? this.stageName,
         label: label ?? this.label,
@@ -42,7 +42,7 @@ class UserEntry {
         'color': colorValue,
       };
 
-  factory UserEntry.fromJson(Map<String, dynamic> j) => UserEntry(
+  factory MyTimetableEntry.fromJson(Map<String, dynamic> j) => MyTimetableEntry(
         id: j['id'] as String,
         stageName: j['stageName'] as String,
         label: j['label'] as String,

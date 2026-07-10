@@ -28,84 +28,84 @@ void main() {
         festivalService: mockFestivalInteractionService,
       );
 
-  group('loadCertState', () {
+  group('loadMyCertificationStatus', () {
     test('해당 페스티벌에 APPROVED 인증 있으면 isCertified true', () async {
-      when(() => mockCertService.getCertState(5)).thenAnswer((_) async =>
+      when(() => mockCertService.getMyCertificationStatus(5)).thenAnswer((_) async =>
           MyCertificationStatus(status: CertStatus.approved, certId: 1, myRating: null, myReview: null));
 
       final notifier = make(5);
-      await notifier.loadCertState();
+      await notifier.loadMyCertificationStatus();
 
       expect(notifier.isCertified, true);
       expect(notifier.isPending, false);
     });
 
     test('해당 페스티벌에 PENDING 인증 있으면 isPending true', () async {
-      when(() => mockCertService.getCertState(5)).thenAnswer((_) async =>
+      when(() => mockCertService.getMyCertificationStatus(5)).thenAnswer((_) async =>
           MyCertificationStatus(status: CertStatus.pending, certId: null, myRating: null, myReview: null));
 
       final notifier = make(5);
-      await notifier.loadCertState();
+      await notifier.loadMyCertificationStatus();
 
       expect(notifier.isCertified, false);
       expect(notifier.isPending, true);
     });
 
     test('인증 없으면 둘 다 false', () async {
-      when(() => mockCertService.getCertState(5)).thenAnswer((_) async =>
+      when(() => mockCertService.getMyCertificationStatus(5)).thenAnswer((_) async =>
           MyCertificationStatus(status: null, certId: null, myRating: null, myReview: null));
 
       final notifier = make(5);
-      await notifier.loadCertState();
+      await notifier.loadMyCertificationStatus();
 
       expect(notifier.isCertified, false);
       expect(notifier.isPending, false);
     });
 
     test('REJECTED 인증이면 둘 다 false', () async {
-      when(() => mockCertService.getCertState(5)).thenAnswer((_) async =>
+      when(() => mockCertService.getMyCertificationStatus(5)).thenAnswer((_) async =>
           MyCertificationStatus(status: CertStatus.rejected, certId: null, myRating: null, myReview: null));
 
       final notifier = make(5);
-      await notifier.loadCertState();
+      await notifier.loadMyCertificationStatus();
 
       expect(notifier.isCertified, false);
       expect(notifier.isPending, false);
     });
 
     test('서비스 예외 시 크래시 없이 기본값 유지', () async {
-      when(() => mockCertService.getCertState(5)).thenThrow(Exception('err'));
+      when(() => mockCertService.getMyCertificationStatus(5)).thenThrow(Exception('err'));
 
       final notifier = make(5);
-      await expectLater(notifier.loadCertState(), completes);
+      await expectLater(notifier.loadMyCertificationStatus(), completes);
 
       expect(notifier.isCertified, false);
       expect(notifier.isPending, false);
     });
 
     test('인증 없는 경우 isCertified false, isPending false', () async {
-      when(() => mockCertService.getCertState(5)).thenAnswer((_) async =>
+      when(() => mockCertService.getMyCertificationStatus(5)).thenAnswer((_) async =>
           MyCertificationStatus(status: null, certId: null, myRating: null, myReview: null));
 
       final notifier = make(5);
-      await notifier.loadCertState();
+      await notifier.loadMyCertificationStatus();
 
       expect(notifier.isCertified, false);
       expect(notifier.isPending, false);
     });
 
     test('APPROVED 상태에서 isCertified true, isPending false 동시 검증', () async {
-      when(() => mockCertService.getCertState(5)).thenAnswer((_) async =>
+      when(() => mockCertService.getMyCertificationStatus(5)).thenAnswer((_) async =>
           MyCertificationStatus(status: CertStatus.approved, certId: 1, myRating: 4, myReview: '좋아요'));
 
       final notifier = make(5);
-      await notifier.loadCertState();
+      await notifier.loadMyCertificationStatus();
 
       expect(notifier.isCertified, true);
       expect(notifier.isPending, false);
       expect(notifier.certId, 1);
       expect(notifier.myRating, 4);
-      verify(() => mockCertService.getCertState(5)).called(1);
+      verify(() => mockCertService.getMyCertificationStatus(5)).called(1);
     });
   });
 

@@ -54,7 +54,7 @@ class FestivalArtistsNotifier extends SafeChangeNotifier {
       final (fetched, followed) = await (
         _festivalService.fetchFestivalArtists(festivalId),
         userId != null
-            ? _followService.getFollowingIds(userId!)
+            ? _followService.fetchFollowingIds(userId!)
             : Future<Set<int>>.value({}),
       ).wait;
 

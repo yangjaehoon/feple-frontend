@@ -33,7 +33,7 @@ class _ArtistScreenState extends State<ArtistScreen> {
   late final ArtistFollowNotifier _followNotifier;
   final _swiperKey = GlobalKey<MainImageSwiperState>();
   final _scheduleKey = GlobalKey<ArtistScheduleState>();
-  final _boardKey = GlobalKey<NamedBoardState>();
+  final _boardKey = GlobalKey<BoardPreviewSectionState>();
   final _songsKey = GlobalKey<ArtistSongsState>();
   final _relatedKey = GlobalKey<RelatedArtistsState>();
 

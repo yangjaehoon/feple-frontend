@@ -63,7 +63,7 @@ class MyCommentsView extends StatelessWidget {
               nickname: c.postNickname,
               title: c.postTitle,
               content: c.postContent,
-              heartCount: c.postLikeCount,
+              likeCount: c.postLikeCount,
             ),
           ),
         );

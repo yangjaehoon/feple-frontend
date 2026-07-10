@@ -21,7 +21,7 @@ class PostDetailNotifier extends SafeChangeNotifier {
   List<CommentDetail> comments = [];
   bool liked = false;
   bool scraped = false;
-  late int heartCount;
+  late int likeCount;
   int scrapCount = 0;
   int viewCount = 0;
   bool isSubmitting = false;
@@ -69,13 +69,13 @@ class PostDetailNotifier extends SafeChangeNotifier {
 
   PostDetailNotifier({
     required this.postId,
-    required int initialHeartCount,
+    required int initialLikeCount,
     required int initialViewCount,
     this.onSuccess,
     this.onError,
     this.onPostDeleted,
   }) {
-    heartCount = initialHeartCount;
+    likeCount = initialLikeCount;
     viewCount = initialViewCount;
   }
 
@@ -108,7 +108,7 @@ class PostDetailNotifier extends SafeChangeNotifier {
       ).wait;
       liked = isLiked;
       scraped = isScraped;
-      heartCount = counts.likeCount;
+      likeCount = counts.likeCount;
       scrapCount = counts.scrapCount;
       safeNotify();
     } catch (e) {
@@ -272,7 +272,7 @@ class PostDetailNotifier extends SafeChangeNotifier {
     try {
       await optimisticToggle(
         liked,
-        apply: (v) { liked = v; heartCount += v ? 1 : -1; },
+        apply: (v) { liked = v; likeCount += v ? 1 : -1; },
         action: () => _postService.toggleLike(postId),
         onError: () => onError?.call('like_failed'),
       );

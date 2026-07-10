@@ -21,8 +21,8 @@ class CertificationModel {
   final String? posterUrl;
   final String? rejectionMessage;
   final String? createdAt;
-  final int? rating;
-  final String? userReview;
+  final int? myRating;
+  final String? myReview;
 
   const CertificationModel({
     required this.id,
@@ -33,8 +33,8 @@ class CertificationModel {
     this.posterUrl,
     this.rejectionMessage,
     this.createdAt,
-    this.rating,
-    this.userReview,
+    this.myRating,
+    this.myReview,
   });
 
   factory CertificationModel.fromJson(Map<String, dynamic> json) =>
@@ -47,8 +47,8 @@ class CertificationModel {
         posterUrl: json['festivalPosterUrl'] as String? ?? json['photoUrl'] as String?,
         rejectionMessage: json['rejectionMessage'] as String?,
         createdAt: json['createdAt'] as String?,
-        rating: (json['rating'] as num?)?.toInt(),
-        userReview: json['userReview'] as String?,
+        myRating: (json['rating'] as num?)?.toInt(),
+        myReview: json['userReview'] as String?,
       );
 
   String displayFestivalTitle(bool isEnglish) =>

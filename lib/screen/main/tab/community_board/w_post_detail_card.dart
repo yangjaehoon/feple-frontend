@@ -35,7 +35,7 @@ class PostDetailCard extends StatefulWidget {
   final String nickname;
   final String title;
   final String content;
-  final int heartCount;
+  final int likeCount;
   final int viewCount;
   final bool certified;
   final String? userRole;
@@ -54,7 +54,7 @@ class PostDetailCard extends StatefulWidget {
     required this.nickname,
     required this.title,
     required this.content,
-    required this.heartCount,
+    required this.likeCount,
     this.viewCount = 0,
     this.certified = false,
     this.userRole,
@@ -75,7 +75,7 @@ class PostDetailCard extends StatefulWidget {
         nickname = post.nickname,
         title = post.title,
         content = post.content,
-        heartCount = post.likeCount,
+        likeCount = post.likeCount,
         viewCount = post.viewCount,
         certified = post.certified,
         userRole = post.userRole,
@@ -129,7 +129,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
     _updatedAt = widget.updatedAt;
     _notifier = PostDetailNotifier(
       postId: widget.id,
-      initialHeartCount: widget.heartCount,
+      initialLikeCount: widget.likeCount,
       initialViewCount: widget.viewCount,
       onSuccess: (key) {
         _commentController.clear();
@@ -384,7 +384,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
           LikeCommentRow(
             data: PostInteractionData(
               liked: _notifier.liked,
-              heartCount: _notifier.heartCount,
+              likeCount: _notifier.likeCount,
               commentCount: _notifier.comments.length,
               scraped: _notifier.scraped,
               scrapCount: _notifier.scrapCount,

@@ -248,27 +248,22 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     );
   }
 
+  // 카카오 버튼과 동일한 LoadingButton으로 통일 — 패키지 제공 SignInWithAppleButton은
+  // 자체 폰트/크기를 써서 카카오 버튼과 나란히 두면 글씨체가 부자연스럽게 달라 보임
   Widget _buildAppleLoginButton() {
     final isDark = context.themeType == CustomTheme.dark;
     return IgnorePointer(
       ignoring: _isAnyLoading,
       child: Opacity(
         opacity: (_isEmailLoading || _isKakaoLoading) ? 0.5 : 1.0,
-        child: _isAppleLoading
-            ? LoadingButton(
-                isLoading: true,
-                backgroundColor: isDark ? Colors.white : Colors.black,
-                foregroundColor: isDark ? Colors.black : Colors.white,
-                onPressed: () {},
-                label: 'apple_login_btn'.tr(),
-              )
-            : SignInWithAppleButton(
-                style: isDark
-                    ? SignInWithAppleButtonStyle.white
-                    : SignInWithAppleButtonStyle.black,
-                text: 'apple_login_btn'.tr(),
-                onPressed: signInWithApple,
-              ),
+        child: LoadingButton(
+          icon: Icons.apple,
+          isLoading: _isAppleLoading,
+          backgroundColor: isDark ? Colors.white : Colors.black,
+          foregroundColor: isDark ? Colors.black : Colors.white,
+          onPressed: signInWithApple,
+          label: 'apple_login_btn'.tr(),
+        ),
       ),
     );
   }

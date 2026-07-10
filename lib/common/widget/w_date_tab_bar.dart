@@ -27,7 +27,9 @@ class DateTabBar extends StatelessWidget {
     if (labelBuilder != null) return labelBuilder!(date);
     final parts = date.split('-');
     if (parts.length == 3) {
-      return '${int.parse(parts[1])}/${int.parse(parts[2])}';
+      final month = int.tryParse(parts[1]);
+      final day = int.tryParse(parts[2]);
+      if (month != null && day != null) return '$month/$day';
     }
     return date;
   }

@@ -115,13 +115,15 @@ class MainImageSwiperState extends State<MainImageSwiper> {
     });
   }
 
-  void refresh() {
+  Future<void> refresh() async {
     _timer?.cancel();
     _timer = null;
     _pageController?.removeListener(_onPageScroll);
     _pageController?.dispose();
     setState(() => _pageController = null);
-    _photosNotifier.load();
+    // load()의 finally에서 safeNotify()가 동기 호출되므로, await가 끝나는 시점엔
+    // _onPhotosLoaded 리스너가 이미 실행되어 새 _pageController까지 준비돼 있음
+    await _photosNotifier.load();
   }
 
   @override
@@ -144,7 +146,7 @@ class MainImageSwiperState extends State<MainImageSwiper> {
           // 블러 배경은 포토카드 스케일 애니메이션과 독립적으로 리페인트되도록 격리
           RepaintBoundary(child: _buildBackground()),
           if (_pageController != null) _buildPhotoPageView(),
-          ArtistNameLike(
+          ArtistFollowHeader(
             artistName: widget.artistName,
             artistId: widget.artistId,
             followNotifier: widget.followNotifier,

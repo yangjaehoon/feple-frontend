@@ -31,7 +31,11 @@ class RelatedArtistsState extends State<RelatedArtists> {
   Future<List<Artist>> _fetch() =>
       _artistService.fetchRelatedArtists(widget.artistId);
 
-  void refresh() => setState(() { _future = _fetch(); });
+  Future<void> refresh() async {
+    final future = _fetch();
+    setState(() => _future = future);
+    try { await future; } catch (_) {}
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -41,7 +41,11 @@ class ArtistSongsState extends State<ArtistSongs> with NavigationGuard {
   Future<List<SongModel>> _fetchSongs() =>
       _songService.fetchSongs(widget.artistId);
 
-  void refresh() => setState(() { _songsFuture = _fetchSongs(); });
+  Future<void> refresh() async {
+    final future = _fetchSongs();
+    setState(() => _songsFuture = future);
+    try { await future; } catch (_) {}
+  }
 
   @override
   Widget build(BuildContext context) {

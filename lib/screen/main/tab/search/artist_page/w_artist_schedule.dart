@@ -41,7 +41,11 @@ class ArtistScheduleState extends State<ArtistSchedule> with NavigationGuard {
   Future<List<ArtistScheduleModel>> _fetchSchedule() =>
       _scheduleService.fetchSchedule(widget.artistId);
 
-  void refresh() => setState(() { _scheduleFuture = _fetchSchedule(); });
+  Future<void> refresh() async {
+    final future = _fetchSchedule();
+    setState(() => _scheduleFuture = future);
+    try { await future; } catch (_) {}
+  }
 
   @override
   Widget build(BuildContext context) {

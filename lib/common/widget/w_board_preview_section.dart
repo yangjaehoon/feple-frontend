@@ -40,8 +40,10 @@ class NamedBoardState extends State<NamedBoard> {
     _postsFuture = widget.fetchPosts();
   }
 
-  void refresh() {
-    setState(() { _postsFuture = widget.fetchPosts(); });
+  Future<void> refresh() async {
+    final future = widget.fetchPosts();
+    setState(() => _postsFuture = future);
+    try { await future; } catch (_) {}
   }
 
   @override

@@ -53,12 +53,17 @@ class _ArtistScreenState extends State<ArtistScreen> {
   }
 
   Future<void> _onRefresh() async {
-    _swiperKey.currentState?.refresh();
-    _scheduleKey.currentState?.refresh();
-    _boardKey.currentState?.refresh();
-    _songsKey.currentState?.refresh();
-    _relatedKey.currentState?.refresh();
-    await _followNotifier.init();
+    // 각 섹션의 refresh()가 실제로 끝날 때까지 기다려야 당겨서 새로고침
+    // 스피너가 화면 갱신 완료와 맞물려 사라짐 (예전엔 팔로우 상태만 기다려서
+    // 다른 섹션이 아직 로딩 중인데도 스피너가 먼저 사라졌음)
+    await Future.wait([
+      _swiperKey.currentState?.refresh() ?? Future.value(),
+      _scheduleKey.currentState?.refresh() ?? Future.value(),
+      _boardKey.currentState?.refresh() ?? Future.value(),
+      _songsKey.currentState?.refresh() ?? Future.value(),
+      _relatedKey.currentState?.refresh() ?? Future.value(),
+      _followNotifier.init(),
+    ]);
   }
 
   @override

@@ -156,11 +156,12 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
             Navigator.push(context, SlideRoute(builder: (_) => const BlockedUsersScreen()))),
       ),
       const _ItemDivider(),
+      // 로그아웃은 자주 쓰는 되돌릴 수 있는 행동이라 중립 스타일 유지 —
+      // 회원탈퇴(영구 삭제)와 동일한 빨간색을 쓰면 위험도 구분이 안 됨
       _SettingsItem(
         icon: Icons.logout_rounded,
         label: 'logout'.tr(),
         onTap: _logout,
-        isDestructive: true,
       ),
       const _ItemDivider(),
       _SettingsItem(

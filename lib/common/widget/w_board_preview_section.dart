@@ -42,7 +42,7 @@ class BoardPreviewSectionState extends State<BoardPreviewSection> {
 
   Future<void> refresh() async {
     final future = widget.fetchPosts();
-    setState(() => _postsFuture = future);
+    setState(() { _postsFuture = future; });
     try { await future; } catch (_) {}
   }
 

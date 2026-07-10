@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
+import 'package:feple/model/user_model.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/service/auth_service.dart';
 import 'package:feple/service/fcm_service.dart';
@@ -105,7 +106,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
 
   Future<void> _onVerifyTapped() => _tryComplete(silent: false);
 
-  Future<void> _navigateToApp(dynamic user) async {
+  Future<void> _navigateToApp(User user) async {
     // setUser 전에 스택 정리 — LoginScreen→SignupScreen→VerifyEmailScreen가 쌓인 상태에서
     // setUser만 호출하면 Consumer가 home을 교체해도 위 라우트들이 남아 화면이 안 바뀜
     final userProvider = context.read<UserProvider>();

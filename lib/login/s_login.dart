@@ -9,7 +9,7 @@ import 'package:feple/login/s_forgot_password.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:feple/service/auth_service.dart';
 import 'package:feple/service/fcm_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide User;
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +17,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:feple/common/theme/custom_theme.dart';
+import 'package:feple/model/user_model.dart';
 import '../provider/user_provider.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -336,7 +337,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     _authError = null;
   }
 
-  Future<void> _handleLoginSuccess(dynamic user) async {
+  Future<void> _handleLoginSuccess(User user) async {
     if (!mounted) return;
     await context.read<UserProvider>().setUser(user);
     FcmService.instance.initWithRationale().catchError((e) => debugPrint('[FCM] init failed: $e'));

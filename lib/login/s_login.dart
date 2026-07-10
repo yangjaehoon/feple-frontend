@@ -419,7 +419,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
   }
 
   Future<void> signInWithKakao() async {
-    if (_isEmailLoading || _isKakaoLoading) return;
+    if (_isAnyLoading) return;
     // async gap 전에 캡처 — 카카오 OAuth 브라우저/앱 복귀 시 mounted가 false일 수 있음
     final userProvider = context.read<UserProvider>();
     setState(() { _isKakaoLoading = true; _clearErrors(); });

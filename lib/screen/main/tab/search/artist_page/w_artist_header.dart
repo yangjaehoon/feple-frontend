@@ -53,12 +53,16 @@ class _ArtistNameLikeState extends State<ArtistNameLike>
       context.showInfoSnackbar('no_login_info'.tr());
       return;
     }
-    _heartController.forward().whenComplete(() {
-      if (mounted) _heartController.reverse();
-    });
     try {
       await widget.followNotifier.toggle();
       if (!mounted) return;
+      // 성공 + 팔로우된 결과일 때만 축하 애니메이션 재생 — 실패 시 재생하면
+      // 곧바로 뜨는 에러 스낵바와 모순되고, 언팔로우는 축하할 동작이 아님
+      if (widget.followNotifier.isFollowed) {
+        _heartController.forward().whenComplete(() {
+          if (mounted) _heartController.reverse();
+        });
+      }
       AppEvents.artistFollowChanged.value++;
       context.showSuccessSnackbar(widget.followNotifier.followStatusKey.tr());
     } catch (_) {

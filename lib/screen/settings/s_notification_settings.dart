@@ -35,7 +35,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
       // 실제 서버 상태를 모르는 채 가짜 기본값을 채우면 이후 토글 시 전체
       // 스냅샷을 PUT하는 _togglePref가 서버의 다른 항목 값을 덮어쓸 수 있음
       // → 기본값 대체 대신 재시도를 요구
-      debugPrint('[NotifSettings] prefs load failed: $e');
+      debugPrint('[NotificationSettings] prefs load failed: $e');
       if (mounted) setState(() => _hasError = true);
     }
   }
@@ -83,30 +83,30 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
       padding: const EdgeInsets.only(top: 16, bottom: 40),
       children: [
         if (_prefs == null)
-          const _NotifSkeleton()
+          const _NotificationSettingsSkeleton()
         else ...[
-          _NotifItem(
+          _NotificationSettingsItem(
             icon: Icons.verified_rounded,
             label: 'notif_cert'.tr(),
             value: _prefs!.certEnabled,
             onChanged: _saving ? null : (_) => _togglePref(_prefs!.toggleCert()),
           ),
           const _Divider(),
-          _NotifItem(
+          _NotificationSettingsItem(
             icon: Icons.chat_bubble_rounded,
             label: 'notif_comment'.tr(),
             value: _prefs!.commentEnabled,
             onChanged: _saving ? null : (_) => _togglePref(_prefs!.toggleComment()),
           ),
           const _Divider(),
-          _NotifItem(
+          _NotificationSettingsItem(
             icon: Icons.festival_rounded,
             label: 'notif_festival'.tr(),
             value: _prefs!.festivalEnabled,
             onChanged: _saving ? null : (_) => _togglePref(_prefs!.toggleFestival()),
           ),
           const _Divider(),
-          _NotifItem(
+          _NotificationSettingsItem(
             icon: Icons.music_note_rounded,
             label: 'notif_song_request'.tr(),
             value: _prefs!.songRequestEnabled,
@@ -118,13 +118,13 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   }
 }
 
-class _NotifItem extends StatelessWidget {
+class _NotificationSettingsItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool value;
   final ValueChanged<bool>? onChanged;
 
-  const _NotifItem({
+  const _NotificationSettingsItem({
     required this.icon,
     required this.label,
     required this.value,
@@ -171,8 +171,8 @@ class _Divider extends StatelessWidget {
   }
 }
 
-class _NotifSkeleton extends StatelessWidget {
-  const _NotifSkeleton();
+class _NotificationSettingsSkeleton extends StatelessWidget {
+  const _NotificationSettingsSkeleton();
 
   @override
   Widget build(BuildContext context) {

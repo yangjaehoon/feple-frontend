@@ -61,6 +61,8 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
     final rawMins = ((pos.dy - _topPad) / pxPerMin).round();
     final clampedMins = rawMins.clamp(0, totalMins);
     final hour = _startHour + (clampedMins ~/ 60);
+    // 그리드 눈금이 10분 단위로 그려지므로 탭 위치도 10분 단위로 스냅 —
+    // 눈금 간격을 바꾸면 이 값도 함께 바꿀 것
     final minute = (clampedMins % 60 ~/ 10) * 10;
     final timeStr = TimeOfDay(hour: hour, minute: minute).toHHmm;
 

@@ -65,6 +65,8 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
     if (nextChange.isAfter(now)) {
       final diffHours = nextChange.difference(now).inHours;
       _isNicknameLocked = true;
+      // +23은 시간을 일 단위로 올림 처리(단순 나눗셈이면 1시간 남아도 0일 표시),
+      // 상한 90은 위 90일 잠금 기간과 동일해야 함
       _nicknameDaysRemaining = ((diffHours + 23) ~/ 24).clamp(1, 90);
     }
   }

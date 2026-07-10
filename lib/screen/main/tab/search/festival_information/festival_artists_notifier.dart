@@ -58,6 +58,8 @@ class FestivalArtistsNotifier extends SafeChangeNotifier {
             : Future<Set<int>>.value({}),
       ).wait;
 
+      // Dart List.sort는 stable 정렬 미보장 — 같은 순위(팔로우 여부) 그룹 내
+      // 원래 서버 순서가 fetch마다 흔들릴 수 있음에 유의
       fetched.sort((a, b) {
         final aRank = followed.contains(a.artistId) ? 0 : 1;
         final bRank = followed.contains(b.artistId) ? 0 : 1;

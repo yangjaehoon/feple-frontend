@@ -4,6 +4,7 @@ class PasswordValidator {
   PasswordValidator._();
 
   static const int minLength = 8;
+  // 과도하게 긴 입력으로 인한 해싱 지연/DoS 방지용 상한 — 백엔드 처리 한도와 맞출 것
   static const int maxLength = 4096;
   static const String regexUpper = r'[A-Z]';
   static const String regexLower = r'[a-z]';

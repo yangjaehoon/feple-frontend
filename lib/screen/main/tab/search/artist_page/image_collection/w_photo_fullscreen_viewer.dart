@@ -46,6 +46,8 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
       _transformController.value = Matrix4.identity();
     } else {
       final pos = details.localPosition;
+      // 확대 배율(scale)과 이동 배수는 translate = -pos * (scale - 1) 공식으로 묶여있음 —
+      // scale만 바꾸면 더블탭 확대 중심이 탭 지점에서 벗어남
       _transformController.value = Matrix4.identity()
         ..translateByDouble(-pos.dx * 1.5, -pos.dy * 1.5, 0.0, 0.0)
         ..scaleByDouble(2.5, 2.5, 2.5, 1.0);

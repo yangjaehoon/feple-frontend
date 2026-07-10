@@ -67,6 +67,8 @@ class MainScreenState extends State<MainScreen>
     if (notification.metrics.axis != Axis.vertical) return false;
     if (notification is ScrollUpdateNotification) {
       final delta = notification.scrollDelta ?? 0;
+      // 3px 미만은 잔떨림으로 간주해 무시 — 없으면 미세한 스크롤에도
+      // 매 프레임 표시 상태가 깜빡임
       if (delta > 3 && _showBottomNav.value) {
         _showBottomNav.value = false;
       } else if (delta < -3 && !_showBottomNav.value) {

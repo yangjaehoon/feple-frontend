@@ -232,6 +232,8 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
         myLocationButtonEnabled: _userPosition != null,
         onMapCreated: (c) => _mapController = c,
         zoomControlsEnabled: false,
+        // SingleChildScrollView 안에 있어 EagerGestureRecognizer 없이는
+        // 지도 팬/줌 제스처가 부모 스크롤과 경쟁하다 묻힘 — 제거 금지
         gestureRecognizers: {
           Factory<OneSequenceGestureRecognizer>(
             () => EagerGestureRecognizer(),

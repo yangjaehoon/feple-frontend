@@ -172,6 +172,10 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
   }
 
   Future<void> _navigateDirectly(SearchSuggestion suggestion) async {
+    // 직전 text/selection 변경으로 예약된 자동완성 재조회를 취소 — 그대로 두면
+    // 상세 화면으로 이동한 뒤 백그라운드에서 실행되어, 돌아왔을 때 방금 선택한
+    // 항목의 자동완성 목록이 엉뚱하게 다시 떠 있게 됨
+    _debounce?.cancel();
     await guardedNavigate(() async {
       _focusNode.unfocus();
       await _addRecentSearch(suggestion.label.trim());

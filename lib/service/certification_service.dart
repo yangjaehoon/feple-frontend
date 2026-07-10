@@ -43,12 +43,6 @@ class CertificationService {
         .toList();
   }
 
-  /// 승인된 페스티벌 ID 목록 조회
-  Future<List<int>> getApprovedFestivalIds() async {
-    final response = await DioClient.dio.get('/certifications/approved-festivals');
-    return (response.data as List).cast<int>();
-  }
-
   /// 특정 페스티벌의 인증 상태 및 내 별점 정보 단건 조회
   Future<CertStateResult> getCertState(int festivalId) async {
     final response = await DioClient.dio.get(

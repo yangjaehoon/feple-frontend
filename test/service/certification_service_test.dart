@@ -70,28 +70,6 @@ void main() {
       expect(certs.first.status, CertStatus.approved);
     });
 
-    // ── getApprovedFestivalIds ─────────────────────────────────────────────
-
-    test('getApprovedFestivalIds returns id list', () async {
-      server.enqueue(
-        body: '[1,2,3]',
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      final ids = await service.getApprovedFestivalIds();
-
-      expect(ids, [1, 2, 3]);
-    });
-
-    test('getApprovedFestivalIds returns empty list', () async {
-      server.enqueue(
-        body: '[]',
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      expect(await service.getApprovedFestivalIds(), isEmpty);
-    });
-
     // ── getCertState ───────────────────────────────────────────────────────
 
     test('getCertState NONE returns CertStateResult.none', () async {

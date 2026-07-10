@@ -15,9 +15,6 @@ class SongRequestService {
         },
       );
 
-  Future<List<SongRequestModel>> fetchMyRequests(int artistId) =>
-      _fetchRequests('/artists/$artistId/song-requests');
-
   Future<List<SongRequestModel>> fetchAllMyRequests(int userId) =>
       _fetchRequests('/users/$userId/song-requests');
 

@@ -171,9 +171,9 @@ class FtvCertificationWidgetState extends State<FtvCertificationWidget> {
   }
 
   Widget _buildCertList(AbstractThemeColors colors) {
-    final certs = _certifications!
-        .where((c) => c.status == CertStatus.approved)
-        .toList();
+    // 승인된 것만 보여주면 대기중/거절만 있는 경우 "제출 이력이 없다"는
+    // 빈 상태로 잘못 보임 — 상세 화면과 동일하게 모든 상태를 표시
+    final certs = _certifications!;
     if (certs.isEmpty) return _buildEmptyState(colors);
     return ListView.builder(
       scrollDirection: Axis.horizontal,

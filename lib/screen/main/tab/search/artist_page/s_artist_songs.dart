@@ -40,7 +40,9 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
   Future<List<SongModel>> _fetch() => _songService.fetchSongs(widget.artistId);
 
   Future<void> _refresh() async {
-    setState(() { _future = _fetch(); });
+    setState(() {
+      _future = _fetch();
+    });
     try {
       await _future;
     } catch (_) {}
@@ -60,17 +62,24 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
               _isSheetOpen = true;
               showAppBottomSheet(
                 context,
+                isDismissible: false,
+                enableDrag: false,
                 builder: (_) => SongRequestSheet(
                   artistId: widget.artistId,
                   artistName: widget.artistName,
                 ),
-              ).whenComplete(() { if (mounted) _isSheetOpen = false; });
+              ).whenComplete(() {
+                if (mounted) _isSheetOpen = false;
+              });
             },
             icon: const Icon(Icons.add_rounded, size: 16),
             label: Text('song_request_button'.tr()),
             style: TextButton.styleFrom(
               foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              textStyle: const TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w600),
+              textStyle: const TextStyle(
+                fontSize: AppDimens.fontSizeSm,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -86,7 +95,10 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
     );
   }
 
-  Widget _buildBody(AsyncSnapshot<List<SongModel>> snapshot, AbstractThemeColors colors) {
+  Widget _buildBody(
+    AsyncSnapshot<List<SongModel>> snapshot,
+    AbstractThemeColors colors,
+  ) {
     if (snapshot.connectionState == ConnectionState.waiting) {
       return const SongListSkeleton(itemCount: 6);
     }

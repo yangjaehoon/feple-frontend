@@ -27,9 +27,12 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
   double averageRating = 0.0;
   int ratingCount = 0;
   bool ratingLoaded = false;
+  bool ratingLoadFailed = false;
   int? certId;
   int? myRating;
   String? myReview;
+
+  final void Function(String key)? onError;
 
   CertState get certState {
     if (isCertified) return CertState.certified;
@@ -44,11 +47,18 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
     required this.certService,
     required this.festivalService,
     this.attendingCount = 0,
+    this.onError,
   });
 
   Future<void> init() async {
     hasInitError = false;
-    await Future.wait([loadLikeState(), loadAttendingState(), loadDescState(), loadCertState(), loadRatingInfo()]);
+    await Future.wait([
+      loadLikeState(),
+      loadAttendingState(),
+      loadDescState(),
+      loadCertState(),
+      loadRatingInfo(),
+    ]);
   }
 
   Future<void> retryInit() => init();
@@ -110,8 +120,11 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
       final info = await certService.getFestivalRating(festivalId);
       averageRating = info.averageRating;
       ratingCount = info.ratingCount;
+      ratingLoadFailed = false;
     } catch (e) {
       debugPrint('[FestivalPoster] 별점 정보 로드 실패: $e');
+      ratingLoadFailed = true;
+      hasInitError = true;
     } finally {
       ratingLoaded = true;
       safeNotify();
@@ -130,6 +143,7 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
           await festivalService.toggleLike(festivalId);
           AppEvents.festivalLikeChanged.value++;
         },
+        onError: () => onError?.call('like_failed'),
       );
     } finally {
       isTogglingLike = false;
@@ -144,7 +158,9 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
     final prevAttending = attending;
     final prevCount = attendingCount;
     attending = !attending;
-    attendingCount = attending ? attendingCount + 1 : max(0, attendingCount - 1);
+    attendingCount = attending
+        ? attendingCount + 1
+        : max(0, attendingCount - 1);
     safeNotify();
     try {
       await festivalService.toggleAttending(festivalId);
@@ -153,6 +169,7 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
       attendingCount = prevCount;
       safeNotify();
       debugPrint('toggleAttending error: $e');
+      onError?.call('attend_failed');
     } finally {
       isTogglingAttend = false;
       safeNotify();

@@ -109,6 +109,7 @@
   "search_posts_hint": "Search by title",
   "no_search_results": "No results found.",
   "like_failed": "Failed to process like.",
+  "attend_failed": "Failed to update attending status.",
   "see_more": "More",
   "no_posts_yet": "No posts yet.",
   "be_first_to_discuss": "Be the first to talk about {}",

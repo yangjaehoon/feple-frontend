@@ -69,6 +69,8 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
     final result = await showAppBottomSheet<({int rating, String? review})>(
       context,
       useRootNavigator: true,
+      isDismissible: false,
+      enableDrag: false,
       builder: (_) => RatingSheet(
         festivalTitle: widget.festivalTitle,
         initialRating: _myRating,
@@ -78,7 +80,11 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
     if (result == null) return;
     setState(() => _isSubmittingRating = true);
     try {
-      await widget.certService.submitRating(widget.certId!, result.rating, result.review);
+      await widget.certService.submitRating(
+        widget.certId!,
+        result.rating,
+        result.review,
+      );
       if (!mounted) return;
       setState(() {
         _myRating = result.rating;
@@ -146,7 +152,9 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
       builder: (_, scrollController) => Container(
         decoration: BoxDecoration(
           color: colors.backgroundMain,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppDimens.shapeSheet),
+          ),
         ),
         child: Column(
           children: [
@@ -181,18 +189,23 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
     );
   }
 
-  Widget _buildBody(AbstractThemeColors colors, ScrollController scrollController) {
+  Widget _buildBody(
+    AbstractThemeColors colors,
+    ScrollController scrollController,
+  ) {
     if (_isLoading) {
-      return Center(
-        child: CircularProgressIndicator(color: colors.activate),
-      );
+      return Center(child: CircularProgressIndicator(color: colors.activate));
     }
     if (_hasError) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline_rounded, color: colors.textSecondary, size: 40),
+            Icon(
+              Icons.error_outline_rounded,
+              color: colors.textSecondary,
+              size: 40,
+            ),
             const SizedBox(height: 12),
             Text(
               'reviews_load_failed'.tr(),
@@ -201,7 +214,10 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
             const SizedBox(height: 12),
             TextButton(
               onPressed: () => _load(0),
-              child: Text('retry'.tr(), style: TextStyle(color: colors.activate)),
+              child: Text(
+                'retry'.tr(),
+                style: TextStyle(color: colors.activate),
+              ),
             ),
           ],
         ),
@@ -210,7 +226,9 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
 
     // 헤더 항목: CTA(1) + 요약 있을 때 구분선·요약·구분선(3)
     final headerCount = _ratingCount > 0 ? 4 : 1;
-    final reviewCount = _reviews.isEmpty ? 1 : _reviews.length + (_isLoadingMore ? 1 : 0);
+    final reviewCount = _reviews.isEmpty
+        ? 1
+        : _reviews.length + (_isLoadingMore ? 1 : 0);
 
     return NotificationListener<ScrollNotification>(
       onNotification: (n) {
@@ -265,11 +283,15 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
     );
   }
 
-  Widget _buildCtaContent(AbstractThemeColors colors) => switch (widget.certState) {
-    CertState.pending => _buildPendingCta(colors),
-    CertState.none => _buildNoCertCta(colors),
-    CertState.certified => _isSubmittingRating ? _buildLoadingCta(colors) : _buildCertifiedCta(colors),
-  };
+  Widget _buildCtaContent(AbstractThemeColors colors) =>
+      switch (widget.certState) {
+        CertState.pending => _buildPendingCta(colors),
+        CertState.none => _buildNoCertCta(colors),
+        CertState.certified =>
+          _isSubmittingRating
+              ? _buildLoadingCta(colors)
+              : _buildCertifiedCta(colors),
+      };
 
   Widget _buildPendingCta(AbstractThemeColors colors) => Row(
     children: [
@@ -278,7 +300,10 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
       Expanded(
         child: Text(
           'reviews_cert_pending'.tr(),
-          style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeSm,
+            color: colors.textSecondary,
+          ),
         ),
       ),
     ],
@@ -286,12 +311,19 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
 
   Widget _buildNoCertCta(AbstractThemeColors colors) => Row(
     children: [
-      Icon(Icons.workspace_premium_outlined, color: colors.certRingColor, size: 16),
+      Icon(
+        Icons.workspace_premium_outlined,
+        color: colors.certRingColor,
+        size: 16,
+      ),
       const SizedBox(width: 8),
       Expanded(
         child: Text(
           'reviews_cert_prompt'.tr(),
-          style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textTitle),
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeSm,
+            color: colors.textTitle,
+          ),
         ),
       ),
       const SizedBox(width: 8),
@@ -302,7 +334,11 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
         ),
         child: Text(
           'reviews_cert_btn'.tr(),
-          style: TextStyle(color: colors.activate, fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeSm),
+          style: TextStyle(
+            color: colors.activate,
+            fontWeight: FontWeight.w700,
+            fontSize: AppDimens.fontSizeSm,
+          ),
         ),
       ),
     ],
@@ -310,26 +346,39 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
 
   Widget _buildLoadingCta(AbstractThemeColors colors) => SizedBox(
     height: 24,
-    child: Center(child: CircularProgressIndicator(color: colors.activate, strokeWidth: 2)),
+    child: Center(
+      child: CircularProgressIndicator(color: colors.activate, strokeWidth: 2),
+    ),
   );
 
   Widget _buildCertifiedCta(AbstractThemeColors colors) => Row(
     children: [
-      Icon(Icons.workspace_premium_rounded, color: colors.certRingColor, size: 16),
+      Icon(
+        Icons.workspace_premium_rounded,
+        color: colors.certRingColor,
+        size: 16,
+      ),
       const SizedBox(width: 8),
       Text(
         'reviews_my_rating'.tr(),
-        style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w600, color: colors.textTitle),
+        style: TextStyle(
+          fontSize: AppDimens.fontSizeSm,
+          fontWeight: FontWeight.w600,
+          color: colors.textTitle,
+        ),
       ),
       if (_myRating != null) ...[
         const SizedBox(width: 8),
         Row(
           mainAxisSize: MainAxisSize.min,
-          children: List.generate(5, (i) => Icon(
-            i < _myRating! ? Icons.star_rounded : Icons.star_outline_rounded,
-            color: Colors.amber,
-            size: 14,
-          )),
+          children: List.generate(
+            5,
+            (i) => Icon(
+              i < _myRating! ? Icons.star_rounded : Icons.star_outline_rounded,
+              color: Colors.amber,
+              size: 14,
+            ),
+          ),
         ),
       ],
       const Spacer(),
@@ -339,8 +388,14 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         ),
         child: Text(
-          _myRating != null ? 'reviews_edit_rating'.tr() : 'reviews_leave_rating'.tr(),
-          style: TextStyle(color: colors.activate, fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeSm),
+          _myRating != null
+              ? 'reviews_edit_rating'.tr()
+              : 'reviews_leave_rating'.tr(),
+          style: TextStyle(
+            color: colors.activate,
+            fontWeight: FontWeight.w700,
+            fontSize: AppDimens.fontSizeSm,
+          ),
         ),
       ),
     ],
@@ -413,7 +468,9 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
                     value: ratio,
                     minHeight: 6,
                     backgroundColor: colors.surface,
-                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.amber),
+                    valueColor: const AlwaysStoppedAnimation<Color>(
+                      Colors.amber,
+                    ),
                   ),
                 ),
               ),
@@ -448,7 +505,11 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
               5,
               (_) => const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 3),
-                child: Icon(Icons.star_outline_rounded, color: Colors.amber, size: 32),
+                child: Icon(
+                  Icons.star_outline_rounded,
+                  color: Colors.amber,
+                  size: 32,
+                ),
               ),
             ),
           ),
@@ -539,8 +600,9 @@ class _ReviewCardState extends State<_ReviewCard> {
       _likeCount += wasLiked ? -1 : 1;
     });
     try {
-      final serverLiked =
-          await widget.certService.toggleReviewLike(widget.review.reviewId);
+      final serverLiked = await widget.certService.toggleReviewLike(
+        widget.review.reviewId,
+      );
       if (!mounted) return;
       setState(() {
         _likedByMe = serverLiked;
@@ -562,8 +624,9 @@ class _ReviewCardState extends State<_ReviewCard> {
   Widget build(BuildContext context) {
     final colors = widget.colors;
     final review = widget.review;
-    final initial =
-        review.nickname.isNotEmpty ? review.nickname[0].toUpperCase() : '?';
+    final initial = review.nickname.isNotEmpty
+        ? review.nickname[0].toUpperCase()
+        : '?';
     final hasReviewText =
         review.userReview != null && review.userReview!.isNotEmpty;
 
@@ -659,9 +722,7 @@ class _ReviewCardState extends State<_ReviewCard> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
-                  _likedByMe
-                      ? Icons.thumb_up_rounded
-                      : Icons.thumb_up_outlined,
+                  _likedByMe ? Icons.thumb_up_rounded : Icons.thumb_up_outlined,
                   size: 14,
                   color: _likedByMe ? colors.activate : colors.textSecondary,
                 ),
@@ -671,8 +732,9 @@ class _ReviewCardState extends State<_ReviewCard> {
                     '$_likeCount',
                     style: TextStyle(
                       fontSize: AppDimens.fontSizeXxs,
-                      color:
-                          _likedByMe ? colors.activate : colors.textSecondary,
+                      color: _likedByMe
+                          ? colors.activate
+                          : colors.textSecondary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

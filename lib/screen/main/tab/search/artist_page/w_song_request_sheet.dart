@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
@@ -45,6 +46,25 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
     return url.contains('youtube.com') || url.contains('youtu.be');
   }
 
+  bool get _isDirty =>
+      _titleCtrl.text.trim().isNotEmpty || _urlCtrl.text.trim().isNotEmpty;
+
+  Future<void> _handleClose() async {
+    if (_submitting) return;
+    if (!_isDirty) {
+      Navigator.pop(context);
+      return;
+    }
+    final ctx = context;
+    final confirmed = await showConfirmDialog(
+      ctx,
+      title: 'discard_changes'.tr(),
+      content: 'discard_changes_msg'.tr(),
+      confirmLabel: 'discard'.tr(),
+    );
+    if (confirmed && ctx.mounted) Navigator.pop(ctx);
+  }
+
   Future<void> _submit() async {
     final userId = context.read<UserProvider>().currentUserId;
     if (userId == null) {
@@ -62,7 +82,11 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
       return;
     }
     FocusScope.of(context).unfocus();
-    setState(() { _titleError = null; _urlError = null; _submitting = true; });
+    setState(() {
+      _titleError = null;
+      _urlError = null;
+      _submitting = true;
+    });
 
     try {
       await _songRequestService.submit(
@@ -71,17 +95,22 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
         youtubeUrl: _urlCtrl.text.trim().isEmpty ? null : _urlCtrl.text.trim(),
       );
       if (!mounted) return;
-      setState(() { _submitting = false; _submitSuccess = true; });
+      setState(() {
+        _submitting = false;
+        _submitSuccess = true;
+      });
       await Future.delayed(AppDimens.animSuccessDelay);
       if (!mounted) return;
       Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
       debugPrint('song request submit error: $e');
-      context.showErrorSnackbar(networkAwareErrorKey(
-        e,
-        isDioConflict(e) ? 'song_request_duplicate' : 'song_request_failed',
-      ).tr());
+      context.showErrorSnackbar(
+        networkAwareErrorKey(
+          e,
+          isDioConflict(e) ? 'song_request_duplicate' : 'song_request_failed',
+        ).tr(),
+      );
       if (mounted) setState(() => _submitting = false);
     }
   }
@@ -89,29 +118,41 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: Container(
-        decoration: BoxDecoration(
-          color: colors.backgroundMain,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
-        ),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        _handleClose();
+      },
+      child: Padding(
         padding: EdgeInsets.only(
-          bottom: kBottomNavigationBarHeight +
-              MediaQuery.of(context).padding.bottom +
-              24,
+          bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 12),
-            const BottomSheetHandle(),
-            ..._buildHeader(colors),
-            ..._buildFormFields(),
-            const SizedBox(height: 20),
-            _buildSubmitButton(colors),
-          ],
+        child: Container(
+          decoration: BoxDecoration(
+            color: colors.backgroundMain,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(AppDimens.shapeSheet),
+            ),
+          ),
+          padding: EdgeInsets.only(
+            bottom:
+                kBottomNavigationBarHeight +
+                MediaQuery.of(context).padding.bottom +
+                24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 12),
+              const BottomSheetHandle(),
+              ..._buildHeader(colors),
+              ..._buildFormFields(),
+              const SizedBox(height: 20),
+              _buildSubmitButton(colors),
+            ],
+          ),
         ),
       ),
     );
@@ -119,21 +160,36 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
 
   List<Widget> _buildHeader(AbstractThemeColors colors) => [
     Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
-      child: Text(
-        'song_request_title'.tr(),
-        style: TextStyle(
-          fontSize: AppDimens.fontSizeXxl,
-          fontWeight: FontWeight.w800,
-          color: colors.textTitle,
-        ),
+      padding: const EdgeInsets.fromLTRB(20, 16, 8, 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              'song_request_title'.tr(),
+              style: TextStyle(
+                fontSize: AppDimens.fontSizeXxl,
+                fontWeight: FontWeight.w800,
+                color: colors.textTitle,
+              ),
+            ),
+          ),
+          IconButton(
+            onPressed: _handleClose,
+            icon: Icon(Icons.close_rounded, color: colors.textSecondary),
+            visualDensity: VisualDensity.compact,
+          ),
+        ],
       ),
     ),
     Padding(
       padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
       child: Text(
         'song_request_desc'.tr(),
-        style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary, height: 1.5),
+        style: TextStyle(
+          fontSize: AppDimens.fontSizeSm,
+          color: colors.textSecondary,
+          height: 1.5,
+        ),
       ),
     ),
   ];
@@ -148,7 +204,9 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
         semanticsLabel: 'song_request_song_title'.tr(),
         autofocus: true,
         textInputAction: TextInputAction.next,
-        onChanged: (_) { if (_titleError != null) setState(() => _titleError = null); },
+        onChanged: (_) {
+          if (_titleError != null) setState(() => _titleError = null);
+        },
         errorText: _titleError,
       ),
     ),
@@ -162,7 +220,9 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
         semanticsLabel: 'song_request_youtube_url'.tr(),
         keyboardType: TextInputType.url,
         textInputAction: TextInputAction.done,
-        onChanged: (_) { if (_urlError != null) setState(() => _urlError = null); },
+        onChanged: (_) {
+          if (_urlError != null) setState(() => _urlError = null);
+        },
         errorText: _urlError,
       ),
     ),

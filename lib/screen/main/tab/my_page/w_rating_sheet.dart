@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:flutter/material.dart';
@@ -39,92 +40,161 @@ class _RatingSheetState extends State<RatingSheet> {
     super.dispose();
   }
 
+  bool get _isDirty {
+    final review = _reviewController.text.trim();
+    return _selectedRating != (widget.initialRating ?? 0) ||
+        review != (widget.initialReview ?? '');
+  }
+
+  Future<void> _handleClose() async {
+    if (!_isDirty) {
+      Navigator.pop(context);
+      return;
+    }
+    final ctx = context;
+    final confirmed = await showConfirmDialog(
+      ctx,
+      title: 'discard_changes'.tr(),
+      content: 'discard_changes_msg'.tr(),
+      confirmLabel: 'discard'.tr(),
+    );
+    if (confirmed && ctx.mounted) Navigator.pop(ctx);
+  }
+
   void _submit() {
     if (_selectedRating == 0) return;
     final review = _reviewController.text.trim();
-    Navigator.pop(context, (rating: _selectedRating, review: review.isEmpty ? null : review));
+    Navigator.pop(context, (
+      rating: _selectedRating,
+      review: review.isEmpty ? null : review,
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.backgroundMain,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
-      ),
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const BottomSheetHandle(),
-          const SizedBox(height: 12),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'rating_title'.tr(),
-                  style: TextStyle(fontSize: AppDimens.fontSizeXxl, fontWeight: FontWeight.w700, color: colors.textTitle),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  widget.festivalTitle,
-                  style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(5, (i) {
-                    return GestureDetector(
-                      onTap: () => setState(() => _selectedRating = i + 1),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 6),
-                        child: Icon(
-                          i < _selectedRating ? Icons.star_rounded : Icons.star_outline_rounded,
-                          color: Colors.amber,
-                          size: 40,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        _handleClose();
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: colors.backgroundMain,
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppDimens.shapeSheet),
+          ),
+        ),
+        padding: EdgeInsets.only(
+          bottom:
+              MediaQuery.of(context).viewInsets.bottom +
+              MediaQuery.of(context).padding.bottom,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const BottomSheetHandle(),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'rating_title'.tr(),
+                          style: TextStyle(
+                            fontSize: AppDimens.fontSizeXxl,
+                            fontWeight: FontWeight.w700,
+                            color: colors.textTitle,
+                          ),
                         ),
                       ),
-                    );
-                  }),
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  controller: _reviewController,
-                  maxLength: 100,
-                  maxLines: 2,
-                  style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textTitle),
-                  decoration: InputDecoration(
-                    hintText: 'rating_review_hint'.tr(),
-                    hintStyle: TextStyle(color: colors.textSecondary),
-                    counterStyle: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXxs),
-                    filled: true,
-                    fillColor: colors.surface,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-                      borderSide: BorderSide.none,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      IconButton(
+                        onPressed: _handleClose,
+                        icon: Icon(
+                          Icons.close_rounded,
+                          color: colors.textSecondary,
+                        ),
+                        visualDensity: VisualDensity.compact,
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 12),
-                LoadingButton(
-                  label: 'done'.tr(),
-                  onPressed: _selectedRating > 0 ? _submit : null,
-                  isLoading: false,
-                  backgroundColor: colors.activate,
-                ),
-                const SizedBox(height: 16),
-              ],
+                  const SizedBox(height: 4),
+                  Text(
+                    widget.festivalTitle,
+                    style: TextStyle(
+                      fontSize: AppDimens.fontSizeSm,
+                      color: colors.textSecondary,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(5, (i) {
+                      return GestureDetector(
+                        onTap: () => setState(() => _selectedRating = i + 1),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          child: Icon(
+                            i < _selectedRating
+                                ? Icons.star_rounded
+                                : Icons.star_outline_rounded,
+                            color: Colors.amber,
+                            size: 40,
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: _reviewController,
+                    maxLength: 100,
+                    maxLines: 2,
+                    style: TextStyle(
+                      fontSize: AppDimens.fontSizeMd,
+                      color: colors.textTitle,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'rating_review_hint'.tr(),
+                      hintStyle: TextStyle(color: colors.textSecondary),
+                      counterStyle: TextStyle(
+                        color: colors.textSecondary,
+                        fontSize: AppDimens.fontSizeXxs,
+                      ),
+                      filled: true,
+                      fillColor: colors.surface,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                          AppDimens.radiusSmall,
+                        ),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  LoadingButton(
+                    label: 'done'.tr(),
+                    onPressed: _selectedRating > 0 ? _submit : null,
+                    isLoading: false,
+                    backgroundColor: colors.activate,
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

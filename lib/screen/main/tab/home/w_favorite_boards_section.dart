@@ -6,9 +6,8 @@ import 'package:feple/screen/main/tab/home/s_all_favorite_boards.dart';
 import 'package:feple/screen/main/tab/home/w_boards_section_skeleton.dart';
 import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
 import 'package:feple/model/favorite_board.dart';
+import 'package:feple/screen/main/tab/home/favorite_board_navigation.dart';
 import 'package:feple/screen/main/tab/home/favorite_boards_prefs_manager.dart';
-import 'package:feple/screen/main/tab/search/artist_page/s_artist_post_list.dart';
-import 'package:feple/screen/main/tab/search/festival_information/s_festival_board.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -153,33 +152,13 @@ class _BoardTile extends StatelessWidget {
 
   const _BoardTile({required this.board});
 
-  void _navigate(BuildContext context) {
-    final isEnglish = context.isEnglish;
-    final displayEntityName = board.entityDisplayName(isEnglish);
-    final route = switch (board.type) {
-      FavoriteBoardType.artist => SlideRoute(
-          builder: (_) => ArtistPostListScreen(
-            artistId: board.entityId,
-            artistName: displayEntityName,
-          ),
-        ),
-      FavoriteBoardType.festival => SlideRoute(
-          builder: (_) => FestivalBoardScreen(
-            festivalId: board.entityId,
-            festivalName: displayEntityName,
-          ),
-        ),
-    };
-    Navigator.push(context, route);
-  }
-
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
     // 기준 390px: 보드 카드 110(0.282)
     final cardSize = MediaQuery.sizeOf(context).width * 0.282;
     return TapScale(
-      onTap: () => _navigate(context),
+      onTap: () => board.navigate(context),
       child: Container(
         width: cardSize,
         height: cardSize,

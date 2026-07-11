@@ -4,13 +4,11 @@ import 'package:feple/common/widget/w_app_network_image.dart';
 import 'package:feple/common/widget/w_selectable_chip.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/model/favorite_board.dart';
+import 'package:feple/screen/main/tab/home/favorite_board_navigation.dart';
 import 'package:feple/screen/main/tab/home/w_board_settings_sheet.dart';
-import 'package:feple/screen/main/tab/search/artist_page/s_artist_post_list.dart';
-import 'package:feple/screen/main/tab/search/festival_information/s_festival_board.dart';
 import 'package:flutter/material.dart';
 
 class AllFavoriteBoardsScreen extends StatefulWidget {
@@ -72,25 +70,7 @@ class _AllFavoriteBoardsScreenState extends State<AllFavoriteBoardsScreen> {
     ).whenComplete(() { if (mounted) _isSheetOpen = false; });
   }
 
-  void _navigateToBoard(FavoriteBoard board) {
-    final isEnglish = context.isEnglish;
-    final displayEntityName = board.entityDisplayName(isEnglish);
-    final route = switch (board.type) {
-      FavoriteBoardType.artist => SlideRoute(
-          builder: (_) => ArtistPostListScreen(
-            artistId: board.entityId,
-            artistName: displayEntityName,
-          ),
-        ),
-      FavoriteBoardType.festival => SlideRoute(
-          builder: (_) => FestivalBoardScreen(
-            festivalId: board.entityId,
-            festivalName: displayEntityName,
-          ),
-        ),
-    };
-    Navigator.push(context, route);
-  }
+  void _navigateToBoard(FavoriteBoard board) => board.navigate(context);
 
   @override
   Widget build(BuildContext context) {

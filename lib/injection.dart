@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get_it/get_it.dart';
 
 import 'service/artist_follow_service.dart';
@@ -11,7 +12,9 @@ import 'service/artist_service.dart';
 import 'service/auth_service.dart';
 import 'service/certification_service.dart';
 import 'service/comment_service.dart';
+import 'service/fcm_navigation_handler.dart';
 import 'service/fcm_service.dart';
+import 'service/fcm_token_service.dart';
 import 'service/festival_cache_service.dart';
 import 'service/festival_detail_service.dart';
 import 'service/festival_interaction_service.dart';
@@ -36,6 +39,8 @@ final sl = GetIt.instance;
 
 void setupDependencies() {
   sl.registerLazySingleton<AuthService>(() => AuthService.instance);
+  sl.registerLazySingleton<FcmNavigationHandler>(() => FcmNavigationHandler());
+  sl.registerLazySingleton<FcmTokenService>(() => FcmTokenService(FirebaseMessaging.instance));
   sl.registerLazySingleton<FcmService>(() => FcmService.instance);
 
   sl.registerLazySingleton<ArtistFollowService>(() => ArtistFollowService(userService: sl<UserService>()));

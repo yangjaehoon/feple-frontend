@@ -23,37 +23,58 @@ enum NotificationType {
     return null;
   }
 
-  bool get isFestivalType =>
-      this == NotificationType.newFestival ||
-      this == NotificationType.festivalReminder;
+  // 모든 NotificationType이 반드시 속하는 배타적 1차 분류.
+  // switch에 default가 없어 새 NotificationType 추가 시 컴파일 에러로 강제됨 —
+  // 아래 boolean getter들은 전부 이 분류에서 파생되므로 값 하나만 추가하면
+  // isXxxType들이 자동으로 올바르게 계산됨 (일일이 수정할 필요 없음)
+  _NotificationCategory get _category => switch (this) {
+        NotificationType.newFestival ||
+        NotificationType.festivalReminder =>
+          _NotificationCategory.festival,
+        NotificationType.certApproved ||
+        NotificationType.certRejected =>
+          _NotificationCategory.cert,
+        NotificationType.newComment ||
+        NotificationType.newReply ||
+        NotificationType.postLiked ||
+        NotificationType.postDeletedByAdmin =>
+          _NotificationCategory.comment,
+        NotificationType.songRequestApproved ||
+        NotificationType.songRequestRejected =>
+          _NotificationCategory.songRequest,
+        NotificationType.artistSuggestionProcessed =>
+          _NotificationCategory.artistSuggestion,
+        NotificationType.adminBroadcast => _NotificationCategory.adminBroadcast,
+      };
 
-  bool get isCertType =>
-      this == NotificationType.certApproved ||
-      this == NotificationType.certRejected;
+  bool get isFestivalType => _category == _NotificationCategory.festival;
 
-  bool get isCommentType =>
-      this == NotificationType.newComment ||
-      this == NotificationType.newReply ||
-      this == NotificationType.postLiked ||
-      this == NotificationType.postDeletedByAdmin;
+  bool get isCertType => _category == _NotificationCategory.cert;
+
+  bool get isCommentType => _category == _NotificationCategory.comment;
+
+  bool get isSongRequestType => _category == _NotificationCategory.songRequest;
 
   bool get isFestivalFilterType =>
-      this == NotificationType.newFestival ||
-      this == NotificationType.festivalReminder ||
-      this == NotificationType.songRequestApproved ||
-      this == NotificationType.songRequestRejected ||
-      this == NotificationType.artistSuggestionProcessed;
-
-  bool get isSongRequestType =>
-      this == NotificationType.songRequestApproved ||
-      this == NotificationType.songRequestRejected;
+      isFestivalType ||
+      isSongRequestType ||
+      _category == _NotificationCategory.artistSuggestion;
 
   bool get isArtistNavigationType =>
-      isSongRequestType || this == NotificationType.artistSuggestionProcessed;
+      isSongRequestType || _category == _NotificationCategory.artistSuggestion;
 
   bool get hasFestivalNavigation => isFestivalType || isCertType;
 
   // 관리자 공지는 개별 삭제를 지원하지 않음 — 스와이프 삭제 UI 자체를 막아서
   // "삭제했는데 다시 나타나는" 혼란을 방지 (서버가 삭제를 반영하지 않기 때문)
-  bool get isDismissible => this != NotificationType.adminBroadcast;
+  bool get isDismissible => _category != _NotificationCategory.adminBroadcast;
+}
+
+enum _NotificationCategory {
+  festival,
+  cert,
+  comment,
+  songRequest,
+  artistSuggestion,
+  adminBroadcast,
 }

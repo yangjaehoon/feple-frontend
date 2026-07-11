@@ -9,4 +9,5 @@ class Prefs {
   static final artistFollowedCount = PreferenceItem<int>('artistFollowedCount', 0);
   static final reviewRequested = PreferenceItem<bool>('reviewRequested', false);
   static final showCurrentTimeLine = PreferenceItem<bool>('showCurrentTimeLine', true);
+  static final recentSearches = PreferenceItem<List<String>>('recentSearches', []);
 }

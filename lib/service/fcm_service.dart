@@ -15,16 +15,45 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 class FcmService {
-  FcmService._();
-  static final instance = FcmService._();
+  // 협력 객체(navHandler/tokenService/notifHandler)를 생성자 주입 가능하게 해서
+  // 테스트에서 페이크로 교체할 수 있게 함 — 인자 없이 부르면 기존과 동일하게
+  // 기본 구현으로 조립됨 (FcmService.instance는 이 기본 경로를 사용)
+  factory FcmService({
+    FirebaseMessaging? messaging,
+    FcmNavigationHandler? navHandler,
+    FcmTokenService? tokenService,
+    FcmNotificationHandler? notifHandler,
+  }) {
+    final resolvedMessaging = messaging ?? FirebaseMessaging.instance;
+    final resolvedNavHandler = navHandler ?? FcmNavigationHandler();
+    return FcmService._(
+      messaging: resolvedMessaging,
+      navHandler: resolvedNavHandler,
+      tokenService: tokenService ?? FcmTokenService(resolvedMessaging),
+      notifHandler: notifHandler ??
+          FcmNotificationHandler(
+            FlutterLocalNotificationsPlugin(),
+            onTap: resolvedNavHandler.navigate,
+          ),
+    );
+  }
 
-  final _messaging = FirebaseMessaging.instance;
-  final _navHandler = FcmNavigationHandler();
-  late final _notifHandler = FcmNotificationHandler(
-    FlutterLocalNotificationsPlugin(),
-    onTap: _navHandler.navigate,
-  );
-  late final _tokenService = FcmTokenService(_messaging);
+  FcmService._({
+    required FirebaseMessaging messaging,
+    required FcmNavigationHandler navHandler,
+    required FcmTokenService tokenService,
+    required FcmNotificationHandler notifHandler,
+  })  : _messaging = messaging,
+        _navHandler = navHandler,
+        _tokenService = tokenService,
+        _notifHandler = notifHandler;
+
+  static final instance = FcmService();
+
+  final FirebaseMessaging _messaging;
+  final FcmNavigationHandler _navHandler;
+  final FcmNotificationHandler _notifHandler;
+  final FcmTokenService _tokenService;
 
   StreamSubscription? _messageSubscription;
   StreamSubscription? _tokenSubscription;

@@ -12,13 +12,13 @@ import 'package:feple/model/festival_preview.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
+import 'package:feple/screen/main/tab/search/recent_search_store.dart';
 import 'package:feple/screen/main/tab/search/search_style.dart';
 import 'package:feple/screen/main/tab/search/w_search_result_tiles.dart';
 import 'package:feple/service/artist_service.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:feple/service/search_service.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class UnifiedSearchScreen extends StatefulWidget {
   const UnifiedSearchScreen({super.key});
@@ -29,12 +29,10 @@ class UnifiedSearchScreen extends StatefulWidget {
 
 class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     with SingleTickerProviderStateMixin, NavigationGuard {
-  static const _prefsKey = 'feple_recent_searches';
-  static const _maxRecent = 10;
-
   final _searchService = sl<SearchService>();
   final _artistService = sl<ArtistService>();
   final _festivalService = sl<FestivalService>();
+  final _recentSearchStore = RecentSearchStore();
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
   Timer? _debounce;
@@ -52,16 +50,13 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
   List<Post> _posts = [];
   List<SearchSuggestion> _suggestions = [];
   List<String> _recentSearches = [];
-  // add/remove/clear가 겹쳐 호출되면 서로 stale한 _recentSearches 스냅샷을
-  // 기준으로 저장해 앞선 변경이 유실될 수 있으므로 순차 실행되도록 체이닝
-  Future<void> _recentSearchQueue = Future.value();
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
     _controller.addListener(_onTextChanged);
-    _loadRecentSearches();
+    _recentSearches = _recentSearchStore.load();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _focusNode.requestFocus();
     });
@@ -69,38 +64,19 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
 
   // ── recent searches ──────────────────────────────────────────────────────
 
-  Future<void> _loadRecentSearches() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (mounted) setState(() => _recentSearches = prefs.getStringList(_prefsKey) ?? []);
+  Future<void> _addRecentSearch(String keyword) async {
+    final list = await _recentSearchStore.add(_recentSearches, keyword);
+    if (mounted) setState(() => _recentSearches = list);
   }
 
-  Future<void> _addRecentSearch(String keyword) {
-    if (keyword.trim().isEmpty) return Future.value();
-    return _recentSearchQueue = _recentSearchQueue.then((_) async {
-      final prefs = await SharedPreferences.getInstance();
-      final list = List<String>.from(_recentSearches)..remove(keyword);
-      list.insert(0, keyword);
-      if (list.length > _maxRecent) list.removeLast();
-      await prefs.setStringList(_prefsKey, list);
-      if (mounted) setState(() => _recentSearches = list);
-    });
+  Future<void> _removeRecentSearch(String keyword) async {
+    final list = await _recentSearchStore.remove(_recentSearches, keyword);
+    if (mounted) setState(() => _recentSearches = list);
   }
 
-  Future<void> _removeRecentSearch(String keyword) {
-    return _recentSearchQueue = _recentSearchQueue.then((_) async {
-      final prefs = await SharedPreferences.getInstance();
-      final list = List<String>.from(_recentSearches)..remove(keyword);
-      await prefs.setStringList(_prefsKey, list);
-      if (mounted) setState(() => _recentSearches = list);
-    });
-  }
-
-  Future<void> _clearRecentSearches() {
-    return _recentSearchQueue = _recentSearchQueue.then((_) async {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove(_prefsKey);
-      if (mounted) setState(() => _recentSearches = []);
-    });
+  Future<void> _clearRecentSearches() async {
+    final list = await _recentSearchStore.clear();
+    if (mounted) setState(() => _recentSearches = list);
   }
 
   // ── search ────────────────────────────────────────────────────────────────

@@ -8,4 +8,5 @@ class Prefs {
   static final postCreatedCount = PreferenceItem<int>('postCreatedCount', 0);
   static final artistFollowedCount = PreferenceItem<int>('artistFollowedCount', 0);
   static final reviewRequested = PreferenceItem<bool>('reviewRequested', false);
+  static final showCurrentTimeLine = PreferenceItem<bool>('showCurrentTimeLine', true);
 }

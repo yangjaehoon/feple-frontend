@@ -507,6 +507,7 @@
   "settings_app": "App Settings",
   "settings_support": "Support",
   "dark_mode": "Dark Mode",
+  "timetable_current_time_line": "Show current time line in timetable",
   "language": "Language",
   "logout_confirm": "Are you sure you want to log out?",
   "liked_posts": "Liked",

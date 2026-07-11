@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/constant/timetable_colors.dart';
+import 'package:feple/common/data/preference/prefs.dart';
 import 'package:feple/common/dart/extension/time_of_day_extension.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_stage_cell.dart';
@@ -66,6 +67,7 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
   // (화면을 오래 띄워두고 지켜보는 사용성이 아니라서 dispose 관리 부담을
   // 늘리지 않는 쪽을 택함)
   double? _currentTimeTop(double pxPerMin) {
+    if (!Prefs.showCurrentTimeLine.get()) return null;
     if (widget.selectedDate != DateTime.now().toYMD) return null;
     final nowMinutes = TimeOfDay.now().hour * 60 + TimeOfDay.now().minute;
     final startMinutes = _startHour * 60;

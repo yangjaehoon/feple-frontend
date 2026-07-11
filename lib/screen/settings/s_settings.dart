@@ -33,11 +33,18 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
   bool _clearingCache = false;
   String _appVersion = '';
+  bool _showCurrentTimeLine = true;
 
   @override
   void initState() {
     super.initState();
     _loadVersion();
+    _showCurrentTimeLine = Prefs.showCurrentTimeLine.get();
+  }
+
+  void _toggleShowCurrentTimeLine(bool value) {
+    setState(() => _showCurrentTimeLine = value);
+    Prefs.showCurrentTimeLine.set(value);
   }
 
   Future<void> _loadVersion() async {
@@ -182,6 +189,16 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
         trailing: Switch(
           value: isDark,
           onChanged: (_) => ThemeUtil.toggleTheme(context),
+          activeThumbColor: colors.activate,
+        ),
+      ),
+      const _ItemDivider(),
+      _SettingsItem(
+        icon: Icons.schedule_rounded,
+        label: 'timetable_current_time_line'.tr(),
+        trailing: Switch(
+          value: _showCurrentTimeLine,
+          onChanged: _toggleShowCurrentTimeLine,
           activeThumbColor: colors.activate,
         ),
       ),

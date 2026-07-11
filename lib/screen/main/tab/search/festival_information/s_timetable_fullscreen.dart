@@ -261,6 +261,7 @@ class _TimetableFullscreenScreenState extends State<TimetableFullscreenScreen> {
       range: _range,
       userEntries: _currentUserEntries,
       followedNames: widget.followedNames,
+      selectedDate: _selectedDate,
       onTapGrid: (stage, start) => _openAdd(stage: stage, startTime: start),
       onTapMyTimetableEntry: _openEdit,
     );

@@ -11,6 +11,7 @@ class TimetableFullscreenGrid extends StatefulWidget {
   final TimetableRange range;
   final List<MyTimetableEntry> userEntries;
   final Set<String> followedNames;
+  final String? selectedDate;
   final void Function(String stage, String startTime) onTapGrid;
   final void Function(MyTimetableEntry entry) onTapMyTimetableEntry;
 
@@ -19,6 +20,7 @@ class TimetableFullscreenGrid extends StatefulWidget {
     required this.range,
     required this.userEntries,
     required this.followedNames,
+    required this.selectedDate,
     required this.onTapGrid,
     required this.onTapMyTimetableEntry,
   });
@@ -57,6 +59,19 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
     final hour = int.tryParse(parts.isNotEmpty ? parts[0] : '0') ?? 0;
     final minute = int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0;
     return hour * 60 + minute;
+  }
+
+  // 오늘 날짜 탭이 선택돼 있고 현재 시각이 그리드 범위 안에 있을 때만
+  // "지금" 라인 위치를 계산 — 타이머로 갱신하지 않고 build 시점 값만 사용
+  // (화면을 오래 띄워두고 지켜보는 사용성이 아니라서 dispose 관리 부담을
+  // 늘리지 않는 쪽을 택함)
+  double? _currentTimeTop(double pxPerMin) {
+    if (widget.selectedDate != DateTime.now().toYMD) return null;
+    final nowMinutes = TimeOfDay.now().hour * 60 + TimeOfDay.now().minute;
+    final startMinutes = _startHour * 60;
+    final endMinutes = _endHour * 60;
+    if (nowMinutes < startMinutes || nowMinutes > endMinutes) return null;
+    return _topPad + (nowMinutes - startMinutes) * pxPerMin;
   }
 
   // 내 일정 카드가 같은 스테이지·시간대의 공식 라인업 카드를 가리지 않도록,
@@ -171,6 +186,7 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
 
   Widget _buildGridContent(
       double gridH, double pxPerMin, double stageW, AbstractThemeColors colors) {
+    final currentTimeTop = _currentTimeTop(pxPerMin);
     return SizedBox(
       width: _stages.length * stageW,
       height: gridH,
@@ -275,6 +291,13 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
                 ),
               );
             }),
+            if (currentTimeTop != null)
+              Positioned(
+                left: 0,
+                right: 0,
+                top: currentTimeTop - 4,
+                child: IgnorePointer(child: _CurrentTimeLine()),
+              ),
           ],
         ),
       ),
@@ -409,6 +432,20 @@ class _UserCard extends StatelessWidget {
           Icon(Icons.edit_rounded, size: 10, color: Colors.white.withValues(alpha: 0.8)),
         ],
       ),
+    );
+  }
+}
+
+/// 오늘 날짜 탭에서 현재 시각 위치에 그리는 안내선 (구글 캘린더의 "지금" 라인과 동일한 패턴)
+class _CurrentTimeLine extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(width: 8, height: 8, decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle)),
+        Expanded(child: Container(height: 1.5, color: Colors.red)),
+      ],
     );
   }
 }

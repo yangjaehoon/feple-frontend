@@ -52,6 +52,26 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
     return kStageColors[colorIndex < 0 ? 0 : colorIndex];
   }
 
+  int _minutesOf(String time) {
+    final parts = time.split(':');
+    final hour = int.tryParse(parts.isNotEmpty ? parts[0] : '0') ?? 0;
+    final minute = int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0;
+    return hour * 60 + minute;
+  }
+
+  // 내 일정 카드가 같은 스테이지·시간대의 공식 라인업 카드를 가리지 않도록,
+  // 겹치는 경우에만 칸 오른쪽 절반으로 좁혀서 둘 다 보이게 함
+  bool _overlapsOfficial(MyTimetableEntry entry) {
+    final start = _minutesOf(entry.startTime);
+    final end = _minutesOf(entry.endTime);
+    return _range.filtered.any((official) {
+      if (!official.isOps && official.stageName != entry.stageName) return false;
+      final officialStart = _minutesOf(official.startTime);
+      final officialEnd = _minutesOf(official.endTime);
+      return start < officialEnd && officialStart < end;
+    });
+  }
+
   void _handleTap(double pxPerMin, double stageW) {
     if (_tapPos == null) return;
     final pos = _tapPos!;
@@ -239,10 +259,14 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
               // _toY 차이가 음수가 될 일이 없음 — TimetableEntry(공식 항목)와
               // 달리 durationMinutes 게터가 없는 별도 모델이라 그대로 유지
               final cardH = _toY(entry.endTime, pxPerMin) - rawTop;
+              final colLeft = stageIndex * stageW;
+              final overlaps = _overlapsOfficial(entry);
+              final left = overlaps ? colLeft + stageW * 0.55 : colLeft + 3;
+              final width = overlaps ? stageW * 0.45 - 3 : stageW - 6;
               return Positioned(
-                left: stageIndex * stageW + 3,
+                left: left,
                 top: _topPad + rawTop + 2,
-                width: stageW - 6,
+                width: width,
                 height: (cardH - 4).clamp(4.0, double.infinity),
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,

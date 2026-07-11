@@ -74,6 +74,9 @@ class _LoadingButtonState extends State<LoadingButton>
     final bg = widget.backgroundColor ?? Theme.of(context).colorScheme.primary;
     final fg = widget.foregroundColor ?? Theme.of(context).colorScheme.onPrimary;
     const successColor = AppColors.successGreen;
+    // onPressed가 null인 비활성 상태도 흐리게 표시 — 그렇지 않으면 활성 버튼과
+    // 색이 동일해 탭이 씹히는 것처럼 보임 (isLoading과 동일한 dimming 재사용)
+    final isDisabled = !widget.isLoading && !widget.isSuccess && widget.onPressed == null;
 
     return SizedBox(
       width: double.infinity,
@@ -83,7 +86,7 @@ class _LoadingButtonState extends State<LoadingButton>
         decoration: BoxDecoration(
           color: widget.isSuccess
               ? successColor
-              : (widget.isLoading ? bg.withValues(alpha: 0.6) : bg),
+              : (widget.isLoading || isDisabled ? bg.withValues(alpha: 0.6) : bg),
           borderRadius: BorderRadius.circular(widget.borderRadius),
         ),
         child: FilledButton(

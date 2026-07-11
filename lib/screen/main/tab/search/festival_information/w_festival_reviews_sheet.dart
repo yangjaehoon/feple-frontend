@@ -3,7 +3,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_expandable_text.dart';
-import 'package:feple/model/cert_state.dart';
+import 'package:feple/model/poster_cert_state.dart';
 import 'package:feple/model/festival_review.dart';
 import 'package:feple/screen/main/tab/my_page/w_rating_sheet.dart';
 import 'package:feple/service/certification_service.dart';
@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 class FestivalReviewsSheet extends StatefulWidget {
   final int festivalId;
   final CertificationService certService;
-  final CertState certState;
+  final PosterCertState certState;
   final String festivalTitle;
   final int? certId;
   final int? initialRating;
@@ -23,7 +23,7 @@ class FestivalReviewsSheet extends StatefulWidget {
     super.key,
     required this.festivalId,
     required this.certService,
-    this.certState = CertState.none,
+    this.certState = PosterCertState.none,
     this.festivalTitle = '',
     this.certId,
     this.initialRating,
@@ -285,9 +285,9 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
 
   Widget _buildCtaContent(AbstractThemeColors colors) =>
       switch (widget.certState) {
-        CertState.pending => _buildPendingCta(colors),
-        CertState.none => _buildNoCertCta(colors),
-        CertState.certified =>
+        PosterCertState.pending => _buildPendingCta(colors),
+        PosterCertState.none => _buildNoCertCta(colors),
+        PosterCertState.certified =>
           _isSubmittingRating
               ? _buildLoadingCta(colors)
               : _buildCertifiedCta(colors),

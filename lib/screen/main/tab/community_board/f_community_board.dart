@@ -51,8 +51,8 @@ class _CommunityBoardFragmentState extends State<CommunityBoardFragment> {
                   padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottomLarge),
                   child: Column(
                     children: [
-                      HotBoard(cardKey: _hotKey),
-                      FreeBoard(cardKey: _freeKey),
+                      CommunityHotBoard(cardKey: _hotKey),
+                      CommunityFreeBoard(cardKey: _freeKey),
                       CompanionBoardCard(cardKey: _companionKey),
                     ],
                   ),

@@ -1,33 +1,20 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/model/post_interaction_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class PostInteractionData {
-  final bool liked;
-  final int likeCount;
-  final int commentCount;
-  final bool scraped;
-  final int scrapCount;
-
-  const PostInteractionData({
-    required this.liked,
-    required this.likeCount,
-    required this.commentCount,
-    required this.scraped,
-    required this.scrapCount,
-  });
-}
+export 'package:feple/model/post_interaction_data.dart';
 
 /// 좋아요 + 스크랩 + 댓글 수 표시 행
 class LikeCommentRow extends StatelessWidget {
-  final PostInteractionData data;
+  final PostInteractionData interaction;
   final VoidCallback onLikeTap;
   final VoidCallback onScrapTap;
 
   const LikeCommentRow({
     super.key,
-    required this.data,
+    required this.interaction,
     required this.onLikeTap,
     required this.onScrapTap,
   });
@@ -46,12 +33,12 @@ class LikeCommentRow extends StatelessWidget {
           child: Row(
             children: [
               Icon(
-                data.liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                interaction.liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
                 color: colors.likeActiveColor,
               ),
               const SizedBox(width: 4),
               Text(
-                data.likeCount.toString(),
+                interaction.likeCount.toString(),
                 style: TextStyle(fontSize: AppDimens.fontSizeXl, color: colors.textTitle, fontWeight: FontWeight.w600),
               ),
             ],
@@ -75,13 +62,13 @@ class LikeCommentRow extends StatelessWidget {
           child: Row(
             children: [
               Icon(
-                data.scraped ? Icons.star_rounded : Icons.star_border_rounded,
+                interaction.scraped ? Icons.star_rounded : Icons.star_border_rounded,
                 color: colors.accentColor,
                 size: 24,
               ),
               const SizedBox(width: 4),
               Text(
-                data.scrapCount.toString(),
+                interaction.scrapCount.toString(),
                 style: TextStyle(fontSize: AppDimens.fontSizeXl, color: colors.textTitle, fontWeight: FontWeight.w600),
               ),
             ],
@@ -103,7 +90,7 @@ class LikeCommentRow extends StatelessWidget {
         Icon(Icons.comment_rounded, color: colors.textSecondary),
         const SizedBox(width: 4),
         Text(
-          data.commentCount.toString(),
+          interaction.commentCount.toString(),
           style: TextStyle(fontSize: AppDimens.fontSizeXl, color: colors.textTitle, fontWeight: FontWeight.w600),
         ),
       ],

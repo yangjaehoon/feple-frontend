@@ -15,14 +15,14 @@ import 'package:provider/provider.dart';
 
 const _previewCount = 3;
 
-class MySongRequestsWidget extends StatefulWidget {
-  const MySongRequestsWidget({super.key});
+class MySongRequestsView extends StatefulWidget {
+  const MySongRequestsView({super.key});
 
   @override
-  State<MySongRequestsWidget> createState() => MySongRequestsWidgetState();
+  State<MySongRequestsView> createState() => MySongRequestsViewState();
 }
 
-class MySongRequestsWidgetState extends State<MySongRequestsWidget> {
+class MySongRequestsViewState extends State<MySongRequestsView> {
   final _service = sl<SongRequestService>();
   List<SongRequestModel>? _requests;
   bool _isLoading = true;

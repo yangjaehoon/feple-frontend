@@ -16,7 +16,7 @@ enum TabItem {
       inActiveIcon: Icons.home_outlined),
   festivalList(Icons.queue_music_rounded, 'tab_concert', FestivalListFragment(),
       inActiveIcon: Icons.queue_music_outlined),
-  favorite(Icons.person_rounded, 'tab_my', MypageFragment(),
+  favorite(Icons.person_rounded, 'tab_my', MyPageFragment(),
       inActiveIcon: Icons.person_outlined);
 
   final IconData activeIcon;

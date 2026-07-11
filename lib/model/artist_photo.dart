@@ -1,4 +1,4 @@
-class ArtistPhotoResponse {
+class ArtistPhoto {
   final int photoId;
   final String url;
   // 익명 업로드 시 타인에게는 null로 반환됨; 본인 글은 항상 반환
@@ -12,7 +12,7 @@ class ArtistPhotoResponse {
   final bool isLiked;
   final bool isAnonymous;
 
-  ArtistPhotoResponse({
+  ArtistPhoto({
     required this.photoId,
     required this.url,
     required this.uploaderUserId,
@@ -25,7 +25,7 @@ class ArtistPhotoResponse {
     required this.isAnonymous,
   });
 
-  ArtistPhotoResponse copyWith({
+  ArtistPhoto copyWith({
     int? photoId,
     String? url,
     int? uploaderUserId,
@@ -37,7 +37,7 @@ class ArtistPhotoResponse {
     bool? isLiked,
     bool? isAnonymous,
   }) {
-    return ArtistPhotoResponse(
+    return ArtistPhoto(
       photoId: photoId ?? this.photoId,
       url: url ?? this.url,
       uploaderUserId: uploaderUserId ?? this.uploaderUserId,
@@ -51,8 +51,8 @@ class ArtistPhotoResponse {
     );
   }
 
-  factory ArtistPhotoResponse.fromJson(Map<String, dynamic> json) {
-    return ArtistPhotoResponse(
+  factory ArtistPhoto.fromJson(Map<String, dynamic> json) {
+    return ArtistPhoto(
       photoId: (json['photoId'] as num).toInt(),
       url: json['url'] as String,
       uploaderUserId: (json['uploaderUserId'] as num?)?.toInt(),

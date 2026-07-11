@@ -3,10 +3,10 @@ import 'package:feple/common/constant/board_types.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_board_card.dart';
 import 'package:flutter/material.dart';
 
-class HotBoard extends StatelessWidget {
+class CommunityHotBoard extends StatelessWidget {
   final GlobalKey<CommunityBoardCardState>? cardKey;
 
-  const HotBoard({super.key, this.cardKey});
+  const CommunityHotBoard({super.key, this.cardKey});
 
   @override
   Widget build(BuildContext context) {

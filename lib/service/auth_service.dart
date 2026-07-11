@@ -21,7 +21,7 @@ class AuthService {
 
   // ── 이메일 로그인 ──
 
-  Future<app.User> loginWithEmail(String email, String password) async {
+  Future<app.AppUser> loginWithEmail(String email, String password) async {
     final credential = await FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password);
     final user = credential.user!;
@@ -81,7 +81,7 @@ class AuthService {
 
   // ── 이메일 인증 확인 후 앱 JWT 교환 ──
 
-  Future<app.User?> completeVerifiedLogin() async {
+  Future<app.AppUser?> completeVerifiedLogin() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return null;
     await user.reload();
@@ -94,7 +94,7 @@ class AuthService {
 
   // ── 카카오 로그인 ──
 
-  Future<app.User> loginWithKakao() async {
+  Future<app.AppUser> loginWithKakao() async {
     OAuthToken token;
 
     bool talkInstalled = false;
@@ -120,7 +120,7 @@ class AuthService {
 
   // ── Apple 로그인 ──
 
-  Future<app.User> loginWithApple() async {
+  Future<app.AppUser> loginWithApple() async {
     final appleCredential = await SignInWithApple.getAppleIDCredential(
       scopes: [
         AppleIDAuthorizationScopes.email,
@@ -183,7 +183,7 @@ class AuthService {
 
   // ── 내부: Firebase ID 토큰 → 앱 JWT 교환 ──
 
-  Future<app.User> _exchangeFirebaseToken(String idToken,
+  Future<app.AppUser> _exchangeFirebaseToken(String idToken,
       {String? nickname}) async {
     final body = <String, dynamic>{'idToken': idToken};
     if (nickname != null) body['nickname'] = nickname;
@@ -209,7 +209,7 @@ class AuthService {
 
   // ── 내부: 카카오 액세스 토큰 → 앱 JWT 교환 ──
 
-  Future<app.User> _exchangeKakaoToken(String accessToken) async {
+  Future<app.AppUser> _exchangeKakaoToken(String accessToken) async {
     try {
       final response = await DioClient.dio.post(
         '/auth/kakao',
@@ -268,10 +268,10 @@ class AuthService {
 
   // ── 내부: User 파싱 (query) ──
 
-  app.User _parseUser(Map<String, dynamic> json) {
+  app.AppUser _parseUser(Map<String, dynamic> json) {
     final userJson = json['user'];
     if (userJson is! Map<String, dynamic>) throw Exception('auth_err_auth_failed'.tr());
-    return app.User.fromJson(userJson);
+    return app.AppUser.fromJson(userJson);
   }
 }
 

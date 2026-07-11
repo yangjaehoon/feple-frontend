@@ -1,4 +1,4 @@
-class User {
+class AppUser {
   final int id;
   final String nickname;
   final String? profileImageUrl;
@@ -6,7 +6,7 @@ class User {
   final String? bio;
   final DateTime? nicknameChangedAt;
 
-  User({
+  AppUser({
     required this.id,
     String? nickname,
     this.profileImageUrl,
@@ -15,8 +15,8 @@ class User {
     this.nicknameChangedAt,
   }) : nickname = (nickname != null && nickname.isNotEmpty) ? nickname : 'guest';
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
+  factory AppUser.fromJson(Map<String, dynamic> json) {
+    return AppUser(
       id: (json['id'] as num).toInt(),
       nickname: json['nickname'] as String?,
       profileImageUrl: json['profileImageUrl'] as String?,

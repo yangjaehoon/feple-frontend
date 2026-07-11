@@ -337,7 +337,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     _authError = null;
   }
 
-  Future<void> _handleLoginSuccess(User user) async {
+  Future<void> _handleLoginSuccess(AppUser user) async {
     if (!mounted) return;
     await context.read<UserProvider>().setUser(user);
     FcmService.instance.initWithRationale().catchError((e) => debugPrint('[FCM] init failed: $e'));

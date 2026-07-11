@@ -10,19 +10,19 @@ import 'package:feple/model/user_model.dart';
 import 'package:feple/network/dio_client.dart';
 
 class UserService {
-  Future<User> fetchUser(int userId) async {
+  Future<AppUser> fetchUser(int userId) async {
     final response = await DioClient.dio.get('/users/$userId');
     final raw = response.data is String ? jsonDecode(response.data) : response.data;
     if (raw is! Map<String, dynamic>) throw FormatException('Unexpected user response type: ${raw.runtimeType}');
-    return User.fromJson(raw);
+    return AppUser.fromJson(raw);
   }
 
-  Future<User> fetchUserFromToken(String token) async {
+  Future<AppUser> fetchUserFromToken(String token) async {
     final response = await DioClient.dio.get(
       '/users/me',
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
-    return User.fromJson(response.data);
+    return AppUser.fromJson(response.data);
   }
 
   Future<void> deleteUser(int userId) async {

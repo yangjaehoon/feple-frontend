@@ -19,8 +19,8 @@ const _testToken =
 const _kAccessToken = 'accessToken';
 const _kUserJson = 'userJson';
 
-User _user({int id = 42, String nickname = '테스터'}) =>
-    User(id: id, nickname: nickname);
+AppUser _user({int id = 42, String nickname = '테스터'}) =>
+    AppUser(id: id, nickname: nickname);
 
 Map<String, String> _storage = {};
 
@@ -294,7 +294,7 @@ void main() {
 
     test('currentProfileImageUrl은 user?.profileImageUrl 반환', () async {
       when(() => mockService.fetchUser(10)).thenAnswer((_) async =>
-          User(id: 10, nickname: '유저', profileImageUrl: 'https://img.example.com/pic.jpg'));
+          AppUser(id: 10, nickname: '유저', profileImageUrl: 'https://img.example.com/pic.jpg'));
 
       final provider = await make();
       await provider.fetchUser(10);

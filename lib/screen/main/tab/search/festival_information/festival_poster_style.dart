@@ -1,5 +1,5 @@
 import 'package:feple/common/theme/color/abs_theme_colors.dart';
-import 'package:feple/model/cert_state.dart';
+import 'package:feple/model/poster_cert_state.dart';
 import 'package:flutter/material.dart';
 
 String? genreI18nKey(String genre) => switch (genre) {
@@ -32,20 +32,20 @@ Color ageDisplayColor(String age) => switch (age) {
       _          => Colors.white,
     };
 
-extension CertStateStyle on CertState {
-  IconData get icon => this == CertState.pending
+extension CertStateStyle on PosterCertState {
+  IconData get icon => this == PosterCertState.pending
       ? Icons.hourglass_top_rounded
       : Icons.verified_rounded;
 
   Color color(AbstractThemeColors colors) => switch (this) {
-        CertState.certified => colors.activate.withValues(alpha: 0.7),
-        CertState.pending   => AppColors.statusPending,
-        CertState.none      => Colors.white,
+        PosterCertState.certified => colors.activate.withValues(alpha: 0.7),
+        PosterCertState.pending   => AppColors.statusPending,
+        PosterCertState.none      => Colors.white,
       };
 
   Color? bgColor(AbstractThemeColors colors) => switch (this) {
-        CertState.certified => colors.activate.withValues(alpha: 0.35),
-        CertState.pending   => AppColors.statusPending.withValues(alpha: 0.25),
-        CertState.none      => null,
+        PosterCertState.certified => colors.activate.withValues(alpha: 0.35),
+        PosterCertState.pending   => AppColors.statusPending.withValues(alpha: 0.25),
+        PosterCertState.none      => null,
       };
 }

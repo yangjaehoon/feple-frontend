@@ -15,15 +15,15 @@ import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
-class MyPostCommentWidget extends StatefulWidget {
+class MyPostCommentView extends StatefulWidget {
   final int userId;
-  const MyPostCommentWidget({super.key, required this.userId});
+  const MyPostCommentView({super.key, required this.userId});
 
   @override
-  State<MyPostCommentWidget> createState() => MyPostCommentWidgetState();
+  State<MyPostCommentView> createState() => MyPostCommentViewState();
 }
 
-class MyPostCommentWidgetState extends State<MyPostCommentWidget> with NavigationGuard {
+class MyPostCommentViewState extends State<MyPostCommentView> with NavigationGuard {
   late Future<UserStats> _statsFuture;
 
   @override

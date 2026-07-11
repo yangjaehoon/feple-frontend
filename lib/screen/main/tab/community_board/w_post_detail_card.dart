@@ -382,7 +382,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
       builder: (_, _) => Column(
         children: [
           LikeCommentRow(
-            data: PostInteractionData(
+            interaction: PostInteractionData(
               liked: _notifier.liked,
               likeCount: _notifier.likeCount,
               commentCount: _notifier.comments.length,

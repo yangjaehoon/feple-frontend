@@ -8,7 +8,7 @@ class ArtistSwiperPhotosNotifier extends SafeChangeNotifier {
   final int artistId;
   final _photoService = sl<ArtistPhotoReadable>();
 
-  List<ArtistPhotoResponse> photos = [];
+  List<ArtistPhoto> photos = [];
   bool loaded = false;
 
   ArtistSwiperPhotosNotifier({required this.artistId});

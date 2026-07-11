@@ -5,7 +5,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/screen/main/tab/search/artist_page/artist_follow_notifier.dart';
 import 'package:feple/screen/main/tab/search/artist_page/artist_swiper_photos_notifier.dart';
-import 'package:feple/screen/main/tab/search/artist_page/w_artist_header.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_artist_follow_header.dart';
 import 'package:flutter/material.dart';
 
 class MainImageSwiper extends StatefulWidget {

@@ -45,7 +45,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
   final _festivalService = sl<FestivalService>();
   final _blockService = sl<BlockService>();
 
-  User? _user;
+  AppUser? _user;
   int? _postCount;
   List<CertificationModel>? _certifications;
   bool _hasError = false;

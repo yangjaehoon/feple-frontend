@@ -10,7 +10,7 @@ import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../../../../model/cert_state.dart';
+import '../../../../../model/poster_cert_state.dart';
 import '../../../../../model/festival_model.dart';
 import 'festival_poster_notifier.dart';
 import 'festival_poster_style.dart';
@@ -115,13 +115,13 @@ class FestivalPosterState extends State<FestivalPoster> {
   }
 
   VoidCallback? _certButtonTap() => switch (_notifier.certState) {
-    CertState.certified => () => context.showInfoSnackbar(
+    PosterCertState.certified => () => context.showInfoSnackbar(
       'cert_already_approved'.tr(),
     ),
-    CertState.pending => () => context.showInfoSnackbar(
+    PosterCertState.pending => () => context.showInfoSnackbar(
       'cert_pending_notice'.tr(),
     ),
-    CertState.none => _submitCertification,
+    PosterCertState.none => _submitCertification,
   };
 
   IconData _certButtonIcon() => _notifier.certState.icon;

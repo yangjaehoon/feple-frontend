@@ -9,8 +9,8 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
   final int artistId;
   final _photoService = sl<ArtistPhotoManageable>();
 
-  List<ArtistPhotoResponse> _photos = [];
-  List<ArtistPhotoResponse> get photos => List.unmodifiable(_photos);
+  List<ArtistPhoto> _photos = [];
+  List<ArtistPhoto> get photos => List.unmodifiable(_photos);
   bool isLoading = true;
   String? errorKey;
 

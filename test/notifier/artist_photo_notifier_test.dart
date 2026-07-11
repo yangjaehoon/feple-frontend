@@ -7,12 +7,12 @@ import 'package:mocktail/mocktail.dart';
 
 class MockArtistPhotoService extends Mock implements ArtistPhotoManageable {}
 
-ArtistPhotoResponse _photo({
+ArtistPhoto _photo({
   int id = 1,
   int likeCount = 0,
   bool isLiked = false,
 }) =>
-    ArtistPhotoResponse(
+    ArtistPhoto(
       photoId: id,
       url: 'https://example.com/$id.jpg',
       uploaderUserId: 10,

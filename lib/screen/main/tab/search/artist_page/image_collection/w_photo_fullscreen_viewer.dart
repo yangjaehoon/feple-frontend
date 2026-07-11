@@ -28,7 +28,7 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
 
   // 좋아요 상태는 로컬로 복제하지 않고 notifier를 그대로 구독 —
   // toggleLike 실패 시 notifier가 롤백하면 화면도 자동으로 정확한 값을 반영함
-  ArtistPhotoResponse? get _photo =>
+  ArtistPhoto? get _photo =>
       widget.notifier.photos.firstWhereOrNull((p) => p.photoId == widget.photoId);
 
   @override
@@ -86,7 +86,7 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
     );
   }
 
-  Widget _buildImageArea(ArtistPhotoResponse photo) {
+  Widget _buildImageArea(ArtistPhoto photo) {
     return GestureDetector(
       onTap: _toggleUi,
       onDoubleTapDown: _handleDoubleTap,
@@ -134,7 +134,7 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
     );
   }
 
-  Widget _buildBottomInfo(ArtistPhotoResponse photo) {
+  Widget _buildBottomInfo(ArtistPhoto photo) {
     return Positioned(
       left: 0,
       right: 0,
@@ -175,7 +175,7 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
     );
   }
 
-  Widget _buildUploaderRow(ArtistPhotoResponse photo) {
+  Widget _buildUploaderRow(ArtistPhoto photo) {
     return Row(
       children: [
         const Icon(Icons.person_rounded, size: 13, color: Colors.white70),
@@ -202,7 +202,7 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
     );
   }
 
-  Widget _buildLikeRow(ArtistPhotoResponse photo) {
+  Widget _buildLikeRow(ArtistPhoto photo) {
     return Semantics(
       button: true,
       label: 'like'.tr(),

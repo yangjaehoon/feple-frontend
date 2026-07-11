@@ -7,7 +7,7 @@ import 'package:mocktail/mocktail.dart';
 
 class MockArtistPhotoReadable extends Mock implements ArtistPhotoReadable {}
 
-ArtistPhotoResponse _photo(int id) => ArtistPhotoResponse(
+ArtistPhoto _photo(int id) => ArtistPhoto(
       photoId: id,
       url: 'https://example.com/$id.jpg',
       uploaderUserId: 10,

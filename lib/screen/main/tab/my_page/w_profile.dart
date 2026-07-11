@@ -53,7 +53,7 @@ class ProfileWidgetState extends State<ProfileWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.select<UserProvider, User?>((p) => p.user);
+    final user = context.select<UserProvider, AppUser?>((p) => p.user);
     final colors = context.appColors;
 
     if (_hasError && user == null) {
@@ -120,7 +120,7 @@ class ProfileWidgetState extends State<ProfileWidget> {
     );
   }
 
-  Widget _buildProfileImage(User user, AbstractThemeColors colors) {
+  Widget _buildProfileImage(AppUser user, AbstractThemeColors colors) {
     final avatarSize = MediaQuery.sizeOf(context).width * 0.282; // 110/390
     return Container(
       width: avatarSize,
@@ -156,7 +156,7 @@ class ProfileWidgetState extends State<ProfileWidget> {
     );
   }
 
-  Widget _buildNicknameText(User user, AbstractThemeColors colors) {
+  Widget _buildNicknameText(AppUser user, AbstractThemeColors colors) {
     return Text(
       user.nickname,
       style: TextStyle(
@@ -170,7 +170,7 @@ class ProfileWidgetState extends State<ProfileWidget> {
     );
   }
 
-  Widget _buildLevelBadge(User user, AbstractThemeColors colors) {
+  Widget _buildLevelBadge(AppUser user, AbstractThemeColors colors) {
     return LevelBadge(authorLevel: user.level, fontSize: 22);
   }
 

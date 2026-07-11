@@ -13,7 +13,7 @@ import 'package:feple/model/artist_photo.dart';
 
 class EditPhotoSheet extends StatefulWidget {
   final int artistId;
-  final ArtistPhotoResponse photo;
+  final ArtistPhoto photo;
   final void Function(String title, String description) onSave;
 
   const EditPhotoSheet({

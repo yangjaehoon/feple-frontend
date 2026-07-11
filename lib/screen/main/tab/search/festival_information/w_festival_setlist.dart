@@ -41,7 +41,7 @@ class FestivalSetlistState extends State<FestivalSetlist> {
     await Navigator.push<void>(
       context,
       SlideRoute(
-        builder: (_) => FestivalSetlistFullScreen(festivalId: widget.festivalId),
+        builder: (_) => FestivalSetlistFullscreenScreen(festivalId: widget.festivalId),
       ),
     );
   }

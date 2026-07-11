@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:feple/common/app_events.dart';
 import 'package:feple/common/safe_change_notifier.dart';
-import 'package:feple/model/cert_state.dart';
+import 'package:feple/model/poster_cert_state.dart';
 import 'package:feple/model/certification_model.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
@@ -34,10 +34,10 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
 
   final void Function(String key)? onError;
 
-  CertState get certState {
-    if (isCertified) return CertState.certified;
-    if (isPending) return CertState.pending;
-    return CertState.none;
+  PosterCertState get certState {
+    if (isCertified) return PosterCertState.certified;
+    if (isPending) return PosterCertState.pending;
+    return PosterCertState.none;
   }
 
   String get _descPrefKey => 'festival_desc_expanded_$festivalId';

@@ -12,18 +12,18 @@ import 'package:feple/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class MypageFragment extends StatefulWidget {
-  const MypageFragment({super.key});
+class MyPageFragment extends StatefulWidget {
+  const MyPageFragment({super.key});
 
   @override
-  State<MypageFragment> createState() => _MypageFragmentState();
+  State<MyPageFragment> createState() => _MyPageFragmentState();
 }
 
-class _MypageFragmentState extends State<MypageFragment> with NavigationGuard {
+class _MyPageFragmentState extends State<MyPageFragment> with NavigationGuard {
   final _profileKey = GlobalKey<ProfileWidgetState>();
-  final _statsKey = GlobalKey<MyPostCommentWidgetState>();
+  final _statsKey = GlobalKey<MyPostCommentViewState>();
   final _certKey = GlobalKey<FestivalCertificationWidgetState>();
-  final _songsKey = GlobalKey<MySongRequestsWidgetState>();
+  final _songsKey = GlobalKey<MySongRequestsViewState>();
 
   Future<void> _onRefresh() async {
     _profileKey.currentState?.refresh();
@@ -59,9 +59,9 @@ class _MypageFragmentState extends State<MypageFragment> with NavigationGuard {
                   child: Column(
                     children: [
                       ProfileWidget(key: _profileKey, userId: userId),
-                      MyPostCommentWidget(key: _statsKey, userId: userId),
+                      MyPostCommentView(key: _statsKey, userId: userId),
                       FestivalCertificationWidget(key: _certKey),
-                      MySongRequestsWidget(key: _songsKey),
+                      MySongRequestsView(key: _songsKey),
                     ],
                   ),
                 ),

@@ -17,9 +17,9 @@ class UserProvider with ChangeNotifier {
 
   final UserService _userService;
 
-  User? _user;
+  AppUser? _user;
   bool _isLoggingOut = false;
-  User? get user => _user;
+  AppUser? get user => _user;
   int? get currentUserId => _user?.id;
   String? get currentProfileImageUrl => _user?.profileImageUrl;
 
@@ -43,7 +43,7 @@ class UserProvider with ChangeNotifier {
       final jsonString = await _storage.read(key: _kUserJson);
       if (jsonString != null) {
         final data = jsonDecode(jsonString);
-        final cached = User.fromJson(data);
+        final cached = AppUser.fromJson(data);
         // JWT sub와 캐시 userId 불일치 → 다른 계정의 캐시 데이터 폐기
         final jwtUserId = _parseJwtSub(token);
         if (jwtUserId != null && jwtUserId != cached.id) {
@@ -130,7 +130,7 @@ class UserProvider with ChangeNotifier {
     await logout();
   }
 
-  Future<void> setUser(User me) async {
+  Future<void> setUser(AppUser me) async {
     _user = me;
     notifyListeners();
     await _storage.write(

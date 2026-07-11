@@ -69,7 +69,7 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
   }
 
 
-  void _showEditBottomSheet(ArtistPhotoResponse photo) {
+  void _showEditBottomSheet(ArtistPhoto photo) {
     if (_isSheetOpen) return;
     _isSheetOpen = true;
     showAppBottomSheet(
@@ -137,7 +137,7 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
   }
 
   Widget _buildPhotoCard(
-      ArtistPhotoResponse photo, bool isUploader, AbstractThemeColors colors) {
+      ArtistPhoto photo, bool isUploader, AbstractThemeColors colors) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final imageSize = (constraints.maxWidth * 0.44).clamp(0.0, 195.0);
@@ -163,7 +163,7 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
     );
   }
 
-  Widget _buildPhotoImageArea(ArtistPhotoResponse photo, AbstractThemeColors colors, double imageSize) {
+  Widget _buildPhotoImageArea(ArtistPhoto photo, AbstractThemeColors colors, double imageSize) {
     return Stack(
       children: [
         _buildPhoto(photo, colors, imageSize),
@@ -172,7 +172,7 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
     );
   }
 
-  void _openFullscreen(ArtistPhotoResponse photo) {
+  void _openFullscreen(ArtistPhoto photo) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -185,7 +185,7 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
     );
   }
 
-  Widget _buildPhoto(ArtistPhotoResponse photo, AbstractThemeColors colors, double imageSize) {
+  Widget _buildPhoto(ArtistPhoto photo, AbstractThemeColors colors, double imageSize) {
     return GestureDetector(
       onTap: () => _openFullscreen(photo),
       onDoubleTap: () => _notifier.toggleLike(photo.photoId),
@@ -220,7 +220,7 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
     );
   }
 
-  Widget _buildLikeOverlay(ArtistPhotoResponse photo, AbstractThemeColors colors) {
+  Widget _buildLikeOverlay(ArtistPhoto photo, AbstractThemeColors colors) {
     return Positioned(
       left: 6,
       bottom: 6,
@@ -254,7 +254,7 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
   }
 
   Widget _buildPhotoInfoArea(
-      ArtistPhotoResponse photo, bool isUploader, AbstractThemeColors colors, double imageSize) {
+      ArtistPhoto photo, bool isUploader, AbstractThemeColors colors, double imageSize) {
     return SizedBox(
       height: imageSize,
       child: Padding(
@@ -271,7 +271,7 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
     );
   }
 
-  Widget _buildPhotoHeader(ArtistPhotoResponse photo, bool isUploader, AbstractThemeColors colors) {
+  Widget _buildPhotoHeader(ArtistPhoto photo, bool isUploader, AbstractThemeColors colors) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -291,7 +291,7 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
     );
   }
 
-  Widget _buildPhotoMeta(ArtistPhotoResponse photo, AbstractThemeColors colors) {
+  Widget _buildPhotoMeta(ArtistPhoto photo, AbstractThemeColors colors) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -329,7 +329,7 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
   }
 
   Widget _buildPhotoMenu(
-      ArtistPhotoResponse photo, bool isUploader, AbstractThemeColors colors) {
+      ArtistPhoto photo, bool isUploader, AbstractThemeColors colors) {
     return PopupMenuButton<String>(
       icon: Icon(Icons.more_vert_rounded, color: colors.textSecondary, size: 20),
       color: colors.surface,
@@ -405,7 +405,7 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
     );
   }
 
-  Widget _buildDescriptionBadge(ArtistPhotoResponse photo, AbstractThemeColors colors) {
+  Widget _buildDescriptionBadge(ArtistPhoto photo, AbstractThemeColors colors) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(

@@ -6,7 +6,7 @@ import 'package:feple/network/dio_client.dart';
 
 class PostService {
   static const _endpoints = {
-    BoardTypes.hot: '/posts/hot',
+    BoardTypes.hot: '/posts/popular',
     BoardTypes.free: '/posts/free',
     BoardTypes.mate: '/posts/mate',
   };

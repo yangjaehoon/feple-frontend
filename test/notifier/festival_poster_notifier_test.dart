@@ -1,3 +1,4 @@
+import 'package:feple/common/data/preference/app_preferences.dart';
 import 'package:feple/model/my_certification_status.dart';
 import 'package:feple/model/certification_model.dart';
 import 'package:feple/screen/main/tab/search/festival_information/festival_poster_notifier.dart';
@@ -16,8 +17,12 @@ void main() {
   late MockCertificationService mockCertService;
   late MockFestivalInteractionService mockFestivalInteractionService;
 
-  setUp(() {
+  setUpAll(() async {
     SharedPreferences.setMockInitialValues({});
+    await AppPreferences.init();
+  });
+
+  setUp(() {
     mockCertService = MockCertificationService();
     mockFestivalInteractionService = MockFestivalInteractionService();
   });

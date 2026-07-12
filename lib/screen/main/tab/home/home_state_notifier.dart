@@ -1,3 +1,4 @@
+import 'package:feple/common/data/preference/item/preference_item.dart';
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/favorite_board.dart';
@@ -7,7 +8,6 @@ import 'package:feple/service/cache_prefetch_service.dart';
 import 'package:feple/service/festival_cache_service.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeStateNotifier extends SafeChangeNotifier {
   final _userService = sl<UserService>();
@@ -52,8 +52,8 @@ class HomeStateNotifier extends SafeChangeNotifier {
       _loadOrder(_artistOrderKey),
       _loadOrder(_festivalOrderKey),
     ).wait;
-    if (artistOrd != null) artistOrder = artistOrd;
-    if (festivalOrd != null) festivalOrder = festivalOrd;
+    artistOrder = artistOrd;
+    festivalOrder = festivalOrd;
 
     // 1단계: 캐시가 있으면 즉시 표시 (스플래시 프리패치 활용)
     await _showFromCacheIfAvailable(id);
@@ -157,8 +157,8 @@ class HomeStateNotifier extends SafeChangeNotifier {
   Future<void> _persistOrder(String key, List<int> order) async {
     safeNotify();
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setStringList(key, order.map((e) => e.toString()).toList());
+      await PreferenceItem<List<String>>(key, const [])
+          .set(order.map((e) => e.toString()).toList());
     } catch (e) {
       // 화면에 반영된 순서는 이미 유효하므로 재로드 전까지는 문제없음 —
       // 다음 실행 시 순서가 저장 전으로 되돌아갈 수 있음을 로그로만 남김
@@ -215,9 +215,9 @@ class HomeStateNotifier extends SafeChangeNotifier {
     return [...ordered, ...rest];
   }
 
-  Future<List<int>?> _loadOrder(String key) async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getStringList(key)?.map(int.parse).toList();
+  Future<List<int>> _loadOrder(String key) async {
+    final saved = PreferenceItem<List<String>>(key, const []).get();
+    return saved.map(int.parse).toList();
   }
 
   Future<List<FollowedArtist>> _fetchArtists(int userId) =>

@@ -1,14 +1,12 @@
-import 'dart:convert';
-
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/constant/timetable_colors.dart';
 import 'package:feple/model/timetable_entry.dart';
+import 'package:feple/screen/main/tab/search/festival_information/my_timetable_store.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_entry_dialog.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_fullscreen_grid.dart';
 import 'package:feple/model/my_timetable_entry.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class TimetableFullscreenScreen extends StatefulWidget {
   final int festivalId;
@@ -37,8 +35,7 @@ class _TimetableFullscreenScreenState extends State<TimetableFullscreenScreen> {
   int _colorCursor = 0;
 
   late TimetableRange _range;
-
-  String get _prefKey => 'user_timetable_entries_${widget.festivalId}';
+  late final _store = MyTimetableStore(widget.festivalId);
 
   @override
   void initState() {
@@ -49,30 +46,11 @@ class _TimetableFullscreenScreenState extends State<TimetableFullscreenScreen> {
   }
 
   Future<void> _loadEntries() async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_prefKey);
-    if (raw == null || !mounted) return;
-    try {
-      final decoded = jsonDecode(raw) as Map<String, dynamic>;
-      final map = decoded.map(
-        (k, v) => MapEntry(
-          k,
-          (v as List).map((e) => MyTimetableEntry.fromJson(e as Map<String, dynamic>)).toList(),
-        ),
-      );
-      setState(() => _userEntriesMap.addAll(map));
-    } catch (e) {
-      debugPrint('[Timetable] load user entries failed: $e');
-    }
+    final loaded = await _store.load();
+    if (mounted) setState(() => _userEntriesMap.addAll(loaded));
   }
 
-  Future<void> _saveEntries() async {
-    final prefs = await SharedPreferences.getInstance();
-    final encoded = jsonEncode(
-      _userEntriesMap.map((k, v) => MapEntry(k, v.map((e) => e.toJson()).toList())),
-    );
-    await prefs.setString(_prefKey, encoded);
-  }
+  Future<void> _saveEntries() => _store.save(_userEntriesMap);
 
   List<MyTimetableEntry> get _currentUserEntries =>
       _userEntriesMap[_selectedDate ?? ''] ?? [];

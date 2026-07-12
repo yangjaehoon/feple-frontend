@@ -111,39 +111,14 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
     );
   }
 
-  Widget _buildFilterChips(AbstractThemeColors colors) {
-    return SizedBox(
-      height: 48,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        children: [
-          StatusFilterChip(
-            label: 'filter_all'.tr(),
-            selected: _filter == null,
-            selectedColor: colors.activate,
-            onSelected: (_) => setState(() => _filter = null),
-          ),
-          StatusFilterChip(
-            label: 'song_status_pending'.tr(),
-            selected: _filter == SongRequestStatus.pending,
-            selectedColor: colors.textSecondary,
-            onSelected: (_) => setState(() => _filter = SongRequestStatus.pending),
-          ),
-          StatusFilterChip(
-            label: 'song_status_approved'.tr(),
-            selected: _filter == SongRequestStatus.approved,
-            selectedColor: colors.activate,
-            onSelected: (_) => setState(() => _filter = SongRequestStatus.approved),
-          ),
-          StatusFilterChip(
-            label: 'song_status_rejected'.tr(),
-            selected: _filter == SongRequestStatus.rejected,
-            selectedColor: AppColors.errorRed,
-            onSelected: (_) => setState(() => _filter = SongRequestStatus.rejected),
-          ),
-        ],
-      ),
+  Widget _buildFilterChips() {
+    return StatusFilterChipRow<SongRequestStatus>(
+      values: SongRequestStatus.values,
+      selected: _filter,
+      allLabel: 'filter_all'.tr(),
+      labelOf: (status) => status.labelKey.tr(),
+      colorOf: (status, colors) => status.displayColor(colors),
+      onChanged: (status) => setState(() => _filter = status),
     );
   }
 
@@ -191,7 +166,7 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
       appBar: SecondaryAppBar(title: 'song_request_history'.tr()),
       body: Column(
         children: [
-          _buildFilterChips(colors),
+          _buildFilterChips(),
           Expanded(child: _buildBody(colors)),
         ],
       ),

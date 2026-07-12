@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:feple/common/app_events.dart';
+import 'package:feple/common/data/preference/item/preference_item.dart';
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/model/poster_cert_state.dart';
 import 'package:feple/model/certification_model.dart';
@@ -8,7 +9,6 @@ import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class FestivalPosterNotifier extends SafeChangeNotifier {
   final int festivalId;
@@ -85,18 +85,15 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
     }
   }
 
+  // defaultValue는 descExpanded의 초기값(true)과 동일 — 저장된 값이 없으면
+  // 필드를 건드리지 않는 것과 같은 결과가 되도록 맞춤
   Future<void> loadDescState() async {
-    final prefs = await SharedPreferences.getInstance();
-    final saved = prefs.getBool(_descPrefKey);
-    if (saved != null) {
-      descExpanded = saved;
-      safeNotify();
-    }
+    descExpanded = PreferenceItem<bool>(_descPrefKey, true).get();
+    safeNotify();
   }
 
   Future<void> saveDescState(bool expanded) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_descPrefKey, expanded);
+    await PreferenceItem<bool>(_descPrefKey, true).set(expanded);
   }
 
   Future<void> loadMyCertificationStatus() async {

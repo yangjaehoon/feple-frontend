@@ -4,17 +4,11 @@ import 'package:feple/service/auth_service.dart';
 import 'package:feple/service/fcm_service.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../auth/token_store.dart';
 import '../model/user_model.dart';
 import 'package:dio/dio.dart';
 
 class UserProvider with ChangeNotifier {
-  static const _storage = FlutterSecureStorage(
-    aOptions: AndroidOptions(resetOnError: true),
-  );
-  static const _kUserJson = 'userJson';
-
   final UserService _userService;
 
   AppUser? _user;
@@ -36,18 +30,18 @@ class UserProvider with ChangeNotifier {
     try {
       final token = await TokenStore.readAccessToken();
       if (token == null) {
-        await _storage.delete(key: _kUserJson);
+        await TokenStore.deleteUserJson();
         return;
       }
 
-      final jsonString = await _storage.read(key: _kUserJson);
+      final jsonString = await TokenStore.readUserJson();
       if (jsonString != null) {
         final data = jsonDecode(jsonString);
         final cached = AppUser.fromJson(data);
         // JWT sub와 캐시 userId 불일치 → 다른 계정의 캐시 데이터 폐기
-        final jwtUserId = _parseJwtSub(token);
+        final jwtUserId = TokenStore.parseJwtSub(token);
         if (jwtUserId != null && jwtUserId != cached.id) {
-          await _storage.delete(key: _kUserJson);
+          await TokenStore.deleteUserJson();
           return;
         }
         _user = cached;
@@ -58,21 +52,8 @@ class UserProvider with ChangeNotifier {
       debugPrint('[UserProvider] 보안 스토리지 복구 불가 오류, 초기화');
       try {
         await TokenStore.clear();
-        await _storage.delete(key: _kUserJson);
+        await TokenStore.deleteUserJson();
       } catch (_) {}
-    }
-  }
-
-  static int? _parseJwtSub(String token) {
-    try {
-      final parts = token.split('.');
-      if (parts.length != 3) return null;
-      final payload = base64Url.normalize(parts[1]);
-      final decoded = jsonDecode(utf8.decode(base64Url.decode(payload)));
-      final sub = (decoded as Map<String, dynamic>)['sub'];
-      return sub is String ? int.tryParse(sub) : (sub is int ? sub : null);
-    } catch (_) {
-      return null;
     }
   }
 
@@ -107,7 +88,7 @@ class UserProvider with ChangeNotifier {
         debugPrint('[UserProvider] 토큰 삭제 실패: $e');
       }
       try {
-        await _storage.delete(key: _kUserJson);
+        await TokenStore.deleteUserJson();
       } catch (e) {
         debugPrint('[UserProvider] 유저 캐시 삭제 실패: $e');
       }
@@ -133,10 +114,7 @@ class UserProvider with ChangeNotifier {
   Future<void> setUser(AppUser me) async {
     _user = me;
     notifyListeners();
-    await _storage.write(
-      key: _kUserJson,
-      value: jsonEncode(me.toJson()),
-    );
+    await TokenStore.saveUserJson(jsonEncode(me.toJson()));
   }
 
   Future<void> fetchUserFromToken(String token) async {

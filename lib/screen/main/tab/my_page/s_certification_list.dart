@@ -134,39 +134,14 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
     if (result == true) _load();
   }
 
-  Widget _buildFilterChips(AbstractThemeColors colors) {
-    return SizedBox(
-      height: 48,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        children: [
-          StatusFilterChip(
-            label: 'filter_all'.tr(),
-            selected: _filter == null,
-            selectedColor: colors.activate,
-            onSelected: (_) => setState(() => _filter = null),
-          ),
-          StatusFilterChip(
-            label: 'cert_status_approved'.tr(),
-            selected: _filter == CertStatus.approved,
-            selectedColor: colors.certRingColor,
-            onSelected: (_) => setState(() => _filter = CertStatus.approved),
-          ),
-          StatusFilterChip(
-            label: 'cert_status_pending'.tr(),
-            selected: _filter == CertStatus.pending,
-            selectedColor: AppColors.statusPending,
-            onSelected: (_) => setState(() => _filter = CertStatus.pending),
-          ),
-          StatusFilterChip(
-            label: 'cert_status_rejected'.tr(),
-            selected: _filter == CertStatus.rejected,
-            selectedColor: colors.textSecondary,
-            onSelected: (_) => setState(() => _filter = CertStatus.rejected),
-          ),
-        ],
-      ),
+  Widget _buildFilterChips() {
+    return StatusFilterChipRow<CertStatus>(
+      values: CertStatus.values,
+      selected: _filter,
+      allLabel: 'filter_all'.tr(),
+      labelOf: (status) => status.labelKey.tr(),
+      colorOf: (status, colors) => status.displayColor(colors),
+      onChanged: (status) => setState(() => _filter = status),
     );
   }
 
@@ -228,7 +203,7 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
       ),
       body: Column(
         children: [
-          _buildFilterChips(colors),
+          _buildFilterChips(),
           Expanded(child: _buildBody(colors)),
         ],
       ),

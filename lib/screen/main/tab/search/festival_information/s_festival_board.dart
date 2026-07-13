@@ -13,8 +13,6 @@ import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
 import 'package:feple/screen/main/tab/my_page/s_other_user_profile.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../../../../provider/user_provider.dart';
 
 class FestivalBoardScreen extends StatefulWidget {
   final int festivalId;
@@ -45,21 +43,24 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
         fetchPage: ({int? cursor, int size = 20}) =>
             postService.fetchFestivalPostsPage(widget.festivalId, cursor: cursor, size: size),
         submit: (title, content, anonymous, imageObjectKey) => postService.createFestivalPost(
-            festivalId: widget.festivalId, title: title, content: content, anonymous: anonymous, imageObjectKey: imageObjectKey),
+            festivalId: widget.festivalId,
+            draft: PostDraft(title: title, content: content, anonymous: anonymous, imageObjectKey: imageObjectKey)),
       ),
       _BoardTab(
         name: 'companion_board'.tr(),
         fetchPage: ({int? cursor, int size = 20}) =>
             postService.fetchFestivalCompanionPostsPage(widget.festivalId, cursor: cursor, size: size),
         submit: (title, content, anonymous, imageObjectKey) => postService.createFestivalCompanionPost(
-            festivalId: widget.festivalId, title: title, content: content, anonymous: anonymous, imageObjectKey: imageObjectKey),
+            festivalId: widget.festivalId,
+            draft: PostDraft(title: title, content: content, anonymous: anonymous, imageObjectKey: imageObjectKey)),
       ),
       _BoardTab(
         name: 'ticket_board'.tr(),
         fetchPage: ({int? cursor, int size = 20}) =>
             postService.fetchFestivalTicketPostsPage(widget.festivalId, cursor: cursor, size: size),
         submit: (title, content, anonymous, imageObjectKey) => postService.createFestivalTicketPost(
-            festivalId: widget.festivalId, title: title, content: content, anonymous: anonymous, imageObjectKey: imageObjectKey),
+            festivalId: widget.festivalId,
+            draft: PostDraft(title: title, content: content, anonymous: anonymous, imageObjectKey: imageObjectKey)),
       ),
     ];
     _tabController = TabController(length: _tabs.length, vsync: this);
@@ -396,12 +397,11 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
         return PostListTile(
           post: post,
           onTap: () => _openPost(post),
-          onAuthorTap: () => navigateToUserProfile(
+          onAuthorTap: () => navigateToPostAuthor(
             context,
             userId: post.userId,
             nickname: post.nickname,
             profileImageUrl: post.profileImageUrl,
-            currentUserId: context.read<UserProvider>().currentUserId,
           ),
         );
       },

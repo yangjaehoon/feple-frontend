@@ -349,12 +349,11 @@ class _PostDetailCardState extends State<PostDetailCard> {
             authorLevel: widget.authorLevel,
             createdAt: widget.createdAt,
             updatedAt: _updatedAt,
-            onAuthorTap: () => navigateToUserProfile(
+            onAuthorTap: () => navigateToPostAuthor(
               context,
               userId: widget.postUserId,
               nickname: widget.nickname,
               profileImageUrl: widget.profileImageUrl,
-              currentUserId: userId,
             ),
           ),
           Divider(thickness: 1, height: 24, color: colors.listDivider),

@@ -237,72 +237,80 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
     if (_isSearching && _searchResults == null) {
       return Center(child: CircularProgressIndicator(color: colors.activate));
     }
-    final displayPosts = _searchResults;
-    if (displayPosts != null) {
-      if (_isSearching) return Center(child: CircularProgressIndicator(color: colors.activate));
-      if (displayPosts.isEmpty) {
-        return Center(
-          child: Text('no_search_results'.tr(), style: TextStyle(color: colors.textSecondary)),
-        );
-      }
-      return ListView.separated(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.only(bottom: 80),
-        itemCount: displayPosts.length,
-        itemBuilder: (context, index) {
-          final post = displayPosts[index];
-          return PostListTile(
-            post: post,
-            highlightKeyword: _searchController.text.trim(),
-            onTap: () => _openPost(post),
-            onAuthorTap: () => navigateToUserProfile(
-              context,
-              userId: post.userId,
-              nickname: post.nickname,
-              profileImageUrl: post.profileImageUrl,
-              currentUserId: context.read<UserProvider>().currentUserId,
-            ),
-          );
-        },
-        separatorBuilder: (_, _) => Divider(thickness: 1, color: colors.listDivider),
-      );
+    if (_searchResults != null) {
+      return _buildSearchResults(colors);
     }
-
     if (_hasError) {
       return ErrorState(
         message: 'err_fetch_data'.tr(),
         onRetry: _load,
       );
     }
-
     if (_posts.isEmpty) {
-      return LayoutBuilder(
-        builder: (context, constraints) => SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: SizedBox(
-            height: constraints.maxHeight,
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.chat_bubble_outline_rounded, size: 48, color: colors.textSecondary.withValues(alpha: 0.3)),
-                    const SizedBox(height: 12),
-                    Text(
-                      'be_first_to_discuss'.tr(args: [widget.boardName]),
-                      style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textSecondary),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
+      return _buildEmptyState(colors);
+    }
+    return _buildPostListView(colors);
+  }
+
+  Widget _buildSearchResults(AbstractThemeColors colors) {
+    if (_isSearching) return Center(child: CircularProgressIndicator(color: colors.activate));
+    final displayPosts = _searchResults!;
+    if (displayPosts.isEmpty) {
+      return Center(
+        child: Text('no_search_results'.tr(), style: TextStyle(color: colors.textSecondary)),
+      );
+    }
+    return ListView.separated(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(bottom: 80),
+      itemCount: displayPosts.length,
+      itemBuilder: (context, index) {
+        final post = displayPosts[index];
+        return PostListTile(
+          post: post,
+          highlightKeyword: _searchController.text.trim(),
+          onTap: () => _openPost(post),
+          onAuthorTap: () => navigateToPostAuthor(
+            context,
+            userId: post.userId,
+            nickname: post.nickname,
+            profileImageUrl: post.profileImageUrl,
+          ),
+        );
+      },
+      separatorBuilder: (_, _) => Divider(thickness: 1, color: colors.listDivider),
+    );
+  }
+
+  Widget _buildEmptyState(AbstractThemeColors colors) {
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: SizedBox(
+          height: constraints.maxHeight,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.chat_bubble_outline_rounded, size: 48, color: colors.textSecondary.withValues(alpha: 0.3)),
+                  const SizedBox(height: 12),
+                  Text(
+                    'be_first_to_discuss'.tr(args: [widget.boardName]),
+                    style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textSecondary),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             ),
           ),
         ),
-      );
-    }
+      ),
+    );
+  }
 
+  Widget _buildPostListView(AbstractThemeColors colors) {
     return ListView.separated(
       controller: _scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
@@ -321,12 +329,11 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
           child: PostListTile(
             post: post,
             onTap: () => _openPost(post),
-            onAuthorTap: () => navigateToUserProfile(
+            onAuthorTap: () => navigateToPostAuthor(
               context,
               userId: post.userId,
               nickname: post.nickname,
               profileImageUrl: post.profileImageUrl,
-              currentUserId: context.read<UserProvider>().currentUserId,
             ),
           ),
         );
@@ -370,7 +377,8 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
                   title: 'write_post'.tr(),
                   onSubmit: (title, content, anonymous, imageObjectKey) async {
                     await _postService.createPost(
-                        boardType: _serviceBoardType, title: title, content: content, anonymous: anonymous, imageObjectKey: imageObjectKey);
+                        boardType: _serviceBoardType,
+                        draft: PostDraft(title: title, content: content, anonymous: anonymous, imageObjectKey: imageObjectKey));
                     AppEvents.postChanged.value = PostChangedEvent.refreshAll();
                   },
                 ),

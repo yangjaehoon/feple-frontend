@@ -21,6 +21,9 @@ import 'package:feple/service/user_activity_service.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../../../provider/user_provider.dart';
 
 class OtherUserProfileScreen extends StatefulWidget {
   final int userId;
@@ -563,5 +566,23 @@ void navigateToUserProfile(
         profileImageUrl: profileImageUrl,
       ),
     ),
+  );
+}
+
+/// 게시글 작성자 프로필로 이동 — [Post]의 userId/nickname/profileImageUrl은
+/// 항상 함께 다니는 값이라 호출부마다 currentUserId만 따로 읽지 않도록
+/// [navigateToUserProfile]을 감싼 진입점.
+void navigateToPostAuthor(
+  BuildContext context, {
+  required int? userId,
+  required String nickname,
+  String? profileImageUrl,
+}) {
+  navigateToUserProfile(
+    context,
+    userId: userId,
+    nickname: nickname,
+    profileImageUrl: profileImageUrl,
+    currentUserId: context.read<UserProvider>().currentUserId,
   );
 }

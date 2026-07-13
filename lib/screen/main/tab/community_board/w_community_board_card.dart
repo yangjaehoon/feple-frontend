@@ -85,10 +85,7 @@ class CommunityBoardCardState extends State<CommunityBoardCard> {
           onSubmit: (title, content, anonymous, imageObjectKey) async {
             await _postService.createPost(
               boardType: widget.serviceBoardType,
-              title: title,
-              content: content,
-              anonymous: anonymous,
-              imageObjectKey: imageObjectKey,
+              draft: PostDraft(title: title, content: content, anonymous: anonymous, imageObjectKey: imageObjectKey),
             );
             AppEvents.postChanged.value = PostChangedEvent.refreshAll();
           },

@@ -1,3 +1,4 @@
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 /// 리스트 아이템이 처음 나타날 때 아래에서 페이드인 + 슬라이드업 효과.
@@ -6,13 +7,15 @@ class AnimatedListItem extends StatefulWidget {
   final Widget child;
   final int index;
   final Duration baseDuration;
+  // 이 위젯에서만 쓰이는 stagger 전용 튜닝 값 — 다른 곳에서 재사용되지
+  // 않아 AppDimens로 승격하지 않음
   final Duration staggerDelay;
 
   const AnimatedListItem({
     super.key,
     required this.child,
     required this.index,
-    this.baseDuration = const Duration(milliseconds: 350),
+    this.baseDuration = AppDimens.animSlow,
     this.staggerDelay = const Duration(milliseconds: 55),
   });
 

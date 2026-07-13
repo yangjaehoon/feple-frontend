@@ -1,8 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:feple/common/constant/board_types.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
+import 'package:feple/model/post_draft.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/network/dio_client.dart';
+
+export 'package:feple/model/post_draft.dart';
 
 class PostService {
   static const _endpoints = {
@@ -53,13 +56,13 @@ class PostService {
     return PostCursorPage.fromJson(response.data as Map<String, dynamic>);
   }
 
-  Future<void> _createPost(String endpoint, String title, String content, {bool anonymous = false, String? imageObjectKey}) async {
+  Future<void> _createPost(String endpoint, PostDraft draft) async {
     try {
       await DioClient.dio.post(endpoint, data: {
-        'title': title,
-        'content': content,
-        'anonymous': anonymous,
-        'imageUrl': ?imageObjectKey,
+        'title': draft.title,
+        'content': draft.content,
+        'anonymous': draft.anonymous,
+        'imageUrl': ?draft.imageObjectKey,
       });
     } on DioException catch (e) {
       throwIfBannedWord(e);
@@ -93,14 +96,8 @@ class PostService {
       DioClient.dio.post('/posts/$postId/like');
 
   /// 게시글 작성 (userId는 서버에서 JWT로 추출)
-  Future<void> createPost({
-    required String boardType,
-    required String title,
-    required String content,
-    bool anonymous = false,
-    String? imageObjectKey,
-  }) =>
-      _createPost(_endpointFor(boardType), title, content, anonymous: anonymous, imageObjectKey: imageObjectKey);
+  Future<void> createPost({required String boardType, required PostDraft draft}) =>
+      _createPost(_endpointFor(boardType), draft);
 
   /// 아티스트 게시판 페이지 조회
   Future<PostCursorPage> fetchArtistPostsPage(int artistId, {int? cursor, int size = 20}) async {
@@ -116,28 +113,16 @@ class PostService {
       _fetchPostList('/posts/artist/$artistId');
 
   /// 아티스트 게시판 글 작성
-  Future<void> createArtistPost({
-    required int artistId,
-    required String title,
-    required String content,
-    bool anonymous = false,
-    String? imageObjectKey,
-  }) =>
-      _createPost('/posts/artist/$artistId', title, content, anonymous: anonymous, imageObjectKey: imageObjectKey);
+  Future<void> createArtistPost({required int artistId, required PostDraft draft}) =>
+      _createPost('/posts/artist/$artistId', draft);
 
   /// 페스티벌 게시판 페이지 조회
   Future<PostCursorPage> fetchFestivalPostsPage(int festivalId, {int? cursor, int size = 20}) =>
       _fetchCursorPage('/posts/festival/$festivalId', cursor: cursor, size: size);
 
   /// 페스티벌 게시판 글 작성
-  Future<void> createFestivalPost({
-    required int festivalId,
-    required String title,
-    required String content,
-    bool anonymous = false,
-    String? imageObjectKey,
-  }) =>
-      _createPost('/posts/festival/$festivalId', title, content, anonymous: anonymous, imageObjectKey: imageObjectKey);
+  Future<void> createFestivalPost({required int festivalId, required PostDraft draft}) =>
+      _createPost('/posts/festival/$festivalId', draft);
 
   /// 페스티벌 인기 글 조회 (likeCount 내림차순, 전체 게시판)
   Future<List<Post>> fetchFestivalPopularPosts(int festivalId) =>
@@ -148,28 +133,16 @@ class PostService {
       _fetchCursorPage('/posts/festival/$festivalId/companion', cursor: cursor, size: size);
 
   /// 동행구하기 게시판 글 작성
-  Future<void> createFestivalCompanionPost({
-    required int festivalId,
-    required String title,
-    required String content,
-    bool anonymous = false,
-    String? imageObjectKey,
-  }) =>
-      _createPost('/posts/festival/$festivalId/companion', title, content, anonymous: anonymous, imageObjectKey: imageObjectKey);
+  Future<void> createFestivalCompanionPost({required int festivalId, required PostDraft draft}) =>
+      _createPost('/posts/festival/$festivalId/companion', draft);
 
   /// 티켓양도 게시판 페이지 조회
   Future<PostCursorPage> fetchFestivalTicketPostsPage(int festivalId, {int? cursor, int size = 20}) =>
       _fetchCursorPage('/posts/festival/$festivalId/ticket', cursor: cursor, size: size);
 
   /// 티켓양도 게시판 글 작성
-  Future<void> createFestivalTicketPost({
-    required int festivalId,
-    required String title,
-    required String content,
-    bool anonymous = false,
-    String? imageObjectKey,
-  }) =>
-      _createPost('/posts/festival/$festivalId/ticket', title, content, anonymous: anonymous, imageObjectKey: imageObjectKey);
+  Future<void> createFestivalTicketPost({required int festivalId, required PostDraft draft}) =>
+      _createPost('/posts/festival/$festivalId/ticket', draft);
 
   /// 게시글 삭제
   Future<void> deletePost(int postId) => DioClient.dio.delete('/posts/$postId');

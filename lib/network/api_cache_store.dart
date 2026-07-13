@@ -20,36 +20,32 @@ class ApiCacheStore {
 
   static String _key(String url) => '$_prefix$url';
 
+  // 엔드포인트 특성별 TTL(ms) 테이블 — 위에서부터 첫 매치 우선.
+  // 새 엔드포인트 TTL 추가 시 이 표에 행만 추가하면 됨 (분기 추가 불필요).
+  static const _ttlTable = <(List<String> patterns, int ttlMs)>[
+    (['/notifications'], 2 * 60 * 1000), // 실시간성 높은 상태값 — 2분
+    (['/liked', '/follow', '/attending', '/scraped'], 10 * 60 * 1000), // 10분
+    (['/posts', '/comments'], 30 * 60 * 1000), // 게시글·댓글 — 30분
+    (['/weather'], 3 * 60 * 60 * 1000), // 3시간
+    // 페스티벌 당일 콘텐츠 (타임테이블, 세트리스트, 스케줄) — 12시간
+    (['/timetable', '/setlist', '/schedule'], 12 * 60 * 60 * 1000),
+    // 텍스트 데이터 — presigned URL 없음 — 30일
+    (['/songs'], 30 * 24 * 60 * 60 * 1000),
+    // presigned URL 포함 — 백엔드 TTL(7일)보다 짧게 유지 — 6시간
+    (['/photos'], 6 * 60 * 60 * 1000),
+    // 상태 변경 + presigned URL — 1시간
+    (['/certifications'], 60 * 60 * 1000),
+  ];
+
+  // 기본값: 페스티벌 목록/상세, 아티스트, 유저 프로필 등 — 7일
+  static const _defaultTtlMs = 7 * 24 * 60 * 60 * 1000;
+
   /// 엔드포인트 특성에 맞는 TTL 반환 (단위: ms)
   static int _ttlFor(String url) {
-    // 실시간성 높은 상태값
-    if (url.contains('/notifications')) return 2 * 60 * 1000;           // 2분
-    if (url.contains('/liked') ||
-        url.contains('/follow') ||
-        url.contains('/attending') ||
-        url.contains('/scraped')) {
-      return 10 * 60 * 1000; // 10분
+    for (final (patterns, ttlMs) in _ttlTable) {
+      if (patterns.any(url.contains)) return ttlMs;
     }
-    // 게시글·댓글
-    if (url.contains('/posts') ||
-        url.contains('/comments')) {
-      return 30 * 60 * 1000; // 30분
-    }
-    // 날씨
-    if (url.contains('/weather')) return 3 * 60 * 60 * 1000;            // 3시간
-    // 페스티벌 당일 콘텐츠 (타임테이블, 세트리스트, 스케줄)
-    if (url.contains('/timetable') ||
-        url.contains('/setlist') ||
-        url.contains('/schedule')) {
-      return 12 * 60 * 60 * 1000; // 12시간
-    }
-    // 텍스트 데이터 — presigned URL 없음
-    if (url.contains('/songs')) return 30 * 24 * 60 * 60 * 1000;        // 30일
-    // presigned URL 포함 — 백엔드 TTL(7일)보다 짧게 유지
-    if (url.contains('/photos')) return 6 * 60 * 60 * 1000;             // 6시간
-    if (url.contains('/certifications')) return 60 * 60 * 1000;         // 1시간 (상태 변경 + presigned URL)
-    // 기본값: 페스티벌 목록/상세, 아티스트, 유저 프로필 등
-    return 7 * 24 * 60 * 60 * 1000;                                      // 7일
+    return _defaultTtlMs;
   }
 
   static bool _expired(String url, int ts) =>
@@ -126,74 +122,45 @@ class ApiCacheStore {
     }
   }
 
+  // 뮤테이션 URL → 무효화할 캐시 URL 패턴 테이블 — 위에서부터 첫 매치 우선.
+  // 유저 차단(/users/(\d+)/block)처럼 캐시된 게시글·댓글 목록도 함께
+  // 무효화해야 하는 경우(차단 전 캐시가 TTL 동안 남아 차단한 유저의
+  // 콘텐츠가 계속 보이는 것을 방지) 여러 패턴을 함께 반환한다.
+  // 새 뮤테이션 엔드포인트 추가 시 이 표에 행만 추가하면 됨.
+  static final _invalidationTable =
+      <(RegExp pattern, List<String> Function(RegExpMatch) invalidations)>[
+    (RegExp(r'/festivals/(\d+)/like'),
+        (m) => ['/festivals/${m.group(1)}/liked', '/liked-festivals']),
+    (RegExp(r'/festivals/(\d+)/attending'),
+        (m) => ['/festivals/${m.group(1)}/attending']),
+    (RegExp(r'/festivals/(\d+)/artists/'),
+        (m) => ['/festivals/${m.group(1)}/setlist']),
+    (RegExp(r'/festivals$'), (_) => ['/festivals']),
+    (RegExp(r'/artists/(\d+)/follow'),
+        (m) => ['/artists/${m.group(1)}/follow', '/following']),
+    (RegExp(r'/artists/(\d+)/photos'),
+        (m) => ['/artists/${m.group(1)}/photos']),
+    (RegExp(r'/song-requests'), (_) => ['/song-requests']),
+    (RegExp(r'/posts/(\d+)/like'),
+        (m) => ['/posts/${m.group(1)}/liked', '/liked-posts']),
+    (RegExp(r'/posts/(\d+)/scrap'),
+        (m) => ['/posts/${m.group(1)}/scraped', '/scrapped']),
+    (RegExp(r'/view'), (_) => const <String>[]), // 조회수 — 무효화 불필요
+    (RegExp(r'/posts'), (_) => ['/posts']),
+    (RegExp(r'/comments/(\d+)/like'), (m) => ['/comments/${m.group(1)}']),
+    (RegExp(r'/comments'), (_) => ['/comments']),
+    (RegExp(r'/notifications'), (_) => ['/notifications']),
+    (RegExp(r'/certifications'), (_) => ['/certifications']),
+    (RegExp(r'/users/(\d+)/block'), (m) =>
+        ['/users/${m.group(1)}', '/users/blocked', '/posts', '/comments']),
+    (RegExp(r'/users/(me|\d+)'), (m) => ['/users/${m.group(1)}']),
+  ];
+
   static List<String> _invalidationPatterns(String url) {
-    RegExpMatch? m;
-
-    // 페스티벌 좋아요
-    m = RegExp(r'/festivals/(\d+)/like').firstMatch(url);
-    if (m != null) return ['/festivals/${m.group(1)!}/liked', '/liked-festivals'];
-
-    // 페스티벌 참석
-    m = RegExp(r'/festivals/(\d+)/attending').firstMatch(url);
-    if (m != null) return ['/festivals/${m.group(1)!}/attending'];
-
-    // 세트리스트 수정
-    m = RegExp(r'/festivals/(\d+)/artists/').firstMatch(url);
-    if (m != null) return ['/festivals/${m.group(1)!}/setlist'];
-
-    // 페스티벌 제출
-    if (RegExp(r'/festivals$').hasMatch(url)) return ['/festivals'];
-
-    // 아티스트 팔로우
-    m = RegExp(r'/artists/(\d+)/follow').firstMatch(url);
-    if (m != null) return ['/artists/${m.group(1)!}/follow', '/following'];
-
-    // 아티스트 사진 삭제
-    m = RegExp(r'/artists/(\d+)/photos').firstMatch(url);
-    if (m != null) return ['/artists/${m.group(1)!}/photos'];
-
-    // 곡 신청
-    if (url.contains('/song-requests')) return ['/song-requests'];
-
-    // 게시글 좋아요
-    m = RegExp(r'/posts/(\d+)/like').firstMatch(url);
-    if (m != null) return ['/posts/${m.group(1)!}/liked', '/liked-posts'];
-
-    // 게시글 스크랩
-    m = RegExp(r'/posts/(\d+)/scrap').firstMatch(url);
-    if (m != null) return ['/posts/${m.group(1)!}/scraped', '/scrapped'];
-
-    // 게시글 조회수 (캐시 무효화 불필요)
-    if (url.contains('/view')) return [];
-
-    // 게시글 수정/삭제
-    if (url.contains('/posts')) return ['/posts'];
-
-    // 댓글 좋아요
-    m = RegExp(r'/comments/(\d+)/like').firstMatch(url);
-    if (m != null) return ['/comments/${m.group(1)!}'];
-
-    // 댓글 작성/삭제
-    if (url.contains('/comments')) return ['/comments'];
-
-    // 알림 읽음/삭제
-    if (url.contains('/notifications')) return ['/notifications'];
-
-    // 인증
-    if (url.contains('/certifications')) return ['/certifications'];
-
-    // 유저 차단/차단 해제 — 서버는 차단된 유저의 글/댓글을 걸러서 내려주므로
-    // 캐시된 게시글·댓글 목록도 함께 무효화해야 함 (안 그러면 차단 전에 캐시된
-    // 목록이 TTL 동안 그대로 남아 차단한 유저의 콘텐츠가 계속 보임)
-    m = RegExp(r'/users/(\d+)/block').firstMatch(url);
-    if (m != null) {
-      return ['/users/${m.group(1)!}', '/users/blocked', '/posts', '/comments'];
+    for (final (pattern, invalidations) in _invalidationTable) {
+      final m = pattern.firstMatch(url);
+      if (m != null) return invalidations(m);
     }
-
-    // 유저 프로필 수정
-    m = RegExp(r'/users/(me|\d+)').firstMatch(url);
-    if (m != null) return ['/users/${m.group(1)!}'];
-
     return [];
   }
 

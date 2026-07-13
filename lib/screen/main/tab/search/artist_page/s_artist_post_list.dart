@@ -30,10 +30,7 @@ class _ArtistPostListScreenState extends State<ArtistPostListScreen> {
           _postService.fetchArtistPostsPage(widget.artistId, cursor: cursor, size: size),
       onSubmitPost: (title, content, anonymous, imageObjectKey) => _postService.createArtistPost(
         artistId: widget.artistId,
-        title: title,
-        content: content,
-        anonymous: anonymous,
-        imageObjectKey: imageObjectKey,
+        draft: PostDraft(title: title, content: content, anonymous: anonymous, imageObjectKey: imageObjectKey),
       ),
     );
   }

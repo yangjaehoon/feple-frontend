@@ -70,6 +70,84 @@ class _RatingSheetState extends State<RatingSheet> {
     ));
   }
 
+  Widget _buildHeader(AbstractThemeColors colors) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            'rating_title'.tr(),
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeXxl,
+              fontWeight: FontWeight.w700,
+              color: colors.textTitle,
+            ),
+          ),
+        ),
+        IconButton(
+          onPressed: _handleClose,
+          icon: Icon(
+            Icons.close_rounded,
+            color: colors.textSecondary,
+          ),
+          visualDensity: VisualDensity.compact,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStarRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(5, (i) {
+        return GestureDetector(
+          onTap: () => setState(() => _selectedRating = i + 1),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            child: Icon(
+              i < _selectedRating
+                  ? Icons.star_rounded
+                  : Icons.star_outline_rounded,
+              color: Colors.amber,
+              size: 40,
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildReviewField(AbstractThemeColors colors) {
+    return TextField(
+      controller: _reviewController,
+      maxLength: 100,
+      maxLines: 2,
+      style: TextStyle(
+        fontSize: AppDimens.fontSizeMd,
+        color: colors.textTitle,
+      ),
+      decoration: InputDecoration(
+        hintText: 'rating_review_hint'.tr(),
+        hintStyle: TextStyle(color: colors.textSecondary),
+        counterStyle: TextStyle(
+          color: colors.textSecondary,
+          fontSize: AppDimens.fontSizeXxs,
+        ),
+        filled: true,
+        fillColor: colors.surface,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(
+            AppDimens.radiusSmall,
+          ),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 12,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -101,28 +179,7 @@ class _RatingSheetState extends State<RatingSheet> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'rating_title'.tr(),
-                          style: TextStyle(
-                            fontSize: AppDimens.fontSizeXxl,
-                            fontWeight: FontWeight.w700,
-                            color: colors.textTitle,
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: _handleClose,
-                        icon: Icon(
-                          Icons.close_rounded,
-                          color: colors.textSecondary,
-                        ),
-                        visualDensity: VisualDensity.compact,
-                      ),
-                    ],
-                  ),
+                  _buildHeader(colors),
                   const SizedBox(height: 4),
                   Text(
                     widget.festivalTitle,
@@ -134,54 +191,9 @@ class _RatingSheetState extends State<RatingSheet> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(5, (i) {
-                      return GestureDetector(
-                        onTap: () => setState(() => _selectedRating = i + 1),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6),
-                          child: Icon(
-                            i < _selectedRating
-                                ? Icons.star_rounded
-                                : Icons.star_outline_rounded,
-                            color: Colors.amber,
-                            size: 40,
-                          ),
-                        ),
-                      );
-                    }),
-                  ),
+                  _buildStarRow(),
                   const SizedBox(height: 20),
-                  TextField(
-                    controller: _reviewController,
-                    maxLength: 100,
-                    maxLines: 2,
-                    style: TextStyle(
-                      fontSize: AppDimens.fontSizeMd,
-                      color: colors.textTitle,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'rating_review_hint'.tr(),
-                      hintStyle: TextStyle(color: colors.textSecondary),
-                      counterStyle: TextStyle(
-                        color: colors.textSecondary,
-                        fontSize: AppDimens.fontSizeXxs,
-                      ),
-                      filled: true,
-                      fillColor: colors.surface,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                          AppDimens.radiusSmall,
-                        ),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 12,
-                      ),
-                    ),
-                  ),
+                  _buildReviewField(colors),
                   const SizedBox(height: 12),
                   LoadingButton(
                     label: 'done'.tr(),

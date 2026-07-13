@@ -198,111 +198,130 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
         child: Stack(
           clipBehavior: Clip.hardEdge,
           children: [
-            ...List.generate(
-              _stages.length,
-              (i) => Positioned(
-                left: (i + 1) * stageW - 0.5,
-                top: 0,
-                bottom: 0,
-                width: 0.5,
-                child: Container(color: colors.listDivider),
-              ),
-            ),
-            ...List.generate(
-              (_endHour - _startHour) * 6 + 1,
-              (i) {
-                final mins = i * 10;
-                final isHour = mins % 60 == 0;
-                final isHalf = mins % 30 == 0;
-                return Positioned(
-                  top: _topPad + mins * pxPerMin,
-                  left: 0,
-                  right: 0,
-                  height: 0.5,
-                  child: Container(
-                    color: isHour
-                        ? colors.listDivider.withValues(alpha: 0.9)
-                        : isHalf
-                            ? colors.listDivider.withValues(alpha: 0.5)
-                            : colors.listDivider.withValues(alpha: 0.2),
-                  ),
-                );
-              },
-            ),
-            ..._range.filtered.expand<Widget>((entry) {
-              final rawTop = _toY(entry.startTime, pxPerMin);
-              // 자정을 넘기는 공연은 _toY 차이가 음수가 될 수 있으므로
-              // 랩어라운드를 이미 보정한 durationMinutes로 계산
-              final cardH = entry.durationMinutes * pxPerMin;
-              final clampedH = (cardH - 4).clamp(4.0, double.infinity);
-              if (entry.isOps) {
-                // 운영 항목: 모든 스테이지 열에 동일하게 표시.
-                // 실제 공연 없이 운영 항목만 있는 날은 _stages가 비어있을 수
-                // 있으므로 그 경우에도 최소 1칸은 그림 (stageW 폴백과 동일 전제)
-                final columnCount = _stages.isEmpty ? 1 : _stages.length;
-                return List.generate(columnCount, (i) => Positioned(
-                  left: i * stageW + 3,
-                  top: _topPad + rawTop + 2,
-                  width: stageW - 6,
-                  height: clampedH,
-                  child: _OfficialCard(
-                    entry: entry,
-                    color: kOpsColor,
-                    followed: false,
-                    cardH: cardH - 4,
-                  ),
-                ));
-              }
-              final stageIndex = _stages.indexOf(entry.stageName);
-              if (stageIndex < 0) return const <Widget>[];
-              return [Positioned(
-                left: stageIndex * stageW + 3,
-                top: _topPad + rawTop + 2,
-                width: stageW - 6,
-                height: clampedH,
-                child: _OfficialCard(
-                  entry: entry,
-                  color: _stageColor(entry.stageName),
-                  followed: entry.isFollowedBy(widget.followedNames),
-                  cardH: cardH - 4,
-                ),
-              )];
-            }),
-            ...widget.userEntries.map((entry) {
-              final stageIndex = _stages.indexOf(entry.stageName);
-              if (stageIndex < 0) return const SizedBox.shrink();
-              final rawTop = _toY(entry.startTime, pxPerMin);
-              // MyTimetableEntry는 w_timetable_entry_dialog.dart에서 종료 시각이 시작
-              // 시각보다 뒤여야만 저장 가능하도록 막혀있어(자정 교차 불가)
-              // _toY 차이가 음수가 될 일이 없음 — TimetableEntry(공식 항목)와
-              // 달리 durationMinutes 게터가 없는 별도 모델이라 그대로 유지
-              final cardH = _toY(entry.endTime, pxPerMin) - rawTop;
-              final colLeft = stageIndex * stageW;
-              final overlaps = _overlapsOfficial(entry);
-              final left = overlaps ? colLeft + stageW * 0.55 : colLeft + 3;
-              final width = overlaps ? stageW * 0.45 - 3 : stageW - 6;
-              return Positioned(
-                left: left,
-                top: _topPad + rawTop + 2,
-                width: width,
-                height: (cardH - 4).clamp(4.0, double.infinity),
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => widget.onTapMyTimetableEntry(entry),
-                  child: _UserCard(entry: entry, cardH: cardH - 4),
-                ),
-              );
-            }),
-            if (currentTimeTop != null)
-              Positioned(
-                left: 0,
-                right: 0,
-                top: currentTimeTop - 4,
-                child: IgnorePointer(child: _CurrentTimeLine()),
-              ),
+            ..._buildStageDividers(stageW, colors),
+            ..._buildHourLines(pxPerMin, colors),
+            ..._buildOfficialEntries(pxPerMin, stageW),
+            ..._buildUserEntries(pxPerMin, stageW),
+            if (currentTimeTop != null) _buildCurrentTimeLine(currentTimeTop),
           ],
         ),
       ),
+    );
+  }
+
+  List<Widget> _buildStageDividers(double stageW, AbstractThemeColors colors) {
+    return List.generate(
+      _stages.length,
+      (i) => Positioned(
+        left: (i + 1) * stageW - 0.5,
+        top: 0,
+        bottom: 0,
+        width: 0.5,
+        child: Container(color: colors.listDivider),
+      ),
+    );
+  }
+
+  List<Widget> _buildHourLines(double pxPerMin, AbstractThemeColors colors) {
+    return List.generate(
+      (_endHour - _startHour) * 6 + 1,
+      (i) {
+        final mins = i * 10;
+        final isHour = mins % 60 == 0;
+        final isHalf = mins % 30 == 0;
+        return Positioned(
+          top: _topPad + mins * pxPerMin,
+          left: 0,
+          right: 0,
+          height: 0.5,
+          child: Container(
+            color: isHour
+                ? colors.listDivider.withValues(alpha: 0.9)
+                : isHalf
+                    ? colors.listDivider.withValues(alpha: 0.5)
+                    : colors.listDivider.withValues(alpha: 0.2),
+          ),
+        );
+      },
+    );
+  }
+
+  List<Widget> _buildOfficialEntries(double pxPerMin, double stageW) {
+    return _range.filtered.expand<Widget>((entry) {
+      final rawTop = _toY(entry.startTime, pxPerMin);
+      // 자정을 넘기는 공연은 _toY 차이가 음수가 될 수 있으므로
+      // 랩어라운드를 이미 보정한 durationMinutes로 계산
+      final cardH = entry.durationMinutes * pxPerMin;
+      final clampedH = (cardH - 4).clamp(4.0, double.infinity);
+      if (entry.isOps) {
+        // 운영 항목: 모든 스테이지 열에 동일하게 표시.
+        // 실제 공연 없이 운영 항목만 있는 날은 _stages가 비어있을 수
+        // 있으므로 그 경우에도 최소 1칸은 그림 (stageW 폴백과 동일 전제)
+        final columnCount = _stages.isEmpty ? 1 : _stages.length;
+        return List.generate(columnCount, (i) => Positioned(
+          left: i * stageW + 3,
+          top: _topPad + rawTop + 2,
+          width: stageW - 6,
+          height: clampedH,
+          child: _OfficialCard(
+            entry: entry,
+            color: kOpsColor,
+            followed: false,
+            cardH: cardH - 4,
+          ),
+        ));
+      }
+      final stageIndex = _stages.indexOf(entry.stageName);
+      if (stageIndex < 0) return const <Widget>[];
+      return [Positioned(
+        left: stageIndex * stageW + 3,
+        top: _topPad + rawTop + 2,
+        width: stageW - 6,
+        height: clampedH,
+        child: _OfficialCard(
+          entry: entry,
+          color: _stageColor(entry.stageName),
+          followed: entry.isFollowedBy(widget.followedNames),
+          cardH: cardH - 4,
+        ),
+      )];
+    }).toList();
+  }
+
+  List<Widget> _buildUserEntries(double pxPerMin, double stageW) {
+    return widget.userEntries.map((entry) {
+      final stageIndex = _stages.indexOf(entry.stageName);
+      if (stageIndex < 0) return const SizedBox.shrink();
+      final rawTop = _toY(entry.startTime, pxPerMin);
+      // MyTimetableEntry는 w_timetable_entry_dialog.dart에서 종료 시각이 시작
+      // 시각보다 뒤여야만 저장 가능하도록 막혀있어(자정 교차 불가)
+      // _toY 차이가 음수가 될 일이 없음 — TimetableEntry(공식 항목)와
+      // 달리 durationMinutes 게터가 없는 별도 모델이라 그대로 유지
+      final cardH = _toY(entry.endTime, pxPerMin) - rawTop;
+      final colLeft = stageIndex * stageW;
+      final overlaps = _overlapsOfficial(entry);
+      final left = overlaps ? colLeft + stageW * 0.55 : colLeft + 3;
+      final width = overlaps ? stageW * 0.45 - 3 : stageW - 6;
+      return Positioned(
+        left: left,
+        top: _topPad + rawTop + 2,
+        width: width,
+        height: (cardH - 4).clamp(4.0, double.infinity),
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => widget.onTapMyTimetableEntry(entry),
+          child: _UserCard(entry: entry, cardH: cardH - 4),
+        ),
+      );
+    }).toList();
+  }
+
+  Widget _buildCurrentTimeLine(double top) {
+    return Positioned(
+      left: 0,
+      right: 0,
+      top: top - 4,
+      child: IgnorePointer(child: _CurrentTimeLine()),
     );
   }
 }

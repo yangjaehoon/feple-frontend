@@ -20,11 +20,13 @@ class AuthTokenExchanger {
       await _saveTokens(data);
       return _parseUser(data);
     } on DioException catch (e) {
+      final status = e.response?.statusCode;
       final respBody = e.response?.data;
       if (respBody is Map<String, dynamic>) {
-        debugPrint('[Auth] Firebase 서버 오류: ${respBody['message']}');
+        debugPrint('[Auth] Firebase 서버 오류 ($status): ${respBody['message']}');
         throw Exception('auth_err_auth_failed'.tr());
       }
+      debugPrint('[Auth] Firebase 요청 실패 (${e.type.name}, status=$status)');
       throw Exception('auth_err_auth_failed'.tr());
     }
   }

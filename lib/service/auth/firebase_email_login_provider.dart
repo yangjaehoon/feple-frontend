@@ -22,7 +22,9 @@ class FirebaseEmailLoginProvider {
       throw EmailNotVerifiedException();
     }
 
-    final idToken = await user.getIdToken();
+    // force: true — 이메일 인증 후 세션이 재사용될 때 캐시된 토큰의
+    // email_verified 클레임이 false일 수 있으므로 항상 최신 토큰 요청
+    final idToken = await user.getIdToken(true);
     return _tokenExchanger.exchangeFirebaseToken(idToken!);
   }
 

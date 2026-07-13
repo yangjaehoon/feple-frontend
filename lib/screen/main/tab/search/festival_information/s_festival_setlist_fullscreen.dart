@@ -392,29 +392,24 @@ class _SetlistRequestSheetState extends State<SetlistRequestSheet> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return DraggableScrollableSheet(
-      initialChildSize: 0.55,
-      minChildSize: 0.4,
-      maxChildSize: 0.8,
-      builder: (_, controller) => Material(
-        color: colors.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          children: [
-            const SizedBox(height: 12),
-            const BottomSheetHandle(),
-            _buildHeader(colors),
-            Expanded(
-              child: SingleChildScrollView(
-                controller: controller,
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                child: _buildTextField(colors),
-              ),
-            ),
-            _buildFooter(colors),
-          ],
-        ),
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    return Material(
+      color: colors.surface,
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 12),
+          const BottomSheetHandle(),
+          _buildHeader(colors),
+          SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+            child: _buildTextField(colors),
+          ),
+          _buildFooter(colors),
+          SizedBox(height: bottomInset),
+        ],
       ),
     );
   }

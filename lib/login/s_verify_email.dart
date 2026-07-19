@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
+import 'package:feple/common/widget/w_icon_circle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/model/user_model.dart';
 import 'package:feple/provider/user_provider.dart';
@@ -183,7 +184,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildIcon(colors),
+                const IconCircle(icon: Icons.mark_email_unread_rounded),
                 const SizedBox(height: 28),
                 _buildTextSection(colors),
                 const SizedBox(height: 40),
@@ -279,19 +280,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
         ),
         textAlign: TextAlign.center,
       ),
-    );
-  }
-
-  Widget _buildIcon(AbstractThemeColors colors) {
-    final size = MediaQuery.sizeOf(context).width * 0.226; // 88/390
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: colors.activate.withValues(alpha: 0.12),
-        shape: BoxShape.circle,
-      ),
-      child: Icon(Icons.mark_email_unread_rounded, size: size * 0.5, color: colors.activate),
     );
   }
 

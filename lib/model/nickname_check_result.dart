@@ -2,6 +2,9 @@ class NicknameCheckResult {
   static const int minLength = 2;
   static const int maxLength = 8;
 
+  static bool isValidLength(String nickname) =>
+      nickname.length >= minLength && nickname.length <= maxLength;
+
   final bool available;
   final String code;
 

@@ -1,8 +1,10 @@
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/email_validator.dart';
 import 'package:feple/common/util/password_validator.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_icon_circle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_support_link_row.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
@@ -23,8 +25,6 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  static final _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool _isLoading = false;
@@ -42,7 +42,7 @@ class _SignupScreenState extends State<SignupScreen> {
   bool get _isFormComplete {
     final email = emailController.text.trim();
     final password = passwordController.text;
-    return _emailRegex.hasMatch(email) &&
+    return EmailValidator.hasValidFormat(email) &&
         password.isNotEmpty &&
         PasswordValidator.validate(password) == null &&
         _nicknameAvailable;
@@ -65,13 +65,8 @@ class _SignupScreenState extends State<SignupScreen> {
     String? passwordError;
     bool hasError = false;
 
-    if (email.isEmpty) {
-      emailError = 'enter_email'.tr();
-      hasError = true;
-    } else if (!_emailRegex.hasMatch(email)) {
-      emailError = 'enter_valid_email'.tr();
-      hasError = true;
-    }
+    emailError = EmailValidator.validate(email);
+    if (emailError != null) hasError = true;
     if (password.isEmpty) {
       passwordError = 'enter_password'.tr();
       hasError = true;
@@ -85,8 +80,7 @@ class _SignupScreenState extends State<SignupScreen> {
     if (nickname.isEmpty) {
       nicknameState?.showError('enter_nickname'.tr());
       hasError = true;
-    } else if (nickname.length < NicknameCheckResult.minLength ||
-        nickname.length > NicknameCheckResult.maxLength) {
+    } else if (!NicknameCheckResult.isValidLength(nickname)) {
       nicknameState?.showError('nickname_length_error'.tr());
       hasError = true;
     } else if (nicknameState?.available == null ||
@@ -226,18 +220,9 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Widget _buildHeader(AbstractThemeColors themeColors) {
-    final containerSize = MediaQuery.sizeOf(context).width * 0.205; // 80/390
     return Column(
       children: [
-        Container(
-          width: containerSize,
-          height: containerSize,
-          decoration: BoxDecoration(
-            color: themeColors.activate.withValues(alpha: 0.12),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(Icons.person_add_rounded, size: containerSize * 0.5, color: themeColors.activate),
-        ),
+        const IconCircle(icon: Icons.person_add_rounded, sizeAt390: 80),
         const SizedBox(height: 24),
         Text(
           'signup'.tr(),

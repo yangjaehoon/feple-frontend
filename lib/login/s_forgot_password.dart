@@ -1,6 +1,8 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/email_validator.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
+import 'package:feple/common/widget/w_icon_circle.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/service/auth_service.dart';
@@ -17,8 +19,6 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  static final _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-
   late final TextEditingController _emailController;
   bool _isSending = false;
   bool _sent = false;
@@ -39,12 +39,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   Future<void> _onSend() async {
     final email = _emailController.text.trim();
-    if (email.isEmpty) {
-      setState(() => _emailError = 'enter_email'.tr());
-      return;
-    }
-    if (!_emailRegex.hasMatch(email)) {
-      setState(() => _emailError = 'enter_valid_email'.tr());
+    final emailError = EmailValidator.validate(email);
+    if (emailError != null) {
+      setState(() => _emailError = emailError);
       return;
     }
     setState(() { _emailError = null; _errorMessage = null; _isSending = true; });
@@ -110,7 +107,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _buildIconCircle(colors, Icons.lock_reset_rounded),
+          const IconCircle(icon: Icons.lock_reset_rounded),
           const SizedBox(height: 28),
           Text(
             'reset_password'.tr(),
@@ -184,7 +181,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _buildIconCircle(colors, Icons.mark_email_read_rounded),
+        const IconCircle(icon: Icons.mark_email_read_rounded),
         const SizedBox(height: 28),
         Text(
           'password_reset_sent_title'.tr(),
@@ -218,16 +215,4 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 
-  Widget _buildIconCircle(AbstractThemeColors colors, IconData icon) {
-    final size = MediaQuery.sizeOf(context).width * 0.226; // 88/390
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: colors.activate.withValues(alpha: 0.12),
-        shape: BoxShape.circle,
-      ),
-      child: Icon(icon, size: size * 0.5, color: colors.activate),
-    );
-  }
 }

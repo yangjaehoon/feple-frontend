@@ -63,8 +63,7 @@ class NicknameFieldState extends State<NicknameField> {
       _setResult(false, 'enter_nickname'.tr());
       return;
     }
-    if (nickname.length < NicknameCheckResult.minLength ||
-        nickname.length > NicknameCheckResult.maxLength) {
+    if (!NicknameCheckResult.isValidLength(nickname)) {
       _setResult(false, 'nickname_length_error'.tr());
       return;
     }

@@ -12,7 +12,6 @@ class SecondaryAppBar extends StatelessWidget implements PreferredSizeWidget {
     super.key,
     required this.title,
     this.actions,
-    double? elevation, // API 호환성 유지용, 미사용
   });
 
   @override

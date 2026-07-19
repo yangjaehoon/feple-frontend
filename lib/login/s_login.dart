@@ -1,4 +1,6 @@
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/email_validator.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_support_link_row.dart';
@@ -36,8 +38,6 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
   String? _emailError;
   String? _passwordError;   // 빈 필드 → 빨간 테두리
   String? _authError;       // 인증 실패 → 텍스트만, 테두리 없음
-
-  static final _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
 
   @override
   void dispose() {
@@ -98,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
   }
 
   Widget _buildHeader(AbstractThemeColors themeColors) {
-    final logoSize = MediaQuery.sizeOf(context).width * 0.308; // 120/390
+    final logoSize = ResponsiveSize(context).w(120);
     return Column(
       children: [
         ClipRRect(
@@ -315,12 +315,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     final email = emailController.text.trim();
     final password = passwordController.text;
 
-    String? emailErr;
-    if (email.isEmpty) {
-      emailErr = 'enter_email'.tr();
-    } else if (!_emailRegex.hasMatch(email)) {
-      emailErr = 'enter_valid_email'.tr();
-    }
+    final emailErr = EmailValidator.validate(email);
     final passwordErr = password.isEmpty ? 'enter_password'.tr() : null;
     if (emailErr != null || passwordErr != null) {
       setState(() { _emailError = emailErr; _passwordError = passwordErr; });

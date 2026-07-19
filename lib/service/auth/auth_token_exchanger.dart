@@ -9,44 +9,41 @@ import '../../network/dio_client.dart';
 /// Firebase/카카오 등 외부 인증 토큰을 앱 자체 JWT로 교환하고 저장하는 로직.
 /// 어느 로그인 제공자를 쓰든 공통으로 필요한 서버 왕복이라 별도로 분리함.
 class AuthTokenExchanger {
-  Future<app.AppUser> exchangeFirebaseToken(String idToken, {String? nickname}) async {
+  Future<app.AppUser> exchangeFirebaseToken(String idToken, {String? nickname}) {
     final body = <String, dynamic>{'idToken': idToken};
     if (nickname != null) body['nickname'] = nickname;
-
-    try {
-      final response = await DioClient.dio.post('/auth/firebase', data: body);
-      final data = response.data;
-      if (data is! Map<String, dynamic>) throw Exception('auth_err_auth_failed'.tr());
-      await _saveTokens(data);
-      return _parseUser(data);
-    } on DioException catch (e) {
-      final status = e.response?.statusCode;
-      final respBody = e.response?.data;
-      if (respBody is Map<String, dynamic>) {
-        debugPrint('[Auth] Firebase 서버 오류 ($status): ${respBody['message']}');
-        throw Exception('auth_err_auth_failed'.tr());
-      }
-      debugPrint('[Auth] Firebase 요청 실패 (${e.type.name}, status=$status)');
-      throw Exception('auth_err_auth_failed'.tr());
-    }
+    return _exchange(
+      providerLabel: 'Firebase',
+      request: () => DioClient.dio.post('/auth/firebase', data: body),
+    );
   }
 
-  Future<app.AppUser> exchangeKakaoToken(String accessToken) async {
-    try {
-      final response = await DioClient.dio.post(
+  Future<app.AppUser> exchangeKakaoToken(String accessToken) {
+    return _exchange(
+      providerLabel: '카카오',
+      request: () => DioClient.dio.post(
         '/auth/kakao',
         options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
-      );
+      ),
+    );
+  }
+
+  /// 인증 제공자로 토큰을 교환하고 응답을 파싱. 실패 시 로그 남기고 공통 예외로 통일.
+  Future<app.AppUser> _exchange({
+    required String providerLabel,
+    required Future<Response> Function() request,
+  }) async {
+    try {
+      final response = await request();
       final data = response.data;
       if (data is! Map<String, dynamic>) throw Exception('auth_err_auth_failed'.tr());
       await _saveTokens(data);
       return _parseUser(data);
     } on DioException catch (e) {
-      debugPrint('[Auth] 카카오 서버 교환 실패: [${e.type.name}] ${e.response?.statusCode}');
+      debugPrint('[Auth] $providerLabel 서버 교환 실패: [${e.type.name}] ${e.response?.statusCode}');
       final respBody = e.response?.data;
       if (respBody is Map<String, dynamic>) {
-        debugPrint('[Auth] 카카오 서버 메시지: ${respBody['message']}');
-        throw Exception('auth_err_auth_failed'.tr());
+        debugPrint('[Auth] $providerLabel 서버 메시지: ${respBody['message']}');
       }
       throw Exception('auth_err_auth_failed'.tr());
     }

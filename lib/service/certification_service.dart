@@ -28,19 +28,13 @@ class CertificationService {
   /// 타 유저의 승인된 인증 뱃지 목록 조회 (공개)
   Future<List<CertificationModel>> getPublicCertifications(int userId) async {
     final response = await DioClient.dio.get('/users/$userId/certifications');
-    return (response.data as List)
-        .cast<Map<String, dynamic>>()
-        .map(CertificationModel.fromJson)
-        .toList();
+    return response.toModelList(CertificationModel.fromJson);
   }
 
   /// 내 인증 목록 조회
   Future<List<CertificationModel>> getMyCertifications() async {
     final response = await DioClient.dio.get('/certifications');
-    return (response.data as List)
-        .cast<Map<String, dynamic>>()
-        .map(CertificationModel.fromJson)
-        .toList();
+    return response.toModelList(CertificationModel.fromJson);
   }
 
   /// 특정 페스티벌의 인증 상태 및 내 별점 정보 단건 조회

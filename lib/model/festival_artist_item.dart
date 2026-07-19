@@ -1,3 +1,5 @@
+import 'localized_text.dart';
+
 /// 페스티벌 참여 아티스트 모델
 class FestivalArtistItem {
   final int artistId;
@@ -16,8 +18,7 @@ class FestivalArtistItem {
     this.performanceDates = const [],
   });
 
-  String displayName(bool isEnglish) =>
-      isEnglish && artistNameEn.isNotEmpty ? artistNameEn : artistName;
+  String displayName(bool isEnglish) => pickLocalized(isEnglish, artistName, artistNameEn);
 
   Map<String, dynamic> toJson() => {
         'artistId': artistId,

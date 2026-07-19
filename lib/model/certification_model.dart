@@ -1,3 +1,6 @@
+import 'date_format.dart';
+import 'localized_text.dart';
+
 enum CertStatus {
   approved('APPROVED'),
   pending('PENDING'),
@@ -52,10 +55,7 @@ class CertificationModel {
       );
 
   String displayFestivalTitle(bool isEnglish) =>
-      isEnglish && festivalTitleEn.isNotEmpty ? festivalTitleEn : festivalTitle;
+      pickLocalized(isEnglish, festivalTitle, festivalTitleEn);
 
-  String? get formattedDate {
-    if (createdAt == null) return null;
-    return createdAt!.length >= 10 ? createdAt!.substring(0, 10) : createdAt;
-  }
+  String? get formattedDate => formatShortDate(createdAt);
 }

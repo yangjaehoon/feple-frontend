@@ -1,3 +1,5 @@
+import 'localized_text.dart';
+
 enum FavoriteBoardType { artist, festival }
 
 class FavoriteBoard {
@@ -18,7 +20,7 @@ class FavoriteBoard {
   });
 
   String entityDisplayName(bool isEnglish) =>
-      isEnglish && entityNameEn.isNotEmpty ? entityNameEn : entityName;
+      pickLocalized(isEnglish, entityName, entityNameEn);
 
   String displayName(bool isEnglish) {
     final name = entityDisplayName(isEnglish);

@@ -1,5 +1,6 @@
 import 'package:feple/common/util/festival_date_utils.dart';
 import 'festival_model.dart';
+import 'localized_text.dart';
 
 class FestivalPreview {
   final int id;
@@ -34,8 +35,7 @@ class FestivalPreview {
     this.attendingCount = 0,
   });
 
-  String displayTitle(bool isEnglish) =>
-      isEnglish && titleEn.isNotEmpty ? titleEn : title;
+  String displayTitle(bool isEnglish) => pickLocalized(isEnglish, title, titleEn);
 
   bool get isEnded => isFestivalEnded(endDate);
 

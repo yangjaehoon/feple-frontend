@@ -9,9 +9,7 @@ class ArtistPhotoService implements ArtistPhotoManageable, ArtistPhotoUploadable
   @override
   Future<List<ArtistPhoto>> fetchPhotos(int artistId) async {
     final response = await DioClient.dio.get('/artists/$artistId/photos');
-    return (response.data as List)
-        .map((json) => ArtistPhoto.fromJson(json as Map<String, dynamic>))
-        .toList();
+    return response.toModelList(ArtistPhoto.fromJson);
   }
 
   @override

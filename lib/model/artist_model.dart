@@ -1,3 +1,6 @@
+import 'genre_list.dart';
+import 'localized_text.dart';
+
 class Artist {
   final int id;
   final String name;
@@ -26,9 +29,7 @@ class Artist {
     );
   }
 
-  List<String> get genres =>
-      genre.isEmpty ? const [] : genre.split(', ');
+  List<String> get genres => splitGenres(genre);
 
-  String displayName(bool isEnglish) =>
-      isEnglish && nameEn.isNotEmpty ? nameEn : name;
+  String displayName(bool isEnglish) => pickLocalized(isEnglish, name, nameEn);
 }

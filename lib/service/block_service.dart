@@ -10,9 +10,6 @@ class BlockService {
 
   Future<List<BlockedUserModel>> getBlockedUsers() async {
     final response = await DioClient.dio.get('/users/blocked');
-    final list = response.data as List<dynamic>;
-    return list
-        .map((e) => BlockedUserModel.fromJson(e as Map<String, dynamic>))
-        .toList();
+    return response.toModelList(BlockedUserModel.fromJson);
   }
 }

@@ -1,3 +1,5 @@
+import 'localized_text.dart';
+
 enum EventType {
   festival,
   fanMeeting,
@@ -86,8 +88,7 @@ class CoArtistInfo {
     this.profileImageUrl,
   });
 
-  String displayName(bool isEnglish) =>
-      isEnglish && artistNameEn.isNotEmpty ? artistNameEn : artistName;
+  String displayName(bool isEnglish) => pickLocalized(isEnglish, artistName, artistNameEn);
 
   factory CoArtistInfo.fromJson(Map<String, dynamic> json) {
     return CoArtistInfo(

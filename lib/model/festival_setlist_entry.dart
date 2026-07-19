@@ -1,5 +1,7 @@
 import 'package:feple/model/song_model.dart';
 
+import 'localized_text.dart';
+
 class FestivalSetlistEntry {
   final int artistFestivalId;
   final int artistId;
@@ -17,8 +19,7 @@ class FestivalSetlistEntry {
     required this.songs,
   });
 
-  String displayName(bool isEnglish) =>
-      isEnglish && artistNameEn.isNotEmpty ? artistNameEn : artistName;
+  String displayName(bool isEnglish) => pickLocalized(isEnglish, artistName, artistNameEn);
 
   Set<int> get songIds => songs.map((s) => s.id).toSet();
 

@@ -20,8 +20,6 @@ class SongRequestService {
 
   Future<List<SongRequestModel>> _fetchRequests(String endpoint) async {
     final response = await DioClient.dio.get(endpoint);
-    return (response.data as List)
-        .map((json) => SongRequestModel.fromJson(json as Map<String, dynamic>))
-        .toList();
+    return response.toModelList(SongRequestModel.fromJson);
   }
 }

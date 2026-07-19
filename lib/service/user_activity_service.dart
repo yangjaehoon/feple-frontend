@@ -14,23 +14,17 @@ class UserActivityService {
 
   Future<List<Post>> fetchPosts(int userId) async {
     final response = await DioClient.dio.get('/users/$userId/posts');
-    return (response.data as List)
-        .map((e) => Post.fromJson(e as Map<String, dynamic>))
-        .toList();
+    return response.toModelList(Post.fromJson);
   }
 
   Future<List<MyComment>> fetchComments(int userId) async {
     final response = await DioClient.dio.get('/users/$userId/comments');
-    return (response.data as List)
-        .map((e) => MyComment.fromJson(e as Map<String, dynamic>))
-        .toList();
+    return response.toModelList(MyComment.fromJson);
   }
 
   Future<List<Post>> fetchLikedPosts(int userId) async {
     final response = await DioClient.dio.get('/users/$userId/liked-posts');
-    return (response.data as List)
-        .map((e) => Post.fromJson(e as Map<String, dynamic>))
-        .toList();
+    return response.toModelList(Post.fromJson);
   }
 
   Future<UserStats> fetchStats(int userId) async {

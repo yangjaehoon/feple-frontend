@@ -1,3 +1,6 @@
+import 'genre_list.dart';
+import 'localized_text.dart';
+
 class FollowedArtist {
   final int id;
   final String name;
@@ -35,12 +38,7 @@ class FollowedArtist {
     );
   }
 
-  List<String> get genres {
-    final g = genre;
-    if (g == null || g.isEmpty) return const [];
-    return g.split(', ');
-  }
+  List<String> get genres => splitGenres(genre);
 
-  String displayName(bool isEnglish) =>
-      isEnglish && nameEn.isNotEmpty ? nameEn : name;
+  String displayName(bool isEnglish) => pickLocalized(isEnglish, name, nameEn);
 }

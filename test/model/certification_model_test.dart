@@ -107,7 +107,7 @@ void main() {
       expect(model.formattedDate, isNull);
     });
 
-    test('10자 이상이면 앞 10자(날짜 부분)만 반환', () {
+    test('시각 포함 ISO 문자열이면 yyyy.MM.dd로 변환', () {
       const model = CertificationModel(
         id: 1,
         festivalId: 1,
@@ -116,10 +116,10 @@ void main() {
         createdAt: '2025-08-01T12:00:00',
       );
 
-      expect(model.formattedDate, '2025-08-01');
+      expect(model.formattedDate, '2025.08.01');
     });
 
-    test('10자 미만이면 그대로 반환', () {
+    test('파싱 불가능한 문자열이면 원본 그대로 반환', () {
       const model = CertificationModel(
         id: 1,
         festivalId: 1,
@@ -131,7 +131,7 @@ void main() {
       expect(model.formattedDate, '2025-08');
     });
 
-    test('정확히 10자이면 그대로 반환', () {
+    test('날짜만 있는 ISO 문자열이면 yyyy.MM.dd로 변환', () {
       const model = CertificationModel(
         id: 1,
         festivalId: 1,
@@ -140,7 +140,7 @@ void main() {
         createdAt: '2025-08-01',
       );
 
-      expect(model.formattedDate, '2025-08-01');
+      expect(model.formattedDate, '2025.08.01');
     });
   });
 }

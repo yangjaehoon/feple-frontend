@@ -183,6 +183,6 @@ class PostService {
       'keyword': keyword,
       'boardType': boardType,
     });
-    return (response.data as List).map((j) => Post.fromJson(j as Map<String, dynamic>)).toList();
+    return response.toModelList(Post.fromJson);
   }
 }

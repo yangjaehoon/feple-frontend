@@ -1,5 +1,7 @@
 import 'package:feple/model/notification_type.dart';
 
+import 'localized_text.dart';
+
 class NotificationModel {
   final int id;
   final NotificationType? type;
@@ -80,11 +82,9 @@ class NotificationModel {
     return isKorean ? '이전' : 'Earlier';
   }
 
-  String displayTitle(bool isEnglish) =>
-      isEnglish && titleEn.isNotEmpty ? titleEn : title;
+  String displayTitle(bool isEnglish) => pickLocalized(isEnglish, title, titleEn);
 
-  String displayBody(bool isEnglish) =>
-      isEnglish && bodyEn.isNotEmpty ? bodyEn : body;
+  String displayBody(bool isEnglish) => pickLocalized(isEnglish, body, bodyEn);
 
   NotificationModel copyWithRead() => NotificationModel(
         id: id,

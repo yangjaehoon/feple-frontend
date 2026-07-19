@@ -15,8 +15,6 @@ class ScrapService {
   /// 내 스크랩 목록 조회
   Future<List<Post>> fetchMyScraps() async {
     final response = await DioClient.dio.get('/posts/scrapped');
-    return (response.data as List<dynamic>)
-        .map((json) => Post.fromJson(json as Map<String, dynamic>))
-        .toList();
+    return response.toModelList(Post.fromJson);
   }
 }

@@ -1,3 +1,5 @@
+import 'date_format.dart';
+
 enum SongRequestStatus { pending, approved, rejected }
 
 class SongRequestModel {
@@ -30,15 +32,7 @@ class SongRequestModel {
   bool get isApproved => status == SongRequestStatus.approved;
   bool get isRejected => status == SongRequestStatus.rejected;
 
-  String? get formattedDate {
-    if (createdAt == null) return null;
-    try {
-      final dt = DateTime.parse(createdAt!);
-      return '${dt.year}.${dt.month.toString().padLeft(2, '0')}.${dt.day.toString().padLeft(2, '0')}';
-    } catch (_) {
-      return createdAt;
-    }
-  }
+  String? get formattedDate => formatShortDate(createdAt);
 
   factory SongRequestModel.fromJson(Map<String, dynamic> json) {
     return SongRequestModel(

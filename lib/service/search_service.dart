@@ -17,20 +17,7 @@ class SearchService {
         .get('/search/suggestions', queryParameters: {'keyword': keyword});
     final list = response.data as List? ?? [];
     return list
-        .map((item) {
-          final id = (item['id'] as num?)?.toInt();
-          final label = item['label'] as String? ?? '';
-          final type = item['type'] as String? ?? '';
-          final imageUrl = item['imageUrl'] as String?;
-          final labelEn = item['labelEn'] as String? ?? '';
-          return SearchSuggestion(
-            label,
-            type == 'artist' ? SearchType.artist : SearchType.festival,
-            id: id,
-            labelEn: labelEn,
-            imageUrl: imageUrl,
-          );
-        })
+        .map((item) => SearchSuggestion.fromJson(item as Map<String, dynamic>))
         .where((item) => item.label.isNotEmpty)
         .toList();
   }

@@ -1,3 +1,5 @@
+import 'localized_text.dart';
+
 class TimetableRange {
   final List<TimetableEntry> filtered;
   final List<String> stages;
@@ -76,8 +78,7 @@ class TimetableEntry {
     this.memberArtistNameEnList = const [],
   });
 
-  String displayName(bool isEnglish) =>
-      isEnglish && artistNameEn.isNotEmpty ? artistNameEn : artistName;
+  String displayName(bool isEnglish) => pickLocalized(isEnglish, artistName, artistNameEn);
 
   List<String> memberDisplayNames(bool isEnglish) =>
       isEnglish && memberArtistNameEnList.isNotEmpty

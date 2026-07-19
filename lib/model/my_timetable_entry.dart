@@ -1,3 +1,5 @@
+import 'timetable_entry.dart' show formatTimeRange;
+
 class MyTimetableEntry {
   final String id;
   final String stageName;
@@ -15,7 +17,7 @@ class MyTimetableEntry {
     required this.colorValue,
   });
 
-  String get timeRange => '$startTime – $endTime';
+  String get timeRange => formatTimeRange(startTime, endTime);
 
   MyTimetableEntry copyWith({
     String? stageName,

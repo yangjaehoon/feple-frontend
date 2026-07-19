@@ -4,6 +4,7 @@ import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
+import 'package:feple/common/widget/w_support_link_row.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/common/widget/w_nickname_field.dart';
 import 'package:feple/login/s_verify_email.dart';
@@ -12,7 +13,6 @@ import 'package:feple/model/nickname_check_result.dart';
 import 'package:feple/service/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 
 class SignupScreen extends StatefulWidget {
@@ -214,7 +214,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     const SizedBox(height: 24),
                     _buildLoginLink(themeColors),
                     const SizedBox(height: 32),
-                    _buildSupportLink(themeColors),
+                    const SupportLinkRow(),
                   ],
                 ),
               ),
@@ -307,42 +307,6 @@ class _SignupScreenState extends State<SignupScreen> {
         ],
       ],
     );
-  }
-
-  Widget _buildSupportLink(AbstractThemeColors themeColors) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          'login_trouble'.tr(),
-          style: TextStyle(color: themeColors.textSecondary, fontSize: AppDimens.fontSizeSm),
-        ),
-        TextButton(
-          onPressed: _openSupport,
-          style: TextButton.styleFrom(
-            foregroundColor: themeColors.textSecondary,
-            padding: const EdgeInsets.symmetric(horizontal: 6),
-            minimumSize: Size.zero,
-            tapTargetSize: MaterialTapTargetSize.padded,
-          ),
-          child: Text(
-            'contact_support'.tr(),
-            style: TextStyle(
-              fontSize: AppDimens.fontSizeSm,
-              fontWeight: FontWeight.w600,
-              decoration: TextDecoration.underline,
-              decorationColor: themeColors.textSecondary,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Future<void> _openSupport() async {
-    final uri = Uri.parse('https://open.kakao.com/o/guLhbJki');
-    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!launched && mounted) context.showErrorSnackbar('link_open_failed'.tr());
   }
 
   Widget _buildLoginLink(AbstractThemeColors themeColors) {

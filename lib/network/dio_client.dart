@@ -19,6 +19,18 @@ bool _isNetworkError(DioException e) {
           e.type == DioExceptionType.unknown);
 }
 
+const _defaultConnectTimeout = Duration(seconds: 10);
+const _defaultReceiveTimeout = Duration(seconds: 20);
+
+/// per-request Authorization이 이미 있으면 덮어쓰지 않음 (예: 카카오 액세스 토큰)
+Future<void> _attachJwtIfAbsent(RequestOptions options) async {
+  if (options.headers.containsKey('Authorization')) return;
+  final jwt = await TokenStore.readAccessToken();
+  if (jwt != null && jwt.isNotEmpty) {
+    options.headers['Authorization'] = 'Bearer $jwt';
+  }
+}
+
 /// dio.interceptors 등록 순서 (중요 — 순서를 바꾸면 인증/캐시 흐름이 조용히 깨짐):
 /// 1. [_AuthAndSwrInterceptor] — JWT 첨부, SWR 캐시 즉시 반환(요청 단축), 401 리프레시
 /// 2. [_ResponseCacheInterceptor] — 응답 캐시 저장/무효화, 오프라인 폴백
@@ -36,8 +48,8 @@ class DioClient {
   /// 인터셉터 없이 토큰 갱신/재시도에만 사용하는 내부 Dio
   static final Dio _plainDio = Dio(BaseOptions(
     baseUrl: app_config.baseUrl,
-    connectTimeout: const Duration(seconds: 10),
-    receiveTimeout: const Duration(seconds: 20),
+    connectTimeout: _defaultConnectTimeout,
+    receiveTimeout: _defaultReceiveTimeout,
   ));
 
   // refresh 중복 호출 방지: 진행 중인 refresh가 있으면 완료될 때까지 대기
@@ -68,19 +80,14 @@ class DioClient {
   static final Dio _bgDio = Dio(
     BaseOptions(
       baseUrl: app_config.baseUrl,
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 20),
+      connectTimeout: _defaultConnectTimeout,
+      receiveTimeout: _defaultReceiveTimeout,
       contentType: 'application/json',
     ),
   )..interceptors.add(
     InterceptorsWrapper(
       onRequest: (opts, handler) async {
-        if (!opts.headers.containsKey('Authorization')) {
-          final jwt = await TokenStore.readAccessToken();
-          if (jwt != null && jwt.isNotEmpty) {
-            opts.headers['Authorization'] = 'Bearer $jwt';
-          }
-        }
+        await _attachJwtIfAbsent(opts);
         handler.next(opts);
       },
       onResponse: (resp, handler) async {
@@ -119,13 +126,7 @@ class DioClient {
 class _AuthAndSwrInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
-    // per-request Authorization이 이미 있으면 덮어쓰지 않음 (예: 카카오 액세스 토큰)
-    if (!options.headers.containsKey('Authorization')) {
-      final jwt = await TokenStore.readAccessToken();
-      if (jwt != null && jwt.isNotEmpty) {
-        options.headers['Authorization'] = 'Bearer $jwt';
-      }
-    }
+    await _attachJwtIfAbsent(options);
 
     // SWR: GET 요청에 메모리 캐시가 있으면 즉시 반환 + 백그라운드 갱신
     // 첫 방문(캐시 없음)이나 오프라인 fallback은 _ResponseCacheInterceptor가 처리

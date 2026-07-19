@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
+import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_expandable_text.dart';
 import 'package:feple/model/poster_cert_state.dart';
 import 'package:feple/model/festival_review.dart';
@@ -197,30 +198,9 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
       return Center(child: CircularProgressIndicator(color: colors.activate));
     }
     if (_hasError) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.error_outline_rounded,
-              color: colors.textSecondary,
-              size: 40,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'reviews_load_failed'.tr(),
-              style: TextStyle(color: colors.textSecondary),
-            ),
-            const SizedBox(height: 12),
-            TextButton(
-              onPressed: () => _load(0),
-              child: Text(
-                'retry'.tr(),
-                style: TextStyle(color: colors.activate),
-              ),
-            ),
-          ],
-        ),
+      return ErrorState(
+        message: 'reviews_load_failed'.tr(),
+        onRetry: () => _load(0),
       );
     }
 

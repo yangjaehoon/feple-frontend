@@ -15,36 +15,21 @@ class FestivalDetailService
 
   FestivalDetailService(this._cache);
 
-  @override
-  Future<List<FestivalArtistItem>> fetchFestivalArtists(int festivalId) async {
+  /// GET 요청 → 캐시 저장, 오프라인이면서 캐시가 있으면 캐시로 폴백.
+  Future<List<T>> _fetchWithCacheFallback<T>({
+    required String endpoint,
+    required List<T> Function(dynamic data) parse,
+    required Future<void> Function(List<T> items) save,
+    required Future<List<T>?> Function() load,
+  }) async {
     try {
-      final response =
-          await DioClient.dio.get('/festivals/$festivalId/artists');
-      final items = (response.data as List)
-          .map((e) => FestivalArtistItem.fromJson(e as Map<String, dynamic>))
-          .toList();
-      await _cache.saveArtists(festivalId, items);
+      final response = await DioClient.dio.get(endpoint);
+      final items = parse(response.data);
+      await save(items);
       return items;
     } catch (e) {
       if (isOffline(e)) {
-        final cached = await _cache.loadArtists(festivalId);
-        if (cached != null) return cached;
-      }
-      rethrow;
-    }
-  }
-
-  Future<List<BoothModel>> fetchBooths(int festivalId) async {
-    try {
-      final response = await DioClient.dio.get('/festivals/$festivalId/booths');
-      final items = (response.data as List)
-          .map((json) => BoothModel.fromJson(json as Map<String, dynamic>))
-          .toList();
-      await _cache.saveBooths(festivalId, items);
-      return items;
-    } catch (e) {
-      if (isOffline(e)) {
-        final cached = await _cache.loadBooths(festivalId);
+        final cached = await load();
         if (cached != null) return cached;
       }
       rethrow;
@@ -52,25 +37,36 @@ class FestivalDetailService
   }
 
   @override
-  Future<List<TimetableEntry>> fetchTimetable(int festivalId) async {
-    try {
-      final response =
-          await DioClient.dio.get('/festivals/$festivalId/timetable');
-      final raw = response.data;
-      final items = (raw is List ? raw : <dynamic>[])
-          .whereType<Map<String, dynamic>>()
-          .map((e) => TimetableEntry.fromJson(e))
-          .toList();
-      await _cache.saveTimetable(festivalId, items);
-      return items;
-    } catch (e) {
-      if (isOffline(e)) {
-        final cached = await _cache.loadTimetable(festivalId);
-        if (cached != null) return cached;
-      }
-      rethrow;
-    }
-  }
+  Future<List<FestivalArtistItem>> fetchFestivalArtists(int festivalId) =>
+      _fetchWithCacheFallback(
+        endpoint: '/festivals/$festivalId/artists',
+        parse: (data) => (data as List)
+            .map((e) => FestivalArtistItem.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        save: (items) => _cache.saveArtists(festivalId, items),
+        load: () => _cache.loadArtists(festivalId),
+      );
+
+  Future<List<BoothModel>> fetchBooths(int festivalId) => _fetchWithCacheFallback(
+        endpoint: '/festivals/$festivalId/booths',
+        parse: (data) => (data as List)
+            .map((json) => BoothModel.fromJson(json as Map<String, dynamic>))
+            .toList(),
+        save: (items) => _cache.saveBooths(festivalId, items),
+        load: () => _cache.loadBooths(festivalId),
+      );
+
+  @override
+  Future<List<TimetableEntry>> fetchTimetable(int festivalId) =>
+      _fetchWithCacheFallback(
+        endpoint: '/festivals/$festivalId/timetable',
+        parse: (data) => (data is List ? data : <dynamic>[])
+            .whereType<Map<String, dynamic>>()
+            .map((e) => TimetableEntry.fromJson(e))
+            .toList(),
+        save: (items) => _cache.saveTimetable(festivalId, items),
+        load: () => _cache.loadTimetable(festivalId),
+      );
 
   // 날씨는 실시간 데이터라 캐시하지 않음
   Future<WeatherModel?> fetchWeather(int festivalId) async {
@@ -80,24 +76,15 @@ class FestivalDetailService
     return WeatherModel.fromJson(response.data as Map<String, dynamic>);
   }
 
-  Future<List<FestivalSetlistEntry>> fetchSetlist(int festivalId) async {
-    try {
-      final response =
-          await DioClient.dio.get('/festivals/$festivalId/setlist');
-      final items = (response.data as List)
-          .map((e) =>
-              FestivalSetlistEntry.fromJson(e as Map<String, dynamic>))
-          .toList();
-      await _cache.saveSetlist(festivalId, items);
-      return items;
-    } catch (e) {
-      if (isOffline(e)) {
-        final cached = await _cache.loadSetlist(festivalId);
-        if (cached != null) return cached;
-      }
-      rethrow;
-    }
-  }
+  Future<List<FestivalSetlistEntry>> fetchSetlist(int festivalId) =>
+      _fetchWithCacheFallback(
+        endpoint: '/festivals/$festivalId/setlist',
+        parse: (data) => (data as List)
+            .map((e) => FestivalSetlistEntry.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        save: (items) => _cache.saveSetlist(festivalId, items),
+        load: () => _cache.loadSetlist(festivalId),
+      );
 
   Future<void> submitSetlistRequest({
     required int festivalId,

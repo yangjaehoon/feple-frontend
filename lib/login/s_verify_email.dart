@@ -130,6 +130,15 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     }
   }
 
+  // deleteOnCancel(신규 가입 계정)이면 Firebase 계정 삭제, 아니면 signOut만
+  Future<void> _deleteAccountOrSignOut() async {
+    if (widget.deleteOnCancel) {
+      await AuthService.instance.cancelUnverifiedSignup();
+    } else {
+      await AuthService.instance.signOut();
+    }
+  }
+
   Future<void> _onCancelTapped() async {
     final confirmed = await showConfirmDialog(
       context,
@@ -140,11 +149,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     if (!confirmed || !mounted) return;
     setState(() => _isCanceling = true);
     try {
-      if (widget.deleteOnCancel) {
-        await AuthService.instance.cancelUnverifiedSignup();
-      } else {
-        await AuthService.instance.signOut();
-      }
+      await _deleteAccountOrSignOut();
       if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
     } catch (e) {
       debugPrint('[VerifyEmail] 취소 처리 실패: $e');
@@ -157,11 +162,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   Future<void> _onChangeEmailTapped() async {
     setState(() => _isChangingEmail = true);
     try {
-      if (widget.deleteOnCancel) {
-        await AuthService.instance.cancelUnverifiedSignup();
-      } else {
-        await AuthService.instance.signOut();
-      }
+      await _deleteAccountOrSignOut();
       if (mounted) Navigator.pop(context);
     } catch (e) {
       debugPrint('[VerifyEmail] 이메일 변경 처리 실패: $e');

@@ -12,6 +12,8 @@ class TimetableRange {
   });
 }
 
+String formatTimeRange(String startTime, String endTime) => '$startTime – $endTime';
+
 TimetableRange computeTimetableRange(List<TimetableEntry> entries, String? date) {
   const defaultStart = 12;
   final filtered = date == null
@@ -121,7 +123,7 @@ class TimetableEntry {
 
   bool get isOps => stageName == _opsStage;
 
-  String get timeRange => '$startTime – $endTime';
+  String get timeRange => formatTimeRange(startTime, endTime);
 
   int get durationMinutes {
     try {

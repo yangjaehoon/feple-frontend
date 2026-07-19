@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/common/util/dio_error_helper.dart';
+import 'package:feple/common/util/certification_submit_helper.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
@@ -75,25 +75,22 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
     if (picked == null || !mounted) return;
 
     setState(() => _submitting = true);
-    try {
-      final Uint8List imageData = await picked.readAsBytes();
-      await widget.certService.submit(
-        festivalId: _selectedFestival!.id,
-        imageData: imageData,
-      );
-      if (!mounted) return;
+    final Uint8List imageData = await picked.readAsBytes();
+    if (!mounted) return;
+    final success = await submitCertification(
+      context,
+      certService: widget.certService,
+      festivalId: _selectedFestival!.id,
+      imageData: imageData,
+    );
+    if (!mounted) return;
+    if (success) {
       setState(() { _submitting = false; _submitSuccess = true; });
       await Future.delayed(AppDimens.animSuccessDelay);
       if (!mounted) return;
       Navigator.pop(context, true);
-    } catch (e) {
-      if (!mounted) return;
-      debugPrint('cert submit error: $e');
-      context.showErrorSnackbar(networkAwareErrorKey(
-        e,
-        isDioConflict(e) ? 'cert_already_submitted' : 'cert_submit_failed',
-      ).tr());
-      if (mounted) setState(() => _submitting = false);
+    } else {
+      setState(() => _submitting = false);
     }
   }
 

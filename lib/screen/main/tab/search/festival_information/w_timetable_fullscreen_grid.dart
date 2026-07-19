@@ -4,6 +4,7 @@ import 'package:feple/common/constant/timetable_colors.dart';
 import 'package:feple/common/data/preference/prefs.dart';
 import 'package:feple/common/dart/extension/time_of_day_extension.dart';
 import 'package:feple/model/timetable_entry.dart';
+import 'package:feple/screen/main/tab/search/festival_information/timetable_style.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_timetable_stage_cell.dart';
 import 'package:feple/model/my_timetable_entry.dart';
 import 'package:flutter/material.dart';
@@ -43,17 +44,9 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
 
   Offset? _tapPos;
 
-  double _toY(String time, double pxPerMin) {
-    final parts = time.split(':');
-    final hour = int.tryParse(parts.isNotEmpty ? parts[0] : '0') ?? 0;
-    final minute = int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0;
-    return ((hour - _startHour) * 60 + minute) * pxPerMin;
-  }
+  double _toY(String time, double pxPerMin) => timetableMinutesToY(time, _startHour, pxPerMin);
 
-  Color _stageColor(String stage) {
-    final colorIndex = _stages.indexOf(stage) % kStageColors.length;
-    return kStageColors[colorIndex < 0 ? 0 : colorIndex];
-  }
+  Color _stageColor(String stage) => timetableStageColor(stage, _stages);
 
   int _minutesOf(String time) {
     final parts = time.split(':');

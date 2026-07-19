@@ -103,6 +103,15 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
     );
   }
 
+  Future<void> _openExternalLink(String url) async {
+    try {
+      final launched = await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+      if (!launched && mounted) context.showErrorSnackbar('link_open_failed'.tr());
+    } catch (_) {
+      if (mounted) context.showErrorSnackbar('link_open_failed'.tr());
+    }
+  }
+
   Future<void> _clearCache() async {
     setState(() => _clearingCache = true);
     try {
@@ -233,29 +242,13 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
       _SettingsItem(
         icon: Icons.headset_mic_rounded,
         label: 'customer_service'.tr(),
-        onTap: () async {
-          final uri = Uri.parse('https://open.kakao.com/o/guLhbJki');
-          try {
-            final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
-            if (!launched && mounted) context.showErrorSnackbar('link_open_failed'.tr());
-          } catch (_) {
-            if (mounted) context.showErrorSnackbar('link_open_failed'.tr());
-          }
-        },
+        onTap: () => _openExternalLink('https://open.kakao.com/o/guLhbJki'),
       ),
       const _ItemDivider(),
       _SettingsItem(
         icon: Icons.privacy_tip_rounded,
         label: 'privacy_policy'.tr(),
-        onTap: () async {
-          final uri = Uri.parse('https://yangjae.notion.site/feple-privacy?source=copy_link');
-          try {
-            final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
-            if (!launched && mounted) context.showErrorSnackbar('link_open_failed'.tr());
-          } catch (_) {
-            if (mounted) context.showErrorSnackbar('link_open_failed'.tr());
-          }
-        },
+        onTap: () => _openExternalLink('https://yangjae.notion.site/feple-privacy?source=copy_link'),
       ),
       const _ItemDivider(),
       _SettingsItem(

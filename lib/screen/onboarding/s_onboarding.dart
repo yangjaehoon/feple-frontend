@@ -9,6 +9,7 @@ import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_model.dart';
+import 'package:feple/screen/main/tab/search/artist_genre_style.dart';
 import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/artist_service.dart';
 import 'package:flutter/material.dart';
@@ -298,7 +299,7 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
       ),
       isEmpty: (_) => false,
       builder: (_, artists) {
-        final genres = _extractGenres(artists);
+        final genres = extractArtistGenres(artists);
         final filtered = _selectedGenre == null
             ? artists
             : artists.where((a) => a.genres.contains(_selectedGenre)).toList();
@@ -340,23 +341,6 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
     );
   }
 
-  List<String> _extractGenres(List<Artist> artists) {
-    return artists.expand((a) => a.genres).toSet().toList()..sort();
-  }
-
-  String _genreLabel(String genre) {
-    switch (genre) {
-      case 'Band':    return 'genre_band'.tr();
-      case 'Hip-hop': return 'genre_hip_hop'.tr();
-      case 'Indie':   return 'genre_indie'.tr();
-      case 'Ballad':  return 'genre_ballad'.tr();
-      case 'R&B':     return 'genre_rnb'.tr();
-      case '댄스':     return 'genre_dance'.tr();
-      case '아이돌':   return 'genre_idol'.tr();
-      default:        return genre;
-    }
-  }
-
   Widget _buildGenreChips(List<String> genres, AbstractThemeColors colors) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -370,7 +354,7 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
             onTap: () => setState(() => _selectedGenre = null),
           ),
           ...genres.map((genre) => SelectableChip(
-                label: _genreLabel(genre),
+                label: artistGenreLabel(genre),
                 selected: _selectedGenre == genre,
                 unselectedTextColor: colors.textTitle,
                 onTap: () => setState(() => _selectedGenre = genre),

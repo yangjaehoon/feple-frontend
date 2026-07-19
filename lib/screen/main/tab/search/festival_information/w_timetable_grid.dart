@@ -3,6 +3,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/constant/timetable_colors.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:flutter/material.dart';
+import 'timetable_style.dart';
 import 'w_timetable_stage_cell.dart';
 
 class TimetableScrollControllers {
@@ -47,17 +48,9 @@ class TimetableGrid extends StatelessWidget {
     required this.scrollControllers,
   });
 
-  double _toY(String time) {
-    final timeComponents = time.split(':');
-    final hour = int.tryParse(timeComponents.isNotEmpty ? timeComponents[0] : '0') ?? 0;
-    final minute = int.tryParse(timeComponents.length > 1 ? timeComponents[1] : '0') ?? 0;
-    return ((hour - startHour) * 60 + minute) * _minPx;
-  }
+  double _toY(String time) => timetableMinutesToY(time, startHour, _minPx);
 
-  Color _colorFor(String stage) {
-    final colorIndex = stages.indexOf(stage) % kStageColors.length;
-    return kStageColors[colorIndex < 0 ? 0 : colorIndex];
-  }
+  Color _colorFor(String stage) => timetableStageColor(stage, stages);
 
   @override
   Widget build(BuildContext context) {
@@ -116,14 +109,14 @@ class TimetableGrid extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildTimeColumn(colors, totalH, needsVScroll),
+          _buildTimeColumn(colors, totalH),
           Expanded(child: _buildGridContent(colors, stageW, totalW, totalH, needsVScroll)),
         ],
       ),
     );
   }
 
-  Widget _buildTimeColumn(AbstractThemeColors colors, double totalH, bool needsVScroll) {
+  Widget _buildTimeColumn(AbstractThemeColors colors, double totalH) {
     return SizedBox(
       width: _timeColW,
       child: SingleChildScrollView(

@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:feple/common/util/dio_error_helper.dart';
+import 'package:feple/common/util/certification_submit_helper.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -49,29 +49,18 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
   Future<void> _submit() async {
     if (_imageBytes == null) return;
     setState(() => _submitting = true);
-    try {
-      final imageData = _imageBytes!;
-      await widget.certService.submit(
-        festivalId: widget.festivalId,
-        imageData: imageData,
-      );
-      if (!mounted) return;
+    final success = await submitCertification(
+      context,
+      certService: widget.certService,
+      festivalId: widget.festivalId,
+      imageData: _imageBytes!,
+    );
+    if (!mounted) return;
+    if (success) {
       context.showSuccessSnackbar('cert_submit_success'.tr());
       Navigator.pop(context);
-    } catch (e) {
-      if (!mounted) return;
-      debugPrint('cert submit error: $e');
-      final networkKey = networkAwareErrorKey(e, '');
-      if (networkKey == 'connection_error') {
-        context.showErrorSnackbar('connection_error'.tr());
-      } else {
-        context.showErrorSnackbar(
-          isDioConflict(e) ? 'cert_already_submitted'.tr() : 'cert_submit_failed'.tr(),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _submitting = false);
     }
+    setState(() => _submitting = false);
   }
 
   @override

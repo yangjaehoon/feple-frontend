@@ -8,6 +8,7 @@ import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/provider/user_provider.dart';
+import 'package:feple/screen/main/tab/search/artist_genre_style.dart';
 import 'package:feple/screen/main/tab/search/w_artist_card.dart';
 import 'package:feple/screen/main/tab/search/w_artist_suggestion_sheet.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -172,7 +173,7 @@ class _ArtistContentState extends State<_ArtistContent> with NavigationGuard {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final genres = widget.allArtists.expand((a) => a.genres).toSet().toList()..sort();
+    final genres = extractArtistGenres(widget.allArtists);
     final artists = _selectedGenre == null
         ? widget.allArtists
         : widget.allArtists.where((a) => a.genres.contains(_selectedGenre)).toList();
@@ -211,7 +212,7 @@ class _ArtistContentState extends State<_ArtistContent> with NavigationGuard {
                   onTap: () => setState(() => _selectedGenre = null),
                 ),
                 ...genres.map((genre) => SelectableChip(
-                      label: _genreLabel(genre),
+                      label: artistGenreLabel(genre),
                       selected: _selectedGenre == genre,
                       onTap: () => setState(() => _selectedGenre = genre),
                     )),
@@ -265,17 +266,6 @@ class _ArtistContentState extends State<_ArtistContent> with NavigationGuard {
     );
   }
 }
-
-String _genreLabel(String genre) => switch (genre) {
-  'Band'   => 'genre_band'.tr(),
-  'Hip-hop'=> 'genre_hip_hop'.tr(),
-  'Indie'  => 'genre_indie'.tr(),
-  'Ballad' => 'genre_ballad'.tr(),
-  'R&B'    => 'genre_rnb'.tr(),
-  '댄스'   => 'genre_dance'.tr(),
-  '아이돌' => 'genre_idol'.tr(),
-  _        => genre,
-};
 
 class _ArtistSuggestionBanner extends StatelessWidget {
   const _ArtistSuggestionBanner();

@@ -140,22 +140,13 @@ void main() {
 
     // ── toggleReviewLike ───────────────────────────────────────────────────
 
-    test('toggleReviewLike returns true when liked', () async {
+    test('toggleReviewLike completes without throwing', () async {
       server.enqueue(
         body: '{"liked":true}',
         headers: {'Content-Type': 'application/json'},
       );
 
-      expect(await service.toggleReviewLike(1), true);
-    });
-
-    test('toggleReviewLike returns false when unliked', () async {
-      server.enqueue(
-        body: '{"liked":false}',
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      expect(await service.toggleReviewLike(1), false);
+      await expectLater(service.toggleReviewLike(1), completes);
     });
 
     // ── getFestivalRating ──────────────────────────────────────────────────

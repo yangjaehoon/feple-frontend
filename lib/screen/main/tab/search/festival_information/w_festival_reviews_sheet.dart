@@ -580,14 +580,9 @@ class _ReviewCardState extends State<_ReviewCard> {
       _likeCount += wasLiked ? -1 : 1;
     });
     try {
-      final serverLiked = await widget.certService.toggleReviewLike(
-        widget.review.reviewId,
-      );
+      await widget.certService.toggleReviewLike(widget.review.reviewId);
       if (!mounted) return;
-      setState(() {
-        _likedByMe = serverLiked;
-        _isSubmitting = false;
-      });
+      setState(() => _isSubmitting = false);
     } catch (e) {
       debugPrint('[ReviewCard] like toggle error: $e');
       if (!mounted) return;

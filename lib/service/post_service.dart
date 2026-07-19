@@ -100,13 +100,8 @@ class PostService {
       _createPost(_endpointFor(boardType), draft);
 
   /// 아티스트 게시판 페이지 조회
-  Future<PostCursorPage> fetchArtistPostsPage(int artistId, {int? cursor, int size = 20}) async {
-    final response = await DioClient.dio.get('/posts/artist/$artistId', queryParameters: {
-      'cursor': ?cursor,
-      'size': size,
-    });
-    return PostCursorPage.fromJson(response.data as Map<String, dynamic>);
-  }
+  Future<PostCursorPage> fetchArtistPostsPage(int artistId, {int? cursor, int size = 20}) =>
+      _fetchCursorPage('/posts/artist/$artistId', cursor: cursor, size: size);
 
   /// 아티스트 게시판 목록 조회
   Future<List<Post>> fetchArtistPosts(int artistId) =>

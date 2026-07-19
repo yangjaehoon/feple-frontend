@@ -12,11 +12,6 @@ class UserActivityService {
     return PostCursorPage.fromJson(response.data as Map<String, dynamic>);
   }
 
-  Future<List<Post>> fetchPosts(int userId) async {
-    final response = await DioClient.dio.get('/users/$userId/posts');
-    return response.toModelList(Post.fromJson);
-  }
-
   Future<List<MyComment>> fetchComments(int userId) async {
     final response = await DioClient.dio.get('/users/$userId/comments');
     return response.toModelList(MyComment.fromJson);

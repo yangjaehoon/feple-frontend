@@ -34,45 +34,50 @@ class FcmNavigationHandler {
     nav.push(SlideRoute(builder: (_) => const NotificationScreen()));
   }
 
-  Future<bool> _pushFestival(NavigatorState nav, int festivalId) async {
-    try {
-      final festival = await sl<FestivalService>().fetchById(festivalId);
-      nav.push(SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)));
-      return true;
-    } catch (e) {
-      debugPrint('[FCM Nav] 페스티벌 이동 실패: $e');
-      return false;
-    }
-  }
+  Future<bool> _pushFestival(NavigatorState nav, int festivalId) => _tryPush(
+        nav,
+        label: '페스티벌',
+        buildScreen: () async {
+          final festival = await sl<FestivalService>().fetchById(festivalId);
+          return FestivalInformationFragment(poster: festival);
+        },
+      );
 
-  Future<bool> _pushPost(NavigatorState nav, int postId) async {
-    try {
-      final post = await sl<PostService>().fetchPost(postId);
-      nav.push(SlideRoute(
-        builder: (_) => PostDetailCard.fromPost(boardName: post.boardDisplayName, post: post),
-      ));
-      return true;
-    } catch (e) {
-      debugPrint('[FCM Nav] 게시글 이동 실패: $e');
-      return false;
-    }
-  }
+  Future<bool> _pushPost(NavigatorState nav, int postId) => _tryPush(
+        nav,
+        label: '게시글',
+        buildScreen: () async {
+          final post = await sl<PostService>().fetchPost(postId);
+          return PostDetailCard.fromPost(boardName: post.boardDisplayName, post: post);
+        },
+      );
 
-  Future<bool> _pushArtist(NavigatorState nav, int artistId) async {
+  Future<bool> _pushArtist(NavigatorState nav, int artistId) => _tryPush(
+        nav,
+        label: '아티스트',
+        buildScreen: () async {
+          final artist = await sl<ArtistService>().fetchArtistById(artistId);
+          return ArtistScreen(
+            artistId: artist.id,
+            artistName: artist.name,
+            artistNameEn: artist.nameEn,
+            followerCount: artist.followerCount,
+            profileImageUrl: artist.profileImageUrl,
+          );
+        },
+      );
+
+  Future<bool> _tryPush(
+    NavigatorState nav, {
+    required String label,
+    required Future<Widget> Function() buildScreen,
+  }) async {
     try {
-      final artist = await sl<ArtistService>().fetchArtistById(artistId);
-      nav.push(SlideRoute(
-        builder: (_) => ArtistScreen(
-          artistId: artist.id,
-          artistName: artist.name,
-          artistNameEn: artist.nameEn,
-          followerCount: artist.followerCount,
-          profileImageUrl: artist.profileImageUrl,
-        ),
-      ));
+      final screen = await buildScreen();
+      nav.push(SlideRoute(builder: (_) => screen));
       return true;
     } catch (e) {
-      debugPrint('[FCM Nav] 아티스트 이동 실패: $e');
+      debugPrint('[FCM Nav] $label 이동 실패: $e');
       return false;
     }
   }

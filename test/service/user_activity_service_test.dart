@@ -60,30 +60,6 @@ void main() {
       expect(page.nextCursor, isNull);
     });
 
-    // ── fetchPosts ─────────────────────────────────────────────────────────
-
-    test('fetchPosts parses Post list', () async {
-      server.enqueue(
-        body: '[$postJson]',
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      final posts = await service.fetchPosts(1);
-
-      expect(posts.length, 1);
-      expect(posts.first.id, 1);
-      expect(posts.first.nickname, 'user1');
-    });
-
-    test('fetchPosts returns empty list', () async {
-      server.enqueue(
-        body: '[]',
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      expect(await service.fetchPosts(1), isEmpty);
-    });
-
     // ── fetchComments ──────────────────────────────────────────────────────
 
     test('fetchComments parses MyComment list', () async {

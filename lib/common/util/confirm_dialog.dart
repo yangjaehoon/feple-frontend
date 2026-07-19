@@ -1,5 +1,5 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/app_alert_dialog.dart';
 import 'package:flutter/material.dart';
 
 Future<bool> showConfirmDialog(
@@ -10,32 +10,23 @@ Future<bool> showConfirmDialog(
 }) async {
   return await showDialog<bool>(
     context: context,
-    builder: (ctx) {
-      final colors = ctx.appColors;
-      return AlertDialog(
-        backgroundColor: colors.surface,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(AppDimens.shapeDialog)),
+    builder: (ctx) => buildAppAlertDialog(
+      ctx,
+      title: title,
+      content: content,
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: Text('cancel'.tr()),
         ),
-        title: Text(
-          title,
-          style: TextStyle(fontWeight: FontWeight.w700, color: colors.textTitle),
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, true),
+          child: Text(
+            confirmLabel,
+            style: TextStyle(color: ctx.appColors.error),
+          ),
         ),
-        content: Text(content, style: TextStyle(color: colors.textSecondary)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text('cancel'.tr()),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(
-              confirmLabel,
-              style: TextStyle(color: colors.error),
-            ),
-          ),
-        ],
-      );
-    },
+      ],
+    ),
   ) ?? false;
 }

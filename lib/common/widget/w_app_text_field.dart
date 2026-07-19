@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/app_input_border.dart';
 import 'package:flutter/material.dart';
 
 class AppTextField extends StatefulWidget {
@@ -68,20 +69,9 @@ class _AppTextFieldState extends State<AppTextField> {
       filled: true,
       fillColor: colors.surface,
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-        borderSide: BorderSide(color: colors.divider),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-        borderSide: BorderSide(
-          color: widget.errorText != null ? colors.error : colors.divider,
-        ),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-        borderSide: BorderSide(color: colors.focusedBorder, width: 2),
-      ),
+      border: appInputBorder(colors.divider),
+      enabledBorder: appInputBorder(widget.errorText != null ? colors.error : colors.divider),
+      focusedBorder: appInputBorder(colors.focusedBorder, width: 2),
     );
   }
 

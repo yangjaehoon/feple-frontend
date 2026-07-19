@@ -1,9 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/exception/banned_word_exception.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/util/image_upload_helper.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
+import 'package:feple/common/widget/app_input_border.dart';
+import 'package:feple/common/widget/w_app_network_image.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/service/app_review_service.dart';
@@ -145,18 +146,9 @@ class _WritePostState extends State<WritePost> {
       hintStyle: TextStyle(color: colors.textSecondary),
       counterStyle: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXxs),
       border: OutlineInputBorder(borderRadius: radius),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: radius,
-        borderSide: BorderSide(color: colors.activate, width: 2),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: radius,
-        borderSide: BorderSide(color: colors.error, width: 1.5),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: radius,
-        borderSide: BorderSide(color: colors.error, width: 2),
-      ),
+      focusedBorder: appInputBorder(colors.activate, width: 2),
+      errorBorder: appInputBorder(colors.error, width: 1.5),
+      focusedErrorBorder: appInputBorder(colors.error, width: 2),
       errorText: bannedWordMessage,
     );
   }
@@ -190,22 +182,11 @@ class _WritePostState extends State<WritePost> {
         child: Image.memory(_selectedImage!, fit: BoxFit.cover, width: 72, height: 72),
       );
     } else if (_existingImageUrl != null) {
-      preview = ClipRRect(
+      preview = AppNetworkImage(
+        imageUrl: _existingImageUrl,
+        width: 72,
+        height: 72,
         borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-        child: CachedNetworkImage(
-          imageUrl: _existingImageUrl!,
-          width: 72,
-          height: 72,
-          memCacheWidth: 144,
-          fit: BoxFit.cover,
-          fadeInDuration: AppDimens.animXFast,
-          fadeOutDuration: AppDimens.animTapFeedback,
-          placeholder: (_, _) => Container(width: 72, height: 72, color: Colors.grey.shade200),
-          errorWidget: (_, _, _) => Container(
-            width: 72, height: 72, color: Colors.grey.shade200,
-            child: const Icon(Icons.broken_image_rounded, color: Colors.grey),
-          ),
-        ),
       );
     }
 

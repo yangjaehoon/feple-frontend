@@ -4,6 +4,7 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_refreshable_center.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_write_post.dart';
 import 'package:feple/injection.dart';
@@ -229,7 +230,7 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
 
   void _onScroll() {
     if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 300) {
+        _scrollController.position.maxScrollExtent - AppDimens.loadMoreTriggerDistance) {
       _loadMore();
     }
   }
@@ -354,30 +355,16 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
       return _buildSkeleton(colors);
     }
     if (_hasError) {
-      return LayoutBuilder(
-        builder: (context, constraints) => SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: SizedBox(
-            height: constraints.maxHeight,
-            child: Center(child: ErrorState(message: 'err_fetch_data'.tr(), onRetry: _load)),
-          ),
-        ),
+      return RefreshableCenter(
+        child: ErrorState(message: 'err_fetch_data'.tr(), onRetry: _load),
       );
     }
     if (_posts.isEmpty) {
-      return LayoutBuilder(
-        builder: (context, constraints) => SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: SizedBox(
-            height: constraints.maxHeight,
-            child: Center(
-              child: EmptyState(
-                icon: Icons.article_outlined,
-                title: 'no_posts_yet'.tr(),
-                subtitle: 'first_post_hint'.tr(),
-              ),
-            ),
-          ),
+      return RefreshableCenter(
+        child: EmptyState(
+          icon: Icons.article_outlined,
+          title: 'no_posts_yet'.tr(),
+          subtitle: 'first_post_hint'.tr(),
         ),
       );
     }

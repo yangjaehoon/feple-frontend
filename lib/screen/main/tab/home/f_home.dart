@@ -42,7 +42,7 @@ class _HomeFragmentState extends State<HomeFragment> {
   }
 
   void _onScroll() {
-    final show = _scrollController.position.pixels > 300;
+    final show = _scrollController.position.pixels > AppDimens.scrollToTopThreshold;
     if (show != _showScrollToTop) setState(() => _showScrollToTop = show);
   }
 

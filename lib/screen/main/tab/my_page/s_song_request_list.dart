@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_refreshable_center.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_status_filter_chip.dart';
@@ -62,17 +63,7 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
     } catch (_) {}
   }
 
-  Widget _buildScrollable(Widget child) {
-    return LayoutBuilder(
-      builder: (context, constraints) => SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: SizedBox(
-          height: constraints.maxHeight,
-          child: Center(child: child),
-        ),
-      ),
-    );
-  }
+  Widget _buildScrollable(Widget child) => RefreshableCenter(child: child);
 
   Widget _buildSkeleton(AbstractThemeColors colors) {
     return ListView.separated(

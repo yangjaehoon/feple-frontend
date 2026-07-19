@@ -11,6 +11,7 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_refreshable_center.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
@@ -92,10 +93,10 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
 
   void _onScroll() {
     final pos = _scrollController.position;
-    final showScrollTop = pos.pixels > 300;
+    final showScrollTop = pos.pixels > AppDimens.scrollToTopThreshold;
     if (showScrollTop != _showScrollTop) setState(() => _showScrollTop = showScrollTop);
     if (_loadingMore || !_hasMore || !_isPaginated) return;
-    if (pos.pixels >= pos.maxScrollExtent - 200) {
+    if (pos.pixels >= pos.maxScrollExtent - AppDimens.loadMoreTriggerDistance) {
       _loadMore();
     }
   }
@@ -283,28 +284,20 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
   }
 
   Widget _buildEmptyState(AbstractThemeColors colors) {
-    return LayoutBuilder(
-      builder: (context, constraints) => SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: SizedBox(
-          height: constraints.maxHeight,
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(32),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.chat_bubble_outline_rounded, size: 48, color: colors.textSecondary.withValues(alpha: 0.3)),
-                  const SizedBox(height: 12),
-                  Text(
-                    'be_first_to_discuss'.tr(args: [widget.boardName]),
-                    style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textSecondary),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
+    return RefreshableCenter(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.chat_bubble_outline_rounded, size: 48, color: colors.textSecondary.withValues(alpha: 0.3)),
+            const SizedBox(height: 12),
+            Text(
+              'be_first_to_discuss'.tr(args: [widget.boardName]),
+              style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textSecondary),
+              textAlign: TextAlign.center,
             ),
-          ),
+          ],
         ),
       ),
     );

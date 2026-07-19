@@ -4,6 +4,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_refreshable_center.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_level_badge.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -19,7 +20,7 @@ import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:feple/service/user_activity_service.dart';
 import 'package:feple/service/user_service.dart';
-import 'package:feple/common/util/confirm_dialog.dart';
+import 'package:feple/common/util/block_action_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -90,37 +91,21 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
 
   Future<void> _toggleBlock() async {
     final willBlock = !_isBlocked;
-    if (willBlock) {
-      final confirmed = await showConfirmDialog(
-        context,
-        title: 'block_title'.tr(),
-        content: 'block_confirm'.tr(args: [_user?.nickname ?? widget.nickname]),
-        confirmLabel: 'block'.tr(),
-      );
-      if (!confirmed || !mounted) return;
-    }
-
     setState(() => _isBlockLoading = true);
-    try {
-      if (willBlock) {
-        await _blockService.blockUser(widget.userId);
-      } else {
-        await _blockService.unblockUser(widget.userId);
-      }
-      if (!mounted) return;
+    final success = await confirmAndToggleBlock(
+      context,
+      blockService: _blockService,
+      userId: widget.userId,
+      nickname: _user?.nickname ?? widget.nickname,
+      block: willBlock,
+      requireConfirm: willBlock,
+    );
+    if (!mounted) return;
+    if (success) {
       setState(() => _isBlocked = willBlock);
-      final nickname = _user?.nickname ?? widget.nickname;
-      context.showSuccessSnackbar(
-        willBlock
-            ? 'block_success'.tr(args: [nickname])
-            : 'unblock_success'.tr(args: [nickname]),
-      );
       if (willBlock) Navigator.pop(context);
-    } catch (_) {
-      if (mounted) context.showErrorSnackbar(willBlock ? 'block_failed'.tr() : 'unblock_failed'.tr());
-    } finally {
-      if (mounted) setState(() => _isBlockLoading = false);
     }
+    setState(() => _isBlockLoading = false);
   }
 
   @override
@@ -199,14 +184,8 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
   }
 
   Widget _buildError() {
-    return LayoutBuilder(
-      builder: (context, constraints) => SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: SizedBox(
-          height: constraints.maxHeight,
-          child: Center(child: ErrorState(message: 'load_error'.tr(), onRetry: _load)),
-        ),
-      ),
+    return RefreshableCenter(
+      child: ErrorState(message: 'load_error'.tr(), onRetry: _load),
     );
   }
 

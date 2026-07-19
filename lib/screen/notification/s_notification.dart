@@ -5,6 +5,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_refreshable_center.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
@@ -74,9 +75,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   void _onScroll() {
     final pixels = _scrollController.position.pixels;
-    final show = pixels > 300;
+    final show = pixels > AppDimens.scrollToTopThreshold;
     if (show != _showScrollToTop) setState(() => _showScrollToTop = show);
-    if (pixels >= _scrollController.position.maxScrollExtent - 300) {
+    if (pixels >= _scrollController.position.maxScrollExtent - AppDimens.loadMoreTriggerDistance) {
       _notifier.loadMore();
     }
   }
@@ -457,17 +458,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     return result;
   }
 
-  Widget _buildScrollable(Widget child) {
-    return LayoutBuilder(
-      builder: (context, constraints) => SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: SizedBox(
-          height: constraints.maxHeight,
-          child: Center(child: child),
-        ),
-      ),
-    );
-  }
+  Widget _buildScrollable(Widget child) => RefreshableCenter(child: child);
 
   Widget _buildSkeleton(AbstractThemeColors colors) {
     return ListView.separated(

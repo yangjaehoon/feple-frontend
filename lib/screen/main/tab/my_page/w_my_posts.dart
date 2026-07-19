@@ -1,13 +1,14 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/post_cursor_controller.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_refreshable_center.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/injection.dart';
-import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_stat_row.dart';
 import 'package:feple/service/user_activity_service.dart';
@@ -25,96 +26,31 @@ class MyPostsView extends StatefulWidget {
 class _MyPostsViewState extends State<MyPostsView> {
   final _service = sl<UserActivityService>();
   final _scrollController = ScrollController();
-  List<Post> _posts = [];
-  bool _isLoading = true;
-  bool _hasError = false;
-  bool _isLoadingMore = false;
-  bool _hasMore = true;
-  int? _nextCursor;
-  // load/refresh와 loadMore가 겹칠 때 늦게 도착한 stale 응답을 버리기 위한 가드
-  int _loadId = 0;
+  late final _controller = PostCursorController(
+    fetchPage: ({cursor, size = 20}) =>
+        _service.fetchPostsPage(widget.userId, cursor: cursor, size: size),
+  );
 
   @override
   void initState() {
     super.initState();
+    _controller.addListener(_onControllerChanged);
     _scrollController.addListener(_onScroll);
-    _load();
+    _controller.load();
   }
 
   @override
   void dispose() {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    _controller.removeListener(_onControllerChanged);
+    _controller.dispose();
     super.dispose();
   }
 
-  void _onScroll() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 300) {
-      _loadMore();
-    }
-  }
+  void _onControllerChanged() => setState(() {});
 
-  Future<void> _load() async {
-    final myId = ++_loadId;
-    // 진행 중이던 loadMore를 무효화 — 그 결과가 나중에 와도 _loadId 가드로 버려짐
-    setState(() {
-      _isLoading = true;
-      _hasError = false;
-      _posts = [];
-      _hasMore = true;
-      _nextCursor = null;
-      _isLoadingMore = false;
-    });
-    try {
-      final result = await _service.fetchPostsPage(widget.userId, size: 20);
-      if (mounted && _loadId == myId) {
-        setState(() {
-          _posts = result.content;
-          _hasMore = result.hasNext;
-          _nextCursor = result.nextCursor;
-          _isLoading = false;
-        });
-      }
-    } catch (_) {
-      if (mounted && _loadId == myId) setState(() { _isLoading = false; _hasError = true; });
-    }
-  }
-
-  Future<void> _refresh() async {
-    final myId = ++_loadId;
-    if (_isLoadingMore) setState(() => _isLoadingMore = false);
-    try {
-      final result = await _service.fetchPostsPage(widget.userId, size: 20);
-      if (mounted && _loadId == myId) {
-        setState(() {
-          _posts = result.content;
-          _hasMore = result.hasNext;
-          _nextCursor = result.nextCursor;
-          _hasError = false;
-        });
-      }
-    } catch (_) {}
-  }
-
-  Future<void> _loadMore() async {
-    if (_isLoadingMore || !_hasMore || _isLoading) return;
-    final myId = _loadId;
-    setState(() => _isLoadingMore = true);
-    try {
-      final result = await _service.fetchPostsPage(widget.userId, cursor: _nextCursor, size: 20);
-      if (mounted && _loadId == myId) {
-        setState(() {
-          _posts = [..._posts, ...result.content];
-          _hasMore = result.hasNext;
-          _nextCursor = result.nextCursor;
-          _isLoadingMore = false;
-        });
-      }
-    } catch (_) {
-      if (mounted && _loadId == myId) setState(() => _isLoadingMore = false);
-    }
-  }
+  void _onScroll() => _controller.onScroll(_scrollController);
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +63,7 @@ class _MyPostsViewState extends State<MyPostsView> {
           Expanded(
             child: RefreshIndicator(
               color: colors.activate,
-              onRefresh: _refresh,
+              onRefresh: _controller.refresh,
               child: _buildContent(colors),
             ),
           ),
@@ -162,44 +98,33 @@ class _MyPostsViewState extends State<MyPostsView> {
   }
 
   Widget _buildContent(AbstractThemeColors colors) {
-    if (_isLoading) {
+    if (_controller.isLoading) {
       return _buildSkeleton(colors);
     }
-    if (_hasError) {
-      return LayoutBuilder(
-        builder: (context, constraints) => SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: SizedBox(
-            height: constraints.maxHeight,
-            child: Center(child: ErrorState(message: 'err_fetch_data'.tr(), onRetry: _load)),
-          ),
-        ),
+    if (_controller.hasError) {
+      return RefreshableCenter(
+        child: ErrorState(message: 'err_fetch_data'.tr(), onRetry: _controller.load),
       );
     }
-    if (_posts.isEmpty) {
-      return LayoutBuilder(
-        builder: (context, constraints) => SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: SizedBox(
-            height: constraints.maxHeight,
-            child: Center(child: EmptyState(icon: Icons.article_outlined, title: 'no_posts'.tr())),
-          ),
-        ),
+    final posts = _controller.posts;
+    if (posts.isEmpty) {
+      return RefreshableCenter(
+        child: EmptyState(icon: Icons.article_outlined, title: 'no_posts'.tr()),
       );
     }
     return ListView.separated(
       controller: _scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
-      itemCount: _posts.length + (_isLoadingMore ? 1 : 0),
+      itemCount: posts.length + (_controller.isLoadingMore ? 1 : 0),
       itemBuilder: (context, index) {
-        if (index == _posts.length) {
+        if (index == posts.length) {
           return const Padding(
             padding: EdgeInsets.symmetric(vertical: 16),
             child: Center(child: CircularProgressIndicator.adaptive()),
           );
         }
-        final post = _posts[index];
+        final post = posts[index];
         return AnimatedListItem(
           index: index,
           child: ListTile(
@@ -212,7 +137,7 @@ class _MyPostsViewState extends State<MyPostsView> {
                   ),
                 ),
               );
-              _refresh();
+              _controller.refresh();
             },
             title: Text(
               post.title,

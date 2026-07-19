@@ -12,6 +12,10 @@ class AppDimens {
   static const double scrollPaddingBottomLarge = 120.0;
   static const double fabBottomPadding = 80.0;
 
+  // ── Scroll threshold ──
+  static const double loadMoreTriggerDistance = 300.0; // 무한스크롤 loadMore 트리거 거리
+  static const double scrollToTopThreshold = 300.0;    // 스크롤 최상단 이동 버튼 노출 기준
+
   // ── Shape (MD3 기준) ──
   // Extra Small(4) · Small(8) · Medium(12) · Large(16) · Extra Large(28)
   static const double shapeInput = 12.0;    // 입력 필드 — Medium

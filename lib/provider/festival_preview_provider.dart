@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/safe_change_notifier.dart';
+import 'package:feple/common/stale_tracker.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
 
@@ -45,10 +46,7 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
   bool _hasMore = true;
   bool get hasMore => _hasMore;
 
-  DateTime? _loadedAt;
-  static const _staleAfter = Duration(minutes: 5);
-  bool get _isStale =>
-      _loadedAt == null || DateTime.now().difference(_loadedAt!) > _staleAfter;
+  final _staleness = StaleTracker(const Duration(minutes: 5));
 
   // 연속 필터 변경 시 마지막 변경 후 400ms 뒤에만 API 호출
   Timer? _filterDebounce;
@@ -104,7 +102,7 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
   /// [force] true면 항상 재요청. false면 5분 이내 데이터가 있으면 skip.
   /// 당겨서 새로고침은 force: true, 화면 복귀 후 자동 호출은 force: false.
   Future<void> refresh({bool force = false}) async {
-    if (!force && _items.isNotEmpty && !_isStale) return;
+    if (!force && _items.isNotEmpty && !_staleness.isStale) return;
     _page = 0;
     _hasMore = true;
     _error = null;
@@ -149,7 +147,7 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
       _cachedItems = List.unmodifiable(_items);
       if (newItems.length < _size) _hasMore = false;
       _page += 1;
-      if (wasFirstPage) _loadedAt = DateTime.now();
+      if (wasFirstPage) _staleness.markLoaded();
     } catch (e) {
       if (myGeneration != _generation) return;
       debugPrint('festival preview error: $e');

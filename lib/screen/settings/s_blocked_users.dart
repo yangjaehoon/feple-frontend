@@ -1,6 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/common/util/confirm_dialog.dart';
+import 'package:feple/common/util/block_action_helper.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/injection.dart';
@@ -38,20 +38,15 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
   }
 
   Future<void> _unblock(BlockedUserModel user) async {
-    final confirmed = await showConfirmDialog(
+    final success = await confirmAndToggleBlock(
       context,
-      title: 'unblock_title'.tr(),
-      content: 'unblock_confirm'.tr(args: [user.nickname]),
-      confirmLabel: 'unblock'.tr(),
+      blockService: _service,
+      userId: user.userId,
+      nickname: user.nickname,
+      block: false,
     );
-    if (!confirmed || !mounted) return;
-    try {
-      await _service.unblockUser(user.userId);
-      if (!mounted) return;
+    if (success && mounted) {
       setState(() => _list?.removeWhere((u) => u.userId == user.userId));
-      context.showSuccessSnackbar('unblock_success'.tr(args: [user.nickname]));
-    } catch (_) {
-      if (mounted) context.showErrorSnackbar('unblock_failed'.tr());
     }
   }
 

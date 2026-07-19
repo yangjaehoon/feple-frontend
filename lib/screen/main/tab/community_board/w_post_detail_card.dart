@@ -4,6 +4,7 @@ import 'package:feple/model/post_changed_event.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/block_action_helper.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/popup_menu_item_builder.dart';
 import 'package:feple/common/widget/w_inline_badge.dart';
@@ -315,22 +316,14 @@ class _PostDetailCardState extends State<PostDetailCard> {
   Future<void> _onBlockUser() async {
     final authorId = widget.postUserId;
     if (authorId == null) return;
-    final nickname = widget.nickname;
-    final confirmed = await showConfirmDialog(
+    final success = await confirmAndToggleBlock(
       context,
-      title: 'block_title'.tr(),
-      content: 'block_confirm'.tr(args: [nickname]),
-      confirmLabel: 'block'.tr(),
+      blockService: _blockService,
+      userId: authorId,
+      nickname: widget.nickname,
+      block: true,
     );
-    if (!confirmed || !mounted) return;
-    try {
-      await _blockService.blockUser(authorId);
-      if (!mounted) return;
-      context.showSuccessSnackbar('block_success'.tr(args: [nickname]));
-      Navigator.pop(context);
-    } catch (_) {
-      if (mounted) context.showErrorSnackbar('block_failed'.tr());
-    }
+    if (success && mounted) Navigator.pop(context);
   }
 
   Widget _buildScrollContent(AbstractThemeColors colors, int? userId) {

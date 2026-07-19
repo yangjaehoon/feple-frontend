@@ -1,4 +1,5 @@
 import 'package:feple/common/safe_change_notifier.dart';
+import 'package:feple/common/stale_tracker.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/notification_model.dart';
 import 'package:feple/service/notification_feedable.dart';
@@ -20,10 +21,7 @@ class NotificationNotifier extends SafeChangeNotifier {
   // 원위치 복원용: id → 제거 전 인덱스
   final Map<int, int> _savedPositions = {};
 
-  DateTime? _loadedAt;
-  static const _staleAfter = Duration(minutes: 3);
-  bool get _isStale =>
-      _loadedAt == null || DateTime.now().difference(_loadedAt!) > _staleAfter;
+  final _staleness = StaleTracker(const Duration(minutes: 3));
 
   List<NotificationModel> get items => List.unmodifiable(_items);
   bool get hasUnread => _items.any((n) => !n.read);
@@ -41,7 +39,7 @@ class NotificationNotifier extends SafeChangeNotifier {
       _items = result.items;
       _hasMore = result.hasMore;
       _page = 1;
-      _loadedAt = DateTime.now();
+      _staleness.markLoaded();
     } catch (_) {
       hasError = true;
     } finally {
@@ -51,13 +49,13 @@ class NotificationNotifier extends SafeChangeNotifier {
   }
 
   Future<void> refresh({bool force = false}) async {
-    if (!force && _items.isNotEmpty && !_isStale) return;
+    if (!force && _items.isNotEmpty && !_staleness.isStale) return;
     final result = await _service.fetchPage(0, filter: filter);
     _items = result.items;
     _hasMore = result.hasMore;
     _page = 1;
     hasError = false;
-    _loadedAt = DateTime.now();
+    _staleness.markLoaded();
     safeNotify();
   }
 

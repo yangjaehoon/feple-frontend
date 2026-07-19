@@ -66,11 +66,11 @@ class _FestivalListFragmentState extends State<FestivalListFragment> {
   void _onScroll() {
     if (!mounted) return;
     final pixels = _scrollController.position.pixels;
-    final show = pixels > 300;
+    final show = pixels > AppDimens.scrollToTopThreshold;
     if (show != _showScrollToTop) setState(() => _showScrollToTop = show);
     final provider = context.read<FestivalPreviewProvider>();
     if (!provider.hasMore || provider.isLoadingMore || provider.isLoading) return;
-    if (pixels >= _scrollController.position.maxScrollExtent - 300) {
+    if (pixels >= _scrollController.position.maxScrollExtent - AppDimens.loadMoreTriggerDistance) {
       provider.fetchNext();
     }
   }

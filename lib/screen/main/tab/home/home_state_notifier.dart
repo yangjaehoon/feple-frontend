@@ -1,5 +1,6 @@
 import 'package:feple/common/data/preference/item/preference_item.dart';
 import 'package:feple/common/safe_change_notifier.dart';
+import 'package:feple/common/stale_tracker.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/favorite_board.dart';
 import 'package:feple/model/followed_artist.dart';
@@ -19,10 +20,7 @@ class HomeStateNotifier extends SafeChangeNotifier {
   List<FavoriteBoard>? boards;
   bool hasError = false;
 
-  DateTime? _loadedAt;
-  static const _staleAfter = Duration(minutes: 5);
-  bool get _isStale =>
-      _loadedAt == null || DateTime.now().difference(_loadedAt!) > _staleAfter;
+  final _staleness = StaleTracker(const Duration(minutes: 5));
 
   List<int> artistOrder = [];
   List<int> festivalOrder = [];
@@ -69,7 +67,7 @@ class HomeStateNotifier extends SafeChangeNotifier {
       artists = fetchedArtists;
       festivals = fetchedFestivals;
       boards = _buildBoards(fetchedArtists, fetchedFestivals);
-      _loadedAt = DateTime.now();
+      _staleness.markLoaded();
       // ignore: unawaited_futures
       _cacheService.saveHomeFestivals(id, fetchedFestivals);
       // ignore: unawaited_futures
@@ -100,7 +98,7 @@ class HomeStateNotifier extends SafeChangeNotifier {
 
   /// [force] true면 항상 재요청. false면 5분 이내 로드된 데이터가 있으면 skip.
   Future<void> refresh({bool force = false}) async {
-    if (!force && !_isStale && artists != null) return;
+    if (!force && !_staleness.isStale && artists != null) return;
     hasError = false;
     await loadData();
   }

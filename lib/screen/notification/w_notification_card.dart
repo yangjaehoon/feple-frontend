@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/notification_model.dart';
+import 'package:feple/screen/notification/notification_time_style.dart';
 import 'package:feple/screen/notification/notification_type_style.dart';
 import 'package:flutter/material.dart';
 
@@ -23,6 +24,10 @@ class NotificationCard extends StatelessWidget {
 
     return TapScale(
       onTap: isLoading ? null : onTap,
+      // 읽음 상태는 카드 배경/폰트굵기/점 색상 등 시각적 표시로만 전달돼
+      // 스크린리더에는 노출되지 않으므로 라벨로 보강 — 본문은 카드 내부의
+      // Text들이 별도로 안내되므로 여기서는 안읽음 여부만 전달
+      semanticsLabel: item.read ? null : 'unread_notification'.tr(),
       child: AnimatedContainer(
         duration: AppDimens.animQuick,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -57,7 +62,10 @@ class NotificationCard extends StatelessWidget {
     return BoxDecoration(
       color: item.read
           ? colors.surface
-          : Color.alphaBlend(colors.activate.withValues(alpha: 0.10), colors.surface),
+          : Color.alphaBlend(
+              colors.activate.withValues(alpha: 0.10),
+              colors.surface,
+            ),
       borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
       border: Border.all(
         color: item.read
@@ -95,7 +103,8 @@ class NotificationCard extends StatelessWidget {
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        color: (item.type?.iconColor(colors) ?? colors.certRingColor).withValues(alpha: 0.15),
+        color: (item.type?.iconColor(colors) ?? colors.certRingColor)
+            .withValues(alpha: 0.15),
         shape: BoxShape.circle,
       ),
       child: Icon(
@@ -131,7 +140,7 @@ class NotificationCard extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          item.relativeTime(!isEnglish),
+          item.relativeTimeLabel,
           style: TextStyle(
             fontSize: AppDimens.fontSizeXxs,
             color: colors.textSecondary.withValues(alpha: 0.6),

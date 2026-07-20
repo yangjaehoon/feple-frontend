@@ -11,6 +11,7 @@ import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/popup_menu_item_builder.dart';
 import 'package:feple/model/notification_model.dart';
+import 'package:feple/screen/notification/notification_time_style.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
@@ -77,7 +78,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
     final pixels = _scrollController.position.pixels;
     final show = pixels > AppDimens.scrollToTopThreshold;
     if (show != _showScrollToTop) setState(() => _showScrollToTop = show);
-    if (pixels >= _scrollController.position.maxScrollExtent - AppDimens.loadMoreTriggerDistance) {
+    if (pixels >=
+        _scrollController.position.maxScrollExtent -
+            AppDimens.loadMoreTriggerDistance) {
       _notifier.loadMore();
     }
   }
@@ -127,7 +130,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
       await Navigator.push(
         context,
         SlideRoute(
-          builder: (_) => PostDetailCard.fromPost(boardName: post.boardDisplayName, post: post),
+          builder: (_) => PostDetailCard.fromPost(
+            boardName: post.boardDisplayName,
+            post: post,
+          ),
         ),
       );
     } catch (e) {
@@ -231,17 +237,29 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   try {
                     await _notifier.refresh(force: true);
                   } catch (_) {
-                    if (context.mounted) context.showErrorSnackbar('refresh_failed'.tr());
+                    if (context.mounted) {
+                      context.showErrorSnackbar('refresh_failed'.tr());
+                    }
                   }
                 },
                 color: colors.activate,
                 child: _notifier.isLoading
                     ? _buildSkeleton(colors)
                     : _notifier.hasError
-                        ? _buildScrollable(ErrorState(message: 'err_fetch_data'.tr(), onRetry: _notifier.load))
-                        : _notifier.items.isEmpty
-                            ? _buildScrollable(EmptyState(icon: Icons.notifications_none_rounded, title: 'no_notifications'.tr()))
-                            : _buildNotificationList(colors),
+                    ? _buildScrollable(
+                        ErrorState(
+                          message: 'err_fetch_data'.tr(),
+                          onRetry: _notifier.load,
+                        ),
+                      )
+                    : _notifier.items.isEmpty
+                    ? _buildScrollable(
+                        EmptyState(
+                          icon: Icons.notifications_none_rounded,
+                          title: 'no_notifications'.tr(),
+                        ),
+                      )
+                    : _buildNotificationList(colors),
               ),
             ),
           ],
@@ -293,7 +311,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
               shadowColor: colors.cardShadow.withValues(alpha: 0.18),
               elevation: 3,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppDimens.shapeDialog)),
+                borderRadius: BorderRadius.circular(AppDimens.shapeDialog),
+              ),
               position: PopupMenuPosition.under,
             ),
           ],
@@ -343,17 +362,19 @@ class _NotificationScreenState extends State<NotificationScreen> {
     final messenger = ScaffoldMessenger.of(context);
     messenger.hideCurrentSnackBar();
     messenger
-        .showSnackBar(SnackBar(
-          content: Text('notification_dismissed'.tr()),
-          duration: const Duration(seconds: 4),
-          // Flutter 3.x: action != null이면 persist 기본값이 true → 타이머가 실행되도
-          // 스낵바를 닫지 않음. 실행취소 버튼이 있어도 4초 후 자동 닫히도록 명시
-          persist: false,
-          action: SnackBarAction(
-            label: 'undo'.tr(),
-            onPressed: () => _notifier.undoDismiss(item),
+        .showSnackBar(
+          SnackBar(
+            content: Text('notification_dismissed'.tr()),
+            duration: const Duration(seconds: 4),
+            // Flutter 3.x: action != null이면 persist 기본값이 true → 타이머가 실행되도
+            // 스낵바를 닫지 않음. 실행취소 버튼이 있어도 4초 후 자동 닫히도록 명시
+            persist: false,
+            action: SnackBarAction(
+              label: 'undo'.tr(),
+              onPressed: () => _notifier.undoDismiss(item),
+            ),
           ),
-        ))
+        )
         .closed
         .then((reason) {
           // 서버 삭제(confirmDismiss)는 setState 없이 서비스 호출+자체 try-catch만 하므로
@@ -366,12 +387,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   Widget _buildNotificationList(AbstractThemeColors colors) {
-    final isEnglish = context.isEnglish;
-    final sectioned = _buildSectionedItems(_notifier.items, !isEnglish);
+    final sectioned = _buildSectionedItems(_notifier.items);
 
     if (sectioned.isEmpty) {
       return _buildScrollable(
-        EmptyState(icon: Icons.notifications_none_rounded, title: 'no_notifications'.tr()),
+        EmptyState(
+          icon: Icons.notifications_none_rounded,
+          title: 'no_notifications'.tr(),
+        ),
       );
     }
 
@@ -384,7 +407,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
         if (index == sectioned.length) {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
-            child: Center(child: CircularProgressIndicator(color: colors.activate)),
+            child: Center(
+              child: CircularProgressIndicator(color: colors.activate),
+            ),
           );
         }
 
@@ -406,10 +431,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
         final item = (listItem as _NotificationItem).model;
         // 알림 인덱스 계산 (헤더 제외)
-        final notifIndex = sectioned
-            .take(index + 1)
-            .whereType<_NotificationItem>()
-            .length - 1;
+        final notifIndex =
+            sectioned.take(index + 1).whereType<_NotificationItem>().length - 1;
 
         final card = TapScale(
           child: NotificationCard(
@@ -434,9 +457,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       padding: const EdgeInsets.only(right: 20),
                       decoration: BoxDecoration(
                         color: colors.error,
-                        borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
+                        borderRadius: BorderRadius.circular(
+                          AppDimens.cardRadiusSmall,
+                        ),
                       ),
-                      child: const Icon(Icons.delete_rounded, color: Colors.white, size: 22),
+                      child: const Icon(
+                        Icons.delete_rounded,
+                        color: Colors.white,
+                        size: 22,
+                      ),
                     ),
                     child: card,
                   )
@@ -447,11 +476,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
-  List<_ListItem> _buildSectionedItems(List<NotificationModel> items, bool isKorean) {
+  List<_ListItem> _buildSectionedItems(List<NotificationModel> items) {
     final result = <_ListItem>[];
     String? lastLabel;
     for (final item in items) {
-      final label = item.sectionLabel(isKorean);
+      final label = item.sectionLabel;
       if (label != lastLabel) {
         result.add(_SectionHeader(label));
         lastLabel = label;

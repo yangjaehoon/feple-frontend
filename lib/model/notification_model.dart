@@ -44,58 +44,24 @@ class NotificationModel {
     );
   }
 
-  DateTime? get createdAtDate => createdAt != null ? DateTime.tryParse(createdAt!) : null;
+  DateTime? get createdAtDate =>
+      createdAt != null ? DateTime.tryParse(createdAt!) : null;
 
-  String relativeTime(bool isKorean) {
-    final date = createdAtDate;
-    if (date == null) return '';
-    final diff = DateTime.now().difference(date);
-    if (isKorean) {
-      if (diff.inMinutes < 1) return '방금 전';
-      if (diff.inMinutes < 60) return '${diff.inMinutes}분 전';
-      if (diff.inHours < 24) return '${diff.inHours}시간 전';
-      if (diff.inDays < 7) return '${diff.inDays}일 전';
-      if (diff.inDays < 30) return '${(diff.inDays / 7).floor()}주 전';
-      if (diff.inDays < 365) return '${(diff.inDays / 30).floor()}개월 전';
-      return '${(diff.inDays / 365).floor()}년 전';
-    } else {
-      if (diff.inMinutes < 1) return 'just now';
-      if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-      if (diff.inHours < 24) return '${diff.inHours}h ago';
-      if (diff.inDays < 7) return '${diff.inDays}d ago';
-      if (diff.inDays < 30) return '${(diff.inDays / 7).floor()}w ago';
-      if (diff.inDays < 365) return '${(diff.inDays / 30).floor()}mo ago';
-      return '${(diff.inDays / 365).floor()}y ago';
-    }
-  }
-
-  String sectionLabel(bool isKorean) {
-    final date = createdAtDate;
-    if (date == null) return isKorean ? '이전' : 'Earlier';
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final itemDay = DateTime(date.year, date.month, date.day);
-    final diff = today.difference(itemDay).inDays;
-    if (diff == 0) return isKorean ? '오늘' : 'Today';
-    if (diff == 1) return isKorean ? '어제' : 'Yesterday';
-    if (diff < 7) return isKorean ? '이번 주' : 'This week';
-    return isKorean ? '이전' : 'Earlier';
-  }
-
-  String displayTitle(bool isEnglish) => pickLocalized(isEnglish, title, titleEn);
+  String displayTitle(bool isEnglish) =>
+      pickLocalized(isEnglish, title, titleEn);
 
   String displayBody(bool isEnglish) => pickLocalized(isEnglish, body, bodyEn);
 
   NotificationModel copyWithRead() => NotificationModel(
-        id: id,
-        type: type,
-        title: title,
-        body: body,
-        titleEn: titleEn,
-        bodyEn: bodyEn,
-        referenceId: referenceId,
-        read: true,
-        createdAt: createdAt,
-        imageUrl: imageUrl,
-      );
+    id: id,
+    type: type,
+    title: title,
+    body: body,
+    titleEn: titleEn,
+    bodyEn: bodyEn,
+    referenceId: referenceId,
+    read: true,
+    createdAt: createdAt,
+    imageUrl: imageUrl,
+  );
 }

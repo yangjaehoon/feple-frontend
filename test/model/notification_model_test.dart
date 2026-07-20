@@ -1,4 +1,5 @@
 import 'package:feple/model/notification_model.dart';
+import 'package:feple/screen/notification/notification_time_style.dart';
 import 'package:feple/screen/notification/notification_type_style.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -190,7 +191,11 @@ void main() {
 
     test('원본 객체는 변경되지 않음', () {
       final original = NotificationModel(
-        id: 1, type: null, title: '', body: '', read: false,
+        id: 1,
+        type: null,
+        title: '',
+        body: '',
+        read: false,
       );
 
       original.copyWithRead();
@@ -202,7 +207,12 @@ void main() {
   group('NotificationModel.createdAtDate', () {
     test('createdAt null이면 createdAtDate가 null', () {
       final model = NotificationModel(
-        id: 1, type: null, title: '', body: '', read: false, createdAt: null,
+        id: 1,
+        type: null,
+        title: '',
+        body: '',
+        read: false,
+        createdAt: null,
       );
 
       expect(model.createdAtDate, isNull);
@@ -210,7 +220,11 @@ void main() {
 
     test('ISO 8601 문자열을 DateTime으로 파싱', () {
       final model = NotificationModel(
-        id: 1, type: null, title: '', body: '', read: false,
+        id: 1,
+        type: null,
+        title: '',
+        body: '',
+        read: false,
         createdAt: '2025-05-01T10:00:00',
       );
 
@@ -219,20 +233,28 @@ void main() {
 
     test('날짜만 있는 문자열도 파싱 가능', () {
       final model = NotificationModel(
-        id: 1, type: null, title: '', body: '', read: false,
+        id: 1,
+        type: null,
+        title: '',
+        body: '',
+        read: false,
         createdAt: '2025-05-01',
       );
 
       expect(model.createdAtDate, isNotNull);
     });
 
-    test('relativeTime이 빈 문자열 반환하지 않음 (createdAt 있을 때)', () {
+    test('relativeTimeLabel이 빈 문자열 반환하지 않음 (createdAt 있을 때)', () {
       final model = NotificationModel(
-        id: 1, type: null, title: '', body: '', read: false,
+        id: 1,
+        type: null,
+        title: '',
+        body: '',
+        read: false,
         createdAt: '2025-05-01T10:00:00',
       );
 
-      expect(model.relativeTime(true), isNotEmpty);
+      expect(model.relativeTimeLabel, isNotEmpty);
     });
   });
 

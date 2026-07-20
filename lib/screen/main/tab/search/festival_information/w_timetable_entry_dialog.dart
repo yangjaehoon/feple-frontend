@@ -79,36 +79,45 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
   }
 
   Future<TimeOfDay?> _showTimePicker(TimeOfDay initial) => showTimePicker(
-        context: context,
-        initialTime: initial,
-        builder: (ctx, child) => MediaQuery(
-          data: MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: true),
-          child: child!,
-        ),
-      );
+    context: context,
+    initialTime: initial,
+    builder: (ctx, child) => MediaQuery(
+      data: MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: true),
+      child: child!,
+    ),
+  );
 
   int _toMins(TimeOfDay t) => t.hour * 60 + t.minute;
 
   MyTimetableEntry get _result => MyTimetableEntry(
-        id: widget.initial.id,
-        stageName: _stage,
-        label: _labelCtrl.text.trim(),
-        startTime: _start.toHHmm,
-        endTime: _end.toHHmm,
-        colorValue: _color.toARGB32(),
-      );
+    id: widget.initial.id,
+    stageName: _stage,
+    label: _labelCtrl.text.trim(),
+    startTime: _start.toHHmm,
+    endTime: _end.toHHmm,
+    colorValue: _color.toARGB32(),
+  );
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final valid = _labelCtrl.text.trim().isNotEmpty && _toMins(_end) > _toMins(_start);
+    final valid =
+        _labelCtrl.text.trim().isNotEmpty && _toMins(_end) > _toMins(_start);
 
     return AlertDialog(
       backgroundColor: colors.surface,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadius)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppDimens.cardRadius),
+      ),
       title: Text(
-        widget.isEditing ? 'timetable_edit_entry'.tr() : 'timetable_add_entry'.tr(),
-        style: TextStyle(fontSize: AppDimens.fontSizeXl, fontWeight: FontWeight.w700, color: colors.textTitle),
+        widget.isEditing
+            ? 'timetable_edit_entry'.tr()
+            : 'timetable_add_entry'.tr(),
+        style: TextStyle(
+          fontSize: AppDimens.fontSizeXl,
+          fontWeight: FontWeight.w700,
+          color: colors.textTitle,
+        ),
       ),
       content: SingleChildScrollView(
         child: Column(
@@ -120,12 +129,16 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
             _buildStageDropdown(colors),
             const SizedBox(height: 16),
             _buildTimeRow(colors),
-            if (_labelCtrl.text.trim().isNotEmpty && _toMins(_end) <= _toMins(_start))
+            if (_labelCtrl.text.trim().isNotEmpty &&
+                _toMins(_end) <= _toMins(_start))
               Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(
                   'timetable_invalid_time_range'.tr(),
-                  style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.error),
+                  style: TextStyle(
+                    fontSize: AppDimens.fontSizeXs,
+                    color: colors.error,
+                  ),
                 ),
               ),
             const SizedBox(height: 16),
@@ -147,38 +160,57 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
                 Navigator.pop(context, const TimetableEntryDeleted());
               }
             },
-            child: Text('msg_delete'.tr(), style: TextStyle(color: colors.error)),
+            child: Text(
+              'msg_delete'.tr(),
+              style: TextStyle(color: colors.error),
+            ),
           ),
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text('cancel'.tr(), style: TextStyle(color: colors.textSecondary)),
+          child: Text(
+            'cancel'.tr(),
+            style: TextStyle(color: colors.textSecondary),
+          ),
         ),
         FilledButton(
-          onPressed: valid ? () => Navigator.pop(context, TimetableEntrySaved(_result)) : null,
+          onPressed: valid
+              ? () => Navigator.pop(context, TimetableEntrySaved(_result))
+              : null,
           style: FilledButton.styleFrom(
             backgroundColor: colors.activate,
             foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.radiusSmall)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+            ),
           ),
-          child: Text(widget.isEditing ? 'photo_edit_action'.tr() : 'timetable_add'.tr()),
+          child: Text(
+            widget.isEditing ? 'photo_edit_action'.tr() : 'timetable_add'.tr(),
+          ),
         ),
       ],
     );
   }
 
   Widget _buildLabelField(AbstractThemeColors colors) {
-    return TextField(
-      controller: _labelCtrl,
-      autofocus: true,
-      textInputAction: TextInputAction.done,
-      onChanged: (_) => setState(() {}),
-      decoration: InputDecoration(
-        hintText: 'timetable_entry_name_hint'.tr(),
-        hintStyle: TextStyle(color: colors.textSecondary),
-        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: colors.listDivider)),
-        focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: colors.activate)),
+    return Semantics(
+      label: 'timetable_entry_name_hint'.tr(),
+      child: TextField(
+        controller: _labelCtrl,
+        autofocus: true,
+        textInputAction: TextInputAction.done,
+        onChanged: (_) => setState(() {}),
+        decoration: InputDecoration(
+          hintText: 'timetable_entry_name_hint'.tr(),
+          hintStyle: TextStyle(color: colors.textSecondary),
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: colors.listDivider),
+          ),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: colors.activate),
+          ),
+        ),
+        style: TextStyle(color: colors.textTitle),
       ),
-      style: TextStyle(color: colors.textTitle),
     );
   }
 
@@ -193,10 +225,16 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
           expandedInsets: EdgeInsets.zero,
           enableFilter: false,
           requestFocusOnTap: false,
-          textStyle: TextStyle(color: colors.textTitle, fontSize: AppDimens.fontSizeMd),
+          textStyle: TextStyle(
+            color: colors.textTitle,
+            fontSize: AppDimens.fontSizeMd,
+          ),
           inputDecorationTheme: InputDecorationTheme(
             isDense: true,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 10,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppDimens.shapeInput),
               borderSide: BorderSide(color: colors.listDivider),
@@ -215,7 +253,10 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
             ),
           ),
           dropdownMenuEntries: widget.stages
-              .map((stage) => DropdownMenuEntry<String>(value: stage, label: stage))
+              .map(
+                (stage) =>
+                    DropdownMenuEntry<String>(value: stage, label: stage),
+              )
               .toList(),
           onSelected: (stage) {
             if (stage != null) setState(() => _stage = stage);
@@ -229,14 +270,29 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
     return Row(
       children: [
         Expanded(
-          child: _TimeBtn(label: 'timetable_start'.tr(), time: _start, onTap: _pickStartTime),
+          child: _TimeBtn(
+            label: 'timetable_start'.tr(),
+            time: _start,
+            onTap: _pickStartTime,
+          ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Text('–', style: TextStyle(color: colors.textSecondary, fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeXl)),
+          child: Text(
+            '–',
+            style: TextStyle(
+              color: colors.textSecondary,
+              fontWeight: FontWeight.w700,
+              fontSize: AppDimens.fontSizeXl,
+            ),
+          ),
         ),
         Expanded(
-          child: _TimeBtn(label: 'timetable_end'.tr(), time: _end, onTap: _pickEndTime),
+          child: _TimeBtn(
+            label: 'timetable_end'.tr(),
+            time: _end,
+            onTap: _pickEndTime,
+          ),
         ),
       ],
     );
@@ -268,10 +324,18 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
                     decoration: BoxDecoration(
                       color: c,
                       shape: BoxShape.circle,
-                      border: selected ? Border.all(color: colors.textTitle, width: 2.5) : null,
+                      border: selected
+                          ? Border.all(color: colors.textTitle, width: 2.5)
+                          : null,
                     ),
                     alignment: Alignment.center,
-                    child: selected ? const Icon(Icons.check_rounded, size: 16, color: Colors.white) : null,
+                    child: selected
+                        ? const Icon(
+                            Icons.check_rounded,
+                            size: 16,
+                            color: Colors.white,
+                          )
+                        : null,
                   ),
                 ),
               ),
@@ -292,7 +356,11 @@ class _Label extends StatelessWidget {
     final colors = context.appColors;
     return Text(
       text,
-      style: TextStyle(fontSize: AppDimens.fontSizeXs, fontWeight: FontWeight.w600, color: colors.textSecondary),
+      style: TextStyle(
+        fontSize: AppDimens.fontSizeXs,
+        fontWeight: FontWeight.w600,
+        color: colors.textSecondary,
+      ),
     );
   }
 }
@@ -327,7 +395,11 @@ class _TimeBtn extends StatelessWidget {
             ),
             child: Text(
               time.toHHmm,
-              style: TextStyle(color: colors.textTitle, fontSize: AppDimens.fontSizeMd, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                color: colors.textTitle,
+                fontSize: AppDimens.fontSizeMd,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ),

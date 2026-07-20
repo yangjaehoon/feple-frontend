@@ -70,7 +70,8 @@ class _ReportSheetContentState extends State<_ReportSheetContent> {
       if (!widget.pageContext.mounted) return;
       final isConflict = e.response?.statusCode == 409;
       widget.pageContext.showErrorSnackbar(
-          isConflict ? widget.duplicateErrorKey.tr() : 'report_failed'.tr());
+        isConflict ? widget.duplicateErrorKey.tr() : 'report_failed'.tr(),
+      );
     } catch (e) {
       debugPrint('[Report] submit failed: $e');
       if (mounted) setState(() => _isSubmitting = false);
@@ -89,15 +90,18 @@ class _ReportSheetContentState extends State<_ReportSheetContent> {
             ReportReason.spam => 'report_reason_spam'.tr(),
             ReportReason.abuse => 'report_reason_abuse'.tr(),
             ReportReason.obscene => 'report_reason_obscene'.tr(),
-            ReportReason.misinformation =>
-              'report_reason_misinformation'.tr(),
+            ReportReason.misinformation => 'report_reason_misinformation'.tr(),
             ReportReason.other => 'report_reason_other'.tr(),
           };
           return RadioListTile<ReportReason>(
             value: r,
-            title: Text(label,
-                style: TextStyle(
-                    fontSize: AppDimens.fontSizeMd, color: colors.textTitle)),
+            title: Text(
+              label,
+              style: TextStyle(
+                fontSize: AppDimens.fontSizeMd,
+                color: colors.textTitle,
+              ),
+            ),
             dense: true,
             contentPadding: EdgeInsets.zero,
           );
@@ -116,7 +120,8 @@ class _ReportSheetContentState extends State<_ReportSheetContent> {
               foregroundColor: colors.textSecondary,
               side: BorderSide(color: colors.listDivider),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppDimens.radiusSmall)),
+                borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+              ),
             ),
             child: Text('report_cancel'.tr()),
           ),
@@ -141,15 +146,17 @@ class _ReportSheetContentState extends State<_ReportSheetContent> {
     final colors = context.appColors;
     return Material(
       color: colors.surface,
-      borderRadius:
-          const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
+      borderRadius: const BorderRadius.vertical(
+        top: Radius.circular(AppDimens.shapeSheet),
+      ),
       clipBehavior: Clip.antiAlias,
       child: Padding(
         padding: EdgeInsets.only(
           left: 20,
           right: 20,
           top: 20,
-          bottom: MediaQuery.of(context).viewInsets.bottom +
+          bottom:
+              MediaQuery.of(context).viewInsets.bottom +
               MediaQuery.of(context).viewPadding.bottom +
               20,
         ),
@@ -168,16 +175,22 @@ class _ReportSheetContentState extends State<_ReportSheetContent> {
             const SizedBox(height: 12),
             _buildReasonList(colors),
             const SizedBox(height: 8),
-            TextField(
-              controller: _detailController,
-              decoration: InputDecoration(
-                hintText: 'report_detail_hint'.tr(),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppDimens.radiusSmall)),
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            Semantics(
+              label: 'report_detail_hint'.tr(),
+              child: TextField(
+                controller: _detailController,
+                decoration: InputDecoration(
+                  hintText: 'report_detail_hint'.tr(),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                ),
+                maxLines: 2,
               ),
-              maxLines: 2,
             ),
             const SizedBox(height: 16),
             _buildActions(colors),

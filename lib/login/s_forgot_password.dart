@@ -44,7 +44,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       setState(() => _emailError = emailError);
       return;
     }
-    setState(() { _emailError = null; _errorMessage = null; _isSending = true; });
+    setState(() {
+      _emailError = null;
+      _errorMessage = null;
+      _isSending = true;
+    });
     try {
       await AuthService.instance.sendPasswordReset(email);
       if (!mounted) return;
@@ -85,7 +89,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_rounded, color: colors.textTitle, size: 20),
+          tooltip: 'back'.tr(),
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: colors.textTitle,
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -141,7 +150,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             errorText: _emailError,
             onChanged: (_) {
               if (_emailError != null || _errorMessage != null) {
-                setState(() { _emailError = null; _errorMessage = null; });
+                setState(() {
+                  _emailError = null;
+                  _errorMessage = null;
+                });
               }
             },
           ),
@@ -150,7 +162,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               padding: const EdgeInsets.only(top: 8, left: 4),
               child: Row(
                 children: [
-                  Icon(Icons.error_outline_rounded, color: colors.error, size: 14),
+                  Icon(
+                    Icons.error_outline_rounded,
+                    color: colors.error,
+                    size: 14,
+                  ),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
@@ -214,5 +230,4 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       ],
     );
   }
-
 }

@@ -228,54 +228,67 @@ class FestivalPosterState extends State<FestivalPoster> {
     if (!_notifier.ratingLoaded) return const SizedBox.shrink();
     if (_notifier.ratingLoadFailed) return const SizedBox.shrink();
     if (_notifier.ratingCount == 0) {
-      return GestureDetector(
-        onTap: _showReviews,
-        child: SizedBox(
-          width: _posterThumbnailWidth,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-              5,
-              (_) => const Icon(
-                Icons.star_outline_rounded,
-                color: Colors.white60,
-                size: 20,
+      return Semantics(
+        button: true,
+        label: 'reviews_no_reviews'.tr(),
+        child: GestureDetector(
+          onTap: _showReviews,
+          child: SizedBox(
+            width: _posterThumbnailWidth,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                5,
+                (_) => const Icon(
+                  Icons.star_outline_rounded,
+                  color: Colors.white60,
+                  size: 20,
+                ),
               ),
             ),
           ),
         ),
       );
     }
-    return GestureDetector(
-      onTap: _showReviews,
-      child: SizedBox(
-        width: _posterThumbnailWidth,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ...List.generate(5, (i) {
-              final avg = _notifier.averageRating;
-              final filled = i < avg.floor();
-              final half = !filled && (avg - i) >= 0.5;
-              return Icon(
-                filled
-                    ? Icons.star_rounded
-                    : (half
-                          ? Icons.star_half_rounded
-                          : Icons.star_outline_rounded),
-                color: Colors.amber,
-                size: 18,
-              );
-            }),
-            const SizedBox(width: 4),
-            Text(
-              '(${_notifier.ratingCount})',
-              style: TextStyle(
-                fontSize: AppDimens.fontSizeXxs,
-                color: Colors.white.withValues(alpha: 0.65),
+    return Semantics(
+      button: true,
+      label: 'rating_average_label'.tr(
+        args: [
+          _notifier.averageRating.toStringAsFixed(1),
+          _notifier.ratingCount.toString(),
+        ],
+      ),
+      child: GestureDetector(
+        onTap: _showReviews,
+        child: SizedBox(
+          width: _posterThumbnailWidth,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ...List.generate(5, (i) {
+                final avg = _notifier.averageRating;
+                final filled = i < avg.floor();
+                final half = !filled && (avg - i) >= 0.5;
+                return Icon(
+                  filled
+                      ? Icons.star_rounded
+                      : (half
+                            ? Icons.star_half_rounded
+                            : Icons.star_outline_rounded),
+                  color: Colors.amber,
+                  size: 18,
+                );
+              }),
+              const SizedBox(width: 4),
+              Text(
+                '(${_notifier.ratingCount})',
+                style: TextStyle(
+                  fontSize: AppDimens.fontSizeXxs,
+                  color: Colors.white.withValues(alpha: 0.65),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

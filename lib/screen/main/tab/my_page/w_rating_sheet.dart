@@ -84,12 +84,9 @@ class _RatingSheetState extends State<RatingSheet> {
           ),
         ),
         IconButton(
+          tooltip: 'close'.tr(),
           onPressed: _handleClose,
-          icon: Icon(
-            Icons.close_rounded,
-            color: colors.textSecondary,
-          ),
-          visualDensity: VisualDensity.compact,
+          icon: Icon(Icons.close_rounded, color: colors.textSecondary),
         ),
       ],
     );
@@ -121,10 +118,7 @@ class _RatingSheetState extends State<RatingSheet> {
       controller: _reviewController,
       maxLength: 100,
       maxLines: 2,
-      style: TextStyle(
-        fontSize: AppDimens.fontSizeMd,
-        color: colors.textTitle,
-      ),
+      style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textTitle),
       decoration: InputDecoration(
         hintText: 'rating_review_hint'.tr(),
         hintStyle: TextStyle(color: colors.textSecondary),
@@ -135,9 +129,7 @@ class _RatingSheetState extends State<RatingSheet> {
         filled: true,
         fillColor: colors.surface,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(
-            AppDimens.radiusSmall,
-          ),
+          borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
           borderSide: BorderSide.none,
         ),
         contentPadding: const EdgeInsets.symmetric(

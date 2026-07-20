@@ -72,21 +72,21 @@ class PostDetailCard extends StatefulWidget {
     super.key,
     required this.boardName,
     required Post post,
-  })  : id = post.id,
-        nickname = post.nickname,
-        title = post.title,
-        content = post.content,
-        likeCount = post.likeCount,
-        viewCount = post.viewCount,
-        certified = post.certified,
-        userRole = post.userRole,
-        profileImageUrl = post.profileImageUrl,
-        imageUrl = post.imageUrl,
-        createdAt = post.createdAt,
-        updatedAt = post.updatedAt,
-        postUserId = post.userId,
-        anonymous = post.anonymous,
-        authorLevel = post.authorLevel;
+  }) : id = post.id,
+       nickname = post.nickname,
+       title = post.title,
+       content = post.content,
+       likeCount = post.likeCount,
+       viewCount = post.viewCount,
+       certified = post.certified,
+       userRole = post.userRole,
+       profileImageUrl = post.profileImageUrl,
+       imageUrl = post.imageUrl,
+       createdAt = post.createdAt,
+       updatedAt = post.updatedAt,
+       postUserId = post.userId,
+       anonymous = post.anonymous,
+       authorLevel = post.authorLevel;
 
   @override
   State<PostDetailCard> createState() => _PostDetailCardState();
@@ -177,10 +177,17 @@ class _PostDetailCardState extends State<PostDetailCard> {
                   fadeInDuration: AppDimens.animXFast,
                   fadeOutDuration: AppDimens.animTapFeedback,
                   placeholder: (_, _) => const Center(
-                    child: CircularProgressIndicator(color: Colors.white54, strokeWidth: 2),
+                    child: CircularProgressIndicator(
+                      color: Colors.white54,
+                      strokeWidth: 2,
+                    ),
                   ),
                   errorWidget: (_, _, _) => const Center(
-                    child: Icon(Icons.broken_image_rounded, color: Colors.white38, size: 56),
+                    child: Icon(
+                      Icons.broken_image_rounded,
+                      color: Colors.white38,
+                      size: 56,
+                    ),
                   ),
                 ),
               ),
@@ -192,7 +199,9 @@ class _PostDetailCardState extends State<PostDetailCard> {
   }
 
   Future<String?> _showEditCommentDialog(
-      BuildContext context, String currentContent) {
+    BuildContext context,
+    String currentContent,
+  ) {
     return showDialog<String>(
       context: context,
       barrierDismissible: false,
@@ -201,29 +210,38 @@ class _PostDetailCardState extends State<PostDetailCard> {
   }
 
   List<PopupMenuEntry<String>> _buildMenuItems(
-      bool isOwn, AbstractThemeColors colors) {
-    PopupMenuItem<String> item(String value, IconData icon, String label,
-            {bool danger = false}) =>
-        buildPopupMenuItem(
-          value: value,
-          icon: icon,
-          label: label,
-          colors: colors,
-          danger: danger,
-          height: 48,
-          iconSize: 19,
-          spacing: 12,
-          fontSize: AppDimens.fontSizeMd,
-          fontWeight: FontWeight.w500,
-        );
+    bool isOwn,
+    AbstractThemeColors colors,
+  ) {
+    PopupMenuItem<String> item(
+      String value,
+      IconData icon,
+      String label, {
+      bool danger = false,
+    }) => buildPopupMenuItem(
+      value: value,
+      icon: icon,
+      label: label,
+      colors: colors,
+      danger: danger,
+      height: 48,
+      iconSize: 19,
+      spacing: 12,
+      fontSize: AppDimens.fontSizeMd,
+      fontWeight: FontWeight.w500,
+    );
 
     if (isOwn) {
       return [
         item('edit', Icons.edit_outlined, 'edit_post'.tr()),
         item('share', Icons.share_outlined, 'share'.tr()),
         const PopupMenuDivider(height: 1),
-        item('delete', Icons.delete_outline_rounded, 'delete_post'.tr(),
-            danger: true),
+        item(
+          'delete',
+          Icons.delete_outline_rounded,
+          'delete_post'.tr(),
+          danger: true,
+        ),
       ];
     } else {
       return [
@@ -274,7 +292,9 @@ class _PostDetailCardState extends State<PostDetailCard> {
             // 화면에 깨진 이미지가 보이므로 갱신된 게시글을 다시 조회해 교체한다
             String? resolvedImageUrl = _imageUrl;
             try {
-              resolvedImageUrl = (await _postService.fetchPost(widget.id)).imageUrl;
+              resolvedImageUrl = (await _postService.fetchPost(
+                widget.id,
+              )).imageUrl;
             } catch (e) {
               debugPrint('post refetch after update error: $e');
             }
@@ -403,8 +423,11 @@ class _PostDetailCardState extends State<PostDetailCard> {
         onReport: (commentId) => showReportSheet(
           context,
           titleKey: 'report_comment',
-          onSubmit: (reason, detail) => _reportService
-              .submitCommentReport(commentId, reason, detail: detail),
+          onSubmit: (reason, detail) => _reportService.submitCommentReport(
+            commentId,
+            reason,
+            detail: detail,
+          ),
           duplicateErrorKey: 'report_comment_duplicate',
         ),
         onReply: _setReplyTo,
@@ -432,14 +455,18 @@ class _PostDetailCardState extends State<PostDetailCard> {
   Widget _buildViewCountRow(AbstractThemeColors colors) {
     return Row(
       children: [
-        Icon(Icons.remove_red_eye_outlined,
-            size: 14, color: colors.textSecondary.withValues(alpha: 0.5)),
+        Icon(
+          Icons.remove_red_eye_outlined,
+          size: 14,
+          color: colors.textSecondary.withValues(alpha: 0.5),
+        ),
         const SizedBox(width: 4),
         Text(
           'view_count'.tr(args: [_notifier.viewCount.toString()]),
           style: TextStyle(
-              fontSize: AppDimens.fontSizeXs,
-              color: colors.textSecondary.withValues(alpha: 0.5)),
+            fontSize: AppDimens.fontSizeXs,
+            color: colors.textSecondary.withValues(alpha: 0.5),
+          ),
         ),
       ],
     );
@@ -491,7 +518,8 @@ class _PostDetailCardState extends State<PostDetailCard> {
                 shadowColor: colors.cardShadow.withValues(alpha: 0.18),
                 elevation: 3,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppDimens.shapeDialog)),
+                  borderRadius: BorderRadius.circular(AppDimens.shapeDialog),
+                ),
                 position: PopupMenuPosition.under,
               ),
             ],
@@ -550,71 +578,83 @@ class _PostHeaderSection extends StatelessWidget {
         const SizedBox(height: 12),
         Row(
           children: [
-            GestureDetector(
-              onTap: (!anonymous && onAuthorTap != null) ? onAuthorTap : null,
-              child: ProfileAvatar(
-                imageUrl: profileImageUrl,
-                nickname: nickname,
-                certified: certified,
-                userRole: userRole,
-                radius: 16,
-                anonymous: anonymous,
+            Semantics(
+              button: !anonymous && onAuthorTap != null,
+              label: anonymous
+                  ? null
+                  : 'view_author_profile'.tr(args: [nickname]),
+              child: GestureDetector(
+                onTap: (!anonymous && onAuthorTap != null) ? onAuthorTap : null,
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: ProfileAvatar(
+                    imageUrl: profileImageUrl,
+                    nickname: nickname,
+                    certified: certified,
+                    userRole: userRole,
+                    radius: 16,
+                    anonymous: anonymous,
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        nickname,
-                        style: TextStyle(
-                          fontSize: AppDimens.fontSizeSm,
-                          color: colors.textSecondary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    InlineBadge(
-                        userRole: userRole, certified: certified, size: 14),
-                    if (!anonymous) ...[
-                      const SizedBox(width: 5),
-                      LevelBadge(authorLevel: authorLevel, fontSize: 10),
-                    ],
-                  ],
-                ),
-                if (createdAt != null)
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Row(
                     children: [
-                      Text(
-                        createdAt!.relativeTime,
-                        style: TextStyle(
-                          fontSize: AppDimens.fontSizeXxs,
-                          color:
-                              colors.textSecondary.withValues(alpha: 0.65),
+                      Flexible(
+                        child: Text(
+                          nickname,
+                          style: TextStyle(
+                            fontSize: AppDimens.fontSizeSm,
+                            color: colors.textSecondary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      if (updatedAt != null &&
-                          updatedAt!.difference(createdAt!).inSeconds >
-                              10) ...[
-                        const SizedBox(width: 4),
-                        Text(
-                          'edited'.tr(),
-                          style: TextStyle(
-                            fontSize: AppDimens.fontSizeTiny,
-                            color: colors.textSecondary
-                                .withValues(alpha: 0.45),
-                          ),
-                        ),
+                      InlineBadge(
+                        userRole: userRole,
+                        certified: certified,
+                        size: 14,
+                      ),
+                      if (!anonymous) ...[
+                        const SizedBox(width: 5),
+                        LevelBadge(authorLevel: authorLevel, fontSize: 10),
                       ],
                     ],
                   ),
-              ],
+                  if (createdAt != null)
+                    Row(
+                      children: [
+                        Text(
+                          createdAt!.relativeTime,
+                          style: TextStyle(
+                            fontSize: AppDimens.fontSizeXxs,
+                            color: colors.textSecondary.withValues(alpha: 0.65),
+                          ),
+                        ),
+                        if (updatedAt != null &&
+                            updatedAt!.difference(createdAt!).inSeconds >
+                                10) ...[
+                          const SizedBox(width: 4),
+                          Text(
+                            'edited'.tr(),
+                            style: TextStyle(
+                              fontSize: AppDimens.fontSizeTiny,
+                              color: colors.textSecondary.withValues(
+                                alpha: 0.45,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                ],
               ),
             ),
           ],
@@ -644,8 +684,10 @@ class _PostContentSection extends StatelessWidget {
       children: [
         Text(
           content,
-          style:
-              TextStyle(color: colors.textTitle, fontSize: AppDimens.fontSizeLg),
+          style: TextStyle(
+            color: colors.textTitle,
+            fontSize: AppDimens.fontSizeLg,
+          ),
         ),
         if (imageUrl != null) ...[
           const SizedBox(height: 12),
@@ -669,7 +711,11 @@ class _PostContentSection extends StatelessWidget {
                   height: screenWidth * 0.308,
                   color: colors.listDivider,
                   child: Center(
-                    child: Icon(Icons.broken_image_rounded, color: colors.textSecondary, size: 36),
+                    child: Icon(
+                      Icons.broken_image_rounded,
+                      color: colors.textSecondary,
+                      size: 36,
+                    ),
                   ),
                 ),
               ),

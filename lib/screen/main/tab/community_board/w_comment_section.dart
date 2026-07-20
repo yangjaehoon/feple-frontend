@@ -19,7 +19,8 @@ class CommentSection extends StatelessWidget {
   final Future<bool> Function(int commentId)? onToggleLike;
   final void Function(int commentId)? onDeleteComment;
   final void Function(int commentId, String currentContent)? onEditComment;
-  final void Function(int userId, String nickname, String? profileImageUrl)? onAuthorTap;
+  final void Function(int userId, String nickname, String? profileImageUrl)?
+  onAuthorTap;
 
   const CommentSection({
     super.key,
@@ -40,7 +41,10 @@ class CommentSection extends StatelessWidget {
       child: Center(
         child: Text(
           'be_first_to_comment'.tr(),
-          style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeSm,
+            color: colors.textSecondary,
+          ),
         ),
       ),
     );
@@ -52,40 +56,79 @@ class CommentSection extends StatelessWidget {
     if (rootComments.isEmpty) return _buildEmpty(colors);
 
     final items = <Widget>[];
-    for (int commentIndex = 0; commentIndex < rootComments.length; commentIndex++) {
+    for (
+      int commentIndex = 0;
+      commentIndex < rootComments.length;
+      commentIndex++
+    ) {
       final root = rootComments[commentIndex];
-      if (commentIndex > 0) items.add(Divider(color: colors.listDivider, height: 1));
-      items.add(_CommentTile(
-        comment: root,
-        isOwn: currentUserId != null && root.userId == currentUserId,
-        onReport: onReport != null ? () => onReport!(root.id) : null,
-        onReply: onReply != null ? () => onReply!(root.id, root.nickname) : null,
-        onToggleLike: onToggleLike != null ? () => onToggleLike!(root.id) : null,
-        onDelete: onDeleteComment != null ? () => onDeleteComment!(root.id) : null,
-        onEdit: onEditComment != null ? () => onEditComment!(root.id, root.content) : null,
-        onAuthorTap: onAuthorTap != null && !root.anonymous
-            ? () => onAuthorTap!(root.userId, root.nickname, root.profileImageUrl)
-            : null,
-      ));
+      if (commentIndex > 0) {
+        items.add(Divider(color: colors.listDivider, height: 1));
+      }
+      items.add(
+        _CommentTile(
+          comment: root,
+          isOwn: currentUserId != null && root.userId == currentUserId,
+          onReport: onReport != null ? () => onReport!(root.id) : null,
+          onReply: onReply != null
+              ? () => onReply!(root.id, root.nickname)
+              : null,
+          onToggleLike: onToggleLike != null
+              ? () => onToggleLike!(root.id)
+              : null,
+          onDelete: onDeleteComment != null
+              ? () => onDeleteComment!(root.id)
+              : null,
+          onEdit: onEditComment != null
+              ? () => onEditComment!(root.id, root.content)
+              : null,
+          onAuthorTap: onAuthorTap != null && !root.anonymous
+              ? () => onAuthorTap!(
+                  root.userId,
+                  root.nickname,
+                  root.profileImageUrl,
+                )
+              : null,
+        ),
+      );
 
       final replies = repliesMap[root.id] ?? [];
       for (final reply in replies) {
-        items.add(Divider(color: colors.listDivider, height: 1, indent: 48, endIndent: 0));
-        items.add(Padding(
-          padding: const EdgeInsets.only(left: 32),
-          child: _CommentTile(
-            comment: reply,
-            isReply: true,
-            isOwn: currentUserId != null && reply.userId == currentUserId,
-            onReport: onReport != null ? () => onReport!(reply.id) : null,
-            onToggleLike: onToggleLike != null ? () => onToggleLike!(reply.id) : null,
-            onDelete: onDeleteComment != null ? () => onDeleteComment!(reply.id) : null,
-            onEdit: onEditComment != null ? () => onEditComment!(reply.id, reply.content) : null,
-            onAuthorTap: onAuthorTap != null && !reply.anonymous
-                ? () => onAuthorTap!(reply.userId, reply.nickname, reply.profileImageUrl)
-                : null,
+        items.add(
+          Divider(
+            color: colors.listDivider,
+            height: 1,
+            indent: 48,
+            endIndent: 0,
           ),
-        ));
+        );
+        items.add(
+          Padding(
+            padding: const EdgeInsets.only(left: 32),
+            child: _CommentTile(
+              comment: reply,
+              isReply: true,
+              isOwn: currentUserId != null && reply.userId == currentUserId,
+              onReport: onReport != null ? () => onReport!(reply.id) : null,
+              onToggleLike: onToggleLike != null
+                  ? () => onToggleLike!(reply.id)
+                  : null,
+              onDelete: onDeleteComment != null
+                  ? () => onDeleteComment!(reply.id)
+                  : null,
+              onEdit: onEditComment != null
+                  ? () => onEditComment!(reply.id, reply.content)
+                  : null,
+              onAuthorTap: onAuthorTap != null && !reply.anonymous
+                  ? () => onAuthorTap!(
+                      reply.userId,
+                      reply.nickname,
+                      reply.profileImageUrl,
+                    )
+                  : null,
+            ),
+          ),
+        );
       }
     }
 
@@ -128,17 +171,23 @@ class _CommentTile extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          GestureDetector(
-            onTap: onAuthorTap,
-            child: Padding(
-              padding: EdgeInsets.all(isReply ? 11.0 : 8.0),
-              child: ProfileAvatar(
-                imageUrl: comment.anonymous ? null : comment.profileImageUrl,
-                nickname: comment.nickname,
-                certified: comment.anonymous ? false : comment.certified,
-                userRole: comment.anonymous ? null : comment.userRole,
-                radius: isReply ? 13 : 16,
-                anonymous: comment.anonymous,
+          Semantics(
+            button: onAuthorTap != null,
+            label: comment.anonymous
+                ? null
+                : 'view_author_profile'.tr(args: [comment.nickname]),
+            child: GestureDetector(
+              onTap: onAuthorTap,
+              child: Padding(
+                padding: EdgeInsets.all(isReply ? 11.0 : 8.0),
+                child: ProfileAvatar(
+                  imageUrl: comment.anonymous ? null : comment.profileImageUrl,
+                  nickname: comment.nickname,
+                  certified: comment.anonymous ? false : comment.certified,
+                  userRole: comment.anonymous ? null : comment.userRole,
+                  radius: isReply ? 13 : 16,
+                  anonymous: comment.anonymous,
+                ),
               ),
             ),
           ),
@@ -158,29 +207,45 @@ class _CommentTile extends StatelessWidget {
           children: [
             Text(
               comment.nickname,
-              style: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXs, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: colors.textSecondary,
+                fontSize: AppDimens.fontSizeXs,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             if (!comment.anonymous)
-              InlineBadge(userRole: comment.userRole, certified: comment.certified),
+              InlineBadge(
+                userRole: comment.userRole,
+                certified: comment.certified,
+              ),
           ],
         ),
         Row(
           children: [
             Text(
               comment.createdAt.relativeTime,
-              style: TextStyle(fontSize: AppDimens.fontSizeTiny, color: colors.textSecondary.withValues(alpha: 0.6)),
+              style: TextStyle(
+                fontSize: AppDimens.fontSizeTiny,
+                color: colors.textSecondary.withValues(alpha: 0.6),
+              ),
             ),
             if (comment.isEdited) ...[
               const SizedBox(width: 4),
               Text(
                 'edited'.tr(),
-                style: TextStyle(fontSize: AppDimens.fontSizeMini, color: colors.textSecondary.withValues(alpha: 0.45)),
+                style: TextStyle(
+                  fontSize: AppDimens.fontSizeMini,
+                  color: colors.textSecondary.withValues(alpha: 0.45),
+                ),
               ),
             ],
           ],
         ),
         const SizedBox(height: 2),
-        ExpandableText(text: comment.content, style: TextStyle(color: colors.textTitle)),
+        ExpandableText(
+          text: comment.content,
+          style: TextStyle(color: colors.textTitle),
+        ),
         const SizedBox(height: 4),
         _buildActions(colors),
       ],
@@ -211,7 +276,11 @@ class _CommentTile extends StatelessWidget {
                   child: Center(
                     child: Text(
                       'reply_comment'.tr(),
-                      style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontSize: AppDimens.fontSizeXxs,
+                        color: colors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ),
@@ -230,7 +299,11 @@ class _CommentTile extends StatelessWidget {
         color: colors.surface,
         elevation: 3,
         shadowColor: colors.cardShadow.withValues(alpha: 0.18),
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(AppDimens.shapeDialog))),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(AppDimens.shapeDialog),
+          ),
+        ),
         position: PopupMenuPosition.under,
         onSelected: (value) async {
           if (value == 'edit') {
@@ -271,7 +344,11 @@ class _CommentTile extends StatelessWidget {
         color: colors.surface,
         elevation: 3,
         shadowColor: colors.cardShadow.withValues(alpha: 0.18),
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(AppDimens.shapeDialog))),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(AppDimens.shapeDialog),
+          ),
+        ),
         position: PopupMenuPosition.under,
         onSelected: (value) {
           if (value == 'report') onReport!();
@@ -301,7 +378,12 @@ class _LikeButton extends StatefulWidget {
   final int likeCount;
   final Future<bool> Function()? onToggle;
 
-  const _LikeButton({super.key, required this.liked, required this.likeCount, this.onToggle});
+  const _LikeButton({
+    super.key,
+    required this.liked,
+    required this.likeCount,
+    this.onToggle,
+  });
 
   @override
   State<_LikeButton> createState() => _LikeButtonState();
@@ -315,7 +397,8 @@ class _LikeButtonState extends State<_LikeButton> {
   void didUpdateWidget(covariant _LikeButton oldWidget) {
     super.didUpdateWidget(oldWidget);
     // 댓글 수정/삭제 등 다른 이유로 부모가 새 comment 데이터를 내려주면 동기화
-    if (oldWidget.liked != widget.liked || oldWidget.likeCount != widget.likeCount) {
+    if (oldWidget.liked != widget.liked ||
+        oldWidget.likeCount != widget.likeCount) {
       _liked = widget.liked;
       _likeCount = widget.likeCount;
     }
@@ -359,15 +442,22 @@ class _LikeButtonState extends State<_LikeButton> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    _liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                    _liked
+                        ? Icons.favorite_rounded
+                        : Icons.favorite_border_rounded,
                     size: 13,
-                    color: _liked ? colors.likeActiveColor : colors.textSecondary,
+                    color: _liked
+                        ? colors.likeActiveColor
+                        : colors.textSecondary,
                   ),
                   if (_likeCount > 0) ...[
                     const SizedBox(width: 3),
                     Text(
                       _likeCount.toString(),
-                      style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
+                      style: TextStyle(
+                        fontSize: AppDimens.fontSizeXxs,
+                        color: colors.textSecondary,
+                      ),
                     ),
                   ],
                 ],

@@ -16,7 +16,13 @@ import 'package:image_picker/image_picker.dart';
 
 class WritePost extends StatefulWidget {
   final String title;
-  final Future<void> Function(String title, String content, bool anonymous, String? imageObjectKey) onSubmit;
+  final Future<void> Function(
+    String title,
+    String content,
+    bool anonymous,
+    String? imageObjectKey,
+  )
+  onSubmit;
   final String? initialTitle;
   final String? initialContent;
   final bool showAnonymous;
@@ -58,8 +64,12 @@ class _WritePostState extends State<WritePost> {
   @override
   void initState() {
     super.initState();
-    if (widget.initialTitle != null) _titleController.text = widget.initialTitle!;
-    if (widget.initialContent != null) _contentController.text = widget.initialContent!;
+    if (widget.initialTitle != null) {
+      _titleController.text = widget.initialTitle!;
+    }
+    if (widget.initialContent != null) {
+      _contentController.text = widget.initialContent!;
+    }
     _existingImageUrl = widget.initialImageUrl;
     _titleController.addListener(_clearTitleBannedWord);
     _contentController.addListener(_clearContentBannedWord);
@@ -138,13 +148,19 @@ class _WritePostState extends State<WritePost> {
     }
   }
 
-  InputDecoration _fieldDecoration(String hintKey, {String? bannedWordMessage}) {
+  InputDecoration _fieldDecoration(
+    String hintKey, {
+    String? bannedWordMessage,
+  }) {
     final colors = context.appColors;
     final radius = BorderRadius.circular(AppDimens.cardRadiusTiny);
     return InputDecoration(
       hintText: hintKey.tr(),
       hintStyle: TextStyle(color: colors.textSecondary),
-      counterStyle: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXxs),
+      counterStyle: TextStyle(
+        color: colors.textSecondary,
+        fontSize: AppDimens.fontSizeXxs,
+      ),
       border: OutlineInputBorder(borderRadius: radius),
       focusedBorder: appInputBorder(colors.activate, width: 2),
       errorBorder: appInputBorder(colors.error, width: 1.5),
@@ -163,12 +179,18 @@ class _WritePostState extends State<WritePost> {
                 child: SizedBox(
                   width: 20,
                   height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: context.appColors.appBarIconColor),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: context.appColors.appBarIconColor,
+                  ),
                 ),
               )
             : Text(
                 'done'.tr(),
-                style: TextStyle(color: context.appColors.appBarIconColor, fontWeight: FontWeight.w700),
+                style: TextStyle(
+                  color: context.appColors.appBarIconColor,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
       ),
     );
@@ -179,7 +201,14 @@ class _WritePostState extends State<WritePost> {
     if (_selectedImage != null) {
       preview = ClipRRect(
         borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-        child: Image.memory(_selectedImage!, fit: BoxFit.cover, width: 72, height: 72),
+        child: ExcludeSemantics(
+          child: Image.memory(
+            _selectedImage!,
+            fit: BoxFit.cover,
+            width: 72,
+            height: 72,
+          ),
+        ),
       );
     } else if (_existingImageUrl != null) {
       preview = AppNetworkImage(
@@ -187,28 +216,43 @@ class _WritePostState extends State<WritePost> {
         width: 72,
         height: 72,
         borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+        excludeFromSemantics: true,
       );
     }
 
     return Row(
       children: [
-        GestureDetector(
-          onTap: _pickImage,
-          child: Container(
-            width: 72,
-            height: 72,
-            decoration: BoxDecoration(
-              border: Border.all(color: colors.listDivider),
-              borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+        Semantics(
+          button: true,
+          label: _hasImage ? 'change_photo'.tr() : 'photo_add'.tr(),
+          child: GestureDetector(
+            onTap: _pickImage,
+            child: Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.listDivider),
+                borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+              ),
+              child:
+                  preview ??
+                  Icon(
+                    Icons.add_photo_alternate_outlined,
+                    color: colors.textSecondary,
+                    size: 32,
+                  ),
             ),
-            child: preview ?? Icon(Icons.add_photo_alternate_outlined, color: colors.textSecondary, size: 32),
           ),
         ),
         if (_hasImage) ...[
           const SizedBox(width: 8),
           IconButton(
             tooltip: 'remove_image'.tr(),
-            icon: Icon(Icons.close_rounded, color: colors.textSecondary, size: 20),
+            icon: Icon(
+              Icons.close_rounded,
+              color: colors.textSecondary,
+              size: 20,
+            ),
             onPressed: () => setState(() {
               _selectedImage = null;
               _existingImageUrl = null;
@@ -237,7 +281,10 @@ class _WritePostState extends State<WritePost> {
               const SizedBox(width: 6),
               Text(
                 'post_anonymous'.tr(),
-                style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textTitle),
+                style: TextStyle(
+                  fontSize: AppDimens.fontSizeMd,
+                  color: colors.textTitle,
+                ),
               ),
             ],
           ),
@@ -260,9 +307,12 @@ class _WritePostState extends State<WritePost> {
             style: TextStyle(color: colors.textTitle),
             decoration: _fieldDecoration(
               'enter_title',
-              bannedWordMessage: _titleHasBannedWord ? 'post_banned_word'.tr() : null,
+              bannedWordMessage: _titleHasBannedWord
+                  ? 'post_banned_word'.tr()
+                  : null,
             ),
-            validator: (v) => (v == null || v.trim().isEmpty) ? 'enter_title'.tr() : null,
+            validator: (v) =>
+                (v == null || v.trim().isEmpty) ? 'enter_title'.tr() : null,
           ),
           const SizedBox(height: 12),
           TextFormField(
@@ -274,9 +324,12 @@ class _WritePostState extends State<WritePost> {
             style: TextStyle(color: colors.textTitle),
             decoration: _fieldDecoration(
               'enter_content',
-              bannedWordMessage: _contentHasBannedWord ? 'post_banned_word'.tr() : null,
+              bannedWordMessage: _contentHasBannedWord
+                  ? 'post_banned_word'.tr()
+                  : null,
             ),
-            validator: (v) => (v == null || v.trim().isEmpty) ? 'enter_content'.tr() : null,
+            validator: (v) =>
+                (v == null || v.trim().isEmpty) ? 'enter_content'.tr() : null,
           ),
           const SizedBox(height: 12),
           _buildImagePicker(colors),
@@ -289,7 +342,10 @@ class _WritePostState extends State<WritePost> {
   Future<void> _onPopInvoked(bool didPop) async {
     if (didPop) return;
     if (_isSubmitting) return;
-    if (!_isDirty) { Navigator.of(context).pop(); return; }
+    if (!_isDirty) {
+      Navigator.of(context).pop();
+      return;
+    }
     final ctx = context;
     final confirmed = await showConfirmDialog(
       ctx,

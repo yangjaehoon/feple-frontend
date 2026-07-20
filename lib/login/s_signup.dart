@@ -16,7 +16,6 @@ import 'package:feple/service/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
 
@@ -111,9 +110,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
     setState(() => _isLoading = true);
     try {
-      await AuthService.instance.registerWithEmail(
-        email, password, nickname,
-      );
+      await AuthService.instance.registerWithEmail(email, password, nickname);
       if (!mounted) return;
 
       await Navigator.push(
@@ -166,7 +163,12 @@ class _SignupScreenState extends State<SignupScreen> {
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_rounded, color: themeColors.textTitle, size: 20),
+          tooltip: 'back'.tr(),
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: themeColors.textTitle,
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -236,7 +238,11 @@ class _SignupScreenState extends State<SignupScreen> {
         const SizedBox(height: 8),
         Text(
           'signup_subtitle'.tr(),
-          style: TextStyle(fontSize: AppDimens.fontSizeMd, color: themeColors.textSecondary, fontWeight: FontWeight.w500),
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeMd,
+            color: themeColors.textSecondary,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         const SizedBox(height: 36),
       ],
@@ -255,7 +261,10 @@ class _SignupScreenState extends State<SignupScreen> {
           autofillHints: const [AutofillHints.newUsername, AutofillHints.email],
           errorText: _emailError,
           onChanged: (_) {
-            setState(() { _emailError = null; _generalError = null; });
+            setState(() {
+              _emailError = null;
+              _generalError = null;
+            });
           },
           onSubmitted: (_) => FocusScope.of(context).nextFocus(),
         ),
@@ -300,7 +309,10 @@ class _SignupScreenState extends State<SignupScreen> {
       children: [
         Text(
           'already_have_account'.tr(),
-          style: TextStyle(color: themeColors.textSecondary, fontSize: AppDimens.fontSizeMd),
+          style: TextStyle(
+            color: themeColors.textSecondary,
+            fontSize: AppDimens.fontSizeMd,
+          ),
         ),
         TextButton(
           onPressed: () => Navigator.pop(context),
@@ -312,7 +324,10 @@ class _SignupScreenState extends State<SignupScreen> {
           ),
           child: Text(
             'login'.tr(),
-            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeMd),
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: AppDimens.fontSizeMd,
+            ),
           ),
         ),
       ],

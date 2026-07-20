@@ -45,16 +45,24 @@ class PostListTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            GestureDetector(
-              onTap: (!post.anonymous && onAuthorTap != null) ? onAuthorTap : null,
-              child: Padding(
-                padding: const EdgeInsets.all(4),
-                child: ProfileAvatar(
-                  imageUrl: post.profileImageUrl,
-                  nickname: post.nickname,
-                  certified: post.certified,
-                  userRole: post.userRole,
-                  anonymous: post.anonymous,
+            Semantics(
+              button: !post.anonymous && onAuthorTap != null,
+              label: post.anonymous
+                  ? null
+                  : 'view_author_profile'.tr(args: [post.nickname]),
+              child: GestureDetector(
+                onTap: (!post.anonymous && onAuthorTap != null)
+                    ? onAuthorTap
+                    : null,
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: ProfileAvatar(
+                    imageUrl: post.profileImageUrl,
+                    nickname: post.nickname,
+                    certified: post.certified,
+                    userRole: post.userRole,
+                    anonymous: post.anonymous,
+                  ),
                 ),
               ),
             ),
@@ -120,7 +128,11 @@ class PostListTile extends StatelessWidget {
                       width: 56,
                       height: 56,
                       color: c.surface,
-                      child: Icon(Icons.broken_image_rounded, size: 20, color: c.textSecondary.withValues(alpha: 0.4)),
+                      child: Icon(
+                        Icons.broken_image_rounded,
+                        size: 20,
+                        color: c.textSecondary.withValues(alpha: 0.4),
+                      ),
                     );
                   },
                 ),

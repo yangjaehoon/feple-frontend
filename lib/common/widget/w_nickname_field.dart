@@ -75,6 +75,7 @@ class NicknameFieldState extends State<NicknameField> {
         nickname,
         excludeUserId: widget.excludeUserId,
       );
+      if (!mounted) return;
       final localizedMsg = result.available
           ? 'nickname_available'.tr()
           : switch (result.code) {
@@ -87,7 +88,7 @@ class NicknameFieldState extends State<NicknameField> {
       _lastChecked = nickname;
     } catch (e) {
       debugPrint('[NicknameField] check failed: $e');
-      _setResult(false, 'nickname_check_error'.tr());
+      if (mounted) _setResult(false, 'nickname_check_error'.tr());
     } finally {
       if (mounted) setState(() => _isChecking = false);
     }

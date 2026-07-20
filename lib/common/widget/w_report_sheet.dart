@@ -71,6 +71,11 @@ class _ReportSheetContentState extends State<_ReportSheetContent> {
       final isConflict = e.response?.statusCode == 409;
       widget.pageContext.showErrorSnackbar(
           isConflict ? widget.duplicateErrorKey.tr() : 'report_failed'.tr());
+    } catch (e) {
+      debugPrint('[Report] submit failed: $e');
+      if (mounted) setState(() => _isSubmitting = false);
+      if (!widget.pageContext.mounted) return;
+      widget.pageContext.showErrorSnackbar('report_failed'.tr());
     }
   }
 

@@ -356,7 +356,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
         ))
         .closed
         .then((reason) {
-          if (reason != SnackBarClosedReason.action && mounted) {
+          // 서버 삭제(confirmDismiss)는 setState 없이 서비스 호출+자체 try-catch만 하므로
+          // 스낵바가 닫히는 시점에 화면을 이미 벗어났어도(mounted=false) 안전하게 호출 가능 —
+          // 여기서 mounted를 체크하면 화면 이탈 시 서버 삭제가 누락돼 항목이 되살아나는 버그가 생김
+          if (reason != SnackBarClosedReason.action) {
             _notifier.confirmDismiss(item);
           }
         });

@@ -137,7 +137,7 @@ class _MyPostsViewState extends State<MyPostsView> {
                   ),
                 ),
               );
-              _controller.refresh();
+              if (mounted) _controller.refresh();
             },
             title: Text(
               post.title,

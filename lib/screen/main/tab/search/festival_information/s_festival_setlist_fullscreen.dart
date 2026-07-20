@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/url_validator.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
@@ -19,10 +20,12 @@ class FestivalSetlistFullscreenScreen extends StatefulWidget {
   const FestivalSetlistFullscreenScreen({super.key, required this.festivalId});
 
   @override
-  State<FestivalSetlistFullscreenScreen> createState() => _FestivalSetlistFullscreenScreenState();
+  State<FestivalSetlistFullscreenScreen> createState() =>
+      _FestivalSetlistFullscreenScreenState();
 }
 
-class _FestivalSetlistFullscreenScreenState extends State<FestivalSetlistFullscreenScreen> {
+class _FestivalSetlistFullscreenScreenState
+    extends State<FestivalSetlistFullscreenScreen> {
   late Future<List<FestivalSetlistEntry>> _future;
   final Set<int> _expanded = {};
 
@@ -36,6 +39,10 @@ class _FestivalSetlistFullscreenScreenState extends State<FestivalSetlistFullscr
       sl<FestivalDetailService>().fetchSetlist(widget.festivalId);
 
   Future<void> _openYoutubeMusic(String url) async {
+    if (!isValidYoutubeUrl(url)) {
+      context.showErrorSnackbar('youtube_open_failed'.tr());
+      return;
+    }
     final uri = Uri.parse(url);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (mounted) context.showErrorSnackbar('youtube_open_failed'.tr());
@@ -45,10 +52,8 @@ class _FestivalSetlistFullscreenScreenState extends State<FestivalSetlistFullscr
   Future<void> _openRequestSheet(FestivalSetlistEntry entry) async {
     await showAppBottomSheet<void>(
       context,
-      builder: (_) => SetlistRequestSheet(
-        festivalId: widget.festivalId,
-        entry: entry,
-      ),
+      builder: (_) =>
+          SetlistRequestSheet(festivalId: widget.festivalId, entry: entry),
     );
   }
 
@@ -68,12 +73,20 @@ class _FestivalSetlistFullscreenScreenState extends State<FestivalSetlistFullscr
       elevation: 0,
       leading: IconButton(
         tooltip: 'back'.tr(),
-        icon: Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: colors.textTitle),
+        icon: Icon(
+          Icons.arrow_back_ios_new_rounded,
+          size: 18,
+          color: colors.textTitle,
+        ),
         onPressed: () => Navigator.pop(context),
       ),
       title: Text(
         'setlist'.tr(),
-        style: TextStyle(fontSize: AppDimens.fontSizeXl, fontWeight: FontWeight.w700, color: colors.textTitle),
+        style: TextStyle(
+          fontSize: AppDimens.fontSizeXl,
+          fontWeight: FontWeight.w700,
+          color: colors.textTitle,
+        ),
       ),
       centerTitle: true,
     );
@@ -83,9 +96,14 @@ class _FestivalSetlistFullscreenScreenState extends State<FestivalSetlistFullscr
     return AsyncContentBuilder<List<FestivalSetlistEntry>>(
       future: _future,
       loadingBuilder: (_) => _buildSkeleton(colors),
-      onRetry: () => setState(() { _future = _fetch(); }),
+      onRetry: () => setState(() {
+        _future = _fetch();
+      }),
       emptyBuilder: (_) => Center(
-        child: Text('no_setlist'.tr(), style: TextStyle(color: colors.textSecondary)),
+        child: Text(
+          'no_setlist'.tr(),
+          style: TextStyle(color: colors.textSecondary),
+        ),
       ),
       useListViewForEmptyState: false,
       builder: (_, entries) => ListView.separated(
@@ -123,7 +141,11 @@ class _FestivalSetlistFullscreenScreenState extends State<FestivalSetlistFullscr
         ),
         child: Row(
           children: [
-            const SkeletonBox(width: 40, height: 40, borderRadius: BorderRadius.all(Radius.circular(20))),
+            const SkeletonBox(
+              width: 40,
+              height: 40,
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+            ),
             const SizedBox(width: 12),
             const Expanded(child: SkeletonBox(height: 14)),
           ],
@@ -185,7 +207,9 @@ class _ArtistFullTile extends StatelessWidget {
             onTap: onToggle,
             borderRadius: BorderRadius.vertical(
               top: const Radius.circular(AppDimens.cardRadius),
-              bottom: isExpanded ? Radius.zero : const Radius.circular(AppDimens.cardRadius),
+              bottom: isExpanded
+                  ? Radius.zero
+                  : const Radius.circular(AppDimens.cardRadius),
             ),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 14, 0, 14),
@@ -197,7 +221,11 @@ class _ArtistFullTile extends StatelessWidget {
                   AnimatedRotation(
                     turns: isExpanded ? 0.5 : 0,
                     duration: AppDimens.animXFast,
-                    child: Icon(Icons.keyboard_arrow_down_rounded, size: 20, color: colors.textSecondary),
+                    child: Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      size: 20,
+                      color: colors.textSecondary,
+                    ),
                   ),
                 ],
               ),
@@ -208,7 +236,11 @@ class _ArtistFullTile extends StatelessWidget {
           onTap: onRequest,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            child: Icon(Icons.edit_note_rounded, size: 18, color: colors.activate),
+            child: Icon(
+              Icons.edit_note_rounded,
+              size: 18,
+              color: colors.activate,
+            ),
           ),
         ),
       ],
@@ -230,7 +262,10 @@ class _ArtistFullTile extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           'total_songs'.tr(args: ['${entry.songs.length}']),
-          style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeXxs,
+            color: colors.textSecondary,
+          ),
         ),
       ],
     );
@@ -265,7 +300,11 @@ class _ArtistFullTile extends StatelessWidget {
         color: colors.backgroundMain,
         borderRadius: BorderRadius.circular(size / 2),
       ),
-      child: Icon(Icons.person_rounded, size: size * 0.55, color: colors.textSecondary),
+      child: Icon(
+        Icons.person_rounded,
+        size: size * 0.55,
+        color: colors.textSecondary,
+      ),
     );
   }
 
@@ -275,12 +314,19 @@ class _ArtistFullTile extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
         child: Text(
           'no_setlist'.tr(),
-          style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeXs,
+            color: colors.textSecondary,
+          ),
         ),
       );
     }
     return Column(
-      children: entry.songs.asMap().entries.map((e) => _buildSongRow(e.value, e.key, colors)).toList(),
+      children: entry.songs
+          .asMap()
+          .entries
+          .map((e) => _buildSongRow(e.value, e.key, colors))
+          .toList(),
     );
   }
 
@@ -296,7 +342,11 @@ class _ArtistFullTile extends StatelessWidget {
               child: Text(
                 '${index + 1}',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary, fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  fontSize: AppDimens.fontSizeXs,
+                  color: colors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
             const SizedBox(width: 10),
@@ -320,13 +370,21 @@ class _ArtistFullTile extends StatelessWidget {
             Expanded(
               child: Text(
                 song.title,
-                style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w500, color: colors.textTitle),
+                style: TextStyle(
+                  fontSize: AppDimens.fontSizeSm,
+                  fontWeight: FontWeight.w500,
+                  color: colors.textTitle,
+                ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
             const SizedBox(width: 6),
-            Icon(Icons.open_in_new_rounded, size: 13, color: colors.textSecondary),
+            Icon(
+              Icons.open_in_new_rounded,
+              size: 13,
+              color: colors.textSecondary,
+            ),
           ],
         ),
       ),
@@ -341,7 +399,11 @@ class _ArtistFullTile extends StatelessWidget {
         color: colors.backgroundMain,
         borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
       ),
-      child: Icon(Icons.music_note_rounded, size: 16, color: colors.textSecondary),
+      child: Icon(
+        Icons.music_note_rounded,
+        size: 16,
+        color: colors.textSecondary,
+      ),
     );
   }
 }
@@ -350,7 +412,11 @@ class SetlistRequestSheet extends StatefulWidget {
   final int festivalId;
   final FestivalSetlistEntry entry;
 
-  const SetlistRequestSheet({super.key, required this.festivalId, required this.entry});
+  const SetlistRequestSheet({
+    super.key,
+    required this.festivalId,
+    required this.entry,
+  });
 
   @override
   State<SetlistRequestSheet> createState() => _SetlistRequestSheetState();
@@ -395,7 +461,9 @@ class _SetlistRequestSheetState extends State<SetlistRequestSheet> {
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
     return Material(
       color: colors.surface,
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
+      borderRadius: const BorderRadius.vertical(
+        top: Radius.circular(AppDimens.shapeSheet),
+      ),
       clipBehavior: Clip.antiAlias,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -422,7 +490,11 @@ class _SetlistRequestSheetState extends State<SetlistRequestSheet> {
           Flexible(
             child: Text(
               widget.entry.displayName(context.isEnglish),
-              style: TextStyle(fontSize: AppDimens.fontSizeXl, fontWeight: FontWeight.w700, color: colors.textTitle),
+              style: TextStyle(
+                fontSize: AppDimens.fontSizeXl,
+                fontWeight: FontWeight.w700,
+                color: colors.textTitle,
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -430,7 +502,10 @@ class _SetlistRequestSheetState extends State<SetlistRequestSheet> {
           const SizedBox(width: 6),
           Text(
             'setlist_request'.tr(),
-            style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeSm,
+              color: colors.textSecondary,
+            ),
           ),
         ],
       ),
@@ -444,7 +519,11 @@ class _SetlistRequestSheetState extends State<SetlistRequestSheet> {
       maxLength: 500,
       decoration: InputDecoration(
         hintText: 'setlist_request_hint'.tr(),
-        hintStyle: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeSm, height: 1.5),
+        hintStyle: TextStyle(
+          color: colors.textSecondary,
+          fontSize: AppDimens.fontSizeSm,
+          height: 1.5,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
           borderSide: BorderSide(color: colors.listDivider),
@@ -459,7 +538,11 @@ class _SetlistRequestSheetState extends State<SetlistRequestSheet> {
         ),
         contentPadding: const EdgeInsets.all(14),
       ),
-      style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textTitle, height: 1.5),
+      style: TextStyle(
+        fontSize: AppDimens.fontSizeSm,
+        color: colors.textTitle,
+        height: 1.5,
+      ),
     );
   }
 
@@ -476,7 +559,9 @@ class _SetlistRequestSheetState extends State<SetlistRequestSheet> {
                   side: BorderSide(color: colors.activate),
                   foregroundColor: colors.activate,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.radiusMedium)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
+                  ),
                 ),
                 child: Text('cancel'.tr()),
               ),

@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/url_validator.dart';
 import 'package:feple/model/song_model.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -12,9 +13,15 @@ class SongListTile extends StatelessWidget {
   const SongListTile({super.key, required this.song, required this.index});
 
   Future<void> _open(BuildContext context) async {
+    if (!isValidYoutubeUrl(song.youtubeUrl)) {
+      context.showErrorSnackbar('youtube_open_failed'.tr());
+      return;
+    }
     final uri = Uri.parse(song.youtubeUrl);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      if (context.mounted) context.showErrorSnackbar('youtube_open_failed'.tr());
+      if (context.mounted) {
+        context.showErrorSnackbar('youtube_open_failed'.tr());
+      }
     }
   }
 
@@ -47,7 +54,11 @@ class SongListTile extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(child: _buildInfo(colors)),
             const SizedBox(width: 8),
-            Icon(Icons.open_in_new_rounded, size: 14, color: colors.textSecondary),
+            Icon(
+              Icons.open_in_new_rounded,
+              size: 14,
+              color: colors.textSecondary,
+            ),
           ],
         ),
       ),
@@ -95,7 +106,9 @@ class SongListTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
             ),
             child: Text(
-              'festival_performed_count'.tr(args: [song.festivalCount.toString()]),
+              'festival_performed_count'.tr(
+                args: [song.festivalCount.toString()],
+              ),
               style: TextStyle(
                 fontSize: AppDimens.fontSizeTiny,
                 fontWeight: FontWeight.w600,
@@ -116,7 +129,11 @@ class SongListTile extends StatelessWidget {
         color: colors.backgroundMain,
         borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
       ),
-      child: Icon(Icons.music_note_rounded, size: 18, color: colors.textSecondary),
+      child: Icon(
+        Icons.music_note_rounded,
+        size: 18,
+        color: colors.textSecondary,
+      ),
     );
   }
 }

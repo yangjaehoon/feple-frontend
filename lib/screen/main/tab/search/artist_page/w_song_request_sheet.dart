@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
+import 'package:feple/common/util/url_validator.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
@@ -41,11 +42,6 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
     super.dispose();
   }
 
-  bool _isValidYoutubeUrl(String url) {
-    if (!url.startsWith('http://') && !url.startsWith('https://')) return false;
-    return url.contains('youtube.com') || url.contains('youtu.be');
-  }
-
   bool get _isDirty =>
       _titleCtrl.text.trim().isNotEmpty || _urlCtrl.text.trim().isNotEmpty;
 
@@ -77,7 +73,7 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
       return;
     }
     final rawUrl = _urlCtrl.text.trim();
-    if (rawUrl.isNotEmpty && !_isValidYoutubeUrl(rawUrl)) {
+    if (rawUrl.isNotEmpty && !isValidYoutubeUrl(rawUrl)) {
       setState(() => _urlError = 'song_request_invalid_url'.tr());
       return;
     }
@@ -174,9 +170,9 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
             ),
           ),
           IconButton(
+            tooltip: 'close'.tr(),
             onPressed: _handleClose,
             icon: Icon(Icons.close_rounded, color: colors.textSecondary),
-            visualDensity: VisualDensity.compact,
           ),
         ],
       ),

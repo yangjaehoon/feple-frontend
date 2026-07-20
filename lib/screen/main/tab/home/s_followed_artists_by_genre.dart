@@ -32,18 +32,17 @@ class _FollowedArtistsByGenreScreenState
   String? _selectedGenre;
   bool _isSheetOpen = false;
   late List<FollowedArtist> _artists;
+  late List<String> _genres;
 
   @override
   void initState() {
     super.initState();
     _artists = widget.artists;
+    _genres = _computeGenres();
   }
 
-  List<String> get _genres => _artists
-      .expand((a) => a.genres)
-      .toSet()
-      .toList()
-    ..sort();
+  List<String> _computeGenres() =>
+      _artists.expand((a) => a.genres).toSet().toList()..sort();
 
   List<FollowedArtist> get _filteredArtists => _selectedGenre == null
       ? _artists
@@ -69,7 +68,10 @@ class _FollowedArtistsByGenreScreenState
     // widget.artists는 화면 진입 시점의 스냅샷이라 onSaveOrder가 상위 notifier를
     // 갱신해도 이 화면 자체는 재진입 전까지 반영되지 않았음 — 즉시 반영
     if (newOrder != null && mounted) {
-      setState(() => _artists = _reordered(_artists, newOrder));
+      setState(() {
+        _artists = _reordered(_artists, newOrder);
+        _genres = _computeGenres();
+      });
     }
   }
 

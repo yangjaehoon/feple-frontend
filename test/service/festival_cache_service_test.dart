@@ -204,15 +204,6 @@ void main() {
   });
 
   group('clear', () {
-    test('clear(id) 후 해당 festival 캐시는 모두 비워짐', () async {
-      await cache.saveArtists(1, [_artist()]);
-      expect(await cache.loadArtists(1), isNotNull);
-
-      await cache.clear(1);
-
-      expect(await cache.loadArtists(1), isNull);
-    });
-
     test('clearAll 후 모든 캐시 키 제거', () async {
       await cache.saveArtists(1, [_artist()]);
       await cache.saveArtists(2, [_artist()]);
@@ -223,15 +214,6 @@ void main() {
       expect(await cache.loadArtists(1), isNull);
       expect(await cache.loadArtists(2), isNull);
       expect(await cache.loadPreviewList(), isNull);
-    });
-
-    test('clear(id)는 다른 festivalId 캐시에 영향 없음', () async {
-      await cache.saveArtists(1, [_artist()]);
-      await cache.saveArtists(2, [_artist()]);
-
-      await cache.clear(1);
-
-      expect(await cache.loadArtists(2), isNotNull);
     });
   });
 }

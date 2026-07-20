@@ -169,15 +169,29 @@ class _ArtistContent extends StatefulWidget {
 
 class _ArtistContentState extends State<_ArtistContent> with NavigationGuard {
   String? _selectedGenre;
+  late List<String> _genres;
+
+  @override
+  void initState() {
+    super.initState();
+    _genres = extractArtistGenres(widget.allArtists);
+  }
+
+  @override
+  void didUpdateWidget(_ArtistContent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.allArtists, widget.allArtists)) {
+      _genres = extractArtistGenres(widget.allArtists);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final genres = extractArtistGenres(widget.allArtists);
     final artists = _selectedGenre == null
         ? widget.allArtists
         : widget.allArtists.where((a) => a.genres.contains(_selectedGenre)).toList();
-    return _buildContent(artists, genres, colors);
+    return _buildContent(artists, _genres, colors);
   }
 
   Widget _buildContent(

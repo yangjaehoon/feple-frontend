@@ -54,11 +54,6 @@ class AppPreferences {
     }
   }
 
-  static Future<void> deleteValue<T>(PreferenceItem<T> item) async {
-    final String key = getPrefKey(item);
-    await _prefs.remove(key);
-  }
-
   static T getValue<T>(PreferenceItem<T> item) {
     final String key = getPrefKey(item);
     switch (_baseTypeName(T)) {

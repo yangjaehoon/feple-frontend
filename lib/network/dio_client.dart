@@ -40,7 +40,9 @@ class DioClient {
   DioClient._();
 
   /// 리프레시 토큰도 만료됐을 때 호출 → 로그인 화면으로 이동
-  static void Function()? onSessionExpired;
+  /// Kakao/Firebase 로그아웃까지 포함한 비동기 정리이므로 완료를 기다려야
+  /// 다음 로그인 시도(예: 자동 로그인 직후 사용자가 바로 재로그인)와 경쟁하지 않음
+  static Future<void> Function()? onSessionExpired;
 
   /// 계정 정지(403 banned) 시 호출 → 안내 다이얼로그 표시 후 로그아웃
   static void Function()? onUserBanned;
@@ -192,7 +194,7 @@ class _AuthAndSwrInterceptor extends Interceptor {
     // refresh 토큰 없음(null 반환) 또는 refresh 실패(예외) — 두 경우 모두 정리
     if (newToken == null) {
       await TokenStore.clear();
-      DioClient.onSessionExpired?.call();
+      await DioClient.onSessionExpired?.call();
       return handler.next(error);
     }
     final opts = error.requestOptions;

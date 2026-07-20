@@ -36,6 +36,10 @@
     @com.google.gson.annotations.SerializedName <fields>;
 }
 
+# AndroidX DataStore — NativeSharedCounter가 JNI 네이티브 메서드를 가지고 있어
+# R8이 클래스명을 바꾸면 UnsatisfiedLinkError로 런타임 크래시 (프로덕션 스플래시 직후 크래시 실사례)
+-keep class androidx.datastore.core.** { *; }
+
 # androidx.window (R8 missing class 억제)
 -dontwarn androidx.window.extensions.WindowExtensions
 -dontwarn androidx.window.extensions.WindowExtensionsProvider

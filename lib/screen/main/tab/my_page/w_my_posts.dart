@@ -82,15 +82,33 @@ class _MyPostsViewState extends State<MyPostsView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SkeletonBox(width: double.infinity, height: 14, borderRadius: BorderRadius.circular(AppDimens.radiusXs)),
+            SkeletonBox(
+              width: double.infinity,
+              height: 14,
+              borderRadius: BorderRadius.circular(AppDimens.radiusXs),
+            ),
             const SizedBox(height: 8),
-            SkeletonBox(width: 160, height: 12, borderRadius: BorderRadius.circular(AppDimens.radiusXs)),
+            SkeletonBox(
+              width: 160,
+              height: 12,
+              borderRadius: BorderRadius.circular(AppDimens.radiusXs),
+            ),
             const SizedBox(height: 8),
-            Row(children: [
-              SkeletonBox(width: 40, height: 10, borderRadius: BorderRadius.circular(AppDimens.radiusXs)),
-              const SizedBox(width: 12),
-              SkeletonBox(width: 40, height: 10, borderRadius: BorderRadius.circular(AppDimens.radiusXs)),
-            ]),
+            Row(
+              children: [
+                SkeletonBox(
+                  width: 40,
+                  height: 10,
+                  borderRadius: BorderRadius.circular(AppDimens.radiusXs),
+                ),
+                const SizedBox(width: 12),
+                SkeletonBox(
+                  width: 40,
+                  height: 10,
+                  borderRadius: BorderRadius.circular(AppDimens.radiusXs),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -103,7 +121,10 @@ class _MyPostsViewState extends State<MyPostsView> {
     }
     if (_controller.hasError) {
       return RefreshableCenter(
-        child: ErrorState(message: 'err_fetch_data'.tr(), onRetry: _controller.load),
+        child: ErrorState.network(
+          _controller.error!,
+          onRetry: _controller.load,
+        ),
       );
     }
     final posts = _controller.posts;
@@ -141,21 +162,31 @@ class _MyPostsViewState extends State<MyPostsView> {
             },
             title: Text(
               post.title,
-              style: TextStyle(color: colors.textTitle, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                color: colors.textTitle,
+                fontWeight: FontWeight.w600,
+              ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
             subtitle: Text(
               post.boardDisplayName,
-              style: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXs),
+              style: TextStyle(
+                color: colors.textSecondary,
+                fontSize: AppDimens.fontSizeXs,
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            trailing: PostStatRow(likeCount: post.likeCount, commentCount: post.commentCount),
+            trailing: PostStatRow(
+              likeCount: post.likeCount,
+              commentCount: post.commentCount,
+            ),
           ),
         );
       },
-      separatorBuilder: (_, _) => Divider(thickness: 1, color: colors.listDivider),
+      separatorBuilder: (_, _) =>
+          Divider(thickness: 1, color: colors.listDivider),
     );
   }
 }

@@ -34,6 +34,7 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
   List<CertificationModel> _certifications = [];
   bool _isLoading = true;
   bool _hasError = false;
+  Object? _error;
   CertStatus? _filter; // null = 전체
 
   List<CertificationModel> get _filtered => _filter == null
@@ -47,12 +48,27 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
   }
 
   Future<void> _load() async {
-    setState(() { _isLoading = true; _hasError = false; });
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
     try {
       final list = await _certService.getMyCertifications();
-      if (mounted) setState(() { _certifications = list; _isLoading = false; });
-    } catch (_) {
-      if (mounted) setState(() { _certifications = []; _isLoading = false; _hasError = true; });
+      if (mounted) {
+        setState(() {
+          _certifications = list;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _certifications = [];
+          _isLoading = false;
+          _hasError = true;
+          _error = e;
+        });
+      }
     }
   }
 
@@ -60,7 +76,12 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
   Future<void> _refresh() async {
     try {
       final list = await _certService.getMyCertifications();
-      if (mounted) setState(() { _certifications = list; _hasError = false; });
+      if (mounted) {
+        setState(() {
+          _certifications = list;
+          _hasError = false;
+        });
+      }
     } catch (_) {}
   }
 
@@ -96,15 +117,20 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
             ),
             Expanded(
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 14,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: const [
                     SkeletonBox(height: 15),
                     SizedBox(height: 8),
-                    SkeletonBox(width: 80, height: 22,
-                        borderRadius: BorderRadius.all(Radius.circular(20))),
+                    SkeletonBox(
+                      width: 80,
+                      height: 22,
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                    ),
                     SizedBox(height: 6),
                     SkeletonBox(width: 60, height: 11),
                   ],
@@ -144,30 +170,29 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
       child: _isLoading
           ? _buildSkeleton(colors)
           : _hasError
-              ? _buildScrollable(
-                  ErrorState(
-                    message: 'err_fetch_data'.tr(),
-                    onRetry: _load,
-                  ),
-                )
-              : displayed.isEmpty
-                  ? _buildScrollable(
-                      EmptyState(
-                        icon: Icons.verified_outlined,
-                        title: 'cert_no_history'.tr(),
-                        subtitle: _filter == null ? 'cert_no_history_hint'.tr() : null,
-                      ),
-                    )
-                  : ListView.separated(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-                      itemCount: displayed.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 10),
-                      itemBuilder: (context, index) {
-                        final cert = displayed[index];
-                        return _CertCard(key: ValueKey(cert.id), cert: cert, certService: _certService);
-                      },
-                    ),
+          ? _buildScrollable(ErrorState.network(_error!, onRetry: _load))
+          : displayed.isEmpty
+          ? _buildScrollable(
+              EmptyState(
+                icon: Icons.verified_outlined,
+                title: 'cert_no_history'.tr(),
+                subtitle: _filter == null ? 'cert_no_history_hint'.tr() : null,
+              ),
+            )
+          : ListView.separated(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+              itemCount: displayed.length,
+              separatorBuilder: (_, _) => const SizedBox(height: 10),
+              itemBuilder: (context, index) {
+                final cert = displayed[index];
+                return _CertCard(
+                  key: ValueKey(cert.id),
+                  cert: cert,
+                  certService: _certService,
+                );
+              },
+            ),
     );
   }
 
@@ -184,10 +209,18 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
             onPressed: _openSubmitSheet,
             // certRingColor(skyBlue)는 appBarColor와 동일한 색이라 앱바 위에서 안 보임 —
             // 앱바 텍스트/아이콘 전용 색상 사용
-            icon: Icon(Icons.add_photo_alternate_rounded, color: colors.appBarIconColor, size: 20),
+            icon: Icon(
+              Icons.add_photo_alternate_rounded,
+              color: colors.appBarIconColor,
+              size: 20,
+            ),
             label: Text(
               'cert_submit'.tr(),
-              style: TextStyle(color: colors.appBarIconColor, fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeSm),
+              style: TextStyle(
+                color: colors.appBarIconColor,
+                fontWeight: FontWeight.w700,
+                fontSize: AppDimens.fontSizeSm,
+              ),
             ),
           ),
         ],
@@ -227,11 +260,15 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
   Future<void> _navigateToFestival() async {
     await guardedNavigate(() async {
       try {
-        final festival = await sl<FestivalService>().fetchById(widget.cert.festivalId);
+        final festival = await sl<FestivalService>().fetchById(
+          widget.cert.festivalId,
+        );
         if (!mounted) return;
         await Navigator.push(
           context,
-          SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)),
+          SlideRoute(
+            builder: (_) => FestivalInformationFragment(poster: festival),
+          ),
         );
       } catch (e) {
         debugPrint('[CertCard] 페스티벌 이동 실패: $e');
@@ -250,9 +287,15 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
       ),
     );
     if (result == null) return;
-    setState(() { _isSubmitting = true; });
+    setState(() {
+      _isSubmitting = true;
+    });
     try {
-      await widget.certService.submitRating(widget.cert.id, result.rating, result.review);
+      await widget.certService.submitRating(
+        widget.cert.id,
+        result.rating,
+        result.review,
+      );
       if (mounted) {
         setState(() {
           _rating = result.rating;
@@ -264,7 +307,9 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
     } catch (e) {
       debugPrint('[CertCard] 별점 저장 실패: $e');
       if (mounted) {
-        setState(() { _isSubmitting = false; });
+        setState(() {
+          _isSubmitting = false;
+        });
         context.showErrorSnackbar('rating_submit_failed'.tr());
       }
     }
@@ -294,7 +339,13 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildPosterImage(widget.cert.posterUrl, colors),
-          _buildCardContent(colors, statusColor, statusLabel, isApproved, isPending),
+          _buildCardContent(
+            colors,
+            statusColor,
+            statusLabel,
+            isApproved,
+            isPending,
+          ),
         ],
       ),
     );
@@ -316,7 +367,8 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
                   memCacheWidth: 180,
                   fadeInDuration: AppDimens.animXFast,
                   fadeOutDuration: AppDimens.animTapFeedback,
-                  placeholder: (_, _) => const SkeletonBox(height: double.infinity),
+                  placeholder: (_, _) =>
+                      const SkeletonBox(height: double.infinity),
                   errorWidget: (_, _, _) => _buildPhotoPlaceholder(colors),
                 )
               : _buildPhotoPlaceholder(colors),
@@ -366,13 +418,23 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
           children: [
             Text(
               widget.cert.displayFestivalTitle(context.isEnglish),
-              style: TextStyle(fontSize: AppDimens.fontSizeLg, fontWeight: FontWeight.w700, color: colors.textTitle),
+              style: TextStyle(
+                fontSize: AppDimens.fontSizeLg,
+                fontWeight: FontWeight.w700,
+                color: colors.textTitle,
+              ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 6),
             _buildStatusBadge(statusColor, statusLabel),
-            _buildMeta(isPending, isApproved, widget.cert.rejectionMessage, widget.cert.formattedDate, colors),
+            _buildMeta(
+              isPending,
+              isApproved,
+              widget.cert.rejectionMessage,
+              widget.cert.formattedDate,
+              colors,
+            ),
             if (isApproved) ...[
               const SizedBox(height: 6),
               _buildRatingSection(colors),
@@ -388,7 +450,10 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
       return SizedBox(
         height: 20,
         width: 20,
-        child: CircularProgressIndicator(strokeWidth: 2, color: colors.activate),
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          color: colors.activate,
+        ),
       );
     }
     if (_rating != null) {
@@ -397,17 +462,23 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ...List.generate(5, (i) => Icon(
-              i < _rating! ? Icons.star_rounded : Icons.star_outline_rounded,
-              size: 16,
-              color: Colors.amber,
-            )),
+            ...List.generate(
+              5,
+              (i) => Icon(
+                i < _rating! ? Icons.star_rounded : Icons.star_outline_rounded,
+                size: 16,
+                color: Colors.amber,
+              ),
+            ),
             if (_review != null && _review!.isNotEmpty) ...[
               const SizedBox(width: 6),
               Flexible(
                 child: Text(
                   _review!,
-                  style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
+                  style: TextStyle(
+                    fontSize: AppDimens.fontSizeXxs,
+                    color: colors.textSecondary,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -426,29 +497,51 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
           const SizedBox(width: 4),
           Text(
             'rating_submit'.tr(),
-            style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: colors.activate),
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeXxs,
+              fontWeight: FontWeight.w600,
+              color: colors.activate,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildMeta(bool isPending, bool isApproved, String? rejectionMessage, String? createdAt, AbstractThemeColors colors) {
+  Widget _buildMeta(
+    bool isPending,
+    bool isApproved,
+    String? rejectionMessage,
+    String? createdAt,
+    AbstractThemeColors colors,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (!isPending && !isApproved && rejectionMessage != null && rejectionMessage.isNotEmpty) ...[
+        if (!isPending &&
+            !isApproved &&
+            rejectionMessage != null &&
+            rejectionMessage.isNotEmpty) ...[
           const SizedBox(height: 4),
           Text(
             'cert_rejection_reason'.tr(args: [rejectionMessage]),
-            style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeXxs,
+              color: colors.textSecondary,
+            ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
         ],
         if (createdAt != null) ...[
           const SizedBox(height: 4),
-          Text(createdAt, style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary)),
+          Text(
+            createdAt,
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeXxs,
+              color: colors.textSecondary,
+            ),
+          ),
         ],
       ],
     );
@@ -457,9 +550,11 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
   Widget _buildPhotoPlaceholder(AbstractThemeColors colors) {
     return Container(
       color: colors.certRingColor.withValues(alpha: 0.1),
-      child: Icon(Icons.photo_rounded,
-          color: colors.textSecondary.withValues(alpha: 0.4), size: 32),
+      child: Icon(
+        Icons.photo_rounded,
+        color: colors.textSecondary.withValues(alpha: 0.4),
+        size: 32,
+      ),
     );
   }
 }
-

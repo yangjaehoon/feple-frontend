@@ -29,7 +29,10 @@ class _FestivalListSwiperWidgetState extends State<FestivalListSwiperWidget> {
   }
 
   Widget _buildBlurBackground(
-      AbstractThemeColors colors, String posterUrl, double swiperHeight) {
+    AbstractThemeColors colors,
+    String posterUrl,
+    double swiperHeight,
+  ) {
     // 100px ResizeImage는 늘릴 때 자연스럽게 흐려짐 — BackdropFilter GPU offscreen 불필요
     return ClipRect(
       child: SizedBox(
@@ -38,7 +41,10 @@ class _FestivalListSwiperWidgetState extends State<FestivalListSwiperWidget> {
           fit: StackFit.expand,
           children: [
             Image(
-              image: ResizeImage(CachedNetworkImageProvider(posterUrl), width: 100),
+              image: ResizeImage(
+                CachedNetworkImageProvider(posterUrl),
+                width: 100,
+              ),
               fit: BoxFit.cover,
             ),
             ColoredBox(color: colors.swiperOverlay.withValues(alpha: 0.55)),
@@ -80,10 +86,12 @@ class _FestivalListSwiperWidgetState extends State<FestivalListSwiperWidget> {
             onTap: () {
               Navigator.push(
                 context,
-                SlideRoute(builder: (context) => FestivalInformationFragment(
-                  poster: item.toModel(),
-                  heroTag: 'swiper_fp_${item.id}',
-                )),
+                SlideRoute(
+                  builder: (context) => FestivalInformationFragment(
+                    poster: item.toModel(),
+                    heroTag: 'swiper_fp_${item.id}',
+                  ),
+                ),
               );
             },
             child: Hero(
@@ -107,13 +115,17 @@ class _FestivalListSwiperWidgetState extends State<FestivalListSwiperWidget> {
                     fit: BoxFit.cover,
                     fadeInDuration: AppDimens.animXFast,
                     fadeOutDuration: AppDimens.animTapFeedback,
-                    placeholder: (context, url) => const SkeletonBox(height: double.infinity),
+                    placeholder: (context, url) =>
+                        const SkeletonBox(height: double.infinity),
                     errorWidget: (context, url, error) {
                       final colors = context.appColors;
                       return Container(
                         color: colors.surface,
-                        child: Icon(Icons.broken_image_rounded,
-                            size: 36, color: colors.textSecondary.withValues(alpha: 0.4)),
+                        child: Icon(
+                          Icons.broken_image_rounded,
+                          size: 36,
+                          color: colors.textSecondary.withValues(alpha: 0.4),
+                        ),
                       );
                     },
                   ),
@@ -139,11 +151,13 @@ class _FestivalListSwiperWidgetState extends State<FestivalListSwiperWidget> {
   @override
   Widget build(BuildContext context) {
     final isLoadingEmpty = context.select<FestivalPreviewProvider, bool>(
-        (p) => p.isLoading && p.items.isEmpty);
+      (p) => p.isLoading && p.items.isEmpty,
+    );
     final isErrorEmpty = context.select<FestivalPreviewProvider, bool>(
-        (p) => p.error != null && p.items.isEmpty);
-    final allItems = context.select<FestivalPreviewProvider, List<FestivalPreview>>(
-        (p) => p.items);
+      (p) => p.error != null && p.items.isEmpty,
+    );
+    final allItems = context
+        .select<FestivalPreviewProvider, List<FestivalPreview>>((p) => p.items);
     final colors = context.appColors;
 
     if (isLoadingEmpty) return _buildSkeleton(context);
@@ -165,8 +179,19 @@ class _FestivalListSwiperWidgetState extends State<FestivalListSwiperWidget> {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        _buildBlurBackground(colors, items[safeCurrentPage].posterUrl, swiperHeight),
-        _buildSwiperContent(colors, items, swiperHeight, itemWidth, itemHeight, translateOffset),
+        _buildBlurBackground(
+          colors,
+          items[safeCurrentPage].posterUrl,
+          swiperHeight,
+        ),
+        _buildSwiperContent(
+          colors,
+          items,
+          swiperHeight,
+          itemWidth,
+          itemHeight,
+          translateOffset,
+        ),
       ],
     );
   }
@@ -206,13 +231,11 @@ class _FestivalListSwiperWidgetState extends State<FestivalListSwiperWidget> {
   }
 
   Widget _buildError(BuildContext context) {
+    final provider = context.read<FestivalPreviewProvider>();
     return SizedBox(
       height: 160,
       child: Center(
-        child: ErrorState(
-          message: 'err_fetch_data'.tr(),
-          onRetry: () => context.read<FestivalPreviewProvider>().refresh(),
-        ),
+        child: ErrorState.network(provider.error!, onRetry: provider.refresh),
       ),
     );
   }
@@ -224,14 +247,18 @@ class _FestivalListSwiperWidgetState extends State<FestivalListSwiperWidget> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.festival_rounded,
-              size: 40, color: colors.textSecondary.withValues(alpha: 0.3)),
+          Icon(
+            Icons.festival_rounded,
+            size: 40,
+            color: colors.textSecondary.withValues(alpha: 0.3),
+          ),
           const SizedBox(height: 10),
           Text(
             'no_upcoming_festivals'.tr(),
             style: TextStyle(
-                fontSize: AppDimens.fontSizeMd,
-                color: colors.textSecondary.withValues(alpha: 0.6)),
+              fontSize: AppDimens.fontSizeMd,
+              color: colors.textSecondary.withValues(alpha: 0.6),
+            ),
           ),
         ],
       ),

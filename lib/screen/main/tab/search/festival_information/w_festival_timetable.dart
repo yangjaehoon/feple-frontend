@@ -33,7 +33,8 @@ class FestivalTimetable extends StatefulWidget {
   State<FestivalTimetable> createState() => FestivalTimetableState();
 }
 
-class FestivalTimetableState extends State<FestivalTimetable> with NavigationGuard {
+class FestivalTimetableState extends State<FestivalTimetable>
+    with NavigationGuard {
   final _vContent = ScrollController();
   final _vTime = ScrollController();
   final _hContent = ScrollController();
@@ -123,29 +124,44 @@ class FestivalTimetableState extends State<FestivalTimetable> with NavigationGua
         children: [
           Icon(Icons.schedule_rounded, size: 15, color: colors.activate),
           const SizedBox(width: 8),
-          Text('timetable'.tr(),
-              style: TextStyle(
-                  fontSize: AppDimens.fontSizeLg, fontWeight: FontWeight.w700, color: colors.textTitle)),
+          Text(
+            'timetable'.tr(),
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeLg,
+              fontWeight: FontWeight.w700,
+              color: colors.textTitle,
+            ),
+          ),
           const Spacer(),
-          if (!_notifier.isLoading && _notifier.error == null && _notifier.hasEntries)
+          if (!_notifier.isLoading &&
+              _notifier.error == null &&
+              _notifier.hasEntries)
             GestureDetector(
-              onTap: () => guardedNavigate(() => Navigator.push(
-                context,
-                SlideRoute(builder: (_) => TimetableFullscreenScreen(
-                  festivalId: widget.festivalId,
-                  entries: _notifier.entries,
-                  followedNames: _notifier.followedNames,
-                  dates: _notifier.dates,
-                  initialDate: _notifier.selectedDate,
-                )),
-              )),
+              onTap: () => guardedNavigate(
+                () => Navigator.push(
+                  context,
+                  SlideRoute(
+                    builder: (_) => TimetableFullscreenScreen(
+                      festivalId: widget.festivalId,
+                      entries: _notifier.entries,
+                      followedNames: _notifier.followedNames,
+                      dates: _notifier.dates,
+                      initialDate: _notifier.selectedDate,
+                    ),
+                  ),
+                ),
+              ),
               child: Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   color: colors.activate.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
                 ),
-                child: Icon(Icons.open_in_full_rounded, size: 16, color: colors.activate),
+                child: Icon(
+                  Icons.open_in_full_rounded,
+                  size: 16,
+                  color: colors.activate,
+                ),
               ),
             ),
         ],
@@ -158,14 +174,14 @@ class FestivalTimetableState extends State<FestivalTimetable> with NavigationGua
     if (_notifier.error != null) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        child: ErrorState(
-          message: 'err_fetch_data'.tr(),
-          onRetry: _notifier.retry,
-        ),
+        child: ErrorState.network(_notifier.error!, onRetry: _notifier.retry),
       );
     }
     if (!_notifier.hasEntries) {
-      return EmptyState(icon: Icons.schedule_rounded, title: 'no_timetable'.tr());
+      return EmptyState(
+        icon: Icons.schedule_rounded,
+        title: 'no_timetable'.tr(),
+      );
     }
     return LayoutBuilder(
       builder: (_, constraints) => TimetableGrid(

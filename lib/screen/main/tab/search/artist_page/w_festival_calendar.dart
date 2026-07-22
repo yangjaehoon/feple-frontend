@@ -2,6 +2,7 @@ import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/injection.dart';
@@ -32,6 +33,7 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
   List<ArtistScheduleModel> _schedules = [];
   bool _isLoading = true;
   bool _hasError = false;
+  Object? _error;
 
   @override
   void initState() {
@@ -57,6 +59,7 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
       setState(() {
         _isLoading = false;
         _hasError = true;
+        _error = e;
       });
     }
   }
@@ -80,15 +83,16 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
       return const Center(child: CircularProgressIndicator.adaptive());
     }
     if (_hasError) {
-      return Center(
-        child: ErrorState(message: 'err_fetch_data'.tr(), onRetry: _fetch),
-      );
+      return Center(child: ErrorState.network(_error!, onRetry: _fetch));
     }
     if (_schedules.isEmpty) {
       return Center(
         child: Text(
           'no_schedule'.tr(),
-          style: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeMd),
+          style: TextStyle(
+            color: colors.textSecondary,
+            fontSize: AppDimens.fontSizeMd,
+          ),
         ),
       );
     }
@@ -98,7 +102,9 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
 
     return RefreshIndicator(
       onRefresh: () async {
-        setState(() { _future = _fetch(); });
+        setState(() {
+          _future = _fetch();
+        });
         try {
           await _future;
         } catch (_) {}
@@ -161,7 +167,11 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
                   color: config.color.withValues(alpha: isPast ? 0.15 : 0.2),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(config.icon, size: 18, color: isPast ? colors.textSecondary : config.color),
+                child: Icon(
+                  config.icon,
+                  size: 18,
+                  color: isPast ? colors.textSecondary : config.color,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -182,19 +192,29 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
                       const SizedBox(height: 3),
                       Text(
                         dateText,
-                        style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
+                        style: TextStyle(
+                          fontSize: AppDimens.fontSizeXs,
+                          color: colors.textSecondary,
+                        ),
                       ),
                     ],
                     if (s.location != null && s.location!.isNotEmpty) ...[
                       const SizedBox(height: 2),
                       Row(
                         children: [
-                          Icon(Icons.location_on_rounded, size: 12, color: colors.textSecondary),
+                          Icon(
+                            Icons.location_on_rounded,
+                            size: 12,
+                            color: colors.textSecondary,
+                          ),
                           const SizedBox(width: 2),
                           Expanded(
                             child: Text(
                               s.location!,
-                              style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
+                              style: TextStyle(
+                                fontSize: AppDimens.fontSizeXs,
+                                color: colors.textSecondary,
+                              ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -214,7 +234,10 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
     );
   }
 
-  Widget _buildCalendarButton(ArtistScheduleModel s, AbstractThemeColors colors) {
+  Widget _buildCalendarButton(
+    ArtistScheduleModel s,
+    AbstractThemeColors colors,
+  ) {
     return Tooltip(
       message: 'add_to_calendar'.tr(),
       child: IconButton(
@@ -223,7 +246,9 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
         color: colors.activate,
         style: IconButton.styleFrom(
           backgroundColor: colors.activate.withValues(alpha: 0.1),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.radiusSmall)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+          ),
         ),
         onPressed: () => _saveToCalendar(s),
       ),
@@ -231,13 +256,17 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
   }
 
   Future<void> _saveToCalendar(ArtistScheduleModel s) async {
-    final startDate = s.startDate != null ? DateTime.tryParse(s.startDate!) : null;
+    final startDate = s.startDate != null
+        ? DateTime.tryParse(s.startDate!)
+        : null;
     if (startDate == null) {
       if (mounted) context.showErrorSnackbar('add_to_calendar_no_date'.tr());
       return;
     }
     final endDate = s.endDate != null
-        ? (DateTime.tryParse(s.endDate!) ?? startDate).add(const Duration(days: 1))
+        ? (DateTime.tryParse(s.endDate!) ?? startDate).add(
+            const Duration(days: 1),
+          )
         : startDate.add(const Duration(days: 1));
 
     final event = Event(
@@ -257,11 +286,17 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
       if (!mounted) return;
       Navigator.push(
         context,
-        SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)),
+        SlideRoute(
+          builder: (_) => FestivalInformationFragment(poster: festival),
+        ),
       );
     } catch (e) {
       debugPrint('[FestivalCalendar] festival fetch error: $e');
-      if (mounted) context.showErrorSnackbar('err_fetch_data'.tr());
+      if (mounted) {
+        context.showErrorSnackbar(
+          networkAwareErrorKey(e, 'err_fetch_data').tr(),
+        );
+      }
     }
   }
 

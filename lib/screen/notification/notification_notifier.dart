@@ -5,7 +5,8 @@ import 'package:feple/model/notification_model.dart';
 import 'package:feple/service/notification_feedable.dart';
 import 'package:flutter/foundation.dart';
 
-export 'package:feple/service/notification_feedable.dart' show NotificationFilter;
+export 'package:feple/service/notification_feedable.dart'
+    show NotificationFilter;
 
 class NotificationNotifier extends SafeChangeNotifier {
   final _service = sl<NotificationFeedable>();
@@ -13,6 +14,7 @@ class NotificationNotifier extends SafeChangeNotifier {
   List<NotificationModel> _items = [];
   bool isLoading = true;
   bool hasError = false;
+  Object? error;
   bool isLoadingMore = false;
   bool _hasMore = true;
   int _page = 0;
@@ -43,8 +45,9 @@ class NotificationNotifier extends SafeChangeNotifier {
       _hasMore = result.hasMore;
       _page = 1;
       _staleness.markLoaded();
-    } catch (_) {
+    } catch (e) {
       hasError = true;
+      error = e;
     } finally {
       isLoading = false;
       safeNotify();

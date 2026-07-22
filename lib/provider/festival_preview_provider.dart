@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/common/stale_tracker.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
 
@@ -28,14 +29,16 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
   Set<String> get selectedRegions => _selectedRegions;
   Set<String> get selectedAgeRestrictions => _selectedAgeRestrictions;
   bool get hasActiveFilters =>
-      _selectedGenres.isNotEmpty || _selectedRegions.isNotEmpty || _selectedAgeRestrictions.isNotEmpty;
+      _selectedGenres.isNotEmpty ||
+      _selectedRegions.isNotEmpty ||
+      _selectedAgeRestrictions.isNotEmpty;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
   bool _isLoadingMore = false;
   bool get isLoadingMore => _isLoadingMore;
-  String? _error;
-  String? get error => _error;
+  Object? _error;
+  Object? get error => _error;
   // page 0 refresh 실패 + 기존 아이템 있을 때 설정 — UI가 snackbar로 표시 후 clearRefreshError() 호출
   String? _refreshError;
   String? get refreshError => _refreshError;
@@ -55,7 +58,11 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
   // 필터 변경으로 무효화된 요청의 응답이 늦게 도착해 최신 결과를 덮어쓰지 않도록 가드
   int _generation = 0;
 
-  void _toggleInSet(Set<String> current, String value, void Function(Set<String>) assign) {
+  void _toggleInSet(
+    Set<String> current,
+    String value,
+    void Function(Set<String>) assign,
+  ) {
     final updated = current.contains(value)
         ? current.where((e) => e != value).toSet()
         : {...current, value};
@@ -67,8 +74,11 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
       _toggleInSet(_selectedGenres, genre, (s) => _selectedGenres = s);
   void toggleRegion(String region) =>
       _toggleInSet(_selectedRegions, region, (s) => _selectedRegions = s);
-  void toggleAgeRestriction(String ageRestriction) =>
-      _toggleInSet(_selectedAgeRestrictions, ageRestriction, (s) => _selectedAgeRestrictions = s);
+  void toggleAgeRestriction(String ageRestriction) => _toggleInSet(
+    _selectedAgeRestrictions,
+    ageRestriction,
+    (s) => _selectedAgeRestrictions = s,
+  );
 
   void clearFilters() {
     _selectedGenres = const {};
@@ -152,12 +162,12 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
       if (myGeneration != _generation) return;
       debugPrint('festival preview error: $e');
       if (_items.isEmpty) {
-        _error = 'err_fetch_data'.tr();
+        _error = e;
       } else {
         // 기존 데이터 유지, 새로고침/더 불러오기 실패 알림 (snackbar용 일회성 플래그)
         // — wasFirstPage 여부와 무관하게 항상 알려야 "더 불러오기"만 조용히
         // 실패하는 비대칭을 피할 수 있음
-        _refreshError = 'err_fetch_data'.tr();
+        _refreshError = networkAwareErrorKey(e, 'err_fetch_data').tr();
       }
     } finally {
       if (myGeneration == _generation) {

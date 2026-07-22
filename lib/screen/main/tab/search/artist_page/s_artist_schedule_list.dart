@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
@@ -24,7 +25,8 @@ class ArtistScheduleListScreen extends StatefulWidget {
   });
 
   @override
-  State<ArtistScheduleListScreen> createState() => _ArtistScheduleListScreenState();
+  State<ArtistScheduleListScreen> createState() =>
+      _ArtistScheduleListScreenState();
 }
 
 class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
@@ -42,7 +44,9 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
       _scheduleService.fetchSchedule(widget.artistId);
 
   Future<void> _refresh() async {
-    setState(() { _future = _fetch(); });
+    setState(() {
+      _future = _fetch();
+    });
     try {
       await _future;
     } catch (_) {}
@@ -54,12 +58,14 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
       if (!mounted) return;
       Navigator.push(
         context,
-        SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)),
+        SlideRoute(
+          builder: (_) => FestivalInformationFragment(poster: festival),
+        ),
       );
     } catch (e) {
       debugPrint('[ScheduleList] 페스티벌 이동 실패: $e');
       if (!mounted) return;
-      context.showErrorSnackbar('err_fetch_data'.tr());
+      context.showErrorSnackbar(networkAwareErrorKey(e, 'err_fetch_data').tr());
     }
   }
 
@@ -70,7 +76,9 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
       backgroundColor: colors.backgroundMain,
       body: Column(
         children: [
-          SecondaryAppBar(title: 'artist_schedule_title'.tr(args: [widget.artistName])),
+          SecondaryAppBar(
+            title: 'artist_schedule_title'.tr(args: [widget.artistName]),
+          ),
           Expanded(
             child: RefreshIndicator(
               color: colors.activate,
@@ -86,37 +94,50 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
     );
   }
 
-  Widget _buildBody(AsyncSnapshot<List<ArtistScheduleModel>> snapshot, AbstractThemeColors colors) {
+  Widget _buildBody(
+    AsyncSnapshot<List<ArtistScheduleModel>> snapshot,
+    AbstractThemeColors colors,
+  ) {
     if (snapshot.connectionState == ConnectionState.waiting) {
       return const ScheduleListSkeleton(itemCount: 6);
     }
     if (snapshot.hasError) {
-      return ErrorState(message: 'err_fetch_data'.tr(), onRetry: _refresh);
+      return ErrorState.network(snapshot.error!, onRetry: _refresh);
     }
     final schedules = snapshot.data ?? [];
     if (schedules.isEmpty) {
       return ListView(
         children: [
           const SizedBox(height: 80),
-          EmptyState(icon: Icons.calendar_today_outlined, title: 'no_schedule'.tr()),
+          EmptyState(
+            icon: Icons.calendar_today_outlined,
+            title: 'no_schedule'.tr(),
+          ),
         ],
       );
     }
     return _buildScheduleList(schedules, colors);
   }
 
-  Widget _buildScheduleList(List<ArtistScheduleModel> schedules, AbstractThemeColors colors) {
+  Widget _buildScheduleList(
+    List<ArtistScheduleModel> schedules,
+    AbstractThemeColors colors,
+  ) {
     final upcoming = schedules.where((e) => !e.isPast).toList();
     final past = schedules.where((e) => e.isPast).toList().reversed.toList();
 
     final rows = <_ScheduleRow>[];
     if (upcoming.isNotEmpty) {
       rows.add(_ScheduleRow.header('schedule_upcoming'.tr()));
-      for (final item in upcoming) { rows.add(_ScheduleRow.item(item, isPast: false)); }
+      for (final item in upcoming) {
+        rows.add(_ScheduleRow.item(item, isPast: false));
+      }
     }
     if (past.isNotEmpty) {
       rows.add(_ScheduleRow.header('schedule_past'.tr()));
-      for (final item in past) { rows.add(_ScheduleRow.item(item, isPast: true)); }
+      for (final item in past) {
+        rows.add(_ScheduleRow.item(item, isPast: true));
+      }
     }
 
     return ListView.builder(
@@ -126,7 +147,8 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
       itemBuilder: (_, index) {
         final row = rows[index];
         if (row.isHeader) return _buildSectionHeader(row.label!, colors);
-        final showDivider = index < rows.length - 1 && !rows[index + 1].isHeader;
+        final showDivider =
+            index < rows.length - 1 && !rows[index + 1].isHeader;
         return _buildItem(row.item!, row.isPast, showDivider, colors);
       },
     );
@@ -135,7 +157,11 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
   Widget _buildSectionHeader(String label, AbstractThemeColors colors) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
-          AppDimens.paddingHorizontal, 16, AppDimens.paddingHorizontal, 4),
+        AppDimens.paddingHorizontal,
+        16,
+        AppDimens.paddingHorizontal,
+        4,
+      ),
       child: Row(
         children: [
           Text(
@@ -154,7 +180,12 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
     );
   }
 
-  Widget _buildItem(ArtistScheduleModel item, bool isPast, bool showDivider, AbstractThemeColors colors) {
+  Widget _buildItem(
+    ArtistScheduleModel item,
+    bool isPast,
+    bool showDivider,
+    AbstractThemeColors colors,
+  ) {
     return Column(
       children: [
         ScheduleListTile(
@@ -182,7 +213,8 @@ class _ScheduleRow {
 
   const _ScheduleRow._({this.label, this.item, required this.isPast});
 
-  factory _ScheduleRow.header(String label) => _ScheduleRow._(label: label, isPast: false);
+  factory _ScheduleRow.header(String label) =>
+      _ScheduleRow._(label: label, isPast: false);
   factory _ScheduleRow.item(ArtistScheduleModel item, {required bool isPast}) =>
       _ScheduleRow._(item: item, isPast: isPast);
 

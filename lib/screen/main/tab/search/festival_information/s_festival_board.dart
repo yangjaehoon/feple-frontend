@@ -42,26 +42,59 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
       _BoardTab(
         name: 'name_board'.tr(args: [widget.festivalName]),
         fetchPage: ({int? cursor, int size = 20}) =>
-            postService.fetchFestivalPostsPage(widget.festivalId, cursor: cursor, size: size),
-        submit: (title, content, anonymous, imageObjectKey) => postService.createFestivalPost(
-            festivalId: widget.festivalId,
-            draft: PostDraft(title: title, content: content, anonymous: anonymous, imageObjectKey: imageObjectKey)),
+            postService.fetchFestivalPostsPage(
+              widget.festivalId,
+              cursor: cursor,
+              size: size,
+            ),
+        submit: (title, content, anonymous, imageObjectKey) =>
+            postService.createFestivalPost(
+              festivalId: widget.festivalId,
+              draft: PostDraft(
+                title: title,
+                content: content,
+                anonymous: anonymous,
+                imageObjectKey: imageObjectKey,
+              ),
+            ),
       ),
       _BoardTab(
         name: 'companion_board'.tr(),
         fetchPage: ({int? cursor, int size = 20}) =>
-            postService.fetchFestivalCompanionPostsPage(widget.festivalId, cursor: cursor, size: size),
-        submit: (title, content, anonymous, imageObjectKey) => postService.createFestivalCompanionPost(
-            festivalId: widget.festivalId,
-            draft: PostDraft(title: title, content: content, anonymous: anonymous, imageObjectKey: imageObjectKey)),
+            postService.fetchFestivalCompanionPostsPage(
+              widget.festivalId,
+              cursor: cursor,
+              size: size,
+            ),
+        submit: (title, content, anonymous, imageObjectKey) =>
+            postService.createFestivalCompanionPost(
+              festivalId: widget.festivalId,
+              draft: PostDraft(
+                title: title,
+                content: content,
+                anonymous: anonymous,
+                imageObjectKey: imageObjectKey,
+              ),
+            ),
       ),
       _BoardTab(
         name: 'ticket_board'.tr(),
         fetchPage: ({int? cursor, int size = 20}) =>
-            postService.fetchFestivalTicketPostsPage(widget.festivalId, cursor: cursor, size: size),
-        submit: (title, content, anonymous, imageObjectKey) => postService.createFestivalTicketPost(
-            festivalId: widget.festivalId,
-            draft: PostDraft(title: title, content: content, anonymous: anonymous, imageObjectKey: imageObjectKey)),
+            postService.fetchFestivalTicketPostsPage(
+              widget.festivalId,
+              cursor: cursor,
+              size: size,
+            ),
+        submit: (title, content, anonymous, imageObjectKey) =>
+            postService.createFestivalTicketPost(
+              festivalId: widget.festivalId,
+              draft: PostDraft(
+                title: title,
+                content: content,
+                anonymous: anonymous,
+                imageObjectKey: imageObjectKey,
+              ),
+            ),
       ),
     ];
     _tabController = TabController(length: _tabs.length, vsync: this);
@@ -78,10 +111,7 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
     await Navigator.push(
       context,
       SlideRoute(
-        builder: (_) => WritePost(
-          title: tab.name,
-          onSubmit: tab.submit,
-        ),
+        builder: (_) => WritePost(title: tab.name, onSubmit: tab.submit),
       ),
     );
   }
@@ -125,9 +155,15 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
           onPressed: () => _openWrite(_tabController.index),
           label: Text(
             'write_post'.tr(),
-            style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.w700),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onPrimary,
+              fontWeight: FontWeight.w700,
+            ),
           ),
-          icon: Icon(Icons.edit_rounded, color: Theme.of(context).colorScheme.onPrimary),
+          icon: Icon(
+            Icons.edit_rounded,
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
         ),
       ),
     );
@@ -147,7 +183,10 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
                 children: [
                   IconButton(
                     tooltip: 'back'.tr(),
-                    icon: Icon(Icons.arrow_back_ios_rounded, color: colors.appBarIconColor),
+                    icon: Icon(
+                      Icons.arrow_back_ios_rounded,
+                      color: colors.appBarIconColor,
+                    ),
                     onPressed: () => Navigator.pop(context),
                   ),
                   Expanded(
@@ -167,11 +206,19 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
             TabBar(
               controller: _tabController,
               labelColor: colors.appBarIconColor,
-              unselectedLabelColor: colors.appBarIconColor.withValues(alpha: 0.54),
+              unselectedLabelColor: colors.appBarIconColor.withValues(
+                alpha: 0.54,
+              ),
               indicatorColor: colors.appBarIconColor,
               indicatorWeight: 2.5,
-              labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeMd),
-              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: AppDimens.fontSizeMd),
+              labelStyle: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: AppDimens.fontSizeMd,
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: AppDimens.fontSizeMd,
+              ),
               tabs: [
                 Tab(text: 'free_board'.tr()),
                 Tab(text: 'companion_tab'.tr()),
@@ -196,7 +243,8 @@ class _FestivalBoardTabContent extends StatefulWidget {
   });
 
   @override
-  State<_FestivalBoardTabContent> createState() => _FestivalBoardTabContentState();
+  State<_FestivalBoardTabContent> createState() =>
+      _FestivalBoardTabContentState();
 }
 
 class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
@@ -205,6 +253,7 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
   List<Post> _posts = [];
   bool _isLoading = true;
   bool _hasError = false;
+  Object? _error;
   bool _isLoadingMore = false;
   bool _hasMore = true;
   int? _nextCursor;
@@ -230,7 +279,8 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
 
   void _onScroll() {
     if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - AppDimens.loadMoreTriggerDistance) {
+        _scrollController.position.maxScrollExtent -
+            AppDimens.loadMoreTriggerDistance) {
       _loadMore();
     }
   }
@@ -256,8 +306,14 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
           _isLoading = false;
         });
       }
-    } catch (_) {
-      if (mounted && _loadId == myId) setState(() { _isLoading = false; _hasError = true; });
+    } catch (e) {
+      if (mounted && _loadId == myId) {
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+          _error = e;
+        });
+      }
     }
   }
 
@@ -300,7 +356,8 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
     await guardedNavigate(() async {
       await Navigator.of(context, rootNavigator: true).push(
         SlideRoute(
-          builder: (_) => PostDetailCard.fromPost(boardName: widget.tab.name, post: post),
+          builder: (_) =>
+              PostDetailCard.fromPost(boardName: widget.tab.name, post: post),
         ),
       );
       if (!mounted) return;
@@ -329,21 +386,49 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(children: [
-              SkeletonBox(width: 40, height: 10, borderRadius: BorderRadius.circular(AppDimens.radiusXs)),
-              const SizedBox(width: 8),
-              SkeletonBox(width: 60, height: 10, borderRadius: BorderRadius.circular(AppDimens.radiusXs)),
-            ]),
+            Row(
+              children: [
+                SkeletonBox(
+                  width: 40,
+                  height: 10,
+                  borderRadius: BorderRadius.circular(AppDimens.radiusXs),
+                ),
+                const SizedBox(width: 8),
+                SkeletonBox(
+                  width: 60,
+                  height: 10,
+                  borderRadius: BorderRadius.circular(AppDimens.radiusXs),
+                ),
+              ],
+            ),
             const SizedBox(height: 8),
-            SkeletonBox(width: double.infinity, height: 14, borderRadius: BorderRadius.circular(AppDimens.radiusXs)),
+            SkeletonBox(
+              width: double.infinity,
+              height: 14,
+              borderRadius: BorderRadius.circular(AppDimens.radiusXs),
+            ),
             const SizedBox(height: 6),
-            SkeletonBox(width: 200, height: 12, borderRadius: BorderRadius.circular(AppDimens.radiusXs)),
+            SkeletonBox(
+              width: 200,
+              height: 12,
+              borderRadius: BorderRadius.circular(AppDimens.radiusXs),
+            ),
             const SizedBox(height: 8),
-            Row(children: [
-              SkeletonBox(width: 36, height: 10, borderRadius: BorderRadius.circular(AppDimens.radiusXs)),
-              const SizedBox(width: 12),
-              SkeletonBox(width: 36, height: 10, borderRadius: BorderRadius.circular(AppDimens.radiusXs)),
-            ]),
+            Row(
+              children: [
+                SkeletonBox(
+                  width: 36,
+                  height: 10,
+                  borderRadius: BorderRadius.circular(AppDimens.radiusXs),
+                ),
+                const SizedBox(width: 12),
+                SkeletonBox(
+                  width: 36,
+                  height: 10,
+                  borderRadius: BorderRadius.circular(AppDimens.radiusXs),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -356,7 +441,7 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
     }
     if (_hasError) {
       return RefreshableCenter(
-        child: ErrorState(message: 'err_fetch_data'.tr(), onRetry: _load),
+        child: ErrorState.network(_error!, onRetry: _load),
       );
     }
     if (_posts.isEmpty) {
@@ -392,7 +477,8 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
           ),
         );
       },
-      separatorBuilder: (_, _) => Divider(thickness: 1, color: colors.listDivider),
+      separatorBuilder: (_, _) =>
+          Divider(thickness: 1, color: colors.listDivider),
     );
   }
 }

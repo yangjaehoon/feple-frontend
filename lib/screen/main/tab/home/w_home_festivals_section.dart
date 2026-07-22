@@ -13,21 +13,21 @@ class HomeFestivalsSection extends StatelessWidget {
     super.key,
     required this.festivals,
     required this.onTap,
-    this.hasError = false,
+    this.error,
     this.onRetry,
   });
 
   final List<FestivalModel>? festivals;
   final void Function(FestivalModel) onTap;
-  final bool hasError;
+  final Object? error;
   final VoidCallback? onRetry;
 
   @override
   Widget build(BuildContext context) {
-    if (hasError) {
+    if (error != null) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        child: ErrorState(message: 'err_fetch_data'.tr(), onRetry: onRetry),
+        child: ErrorState.network(error!, onRetry: onRetry),
       );
     }
 
@@ -128,7 +128,10 @@ class _FestivalItem extends StatelessWidget {
       placeholder: (_, _) => Container(color: colors.surface),
       errorWidget: (_, _, _) => Container(
         color: colors.surface,
-        child: Icon(Icons.image_not_supported_rounded, color: colors.textSecondary),
+        child: Icon(
+          Icons.image_not_supported_rounded,
+          color: colors.textSecondary,
+        ),
       ),
     );
   }

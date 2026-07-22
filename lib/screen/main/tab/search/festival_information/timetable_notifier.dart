@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/dart/extension/datetime_extension.dart';
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/model/timetable_entry.dart';
@@ -15,13 +14,14 @@ class TimetableNotifier extends SafeChangeNotifier {
   List<TimetableEntry> entries = [];
   Set<String> followedNames = {};
   bool isLoading = true;
-  String? error;
+  Object? error;
 
   List<String> dates = [];
   String? selectedDate;
 
   TimetableRange? _cachedRange;
-  TimetableRange get range => _cachedRange ??= computeTimetableRange(entries, selectedDate);
+  TimetableRange get range =>
+      _cachedRange ??= computeTimetableRange(entries, selectedDate);
 
   bool get hasEntries => range.filtered.isNotEmpty;
   List<String> get stages => range.stages;
@@ -36,8 +36,8 @@ class TimetableNotifier extends SafeChangeNotifier {
     required String endDate,
     required FestivalTimetableFetcher festivalService,
     required ArtistFollowService followService,
-  })  : _festivalService = festivalService,
-        _followService = followService {
+  }) : _festivalService = festivalService,
+       _followService = followService {
     _buildDates(startDate, endDate);
   }
 
@@ -72,7 +72,7 @@ class TimetableNotifier extends SafeChangeNotifier {
       safeNotify();
     } catch (e) {
       debugPrint('timetable fetch error: $e');
-      error = 'err_fetch_data'.tr();
+      error = e;
       isLoading = false;
       safeNotify();
     }

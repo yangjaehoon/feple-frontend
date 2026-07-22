@@ -42,7 +42,9 @@ class CircleArtistWidgetState extends State<CircleArtistWidget> {
   }
 
   void refresh() {
-    setState(() { _artistsFuture = _artistService.fetchArtists(); });
+    setState(() {
+      _artistsFuture = _artistService.fetchArtists();
+    });
     _loadFollowedIds();
   }
 
@@ -67,8 +69,8 @@ class CircleArtistWidgetState extends State<CircleArtistWidget> {
           return _buildSkeleton();
         }
         if (snapshot.hasError) {
-          return ErrorState(
-            message: 'err_fetch_data'.tr(),
+          return ErrorState.network(
+            snapshot.error!,
             onRetry: () => setState(() {
               _artistsFuture = _artistService.fetchArtists();
             }),
@@ -122,30 +124,35 @@ class CircleArtistWidgetState extends State<CircleArtistWidget> {
   Widget _buildSkeletonGrid() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: LayoutBuilder(builder: (context, constraints) {
-        final colWidth = (constraints.maxWidth - 24) / 3;
-        return Wrap(
-          spacing: 12,
-          runSpacing: 16,
-          children: List.generate(6, (_) => SizedBox(
-            width: colWidth,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: const [
-                AspectRatio(
-                  aspectRatio: 1.0,
-                  child: SkeletonBox(
-                    height: double.infinity,
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                  ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final colWidth = (constraints.maxWidth - 24) / 3;
+          return Wrap(
+            spacing: 12,
+            runSpacing: 16,
+            children: List.generate(
+              6,
+              (_) => SizedBox(
+                width: colWidth,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: const [
+                    AspectRatio(
+                      aspectRatio: 1.0,
+                      child: SkeletonBox(
+                        height: double.infinity,
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    SkeletonBox(width: 60, height: 13),
+                  ],
                 ),
-                SizedBox(height: 8),
-                SkeletonBox(width: 60, height: 13),
-              ],
+              ),
             ),
-          )),
-        );
-      }),
+          );
+        },
+      ),
     );
   }
 }
@@ -190,12 +197,17 @@ class _ArtistContentState extends State<_ArtistContent> with NavigationGuard {
     final colors = context.appColors;
     final artists = _selectedGenre == null
         ? widget.allArtists
-        : widget.allArtists.where((a) => a.genres.contains(_selectedGenre)).toList();
+        : widget.allArtists
+              .where((a) => a.genres.contains(_selectedGenre))
+              .toList();
     return _buildContent(artists, _genres, colors);
   }
 
   Widget _buildContent(
-      List<Artist> artists, List<String> genres, AbstractThemeColors colors) {
+    List<Artist> artists,
+    List<String> genres,
+    AbstractThemeColors colors,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(top: 16),
       child: Column(
@@ -225,52 +237,67 @@ class _ArtistContentState extends State<_ArtistContent> with NavigationGuard {
                   selected: _selectedGenre == null,
                   onTap: () => setState(() => _selectedGenre = null),
                 ),
-                ...genres.map((genre) => SelectableChip(
-                      label: artistGenreLabel(genre),
-                      selected: _selectedGenre == genre,
-                      onTap: () => setState(() => _selectedGenre = genre),
-                    )),
+                ...genres.map(
+                  (genre) => SelectableChip(
+                    label: artistGenreLabel(genre),
+                    selected: _selectedGenre == genre,
+                    onTap: () => setState(() => _selectedGenre = genre),
+                  ),
+                ),
               ],
             ),
           ),
           const SizedBox(height: 12),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: LayoutBuilder(builder: (context, constraints) {
-              final colWidth = (constraints.maxWidth - 24) / 3;
-              return Wrap(
-                spacing: 12,
-                runSpacing: 16,
-                children: [
-                  for (int index = 0; index < artists.length; index++)
-                    SizedBox(
-                      width: colWidth,
-                      child: AnimatedListItem(
-                        index: index,
-                        child: TapScale(
-                          onTap: () => guardedNavigate(() => Navigator.push(
-                            context,
-                            SlideRoute(
-                              builder: (context) => ArtistScreen(
-                                artistName: artists[index].name,
-                                artistNameEn: artists[index].nameEn,
-                                artistId: artists[index].id,
-                                followerCount: artists[index].followerCount,
-                                profileImageUrl: artists[index].profileImageUrl,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final colWidth = (constraints.maxWidth - 24) / 3;
+                return Wrap(
+                  spacing: 12,
+                  runSpacing: 16,
+                  children: [
+                    for (int index = 0; index < artists.length; index++)
+                      SizedBox(
+                        width: colWidth,
+                        child: AnimatedListItem(
+                          index: index,
+                          child: TapScale(
+                            onTap: () => guardedNavigate(
+                              () =>
+                                  Navigator.push(
+                                    context,
+                                    SlideRoute(
+                                      builder: (context) => ArtistScreen(
+                                        artistName: artists[index].name,
+                                        artistNameEn: artists[index].nameEn,
+                                        artistId: artists[index].id,
+                                        followerCount:
+                                            artists[index].followerCount,
+                                        profileImageUrl:
+                                            artists[index].profileImageUrl,
+                                      ),
+                                    ),
+                                  ).then((_) {
+                                    if (mounted) widget.onRefreshFollowedIds();
+                                  }),
+                            ),
+                            child: ArtistCard(
+                              profileImageUrl: artists[index].profileImageUrl,
+                              name: artists[index].displayName(
+                                context.isEnglish,
+                              ),
+                              isFollowed: widget.followedIds.contains(
+                                artists[index].id,
                               ),
                             ),
-                          ).then((_) { if (mounted) widget.onRefreshFollowedIds(); })),
-                          child: ArtistCard(
-                            profileImageUrl: artists[index].profileImageUrl,
-                            name: artists[index].displayName(context.isEnglish),
-                            isFollowed: widget.followedIds.contains(artists[index].id),
                           ),
                         ),
                       ),
-                    ),
-                ],
-              );
-            }),
+                  ],
+                );
+              },
+            ),
           ),
           const SizedBox(height: 20),
           const _ArtistSuggestionBanner(),
@@ -291,10 +318,7 @@ class _ArtistSuggestionBanner extends StatelessWidget {
       context.showInfoSnackbar('no_login_info'.tr());
       return;
     }
-    showAppBottomSheet(
-      context,
-      builder: (_) => const ArtistSuggestionSheet(),
-    );
+    showAppBottomSheet(context, builder: (_) => const ArtistSuggestionSheet());
   }
 
   @override
@@ -329,13 +353,19 @@ class _ArtistSuggestionBanner extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     'artist_suggestion_banner_sub'.tr(),
-                    style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
+                    style: TextStyle(
+                      fontSize: AppDimens.fontSizeXs,
+                      color: colors.textSecondary,
+                    ),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.chevron_right_rounded,
-                color: colors.textSecondary, size: 20),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: colors.textSecondary,
+              size: 20,
+            ),
           ],
         ),
       ),

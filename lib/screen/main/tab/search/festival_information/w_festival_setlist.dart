@@ -35,13 +35,16 @@ class FestivalSetlistState extends State<FestivalSetlist> {
   Future<List<FestivalSetlistEntry>> _fetch() =>
       sl<FestivalDetailService>().fetchSetlist(widget.festivalId);
 
-  void refresh() => setState(() { _future = _fetch(); });
+  void refresh() => setState(() {
+    _future = _fetch();
+  });
 
   Future<void> _openFullPage() async {
     await Navigator.push<void>(
       context,
       SlideRoute(
-        builder: (_) => FestivalSetlistFullscreenScreen(festivalId: widget.festivalId),
+        builder: (_) =>
+            FestivalSetlistFullscreenScreen(festivalId: widget.festivalId),
       ),
     );
   }
@@ -52,10 +55,7 @@ class FestivalSetlistState extends State<FestivalSetlist> {
     return SurfaceCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(colors),
-          _buildContent(colors),
-        ],
+        children: [_buildHeader(colors), _buildContent(colors)],
       ),
     );
   }
@@ -65,7 +65,11 @@ class FestivalSetlistState extends State<FestivalSetlist> {
       padding: const EdgeInsets.fromLTRB(16, 14, 8, 10),
       child: Row(
         children: [
-          Icon(Icons.queue_music_rounded, size: AppDimens.iconSizeMd, color: colors.activate),
+          Icon(
+            Icons.queue_music_rounded,
+            size: AppDimens.iconSizeMd,
+            color: colors.activate,
+          ),
           const SizedBox(width: 8),
           Text(
             'setlist_card_title'.tr(),
@@ -86,7 +90,10 @@ class FestivalSetlistState extends State<FestivalSetlist> {
             ),
             child: Text(
               'view_all'.tr(),
-              style: const TextStyle(fontSize: AppDimens.fontSizeXs, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                fontSize: AppDimens.fontSizeXs,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -98,16 +105,21 @@ class FestivalSetlistState extends State<FestivalSetlist> {
     return AsyncContentBuilder<List<FestivalSetlistEntry>>(
       future: _future,
       loadingBuilder: (_) => _buildSkeleton(),
-      errorBuilder: (_) => Padding(
+      errorBuilder: (error) => Padding(
         padding: const EdgeInsets.only(bottom: 8),
-        child: ErrorState(
-          message: 'err_fetch_data'.tr(),
-          onRetry: () => setState(() { _future = _fetch(); }),
+        child: ErrorState.network(
+          error ?? Exception('unknown'),
+          onRetry: () => setState(() {
+            _future = _fetch();
+          }),
         ),
       ),
       emptyBuilder: (_) => Padding(
         padding: const EdgeInsets.only(bottom: 8),
-        child: EmptyState(icon: Icons.queue_music_rounded, title: 'no_setlist'.tr()),
+        child: EmptyState(
+          icon: Icons.queue_music_rounded,
+          title: 'no_setlist'.tr(),
+        ),
       ),
       useListViewForEmptyState: false,
       builder: (_, entries) => _buildList(entries, colors),
@@ -116,7 +128,10 @@ class FestivalSetlistState extends State<FestivalSetlist> {
 
   static const int _maxVisible = 5;
 
-  Widget _buildList(List<FestivalSetlistEntry> entries, AbstractThemeColors colors) {
+  Widget _buildList(
+    List<FestivalSetlistEntry> entries,
+    AbstractThemeColors colors,
+  ) {
     final hasMore = entries.length > _maxVisible;
     final visible = hasMore ? entries.sublist(0, _maxVisible) : entries;
     return Column(
@@ -149,7 +164,11 @@ class FestivalSetlistState extends State<FestivalSetlist> {
               ),
             ),
             const SizedBox(width: 2),
-            Icon(Icons.keyboard_arrow_down_rounded, size: 18, color: colors.activate),
+            Icon(
+              Icons.keyboard_arrow_down_rounded,
+              size: 18,
+              color: colors.activate,
+            ),
           ],
         ),
       ),
@@ -163,7 +182,11 @@ class FestivalSetlistState extends State<FestivalSetlist> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             children: [
-              const SkeletonBox(width: 36, height: 36, borderRadius: BorderRadius.all(Radius.circular(18))),
+              const SkeletonBox(
+                width: 36,
+                height: 36,
+                borderRadius: BorderRadius.all(Radius.circular(18)),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -187,10 +210,7 @@ class _ArtistCompactRow extends StatelessWidget {
   final FestivalSetlistEntry entry;
   final bool isLast;
 
-  const _ArtistCompactRow({
-    required this.entry,
-    required this.isLast,
-  });
+  const _ArtistCompactRow({required this.entry, required this.isLast});
 
   @override
   Widget build(BuildContext context) {
@@ -204,17 +224,29 @@ class _ArtistCompactRow extends StatelessWidget {
             children: [
               _buildAvatar(colors),
               const SizedBox(width: 12),
-              Expanded(child: _buildTextColumn(topSong, context.isEnglish, colors)),
+              Expanded(
+                child: _buildTextColumn(topSong, context.isEnglish, colors),
+              ),
             ],
           ),
         ),
         if (!isLast)
-          Divider(thickness: 1, color: colors.listDivider, indent: 16, endIndent: 16, height: 1),
+          Divider(
+            thickness: 1,
+            color: colors.listDivider,
+            indent: 16,
+            endIndent: 16,
+            height: 1,
+          ),
       ],
     );
   }
 
-  Widget _buildTextColumn(SongModel? topSong, bool isEnglish, AbstractThemeColors colors) {
+  Widget _buildTextColumn(
+    SongModel? topSong,
+    bool isEnglish,
+    AbstractThemeColors colors,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -232,7 +264,10 @@ class _ArtistCompactRow extends StatelessWidget {
         else
           Text(
             'no_setlist'.tr(),
-            style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeXxs,
+              color: colors.textSecondary,
+            ),
           ),
       ],
     );
@@ -261,7 +296,10 @@ class _ArtistCompactRow extends StatelessWidget {
         Expanded(
           child: Text(
             topSong.title,
-            style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeXxs,
+              color: colors.textSecondary,
+            ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -269,7 +307,10 @@ class _ArtistCompactRow extends StatelessWidget {
         if (entry.songs.length > 1)
           Text(
             ' +${entry.songs.length - 1}',
-            style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.activate),
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeXxs,
+              color: colors.activate,
+            ),
           ),
       ],
     );
@@ -304,7 +345,11 @@ class _ArtistCompactRow extends StatelessWidget {
         color: colors.backgroundMain,
         borderRadius: BorderRadius.circular(size / 2),
       ),
-      child: Icon(Icons.person_rounded, size: size * 0.55, color: colors.textSecondary),
+      child: Icon(
+        Icons.person_rounded,
+        size: size * 0.55,
+        color: colors.textSecondary,
+      ),
     );
   }
 }

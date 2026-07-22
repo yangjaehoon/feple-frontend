@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_schedule_model.dart';
@@ -28,7 +29,8 @@ class ScheduleListTile extends StatefulWidget {
   State<ScheduleListTile> createState() => _ScheduleListTileState();
 }
 
-class _ScheduleListTileState extends State<ScheduleListTile> with NavigationGuard {
+class _ScheduleListTileState extends State<ScheduleListTile>
+    with NavigationGuard {
   ArtistScheduleModel get item => widget.item;
   bool get isPast => widget.isPast;
 
@@ -77,7 +79,9 @@ class _ScheduleListTileState extends State<ScheduleListTile> with NavigationGuar
                   memCacheWidth: 84,
                   fit: BoxFit.cover,
                   // CachedNetworkImage color 파라미터로 alpha 적용 — Opacity 위젯(saveLayer) 불필요
-                  color: isPast ? Colors.white.withValues(alpha: _pastAlpha) : null,
+                  color: isPast
+                      ? Colors.white.withValues(alpha: _pastAlpha)
+                      : null,
                   colorBlendMode: isPast ? BlendMode.modulate : null,
                   fadeInDuration: AppDimens.animXFast,
                   fadeOutDuration: AppDimens.animTapFeedback,
@@ -97,11 +101,17 @@ class _ScheduleListTileState extends State<ScheduleListTile> with NavigationGuar
         if (!mounted) return;
         await Navigator.push(
           context,
-          SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)),
+          SlideRoute(
+            builder: (_) => FestivalInformationFragment(poster: festival),
+          ),
         );
       } catch (e) {
         debugPrint('[ScheduleListTile] festival fetch error: $e');
-        if (mounted) context.showErrorSnackbar('err_fetch_data'.tr());
+        if (mounted) {
+          context.showErrorSnackbar(
+            networkAwareErrorKey(e, 'err_fetch_data').tr(),
+          );
+        }
       }
     });
   }
@@ -124,7 +134,10 @@ class _ScheduleListTileState extends State<ScheduleListTile> with NavigationGuar
           const SizedBox(height: 2),
           Text(
             item.location!,
-            style: TextStyle(fontSize: AppDimens.fontSizeXs, color: _c(colors.textSecondary)),
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeXs,
+              color: _c(colors.textSecondary),
+            ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -133,11 +146,18 @@ class _ScheduleListTileState extends State<ScheduleListTile> with NavigationGuar
           const SizedBox(height: 4),
           Row(
             children: [
-              Icon(Icons.calendar_today_rounded, size: 11, color: _c(colors.textSecondary)),
+              Icon(
+                Icons.calendar_today_rounded,
+                size: 11,
+                color: _c(colors.textSecondary),
+              ),
               const SizedBox(width: 4),
               Text(
                 item.dateRange,
-                style: TextStyle(fontSize: AppDimens.fontSizeXs, color: _c(colors.textSecondary)),
+                style: TextStyle(
+                  fontSize: AppDimens.fontSizeXs,
+                  color: _c(colors.textSecondary),
+                ),
               ),
             ],
           ),
@@ -181,19 +201,29 @@ class _ScheduleListTileState extends State<ScheduleListTile> with NavigationGuar
                     width: 26,
                     height: 26,
                     child: ClipOval(
-                      child: (coArtist.profileImageUrl != null && coArtist.profileImageUrl!.isNotEmpty)
+                      child:
+                          (coArtist.profileImageUrl != null &&
+                              coArtist.profileImageUrl!.isNotEmpty)
                           ? CachedNetworkImage(
                               imageUrl: coArtist.profileImageUrl!,
                               width: 26,
                               height: 26,
                               memCacheWidth: 52,
                               fit: BoxFit.cover,
-                              color: isPast ? Colors.white.withValues(alpha: _pastAlpha) : null,
-                              colorBlendMode: isPast ? BlendMode.modulate : null,
+                              color: isPast
+                                  ? Colors.white.withValues(alpha: _pastAlpha)
+                                  : null,
+                              colorBlendMode: isPast
+                                  ? BlendMode.modulate
+                                  : null,
                             )
                           : Container(
                               color: _c(colors.backgroundMain),
-                              child: Icon(Icons.person_rounded, size: 12, color: _c(colors.textSecondary)),
+                              child: Icon(
+                                Icons.person_rounded,
+                                size: 12,
+                                color: _c(colors.textSecondary),
+                              ),
                             ),
                     ),
                   ),

@@ -31,12 +31,20 @@ class FestivalArtistListScreen extends StatelessWidget {
               listenable: notifier,
               builder: (context, _) {
                 if (notifier.isLoading) return _buildSkeleton();
-                if (notifier.hasError) return ErrorState(message: 'err_fetch_data'.tr(), onRetry: notifier.retry);
+                if (notifier.hasError) {
+                  return ErrorState.network(
+                    notifier.error!,
+                    onRetry: notifier.retry,
+                  );
+                }
                 if (notifier.artists.isEmpty) {
                   return Center(
                     child: Text(
                       'no_participating_artists'.tr(),
-                      style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textSecondary),
+                      style: TextStyle(
+                        fontSize: AppDimens.fontSizeMd,
+                        color: colors.textSecondary,
+                      ),
                     ),
                   );
                 }
@@ -65,11 +73,17 @@ class FestivalArtistListScreen extends StatelessWidget {
               ? Center(
                   child: Text(
                     'no_participating_artists'.tr(),
-                    style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textSecondary),
+                    style: TextStyle(
+                      fontSize: AppDimens.fontSizeMd,
+                      color: colors.textSecondary,
+                    ),
                   ),
                 )
               : GridView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     mainAxisSpacing: 16,
@@ -88,7 +102,12 @@ class FestivalArtistListScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildArtistCard(BuildContext context, int index, FestivalArtistItem artist, bool isFollowed) {
+  Widget _buildArtistCard(
+    BuildContext context,
+    int index,
+    FestivalArtistItem artist,
+    bool isFollowed,
+  ) {
     return AnimatedListItem(
       index: index,
       child: TapScale(
@@ -132,7 +151,9 @@ class FestivalArtistListScreen extends StatelessWidget {
             aspectRatio: 1.0,
             child: SkeletonBox(
               height: double.infinity,
-              borderRadius: BorderRadius.all(Radius.circular(AppDimens.cardRadiusTiny)),
+              borderRadius: BorderRadius.all(
+                Radius.circular(AppDimens.cardRadiusTiny),
+              ),
             ),
           ),
           SizedBox(height: 8),

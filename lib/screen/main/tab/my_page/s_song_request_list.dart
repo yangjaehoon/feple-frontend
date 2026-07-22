@@ -26,6 +26,7 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
   List<SongRequestModel> _requests = [];
   bool _isLoading = true;
   bool _hasError = false;
+  Object? _error;
   int? _userId;
   SongRequestStatus? _filter; // null = 전체
 
@@ -45,12 +46,26 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
 
   Future<void> _load() async {
     if (_userId == null) return;
-    setState(() { _isLoading = true; _hasError = false; });
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
     try {
       final list = await _service.fetchAllMyRequests(_userId!);
-      if (mounted) setState(() { _requests = list; _isLoading = false; });
-    } catch (_) {
-      if (mounted) setState(() { _isLoading = false; _hasError = true; });
+      if (mounted) {
+        setState(() {
+          _requests = list;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+          _error = e;
+        });
+      }
     }
   }
 
@@ -59,7 +74,12 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
     if (_userId == null) return;
     try {
       final list = await _service.fetchAllMyRequests(_userId!);
-      if (mounted) setState(() { _requests = list; _hasError = false; });
+      if (mounted) {
+        setState(() {
+          _requests = list;
+          _hasError = false;
+        });
+      }
     } catch (_) {}
   }
 
@@ -121,31 +141,25 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
       child: _isLoading
           ? _buildSkeleton(colors)
           : _hasError
-              ? _buildScrollable(
-                  ErrorState(
-                    message: 'err_fetch_data'.tr(),
-                    onRetry: _load,
-                  ),
-                )
-              : displayed.isEmpty
-                  ? _buildScrollable(
-                      EmptyState(
-                        icon: Icons.music_off_rounded,
-                        title: 'song_request_no_history'.tr(),
-                        subtitle: _filter == null
-                            ? 'song_request_no_history_hint'.tr()
-                            : null,
-                      ),
-                    )
-                  : ListView.separated(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-                      itemCount: displayed.length,
-                      separatorBuilder: (_, _) =>
-                          Divider(height: 1, color: colors.listDivider),
-                      itemBuilder: (_, index) =>
-                          SongRequestItem(req: displayed[index]),
-                    ),
+          ? _buildScrollable(ErrorState.network(_error!, onRetry: _load))
+          : displayed.isEmpty
+          ? _buildScrollable(
+              EmptyState(
+                icon: Icons.music_off_rounded,
+                title: 'song_request_no_history'.tr(),
+                subtitle: _filter == null
+                    ? 'song_request_no_history_hint'.tr()
+                    : null,
+              ),
+            )
+          : ListView.separated(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+              itemCount: displayed.length,
+              separatorBuilder: (_, _) =>
+                  Divider(height: 1, color: colors.listDivider),
+              itemBuilder: (_, index) => SongRequestItem(req: displayed[index]),
+            ),
     );
   }
 
@@ -169,7 +183,11 @@ class SongRequestItem extends StatelessWidget {
   final SongRequestModel req;
   final double verticalPadding;
 
-  const SongRequestItem({required this.req, this.verticalPadding = 14, super.key});
+  const SongRequestItem({
+    required this.req,
+    this.verticalPadding = 14,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -207,9 +225,21 @@ class SongRequestItem extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
         if (artistDisplay != null)
-          Text(artistDisplay, style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary)),
+          Text(
+            artistDisplay,
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeXs,
+              color: colors.textSecondary,
+            ),
+          ),
         if (req.formattedDate != null)
-          Text(req.formattedDate!, style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary)),
+          Text(
+            req.formattedDate!,
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeXxs,
+              color: colors.textSecondary,
+            ),
+          ),
       ],
     );
   }
@@ -228,7 +258,11 @@ class SongRequestItem extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             statusLabel,
-            style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: statusColor),
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeXxs,
+              fontWeight: FontWeight.w600,
+              color: statusColor,
+            ),
           ),
         ],
       ),

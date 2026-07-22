@@ -14,6 +14,7 @@ class PostCursorController extends SafeChangeNotifier {
   List<Post> _posts = [];
   bool _isLoading = true;
   bool _hasError = false;
+  Object? _error;
   bool _isLoadingMore = false;
   bool _hasMore = true;
   int? _nextCursor;
@@ -22,6 +23,7 @@ class PostCursorController extends SafeChangeNotifier {
   List<Post> get posts => _posts;
   bool get isLoading => _isLoading;
   bool get hasError => _hasError;
+  Object? get error => _error;
   bool get isLoadingMore => _isLoadingMore;
   bool get hasMore => _hasMore;
 
@@ -43,10 +45,11 @@ class PostCursorController extends SafeChangeNotifier {
       _nextCursor = result.nextCursor;
       _isLoading = false;
       safeNotify();
-    } catch (_) {
+    } catch (e) {
       if (_loadId != myId) return;
       _isLoading = false;
       _hasError = true;
+      _error = e;
       safeNotify();
     }
   }
@@ -90,7 +93,8 @@ class PostCursorController extends SafeChangeNotifier {
 
   void onScroll(ScrollController scrollController) {
     if (scrollController.position.pixels >=
-        scrollController.position.maxScrollExtent - AppDimens.loadMoreTriggerDistance) {
+        scrollController.position.maxScrollExtent -
+            AppDimens.loadMoreTriggerDistance) {
       loadMore();
     }
   }

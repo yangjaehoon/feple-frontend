@@ -15,23 +15,23 @@ class HomeArtistsSection extends StatelessWidget {
     super.key,
     required this.artists,
     required this.onTap,
-    this.hasError = false,
+    this.error,
     this.onRetry,
     this.onShowMore,
   });
 
   final List<FollowedArtist>? artists;
   final void Function(FollowedArtist) onTap;
-  final bool hasError;
+  final Object? error;
   final VoidCallback? onRetry;
   final VoidCallback? onShowMore;
 
   @override
   Widget build(BuildContext context) {
-    if (hasError) {
+    if (error != null) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        child: ErrorState(message: 'err_fetch_data'.tr(), onRetry: onRetry),
+        child: ErrorState.network(error!, onRetry: onRetry),
       );
     }
 
@@ -117,7 +117,10 @@ class _ShowMoreItem extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: colors.activate.withValues(alpha: 0.1),
-                border: Border.all(color: colors.activate.withValues(alpha: 0.3), width: 1.5),
+                border: Border.all(
+                  color: colors.activate.withValues(alpha: 0.3),
+                  width: 1.5,
+                ),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -179,16 +182,29 @@ class _ArtistItem extends StatelessWidget {
       ),
       child: Container(
         padding: const EdgeInsets.all(2),
-        decoration: BoxDecoration(shape: BoxShape.circle, color: colors.surface),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: colors.surface,
+        ),
         child: CircleAvatar(
           radius: 32,
           backgroundColor: colors.backgroundMain,
-          backgroundImage: (artist.profileImageUrl != null &&
+          backgroundImage:
+              (artist.profileImageUrl != null &&
                   artist.profileImageUrl!.isNotEmpty)
-              ? CachedNetworkImageProvider(artist.profileImageUrl!, maxWidth: 150)
+              ? CachedNetworkImageProvider(
+                  artist.profileImageUrl!,
+                  maxWidth: 150,
+                )
               : null,
-          child: (artist.profileImageUrl == null || artist.profileImageUrl!.isEmpty)
-              ? Icon(Icons.person_rounded, size: 28, color: colors.textSecondary)
+          child:
+              (artist.profileImageUrl == null ||
+                  artist.profileImageUrl!.isEmpty)
+              ? Icon(
+                  Icons.person_rounded,
+                  size: 28,
+                  color: colors.textSecondary,
+                )
               : null,
         ),
       ),
@@ -210,7 +226,11 @@ class _ArtistItem extends StatelessWidget {
               width: 64,
               child: Text(
                 _displayName(context),
-                style: TextStyle(fontSize: AppDimens.fontSizeXs, fontWeight: FontWeight.w600, color: colors.textTitle),
+                style: TextStyle(
+                  fontSize: AppDimens.fontSizeXs,
+                  fontWeight: FontWeight.w600,
+                  color: colors.textTitle,
+                ),
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

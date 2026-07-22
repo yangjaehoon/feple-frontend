@@ -27,6 +27,7 @@ class MySongRequestsViewState extends State<MySongRequestsView> {
   List<SongRequestModel>? _requests;
   bool _isLoading = true;
   bool _hasError = false;
+  Object? _error;
   int? _userId;
 
   void refresh() => _load();
@@ -49,9 +50,20 @@ class MySongRequestsViewState extends State<MySongRequestsView> {
     });
     try {
       final list = await _service.fetchAllMyRequests(_userId!);
-      if (mounted) setState(() { _requests = list; _isLoading = false; });
-    } catch (_) {
-      if (mounted) setState(() { _isLoading = false; _hasError = true; });
+      if (mounted) {
+        setState(() {
+          _requests = list;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+          _error = e;
+        });
+      }
     }
   }
 
@@ -84,9 +96,17 @@ class MySongRequestsViewState extends State<MySongRequestsView> {
               children: [
                 Text(
                   'see_all'.tr(),
-                  style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w600, color: colors.activate),
+                  style: TextStyle(
+                    fontSize: AppDimens.fontSizeSm,
+                    fontWeight: FontWeight.w600,
+                    color: colors.activate,
+                  ),
                 ),
-                Icon(Icons.chevron_right_rounded, size: 18, color: colors.activate),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  size: 18,
+                  color: colors.activate,
+                ),
               ],
             ),
           ),
@@ -156,7 +176,10 @@ class MySongRequestsViewState extends State<MySongRequestsView> {
   }
 
   Widget _buildEmpty() {
-    return EmptyState(icon: Icons.music_off_rounded, title: 'song_request_no_history'.tr());
+    return EmptyState(
+      icon: Icons.music_off_rounded,
+      title: 'song_request_no_history'.tr(),
+    );
   }
 
   Widget _buildSkeleton() {
@@ -202,7 +225,7 @@ class MySongRequestsViewState extends State<MySongRequestsView> {
   Widget _buildError() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: ErrorState(message: 'err_fetch_data'.tr(), onRetry: _load),
+      child: ErrorState.network(_error!, onRetry: _load),
     );
   }
 }

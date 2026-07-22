@@ -267,8 +267,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     ? _buildSkeleton(colors)
                     : _notifier.hasError
                     ? _buildScrollable(
-                        ErrorState(
-                          message: 'err_fetch_data'.tr(),
+                        ErrorState.network(
+                          _notifier.error!,
                           onRetry: _notifier.load,
                         ),
                       )

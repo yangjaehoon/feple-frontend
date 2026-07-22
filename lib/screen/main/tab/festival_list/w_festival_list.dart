@@ -17,12 +17,17 @@ import '../../../../provider/festival_preview_provider.dart';
 class FestivalListWidget extends StatelessWidget {
   const FestivalListWidget({super.key});
 
-  Widget _buildFestivalItem(BuildContext context, FestivalPreview item, int index) {
+  Widget _buildFestivalItem(
+    BuildContext context,
+    FestivalPreview item,
+    int index,
+  ) {
     return AnimatedListItem(
       index: index,
       child: TapScale(
         onTap: () {
-          Navigator.push(context,
+          Navigator.push(
+            context,
             SlideRoute(
               builder: (context) => FestivalInformationFragment(
                 poster: item.toModel(),
@@ -31,7 +36,10 @@ class FestivalListWidget extends StatelessWidget {
             ),
           );
         },
-        child: FestivalPreviewCard(festival: item, heroTag: 'list_fp_${item.id}'),
+        child: FestivalPreviewCard(
+          festival: item,
+          heroTag: 'list_fp_${item.id}',
+        ),
       ),
     );
   }
@@ -41,21 +49,24 @@ class FestivalListWidget extends StatelessWidget {
     // isLoadingMore(추가 로딩) 변경 시 FestivalListWidget이 불필요하게 리빌드되지 않도록
     // 실제로 사용하는 필드만 선택적으로 구독
     final isLoading = context.select<FestivalPreviewProvider, bool>(
-        (p) => p.isLoading && p.items.isEmpty);
-    final error = context.select<FestivalPreviewProvider, String?>(
-        (p) => p.items.isEmpty ? p.error : null);
-    final items = context.select<FestivalPreviewProvider, List<FestivalPreview>>(
-        (p) => p.items);
+      (p) => p.isLoading && p.items.isEmpty,
+    );
+    final error = context.select<FestivalPreviewProvider, Object?>(
+      (p) => p.items.isEmpty ? p.error : null,
+    );
+    final items = context
+        .select<FestivalPreviewProvider, List<FestivalPreview>>((p) => p.items);
     final hasActiveFilters = context.select<FestivalPreviewProvider, bool>(
-        (p) => p.hasActiveFilters);
+      (p) => p.hasActiveFilters,
+    );
 
     if (isLoading) {
       return const _FestivalListSkeleton();
     }
 
     if (error != null) {
-      return ErrorState(
-        message: error,
+      return ErrorState.network(
+        error,
         onRetry: context.read<FestivalPreviewProvider>().refresh,
       );
     }
@@ -129,7 +140,9 @@ class _FestivalListSkeleton extends StatelessWidget {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 16),
+                    horizontal: 12,
+                    vertical: 16,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const [

@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 class WeatherBottomSheet extends StatefulWidget {
   final int festivalId;
   final String startDate; // "YYYY-MM-DD"
-  final String endDate;   // "YYYY-MM-DD" or empty
+  final String endDate; // "YYYY-MM-DD" or empty
 
   const WeatherBottomSheet({
     super.key,
@@ -34,8 +34,12 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
 
     final today = DateTime.now();
     final start = DateTime.tryParse(widget.startDate);
-    final end = widget.endDate.isNotEmpty ? DateTime.tryParse(widget.endDate) : null;
-    final isEnded = end != null && end.isBefore(DateTime(today.year, today.month, today.day));
+    final end = widget.endDate.isNotEmpty
+        ? DateTime.tryParse(widget.endDate)
+        : null;
+    final isEnded =
+        end != null &&
+        end.isBefore(DateTime(today.year, today.month, today.day));
     final daysUntilStart = start != null
         ? start.difference(DateTime(today.year, today.month, today.day)).inDays
         : 0;
@@ -57,7 +61,9 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
     return Container(
       decoration: BoxDecoration(
         color: colors.backgroundMain,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(AppDimens.shapeSheet),
+        ),
       ),
       padding: EdgeInsets.fromLTRB(24, 12, 24, 16 + bottomInset),
       child: Column(
@@ -94,10 +100,12 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
           );
         }
         if (snapshot.hasError) {
-          return ErrorState(
-            message: 'err_fetch_data'.tr(),
+          return ErrorState.network(
+            snapshot.error!,
             onRetry: () => setState(() {
-              _future = sl<FestivalDetailService>().fetchWeather(widget.festivalId);
+              _future = sl<FestivalDetailService>().fetchWeather(
+                widget.festivalId,
+              );
             }),
           );
         }
@@ -147,7 +155,6 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
       ],
     );
   }
-
 }
 
 class _TooEarlyMessage extends StatelessWidget {
@@ -160,7 +167,11 @@ class _TooEarlyMessage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 28),
       child: Column(
         children: [
-          Icon(Icons.calendar_today_outlined, size: 48, color: colors.textSecondary),
+          Icon(
+            Icons.calendar_today_outlined,
+            size: 48,
+            color: colors.textSecondary,
+          ),
           const SizedBox(height: 16),
           Text(
             'weather_too_early'.tr(),
@@ -176,7 +187,10 @@ class _TooEarlyMessage extends StatelessWidget {
           Text(
             'weather_too_early_hint'.tr(),
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeXs,
+              color: colors.textSecondary,
+            ),
           ),
         ],
       ),
@@ -198,7 +212,10 @@ class _NoDataMessage extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             'weather_no_data'.tr(),
-            style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textSecondary),
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeMd,
+              color: colors.textSecondary,
+            ),
           ),
         ],
       ),
@@ -232,11 +249,14 @@ class _InfoChip extends StatelessWidget {
         children: [
           Icon(icon, size: 16, color: color),
           const SizedBox(width: 6),
-          Text(label,
-              style: TextStyle(
-                  fontSize: AppDimens.fontSizeSm,
-                  color: colors.text,
-                  fontWeight: FontWeight.w500)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeSm,
+              color: colors.text,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );

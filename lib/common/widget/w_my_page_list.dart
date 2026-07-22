@@ -10,25 +10,27 @@ import 'package:flutter/material.dart';
 /// 내 게시글·스크랩처럼 '제목 + 서브텍스트 + trailing 숫자' 형태 목록의 기본 스켈레톤.
 Widget postListSkeleton(AbstractThemeColors colors) {
   Widget item() => Padding(
-        padding: const EdgeInsets.symmetric(
-            horizontal: AppDimens.paddingHorizontal, vertical: 12),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  SkeletonBox(height: 15),
-                  SizedBox(height: 6),
-                  SkeletonBox(width: 80, height: 11),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            const SkeletonBox(width: 50, height: 13),
-          ],
+    padding: const EdgeInsets.symmetric(
+      horizontal: AppDimens.paddingHorizontal,
+      vertical: 12,
+    ),
+    child: Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              SkeletonBox(height: 15),
+              SizedBox(height: 6),
+              SkeletonBox(width: 80, height: 11),
+            ],
+          ),
         ),
-      );
+        const SizedBox(width: 12),
+        const SkeletonBox(width: 50, height: 13),
+      ],
+    ),
+  );
   return Column(
     children: [
       for (int i = 0; i < 5; i++) ...[
@@ -47,7 +49,8 @@ class MyPageList<T> extends StatefulWidget {
   final String title;
   final Future<List<T>> Function() loader;
   final Widget Function(AbstractThemeColors colors) skeletonBuilder;
-  final Widget Function(BuildContext context, T item, VoidCallback reload) itemBuilder;
+  final Widget Function(BuildContext context, T item, VoidCallback reload)
+  itemBuilder;
   final IconData emptyIcon;
   final String emptyTitle;
 
@@ -69,6 +72,7 @@ class _MyPageListState<T> extends State<MyPageList<T>> {
   List<T> _items = [];
   bool _isLoading = true;
   bool _hasError = false;
+  Object? _error;
 
   @override
   void initState() {
@@ -83,18 +87,39 @@ class _MyPageListState<T> extends State<MyPageList<T>> {
     });
     try {
       final data = await widget.loader();
-      if (mounted) setState(() { _items = data; _isLoading = false; });
-    } catch (_) {
-      if (mounted) setState(() { _isLoading = false; _hasError = true; });
+      if (mounted) {
+        setState(() {
+          _items = data;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+          _error = e;
+        });
+      }
     }
   }
 
   Future<void> _refresh() async {
     try {
       final data = await widget.loader();
-      if (mounted) setState(() { _items = data; _hasError = false; });
-    } catch (_) {
-      if (mounted) setState(() => _hasError = true);
+      if (mounted) {
+        setState(() {
+          _items = data;
+          _hasError = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _hasError = true;
+          _error = e;
+        });
+      }
     }
   }
 
@@ -113,30 +138,30 @@ class _MyPageListState<T> extends State<MyPageList<T>> {
               child: _isLoading
                   ? widget.skeletonBuilder(colors)
                   : _hasError
-                      ? _buildScrollable(
-                          ErrorState(
-                            message: 'err_fetch_data'.tr(),
-                            onRetry: _load,
-                          ),
-                        )
-                      : _items.isEmpty
-                          ? _buildScrollable(
-                              EmptyState(
-                                icon: widget.emptyIcon,
-                                title: widget.emptyTitle,
-                              ),
-                            )
-                          : ListView.separated(
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              itemCount: _items.length,
-                              separatorBuilder: (_, _) =>
-                                  Divider(thickness: 1, color: colors.listDivider),
-                              itemBuilder: (context, index) => AnimatedListItem(
-                                index: index,
-                                child: widget.itemBuilder(
-                                    context, _items[index], _load),
-                              ),
-                            ),
+                  ? _buildScrollable(
+                      ErrorState.network(_error!, onRetry: _load),
+                    )
+                  : _items.isEmpty
+                  ? _buildScrollable(
+                      EmptyState(
+                        icon: widget.emptyIcon,
+                        title: widget.emptyTitle,
+                      ),
+                    )
+                  : ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      itemCount: _items.length,
+                      separatorBuilder: (_, _) =>
+                          Divider(thickness: 1, color: colors.listDivider),
+                      itemBuilder: (context, index) => AnimatedListItem(
+                        index: index,
+                        child: widget.itemBuilder(
+                          context,
+                          _items[index],
+                          _load,
+                        ),
+                      ),
+                    ),
             ),
           ),
         ],

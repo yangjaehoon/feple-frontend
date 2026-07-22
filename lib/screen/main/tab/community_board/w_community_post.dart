@@ -28,7 +28,11 @@ class CommunityPost extends StatefulWidget {
   final String boardName;
   final String boardType;
 
-  const CommunityPost({super.key, required this.boardName, required this.boardType});
+  const CommunityPost({
+    super.key,
+    required this.boardName,
+    required this.boardType,
+  });
 
   @override
   State<CommunityPost> createState() => _CommunityPostState();
@@ -48,6 +52,7 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
   bool _loadingMore = false;
   bool _hasMore = true;
   bool _hasError = false;
+  Object? _error;
   int? _cursor;
   int _loadId = 0;
   String _sort = _sortLatest;
@@ -94,7 +99,9 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
   void _onScroll() {
     final pos = _scrollController.position;
     final showScrollTop = pos.pixels > AppDimens.scrollToTopThreshold;
-    if (showScrollTop != _showScrollTop) setState(() => _showScrollTop = showScrollTop);
+    if (showScrollTop != _showScrollTop) {
+      setState(() => _showScrollTop = showScrollTop);
+    }
     if (_loadingMore || !_hasMore || !_isPaginated) return;
     if (pos.pixels >= pos.maxScrollExtent - AppDimens.loadMoreTriggerDistance) {
       _loadMore();
@@ -102,9 +109,14 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
   }
 
   Future<void> _openPost(Post post) async {
-    await guardedNavigate(() => Navigator.of(context, rootNavigator: true).push(
-      SlideRoute(builder: (_) => PostDetailCard.fromPost(boardName: widget.boardName, post: post)),
-    ));
+    await guardedNavigate(
+      () => Navigator.of(context, rootNavigator: true).push(
+        SlideRoute(
+          builder: (_) =>
+              PostDetailCard.fromPost(boardName: widget.boardName, post: post),
+        ),
+      ),
+    );
   }
 
   Future<void> _load() async {
@@ -120,7 +132,12 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
     });
     try {
       if (_isPaginated) {
-        final page = await _postService.fetchPostsPage(_serviceBoardType, cursor: null, size: _pageSize, sort: _sort);
+        final page = await _postService.fetchPostsPage(
+          _serviceBoardType,
+          cursor: null,
+          size: _pageSize,
+          sort: _sort,
+        );
         if (!mounted || _loadId != myId) return;
         setState(() {
           _posts.addAll(page.content);
@@ -131,11 +148,20 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
       } else {
         final items = await _postService.fetchPosts(_serviceBoardType);
         if (!mounted || _loadId != myId) return;
-        setState(() { _posts.addAll(items); _isLoading = false; });
+        setState(() {
+          _posts.addAll(items);
+          _isLoading = false;
+        });
       }
     } catch (e) {
       debugPrint('[CommunityPost] 게시글 로드 실패: $e');
-      if (mounted && _loadId == myId) setState(() { _isLoading = false; _hasError = true; });
+      if (mounted && _loadId == myId) {
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+          _error = e;
+        });
+      }
     }
   }
 
@@ -147,10 +173,17 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
     if (_loadingMore) setState(() => _loadingMore = false);
     try {
       if (_isPaginated) {
-        final page = await _postService.fetchPostsPage(_serviceBoardType, cursor: null, size: _pageSize, sort: _sort);
+        final page = await _postService.fetchPostsPage(
+          _serviceBoardType,
+          cursor: null,
+          size: _pageSize,
+          sort: _sort,
+        );
         if (!mounted || _loadId != myId) return;
         setState(() {
-          _posts..clear()..addAll(page.content);
+          _posts
+            ..clear()
+            ..addAll(page.content);
           _cursor = page.nextCursor;
           _hasMore = page.hasNext;
           _hasError = false;
@@ -158,7 +191,12 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
       } else {
         final items = await _postService.fetchPosts(_serviceBoardType);
         if (!mounted || _loadId != myId) return;
-        setState(() { _posts..clear()..addAll(items); _hasError = false; });
+        setState(() {
+          _posts
+            ..clear()
+            ..addAll(items);
+          _hasError = false;
+        });
       }
     } catch (_) {
       if (!context.mounted || _loadId != myId || silent) return;
@@ -172,7 +210,12 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
     final myId = _loadId;
     setState(() => _loadingMore = true);
     try {
-      final page = await _postService.fetchPostsPage(_serviceBoardType, cursor: _cursor, size: _pageSize, sort: _sort);
+      final page = await _postService.fetchPostsPage(
+        _serviceBoardType,
+        cursor: _cursor,
+        size: _pageSize,
+        sort: _sort,
+      );
       if (!mounted || _loadId != myId) return;
       setState(() {
         _posts.addAll(page.content);
@@ -198,8 +241,16 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
     }
     setState(() => _isSearching = true);
     try {
-      final results = await _postService.searchInBoard(keyword.trim(), _serviceBoardType);
-      if (mounted) setState(() { _searchResults = results; _isSearching = false; });
+      final results = await _postService.searchInBoard(
+        keyword.trim(),
+        _serviceBoardType,
+      );
+      if (mounted) {
+        setState(() {
+          _searchResults = results;
+          _isSearching = false;
+        });
+      }
     } catch (e) {
       debugPrint('[CommunityPost] 검색 실패: $e');
       if (mounted) setState(() => _isSearching = false);
@@ -212,7 +263,9 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
       itemCount: 8,
       itemBuilder: (_, _) => Padding(
         padding: const EdgeInsets.symmetric(
-            horizontal: AppDimens.paddingHorizontal, vertical: 10),
+          horizontal: AppDimens.paddingHorizontal,
+          vertical: 10,
+        ),
         child: Row(
           children: [
             Expanded(
@@ -230,7 +283,8 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
           ],
         ),
       ),
-      separatorBuilder: (_, _) => const Divider(height: 1, thickness: 1, indent: 16, endIndent: 16),
+      separatorBuilder: (_, _) =>
+          const Divider(height: 1, thickness: 1, indent: 16, endIndent: 16),
     );
   }
 
@@ -242,10 +296,7 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
       return _buildSearchResults(colors);
     }
     if (_hasError) {
-      return ErrorState(
-        message: 'err_fetch_data'.tr(),
-        onRetry: _load,
-      );
+      return ErrorState.network(_error!, onRetry: _load);
     }
     if (_posts.isEmpty) {
       return _buildEmptyState(colors);
@@ -254,11 +305,16 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
   }
 
   Widget _buildSearchResults(AbstractThemeColors colors) {
-    if (_isSearching) return Center(child: CircularProgressIndicator(color: colors.activate));
+    if (_isSearching) {
+      return Center(child: CircularProgressIndicator(color: colors.activate));
+    }
     final displayPosts = _searchResults!;
     if (displayPosts.isEmpty) {
       return Center(
-        child: Text('no_search_results'.tr(), style: TextStyle(color: colors.textSecondary)),
+        child: Text(
+          'no_search_results'.tr(),
+          style: TextStyle(color: colors.textSecondary),
+        ),
       );
     }
     return ListView.separated(
@@ -279,7 +335,8 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
           ),
         );
       },
-      separatorBuilder: (_, _) => Divider(thickness: 1, color: colors.listDivider),
+      separatorBuilder: (_, _) =>
+          Divider(thickness: 1, color: colors.listDivider),
     );
   }
 
@@ -290,11 +347,18 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.chat_bubble_outline_rounded, size: 48, color: colors.textSecondary.withValues(alpha: 0.3)),
+            Icon(
+              Icons.chat_bubble_outline_rounded,
+              size: 48,
+              color: colors.textSecondary.withValues(alpha: 0.3),
+            ),
             const SizedBox(height: 12),
             Text(
               'be_first_to_discuss'.tr(args: [widget.boardName]),
-              style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textSecondary),
+              style: TextStyle(
+                fontSize: AppDimens.fontSizeMd,
+                color: colors.textSecondary,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -313,7 +377,9 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
         if (index == _posts.length) {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
-            child: Center(child: CircularProgressIndicator(color: colors.activate)),
+            child: Center(
+              child: CircularProgressIndicator(color: colors.activate),
+            ),
           );
         }
         final post = _posts[index];
@@ -331,10 +397,8 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
           ),
         );
       },
-      separatorBuilder: (_, _) => Divider(
-        thickness: 1,
-        color: colors.listDivider,
-      ),
+      separatorBuilder: (_, _) =>
+          Divider(thickness: 1, color: colors.listDivider),
     );
   }
 
@@ -357,28 +421,37 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
           ),
           const SizedBox(height: 8),
         ],
-        if (_showWriteButton) WritePostFab(
-          onPressed: () async {
-            if (context.read<UserProvider>().currentUserId == null) {
-              context.showInfoSnackbar('no_login_info'.tr());
-              return;
-            }
-            await Navigator.push(
-              context,
-              SlideRoute(
-                builder: (_) => WritePost(
-                  title: 'write_post'.tr(),
-                  onSubmit: (title, content, anonymous, imageObjectKey) async {
-                    await _postService.createPost(
-                        boardType: _serviceBoardType,
-                        draft: PostDraft(title: title, content: content, anonymous: anonymous, imageObjectKey: imageObjectKey));
-                    AppEvents.postChanged.value = PostChangedEvent.refreshAll();
-                  },
+        if (_showWriteButton)
+          WritePostFab(
+            onPressed: () async {
+              if (context.read<UserProvider>().currentUserId == null) {
+                context.showInfoSnackbar('no_login_info'.tr());
+                return;
+              }
+              await Navigator.push(
+                context,
+                SlideRoute(
+                  builder: (_) => WritePost(
+                    title: 'write_post'.tr(),
+                    onSubmit:
+                        (title, content, anonymous, imageObjectKey) async {
+                          await _postService.createPost(
+                            boardType: _serviceBoardType,
+                            draft: PostDraft(
+                              title: title,
+                              content: content,
+                              anonymous: anonymous,
+                              imageObjectKey: imageObjectKey,
+                            ),
+                          );
+                          AppEvents.postChanged.value =
+                              PostChangedEvent.refreshAll();
+                        },
+                  ),
                 ),
-              ),
-            );
-          },
-        ),
+              );
+            },
+          ),
       ],
     );
   }
@@ -397,27 +470,47 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
             _searchDebounce?.cancel();
             _search(v);
           },
-          style: TextStyle(color: colors.textTitle, fontSize: AppDimens.fontSizeMd),
+          style: TextStyle(
+            color: colors.textTitle,
+            fontSize: AppDimens.fontSizeMd,
+          ),
           decoration: InputDecoration(
             hintText: 'search_posts_hint'.tr(),
-            prefixIcon: Icon(Icons.search_rounded, color: colors.textSecondary, size: 20),
+            prefixIcon: Icon(
+              Icons.search_rounded,
+              color: colors.textSecondary,
+              size: 20,
+            ),
             suffixIcon: _searchController.text.isNotEmpty
                 ? IconButton(
                     tooltip: 'clear'.tr(),
-                    icon: Icon(Icons.close_rounded, size: 18, color: colors.textSecondary),
+                    icon: Icon(
+                      Icons.close_rounded,
+                      size: 18,
+                      color: colors.textSecondary,
+                    ),
                     onPressed: () {
                       _searchDebounce?.cancel();
                       _searchController.clear();
                       setSearchState(() {});
-                      setState(() { _searchResults = null; _isSearching = false; });
+                      setState(() {
+                        _searchResults = null;
+                        _isSearching = false;
+                      });
                     },
                   )
                 : null,
             isDense: true,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 10,
+            ),
             filled: true,
             fillColor: colors.surface,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimens.radiusMedium), borderSide: BorderSide.none),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
+              borderSide: BorderSide.none,
+            ),
           ),
         ),
       ),
@@ -477,4 +570,3 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
     );
   }
 }
-

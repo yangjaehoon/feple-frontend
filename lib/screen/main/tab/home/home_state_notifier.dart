@@ -19,6 +19,7 @@ class HomeStateNotifier extends SafeChangeNotifier {
   List<FestivalModel>? festivals;
   List<FavoriteBoard>? boards;
   bool hasError = false;
+  Object? error;
 
   final _staleness = StaleTracker(const Duration(minutes: 5));
 
@@ -78,7 +79,10 @@ class HomeStateNotifier extends SafeChangeNotifier {
       if (userId != id) return;
       debugPrint('[Home] 데이터 로드 실패: $e');
       // 캐시에서 이미 표시 중이면 에러 표시 안 함
-      if (artists == null) hasError = true;
+      if (artists == null) {
+        hasError = true;
+        error = e;
+      }
     }
     safeNotify();
   }
@@ -155,8 +159,10 @@ class HomeStateNotifier extends SafeChangeNotifier {
   Future<void> _persistOrder(String key, List<int> order) async {
     safeNotify();
     try {
-      await PreferenceItem<List<String>>(key, const [])
-          .set(order.map((e) => e.toString()).toList());
+      await PreferenceItem<List<String>>(
+        key,
+        const [],
+      ).set(order.map((e) => e.toString()).toList());
     } catch (e) {
       // 화면에 반영된 순서는 이미 유효하므로 재로드 전까지는 문제없음 —
       // 다음 실행 시 순서가 저장 전으로 되돌아갈 수 있음을 로그로만 남김
@@ -174,7 +180,10 @@ class HomeStateNotifier extends SafeChangeNotifier {
     final source = artists;
     if (source == null) return null;
     return _artistOrderCache.resolve(
-        source, artistOrder, () => applyOrder(source, artistOrder, (x) => x.id));
+      source,
+      artistOrder,
+      () => applyOrder(source, artistOrder, (x) => x.id),
+    );
   }
 
   List<FestivalModel>? get orderedFestivals {
@@ -193,11 +202,11 @@ class HomeStateNotifier extends SafeChangeNotifier {
   List<T> applyOrder<T>(List<T> items, List<int> order, int Function(T) getId) {
     if (order.isEmpty) return items;
     final map = {for (final item in items) getId(item): item};
-    final ordered =
-        order.where(map.containsKey).map((id) => map[id]!).toList();
+    final ordered = order.where(map.containsKey).map((id) => map[id]!).toList();
     final orderedIds = order.toSet();
-    final rest =
-        items.where((item) => !orderedIds.contains(getId(item))).toList();
+    final rest = items
+        .where((item) => !orderedIds.contains(getId(item)))
+        .toList();
     return [...ordered, ...rest];
   }
 
@@ -213,24 +222,30 @@ class HomeStateNotifier extends SafeChangeNotifier {
       _userService.fetchLikedFestivals(userId);
 
   List<FavoriteBoard> _buildBoards(
-      List<FollowedArtist> artists, List<FestivalModel> festivals) {
+    List<FollowedArtist> artists,
+    List<FestivalModel> festivals,
+  ) {
     return [
-      ...artists.map((artist) => FavoriteBoard(
-            boardId: 'artist_${artist.id}',
-            type: FavoriteBoardType.artist,
-            entityId: artist.id,
-            entityName: artist.name,
-            entityNameEn: artist.nameEn,
-            imageUrl: artist.profileImageUrl,
-          )),
-      ...festivals.map((festival) => FavoriteBoard(
-            boardId: 'festival_${festival.id}',
-            type: FavoriteBoardType.festival,
-            entityId: festival.id,
-            entityName: festival.title,
-            entityNameEn: festival.titleEn,
-            imageUrl: festival.posterUrl,
-          )),
+      ...artists.map(
+        (artist) => FavoriteBoard(
+          boardId: 'artist_${artist.id}',
+          type: FavoriteBoardType.artist,
+          entityId: artist.id,
+          entityName: artist.name,
+          entityNameEn: artist.nameEn,
+          imageUrl: artist.profileImageUrl,
+        ),
+      ),
+      ...festivals.map(
+        (festival) => FavoriteBoard(
+          boardId: 'festival_${festival.id}',
+          type: FavoriteBoardType.festival,
+          entityId: festival.id,
+          entityName: festival.title,
+          entityNameEn: festival.titleEn,
+          imageUrl: festival.posterUrl,
+        ),
+      ),
     ];
   }
 }

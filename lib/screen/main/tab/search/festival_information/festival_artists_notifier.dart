@@ -14,6 +14,7 @@ class FestivalArtistsNotifier extends SafeChangeNotifier {
   Set<int> followedIds = {};
   bool isLoading = true;
   bool hasError = false;
+  Object? error;
   List<String> allDates = [];
 
   // null = 전체, otherwise ISO date string
@@ -24,8 +25,8 @@ class FestivalArtistsNotifier extends SafeChangeNotifier {
     this.userId,
     required FestivalArtistsFetcher festivalService,
     required ArtistFollowService followService,
-  })  : _festivalService = festivalService,
-        _followService = followService;
+  }) : _festivalService = festivalService,
+       _followService = followService;
 
   bool isFollowed(int artistId) => followedIds.contains(artistId);
 
@@ -33,7 +34,9 @@ class FestivalArtistsNotifier extends SafeChangeNotifier {
 
   List<FestivalArtistItem> get displayedArtists {
     if (selectedDate == null) return artists;
-    return artists.where((a) => a.performanceDates.contains(selectedDate)).toList();
+    return artists
+        .where((a) => a.performanceDates.contains(selectedDate))
+        .toList();
   }
 
   void selectDate(String? date) {
@@ -74,6 +77,7 @@ class FestivalArtistsNotifier extends SafeChangeNotifier {
     } catch (e) {
       isLoading = false;
       hasError = true;
+      error = e;
       safeNotify();
       debugPrint('festival artists fetch error: $e');
     }

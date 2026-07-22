@@ -4,6 +4,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/certification_submit_helper.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
@@ -30,6 +31,7 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
   FestivalModel? _selectedFestival;
   bool _loadingFestivals = true;
   bool _festivalLoadError = false;
+  Object? _festivalLoadErrorCause;
   bool _submitting = false;
   bool _submitSuccess = false;
 
@@ -40,12 +42,28 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
   }
 
   Future<void> _loadFestivals() async {
-    if (mounted) setState(() { _loadingFestivals = true; _festivalLoadError = false; });
+    if (mounted) {
+      setState(() {
+        _loadingFestivals = true;
+        _festivalLoadError = false;
+      });
+    }
     try {
       final festivals = await sl<FestivalService>().fetchAll();
-      if (mounted) setState(() { _festivals = festivals; _loadingFestivals = false; });
-    } catch (_) {
-      if (mounted) setState(() { _loadingFestivals = false; _festivalLoadError = true; });
+      if (mounted) {
+        setState(() {
+          _festivals = festivals;
+          _loadingFestivals = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _loadingFestivals = false;
+          _festivalLoadError = true;
+          _festivalLoadErrorCause = e;
+        });
+      }
     }
   }
 
@@ -85,7 +103,10 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
     );
     if (!mounted) return;
     if (success) {
-      setState(() { _submitting = false; _submitSuccess = true; });
+      setState(() {
+        _submitting = false;
+        _submitSuccess = true;
+      });
       await Future.delayed(AppDimens.animSuccessDelay);
       if (!mounted) return;
       Navigator.pop(context, true);
@@ -100,27 +121,30 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
 
     return Material(
       color: colors.backgroundMain,
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
+      borderRadius: const BorderRadius.vertical(
+        top: Radius.circular(AppDimens.shapeSheet),
+      ),
       clipBehavior: Clip.antiAlias,
       child: Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom +
-            kBottomNavigationBarHeight +
-            MediaQuery.of(context).padding.bottom +
-            24,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 12),
-          const BottomSheetHandle(),
-          _buildSheetHeader(colors),
-          _buildFestivalSelector(colors),
-          const SizedBox(height: 16),
-          _buildSubmitButton(colors),
-        ],
-      ),
+        padding: EdgeInsets.only(
+          bottom:
+              MediaQuery.of(context).viewInsets.bottom +
+              kBottomNavigationBarHeight +
+              MediaQuery.of(context).padding.bottom +
+              24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 12),
+            const BottomSheetHandle(),
+            _buildSheetHeader(colors),
+            _buildFestivalSelector(colors),
+            const SizedBox(height: 16),
+            _buildSubmitButton(colors),
+          ],
+        ),
       ),
     );
   }
@@ -145,7 +169,10 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
           child: Text(
             'cert_photo_guide'.tr(),
             style: TextStyle(
-                fontSize: AppDimens.fontSizeSm, color: colors.textSecondary, height: 1.5),
+              fontSize: AppDimens.fontSizeSm,
+              color: colors.textSecondary,
+              height: 1.5,
+            ),
           ),
         ),
       ],
@@ -156,7 +183,12 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
     if (_loadingFestivals) {
       return const Padding(
         padding: EdgeInsets.symmetric(horizontal: 20),
-        child: SkeletonBox(height: 50, borderRadius: BorderRadius.all(Radius.circular(AppDimens.cardRadiusTiny))),
+        child: SkeletonBox(
+          height: 50,
+          borderRadius: BorderRadius.all(
+            Radius.circular(AppDimens.cardRadiusTiny),
+          ),
+        ),
       );
     }
     if (_festivalLoadError) {
@@ -168,13 +200,25 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                'err_fetch_data'.tr(),
-                style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
+                networkAwareErrorKey(
+                  _festivalLoadErrorCause!,
+                  'err_fetch_data',
+                ).tr(),
+                style: TextStyle(
+                  fontSize: AppDimens.fontSizeSm,
+                  color: colors.textSecondary,
+                ),
               ),
             ),
             TextButton(
               onPressed: _loadFestivals,
-              child: Text('retry'.tr(), style: TextStyle(color: colors.activate, fontSize: AppDimens.fontSizeSm)),
+              child: Text(
+                'retry'.tr(),
+                style: TextStyle(
+                  color: colors.activate,
+                  fontSize: AppDimens.fontSizeSm,
+                ),
+              ),
             ),
           ],
         ),
@@ -192,7 +236,9 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
               borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
             ),
             contentPadding: const EdgeInsets.symmetric(
-                horizontal: 14, vertical: 12),
+              horizontal: 14,
+              vertical: 12,
+            ),
             suffixIcon: const Icon(Icons.arrow_drop_down),
           ),
           isEmpty: _selectedFestival == null,
@@ -256,9 +302,11 @@ class _FestivalSearchSheetState extends State<_FestivalSearchSheet> {
       if (mounted) {
         setState(() {
           _filtered = widget.festivals
-              .where((f) =>
-                  f.title.toLowerCase().contains(query.toLowerCase()) ||
-                  f.titleEn.toLowerCase().contains(query.toLowerCase()))
+              .where(
+                (f) =>
+                    f.title.toLowerCase().contains(query.toLowerCase()) ||
+                    f.titleEn.toLowerCase().contains(query.toLowerCase()),
+              )
               .toList();
         });
       }
@@ -276,7 +324,9 @@ class _FestivalSearchSheetState extends State<_FestivalSearchSheet> {
       builder: (ctx, scrollCtrl) {
         return Material(
           color: colors.backgroundMain,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppDimens.shapeSheet),
+          ),
           clipBehavior: Clip.antiAlias,
           child: Column(
             children: [
@@ -305,7 +355,9 @@ class _FestivalSearchSheetState extends State<_FestivalSearchSheet> {
             borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
           ),
           contentPadding: const EdgeInsets.symmetric(
-              horizontal: 14, vertical: 12),
+            horizontal: 14,
+            vertical: 12,
+          ),
         ),
       ),
     );
@@ -313,7 +365,10 @@ class _FestivalSearchSheetState extends State<_FestivalSearchSheet> {
 
   Widget _buildFestivalList(BuildContext ctx, ScrollController scrollCtrl) {
     if (_filtered.isEmpty) {
-      return EmptyState(icon: Icons.search_off_rounded, title: 'search_no_result'.tr());
+      return EmptyState(
+        icon: Icons.search_off_rounded,
+        title: 'search_no_result'.tr(),
+      );
     }
     return ListView.builder(
       controller: scrollCtrl,

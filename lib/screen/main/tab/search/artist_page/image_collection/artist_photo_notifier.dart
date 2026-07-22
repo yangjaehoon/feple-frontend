@@ -1,4 +1,5 @@
 import 'package:feple/common/safe_change_notifier.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_photo.dart';
 import 'package:feple/service/artist_photo_manageable.dart';
@@ -33,7 +34,7 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
       _photos = await _photoService.fetchPhotos(artistId);
     } catch (e) {
       debugPrint('load photos error: $e');
-      errorKey = 'err_fetch_data';
+      errorKey = networkAwareErrorKey(e, 'err_fetch_data');
     } finally {
       isLoading = false;
       safeNotify();
@@ -48,7 +49,9 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
       HapticFeedback.lightImpact();
       final original = _photos[index];
       _photos[index] = original.copyWith(
-        likeCount: original.isLiked ? original.likeCount - 1 : original.likeCount + 1,
+        likeCount: original.isLiked
+            ? original.likeCount - 1
+            : original.likeCount + 1,
         isLiked: !original.isLiked,
       );
       safeNotify();
@@ -82,7 +85,11 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
     }
   }
 
-  Future<void> updatePhoto(int photoId, String title, String description) async {
+  Future<void> updatePhoto(
+    int photoId,
+    String title,
+    String description,
+  ) async {
     if (!_pendingUpdates.add(photoId)) return;
     try {
       await _photoService.updatePhoto(artistId, photoId, title, description);

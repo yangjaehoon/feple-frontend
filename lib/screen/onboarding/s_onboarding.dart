@@ -291,10 +291,13 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
     return AsyncContentBuilder<List<Artist>>(
       future: _artistsFuture,
       loadingBuilder: (_) => _buildSkeleton(),
-      errorBuilder: (_) => Center(
-        child: ErrorState(
-          message: 'onboarding_pick_load_failed'.tr(),
-          onRetry: () => setState(() { _artistsFuture = sl<ArtistService>().fetchArtists(); }),
+      errorBuilder: (error) => Center(
+        child: ErrorState.network(
+          error ?? Exception('unknown'),
+          operationErrorKey: 'onboarding_pick_load_failed',
+          onRetry: () => setState(() {
+            _artistsFuture = sl<ArtistService>().fetchArtists();
+          }),
         ),
       ),
       isEmpty: (_) => false,
@@ -353,12 +356,14 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
             unselectedTextColor: colors.textTitle,
             onTap: () => setState(() => _selectedGenre = null),
           ),
-          ...genres.map((genre) => SelectableChip(
-                label: artistGenreLabel(genre),
-                selected: _selectedGenre == genre,
-                unselectedTextColor: colors.textTitle,
-                onTap: () => setState(() => _selectedGenre = genre),
-              )),
+          ...genres.map(
+            (genre) => SelectableChip(
+              label: artistGenreLabel(genre),
+              selected: _selectedGenre == genre,
+              unselectedTextColor: colors.textTitle,
+              onTap: () => setState(() => _selectedGenre = genre),
+            ),
+          ),
         ],
       ),
     );
@@ -405,8 +410,7 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
           if (count > 0) ...[
             AnimatedContainer(
               duration: AppDimens.animFast,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: colors.activate.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppDimens.cardRadius),
@@ -471,10 +475,15 @@ class _ArtistSelectCard extends StatelessWidget {
                   imageUrl: artist.profileImageUrl,
                   fit: BoxFit.cover,
                   memCacheWidth: 200,
-                  placeholder: (_, _) => const SkeletonBox(height: double.infinity),
+                  placeholder: (_, _) =>
+                      const SkeletonBox(height: double.infinity),
                   errorWidget: (_, _, _) => Container(
                     color: colors.activate.withValues(alpha: 0.08),
-                    child: Icon(Icons.person_rounded, color: colors.activate, size: 36),
+                    child: Icon(
+                      Icons.person_rounded,
+                      color: colors.activate,
+                      size: 36,
+                    ),
                   ),
                 ),
               ),
@@ -487,8 +496,15 @@ class _ArtistSelectCard extends StatelessWidget {
               child: Container(
                 width: 22,
                 height: 22,
-                decoration: BoxDecoration(color: colors.activate, shape: BoxShape.circle),
-                child: Icon(Icons.check_rounded, color: Theme.of(context).colorScheme.onPrimary, size: 14),
+                decoration: BoxDecoration(
+                  color: colors.activate,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.check_rounded,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  size: 14,
+                ),
               ),
             ),
         ],
@@ -523,7 +539,6 @@ class _ArtistSelectCard extends StatelessWidget {
 }
 
 // ─── 장르 필터 칩 ────────────────────────────────────────────────────────────
-
 
 // ─── 인포 페이지 데이터 & 위젯 ────────────────────────────────────────────────
 
@@ -629,7 +644,11 @@ class _PageContent extends StatelessWidget {
                 width: 2,
               ),
             ),
-            child: Icon(page.icon, size: outerSize * 0.309, color: page.primaryColor), // 68/220
+            child: Icon(
+              page.icon,
+              size: outerSize * 0.309,
+              color: page.primaryColor,
+            ), // 68/220
           ),
         ],
       ),

@@ -20,7 +20,13 @@ class BoardPostList extends StatefulWidget {
   final String boardName;
   final Future<PostCursorPage> Function({int? cursor, int size}) fetchPage;
   final String writeScreenTitle;
-  final Future<void> Function(String title, String content, bool anonymous, String? imageObjectKey) onSubmitPost;
+  final Future<void> Function(
+    String title,
+    String content,
+    bool anonymous,
+    String? imageObjectKey,
+  )
+  onSubmitPost;
 
   const BoardPostList({
     super.key,
@@ -95,21 +101,40 @@ class _BoardPostListState extends State<BoardPostList> {
     return ListView.separated(
       physics: const NeverScrollableScrollPhysics(),
       itemCount: 6,
-      separatorBuilder: (_, _) => Divider(thickness: 1, color: colors.listDivider),
+      separatorBuilder: (_, _) =>
+          Divider(thickness: 1, color: colors.listDivider),
       itemBuilder: (_, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SkeletonBox(width: double.infinity, height: 14, borderRadius: BorderRadius.circular(AppDimens.radiusXs)),
+            SkeletonBox(
+              width: double.infinity,
+              height: 14,
+              borderRadius: BorderRadius.circular(AppDimens.radiusXs),
+            ),
             const SizedBox(height: 8),
-            SkeletonBox(width: 160, height: 12, borderRadius: BorderRadius.circular(AppDimens.radiusXs)),
+            SkeletonBox(
+              width: 160,
+              height: 12,
+              borderRadius: BorderRadius.circular(AppDimens.radiusXs),
+            ),
             const SizedBox(height: 8),
-            Row(children: [
-              SkeletonBox(width: 40, height: 10, borderRadius: BorderRadius.circular(AppDimens.radiusXs)),
-              const SizedBox(width: 12),
-              SkeletonBox(width: 40, height: 10, borderRadius: BorderRadius.circular(AppDimens.radiusXs)),
-            ]),
+            Row(
+              children: [
+                SkeletonBox(
+                  width: 40,
+                  height: 10,
+                  borderRadius: BorderRadius.circular(AppDimens.radiusXs),
+                ),
+                const SizedBox(width: 12),
+                SkeletonBox(
+                  width: 40,
+                  height: 10,
+                  borderRadius: BorderRadius.circular(AppDimens.radiusXs),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -122,7 +147,10 @@ class _BoardPostListState extends State<BoardPostList> {
     }
     if (_controller.hasError) {
       return RefreshableCenter(
-        child: ErrorState(message: 'err_fetch_data'.tr(), onRetry: _controller.load),
+        child: ErrorState.network(
+          _controller.error!,
+          onRetry: _controller.load,
+        ),
       );
     }
     final posts = _controller.posts;
@@ -172,7 +200,8 @@ class _BoardPostListState extends State<BoardPostList> {
           ),
         );
       },
-      separatorBuilder: (_, _) => Divider(thickness: 1, color: colors.listDivider),
+      separatorBuilder: (_, _) =>
+          Divider(thickness: 1, color: colors.listDivider),
     );
   }
 

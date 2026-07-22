@@ -103,7 +103,7 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
       return const SongListSkeleton(itemCount: 6);
     }
     if (snapshot.hasError) {
-      return ErrorState(message: 'err_fetch_data'.tr(), onRetry: _refresh);
+      return ErrorState.network(snapshot.error!, onRetry: _refresh);
     }
     final songs = snapshot.data ?? [];
     if (songs.isEmpty) {

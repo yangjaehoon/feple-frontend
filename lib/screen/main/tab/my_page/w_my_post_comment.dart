@@ -23,7 +23,8 @@ class MyPostCommentView extends StatefulWidget {
   State<MyPostCommentView> createState() => MyPostCommentViewState();
 }
 
-class MyPostCommentViewState extends State<MyPostCommentView> with NavigationGuard {
+class MyPostCommentViewState extends State<MyPostCommentView>
+    with NavigationGuard {
   late Future<UserStats> _statsFuture;
 
   @override
@@ -35,10 +36,13 @@ class MyPostCommentViewState extends State<MyPostCommentView> with NavigationGua
   Future<UserStats> _fetchStats() =>
       sl<UserActivityService>().fetchStats(widget.userId);
 
-  void refresh() => setState(() { _statsFuture = _fetchStats(); });
+  void refresh() => setState(() {
+    _statsFuture = _fetchStats();
+  });
 
-  Future<void> _navigate(Widget screen) =>
-      guardedNavigate(() => Navigator.push(context, SlideRoute(builder: (_) => screen)));
+  Future<void> _navigate(Widget screen) => guardedNavigate(
+    () => Navigator.push(context, SlideRoute(builder: (_) => screen)),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -52,12 +56,14 @@ class MyPostCommentViewState extends State<MyPostCommentView> with NavigationGua
   }
 
   Widget _buildStatRow(
-      BuildContext context, AsyncSnapshot<UserStats> snapshot) {
+    BuildContext context,
+    AsyncSnapshot<UserStats> snapshot,
+  ) {
     if (snapshot.connectionState == ConnectionState.waiting) {
       return _buildSkeleton();
     }
     if (snapshot.hasError) {
-      return ErrorState(message: 'err_fetch_data'.tr(), onRetry: refresh);
+      return ErrorState.network(snapshot.error!, onRetry: refresh);
     }
     final stats = snapshot.data!;
     final colors = context.appColors;
@@ -65,50 +71,60 @@ class MyPostCommentViewState extends State<MyPostCommentView> with NavigationGua
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
-          Expanded(child: _buildStatCard(
-            context,
-            icon: Icons.verified_rounded,
-            label: 'certification_badge'.tr(),
-            value: stats.certificationCount.toString(),
-            color: colors.activate,
-            onTap: () => _navigate(const CertificationListScreen()),
-          )),
+          Expanded(
+            child: _buildStatCard(
+              context,
+              icon: Icons.verified_rounded,
+              label: 'certification_badge'.tr(),
+              value: stats.certificationCount.toString(),
+              color: colors.activate,
+              onTap: () => _navigate(const CertificationListScreen()),
+            ),
+          ),
           const SizedBox(width: 6),
-          Expanded(child: _buildStatCard(
-            context,
-            icon: Icons.article_rounded,
-            label: 'posts'.tr(),
-            value: stats.postCount.toString(),
-            color: colors.activate,
-            onTap: () => _navigate(MyPostsView(userId: widget.userId)),
-          )),
+          Expanded(
+            child: _buildStatCard(
+              context,
+              icon: Icons.article_rounded,
+              label: 'posts'.tr(),
+              value: stats.postCount.toString(),
+              color: colors.activate,
+              onTap: () => _navigate(MyPostsView(userId: widget.userId)),
+            ),
+          ),
           const SizedBox(width: 6),
-          Expanded(child: _buildStatCard(
-            context,
-            icon: Icons.chat_bubble_rounded,
-            label: 'comments'.tr(),
-            value: stats.commentCount.toString(),
-            color: colors.activate,
-            onTap: () => _navigate(MyCommentsView(userId: widget.userId)),
-          )),
+          Expanded(
+            child: _buildStatCard(
+              context,
+              icon: Icons.chat_bubble_rounded,
+              label: 'comments'.tr(),
+              value: stats.commentCount.toString(),
+              color: colors.activate,
+              onTap: () => _navigate(MyCommentsView(userId: widget.userId)),
+            ),
+          ),
           const SizedBox(width: 6),
-          Expanded(child: _buildStatCard(
-            context,
-            icon: Icons.star_rounded,
-            label: 'scraps'.tr(),
-            value: stats.scrapCount.toString(),
-            color: colors.accentColor,
-            onTap: () => _navigate(const MyScrapsView()),
-          )),
+          Expanded(
+            child: _buildStatCard(
+              context,
+              icon: Icons.star_rounded,
+              label: 'scraps'.tr(),
+              value: stats.scrapCount.toString(),
+              color: colors.accentColor,
+              onTap: () => _navigate(const MyScrapsView()),
+            ),
+          ),
           const SizedBox(width: 6),
-          Expanded(child: _buildStatCard(
-            context,
-            icon: Icons.favorite_rounded,
-            label: 'liked_posts'.tr(),
-            value: stats.likedPostCount.toString(),
-            color: colors.accentColor,
-            onTap: () => _navigate(MyLikedPostsView(userId: widget.userId)),
-          )),
+          Expanded(
+            child: _buildStatCard(
+              context,
+              icon: Icons.favorite_rounded,
+              label: 'liked_posts'.tr(),
+              value: stats.likedPostCount.toString(),
+              color: colors.accentColor,
+              onTap: () => _navigate(MyLikedPostsView(userId: widget.userId)),
+            ),
+          ),
         ],
       ),
     );
@@ -119,15 +135,40 @@ class MyPostCommentViewState extends State<MyPostCommentView> with NavigationGua
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: const Row(
         children: [
-          Expanded(child: SkeletonBox(height: 90, borderRadius: BorderRadius.all(Radius.circular(16)))),
+          Expanded(
+            child: SkeletonBox(
+              height: 90,
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
+          ),
           SizedBox(width: 6),
-          Expanded(child: SkeletonBox(height: 90, borderRadius: BorderRadius.all(Radius.circular(16)))),
+          Expanded(
+            child: SkeletonBox(
+              height: 90,
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
+          ),
           SizedBox(width: 6),
-          Expanded(child: SkeletonBox(height: 90, borderRadius: BorderRadius.all(Radius.circular(16)))),
+          Expanded(
+            child: SkeletonBox(
+              height: 90,
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
+          ),
           SizedBox(width: 6),
-          Expanded(child: SkeletonBox(height: 90, borderRadius: BorderRadius.all(Radius.circular(16)))),
+          Expanded(
+            child: SkeletonBox(
+              height: 90,
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
+          ),
           SizedBox(width: 6),
-          Expanded(child: SkeletonBox(height: 90, borderRadius: BorderRadius.all(Radius.circular(16)))),
+          Expanded(
+            child: SkeletonBox(
+              height: 90,
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
+          ),
         ],
       ),
     );

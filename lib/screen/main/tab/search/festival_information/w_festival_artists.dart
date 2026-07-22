@@ -58,10 +58,7 @@ class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
     return SurfaceCard(
       width: double.infinity,
       child: Column(
-        children: [
-          _buildHeader(colors),
-          _buildArtistListArea(colors),
-        ],
+        children: [_buildHeader(colors), _buildArtistListArea(colors)],
       ),
     );
   }
@@ -71,28 +68,36 @@ class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
       icon: Icons.music_note_rounded,
       title: 'participating_artists'.tr(),
       headerColor: colors.activate,
-      onTap: () => guardedNavigate(() => Navigator.push(
-        context,
-        SlideRoute(builder: (_) => FestivalArtistListScreen(notifier: _notifier)),
-      )),
+      onTap: () => guardedNavigate(
+        () => Navigator.push(
+          context,
+          SlideRoute(
+            builder: (_) => FestivalArtistListScreen(notifier: _notifier),
+          ),
+        ),
+      ),
     );
   }
 
   Widget _padContent(Widget child) => Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppDimens.paddingHorizontal,
-          vertical: 12,
-        ),
-        child: child,
-      );
+    padding: const EdgeInsets.symmetric(
+      horizontal: AppDimens.paddingHorizontal,
+      vertical: 12,
+    ),
+    child: child,
+  );
 
   Widget _buildArtistListArea(AbstractThemeColors colors) {
     return ListenableBuilder(
       listenable: _notifier,
       builder: (context, _) {
         if (_notifier.isLoading) return _padContent(_buildSkeletonRow());
-        if (_notifier.hasError) return ErrorState(message: 'err_fetch_data'.tr(), onRetry: _notifier.retry);
-        if (_notifier.artists.isEmpty) return _padContent(_buildEmptyRow(colors));
+        if (_notifier.hasError) {
+          return ErrorState.network(_notifier.error!, onRetry: _notifier.retry);
+        }
+        if (_notifier.artists.isEmpty) {
+          return _padContent(_buildEmptyRow(colors));
+        }
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -149,10 +154,14 @@ class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
 
   Widget _buildMoreItem(AbstractThemeColors colors) {
     return GestureDetector(
-      onTap: () => guardedNavigate(() => Navigator.push(
-        context,
-        SlideRoute(builder: (_) => FestivalArtistListScreen(notifier: _notifier)),
-      )),
+      onTap: () => guardedNavigate(
+        () => Navigator.push(
+          context,
+          SlideRoute(
+            builder: (_) => FestivalArtistListScreen(notifier: _notifier),
+          ),
+        ),
+      ),
       child: SizedBox(
         width: 64,
         child: Column(
@@ -166,7 +175,11 @@ class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
                 shape: BoxShape.circle,
                 border: Border.all(color: colors.listDivider),
               ),
-              child: Icon(Icons.more_horiz_rounded, size: 22, color: colors.textSecondary),
+              child: Icon(
+                Icons.more_horiz_rounded,
+                size: 22,
+                color: colors.textSecondary,
+              ),
             ),
             const SizedBox(height: 6),
             Text(
@@ -186,18 +199,27 @@ class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
     );
   }
 
-  Widget _buildArtistItem(BuildContext context, FestivalArtistItem artist, bool isFollowed, AbstractThemeColors colors) {
+  Widget _buildArtistItem(
+    BuildContext context,
+    FestivalArtistItem artist,
+    bool isFollowed,
+    AbstractThemeColors colors,
+  ) {
     return GestureDetector(
-      onTap: () => guardedNavigate(() => Navigator.push(
-        context,
-        SlideRoute(builder: (_) => ArtistScreen(
-          artistId: artist.artistId,
-          artistName: artist.artistName,
-          artistNameEn: artist.artistNameEn,
-          followerCount: 0,
-          profileImageUrl: artist.profileImageUrl,
-        )),
-      )),
+      onTap: () => guardedNavigate(
+        () => Navigator.push(
+          context,
+          SlideRoute(
+            builder: (_) => ArtistScreen(
+              artistId: artist.artistId,
+              artistName: artist.artistName,
+              artistNameEn: artist.artistNameEn,
+              followerCount: 0,
+              profileImageUrl: artist.profileImageUrl,
+            ),
+          ),
+        ),
+      ),
       child: SizedBox(
         width: 64,
         child: Column(
@@ -258,11 +280,12 @@ class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
       child: Center(
         child: Text(
           'no_participating_artists'.tr(),
-          style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeSm,
+            color: colors.textSecondary,
+          ),
         ),
       ),
     );
   }
-
 }
-

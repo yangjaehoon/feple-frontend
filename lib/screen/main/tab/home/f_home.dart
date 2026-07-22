@@ -42,7 +42,8 @@ class _HomeFragmentState extends State<HomeFragment> {
   }
 
   void _onScroll() {
-    final show = _scrollController.position.pixels > AppDimens.scrollToTopThreshold;
+    final show =
+        _scrollController.position.pixels > AppDimens.scrollToTopThreshold;
     if (show != _showScrollToTop) setState(() => _showScrollToTop = show);
   }
 
@@ -70,10 +71,10 @@ class _HomeFragmentState extends State<HomeFragment> {
   void _onArtistFollowChanged() => _notifier.refreshArtists();
   void _onAppResumed() => _notifier.refresh();
 
-
   @override
   Widget build(BuildContext context) {
-    context.locale; // Subscribe to locale changes so section titles re-translate immediately
+    context
+        .locale; // Subscribe to locale changes so section titles re-translate immediately
     final colors = context.appColors;
     return Stack(
       children: [
@@ -87,7 +88,11 @@ class _HomeFragmentState extends State<HomeFragment> {
                   listenable: _notifier,
                   builder: (context, _) {
                     if (_notifier.userId == null) {
-                      return Center(child: CircularProgressIndicator(color: colors.loadingIndicator));
+                      return Center(
+                        child: CircularProgressIndicator(
+                          color: colors.loadingIndicator,
+                        ),
+                      );
                     }
                     return RefreshIndicator(
                       color: colors.activate,
@@ -102,7 +107,9 @@ class _HomeFragmentState extends State<HomeFragment> {
                       child: SingleChildScrollView(
                         controller: _scrollController,
                         physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
+                        padding: const EdgeInsets.only(
+                          bottom: AppDimens.scrollPaddingBottom,
+                        ),
                         child: _buildScrollContent(context, colors),
                       ),
                     );
@@ -143,30 +150,32 @@ class _HomeFragmentState extends State<HomeFragment> {
           title: 'followed_artists'.tr(),
           onExpand: (_notifier.artists?.isNotEmpty ?? false)
               ? () => Navigator.push(
-                    context,
-                    SlideRoute(
-                      builder: (_) => FollowedArtistsByGenreScreen(
-                        artists: orderedArtists ?? [],
-                        onSaveOrder: _notifier.saveArtistOrder,
-                      ),
+                  context,
+                  SlideRoute(
+                    builder: (_) => FollowedArtistsByGenreScreen(
+                      artists: orderedArtists ?? [],
+                      onSaveOrder: _notifier.saveArtistOrder,
                     ),
-                  )
+                  ),
+                )
               : null,
         ),
         HomeArtistsSection(
           artists: orderedArtists,
-          hasError: _notifier.hasError,
+          error: _notifier.error,
           onRetry: _notifier.retry,
-          onShowMore: (orderedArtists != null && orderedArtists.length > HomeArtistsSection.maxPreview)
+          onShowMore:
+              (orderedArtists != null &&
+                  orderedArtists.length > HomeArtistsSection.maxPreview)
               ? () => Navigator.push(
-                    context,
-                    SlideRoute(
-                      builder: (_) => FollowedArtistsByGenreScreen(
-                        artists: orderedArtists,
-                        onSaveOrder: _notifier.saveArtistOrder,
-                      ),
+                  context,
+                  SlideRoute(
+                    builder: (_) => FollowedArtistsByGenreScreen(
+                      artists: orderedArtists,
+                      onSaveOrder: _notifier.saveArtistOrder,
                     ),
-                  )
+                  ),
+                )
               : null,
           onTap: (artist) => Navigator.push(
             context,
@@ -186,30 +195,35 @@ class _HomeFragmentState extends State<HomeFragment> {
           title: 'liked_festivals'.tr(),
           onExpand: (_notifier.festivals?.isNotEmpty ?? false)
               ? () => Navigator.push(
-                    context,
-                    SlideRoute(
-                      builder: (_) => LikedFestivalsScreen(
-                        festivals: orderedFestivals ?? [],
-                        onSaveOrder: _notifier.saveFestivalOrder,
-                      ),
+                  context,
+                  SlideRoute(
+                    builder: (_) => LikedFestivalsScreen(
+                      festivals: orderedFestivals ?? [],
+                      onSaveOrder: _notifier.saveFestivalOrder,
                     ),
-                  )
+                  ),
+                )
               : null,
         ),
         HomeFestivalsSection(
           festivals: orderedFestivals,
-          hasError: _notifier.hasError,
+          error: _notifier.error,
           onRetry: _notifier.retry,
           onTap: (festival) => Navigator.push(
             context,
-            SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)),
+            SlideRoute(
+              builder: (_) => FestivalInformationFragment(poster: festival),
+            ),
           ),
         ),
         const SizedBox(height: 8),
         if (_notifier.hasError)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
-            child: ErrorState(message: 'err_fetch_data'.tr(), onRetry: _notifier.retry),
+            child: ErrorState.network(
+              _notifier.error!,
+              onRetry: _notifier.retry,
+            ),
           )
         else if (_notifier.boards == null)
           const BoardsSectionSkeleton()

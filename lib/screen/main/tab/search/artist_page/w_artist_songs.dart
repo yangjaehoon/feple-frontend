@@ -43,7 +43,7 @@ class ArtistSongsState extends State<ArtistSongs> with NavigationGuard {
 
   Future<void> refresh() async {
     final future = _fetchSongs();
-    setState(() => _songsFuture = future);
+    setState(() { _songsFuture = future; });
     try { await future; } catch (_) {}
   }
 

@@ -43,7 +43,7 @@ class ArtistScheduleState extends State<ArtistSchedule> with NavigationGuard {
 
   Future<void> refresh() async {
     final future = _fetchSchedule();
-    setState(() => _scheduleFuture = future);
+    setState(() { _scheduleFuture = future; });
     try { await future; } catch (_) {}
   }
 

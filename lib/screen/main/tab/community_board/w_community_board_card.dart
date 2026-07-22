@@ -59,7 +59,7 @@ class CommunityBoardCardState extends State<CommunityBoardCard> {
   /// 끝났다고 가정했음.
   Future<void> refresh() async {
     final future = _postService.fetchPosts(widget.serviceBoardType);
-    if (mounted) setState(() => _postsFuture = future);
+    if (mounted) setState(() { _postsFuture = future; });
     try { await future; } catch (_) {}
   }
 

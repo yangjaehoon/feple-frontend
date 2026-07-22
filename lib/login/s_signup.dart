@@ -1,4 +1,5 @@
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/email_validator.dart';
 import 'package:feple/common/util/password_validator.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
@@ -45,6 +46,26 @@ class _SignupScreenState extends State<SignupScreen> {
         password.isNotEmpty &&
         PasswordValidator.validate(password) == null &&
         _nicknameAvailable;
+  }
+
+  bool get _isDirty =>
+      emailController.text.isNotEmpty ||
+      passwordController.text.isNotEmpty ||
+      (_nicknameKey.currentState?.currentNickname.isNotEmpty ?? false);
+
+  Future<void> _confirmExit() async {
+    if (_isLoading) return;
+    if (!_isDirty) {
+      Navigator.of(context).pop();
+      return;
+    }
+    final confirmed = await showConfirmDialog(
+      context,
+      title: 'discard_changes'.tr(),
+      content: 'discard_changes_msg'.tr(),
+      confirmLabel: 'discard'.tr(),
+    );
+    if (confirmed && mounted) Navigator.of(context).pop();
   }
 
   @override
@@ -156,62 +177,68 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     final themeColors = context.appColors;
-    return Scaffold(
-      backgroundColor: themeColors.backgroundMain,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        leading: IconButton(
-          tooltip: 'back'.tr(),
-          icon: Icon(
-            Icons.arrow_back_ios_rounded,
-            color: themeColors.textTitle,
-            size: 20,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _confirmExit();
+      },
+      child: Scaffold(
+        backgroundColor: themeColors.backgroundMain,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          leading: IconButton(
+            tooltip: 'back'.tr(),
+            icon: Icon(
+              Icons.arrow_back_ios_rounded,
+              color: themeColors.textTitle,
+              size: 20,
+            ),
+            onPressed: _confirmExit,
           ),
-          onPressed: () => Navigator.pop(context),
         ),
-      ),
-      body: KeyboardDismiss(
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
-              child: AutofillGroup(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildHeader(themeColors),
-                    _buildForm(themeColors),
-                    const SizedBox(height: 28),
-                    if (_generalError != null)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Text(
-                          _generalError!,
-                          style: TextStyle(
-                            fontSize: AppDimens.fontSizeSm,
-                            color: themeColors.error,
-                            fontWeight: FontWeight.w500,
+        body: KeyboardDismiss(
+          child: SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 28),
+                child: AutofillGroup(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildHeader(themeColors),
+                      _buildForm(themeColors),
+                      const SizedBox(height: 28),
+                      if (_generalError != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Text(
+                            _generalError!,
+                            style: TextStyle(
+                              fontSize: AppDimens.fontSizeSm,
+                              color: themeColors.error,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center,
+                        ),
+                      AnimatedOpacity(
+                        opacity: _isFormComplete ? 1.0 : 0.5,
+                        duration: AppDimens.animNormal,
+                        child: LoadingButton(
+                          label: 'register'.tr(),
+                          onPressed: _register,
+                          isLoading: _isLoading,
+                          backgroundColor: themeColors.activate,
                         ),
                       ),
-                    AnimatedOpacity(
-                      opacity: _isFormComplete ? 1.0 : 0.5,
-                      duration: AppDimens.animNormal,
-                      child: LoadingButton(
-                        label: 'register'.tr(),
-                        onPressed: _register,
-                        isLoading: _isLoading,
-                        backgroundColor: themeColors.activate,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    _buildLoginLink(themeColors),
-                    const SizedBox(height: 32),
-                    const SupportLinkRow(),
-                  ],
+                      const SizedBox(height: 24),
+                      _buildLoginLink(themeColors),
+                      const SizedBox(height: 32),
+                      const SupportLinkRow(),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -315,7 +342,7 @@ class _SignupScreenState extends State<SignupScreen> {
           ),
         ),
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: _confirmExit,
           style: TextButton.styleFrom(
             foregroundColor: themeColors.activate,
             padding: EdgeInsets.zero,

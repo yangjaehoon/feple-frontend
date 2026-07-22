@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/blocked_user_model.dart';
 import 'package:feple/screen/settings/s_blocked_users.dart';
@@ -58,13 +59,13 @@ void main() {
   });
 
   group('BlockedUsersScreen 로딩', () {
-    testWidgets('로딩 중에는 스피너를 보여준다', (tester) async {
+    testWidgets('로딩 중에는 스켈레톤을 보여준다', (tester) async {
       final completer = Completer<List<BlockedUserModel>>();
       when(() => mockService.getBlockedUsers()).thenAnswer((_) => completer.future);
 
       await _pump(tester);
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.byType(SkeletonBox), findsWidgets);
       completer.complete([]);
       await tester.pumpAndSettle();
     });

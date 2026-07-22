@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
@@ -86,12 +87,16 @@ class NotificationCard extends StatelessWidget {
   Widget _buildIconBadge(AbstractThemeColors colors) {
     if (item.imageUrl != null) {
       return ClipOval(
-        child: Image.network(
-          item.imageUrl!,
+        child: CachedNetworkImage(
+          imageUrl: item.imageUrl!,
           width: 40,
           height: 40,
+          memCacheWidth: 80,
           fit: BoxFit.cover,
-          errorBuilder: (context, error, _) => _buildIconFallback(colors),
+          fadeInDuration: AppDimens.animXFast,
+          fadeOutDuration: AppDimens.animTapFeedback,
+          placeholder: (_, _) => _buildIconFallback(colors),
+          errorWidget: (_, _, _) => _buildIconFallback(colors),
         ),
       );
     }

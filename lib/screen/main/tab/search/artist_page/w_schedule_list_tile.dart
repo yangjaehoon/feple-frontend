@@ -216,15 +216,12 @@ class _ScheduleListTileState extends State<ScheduleListTile>
                               colorBlendMode: isPast
                                   ? BlendMode.modulate
                                   : null,
+                              placeholder: (_, _) =>
+                                  _buildCoArtistFallback(colors),
+                              errorWidget: (_, _, _) =>
+                                  _buildCoArtistFallback(colors),
                             )
-                          : Container(
-                              color: _c(colors.backgroundMain),
-                              child: Icon(
-                                Icons.person_rounded,
-                                size: 12,
-                                color: _c(colors.textSecondary),
-                              ),
-                            ),
+                          : _buildCoArtistFallback(colors),
                     ),
                   ),
                 ),
@@ -232,6 +229,17 @@ class _ScheduleListTileState extends State<ScheduleListTile>
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildCoArtistFallback(AbstractThemeColors colors) {
+    return Container(
+      color: _c(colors.backgroundMain),
+      child: Icon(
+        Icons.person_rounded,
+        size: 12,
+        color: _c(colors.textSecondary),
       ),
     );
   }

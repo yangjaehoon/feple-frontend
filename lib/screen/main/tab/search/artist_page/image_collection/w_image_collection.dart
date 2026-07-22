@@ -18,8 +18,11 @@ import 'w_edit_photo_sheet.dart';
 import 'w_photo_fullscreen_viewer.dart';
 
 class ImageCollectionWidget extends StatefulWidget {
-  const ImageCollectionWidget(
-      {super.key, required this.artistId, required this.artistName});
+  const ImageCollectionWidget({
+    super.key,
+    required this.artistId,
+    required this.artistName,
+  });
 
   final int artistId;
   final String artistName;
@@ -56,7 +59,7 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
     super.dispose();
   }
 
-  void refresh() => _notifier.loadPhotos();
+  Future<void> refresh() => _notifier.loadPhotos();
 
   Future<void> _confirmAndDelete(int photoId) async {
     final confirmed = await showConfirmDialog(
@@ -67,7 +70,6 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
     );
     if (confirmed) _notifier.deletePhoto(photoId);
   }
-
 
   void _showEditBottomSheet(ArtistPhoto photo) {
     if (_isSheetOpen) return;
@@ -81,14 +83,18 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
         onSave: (newTitle, newDesc) =>
             _notifier.updatePhoto(photo.photoId, newTitle, newDesc),
       ),
-    ).whenComplete(() { if (mounted) _isSheetOpen = false; });
+    ).whenComplete(() {
+      if (mounted) _isSheetOpen = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final currentUserId =
-        Provider.of<UserProvider>(context, listen: false).currentUserId;
+    final currentUserId = Provider.of<UserProvider>(
+      context,
+      listen: false,
+    ).currentUserId;
 
     return ListenableBuilder(
       listenable: _notifier,
@@ -120,7 +126,8 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
             currentUserId != null && photo.uploaderUserId == currentUserId;
         return Padding(
           padding: EdgeInsets.only(
-              bottom: index == _notifier.photos.length - 1 ? 0 : 12.0),
+            bottom: index == _notifier.photos.length - 1 ? 0 : 12.0,
+          ),
           child: _buildPhotoCard(photo, isUploader, colors),
         );
       },
@@ -137,7 +144,10 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
   }
 
   Widget _buildPhotoCard(
-      ArtistPhoto photo, bool isUploader, AbstractThemeColors colors) {
+    ArtistPhoto photo,
+    bool isUploader,
+    AbstractThemeColors colors,
+  ) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final imageSize = (constraints.maxWidth * 0.44).clamp(0.0, 195.0);
@@ -147,15 +157,23 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
             borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
             boxShadow: [
               BoxShadow(
-                  color: colors.cardShadow.withValues(alpha: 0.08),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2)),
+                color: colors.cardShadow.withValues(alpha: 0.08),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
             ],
           ),
           child: Row(
             children: [
               _buildPhotoImageArea(photo, colors, imageSize),
-              Expanded(child: _buildPhotoInfoArea(photo, isUploader, colors, imageSize)),
+              Expanded(
+                child: _buildPhotoInfoArea(
+                  photo,
+                  isUploader,
+                  colors,
+                  imageSize,
+                ),
+              ),
             ],
           ),
         );
@@ -163,7 +181,11 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
     );
   }
 
-  Widget _buildPhotoImageArea(ArtistPhoto photo, AbstractThemeColors colors, double imageSize) {
+  Widget _buildPhotoImageArea(
+    ArtistPhoto photo,
+    AbstractThemeColors colors,
+    double imageSize,
+  ) {
     return Stack(
       children: [
         _buildPhoto(photo, colors, imageSize),
@@ -176,16 +198,18 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => PhotoFullscreenViewer(
-          photoId: photo.photoId,
-          notifier: _notifier,
-        ),
+        builder: (_) =>
+            PhotoFullscreenViewer(photoId: photo.photoId, notifier: _notifier),
         fullscreenDialog: true,
       ),
     );
   }
 
-  Widget _buildPhoto(ArtistPhoto photo, AbstractThemeColors colors, double imageSize) {
+  Widget _buildPhoto(
+    ArtistPhoto photo,
+    AbstractThemeColors colors,
+    double imageSize,
+  ) {
     return GestureDetector(
       onTap: () => _openFullscreen(photo),
       onDoubleTap: () => _notifier.toggleLike(photo.photoId),
@@ -205,15 +229,16 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
           fadeOutDuration: AppDimens.animTapFeedback,
           // CircularProgressIndicator는 매 프레임 repaint — 리스트에서 스피너가
           // 여러 개 동시에 애니메이션되면 GPU 부담 증가 → SkeletonBox로 교체
-          placeholder: (context, url) => SkeletonBox(
-            width: imageSize,
-            height: imageSize,
-          ),
+          placeholder: (context, url) =>
+              SkeletonBox(width: imageSize, height: imageSize),
           errorWidget: (context, url, error) => Container(
             width: imageSize,
             height: imageSize,
             color: colors.listDivider,
-            child: Icon(Icons.broken_image_rounded, color: colors.textSecondary),
+            child: Icon(
+              Icons.broken_image_rounded,
+              color: colors.textSecondary,
+            ),
           ),
         ),
       ),
@@ -236,7 +261,9 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                photo.isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                photo.isLiked
+                    ? Icons.favorite_rounded
+                    : Icons.favorite_border_rounded,
                 color: photo.isLiked ? colors.likeActiveColor : Colors.white,
                 size: 18,
               ),
@@ -244,7 +271,10 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
               Text(
                 '${photo.likeCount}',
                 style: const TextStyle(
-                    fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w600, color: Colors.white),
+                  fontSize: AppDimens.fontSizeSm,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
               ),
             ],
           ),
@@ -254,7 +284,11 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
   }
 
   Widget _buildPhotoInfoArea(
-      ArtistPhoto photo, bool isUploader, AbstractThemeColors colors, double imageSize) {
+    ArtistPhoto photo,
+    bool isUploader,
+    AbstractThemeColors colors,
+    double imageSize,
+  ) {
     return SizedBox(
       height: imageSize,
       child: Padding(
@@ -271,7 +305,11 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
     );
   }
 
-  Widget _buildPhotoHeader(ArtistPhoto photo, bool isUploader, AbstractThemeColors colors) {
+  Widget _buildPhotoHeader(
+    ArtistPhoto photo,
+    bool isUploader,
+    AbstractThemeColors colors,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -279,9 +317,10 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
           child: Text(
             photo.title,
             style: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: AppDimens.fontSizeXl,
-                color: colors.textTitle),
+              fontWeight: FontWeight.w700,
+              fontSize: AppDimens.fontSizeXl,
+              color: colors.textTitle,
+            ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
@@ -299,7 +338,11 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
         Row(
           children: [
             if (photo.isAnonymous)
-              _buildBadge(Icons.visibility_off_rounded, 'post_anonymous'.tr(), colors),
+              _buildBadge(
+                Icons.visibility_off_rounded,
+                'post_anonymous'.tr(),
+                colors,
+              ),
             if (photo.isAnonymous && photo.description.isNotEmpty)
               const SizedBox(width: 6),
             if (photo.description.isNotEmpty)
@@ -311,12 +354,19 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
             padding: const EdgeInsets.only(top: 4),
             child: Row(
               children: [
-                Icon(Icons.person_rounded, size: 12, color: colors.textSecondary),
+                Icon(
+                  Icons.person_rounded,
+                  size: 12,
+                  color: colors.textSecondary,
+                ),
                 const SizedBox(width: 3),
                 Flexible(
                   child: Text(
                     photo.uploaderNickname,
-                    style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
+                    style: TextStyle(
+                      fontSize: AppDimens.fontSizeXxs,
+                      color: colors.textSecondary,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -329,13 +379,22 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
   }
 
   Widget _buildPhotoMenu(
-      ArtistPhoto photo, bool isUploader, AbstractThemeColors colors) {
+    ArtistPhoto photo,
+    bool isUploader,
+    AbstractThemeColors colors,
+  ) {
     return PopupMenuButton<String>(
-      icon: Icon(Icons.more_vert_rounded, color: colors.textSecondary, size: 20),
+      icon: Icon(
+        Icons.more_vert_rounded,
+        color: colors.textSecondary,
+        size: 20,
+      ),
       color: colors.surface,
       elevation: 3,
       shadowColor: colors.cardShadow.withValues(alpha: 0.18),
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(AppDimens.shapeDialog))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(AppDimens.shapeDialog)),
+      ),
       position: PopupMenuPosition.under,
       onSelected: (value) {
         if (value == 'edit') {
@@ -398,7 +457,11 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
           const SizedBox(width: 3),
           Text(
             label,
-            style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: colors.textSecondary),
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeXxs,
+              fontWeight: FontWeight.w600,
+              color: colors.textSecondary,
+            ),
           ),
         ],
       ),
@@ -414,7 +477,11 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
       ),
       child: Text(
         photo.description,
-        style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: colors.activate),
+        style: TextStyle(
+          fontSize: AppDimens.fontSizeXxs,
+          fontWeight: FontWeight.w600,
+          color: colors.activate,
+        ),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),

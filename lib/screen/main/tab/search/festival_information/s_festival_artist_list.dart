@@ -38,17 +38,33 @@ class FestivalArtistListScreen extends StatelessWidget {
                   );
                 }
                 if (notifier.artists.isEmpty) {
-                  return Center(
-                    child: Text(
-                      'no_participating_artists'.tr(),
-                      style: TextStyle(
-                        fontSize: AppDimens.fontSizeMd,
-                        color: colors.textSecondary,
-                      ),
+                  return RefreshIndicator(
+                    color: colors.activate,
+                    onRefresh: notifier.refresh,
+                    child: ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [
+                        SizedBox(
+                          height: 300,
+                          child: Center(
+                            child: Text(
+                              'no_participating_artists'.tr(),
+                              style: TextStyle(
+                                fontSize: AppDimens.fontSizeMd,
+                                color: colors.textSecondary,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 }
-                return _buildContent(colors);
+                return RefreshIndicator(
+                  color: colors.activate,
+                  onRefresh: notifier.refresh,
+                  child: _buildContent(colors),
+                );
               },
             ),
           ),
@@ -80,6 +96,7 @@ class FestivalArtistListScreen extends StatelessWidget {
                   ),
                 )
               : GridView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 16,

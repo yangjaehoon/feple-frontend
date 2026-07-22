@@ -54,24 +54,7 @@ class FestivalArtistsNotifier extends SafeChangeNotifier {
 
   Future<void> fetch() async {
     try {
-      final (fetched, followed) = await (
-        _festivalService.fetchFestivalArtists(festivalId),
-        userId != null
-            ? _followService.fetchFollowingIds(userId!)
-            : Future<Set<int>>.value({}),
-      ).wait;
-
-      // Dart List.sort는 stable 정렬 미보장 — 같은 순위(팔로우 여부) 그룹 내
-      // 원래 서버 순서가 fetch마다 흔들릴 수 있음에 유의
-      fetched.sort((a, b) {
-        final aRank = followed.contains(a.artistId) ? 0 : 1;
-        final bRank = followed.contains(b.artistId) ? 0 : 1;
-        return aRank.compareTo(bRank);
-      });
-
-      artists = fetched;
-      followedIds = followed;
-      allDates = _computeAllDates(fetched);
+      await _fetchAndApply();
       isLoading = false;
       safeNotify();
     } catch (e) {
@@ -81,6 +64,39 @@ class FestivalArtistsNotifier extends SafeChangeNotifier {
       safeNotify();
       debugPrint('festival artists fetch error: $e');
     }
+  }
+
+  /// Pull-to-refresh용 — 실패해도 기존 목록을 유지하고 조용히 무시
+  /// (다른 리스트 화면의 refresh()와 동일 패턴)
+  Future<void> refresh() async {
+    try {
+      await _fetchAndApply();
+      hasError = false;
+      safeNotify();
+    } catch (e) {
+      debugPrint('festival artists refresh error: $e');
+    }
+  }
+
+  Future<void> _fetchAndApply() async {
+    final (fetched, followed) = await (
+      _festivalService.fetchFestivalArtists(festivalId),
+      userId != null
+          ? _followService.fetchFollowingIds(userId!)
+          : Future<Set<int>>.value({}),
+    ).wait;
+
+    // Dart List.sort는 stable 정렬 미보장 — 같은 순위(팔로우 여부) 그룹 내
+    // 원래 서버 순서가 fetch마다 흔들릴 수 있음에 유의
+    fetched.sort((a, b) {
+      final aRank = followed.contains(a.artistId) ? 0 : 1;
+      final bRank = followed.contains(b.artistId) ? 0 : 1;
+      return aRank.compareTo(bRank);
+    });
+
+    artists = fetched;
+    followedIds = followed;
+    allDates = _computeAllDates(fetched);
   }
 
   static List<String> _computeAllDates(List<FestivalArtistItem> artists) {

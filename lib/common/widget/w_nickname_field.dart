@@ -117,23 +117,39 @@ class NicknameFieldState extends State<NicknameField> {
       controller: controller,
       maxLength: NicknameCheckResult.maxLength,
       onChanged: _onTextChanged,
+      textInputAction: TextInputAction.next,
+      // 이 필드는 다음 필드로 넘어가기 전에 중복확인이 선행돼야 하므로,
+      // 키보드의 "다음" 액션은 포커스 이동 대신 중복확인 버튼과 동일한 동작을 트리거
+      onSubmitted: (_) {
+        if (!_isChecking) checkNickname();
+      },
       autofillHints: const [AutofillHints.nickname],
       style: TextStyle(fontSize: AppDimens.fontSizeLg, color: colors.text),
       decoration: InputDecoration(
         counterText: '',
-        prefixIcon: Icon(Icons.badge_outlined, color: colors.activate, size: 22),
+        prefixIcon: Icon(
+          Icons.badge_outlined,
+          color: colors.activate,
+          size: 22,
+        ),
         hintText: 'nickname_hint_format'.tr(),
-        hintStyle: TextStyle(color: colors.hintText, fontSize: AppDimens.fontSizeLg),
+        hintStyle: TextStyle(
+          color: colors.hintText,
+          fontSize: AppDimens.fontSizeLg,
+        ),
         filled: true,
         fillColor: colors.surface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 16,
+        ),
         border: appInputBorder(colors.divider),
         enabledBorder: appInputBorder(
           _available == false
               ? colors.error
               : _available == true
-                  ? colors.activate
-                  : colors.divider,
+              ? colors.activate
+              : colors.divider,
         ),
         focusedBorder: appInputBorder(colors.focusedBorder, width: 2),
       ),

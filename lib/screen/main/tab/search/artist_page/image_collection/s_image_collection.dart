@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:feple/screen/main/tab/search/artist_page/image_collection/w_image_collection.dart';
 
 class ImageCollectionScreen extends StatefulWidget {
-  const ImageCollectionScreen(
-      {super.key, required this.artistName, required this.artistId});
+  const ImageCollectionScreen({
+    super.key,
+    required this.artistName,
+    required this.artistId,
+  });
 
   final String artistName;
   final int artistId;
@@ -27,17 +30,23 @@ class _ImageCollectionScreenState extends State<ImageCollectionScreen> {
       backgroundColor: colors.backgroundMain,
       floatingActionButton: _buildFab(colors),
       appBar: SecondaryAppBar(title: 'photo_collection_title'.tr()),
-      body: CustomScrollView(
-        slivers: [
-          SliverPadding(
-            padding: const EdgeInsets.all(16),
-            sliver: ImageCollectionWidget(
-              key: _imgCollectionKey,
-              artistName: widget.artistName,
-              artistId: widget.artistId,
+      body: RefreshIndicator(
+        color: colors.activate,
+        onRefresh: () =>
+            _imgCollectionKey.currentState?.refresh() ?? Future.value(),
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.all(16),
+              sliver: ImageCollectionWidget(
+                key: _imgCollectionKey,
+                artistName: widget.artistName,
+                artistId: widget.artistId,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -61,7 +70,10 @@ class _ImageCollectionScreenState extends State<ImageCollectionScreen> {
           _imgCollectionKey.currentState?.refresh();
         }
       },
-      child: Icon(Icons.add_photo_alternate, color: Theme.of(context).colorScheme.onPrimary),
+      child: Icon(
+        Icons.add_photo_alternate,
+        color: Theme.of(context).colorScheme.onPrimary,
+      ),
     );
   }
 }

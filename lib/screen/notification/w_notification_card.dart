@@ -58,11 +58,6 @@ class NotificationCard extends StatelessWidget {
     );
   }
 
-  // Dismissible은 child를 클리핑 없이 단순 translate만 하므로, 카드 자체에
-  // borderRadius가 있으면 드래그 중간 지점에서 카드의 둥근 모서리가 깎아낸
-  // 삼각형 틈으로 뒤쪽 배경(Dismissible의 배경도 아닌 화면 배경)이 비쳐 보이는
-  // 문제가 생김 → 카드는 항상 각진 사각형으로 두고, 라운드 처리는
-  // s_notification.dart가 바깥 ClipRRect로 전담
   BoxDecoration _buildCardDecoration(AbstractThemeColors colors) {
     return BoxDecoration(
       color: item.read
@@ -71,6 +66,20 @@ class NotificationCard extends StatelessWidget {
               colors.activate.withValues(alpha: 0.10),
               colors.surface,
             ),
+      borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
+      border: Border.all(
+        color: item.read
+            ? colors.listDivider
+            : colors.activate.withValues(alpha: 0.35),
+        width: 1,
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: colors.cardShadow.withValues(alpha: 0.06),
+          blurRadius: 8,
+          offset: const Offset(0, 2),
+        ),
+      ],
     );
   }
 

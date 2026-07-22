@@ -442,34 +442,35 @@ class _NotificationScreenState extends State<NotificationScreen> {
           ),
         );
         final isDismissible = item.type?.isDismissible ?? true;
+        // NotificationCard는 항상 각진 사각형을 그리므로(스와이프 중간 지점의
+        // 틈 방지), 라운드 처리는 여기 바깥 ClipRRect가 전담
+        final rounded = isDismissible
+            ? Dismissible(
+                key: ValueKey(item.id),
+                direction: DismissDirection.endToStart,
+                onDismissed: (_) => _dismissWithUndo(item),
+                background: Container(
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: 20),
+                  color: colors.error,
+                  child: const Icon(
+                    Icons.delete_rounded,
+                    color: Colors.white,
+                    size: 22,
+                  ),
+                ),
+                child: card,
+              )
+            : card;
 
         return Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: AnimatedListItem(
             index: notifIndex,
-            child: isDismissible
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(
-                      AppDimens.cardRadiusSmall,
-                    ),
-                    child: Dismissible(
-                      key: ValueKey(item.id),
-                      direction: DismissDirection.endToStart,
-                      onDismissed: (_) => _dismissWithUndo(item),
-                      background: Container(
-                        alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.only(right: 20),
-                        color: colors.error,
-                        child: const Icon(
-                          Icons.delete_rounded,
-                          color: Colors.white,
-                          size: 22,
-                        ),
-                      ),
-                      child: card,
-                    ),
-                  )
-                : card,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
+              child: rounded,
+            ),
           ),
         );
       },

@@ -448,26 +448,26 @@ class _NotificationScreenState extends State<NotificationScreen> {
           child: AnimatedListItem(
             index: notifIndex,
             child: isDismissible
-                ? Dismissible(
-                    key: ValueKey(item.id),
-                    direction: DismissDirection.endToStart,
-                    onDismissed: (_) => _dismissWithUndo(item),
-                    background: Container(
-                      alignment: Alignment.centerRight,
-                      padding: const EdgeInsets.only(right: 20),
-                      decoration: BoxDecoration(
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(
+                      AppDimens.cardRadiusSmall,
+                    ),
+                    child: Dismissible(
+                      key: ValueKey(item.id),
+                      direction: DismissDirection.endToStart,
+                      onDismissed: (_) => _dismissWithUndo(item),
+                      background: Container(
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 20),
                         color: colors.error,
-                        borderRadius: BorderRadius.circular(
-                          AppDimens.cardRadiusSmall,
+                        child: const Icon(
+                          Icons.delete_rounded,
+                          color: Colors.white,
+                          size: 22,
                         ),
                       ),
-                      child: const Icon(
-                        Icons.delete_rounded,
-                        color: Colors.white,
-                        size: 22,
-                      ),
+                      child: card,
                     ),
-                    child: card,
                   )
                 : card,
           ),

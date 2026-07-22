@@ -7,6 +7,7 @@ import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_refreshable_center.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_write_post_fab.dart';
 import 'package:feple/common/widget/w_write_post.dart';
 import 'package:feple/model/post_model.dart';
@@ -90,9 +91,34 @@ class _BoardPostListState extends State<BoardPostList> {
     );
   }
 
+  Widget _buildSkeleton(AbstractThemeColors colors) {
+    return ListView.separated(
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 6,
+      separatorBuilder: (_, _) => Divider(thickness: 1, color: colors.listDivider),
+      itemBuilder: (_, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SkeletonBox(width: double.infinity, height: 14, borderRadius: BorderRadius.circular(AppDimens.radiusXs)),
+            const SizedBox(height: 8),
+            SkeletonBox(width: 160, height: 12, borderRadius: BorderRadius.circular(AppDimens.radiusXs)),
+            const SizedBox(height: 8),
+            Row(children: [
+              SkeletonBox(width: 40, height: 10, borderRadius: BorderRadius.circular(AppDimens.radiusXs)),
+              const SizedBox(width: 12),
+              SkeletonBox(width: 40, height: 10, borderRadius: BorderRadius.circular(AppDimens.radiusXs)),
+            ]),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildContent(AbstractThemeColors colors) {
     if (_controller.isLoading) {
-      return const Center(child: CircularProgressIndicator.adaptive());
+      return _buildSkeleton(colors);
     }
     if (_controller.hasError) {
       return RefreshableCenter(

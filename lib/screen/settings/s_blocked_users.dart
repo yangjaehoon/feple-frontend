@@ -1,8 +1,10 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/block_action_helper.dart';
+import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/blocked_user_model.dart';
 import 'package:feple/service/block_service.dart';
@@ -69,21 +71,12 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
       return ErrorState(message: 'load_error'.tr(), onRetry: _load);
     }
     if (_list == null) {
-      return const Center(child: CircularProgressIndicator());
+      return _buildSkeleton(colors);
     }
     if (_list!.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.block_rounded, size: 48, color: colors.textSecondary.withValues(alpha: 0.4)),
-            const SizedBox(height: 12),
-            Text(
-              'no_blocked_users'.tr(),
-              style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textSecondary),
-            ),
-          ],
-        ),
+      return EmptyState(
+        icon: Icons.block_rounded,
+        title: 'no_blocked_users'.tr(),
       );
     }
     return RefreshIndicator(
@@ -93,6 +86,34 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
         itemCount: _list!.length,
         separatorBuilder: (_, _) => Divider(height: 1, color: colors.listDivider),
         itemBuilder: (_, i) => _buildItem(_list![i], colors),
+      ),
+    );
+  }
+
+  Widget _buildSkeleton(AbstractThemeColors colors) {
+    return ListView.separated(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      itemCount: 6,
+      separatorBuilder: (_, _) => Divider(height: 1, color: colors.listDivider),
+      itemBuilder: (_, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        child: Row(
+          children: [
+            const SkeletonBox(
+              width: 44,
+              height: 44,
+              borderRadius: BorderRadius.all(Radius.circular(22)),
+            ),
+            const SizedBox(width: 16),
+            const Expanded(child: SkeletonBox(width: 120, height: 15)),
+            const SizedBox(width: 12),
+            const SkeletonBox(
+              width: 72,
+              height: 36,
+              borderRadius: BorderRadius.all(Radius.circular(AppDimens.radiusSmall)),
+            ),
+          ],
+        ),
       ),
     );
   }

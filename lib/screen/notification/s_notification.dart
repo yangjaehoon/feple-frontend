@@ -168,9 +168,29 @@ class _NotificationScreenState extends State<NotificationScreen> {
       content: 'notif_delete_all_content'.tr(),
       confirmLabel: 'notif_delete_all_confirm'.tr(),
     );
-    if (confirmed == true) {
-      await _notifier.deleteAll();
-    }
+    if (!confirmed || !mounted) return;
+
+    _notifier.removeAllLocally();
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.hideCurrentSnackBar();
+    messenger
+        .showSnackBar(
+          SnackBar(
+            content: Text('notif_delete_all_dismissed'.tr()),
+            duration: const Duration(seconds: 4),
+            persist: false,
+            action: SnackBarAction(
+              label: 'undo'.tr(),
+              onPressed: _notifier.undoDeleteAll,
+            ),
+          ),
+        )
+        .closed
+        .then((reason) {
+          if (reason != SnackBarClosedReason.action) {
+            _notifier.confirmDeleteAll();
+          }
+        });
   }
 
   void _onMenuSelected(String value) {

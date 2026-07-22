@@ -21,6 +21,9 @@ class NotificationNotifier extends SafeChangeNotifier {
   // 원위치 복원용: id → 제거 전 인덱스
   final Map<int, int> _savedPositions = {};
 
+  // 전체 삭제 실행취소용: 삭제 직전 전체 목록 스냅샷
+  List<NotificationModel>? _savedAllItems;
+
   final _staleness = StaleTracker(const Duration(minutes: 3));
 
   List<NotificationModel> get items => List.unmodifiable(_items);
@@ -142,17 +145,31 @@ class NotificationNotifier extends SafeChangeNotifier {
     }
   }
 
-  Future<void> deleteAll() async {
-    final original = List<NotificationModel>.from(_items);
+  // 실행취소 지원: 개별 삭제(removeLocally/undoDismiss/confirmDismiss)와
+  // 동일하게 로컬에서 먼저 비우고, 실행취소 스낵바가 끝난 뒤에만 서버에서
+  // 실제 삭제를 확정한다 — 전체 삭제는 개별 삭제보다 되돌릴 수 없는 피해가
+  // 크므로 같은 안전장치를 반드시 제공해야 함
+  void removeAllLocally() {
+    _savedAllItems = List<NotificationModel>.from(_items);
     _items = [];
     _savedPositions.clear();
     safeNotify();
+  }
+
+  void undoDeleteAll() {
+    final saved = _savedAllItems;
+    if (saved == null) return;
+    _items = saved;
+    _savedAllItems = null;
+    safeNotify();
+  }
+
+  Future<void> confirmDeleteAll() async {
+    _savedAllItems = null;
     try {
       await _service.deleteAll();
     } catch (e) {
       debugPrint('[Notification] deleteAll 실패: $e');
-      _items = original;
-      safeNotify();
     }
   }
 }

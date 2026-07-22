@@ -331,17 +331,34 @@ void main() {
     });
   });
 
-  group('deleteAll', () {
-    test('items 전체 제거 후 서비스 deleteAll 호출', () async {
+  group('전체 삭제 (removeAllLocally/undoDeleteAll/confirmDeleteAll)', () {
+    setUp(() async {
       when(() => mockService.fetchPage(0, filter: any(named: 'filter')))
           .thenAnswer((_) async => _page([_item(1), _item(2)]));
       await notifier.load();
-      when(() => mockService.deleteAll()).thenAnswer((_) async {});
+    });
 
-      await notifier.deleteAll();
-
+    test('removeAllLocally 시 목록이 즉시 비워짐', () {
+      notifier.removeAllLocally();
       expect(notifier.items, isEmpty);
+    });
+
+    test('confirmDeleteAll 시에만 서비스 deleteAll 호출', () async {
+      when(() => mockService.deleteAll()).thenAnswer((_) async {});
+      notifier.removeAllLocally();
+
+      await notifier.confirmDeleteAll();
+
       verify(() => mockService.deleteAll()).called(1);
+    });
+
+    test('undoDeleteAll 시 원래 목록으로 복원되고 서비스는 호출 안 됨', () {
+      notifier.removeAllLocally();
+
+      notifier.undoDeleteAll();
+
+      expect(notifier.items.map((n) => n.id), [1, 2]);
+      verifyNever(() => mockService.deleteAll());
     });
   });
 }

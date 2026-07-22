@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/popup_menu_item_builder.dart';
+import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_expandable_text.dart';
 import 'package:feple/common/widget/w_inline_badge.dart';
 import 'package:feple/common/widget/w_profile_avatar.dart';
@@ -35,25 +36,17 @@ class CommentSection extends StatelessWidget {
     this.onAuthorTap,
   });
 
-  Widget _buildEmpty(AbstractThemeColors colors) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      child: Center(
-        child: Text(
-          'be_first_to_comment'.tr(),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeSm,
-            color: colors.textSecondary,
-          ),
-        ),
-      ),
+  Widget _buildEmpty() {
+    return EmptyState(
+      icon: Icons.mode_comment_outlined,
+      title: 'be_first_to_comment'.tr(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    if (rootComments.isEmpty) return _buildEmpty(colors);
+    if (rootComments.isEmpty) return _buildEmpty();
 
     final items = <Widget>[];
     for (

@@ -3,6 +3,7 @@ import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
+import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/festival_preview.dart';
@@ -157,25 +158,10 @@ class _LikedFestivalsScreenState extends State<LikedFestivalsScreen> with Naviga
 
   Widget _buildList(List<FestivalModel> items, AbstractThemeColors colors) {
     if (items.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.favorite_border_rounded,
-                size: 40, color: colors.textSecondary.withValues(alpha: 0.3)),
-            const SizedBox(height: 10),
-            Text(
-              _showEnded ? 'tab_ended_festivals'.tr() : 'tab_upcoming_festivals'.tr(),
-              style: TextStyle(
-                  fontSize: AppDimens.fontSizeMd, color: colors.textSecondary.withValues(alpha: 0.6)),
-            ),
-            Text(
-              'no_liked_in_tab'.tr(),
-              style: TextStyle(
-                  fontSize: AppDimens.fontSizeSm, color: colors.textSecondary.withValues(alpha: 0.45)),
-            ),
-          ],
-        ),
+      return EmptyState(
+        icon: Icons.favorite_border_rounded,
+        title: _showEnded ? 'tab_ended_festivals'.tr() : 'tab_upcoming_festivals'.tr(),
+        subtitle: 'no_liked_in_tab'.tr(),
       );
     }
     return ListView.builder(

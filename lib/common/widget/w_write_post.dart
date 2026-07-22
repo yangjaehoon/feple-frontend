@@ -369,6 +369,7 @@ class _WritePostState extends State<WritePost> {
             SecondaryAppBar(
               title: widget.title,
               actions: [_buildSubmitAction()],
+              onBackPressed: () => _onPopInvoked(false),
             ),
             Expanded(
               child: KeyboardDismiss(

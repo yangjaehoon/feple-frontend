@@ -8,10 +8,17 @@ class SecondaryAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
 
+  /// 뒤로가기 버튼 탭 시 동작을 오버라이드. 미지정 시 기본값(Navigator.pop).
+  /// PopScope로 이탈 확인을 거는 화면은 반드시 지정할 것 — 이 버튼은
+  /// Navigator.pop을 직접 호출하는 imperative pop이라 PopScope(canPop:false)를
+  /// 우회하므로, 지정하지 않으면 시스템 뒤로가기와 달리 확인 없이 바로 닫힘.
+  final VoidCallback? onBackPressed;
+
   const SecondaryAppBar({
     super.key,
     required this.title,
     this.actions,
+    this.onBackPressed,
   });
 
   @override
@@ -31,7 +38,7 @@ class SecondaryAppBar extends StatelessWidget implements PreferredSizeWidget {
             IconButton(
               tooltip: 'back'.tr(),
               icon: Icon(Icons.arrow_back_ios_rounded, color: onAppBar),
-              onPressed: () => Navigator.pop(context),
+              onPressed: onBackPressed ?? () => Navigator.pop(context),
             ),
             Expanded(
               child: Text(

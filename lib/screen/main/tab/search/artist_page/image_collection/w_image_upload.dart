@@ -145,7 +145,7 @@ class _ImageUploadState extends State<ImageUpload> {
             IconButton(
               tooltip: 'back'.tr(),
               icon: Icon(Icons.arrow_back_ios_rounded, color: colors.appBarIconColor),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => _onPopInvoked(false),
             ),
             Expanded(
               child: Text(

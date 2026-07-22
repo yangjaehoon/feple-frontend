@@ -187,6 +187,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
         children: [
           SecondaryAppBar(
             title: 'edit_profile'.tr(),
+            onBackPressed: () => _onPopInvoked(false),
           ),
           Expanded(
             child: SingleChildScrollView(

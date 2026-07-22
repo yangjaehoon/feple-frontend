@@ -58,6 +58,9 @@ class NotificationCard extends StatelessWidget {
     );
   }
 
+  // 스와이프 삭제 시 카드 자체 테두리/그림자가 드래그 중간 지점에 뾰족한
+  // 모서리로 떠 보이는 것을 막기 위해 border/shadow 없이 배경색+radius만 적용
+  // (바깥 고정 프레임은 s_notification.dart의 ClipRRect가 담당)
   BoxDecoration _buildCardDecoration(AbstractThemeColors colors) {
     return BoxDecoration(
       color: item.read
@@ -67,19 +70,6 @@ class NotificationCard extends StatelessWidget {
               colors.surface,
             ),
       borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-      border: Border.all(
-        color: item.read
-            ? colors.listDivider
-            : colors.activate.withValues(alpha: 0.35),
-        width: 1,
-      ),
-      boxShadow: [
-        BoxShadow(
-          color: colors.cardShadow.withValues(alpha: 0.06),
-          blurRadius: 8,
-          offset: const Offset(0, 2),
-        ),
-      ],
     );
   }
 

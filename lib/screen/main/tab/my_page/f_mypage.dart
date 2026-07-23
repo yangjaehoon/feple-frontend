@@ -34,6 +34,7 @@ class _MyPageFragmentState extends State<MyPageFragment> with NavigationGuard {
 
   @override
   Widget build(BuildContext context) {
+    context.locale; // Subscribe to locale changes so labels re-translate immediately
     // userId만 구독 — 프로필 사진·닉네임 변경 시 이 위젯은 재빌드하지 않음
     final userId = context.select<UserProvider, int?>((p) => p.currentUserId);
     final colors = context.appColors;

@@ -93,6 +93,7 @@ class MainScreenState extends State<MainScreen>
 
   @override
   Widget build(BuildContext context) {
+    context.locale; // Subscribe to locale changes so bottom nav labels re-translate immediately
     return OfflineBanner(
       child: PopScope(
         canPop: false,

@@ -56,6 +56,7 @@ class _SearchFragmentState extends State<SearchFragment> {
 
   @override
   Widget build(BuildContext context) {
+    context.locale; // Subscribe to locale changes so labels re-translate immediately
     final colors = context.appColors;
     return ColoredBox(
       color: colors.backgroundMain,

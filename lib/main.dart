@@ -37,13 +37,15 @@ void main() async {
   PaintingBinding.instance.imageCache.maximumSizeBytes = 60 * 1024 * 1024; // 60MB
   FlutterNativeSplash.preserve(widgetsBinding: bindings);
 
-  // google-services.json이 Android에서 자동 초기화하므로 중복 방지
-  if (Firebase.apps.isEmpty) {
-    await Firebase.initializeApp();
-  }
-  await EasyLocalization.ensureInitialized();
-  await AppPreferences.init();
-  await ApiCacheStore.init();
+  // 서로 의존관계 없는 초기화라 병렬로 실행 — 콜드스타트 시간을 합이 아닌
+  // 가장 느린 것 하나의 시간으로 줄임. google-services.json이 Android에서
+  // 자동 초기화하므로 이미 초기화된 경우 Firebase.initializeApp()은 생략.
+  await Future.wait([
+    if (Firebase.apps.isEmpty) Firebase.initializeApp().then((_) {}),
+    EasyLocalization.ensureInitialized(),
+    AppPreferences.init(),
+    ApiCacheStore.init(),
+  ]);
 
   KakaoSdk.init(
     nativeAppKey: kakaoNativeAppKey,

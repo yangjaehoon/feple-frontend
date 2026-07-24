@@ -1,0 +1,76 @@
+class CommentDetail {
+  final int id;
+  final int postId;
+  final int userId;
+  final String nickname;
+  final String? profileImageUrl;
+  final String content;
+  final DateTime createdAt;
+  final DateTime? updatedAt;
+  final bool certified;
+  final String? userRole;
+  final int? parentId;
+  final int likeCount;
+  final bool liked;
+  final bool anonymous;
+
+  const CommentDetail({
+    required this.id,
+    required this.postId,
+    required this.userId,
+    required this.nickname,
+    this.profileImageUrl,
+    required this.content,
+    required this.createdAt,
+    this.updatedAt,
+    required this.certified,
+    this.userRole,
+    this.parentId,
+    required this.likeCount,
+    required this.liked,
+    this.anonymous = false,
+  });
+
+  factory CommentDetail.fromJson(Map<String, dynamic> json) {
+    return CommentDetail(
+      id: (json['id'] as num).toInt(),
+      postId: (json['postId'] as num).toInt(),
+      userId: (json['userId'] as num).toInt(),
+      nickname: json['nickname'] as String? ?? 'User',
+      profileImageUrl: json['profileImageUrl'] as String?,
+      content: json['content'] as String,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt'] as String) : null,
+      certified: json['certified'] as bool? ?? false,
+      userRole: json['userRole'] as String?,
+      parentId: json['parentId'] != null ? (json['parentId'] as num).toInt() : null,
+      likeCount: (json['likeCount'] as num?)?.toInt() ?? 0,
+      liked: json['liked'] as bool? ?? false,
+      anonymous: json['anonymous'] as bool? ?? false,
+    );
+  }
+
+  CommentDetail copyWith({bool? liked, int? likeCount, String? content, DateTime? updatedAt}) => CommentDetail(
+        id: id,
+        postId: postId,
+        userId: userId,
+        nickname: nickname,
+        profileImageUrl: profileImageUrl,
+        content: content ?? this.content,
+        createdAt: createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+        certified: certified,
+        userRole: userRole,
+        parentId: parentId,
+        likeCount: likeCount ?? this.likeCount,
+        liked: liked ?? this.liked,
+        anonymous: anonymous,
+      );
+
+  bool get isEdited {
+    if (updatedAt == null) return false;
+    return updatedAt!.difference(createdAt).inSeconds > 10;
+  }
+
+  bool get isReply => parentId != null;
+}

@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  analyze:
+    name: Flutter Analyze
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+          channel: stable
+          cache: true
+
+      - name: Restore secret files
+        run: |
+          echo "${{ secrets.KEYS_DART }}" > lib/auth/keys.dart
+          echo "${{ secrets.CONFIG_DART }}" > lib/config.dart
+
+      - run: flutter pub get
+
+      - run: flutter analyze --no-pub
+
+  test:
+    name: Flutter Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+          channel: stable
+          cache: true
+
+      - name: Restore secret files
+        run: |
+          echo "${{ secrets.KEYS_DART }}" > lib/auth/keys.dart
+          echo "${{ secrets.CONFIG_DART }}" > lib/config.dart
+
+      - run: flutter pub get
+
+      - run: flutter test --no-pub

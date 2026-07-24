@@ -1,0 +1,130 @@
+import 'package:feple/common/common.dart';
+import 'package:feple/common/widget/w_board_preview_section.dart';
+import 'package:feple/common/widget/w_secondary_app_bar.dart';
+import 'package:feple/screen/main/tab/search/artist_page/artist_follow_notifier.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_artist_board.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_artist_schedule.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_artist_songs.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_main_image_swiper.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_related_artists.dart';
+import 'package:flutter/material.dart';
+
+class ArtistScreen extends StatefulWidget {
+  const ArtistScreen({
+    super.key,
+    required this.artistName,
+    this.artistNameEn = '',
+    required this.artistId,
+    required this.followerCount,
+    this.profileImageUrl,
+  });
+
+  final String artistName;
+  final String artistNameEn;
+  final int artistId;
+  final int followerCount;
+  final String? profileImageUrl;
+
+  @override
+  State<ArtistScreen> createState() => _ArtistScreenState();
+}
+
+class _ArtistScreenState extends State<ArtistScreen> {
+  late final ArtistFollowNotifier _followNotifier;
+  final _swiperKey = GlobalKey<MainImageSwiperState>();
+  final _scheduleKey = GlobalKey<ArtistScheduleState>();
+  final _boardKey = GlobalKey<BoardPreviewSectionState>();
+  final _songsKey = GlobalKey<ArtistSongsState>();
+  final _relatedKey = GlobalKey<RelatedArtistsState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _followNotifier = ArtistFollowNotifier(
+      artistId: widget.artistId,
+      initialFollowerCount: widget.followerCount,
+    )..init();
+  }
+
+  @override
+  void dispose() {
+    _followNotifier.dispose();
+    super.dispose();
+  }
+
+  Future<void> _onRefresh() async {
+    // 각 섹션의 refresh()가 실제로 끝날 때까지 기다려야 당겨서 새로고침
+    // 스피너가 화면 갱신 완료와 맞물려 사라짐 (예전엔 팔로우 상태만 기다려서
+    // 다른 섹션이 아직 로딩 중인데도 스피너가 먼저 사라졌음)
+    await Future.wait([
+      _swiperKey.currentState?.refresh() ?? Future.value(),
+      _scheduleKey.currentState?.refresh() ?? Future.value(),
+      _boardKey.currentState?.refresh() ?? Future.value(),
+      _songsKey.currentState?.refresh() ?? Future.value(),
+      _relatedKey.currentState?.refresh() ?? Future.value(),
+      _followNotifier.init(),
+    ]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    final displayName = context.isEnglish && widget.artistNameEn.isNotEmpty
+        ? widget.artistNameEn
+        : widget.artistName;
+    return Scaffold(
+      backgroundColor: colors.backgroundMain,
+      body: Column(
+        children: [
+          SecondaryAppBar(title: displayName),
+          Expanded(
+            child: SafeArea(
+              top: false,
+              child: RefreshIndicator(
+                color: colors.activate,
+                onRefresh: _onRefresh,
+                child: _buildScrollBody(displayName),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildScrollBody(String displayName) {
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Column(
+        children: [
+          MainImageSwiper(
+            key: _swiperKey,
+            artistName: displayName,
+            artistId: widget.artistId,
+            followNotifier: _followNotifier,
+            profileImageUrl: (widget.profileImageUrl?.isNotEmpty ?? false) ? widget.profileImageUrl : null,
+          ),
+          ArtistSchedule(
+            key: _scheduleKey,
+            artistId: widget.artistId,
+            artistName: displayName,
+          ),
+          ArtistBoard(
+            boardKey: _boardKey,
+            artistId: widget.artistId,
+            artistName: displayName,
+          ),
+          ArtistSongs(
+            key: _songsKey,
+            artistId: widget.artistId,
+            artistName: displayName,
+          ),
+          RelatedArtists(
+            key: _relatedKey,
+            artistId: widget.artistId,
+          ),
+        ],
+      ),
+    );
+  }
+}

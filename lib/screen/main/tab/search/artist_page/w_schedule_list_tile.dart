@@ -4,6 +4,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/util/navigation_guard.dart';
+import 'package:feple/common/widget/w_tap_loading_indicator.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_schedule_model.dart';
 import 'package:feple/screen/main/tab/search/artist_page/event_type_style.dart';
@@ -17,12 +18,15 @@ class ScheduleListTile extends StatefulWidget {
   final ArtistScheduleModel item;
   final VoidCallback? onTap;
   final bool isPast;
+  // 부모가 같은 festivalId로 별도 fetch(행 전체 탭)를 진행 중일 때 표시
+  final bool isLoading;
 
   const ScheduleListTile({
     super.key,
     required this.item,
     this.onTap,
     this.isPast = false,
+    this.isLoading = false,
   });
 
   @override
@@ -34,6 +38,11 @@ class _ScheduleListTileState extends State<ScheduleListTile>
   ArtistScheduleModel get item => widget.item;
   bool get isPast => widget.isPast;
 
+  // 포스터 탭 → fetchById → 화면 전환까지 아무 피드백 없이 멈춰 보이는 걸 방지.
+  // widget.isLoading(행 전체 탭)과 합쳐서 둘 중 하나라도 진행 중이면 로딩 표시.
+  bool _isLoadingFestival = false;
+  bool get _loading => _isLoadingFestival || widget.isLoading;
+
   // 지난 일정에 적용하는 투명도 — Opacity 위젯으로 전체를 감싸면 saveLayer()가 발생해
   // 리스트 항목마다 GPU offscreen buffer가 생긴다. 색상에 직접 alpha를 녹여 방지한다.
   static const double _pastAlpha = 0.55;
@@ -44,7 +53,7 @@ class _ScheduleListTileState extends State<ScheduleListTile>
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return InkWell(
-      onTap: widget.onTap,
+      onTap: _loading ? null : widget.onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: AppDimens.paddingHorizontal,
@@ -66,12 +75,14 @@ class _ScheduleListTileState extends State<ScheduleListTile>
     final typeConfig = item.eventType.config(colors);
     final hasPoster = item.posterUrl != null && item.posterUrl!.isNotEmpty;
     return GestureDetector(
-      onTap: _navigateToFestival,
+      onTap: _loading ? null : _navigateToFestival,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 3),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-          child: hasPoster
+          child: _loading
+              ? const Center(child: TapLoadingIndicator())
+              : hasPoster
               ? CachedNetworkImage(
                   imageUrl: item.posterUrl!,
                   width: 42,
@@ -96,6 +107,7 @@ class _ScheduleListTileState extends State<ScheduleListTile>
 
   Future<void> _navigateToFestival() async {
     await guardedNavigate(() async {
+      setState(() => _isLoadingFestival = true);
       try {
         final festival = await sl<FestivalService>().fetchById(item.festivalId);
         if (!mounted) return;
@@ -112,6 +124,8 @@ class _ScheduleListTileState extends State<ScheduleListTile>
             networkAwareErrorKey(e, 'err_fetch_data').tr(),
           );
         }
+      } finally {
+        if (mounted) setState(() => _isLoadingFestival = false);
       }
     });
   }

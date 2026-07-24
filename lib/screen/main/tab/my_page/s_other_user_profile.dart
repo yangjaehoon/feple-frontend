@@ -8,6 +8,7 @@ import 'package:feple/common/widget/w_refreshable_center.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_level_badge.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/common/widget/w_tap_loading_indicator.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/certification_model.dart';
@@ -55,6 +56,8 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
   bool _hasError = false;
   bool _isBlocked = false;
   bool _isBlockLoading = false;
+  // 인증 카드 탭 → fetchById → 화면 전환까지 아무 피드백 없이 멈춰 보이는 걸 방지
+  int? _navigatingFestivalId;
 
   @override
   void initState() {
@@ -460,20 +463,25 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
   }
 
   Future<void> _navigateToFestival(int festivalId) async {
+    if (_navigatingFestivalId != null) return;
+    setState(() => _navigatingFestivalId = festivalId);
     try {
       final festival = await _festivalService.fetchById(festivalId);
       if (!mounted) return;
       Navigator.push(context, SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)));
     } catch (e) {
       debugPrint('[OtherUserProfile] festival fetch error: $e');
+    } finally {
+      if (mounted) setState(() => _navigatingFestivalId = null);
     }
   }
 
   Widget _buildCertItem(CertificationModel cert, AbstractThemeColors colors) {
     final isEnglish = context.isEnglish;
     final ringColor = CertStatus.approved.displayColor(colors);
+    final isLoading = _navigatingFestivalId == cert.festivalId;
     return TapScale(
-      onTap: () => _navigateToFestival(cert.festivalId),
+      onTap: isLoading ? null : () => _navigateToFestival(cert.festivalId),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
         child: Column(
@@ -501,7 +509,9 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
                   backgroundImage: cert.posterUrl != null
                       ? CachedNetworkImageProvider(cert.posterUrl!, maxWidth: 132)
                       : null,
-                  child: cert.posterUrl == null
+                  child: isLoading
+                      ? const TapLoadingIndicator()
+                      : cert.posterUrl == null
                       ? Icon(Icons.photo_rounded, size: 26, color: colors.textTitle.withValues(alpha: 0.3))
                       : null,
                 ),

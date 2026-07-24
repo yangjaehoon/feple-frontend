@@ -5,6 +5,7 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
+import 'package:feple/common/widget/w_tap_loading_indicator.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_schedule_model.dart';
 import 'package:feple/screen/main/tab/search/artist_page/event_type_style.dart';
@@ -34,6 +35,8 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
   bool _isLoading = true;
   bool _hasError = false;
   Object? _error;
+  // 카드 탭 → fetchById → 화면 전환까지 아무 피드백 없이 멈춰 보이는 걸 방지
+  int? _navigatingFestivalId;
 
   @override
   void initState() {
@@ -143,6 +146,7 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
     final config = s.eventType.config(colors);
     final dateText = _formatDateRange(s.startDate, s.endDate);
     final isPast = s.isPast;
+    final isLoading = _navigatingFestivalId == s.festivalId;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
@@ -154,7 +158,7 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-        onTap: () => _navigateToFestival(s.festivalId),
+        onTap: isLoading ? null : () => _navigateToFestival(s.festivalId),
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Row(
@@ -167,11 +171,13 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
                   color: config.color.withValues(alpha: isPast ? 0.15 : 0.2),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  config.icon,
-                  size: 18,
-                  color: isPast ? colors.textSecondary : config.color,
-                ),
+                child: isLoading
+                    ? const Center(child: TapLoadingIndicator(size: 18))
+                    : Icon(
+                        config.icon,
+                        size: 18,
+                        color: isPast ? colors.textSecondary : config.color,
+                      ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -281,6 +287,8 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
   }
 
   Future<void> _navigateToFestival(int festivalId) async {
+    if (_navigatingFestivalId != null) return;
+    setState(() => _navigatingFestivalId = festivalId);
     try {
       final festival = await _festivalService.fetchById(festivalId);
       if (!mounted) return;
@@ -297,6 +305,8 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
           networkAwareErrorKey(e, 'err_fetch_data').tr(),
         );
       }
+    } finally {
+      if (mounted) setState(() => _navigatingFestivalId = null);
     }
   }
 

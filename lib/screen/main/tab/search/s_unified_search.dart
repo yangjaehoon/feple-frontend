@@ -6,6 +6,7 @@ import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/common/widget/w_tap_loading_indicator.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_model.dart';
 import 'package:feple/model/festival_preview.dart';
@@ -52,6 +53,8 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
   // 검색바(TextField)는 그대로 두고 본문 영역만 다시 그리기 위함 (build() 참고)
   final _suggestionsNotifier = ValueNotifier<List<SearchSuggestion>>([]);
   List<String> _recentSearches = [];
+  // 제안 탭 → fetchById → 화면 전환까지 아무 피드백 없이 멈춰 보이는 걸 방지
+  int? _navigatingSuggestionId;
 
   @override
   void initState() {
@@ -158,6 +161,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     _debounce?.cancel();
     await guardedNavigate(() async {
       _focusNode.unfocus();
+      setState(() => _navigatingSuggestionId = suggestion.id);
       await _addRecentSearch(suggestion.label.trim());
       try {
         if (suggestion.type == SearchType.artist) {
@@ -182,6 +186,8 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
       } catch (e) {
         debugPrint('[Search] 직접 이동 실패: $e');
         if (mounted) _search(suggestion.label);
+      } finally {
+        if (mounted) setState(() => _navigatingSuggestionId = null);
       }
     });
   }
@@ -426,14 +432,17 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
   List<Widget> _buildSuggestionTiles(List<SearchSuggestion> items, AbstractThemeColors colors) {
     return List.generate(items.length, (i) {
       final suggestion = items[i];
+      final isLoading = suggestion.id != null && _navigatingSuggestionId == suggestion.id;
       return Column(
         children: [
           ListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
             leading: _buildSuggestionLeading(suggestion, colors),
             title: _buildHighlightedSuggestion(suggestion.displayLabel(context.isEnglish), _controller.text.trim(), colors),
-            trailing: Icon(Icons.north_west_rounded, size: 16, color: colors.textSecondary),
-            onTap: () => _selectSuggestion(suggestion),
+            trailing: isLoading
+                ? const TapLoadingIndicator()
+                : Icon(Icons.north_west_rounded, size: 16, color: colors.textSecondary),
+            onTap: isLoading ? null : () => _selectSuggestion(suggestion),
           ),
           if (i < items.length - 1)
             Divider(height: 1, thickness: 1, color: colors.listDivider, indent: 72, endIndent: 16),

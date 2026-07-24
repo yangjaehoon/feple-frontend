@@ -9,6 +9,7 @@ import 'package:feple/common/widget/w_refreshable_center.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_status_filter_chip.dart';
+import 'package:feple/common/widget/w_tap_loading_indicator.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/certification_model.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
@@ -249,6 +250,8 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
   late int? _rating;
   late String? _review;
   bool _isSubmitting = false;
+  // 포스터 탭 → fetchById → 화면 전환까지 아무 피드백 없이 멈춰 보이는 걸 방지
+  bool _isLoadingFestival = false;
 
   @override
   void initState() {
@@ -259,6 +262,7 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
 
   Future<void> _navigateToFestival() async {
     await guardedNavigate(() async {
+      setState(() => _isLoadingFestival = true);
       try {
         final festival = await sl<FestivalService>().fetchById(
           widget.cert.festivalId,
@@ -272,6 +276,8 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
         );
       } catch (e) {
         debugPrint('[CertCard] 페스티벌 이동 실패: $e');
+      } finally {
+        if (mounted) setState(() => _isLoadingFestival = false);
       }
     });
   }
@@ -354,13 +360,15 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
   Widget _buildPosterImage(String? posterUrl, AbstractThemeColors colors) {
     final posterWidth = MediaQuery.sizeOf(context).width * 0.231; // 90/390
     return GestureDetector(
-      onTap: _navigateToFestival,
+      onTap: _isLoadingFestival ? null : _navigateToFestival,
       child: ClipRRect(
         borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
         child: SizedBox(
           width: posterWidth,
           height: posterWidth * 1.5, // 135/90 = 1.5 (2:3 비율)
-          child: posterUrl != null
+          child: _isLoadingFestival
+              ? const Center(child: TapLoadingIndicator())
+              : posterUrl != null
               ? CachedNetworkImage(
                   imageUrl: posterUrl,
                   fit: BoxFit.cover,

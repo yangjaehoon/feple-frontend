@@ -33,6 +33,8 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
   late Future<List<ArtistScheduleModel>> _future;
   final _scheduleService = sl<ArtistScheduleService>();
   final _festivalService = sl<FestivalService>();
+  // 행 탭 → fetchById → 화면 전환까지 아무 피드백 없이 멈춰 보이는 걸 방지
+  int? _navigatingFestivalId;
 
   @override
   void initState() {
@@ -53,6 +55,8 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
   }
 
   Future<void> _navigateToFestival(int festivalId) async {
+    if (_navigatingFestivalId != null) return;
+    setState(() => _navigatingFestivalId = festivalId);
     try {
       final festival = await _festivalService.fetchById(festivalId);
       if (!mounted) return;
@@ -66,6 +70,8 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
       debugPrint('[ScheduleList] 페스티벌 이동 실패: $e');
       if (!mounted) return;
       context.showErrorSnackbar(networkAwareErrorKey(e, 'err_fetch_data').tr());
+    } finally {
+      if (mounted) setState(() => _navigatingFestivalId = null);
     }
   }
 
@@ -191,6 +197,7 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
         ScheduleListTile(
           item: item,
           isPast: isPast,
+          isLoading: _navigatingFestivalId == item.festivalId,
           onTap: () => _navigateToFestival(item.festivalId),
         ),
         if (showDivider)

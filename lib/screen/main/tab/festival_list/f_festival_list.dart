@@ -106,19 +106,24 @@ class _FestivalListFragmentState extends State<FestivalListFragment> {
                 slivers: [
                   SliverPadding(
                     padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
-                    sliver: SliverList(
-                      delegate: SliverChildListDelegate([
-                        _FilterPanel(
-                          expanded: _filterExpanded,
-                          onToggle: () =>
-                              setState(() => _filterExpanded = !_filterExpanded),
-                          selectedGenres: selectedGenres,
-                          selectedRegions: selectedRegions,
-                          selectedAgeRestrictions: selectedAgeRestrictions,
+                    // FestivalListWidget이 SliverList.builder를 반환해 카드가 화면에
+                    // 보일 때만 지연 빌드되도록 함 — SliverMainAxisGroup으로 필터 패널·
+                    // 로드모어 표시기와 하나의 스크롤 흐름으로 묶음
+                    sliver: SliverMainAxisGroup(
+                      slivers: [
+                        SliverToBoxAdapter(
+                          child: _FilterPanel(
+                            expanded: _filterExpanded,
+                            onToggle: () =>
+                                setState(() => _filterExpanded = !_filterExpanded),
+                            selectedGenres: selectedGenres,
+                            selectedRegions: selectedRegions,
+                            selectedAgeRestrictions: selectedAgeRestrictions,
+                          ),
                         ),
                         const FestivalListWidget(),
-                        const _LoadMoreIndicator(),
-                      ]),
+                        const SliverToBoxAdapter(child: _LoadMoreIndicator()),
+                      ],
                     ),
                   ),
                 ],

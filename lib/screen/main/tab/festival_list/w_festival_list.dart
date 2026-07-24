@@ -14,6 +14,11 @@ import 'package:provider/provider.dart';
 
 import '../../../../provider/festival_preview_provider.dart';
 
+// f_festival_list.dart의 CustomScrollView 안에서 SliverMainAxisGroup의 한 항목으로
+// 쓰이는 sliver 위젯 — build()가 항상 sliver(SliverToBoxAdapter/SliverList)를
+// 반환해야 함. 이전엔 Column(children: List.generate(...))으로 카드를 전부 한 번에
+// 빌드해서 화면 밖 카드까지 매번 그렸는데, SliverList.builder로 바꿔 보이는
+// 카드만 지연 빌드하도록 함.
 class FestivalListWidget extends StatelessWidget {
   const FestivalListWidget({super.key});
 
@@ -61,40 +66,45 @@ class FestivalListWidget extends StatelessWidget {
     );
 
     if (isLoading) {
-      return const _FestivalListSkeleton();
+      return const SliverToBoxAdapter(child: _FestivalListSkeleton());
     }
 
     if (error != null) {
-      return ErrorState.network(
-        error,
-        onRetry: context.read<FestivalPreviewProvider>().refresh,
+      return SliverToBoxAdapter(
+        child: ErrorState.network(
+          error,
+          onRetry: context.read<FestivalPreviewProvider>().refresh,
+        ),
       );
     }
 
     if (items.isEmpty) {
       if (hasActiveFilters) {
         final colors = context.appColors;
-        return EmptyState(
-          icon: Icons.filter_list_off_rounded,
-          title: 'no_festival_filter_hint'.tr(),
-          action: FilledButton(
-            onPressed: context.read<FestivalPreviewProvider>().clearFilters,
-            style: FilledButton.styleFrom(backgroundColor: colors.activate),
-            child: Text('filter_reset_action'.tr()),
+        return SliverToBoxAdapter(
+          child: EmptyState(
+            icon: Icons.filter_list_off_rounded,
+            title: 'no_festival_filter_hint'.tr(),
+            action: FilledButton(
+              onPressed: context.read<FestivalPreviewProvider>().clearFilters,
+              style: FilledButton.styleFrom(backgroundColor: colors.activate),
+              child: Text('filter_reset_action'.tr()),
+            ),
           ),
         );
       }
-      return EmptyState(
-        icon: Icons.event_busy_rounded,
-        title: 'no_festival_condition'.tr(),
+      return SliverToBoxAdapter(
+        child: EmptyState(
+          icon: Icons.event_busy_rounded,
+          title: 'no_festival_condition'.tr(),
+        ),
       );
     }
 
-    return Column(
-      children: List.generate(
-        items.length,
-        (index) => _buildFestivalItem(context, items[index], index),
-      ),
+    return SliverList.builder(
+      itemCount: items.length,
+      itemBuilder: (context, index) =>
+          _buildFestivalItem(context, items[index], index),
     );
   }
 }

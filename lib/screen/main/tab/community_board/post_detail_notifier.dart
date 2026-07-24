@@ -18,6 +18,19 @@ class PostDetailNotifier extends SafeChangeNotifier {
   // 댓글 내용이 바뀔 때만 증가 — UI에서 CommentSection만 구독할 수 있도록
   final ValueNotifier<int> commentsVersion = ValueNotifier(0);
 
+  // 댓글 입력창(isSubmitting/commentError)만 구독할 수 있도록 분리 — 좋아요·
+  // 스크랩 토글(전체 notifier로 알림)이 댓글 입력창까지 리빌드시키지 않게 함
+  final ValueNotifier<({bool isSubmitting, String? commentError})>
+  inputBarState = ValueNotifier((isSubmitting: false, commentError: null));
+
+  void _notifyInputBar() {
+    if (isDisposed) return;
+    inputBarState.value = (
+      isSubmitting: isSubmitting,
+      commentError: commentError,
+    );
+  }
+
   List<CommentDetail> comments = [];
   bool liked = false;
   bool scraped = false;
@@ -82,6 +95,7 @@ class PostDetailNotifier extends SafeChangeNotifier {
   @override
   void dispose() {
     commentsVersion.dispose();
+    inputBarState.dispose();
     super.dispose();
   }
 
@@ -130,11 +144,13 @@ class PostDetailNotifier extends SafeChangeNotifier {
     if (content.isEmpty) {
       commentError = 'enter_comment_please';
       safeNotify();
+      _notifyInputBar();
       return;
     }
     commentError = null;
     isSubmitting = true;
     safeNotify();
+    _notifyInputBar();
 
     try {
       await _commentService.submitComment(
@@ -148,12 +164,14 @@ class PostDetailNotifier extends SafeChangeNotifier {
     } on BannedWordException {
       commentError = 'comment_banned_word';
       safeNotify();
+      _notifyInputBar();
     } catch (e) {
       debugPrint('submitComment error: $e');
       onError?.call(networkAwareErrorKey(e, 'comment_failed'));
     } finally {
       isSubmitting = false;
       safeNotify();
+      _notifyInputBar();
     }
   }
 

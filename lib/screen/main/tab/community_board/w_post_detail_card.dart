@@ -473,11 +473,13 @@ class _PostDetailCardState extends State<PostDetailCard> {
   }
 
   Widget _buildBottomBar(int? userId) {
-    return ListenableBuilder(
-      listenable: _notifier,
-      builder: (_, _) => CommentInputBar(
+    // 좋아요/스크랩 토글(전체 notifier)이 아니라 isSubmitting/commentError만
+    // 담긴 inputBarState를 구독 — 포스트 좋아요를 눌러도 입력창은 안 그려짐
+    return ValueListenableBuilder(
+      valueListenable: _notifier.inputBarState,
+      builder: (_, state, _) => CommentInputBar(
         controller: _commentController,
-        isSubmitting: _notifier.isSubmitting,
+        isSubmitting: state.isSubmitting,
         onSubmit: (anonymous) {
           if (userId == null) {
             context.showInfoSnackbar('no_login_info'.tr());
@@ -489,7 +491,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
             anonymous: anonymous,
           );
         },
-        errorText: _notifier.commentError?.tr(),
+        errorText: state.commentError?.tr(),
         replyToNickname: _replyToNickname,
         onCancelReply: _cancelReply,
       ),

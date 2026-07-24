@@ -48,7 +48,9 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
   List<Artist> _artists = [];
   List<FestivalPreview> _festivals = [];
   List<Post> _posts = [];
-  List<SearchSuggestion> _suggestions = [];
+  // 키 입력마다 갱신되므로 setState(전체 화면 리빌드) 대신 별도 Listenable로 분리 —
+  // 검색바(TextField)는 그대로 두고 본문 영역만 다시 그리기 위함 (build() 참고)
+  final _suggestionsNotifier = ValueNotifier<List<SearchSuggestion>>([]);
   List<String> _recentSearches = [];
 
   @override
@@ -82,10 +84,12 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
   // ── search ────────────────────────────────────────────────────────────────
 
   void _onTextChanged() {
-    setState(() => _searched = false);
+    // setState 대신 필드만 갱신 — _controller 자체가 이미 Listenable이라 build()의
+    // AnimatedBuilder가 이 변경을 감지해서 본문만 다시 그림 (검색바는 그대로 유지)
+    _searched = false;
     _debounce?.cancel();
     if (_controller.text.trim().isEmpty) {
-      setState(() => _suggestions = []);
+      _suggestionsNotifier.value = [];
       return;
     }
     _debounce = Timer(
@@ -99,7 +103,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     try {
       final results = await _searchService.suggestions(keyword);
       if (mounted && requestId == _suggestionsRequestId) {
-        setState(() => _suggestions = results);
+        _suggestionsNotifier.value = results;
       }
     } catch (e) {
       debugPrint('[Search] 자동완성 로드 실패: $e');
@@ -111,11 +115,11 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     final requestId = ++_searchRequestId;
     _debounce?.cancel();
     _focusNode.unfocus();
+    _suggestionsNotifier.value = [];
     setState(() {
       _isLoading = true;
       _searched = true;
       _hasError = false;
-      _suggestions = [];
     });
     await _addRecentSearch(keyword.trim());
     try {
@@ -189,6 +193,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     _controller.removeListener(_onTextChanged);
     _controller.dispose();
     _focusNode.dispose();
+    _suggestionsNotifier.dispose();
     super.dispose();
   }
 
@@ -202,7 +207,14 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
       body: Column(
         children: [
           _buildSearchBar(colors),
-          Expanded(child: _buildContent(colors)),
+          Expanded(
+            // 키 입력마다 검색바(TextField)까지 통째로 리빌드되지 않도록, 본문만
+            // _controller/_suggestionsNotifier 변경에 반응해서 다시 그림
+            child: AnimatedBuilder(
+              animation: Listenable.merge([_controller, _suggestionsNotifier]),
+              builder: (context, _) => _buildContent(colors),
+            ),
+          ),
         ],
       ),
     );
@@ -232,7 +244,12 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
                   hintStyle: const TextStyle(color: Colors.white54),
                   border: InputBorder.none,
                   filled: false,
-                  suffixIcon: _buildClearSuffix(),
+                  // build()가 키 입력마다 재실행되지 않으므로, 지우기 버튼 표시 여부는
+                  // _controller를 직접 구독해서 독립적으로 갱신
+                  suffixIcon: AnimatedBuilder(
+                    animation: _controller,
+                    builder: (context, _) => _buildClearSuffix(),
+                  ),
                 ),
                 textInputAction: TextInputAction.search,
                 onSubmitted: _search,
@@ -249,19 +266,19 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     );
   }
 
-  Widget? _buildClearSuffix() {
-    if (_controller.text.isEmpty) return null;
+  Widget _buildClearSuffix() {
+    if (_controller.text.isEmpty) return const SizedBox.shrink();
     return IconButton(
       tooltip: 'clear'.tr(),
       icon: const Icon(Icons.clear, color: Colors.white70),
       onPressed: () {
         _controller.clear();
+        _suggestionsNotifier.value = [];
         setState(() {
           _searched = false;
           _artists = [];
           _festivals = [];
           _posts = [];
-          _suggestions = [];
         });
       },
     );
@@ -372,9 +389,10 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
   }
 
   Widget _buildSuggestions(AbstractThemeColors colors) {
-    if (_suggestions.isEmpty) return const SizedBox.shrink();
-    final artists = _suggestions.where((s) => s.type == SearchType.artist).toList();
-    final festivals = _suggestions.where((s) => s.type == SearchType.festival).toList();
+    final suggestions = _suggestionsNotifier.value;
+    if (suggestions.isEmpty) return const SizedBox.shrink();
+    final artists = suggestions.where((s) => s.type == SearchType.artist).toList();
+    final festivals = suggestions.where((s) => s.type == SearchType.festival).toList();
     return ListView(
       padding: const EdgeInsets.only(bottom: 8),
       children: [

@@ -47,12 +47,13 @@ void main() {
       expect(after.opacity.value, 1.0);
     });
 
-    testWidgets('index가 10 이상이면 stagger 없이 즉시 시작한다', (tester) async {
+    testWidgets('index가 10 이상이면 애니메이션 없이 child를 바로 렌더링한다', (tester) async {
+      // 가상화된 리스트에서 스크롤할 때마다 State가 재생성돼 이 인덱스 이상은
+      // 반복 재생 비용(Opacity/saveLayer)을 피하려 애니메이션 자체를 안 건다
       await _pump(tester, const AnimatedListItem(index: 20, child: Text('아이템')));
 
-      await tester.pump(const Duration(milliseconds: 350));
-      final transition = tester.widget<FadeTransition>(find.byType(FadeTransition));
-      expect(transition.opacity.value, 1.0);
+      expect(find.text('아이템'), findsOneWidget);
+      expect(find.byType(FadeTransition), findsNothing);
     });
   });
 }

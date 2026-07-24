@@ -25,55 +25,64 @@ class AnimatedListItem extends StatefulWidget {
 
 class _AnimatedListItemState extends State<AnimatedListItem>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _opacity;
-  late Animation<Offset> _slide;
+  // 가상화된(lazy) 리스트에서는 스크롤로 항목이 화면에 새로 들어올 때마다
+  // State가 다시 생성돼 이 인덱스 미만에서만 애니메이션이 매번 재생된다.
+  // FadeTransition은 내부적으로 Opacity(saveLayer)라 이 이상 인덱스까지
+  // 매번 재생하면 스크롤 내내 GPU 비용이 반복된다 — 첫 화면 분량만 stagger
+  // 효과를 주고 그 이후는 애니메이션 없이 바로 표시한다.
+  static const int _animateLimit = 10;
+
+  AnimationController? _controller;
+  Animation<double>? _opacity;
+  Animation<Offset>? _slide;
+
+  bool get _shouldAnimate => widget.index < _animateLimit;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+    if (!_shouldAnimate) return;
+
+    final controller = AnimationController(
       vsync: this,
       duration: widget.baseDuration,
     );
+    _controller = controller;
 
     _opacity = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+      CurvedAnimation(parent: controller, curve: Curves.easeOut),
     );
 
     _slide = Tween<Offset>(
       begin: const Offset(0.0, 0.12),
       end: Offset.zero,
     ).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
+      CurvedAnimation(parent: controller, curve: Curves.easeOutCubic),
     );
 
-    // 최대 10개까지만 stagger — 그 이상은 즉시 표시
-    final delay = widget.index < 10
-        ? widget.staggerDelay * widget.index
-        : Duration.zero;
-
+    final delay = widget.staggerDelay * widget.index;
     if (delay == Duration.zero) {
-      _controller.forward();
+      controller.forward();
     } else {
       Future.delayed(delay, () {
-        if (mounted) _controller.forward();
+        if (mounted) controller.forward();
       });
     }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!_shouldAnimate) return widget.child;
     return FadeTransition(
-      opacity: _opacity,
+      opacity: _opacity!,
       child: SlideTransition(
-        position: _slide,
+        position: _slide!,
         child: widget.child,
       ),
     );

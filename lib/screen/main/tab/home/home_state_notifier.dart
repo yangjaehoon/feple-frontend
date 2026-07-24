@@ -15,6 +15,14 @@ class HomeStateNotifier extends SafeChangeNotifier {
   final _cacheService = sl<FestivalCacheService>();
   final _prefetchService = sl<CachePrefetchService>();
 
+  // 아티스트/페스티벌 섹션 각각의 좋아요·팔로우 토글·정렬 변경을 이 두 Listenable로만
+  // 알려서, 홈 화면이 두 섹션을 별도 ListenableBuilder로 감쌀 수 있게 한다 — 하나만
+  // 바뀌어도 전체(this)가 notifyListeners()하면 두 섹션이 다 리빌드되는 문제를 피함.
+  // 전체 로드(init/loadData/retry)는 기존대로 this(top-level)로만 알림 — 화면 전체를
+  // 다시 그려야 하는 시점이라 굳이 나눌 필요 없음.
+  final artistsChanges = ChangeNotifier();
+  final festivalsChanges = ChangeNotifier();
+
   List<FollowedArtist>? artists;
   List<FestivalModel>? festivals;
   List<FavoriteBoard>? boards;
@@ -30,6 +38,13 @@ class HomeStateNotifier extends SafeChangeNotifier {
 
   String get _artistOrderKey => 'artist_order_$userId';
   String get _festivalOrderKey => 'festival_order_$userId';
+
+  @override
+  void dispose() {
+    artistsChanges.dispose();
+    festivalsChanges.dispose();
+    super.dispose();
+  }
 
   Future<void> init(int newUserId) async {
     userId = newUserId;
@@ -119,7 +134,10 @@ class HomeStateNotifier extends SafeChangeNotifier {
     } catch (e) {
       debugPrint('[Home] 페스티벌 갱신 실패: $e');
     }
-    if (userId == id) safeNotify();
+    // isDisposed 체크: 위젯이 이미 dispose된 뒤 이 async 콜백이 늦게 완료되면
+    // festivalsChanges(일반 ChangeNotifier, safeNotify 아님)에 notify가 걸려
+    // "used after being disposed" 예외가 날 수 있음
+    if (userId == id && !isDisposed) festivalsChanges.notifyListeners();
   }
 
   Future<void> refreshArtists() async {
@@ -134,7 +152,7 @@ class HomeStateNotifier extends SafeChangeNotifier {
     } catch (e) {
       debugPrint('[Home] 아티스트 갱신 실패: $e');
     }
-    if (userId == id) safeNotify();
+    if (userId == id && !isDisposed) artistsChanges.notifyListeners();
   }
 
   Future<void> retry() async {
@@ -148,16 +166,16 @@ class HomeStateNotifier extends SafeChangeNotifier {
 
   Future<void> saveArtistOrder(List<int> order) async {
     artistOrder = order;
-    await _persistOrder(_artistOrderKey, order);
+    await _persistOrder(_artistOrderKey, order, artistsChanges.notifyListeners);
   }
 
   Future<void> saveFestivalOrder(List<int> order) async {
     festivalOrder = order;
-    await _persistOrder(_festivalOrderKey, order);
+    await _persistOrder(_festivalOrderKey, order, festivalsChanges.notifyListeners);
   }
 
-  Future<void> _persistOrder(String key, List<int> order) async {
-    safeNotify();
+  Future<void> _persistOrder(String key, List<int> order, VoidCallback notify) async {
+    notify();
     try {
       await PreferenceItem<List<String>>(
         key,
@@ -170,9 +188,9 @@ class HomeStateNotifier extends SafeChangeNotifier {
     }
   }
 
-  // artists/artistOrder(또는 festivals/festivalOrder) 레퍼런스가 바뀔 때만
-  // 재계산 — 홈 화면 전체가 하나의 ListenableBuilder라서 한쪽만 바뀌어도
-  // notifyListeners()가 두 getter를 모두 호출하기 때문에 캐싱이 필요함
+  // artists/artistOrder(또는 festivals/festivalOrder) 레퍼런스가 바뀔 때만 재계산.
+  // boards 섹션이 두 Listenable을 merge해서 구독하므로, 한쪽만 바뀌어도 이 getter가
+  // 둘 다 다시 호출될 수 있어 불필요한 재계산을 막기 위한 캐싱.
   final _artistOrderCache = _OrderCache<FollowedArtist>();
   final _festivalOrderCache = _OrderCache<FestivalModel>();
 

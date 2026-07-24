@@ -140,9 +140,36 @@ class _HomeFragmentState extends State<HomeFragment> {
     );
   }
 
+  // 아티스트/페스티벌 섹션을 각각 별도 ListenableBuilder로 감싸서, 좋아요·팔로우
+  // 토글이나 정렬 변경이 반대쪽 섹션과 이미지 캐러셀까지 리빌드하지 않게 함
+  // (HomeStateNotifier.artistsChanges/festivalsChanges 참고).
   Widget _buildScrollContent(BuildContext context, AbstractThemeColors colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListenableBuilder(
+          listenable: _notifier.artistsChanges,
+          builder: (context, _) => _buildArtistsSection(context),
+        ),
+        const SizedBox(height: 8),
+        ListenableBuilder(
+          listenable: _notifier.festivalsChanges,
+          builder: (context, _) => _buildFestivalsSection(context),
+        ),
+        const SizedBox(height: 8),
+        ListenableBuilder(
+          listenable: Listenable.merge([
+            _notifier.artistsChanges,
+            _notifier.festivalsChanges,
+          ]),
+          builder: (context, _) => _buildBoardsSection(colors),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildArtistsSection(BuildContext context) {
     final orderedArtists = _notifier.orderedArtists;
-    final orderedFestivals = _notifier.orderedFestivals;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -190,7 +217,15 @@ class _HomeFragmentState extends State<HomeFragment> {
             ),
           ),
         ),
-        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  Widget _buildFestivalsSection(BuildContext context) {
+    final orderedFestivals = _notifier.orderedFestivals;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         HomeSectionHeader(
           title: 'liked_festivals'.tr(),
           onExpand: (_notifier.festivals?.isNotEmpty ?? false)
@@ -216,23 +251,26 @@ class _HomeFragmentState extends State<HomeFragment> {
             ),
           ),
         ),
-        const SizedBox(height: 8),
-        if (_notifier.hasError)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: ErrorState.network(
-              _notifier.error!,
-              onRetry: _notifier.retry,
-            ),
-          )
-        else if (_notifier.boards == null)
-          const BoardsSectionSkeleton()
-        else
-          FavoriteBoardsSection(
-            allBoards: _notifier.boards!,
-            userId: _notifier.userId!,
-          ),
       ],
     );
+  }
+
+  Widget _buildBoardsSection(AbstractThemeColors colors) {
+    if (_notifier.hasError) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: ErrorState.network(
+          _notifier.error!,
+          onRetry: _notifier.retry,
+        ),
+      );
+    } else if (_notifier.boards == null) {
+      return const BoardsSectionSkeleton();
+    } else {
+      return FavoriteBoardsSection(
+        allBoards: _notifier.boards!,
+        userId: _notifier.userId!,
+      );
+    }
   }
 }

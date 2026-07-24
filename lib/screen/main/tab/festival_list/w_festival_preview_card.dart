@@ -36,6 +36,7 @@ class FestivalPreviewCard extends StatelessWidget {
 
   Widget _buildPoster(double posterHeight) {
     // aspect ratio 2:3 → 너비는 posterHeight * (2/3)으로 자동 계산됨
+    final posterWidth = posterHeight * 2 / 3;
     final inner = ClipRRect(
       borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
       child: AspectRatio(
@@ -46,6 +47,7 @@ class FestivalPreviewCard extends StatelessWidget {
             AppNetworkImage(
               imageUrl: festival.posterUrl,
               fit: BoxFit.cover,
+              width: posterWidth,
               excludeFromSemantics: true,
             ),
             if (festival.isEnded) ...[

@@ -170,9 +170,15 @@ class _GridBoardTile extends StatelessWidget {
 
   const _GridBoardTile({required this.board, required this.onTap});
 
+  // 2열 그리드, 좌우 padding 16 + 칸 사이 spacing 12 (_buildGrid의 GridView.builder 설정과 일치)
+  static const double _gridHorizontalPadding = 16;
+  static const double _gridCrossAxisSpacing = 12;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final tileWidth = (screenWidth - _gridHorizontalPadding * 2 - _gridCrossAxisSpacing) / 2;
     return TapScale(
       onTap: onTap,
       child: Container(
@@ -194,6 +200,7 @@ class _GridBoardTile extends StatelessWidget {
               AppNetworkImage(
                 imageUrl: board.imageUrl,
                 fit: BoxFit.cover,
+                width: tileWidth,
                 errorIcon: Icons.forum_rounded,
                 errorIconSize: 48,
                 excludeFromSemantics: true,

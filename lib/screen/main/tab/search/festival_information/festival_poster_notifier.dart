@@ -34,6 +34,28 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
 
   final void Function(String key)? onError;
 
+  // 액션 버튼(좋아요·인증)/참석 행이 각자 필요한 변경에만 반응하도록 분리 —
+  // 서로의 토글이나 평점뱃지·설명 섹션 변경에 불필요하게 리빌드되지 않게 함.
+  // hasInitError(초기화 에러 표시)는 여러 로더가 공통으로 건드려서 계속
+  // 전체 notifier(safeNotify)로 알림.
+  final actionButtonsChanges = ChangeNotifier();
+  final attendingChanges = ChangeNotifier();
+
+  void _pingActionButtons() {
+    if (!isDisposed) actionButtonsChanges.notifyListeners();
+  }
+
+  void _pingAttending() {
+    if (!isDisposed) attendingChanges.notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    actionButtonsChanges.dispose();
+    attendingChanges.dispose();
+    super.dispose();
+  }
+
   PosterCertState get certState {
     if (isCertified) return PosterCertState.certified;
     if (isPending) return PosterCertState.pending;
@@ -67,6 +89,7 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
     try {
       liked = await festivalService.isLiked(festivalId);
       safeNotify();
+      _pingActionButtons();
     } catch (e) {
       debugPrint('loadLikeState error: $e');
       hasInitError = true;
@@ -78,6 +101,7 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
     try {
       attending = await festivalService.isAttending(festivalId);
       safeNotify();
+      _pingAttending();
     } catch (e) {
       debugPrint('loadAttendingState error: $e');
       hasInitError = true;
@@ -105,6 +129,7 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
       myRating = detail.myRating;
       myReview = detail.myReview;
       safeNotify();
+      _pingActionButtons();
     } catch (e) {
       debugPrint('[FestivalPoster] 인증 상태 로드 실패: $e');
       hasInitError = true;
@@ -135,7 +160,10 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
     try {
       await optimisticToggle(
         liked,
-        apply: (v) => liked = v,
+        apply: (v) {
+          liked = v;
+          _pingActionButtons();
+        },
         action: () async {
           await festivalService.toggleLike(festivalId);
           AppEvents.festivalLikeChanged.value++;
@@ -159,12 +187,14 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
         ? attendingCount + 1
         : max(0, attendingCount - 1);
     safeNotify();
+    _pingAttending();
     try {
       await festivalService.toggleAttending(festivalId);
     } catch (e) {
       attending = prevAttending;
       attendingCount = prevCount;
       safeNotify();
+      _pingAttending();
       debugPrint('toggleAttending error: $e');
       onError?.call('attend_failed');
     } finally {

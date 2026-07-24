@@ -404,26 +404,38 @@ class FestivalPosterState extends State<FestivalPoster> {
           ),
         ),
         const SizedBox(height: 8),
-        ListenableBuilder(
-          listenable: _notifier,
-          builder: (_, _) => _buildInfoColumnBottom(colors),
-        ),
+        _buildInfoColumnBottom(colors),
       ],
     );
   }
 
+  // attending/action buttons를 각각 attendingChanges/actionButtonsChanges로
+  // 개별 구독 — 참석 토글이 좋아요·인증 버튼까지, 좋아요 토글이 참석 행까지
+  // 리빌드시키지 않게 함. 초기화 에러는 여러 로더가 공통으로 건드리므로 전체
+  // notifier 구독 유지(자주 발생하지 않고 위젯도 가벼움).
   Widget _buildInfoColumnBottom(AbstractThemeColors colors) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        _buildAttendingRow(colors),
-        if (_notifier.hasInitError) ...[
-          const SizedBox(height: 4),
-          _buildInitErrorRow(),
-        ],
+        ListenableBuilder(
+          listenable: _notifier.attendingChanges,
+          builder: (_, _) => _buildAttendingRow(colors),
+        ),
+        ListenableBuilder(
+          listenable: _notifier,
+          builder: (_, _) => _notifier.hasInitError
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: _buildInitErrorRow(),
+                )
+              : const SizedBox.shrink(),
+        ),
         const SizedBox(height: 12),
-        _buildActionButtons(colors),
+        ListenableBuilder(
+          listenable: _notifier.actionButtonsChanges,
+          builder: (_, _) => _buildActionButtons(colors),
+        ),
       ],
     );
   }

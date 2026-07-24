@@ -245,14 +245,23 @@ class _NotificationScreenState extends State<NotificationScreen> {
               child: const Icon(Icons.arrow_upward_rounded, size: 20),
             )
           : null,
-      body: ListenableBuilder(
-        listenable: _notifier,
-        builder: (context, _) => Column(
-          children: [
-            _buildAppBar(colors),
-            _buildFilterChips(colors),
-            Expanded(
-              child: RefreshIndicator(
+      // AppBar/필터 칩은 각각 hasUnread·filter가 실제로 바뀔 때만 리빌드되도록
+      // 별도 ValueNotifier로 구독 — 알림 하나를 읽음 처리할 때마다(다른 안 읽은
+      // 알림이 남아있으면 hasUnread는 그대로) 화면 전체가 다시 그려지는 걸 방지
+      body: Column(
+        children: [
+          ValueListenableBuilder<bool>(
+            valueListenable: _notifier.hasUnreadNotifier,
+            builder: (context, _, _) => _buildAppBar(colors),
+          ),
+          ValueListenableBuilder<NotificationFilter>(
+            valueListenable: _notifier.filterNotifier,
+            builder: (context, _, _) => _buildFilterChips(colors),
+          ),
+          Expanded(
+            child: ListenableBuilder(
+              listenable: _notifier,
+              builder: (context, _) => RefreshIndicator(
                 onRefresh: () async {
                   try {
                     await _notifier.refresh(force: true);
@@ -282,8 +291,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     : _buildNotificationList(colors),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

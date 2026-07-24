@@ -31,6 +31,31 @@ class NotificationNotifier extends SafeChangeNotifier {
   List<NotificationModel> get items => List.unmodifiable(_items);
   bool get hasUnread => _items.any((n) => !n.read);
 
+  // AppBar의 "모두 읽음" 아이콘·필터 칩 선택 상태는 리스트 전체와 무관하게
+  // 독립적으로 구독되도록 ValueNotifier로 분리 — ValueNotifier는 실제 값이
+  // 바뀔 때만 notify하므로, 알림 하나를 읽음 처리해도(다른 안 읽은 알림이
+  // 남아있는 한 hasUnread는 안 바뀜) AppBar·필터 칩까지 매번 리빌드되지 않음.
+  final hasUnreadNotifier = ValueNotifier<bool>(false);
+  final filterNotifier = ValueNotifier<NotificationFilter>(NotificationFilter.all);
+
+  @override
+  void dispose() {
+    hasUnreadNotifier.dispose();
+    filterNotifier.dispose();
+    super.dispose();
+  }
+
+  void _notify() {
+    // isDisposed 체크: 위젯이 이미 dispose된 뒤 markRead 등의 async 콜백이
+    // 늦게 완료되면 hasUnreadNotifier/filterNotifier(일반 ValueNotifier,
+    // safeNotify 아님)에 값을 대입하다 "used after being disposed" 예외가 날 수 있음
+    if (!isDisposed) {
+      hasUnreadNotifier.value = hasUnread;
+      filterNotifier.value = filter;
+    }
+    safeNotify();
+  }
+
   Future<void> load() async {
     isLoading = true;
     hasError = false;
@@ -38,7 +63,7 @@ class NotificationNotifier extends SafeChangeNotifier {
     _hasMore = true;
     _items = [];
     _savedPositions.clear();
-    safeNotify();
+    _notify();
     try {
       final result = await _service.fetchPage(0, filter: filter);
       _items = result.items;
@@ -50,7 +75,7 @@ class NotificationNotifier extends SafeChangeNotifier {
       error = e;
     } finally {
       isLoading = false;
-      safeNotify();
+      _notify();
     }
   }
 
@@ -62,13 +87,13 @@ class NotificationNotifier extends SafeChangeNotifier {
     _page = 1;
     hasError = false;
     _staleness.markLoaded();
-    safeNotify();
+    _notify();
   }
 
   Future<void> loadMore() async {
     if (isLoadingMore || !_hasMore || isLoading) return;
     isLoadingMore = true;
-    safeNotify();
+    _notify();
     try {
       final result = await _service.fetchPage(_page, filter: filter);
       _items = [..._items, ...result.items];
@@ -79,7 +104,7 @@ class NotificationNotifier extends SafeChangeNotifier {
       debugPrint('notification loadMore error: $e');
     } finally {
       isLoadingMore = false;
-      safeNotify();
+      _notify();
     }
   }
 
@@ -93,7 +118,7 @@ class NotificationNotifier extends SafeChangeNotifier {
     final index = _items.indexWhere((n) => n.id == item.id);
     if (index < 0 || item.read) return;
     _items[index] = item.copyWithRead();
-    safeNotify();
+    _notify();
     try {
       await _service.markRead(item.id);
     } catch (e) {
@@ -101,7 +126,7 @@ class NotificationNotifier extends SafeChangeNotifier {
       final rollbackIndex = _items.indexWhere((n) => n.id == item.id);
       if (rollbackIndex >= 0) {
         _items[rollbackIndex] = item;
-        safeNotify();
+        _notify();
       }
     }
   }
@@ -110,13 +135,13 @@ class NotificationNotifier extends SafeChangeNotifier {
     if (_items.every((n) => n.read)) return;
     final original = List<NotificationModel>.from(_items);
     _items = _items.map((n) => n.read ? n : n.copyWithRead()).toList();
-    safeNotify();
+    _notify();
     try {
       await _service.markAllRead();
     } catch (e) {
       debugPrint('[Notification] markAllRead error: $e');
       _items = original;
-      safeNotify();
+      _notify();
     }
   }
 
@@ -126,7 +151,7 @@ class NotificationNotifier extends SafeChangeNotifier {
     if (index < 0) return;
     _savedPositions[item.id] = index;
     _items.removeAt(index);
-    safeNotify();
+    _notify();
   }
 
   void undoDismiss(NotificationModel item) {
@@ -136,7 +161,7 @@ class NotificationNotifier extends SafeChangeNotifier {
         ? savedIndex
         : 0;
     _items.insert(insertAt, item);
-    safeNotify();
+    _notify();
   }
 
   Future<void> confirmDismiss(NotificationModel item) async {
@@ -156,7 +181,7 @@ class NotificationNotifier extends SafeChangeNotifier {
     _savedAllItems = List<NotificationModel>.from(_items);
     _items = [];
     _savedPositions.clear();
-    safeNotify();
+    _notify();
   }
 
   void undoDeleteAll() {
@@ -164,7 +189,7 @@ class NotificationNotifier extends SafeChangeNotifier {
     if (saved == null) return;
     _items = saved;
     _savedAllItems = null;
-    safeNotify();
+    _notify();
   }
 
   Future<void> confirmDeleteAll() async {

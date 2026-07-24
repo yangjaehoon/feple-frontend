@@ -135,18 +135,10 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets/image/air_condition_icon/
     - assets/json/
     - assets/image/
-    - assets/image/icon/
     - assets/image/flag/
-    - assets/image/darkmode/
     - assets/image/splash/
-    - assets/image/artist/
-    - assets/image/artist_ftv/
-    - assets/image/poster/
-    - assets/image/chat_room/
-    - assets/image/ftv_certification/
     - assets/image/login/
     - assets/translations/
 

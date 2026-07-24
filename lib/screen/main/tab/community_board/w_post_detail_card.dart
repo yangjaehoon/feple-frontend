@@ -7,9 +7,6 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/block_action_helper.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/popup_menu_item_builder.dart';
-import 'package:feple/common/widget/w_inline_badge.dart';
-import 'package:feple/common/widget/w_level_badge.dart';
-import 'package:feple/common/widget/w_profile_avatar.dart';
 import 'package:feple/common/widget/w_write_post.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/common/widget/w_report_sheet.dart';
@@ -29,6 +26,8 @@ import 'w_comment_input_bar.dart';
 import 'w_comment_section.dart';
 import 'w_edit_comment_dialog.dart';
 import 'w_like_comment_row.dart';
+import 'w_post_content_section.dart';
+import 'w_post_header_section.dart';
 
 class PostDetailCard extends StatefulWidget {
   final String boardName;
@@ -352,7 +351,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _PostHeaderSection(
+          PostHeaderSection(
             title: _title,
             nickname: widget.nickname,
             profileImageUrl: widget.profileImageUrl,
@@ -370,7 +369,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
             ),
           ),
           Divider(thickness: 1, height: 24, color: colors.listDivider),
-          _PostContentSection(
+          PostContentSection(
             content: _content,
             imageUrl: _imageUrl,
             onImageTap: _imageUrl != null
@@ -534,197 +533,6 @@ class _PostDetailCardState extends State<PostDetailCard> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _PostHeaderSection extends StatelessWidget {
-  final String title;
-  final String nickname;
-  final String? profileImageUrl;
-  final bool certified;
-  final String? userRole;
-  final bool anonymous;
-  final String? authorLevel;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
-  final VoidCallback? onAuthorTap;
-
-  const _PostHeaderSection({
-    required this.title,
-    required this.nickname,
-    this.profileImageUrl,
-    required this.certified,
-    this.userRole,
-    required this.anonymous,
-    this.authorLevel,
-    this.createdAt,
-    this.updatedAt,
-    this.onAuthorTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeTitle,
-            fontWeight: FontWeight.w700,
-            color: colors.textTitle,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Semantics(
-              button: !anonymous && onAuthorTap != null,
-              label: anonymous
-                  ? null
-                  : 'view_author_profile'.tr(args: [nickname]),
-              child: GestureDetector(
-                onTap: (!anonymous && onAuthorTap != null) ? onAuthorTap : null,
-                child: Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: ProfileAvatar(
-                    imageUrl: profileImageUrl,
-                    nickname: nickname,
-                    certified: certified,
-                    userRole: userRole,
-                    radius: 16,
-                    anonymous: anonymous,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          nickname,
-                          style: TextStyle(
-                            fontSize: AppDimens.fontSizeSm,
-                            color: colors.textSecondary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      InlineBadge(
-                        userRole: userRole,
-                        certified: certified,
-                        size: 14,
-                      ),
-                      if (!anonymous) ...[
-                        const SizedBox(width: 5),
-                        LevelBadge(authorLevel: authorLevel, fontSize: 10),
-                      ],
-                    ],
-                  ),
-                  if (createdAt != null)
-                    Row(
-                      children: [
-                        Text(
-                          createdAt!.relativeTime,
-                          style: TextStyle(
-                            fontSize: AppDimens.fontSizeXxs,
-                            color: colors.textSecondary.withValues(alpha: 0.65),
-                          ),
-                        ),
-                        if (updatedAt != null &&
-                            updatedAt!.difference(createdAt!).inSeconds >
-                                10) ...[
-                          const SizedBox(width: 4),
-                          Text(
-                            'edited'.tr(),
-                            style: TextStyle(
-                              fontSize: AppDimens.fontSizeTiny,
-                              color: colors.textSecondary.withValues(
-                                alpha: 0.45,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _PostContentSection extends StatelessWidget {
-  final String content;
-  final String? imageUrl;
-  final VoidCallback? onImageTap;
-
-  const _PostContentSection({
-    required this.content,
-    this.imageUrl,
-    this.onImageTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          content,
-          style: TextStyle(
-            color: colors.textTitle,
-            fontSize: AppDimens.fontSizeLg,
-          ),
-        ),
-        if (imageUrl != null) ...[
-          const SizedBox(height: 12),
-          GestureDetector(
-            onTap: onImageTap,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-              child: CachedNetworkImage(
-                imageUrl: imageUrl!,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                memCacheWidth: 800, // 최대 스크린 너비 기준
-                fadeInDuration: AppDimens.animXFast,
-                fadeOutDuration: AppDimens.animTapFeedback,
-                // 기준 390px: 로딩 0.513(200px), 에러 0.308(120px)
-                placeholder: (_, _) => Container(
-                  height: screenWidth * 0.513,
-                  color: colors.listDivider,
-                ),
-                errorWidget: (_, _, _) => Container(
-                  height: screenWidth * 0.308,
-                  color: colors.listDivider,
-                  child: Center(
-                    child: Icon(
-                      Icons.broken_image_rounded,
-                      color: colors.textSecondary,
-                      size: 36,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ],
     );
   }
 }

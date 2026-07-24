@@ -80,15 +80,17 @@ void main() {
       expect(notifier.error, isNull);
     });
 
-    test('전체 페이지(20개) 수신 시 hasMore=true', () async {
+    // 백엔드(/festivals)는 페이지네이션 없이 필터에 맞는 전체 목록을 매번
+    // 한 번에 반환하므로, 몇 개를 받든 "다음 페이지"는 존재하지 않는다.
+    test('20개 이상 수신해도 hasMore=false', () async {
       stubFetch(_pages(20));
 
       final notifier = await make();
 
-      expect(notifier.hasMore, true);
+      expect(notifier.hasMore, false);
     });
 
-    test('부분 페이지(20개 미만) 수신 시 hasMore=false', () async {
+    test('20개 미만 수신 시에도 hasMore=false', () async {
       stubFetch(_pages(7));
 
       final notifier = await make();
@@ -108,19 +110,29 @@ void main() {
   });
 
   // ───────────────────────────────────────────────────
-  // B. 페이지네이션
+  // B. 페이지네이션 (백엔드가 미지원 — 중복 방지 확인)
   // ───────────────────────────────────────────────────
   group('B. 페이지네이션', () {
-    test('fetchNext 호출 시 다음 페이지 아이템 추가', () async {
-      stubFetchCallback((page) => page == 0 ? _pages(20) : _pages(5));
+    // 회귀 방지: 예전엔 hasMore가 응답 개수(20개 이상이면 true)로 결정돼서,
+    // 스크롤로 fetchNext가 다시 호출되면 백엔드가 항상 돌려주는 같은 전체
+    // 목록을 또 append해 페스티벌이 중복으로 보이는 버그가 있었다.
+    test('초기 로드 이후 fetchNext를 다시 호출해도 중복 추가 안 됨', () async {
+      stubFetchCallback((page) => _pages(20));
 
       final notifier = await make();
       expect(notifier.items.length, 20);
 
       await notifier.fetchNext();
 
-      expect(notifier.items.length, 25);
-      expect(notifier.hasMore, false);
+      expect(notifier.items.length, 20);
+      verify(() => mockService.fetchPreviews(
+            page: any(named: 'page'),
+            size: any(named: 'size'),
+            includeEnded: any(named: 'includeEnded'),
+            genres: any(named: 'genres'),
+            regions: any(named: 'regions'),
+            ageRestrictions: any(named: 'ageRestrictions'),
+          )).called(1); // 생성자의 1회만 — fetchNext는 hasMore=false라 무시됨
     });
 
     test('hasMore=false이면 fetchNext 무시', () async {
@@ -181,7 +193,10 @@ void main() {
       expect(notifier.isLoading, false);
     });
 
-    test('더 불러오기(page>0) 실패 → error=null, refreshError 설정', () async {
+    // 초기 로드 실패 시 hasMore가 기본값(true)으로 유지되므로, fetchNext를
+    // 다시 호출하면 재시도가 된다 — "더 불러오기"가 아니라 실패한 최초 로드의
+    // 재시도라는 점만 다를 뿐 동작은 동일한 코드 경로를 탄다.
+    test('초기 로드 실패 후 fetchNext 재호출 시 재시도됨', () async {
       var callCount = 0;
       when(() => mockService.fetchPreviews(
             page: any(named: 'page'),
@@ -191,19 +206,18 @@ void main() {
             regions: any(named: 'regions'),
             ageRestrictions: any(named: 'ageRestrictions'),
           )).thenAnswer((_) async {
-        if (callCount++ == 0) return _pages(20);
-        throw Exception('network error');
+        if (callCount++ == 0) throw Exception('network error');
+        return _pages(5);
       });
 
       final notifier = await make();
-      expect(notifier.items.length, 20);
+      expect(notifier.items, isEmpty);
+      expect(notifier.error, isNotNull);
 
       await notifier.fetchNext();
 
-      expect(notifier.items.length, 20); // 기존 아이템 유지
-      expect(notifier.error, isNull); // 전체 화면 에러 없음
-      expect(notifier.refreshError, isNotNull); // snackbar용 에러 설정
-      expect(notifier.isLoadingMore, false);
+      expect(notifier.items.length, 5);
+      expect(notifier.hasMore, false);
     });
 
     test('clearRefreshError 후 refreshError=null', () async {

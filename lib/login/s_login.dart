@@ -53,44 +53,51 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
       backgroundColor: themeColors.backgroundMain,
       body: KeyboardDismiss(
         child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
-              child: AutofillGroup(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildHeader(themeColors),
-                    _buildForm(themeColors),
-                    const SizedBox(height: 12),
-                    _buildForgotPassword(themeColors),
-                    const SizedBox(height: 20),
-                    IgnorePointer(
-                      ignoring: _isAnyLoading,
-                      child: Opacity(
-                        opacity: (_isKakaoLoading || _isAppleLoading) ? 0.5 : 1.0,
-                        child: LoadingButton(
-                          label: 'login'.tr(),
-                          onPressed: _loginWithEmail,
-                          isLoading: _isEmailLoading,
-                          backgroundColor: themeColors.activate,
-                        ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(28, 24, 28, 24),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: AutofillGroup(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildHeader(themeColors),
+                          _buildForm(themeColors),
+                          const SizedBox(height: 12),
+                          _buildForgotPassword(themeColors),
+                          const SizedBox(height: 20),
+                          IgnorePointer(
+                            ignoring: _isAnyLoading,
+                            child: Opacity(
+                              opacity: (_isKakaoLoading || _isAppleLoading) ? 0.5 : 1.0,
+                              child: LoadingButton(
+                                label: 'login'.tr(),
+                                onPressed: _loginWithEmail,
+                                isLoading: _isEmailLoading,
+                                backgroundColor: themeColors.activate,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          _buildOrDivider(themeColors),
+                          const SizedBox(height: 20),
+                          _buildKakaoLoginButton(),
+                          const SizedBox(height: 12),
+                          _buildAppleLoginButton(),
+                          const SizedBox(height: 28),
+                          _buildSignupRow(context, themeColors),
+                          const SizedBox(height: 32),
+                          const SupportLinkRow(),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    _buildOrDivider(themeColors),
-                    const SizedBox(height: 20),
-                    _buildKakaoLoginButton(),
-                    const SizedBox(height: 12),
-                    _buildAppleLoginButton(),
-                    const SizedBox(height: 28),
-                    _buildSignupRow(context, themeColors),
-                    const SizedBox(height: 32),
-                    const SupportLinkRow(),
-                  ],
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         ),
       ),

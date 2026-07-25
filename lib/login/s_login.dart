@@ -16,11 +16,22 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/model/user_model.dart';
 import '../provider/user_provider.dart';
+
+// 구글 공식 브랜드 가이드의 다색 "G" 로고 (developers.google.com/identity/branding-guidelines)
+const _googleLogoSvg = '''
+<svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+<path fill="#4285F4" d="M17.64 9.2045c0-.6381-.0573-1.2518-.1636-1.8409H9v3.4814h4.8436c-.2086 1.125-.8427 2.0782-1.7959 2.7164v2.2581h2.9087c1.7018-1.5668 2.6836-3.8741 2.6836-6.615z"/>
+<path fill="#34A853" d="M9 18c2.43 0 4.4673-.806 5.9564-2.1805l-2.9087-2.2581c-.8059.54-1.8368.8591-3.0477.8591-2.344 0-4.3282-1.5831-5.036-3.7104H.9573v2.3318C2.4382 15.9832 5.4818 18 9 18z"/>
+<path fill="#FBBC05" d="M3.964 10.71c-.18-.54-.2822-1.1168-.2822-1.71s.1023-1.17.2822-1.71V4.9582H.9573C.3477 6.1732 0 7.5477 0 9s.3477 2.8268.9573 4.0418L3.964 10.71z"/>
+<path fill="#EA4335" d="M9 3.5795c1.3214 0 2.5077.4541 3.4405 1.346l2.5813-2.5814C13.4632.8918 11.426 0 9 0 5.4818 0 2.4382 2.0168.9573 4.9582L3.964 7.29c.7077-2.1273 2.692-3.7105 5.036-3.7105z"/>
+</svg>
+''';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -35,6 +46,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
   bool _isEmailLoading = false;
   bool _isKakaoLoading = false;
   bool _isAppleLoading = false;
+  bool _isGoogleLoading = false;
   String? _emailError;
   String? _passwordError;   // 빈 필드 → 빨간 테두리
   String? _authError;       // 인증 실패 → 텍스트만, 테두리 없음
@@ -236,7 +248,8 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     );
   }
 
-  bool get _isAnyLoading => _isEmailLoading || _isKakaoLoading || _isAppleLoading;
+  bool get _isAnyLoading =>
+      _isEmailLoading || _isKakaoLoading || _isAppleLoading || _isGoogleLoading;
 
   Widget _buildSocialLoginRow() {
     return Row(
@@ -245,6 +258,8 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
         _buildKakaoIconButton(),
         const SizedBox(width: 20),
         _buildAppleIconButton(),
+        const SizedBox(width: 20),
+        _buildGoogleIconButton(),
       ],
     );
   }
@@ -253,7 +268,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     return _SocialIconButton(
       label: 'kakao_login_btn'.tr(),
       isLoading: _isKakaoLoading,
-      dimmed: _isEmailLoading || _isAppleLoading,
+      dimmed: _isEmailLoading || _isAppleLoading || _isGoogleLoading,
       disabled: _isAnyLoading,
       backgroundColor: AppColors.kakaoYellow,
       indicatorColor: const Color(0xFF3C1E1E),
@@ -274,12 +289,28 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     return _SocialIconButton(
       label: 'apple_login_btn'.tr(),
       isLoading: _isAppleLoading,
-      dimmed: _isEmailLoading || _isKakaoLoading,
+      dimmed: _isEmailLoading || _isKakaoLoading || _isGoogleLoading,
       disabled: _isAnyLoading,
       backgroundColor: isDark ? Colors.white : Colors.black,
       indicatorColor: fg,
       onPressed: signInWithApple,
       child: Icon(Icons.apple, color: fg, size: 26),
+    );
+  }
+
+  Widget _buildGoogleIconButton() {
+    final themeColors = context.appColors;
+    return _SocialIconButton(
+      label: 'google_login_btn'.tr(),
+      isLoading: _isGoogleLoading,
+      dimmed: _isEmailLoading || _isKakaoLoading || _isAppleLoading,
+      disabled: _isAnyLoading,
+      backgroundColor: Colors.white,
+      borderColor: themeColors.divider,
+      indicatorColor: Colors.black54,
+      onPressed: signInWithGoogle,
+      // 구글 공식 브랜드 가이드의 다색 "G" 로고 (developers.google.com/identity 배포본)
+      child: SvgPicture.string(_googleLogoSvg, width: 22, height: 22),
     );
   }
 
@@ -395,6 +426,27 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     }
   }
 
+  Future<void> signInWithGoogle() async {
+    if (_isAnyLoading) return;
+    // async gap 전에 캡처 — 구글 로그인 시트 표시 중 mounted가 false일 수 있음
+    final userProvider = context.read<UserProvider>();
+    setState(() { _isGoogleLoading = true; _clearErrors(); });
+    try {
+      final user = await AuthService.instance.loginWithGoogle();
+      await _completeLogin(userProvider, user);
+    } on GoogleSignInException catch (e) {
+      debugPrint('[Auth] Google GoogleSignInException: $e');
+      if (e.code != GoogleSignInExceptionCode.canceled && mounted) {
+        setState(() => _authError = 'login_failed'.tr());
+      }
+    } catch (e) {
+      debugPrint('[Auth] Google 로그인 실패: $e');
+      if (mounted) setState(() => _authError = 'login_failed'.tr());
+    } finally {
+      if (mounted) setState(() => _isGoogleLoading = false);
+    }
+  }
+
   Future<void> signInWithKakao() async {
     if (_isAnyLoading) return;
     // async gap 전에 캡처 — 카카오 OAuth 브라우저/앱 복귀 시 mounted가 false일 수 있음
@@ -429,6 +481,7 @@ class _SocialIconButton extends StatelessWidget {
     required this.indicatorColor,
     required this.onPressed,
     required this.child,
+    this.borderColor,
   });
 
   final String label;
@@ -436,6 +489,7 @@ class _SocialIconButton extends StatelessWidget {
   final bool dimmed;
   final bool disabled;
   final Color backgroundColor;
+  final Color? borderColor;
   final Color indicatorColor;
   final VoidCallback onPressed;
   final Widget child;
@@ -453,7 +507,9 @@ class _SocialIconButton extends StatelessWidget {
           opacity: dimmed ? 0.5 : 1.0,
           child: Material(
             color: backgroundColor,
-            shape: const CircleBorder(),
+            shape: CircleBorder(
+              side: borderColor != null ? BorderSide(color: borderColor!) : BorderSide.none,
+            ),
             child: InkWell(
               customBorder: const CircleBorder(),
               onTap: () {

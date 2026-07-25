@@ -95,6 +95,7 @@ dependencies:
   firebase_performance: ^0.11.4+3
   in_app_review: ^2.0.9
   sign_in_with_apple: ^8.1.0
+  google_sign_in: ^7.2.0
 
 dependency_overrides:
   geolocator_android: ^5.0.2

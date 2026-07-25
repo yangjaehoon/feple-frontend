@@ -84,9 +84,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
                           const SizedBox(height: 20),
                           _buildOrDivider(themeColors),
                           const SizedBox(height: 20),
-                          _buildKakaoLoginButton(),
-                          const SizedBox(height: 12),
-                          _buildAppleLoginButton(),
+                          _buildSocialLoginRow(),
                           const SizedBox(height: 28),
                           _buildSignupRow(context, themeColors),
                           const SizedBox(height: 32),
@@ -240,39 +238,48 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
 
   bool get _isAnyLoading => _isEmailLoading || _isKakaoLoading || _isAppleLoading;
 
-  Widget _buildKakaoLoginButton() {
-    return IgnorePointer(
-      ignoring: _isAnyLoading,
-      child: Opacity(
-        opacity: (_isEmailLoading || _isAppleLoading) ? 0.5 : 1.0,
-        child: LoadingButton(
-          isLoading: _isKakaoLoading,
-          backgroundColor: AppColors.kakaoYellow,
-          foregroundColor: const Color(0xFF3C1E1E),
-          onPressed: signInWithKakao,
-          label: 'kakao_login_btn'.tr(),
-        ),
+  Widget _buildSocialLoginRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _buildKakaoIconButton(),
+        const SizedBox(width: 20),
+        _buildAppleIconButton(),
+      ],
+    );
+  }
+
+  Widget _buildKakaoIconButton() {
+    return _SocialIconButton(
+      label: 'kakao_login_btn'.tr(),
+      isLoading: _isKakaoLoading,
+      dimmed: _isEmailLoading || _isAppleLoading,
+      disabled: _isAnyLoading,
+      backgroundColor: AppColors.kakaoYellow,
+      indicatorColor: const Color(0xFF3C1E1E),
+      onPressed: signInWithKakao,
+      // 카카오 공식 아이콘 로그인 버튼 에셋(19x20 talk 심볼) — kakao_flutter_sdk_user 패키지 번들
+      child: SvgPicture.asset(
+        'assets/images/icon_talk_login.svg',
+        package: 'kakao_flutter_sdk_user',
+        width: 22,
+        height: 22,
       ),
     );
   }
 
-  // 카카오 버튼과 동일한 LoadingButton으로 통일 — 패키지 제공 SignInWithAppleButton은
-  // 자체 폰트/크기를 써서 카카오 버튼과 나란히 두면 글씨체가 부자연스럽게 달라 보임
-  Widget _buildAppleLoginButton() {
+  Widget _buildAppleIconButton() {
     final isDark = context.themeType == CustomTheme.dark;
-    return IgnorePointer(
-      ignoring: _isAnyLoading,
-      child: Opacity(
-        opacity: (_isEmailLoading || _isKakaoLoading) ? 0.5 : 1.0,
-        child: LoadingButton(
-          icon: Icons.apple,
-          isLoading: _isAppleLoading,
-          backgroundColor: isDark ? Colors.white : Colors.black,
-          foregroundColor: isDark ? Colors.black : Colors.white,
-          onPressed: signInWithApple,
-          label: 'apple_login_btn'.tr(),
-        ),
-      ),
+    final fg = isDark ? Colors.black : Colors.white;
+    return _SocialIconButton(
+      label: 'apple_login_btn'.tr(),
+      isLoading: _isAppleLoading,
+      dimmed: _isEmailLoading || _isKakaoLoading,
+      disabled: _isAnyLoading,
+      backgroundColor: isDark ? Colors.white : Colors.black,
+      indicatorColor: fg,
+      onPressed: signInWithApple,
+      child: Icon(Icons.apple, color: fg, size: 26),
     );
   }
 
@@ -407,5 +414,72 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     } finally {
       if (mounted) setState(() => _isKakaoLoading = false);
     }
+  }
+}
+
+/// 소셜 로그인 원형 아이콘 버튼. [dimmed]는 다른 소셜 버튼이 로딩 중일 때
+/// 이 버튼을 흐리게 표시, [disabled]는 어떤 로그인이든 진행 중이면 탭을 막는다.
+class _SocialIconButton extends StatelessWidget {
+  const _SocialIconButton({
+    required this.label,
+    required this.isLoading,
+    required this.dimmed,
+    required this.disabled,
+    required this.backgroundColor,
+    required this.indicatorColor,
+    required this.onPressed,
+    required this.child,
+  });
+
+  final String label;
+  final bool isLoading;
+  final bool dimmed;
+  final bool disabled;
+  final Color backgroundColor;
+  final Color indicatorColor;
+  final VoidCallback onPressed;
+  final Widget child;
+
+  static const _size = 56.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: label,
+      button: true,
+      child: IgnorePointer(
+        ignoring: disabled,
+        child: Opacity(
+          opacity: dimmed ? 0.5 : 1.0,
+          child: Material(
+            color: backgroundColor,
+            shape: const CircleBorder(),
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: () {
+                HapticFeedback.lightImpact();
+                onPressed();
+              },
+              child: SizedBox(
+                width: _size,
+                height: _size,
+                child: Center(
+                  child: isLoading
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: indicatorColor,
+                          ),
+                        )
+                      : child,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

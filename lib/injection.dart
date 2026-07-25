@@ -19,6 +19,7 @@ import 'service/festival_cache_service.dart';
 import 'service/festival_detail_service.dart';
 import 'service/festival_interaction_service.dart';
 import 'service/festival_service.dart';
+import 'service/festival_suggestion_service.dart';
 import 'screen/notification/notification_count_notifier.dart';
 import 'service/notification_countable.dart';
 import 'service/notification_feedable.dart';
@@ -45,6 +46,7 @@ void setupDependencies() {
 
   sl.registerLazySingleton<ArtistFollowService>(() => ArtistFollowService(userService: sl<UserService>()));
   sl.registerLazySingleton<ArtistSuggestionService>(() => ArtistSuggestionService());
+  sl.registerLazySingleton<FestivalSuggestionService>(() => FestivalSuggestionService());
   sl.registerLazySingleton<ArtistPhotoService>(() => ArtistPhotoService());
   sl.registerLazySingleton<ArtistPhotoReadable>(() => sl<ArtistPhotoService>());
   sl.registerLazySingleton<ArtistPhotoUploadable>(() => sl<ArtistPhotoService>());

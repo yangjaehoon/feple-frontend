@@ -20,8 +20,8 @@ void main() {
 
       expect(find.byType(AppTextField), findsNWidgets(2));
       expect(find.text('login'.tr()), findsOneWidget);
-      expect(find.text('kakao_login_btn'.tr()), findsOneWidget);
-      expect(find.text('apple_login_btn'.tr()), findsOneWidget);
+      expect(find.bySemanticsLabel('kakao_login_btn'.tr()), findsOneWidget);
+      expect(find.bySemanticsLabel('apple_login_btn'.tr()), findsOneWidget);
       expect(find.text('signup'.tr()), findsOneWidget);
       expect(find.text('forgot_password'.tr()), findsOneWidget);
     });

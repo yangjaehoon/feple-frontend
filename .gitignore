@@ -101,6 +101,8 @@ macos/**/xcuserdata/
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
 ios/firebase_app_id_file.json
+macos/Runner/GoogleService-Info.plist
+macos/firebase_app_id_file.json
 lib/firebase_options.dart
 lib/auth/keys.dart
 lib/auth/get_api_key.dart
@@ -110,6 +112,8 @@ lib/config/app_config.dart
 
 # Local tooling / platform binaries
 isar.dll
+libisar.dylib
+libisar.so
 .claude/
 
 assets/secrets.json

@@ -10,7 +10,18 @@
 					<string>kakao02840275230ad6eef624936d5d618fad</string>
 				</array>
 			</dict>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<!-- GoogleService-Info.plist REVERSED_CLIENT_ID -->
+					<string>com.googleusercontent.apps.680735056504-j01e6ljl3e7mpsbgoubeb2pfbvv5n3r6</string>
+				</array>
+			</dict>
 		</array>
+		<key>GIDClientID</key>
+		<string>680735056504-j01e6ljl3e7mpsbgoubeb2pfbvv5n3r6.apps.googleusercontent.com</string>
 		<key>LSApplicationQueriesSchemes</key>
 		<array>
 			<string>kakaokompassauth</string>

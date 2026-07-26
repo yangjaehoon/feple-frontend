@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:feple/common/app_events.dart';
@@ -156,7 +157,7 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
   Future<void> toggleLike() async {
     if (isTogglingLike) return;
     isTogglingLike = true;
-    HapticFeedback.lightImpact();
+    unawaited(HapticFeedback.lightImpact());
     try {
       await optimisticToggle(
         liked,
@@ -179,7 +180,7 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
   Future<void> toggleAttending() async {
     if (isTogglingAttend) return;
     isTogglingAttend = true;
-    HapticFeedback.lightImpact();
+    unawaited(HapticFeedback.lightImpact());
     final prevAttending = attending;
     final prevCount = attendingCount;
     attending = !attending;

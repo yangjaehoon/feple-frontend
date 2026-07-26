@@ -92,7 +92,7 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
         _myReview = result.review;
         _isSubmittingRating = false;
       });
-      _load(0);
+      unawaited(_load(0));
     } catch (e) {
       debugPrint('[ReviewsSheet] rating submit error: $e');
       if (!mounted) return;

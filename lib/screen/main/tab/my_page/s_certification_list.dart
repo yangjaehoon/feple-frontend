@@ -149,7 +149,7 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
       context,
       builder: (_) => SubmitCertificationSheet(certService: _certService),
     );
-    if (result == true) _load();
+    if (result == true) unawaited(_load());
   }
 
   Widget _buildFilterChips() {

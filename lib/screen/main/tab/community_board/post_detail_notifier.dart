@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:feple/common/exception/banned_word_exception.dart';
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
@@ -286,7 +288,7 @@ class PostDetailNotifier extends SafeChangeNotifier {
   Future<void> toggleLike(int? userId) async {
     if (isToggling || userId == null) return;
     isToggling = true;
-    HapticFeedback.lightImpact();
+    unawaited(HapticFeedback.lightImpact());
     try {
       await optimisticToggle(
         liked,
@@ -303,7 +305,7 @@ class PostDetailNotifier extends SafeChangeNotifier {
   Future<void> toggleScrap(int? userId) async {
     if (isScrapping || userId == null) return;
     isScrapping = true;
-    HapticFeedback.lightImpact();
+    unawaited(HapticFeedback.lightImpact());
     try {
       await optimisticToggle(
         scraped,

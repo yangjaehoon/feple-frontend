@@ -67,7 +67,7 @@ class _ImageCollectionScreenState extends State<ImageCollectionScreen> {
           ),
         );
         if (result == true) {
-          _imgCollectionKey.currentState?.refresh();
+          unawaited(_imgCollectionKey.currentState?.refresh() ?? Future.value());
         }
       },
       child: Icon(

@@ -60,12 +60,12 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
     try {
       final festival = await _festivalService.fetchById(festivalId);
       if (!mounted) return;
-      Navigator.push(
+      unawaited(Navigator.push(
         context,
         SlideRoute(
           builder: (_) => FestivalInformationFragment(poster: festival),
         ),
-      );
+      ));
     } catch (e) {
       debugPrint('[ScheduleList] 페스티벌 이동 실패: $e');
       if (!mounted) return;

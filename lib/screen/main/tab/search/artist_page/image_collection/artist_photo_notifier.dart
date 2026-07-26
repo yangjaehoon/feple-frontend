@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/injection.dart';
@@ -46,7 +48,7 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
     try {
       final index = _photos.indexWhere((p) => p.photoId == photoId);
       if (index == -1) return;
-      HapticFeedback.lightImpact();
+      unawaited(HapticFeedback.lightImpact());
       final original = _photos[index];
       _photos[index] = original.copyWith(
         likeCount: original.isLiked

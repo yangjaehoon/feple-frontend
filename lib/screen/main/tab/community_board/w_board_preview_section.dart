@@ -66,7 +66,7 @@ class BoardPreviewSectionState extends State<BoardPreviewSection> {
             builder: (_) => PostDetailCard.fromPost(boardName: boardName, post: post),
           ),
         );
-        if (mounted) refresh();
+        if (mounted) unawaited(refresh());
       },
       onRetry: refresh,
       onWriteTap: widget.onWriteTap,

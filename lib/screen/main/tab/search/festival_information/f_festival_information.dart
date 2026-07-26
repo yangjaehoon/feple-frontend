@@ -35,7 +35,7 @@ class _FestivalInformationFragmentState
   Future<void> _onRefresh() async {
     _posterKey.currentState?.refresh();
     _artistsKey.currentState?.refresh();
-    _boardKey.currentState?.refresh();
+    unawaited(_boardKey.currentState?.refresh());
     _timetableKey.currentState?.refresh();
     _setlistKey.currentState?.refresh();
     _mapKey.currentState?.refresh();

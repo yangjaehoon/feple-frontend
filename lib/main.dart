@@ -45,12 +45,11 @@ void main() async {
     EasyLocalization.ensureInitialized(),
     AppPreferences.init(),
     ApiCacheStore.init(),
+    KakaoSdk.init(
+      nativeAppKey: kakaoNativeAppKey,
+      javaScriptAppKey: kakaoJsAppKey,
+    ),
   ]);
-
-  KakaoSdk.init(
-    nativeAppKey: kakaoNativeAppKey,
-    javaScriptAppKey: kakaoJsAppKey,
-  );
 
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
   PlatformDispatcher.instance.onError = (error, stack) {

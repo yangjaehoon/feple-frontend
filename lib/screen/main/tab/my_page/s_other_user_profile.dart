@@ -468,7 +468,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
     try {
       final festival = await _festivalService.fetchById(festivalId);
       if (!mounted) return;
-      Navigator.push(context, SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)));
+      unawaited(Navigator.push(context, SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival))));
     } catch (e) {
       debugPrint('[OtherUserProfile] festival fetch error: $e');
     } finally {

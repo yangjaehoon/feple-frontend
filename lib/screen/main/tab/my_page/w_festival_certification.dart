@@ -50,7 +50,7 @@ class FestivalCertificationWidgetState extends State<FestivalCertificationWidget
       context,
       SlideRoute(builder: (_) => const CertificationListScreen()),
     );
-    _load(); // 돌아왔을 때 목록 새로고침
+    unawaited(_load()); // 돌아왔을 때 목록 새로고침
   }
 
   @override

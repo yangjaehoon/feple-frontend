@@ -34,7 +34,7 @@ class _FepleAppBarState extends State<FepleAppBar> with NavigationGuard {
       context,
       SlideRoute(builder: (_) => const NotificationScreen()),
     );
-    _countNotifier.load();
+    unawaited(_countNotifier.load());
   }
 
   @override

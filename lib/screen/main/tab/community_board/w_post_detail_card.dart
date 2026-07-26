@@ -264,7 +264,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
       case 'block':
         await _onBlockUser();
       case 'share':
-        SharePlus.instance.share(ShareParams(text: '$_title\n\n$_content'));
+        unawaited(SharePlus.instance.share(ShareParams(text: '$_title\n\n$_content')));
     }
   }
 

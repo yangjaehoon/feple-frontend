@@ -94,13 +94,13 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
     await Prefs.onboardingCompleted.set(false);
     if (!mounted) return;
     final rootNav = Navigator.of(context, rootNavigator: true);
-    rootNav.push(
+    unawaited(rootNav.push(
       SlideRoute(
         builder: (_) => OnboardingScreen(
           onComplete: () => rootNav.popUntil((route) => route.isFirst),
         ),
       ),
-    );
+    ));
   }
 
   Future<void> _openExternalLink(String url) async {

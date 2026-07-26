@@ -292,12 +292,12 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
     try {
       final festival = await _festivalService.fetchById(festivalId);
       if (!mounted) return;
-      Navigator.push(
+      unawaited(Navigator.push(
         context,
         SlideRoute(
           builder: (_) => FestivalInformationFragment(poster: festival),
         ),
-      );
+      ));
     } catch (e) {
       debugPrint('[FestivalCalendar] festival fetch error: $e');
       if (mounted) {

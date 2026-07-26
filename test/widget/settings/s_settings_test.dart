@@ -166,7 +166,7 @@ void main() {
     });
 
     testWidgets('현재시간선 스위치는 Prefs 값을 반영한다', (tester) async {
-      Prefs.showCurrentTimeLine.set(false);
+      await Prefs.showCurrentTimeLine.set(false);
       await _pump(tester, mockUserProvider);
       await tester.pumpAndSettle();
 

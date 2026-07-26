@@ -173,7 +173,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     _notifier.removeAllLocally();
     final messenger = ScaffoldMessenger.of(context);
     messenger.hideCurrentSnackBar();
-    messenger
+    unawaited(messenger
         .showSnackBar(
           SnackBar(
             content: Text('notif_delete_all_dismissed'.tr()),
@@ -190,7 +190,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           if (reason != SnackBarClosedReason.action) {
             _notifier.confirmDeleteAll();
           }
-        });
+        }));
   }
 
   void _onMenuSelected(String value) {

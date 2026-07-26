@@ -348,7 +348,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
 
   Future<void> _completeLogin(UserProvider userProvider, AppUser user) async {
     await userProvider.setUser(user);
-    FcmService.instance.initWithRationale();
+    unawaited(FcmService.instance.initWithRationale());
   }
 
   Future<void> _handleLoginSuccess(AppUser user) async {

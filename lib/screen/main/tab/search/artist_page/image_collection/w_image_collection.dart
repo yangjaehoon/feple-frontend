@@ -68,7 +68,7 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
       content: 'photo_delete_confirm'.tr(),
       confirmLabel: 'msg_delete'.tr(),
     );
-    if (confirmed) _notifier.deletePhoto(photoId);
+    if (confirmed) unawaited(_notifier.deletePhoto(photoId));
   }
 
   void _showEditBottomSheet(ArtistPhoto photo) {

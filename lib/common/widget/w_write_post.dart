@@ -129,7 +129,7 @@ class _WritePostState extends State<WritePost> {
         imageObjectKey = _existingImageUrl;
       }
       await widget.onSubmit(title, content, _anonymous, imageObjectKey);
-      AppReviewService.recordPostCreated();
+      unawaited(AppReviewService.recordPostCreated());
       if (!mounted) return;
       context.showSuccessSnackbar('post_success'.tr());
       Navigator.of(context).pop();

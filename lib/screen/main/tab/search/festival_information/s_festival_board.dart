@@ -361,7 +361,7 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
         ),
       );
       if (!mounted) return;
-      _refresh();
+      unawaited(_refresh());
     });
   }
 

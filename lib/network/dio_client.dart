@@ -135,7 +135,7 @@ class _AuthAndSwrInterceptor extends Interceptor {
     if (options.method == 'GET') {
       final cached = ApiCacheStore.getSync(options.uri.toString());
       if (cached != null) {
-        DioClient._bgRefresh(options);
+        unawaited(DioClient._bgRefresh(options));
         return handler.resolve(Response(
           requestOptions: options,
           data: cached,

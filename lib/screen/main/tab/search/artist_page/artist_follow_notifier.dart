@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/app_review_service.dart';
@@ -41,13 +43,13 @@ class ArtistFollowNotifier extends SafeChangeNotifier {
     isFollowed = !isFollowed;
     followCount += isFollowed ? 1 : -1;
     safeNotify();
-    HapticFeedback.mediumImpact();
+    unawaited(HapticFeedback.mediumImpact());
     try {
       if (prevFollowed) {
         await _followService.unfollow(artistId);
       } else {
         await _followService.follow(artistId);
-        AppReviewService.recordArtistFollowed();
+        unawaited(AppReviewService.recordArtistFollowed());
       }
     } catch (e) {
       isFollowed = prevFollowed;

@@ -88,7 +88,7 @@ class FcmService {
       await _setup();
     } catch (e, st) {
       debugPrint('[FCM] init failed: $e');
-      FirebaseCrashlytics.instance.recordError(e, st, fatal: false, reason: 'FCM initWithRationale failed');
+      unawaited(FirebaseCrashlytics.instance.recordError(e, st, fatal: false, reason: 'FCM initWithRationale failed'));
     }
   }
 
@@ -109,9 +109,9 @@ class FcmService {
   Future<void> _setup() async {
     await _notifHandler.initialize();
 
-    _messageSubscription?.cancel();
-    _tokenSubscription?.cancel();
-    _openedAppSubscription?.cancel();
+    await _messageSubscription?.cancel();
+    await _tokenSubscription?.cancel();
+    await _openedAppSubscription?.cancel();
 
     _messageSubscription = FirebaseMessaging.onMessage.listen(_notifHandler.handleForeground);
 

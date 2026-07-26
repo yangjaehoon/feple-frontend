@@ -113,7 +113,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     final userProvider = context.read<UserProvider>();
     Navigator.of(context).popUntil((route) => route.isFirst);
     await userProvider.setUser(user);
-    FcmService.instance.initWithRationale();
+    unawaited(FcmService.instance.initWithRationale());
   }
 
   Future<void> _onResendTapped() async {

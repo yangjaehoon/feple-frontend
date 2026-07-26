@@ -185,7 +185,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
         }
       } catch (e) {
         debugPrint('[Search] 직접 이동 실패: $e');
-        if (mounted) _search(suggestion.label);
+        if (mounted) unawaited(_search(suggestion.label));
       } finally {
         if (mounted) setState(() => _navigatingSuggestionId = null);
       }

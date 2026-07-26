@@ -72,7 +72,7 @@ class MySongRequestsViewState extends State<MySongRequestsView> {
       context,
       SlideRoute(builder: (_) => const SongRequestListScreen()),
     );
-    if (mounted) _load();
+    if (mounted) unawaited(_load());
   }
 
   @override

@@ -77,7 +77,7 @@ class _BoardPostListState extends State<BoardPostList> {
             ),
           ),
         );
-        if (mounted) _controller.refresh();
+        if (mounted) unawaited(_controller.refresh());
       },
     );
   }
@@ -189,7 +189,7 @@ class _BoardPostListState extends State<BoardPostList> {
                   ),
                 ),
               );
-              if (mounted) _controller.refresh();
+              if (mounted) unawaited(_controller.refresh());
             },
             onAuthorTap: () => navigateToPostAuthor(
               context,

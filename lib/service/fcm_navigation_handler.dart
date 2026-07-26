@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:feple/app.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/injection.dart';
@@ -31,7 +33,7 @@ class FcmNavigationHandler {
         if (await _pushArtist(nav, linkId)) return;
       }
     }
-    nav.push(SlideRoute(builder: (_) => const NotificationScreen()));
+    unawaited(nav.push(SlideRoute(builder: (_) => const NotificationScreen())));
   }
 
   Future<bool> _pushFestival(NavigatorState nav, int festivalId) => _tryPush(
@@ -74,7 +76,7 @@ class FcmNavigationHandler {
   }) async {
     try {
       final screen = await buildScreen();
-      nav.push(SlideRoute(builder: (_) => screen));
+      unawaited(nav.push(SlideRoute(builder: (_) => screen)));
       return true;
     } catch (e) {
       debugPrint('[FCM Nav] $label 이동 실패: $e');

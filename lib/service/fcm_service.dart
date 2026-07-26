@@ -5,6 +5,7 @@ import 'package:feple/common/util/permission_rationale.dart';
 import 'package:feple/service/fcm_navigation_handler.dart';
 import 'package:feple/service/fcm_notification_handler.dart';
 import 'package:feple/service/fcm_token_service.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -61,26 +62,34 @@ class FcmService {
 
   /// 알림 권한을 처음 요청하는 경우 사전 설명 바텀시트를 먼저 표시.
   /// 이미 권한이 결정된 경우(허용/거부)에는 바텀시트 없이 바로 진행.
+  /// 실패해도 로그인 흐름을 막지 않도록 여기서 삼키되, Crashlytics에는 non-fatal로
+  /// 남김 — ic_notification 리소스 누락이 debugPrint로만 남아 오래 눈에 안 띄었던
+  /// 사고 이후 추가됨.
   Future<void> initWithRationale() async {
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    try {
+      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-    final current = await _messaging.getNotificationSettings();
-    final needsRationale = current.authorizationStatus == AuthorizationStatus.notDetermined;
+      final current = await _messaging.getNotificationSettings();
+      final needsRationale = current.authorizationStatus == AuthorizationStatus.notDetermined;
 
-    bool requestPermission = true;
-    if (needsRationale) {
-      final ctx = App.navigatorKey.currentContext;
-      if (ctx != null && ctx.mounted) {
-        requestPermission = await PermissionRationale.showNotification(ctx);
+      bool requestPermission = true;
+      if (needsRationale) {
+        final ctx = App.navigatorKey.currentContext;
+        if (ctx != null && ctx.mounted) {
+          requestPermission = await PermissionRationale.showNotification(ctx);
+        }
       }
-    }
 
-    if (requestPermission) {
-      final settings = await _messaging.requestPermission(alert: true, badge: true, sound: true);
-      debugPrint('[FCM] 권한 상태: ${settings.authorizationStatus}');
-    }
+      if (requestPermission) {
+        final settings = await _messaging.requestPermission(alert: true, badge: true, sound: true);
+        debugPrint('[FCM] 권한 상태: ${settings.authorizationStatus}');
+      }
 
-    await _setup();
+      await _setup();
+    } catch (e, st) {
+      debugPrint('[FCM] init failed: $e');
+      FirebaseCrashlytics.instance.recordError(e, st, fatal: false, reason: 'FCM initWithRationale failed');
+    }
   }
 
   String _currentLanguage() => currentLanguage.locale.languageCode;

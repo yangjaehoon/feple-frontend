@@ -83,6 +83,7 @@ class HomeStateNotifier extends SafeChangeNotifier {
       artists = fetchedArtists;
       festivals = fetchedFestivals;
       boards = _buildBoards(fetchedArtists, fetchedFestivals);
+      error = null;
       _staleness.markLoaded();
       // ignore: unawaited_futures
       _cacheService.saveHomeFestivals(id, fetchedFestivals);

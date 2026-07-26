@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
-import 'package:feple/common/widget/w_board_preview_section.dart';
+import 'package:feple/screen/main/tab/community_board/w_board_preview_section.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/provider/user_provider.dart';

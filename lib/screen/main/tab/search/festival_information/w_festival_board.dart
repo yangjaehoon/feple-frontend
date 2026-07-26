@@ -1,5 +1,5 @@
-import 'package:feple/common/widget/w_board_preview_section.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/screen/main/tab/community_board/w_board_preview_section.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/screen/main/tab/search/festival_information/s_festival_board.dart';
 import 'package:flutter/material.dart';

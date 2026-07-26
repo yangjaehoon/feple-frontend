@@ -1,6 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/service/report_service.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -64,19 +64,13 @@ class _ReportSheetContentState extends State<_ReportSheetContent> {
       if (widget.pageContext.mounted) {
         widget.pageContext.showSuccessSnackbar('report_success'.tr());
       }
-    } on DioException catch (e) {
-      debugPrint('[Report] submit failed: $e');
-      if (mounted) setState(() => _isSubmitting = false);
-      if (!widget.pageContext.mounted) return;
-      final isConflict = e.response?.statusCode == 409;
-      widget.pageContext.showErrorSnackbar(
-        isConflict ? widget.duplicateErrorKey.tr() : 'report_failed'.tr(),
-      );
     } catch (e) {
       debugPrint('[Report] submit failed: $e');
       if (mounted) setState(() => _isSubmitting = false);
       if (!widget.pageContext.mounted) return;
-      widget.pageContext.showErrorSnackbar('report_failed'.tr());
+      widget.pageContext.showErrorSnackbar(
+        isDioConflict(e) ? widget.duplicateErrorKey.tr() : 'report_failed'.tr(),
+      );
     }
   }
 

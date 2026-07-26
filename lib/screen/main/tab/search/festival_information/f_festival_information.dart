@@ -1,8 +1,8 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/common/widget/w_board_preview_section.dart';
 import 'package:feple/common/widget/w_offline_banner.dart';
 import 'package:feple/model/festival_model.dart';
+import 'package:feple/screen/main/tab/community_board/w_board_preview_section.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_poster.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_timetable.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_artists.dart';

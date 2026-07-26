@@ -19,6 +19,7 @@ extension NotificationTypeStyle on NotificationType {
       case NotificationType.songRequestRejected:        return Icons.music_off_rounded;
       case NotificationType.artistSuggestionProcessed:  return Icons.person_add_rounded;
       case NotificationType.adminBroadcast:             return Icons.campaign_rounded;
+      case NotificationType.adminPointGranted:          return Icons.paid_rounded;
     }
   }
 
@@ -36,6 +37,7 @@ extension NotificationTypeStyle on NotificationType {
       case NotificationType.artistSuggestionProcessed:  return colors.activate;
       case NotificationType.postDeletedByAdmin:         return colors.textSecondary;
       case NotificationType.adminBroadcast:             return colors.accentColor;
+      case NotificationType.adminPointGranted:          return colors.certRingColor;
     }
   }
 }

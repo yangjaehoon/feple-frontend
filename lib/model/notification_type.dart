@@ -10,7 +10,8 @@ enum NotificationType {
   songRequestApproved('SONG_REQUEST_APPROVED'),
   songRequestRejected('SONG_REQUEST_REJECTED'),
   artistSuggestionProcessed('ARTIST_SUGGESTION_PROCESSED'),
-  adminBroadcast('ADMIN_BROADCAST');
+  adminBroadcast('ADMIN_BROADCAST'),
+  adminPointGranted('ADMIN_POINT_GRANTED');
 
   const NotificationType(this.value);
   final String value;
@@ -45,6 +46,7 @@ enum NotificationType {
         NotificationType.artistSuggestionProcessed =>
           _NotificationCategory.artistSuggestion,
         NotificationType.adminBroadcast => _NotificationCategory.adminBroadcast,
+        NotificationType.adminPointGranted => _NotificationCategory.comment,
       };
 
   bool get isFestivalType => _category == _NotificationCategory.festival;

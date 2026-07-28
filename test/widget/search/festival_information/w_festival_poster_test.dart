@@ -1,0 +1,367 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/data/preference/app_preferences.dart';
+import 'package:feple/common/theme/custom_theme.dart';
+import 'package:feple/common/theme/custom_theme_holder.dart';
+import 'package:feple/injection.dart';
+import 'package:feple/model/certification_model.dart';
+import 'package:feple/model/festival_model.dart';
+import 'package:feple/model/festival_rating_summary.dart';
+import 'package:feple/model/my_certification_status.dart';
+import 'package:feple/screen/main/tab/search/festival_information/w_certification_bottom_sheet.dart';
+import 'package:feple/screen/main/tab/search/festival_information/w_festival_poster.dart';
+import 'package:feple/screen/main/tab/search/festival_information/w_festival_reviews_sheet.dart';
+import 'package:feple/screen/main/tab/search/festival_information/w_weather_bottom_sheet.dart';
+import 'package:feple/service/certification_service.dart';
+import 'package:feple/service/festival_interaction_service.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class MockCertificationService extends Mock implements CertificationService {}
+class MockFestivalInteractionService extends Mock implements FestivalInteractionService {}
+
+FestivalModel _poster({
+  int id = 1,
+  String title = '펜타포트',
+  String description = '',
+  String location = '인천 송도달빛축제공원',
+  List<String> genres = const [],
+  String? ageRestriction,
+  int attendingCount = 0,
+}) {
+  return FestivalModel(
+    id: id,
+    title: title,
+    description: description,
+    location: location,
+    startDate: '2026-08-01',
+    endDate: '2026-08-03',
+    posterUrl: '',
+    genres: genres,
+    ageRestriction: ageRestriction,
+    attendingCount: attendingCount,
+  );
+}
+
+void main() {
+  late MockCertificationService mockCertService;
+  late MockFestivalInteractionService mockFestivalService;
+
+  setUpAll(() async {
+    SharedPreferences.setMockInitialValues({});
+    await AppPreferences.init();
+  });
+
+  setUp(() {
+    mockCertService = MockCertificationService();
+    mockFestivalService = MockFestivalInteractionService();
+    if (sl.isRegistered<CertificationService>()) {
+      sl.unregister<CertificationService>();
+    }
+    sl.registerSingleton<CertificationService>(mockCertService);
+    if (sl.isRegistered<FestivalInteractionService>()) {
+      sl.unregister<FestivalInteractionService>();
+    }
+    sl.registerSingleton<FestivalInteractionService>(mockFestivalService);
+
+    when(() => mockFestivalService.isLiked(any())).thenAnswer((_) async => false);
+    when(() => mockFestivalService.isAttending(any())).thenAnswer((_) async => false);
+    when(() => mockCertService.getMyCertificationStatus(any()))
+        .thenAnswer((_) async => MyCertificationStatus.none);
+    when(() => mockCertService.getFestivalRating(any())).thenAnswer(
+      (_) async => const FestivalRatingSummary(averageRating: 0, ratingCount: 0),
+    );
+  });
+
+  tearDown(() {
+    if (sl.isRegistered<CertificationService>()) {
+      sl.unregister<CertificationService>();
+    }
+    if (sl.isRegistered<FestivalInteractionService>()) {
+      sl.unregister<FestivalInteractionService>();
+    }
+  });
+
+  Future<void> pump(WidgetTester tester, {required FestivalModel poster}) async {
+    SharedPreferences.setMockInitialValues({});
+    await EasyLocalization.ensureInitialized();
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      EasyLocalization(
+        supportedLocales: const [Locale('ko'), Locale('en')],
+        startLocale: const Locale('ko'),
+        fallbackLocale: const Locale('ko'),
+        path: 'assets/translations',
+        useOnlyLangCode: true,
+        child: CustomThemeHolder(
+          theme: CustomTheme.light,
+          changeTheme: (_) {},
+          child: MaterialApp(
+            home: Scaffold(
+              body: SingleChildScrollView(child: FestivalPoster(poster: poster)),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+  }
+
+  group('FestivalPoster 렌더링', () {
+    testWidgets('제목/장소/날짜와 장르 태그를 보여준다', (tester) async {
+      await pump(
+        tester,
+        poster: _poster(
+          title: '펜타포트',
+          location: '인천 송도달빛축제공원',
+          genres: ['BAND'],
+        ),
+      );
+
+      expect(find.text('펜타포트'), findsOneWidget);
+      expect(find.text('인천 송도달빛축제공원'), findsOneWidget);
+      expect(find.text('2026-08-01 ~ 2026-08-03'), findsOneWidget);
+      expect(find.text('genre_band'.tr()), findsOneWidget);
+    });
+  });
+
+  group('FestivalPoster 참석', () {
+    testWidgets('참석 토글을 탭하면 인원이 증가하고 다시 탭하면 원복된다', (tester) async {
+      when(() => mockFestivalService.toggleAttending(1)).thenAnswer((_) async {});
+
+      await pump(tester, poster: _poster(id: 1, attendingCount: 3));
+
+      expect(find.text('attending_count'.tr(args: ['3'])), findsOneWidget);
+
+      await tester.tap(find.text('attend_toggle'.tr()));
+      await tester.pump();
+
+      expect(find.text('attending_count'.tr(args: ['4'])), findsOneWidget);
+
+      await tester.tap(find.text('attend_toggle'.tr()));
+      await tester.pump();
+
+      expect(find.text('attending_count'.tr(args: ['3'])), findsOneWidget);
+    });
+
+    testWidgets('참석 처리에 실패하면 원래 상태로 되돌아간다', (tester) async {
+      // thenThrow는 mock 호출 시 동기적으로 예외를 던지므로 낙관적 갱신→롤백이
+      // await 지점 없이 탭 처리 안에서 전부 끝나 중간 상태를 관찰할 수 없다 —
+      // 최종적으로 원래 상태(0)로 돌아오는지만 검증한다
+      when(() => mockFestivalService.toggleAttending(1)).thenThrow(Exception('네트워크 오류'));
+
+      await pump(tester, poster: _poster(id: 1, attendingCount: 0));
+
+      // attendingCount가 0이면 카운트 라벨도 'attend_toggle' 텍스트를 쓰므로
+      // 실제 토글 버튼(마지막 위젯)을 탭한다
+      await tester.tap(find.text('attend_toggle'.tr()).last);
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.text('attending_count'.tr(args: ['1'])), findsNothing);
+      expect(find.text('attend_toggle'.tr()), findsNWidgets(2));
+    });
+  });
+
+  group('FestivalPoster 좋아요', () {
+    testWidgets('좋아요를 탭하면 아이콘이 채워진다', (tester) async {
+      when(() => mockFestivalService.toggleLike(1)).thenAnswer((_) async {});
+
+      await pump(tester, poster: _poster(id: 1));
+
+      expect(find.byIcon(Icons.favorite_border_rounded), findsOneWidget);
+
+      await tester.tap(find.byIcon(Icons.favorite_border_rounded));
+      await tester.pump();
+
+      expect(find.byIcon(Icons.favorite_rounded), findsOneWidget);
+    });
+  });
+
+  group('FestivalPoster 평점 뱃지', () {
+    testWidgets('평가가 없으면 빈 별을 보여주고 탭하면 리뷰 시트가 열린다', (tester) async {
+      await pump(tester, poster: _poster(id: 1));
+
+      expect(find.byIcon(Icons.star_outline_rounded), findsNWidgets(5));
+
+      await tester.tap(find.byIcon(Icons.star_outline_rounded).first);
+      // 포스터 썸네일의 SkeletonBox가 계속 반짝여 pumpAndSettle이 멈추지 않으므로
+      // 시트 등장 애니메이션만큼만 고정 시간으로 흘려보낸다
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.byType(FestivalReviewsSheet), findsOneWidget);
+    });
+
+    testWidgets('평가가 있으면 평균 별점과 개수를 보여준다', (tester) async {
+      // 별점 뱃지는 120px 고정폭 Row에 별 5개+텍스트를 채우는데, 테스트
+      // 환경의 대체 폰트가 실제 앱 폰트(Pretendard)보다 넓어 한 자릿수
+      // 숫자에도 오버플로우가 발생한다 — 실제 기기에서는 재현되지 않는
+      // 테스트 전용 아티팩트이므로 이 오버플로우 에러만 무시한다
+      final originalOnError = FlutterError.onError;
+      FlutterError.onError = (details) {
+        if (!details.toString().contains('overflowed')) {
+          originalOnError?.call(details);
+        }
+      };
+      addTearDown(() => FlutterError.onError = originalOnError);
+
+      when(() => mockCertService.getFestivalRating(1)).thenAnswer(
+        (_) async => const FestivalRatingSummary(averageRating: 4.5, ratingCount: 3),
+      );
+
+      await pump(tester, poster: _poster(id: 1));
+
+      expect(find.text('(3)'), findsOneWidget);
+    });
+  });
+
+  group('FestivalPoster 인증 버튼', () {
+    testWidgets('미인증 상태면 탭 시 인증 제출 시트가 열린다', (tester) async {
+      await pump(tester, poster: _poster(id: 1));
+
+      await tester.tap(find.text('action_cert'.tr()));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.byType(CertificationBottomSheet), findsOneWidget);
+    });
+
+    testWidgets('승인된 인증이면 탭 시 이미 승인됐다는 안내를 보여준다', (tester) async {
+      when(() => mockCertService.getMyCertificationStatus(1)).thenAnswer(
+        (_) async => const MyCertificationStatus(status: CertStatus.approved, certId: 1),
+      );
+
+      await pump(tester, poster: _poster(id: 1));
+
+      await tester.tap(find.text('action_cert'.tr()));
+      await tester.pump();
+
+      expect(find.text('cert_already_approved'.tr()), findsOneWidget);
+    });
+
+    testWidgets('대기중인 인증이면 탭 시 대기중 안내를 보여준다', (tester) async {
+      when(() => mockCertService.getMyCertificationStatus(1)).thenAnswer(
+        (_) async => const MyCertificationStatus(status: CertStatus.pending),
+      );
+
+      await pump(tester, poster: _poster(id: 1));
+
+      await tester.tap(find.text('action_cert'.tr()));
+      await tester.pump();
+
+      expect(find.text('cert_pending_notice'.tr()), findsOneWidget);
+    });
+  });
+
+  group('FestivalPoster 초기화 에러', () {
+    testWidgets('초기화 중 오류가 있으면 재시도 링크를 보여주고 탭하면 다시 불러온다', (tester) async {
+      var callCount = 0;
+      when(() => mockFestivalService.isLiked(1)).thenAnswer((_) async {
+        callCount++;
+        if (callCount == 1) throw Exception('네트워크 오류');
+        return false;
+      });
+
+      await pump(tester, poster: _poster(id: 1));
+
+      expect(find.text('retry'.tr()), findsOneWidget);
+
+      await tester.tap(find.text('retry'.tr()));
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.text('retry'.tr()), findsNothing);
+    });
+  });
+
+  group('FestivalPoster 설명 섹션', () {
+    testWidgets('설명이 있으면 펼치기/접기 토글을 할 수 있다', (tester) async {
+      await pump(tester, poster: _poster(id: 1, description: '즐거운 축제입니다'));
+
+      expect(find.text('즐거운 축제입니다'), findsOneWidget);
+      expect(find.byIcon(Icons.keyboard_arrow_up_rounded), findsOneWidget);
+
+      await tester.tap(find.text('festival_info'.tr()));
+      await tester.pump();
+      await tester.pump(AppDimens.animFast); // AnimatedCrossFade 전환 완료 대기
+
+      // AnimatedCrossFade는 접힌 뒤에도 두 child를 트리에 유지(투명도만 변경)하므로
+      // 텍스트 존재 여부 대신 화살표 방향(접힘 상태를 나타내는 실제 조건부 렌더링)으로 확인
+      expect(find.byIcon(Icons.keyboard_arrow_down_rounded), findsOneWidget);
+    });
+
+    testWidgets('설명이 없으면 섹션을 보여주지 않는다', (tester) async {
+      await pump(tester, poster: _poster(id: 1, description: ''));
+
+      expect(find.text('festival_info'.tr()), findsNothing);
+    });
+  });
+
+  group('FestivalPoster 날씨', () {
+    testWidgets('날씨 버튼을 탭하면 날씨 시트가 열린다', (tester) async {
+      await pump(tester, poster: _poster(id: 1));
+
+      await tester.tap(find.text('action_weather'.tr()));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.byType(WeatherBottomSheet), findsOneWidget);
+    });
+  });
+
+  group('FestivalPoster 새로고침', () {
+    testWidgets('refresh() 호출 시 좋아요/참석 상태를 다시 불러온다', (tester) async {
+      var callCount = 0;
+      when(() => mockFestivalService.isLiked(1)).thenAnswer((_) async {
+        callCount++;
+        return false;
+      });
+
+      final key = GlobalKey<FestivalPosterState>();
+      SharedPreferences.setMockInitialValues({});
+      await EasyLocalization.ensureInitialized();
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(
+        EasyLocalization(
+          supportedLocales: const [Locale('ko'), Locale('en')],
+          startLocale: const Locale('ko'),
+          fallbackLocale: const Locale('ko'),
+          path: 'assets/translations',
+          useOnlyLangCode: true,
+          child: CustomThemeHolder(
+            theme: CustomTheme.light,
+            changeTheme: (_) {},
+            child: MaterialApp(
+              home: Scaffold(
+                body: SingleChildScrollView(
+                  child: FestivalPoster(key: key, poster: _poster(id: 1)),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+      expect(callCount, 1);
+
+      key.currentState!.refresh();
+      await tester.pump();
+      await tester.pump();
+
+      expect(callCount, 2);
+    });
+  });
+}

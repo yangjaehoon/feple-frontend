@@ -22,6 +22,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 class MockCertificationService extends Mock implements CertificationService {}
 class MockFestivalInteractionService extends Mock implements FestivalInteractionService {}
 
+// 날씨 시트가 sl<FestivalDetailService>() 없이 "너무 이른 조회" 분기를 타도록
+// 항상 현재 시각 기준으로 충분히 먼 미래 날짜를 기본값으로 쓴다 — 고정 날짜는
+// 시간이 지나면 daysUntilStart가 3 이하로 줄어들어 테스트가 깨지는 날짜 폭탄이 된다.
+String _fmtDate(DateTime d) =>
+    '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+final String _defaultStartDate = _fmtDate(DateTime.now().add(const Duration(days: 30)));
+final String _defaultEndDate =
+    _fmtDate(DateTime.now().add(const Duration(days: 32)));
+
 FestivalModel _poster({
   int id = 1,
   String title = '펜타포트',
@@ -30,14 +39,16 @@ FestivalModel _poster({
   List<String> genres = const [],
   String? ageRestriction,
   int attendingCount = 0,
+  String? startDate,
+  String? endDate,
 }) {
   return FestivalModel(
     id: id,
     title: title,
     description: description,
     location: location,
-    startDate: '2026-08-01',
-    endDate: '2026-08-03',
+    startDate: startDate ?? _defaultStartDate,
+    endDate: endDate ?? _defaultEndDate,
     posterUrl: '',
     genres: genres,
     ageRestriction: ageRestriction,
@@ -122,12 +133,14 @@ void main() {
           title: '펜타포트',
           location: '인천 송도달빛축제공원',
           genres: ['BAND'],
+          startDate: '2099-08-01',
+          endDate: '2099-08-03',
         ),
       );
 
       expect(find.text('펜타포트'), findsOneWidget);
       expect(find.text('인천 송도달빛축제공원'), findsOneWidget);
-      expect(find.text('2026-08-01 ~ 2026-08-03'), findsOneWidget);
+      expect(find.text('2099-08-01 ~ 2099-08-03'), findsOneWidget);
       expect(find.text('genre_band'.tr()), findsOneWidget);
     });
   });

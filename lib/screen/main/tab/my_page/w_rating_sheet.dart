@@ -96,16 +96,21 @@ class _RatingSheetState extends State<RatingSheet> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(5, (i) {
-        return GestureDetector(
-          onTap: () => setState(() => _selectedRating = i + 1),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
-            child: Icon(
-              i < _selectedRating
-                  ? Icons.star_rounded
-                  : Icons.star_outline_rounded,
-              color: Colors.amber,
-              size: 40,
+        return Semantics(
+          button: true,
+          label: 'rating_star_label'.tr(args: ['${i + 1}']),
+          selected: i < _selectedRating,
+          child: GestureDetector(
+            onTap: () => setState(() => _selectedRating = i + 1),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+              child: Icon(
+                i < _selectedRating
+                    ? Icons.star_rounded
+                    : Icons.star_outline_rounded,
+                color: Colors.amber,
+                size: 40,
+              ),
             ),
           ),
         );

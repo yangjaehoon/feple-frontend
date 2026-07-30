@@ -294,6 +294,7 @@
   "rating_review_hint": "한줄 후기를 남겨주세요 (선택, 최대 100자)",
   "rating_submit_success": "평가해주셔서 감사합니다!",
   "rating_submit_failed": "별점 저장에 실패했습니다.",
+  "rating_star_label": "별점 {}점 선택",
   "reviews_sheet_title": "별점 및 리뷰",
   "rating_average_label": "평균 별점 {}점, 리뷰 {}개",
   "reviews_count": "{}명이 평가했어요",

@@ -35,10 +35,17 @@ class AppDimens {
   static const double boardCardHeight = 280.0;
   static const double minTouchTarget = 44.0; // HIG/M3 최소 터치 타겟
 
-  // ── Spacing (8px 그리드) ──
+  // ── Spacing (8px 그리드, 4px 단위 보조) ──
   static const double paddingHorizontal = 16.0;
   static const double paddingVertical = 8.0;
+  static const double space4 = 4.0;
   static const double space8 = 8.0;
+  static const double space12 = 12.0;
+  static const double space16 = 16.0;
+  static const double space20 = 20.0;
+  static const double space24 = 24.0;
+  static const double space32 = 32.0;
+  static const double space40 = 40.0;
 
   // ── Icon ──
   static const double iconSizeSm = 14.0;

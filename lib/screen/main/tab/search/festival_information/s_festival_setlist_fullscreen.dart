@@ -232,14 +232,18 @@ class _ArtistFullTile extends StatelessWidget {
             ),
           ),
         ),
-        GestureDetector(
-          onTap: onRequest,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            child: Icon(
-              Icons.edit_note_rounded,
-              size: 18,
-              color: colors.activate,
+        Semantics(
+          button: true,
+          label: 'setlist_request'.tr(),
+          child: GestureDetector(
+            onTap: onRequest,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              child: Icon(
+                Icons.edit_note_rounded,
+                size: 18,
+                color: colors.activate,
+              ),
             ),
           ),
         ),

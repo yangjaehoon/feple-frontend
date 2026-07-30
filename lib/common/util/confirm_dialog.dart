@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_alert_dialog.dart';
 import 'package:flutter/material.dart';
 
@@ -10,6 +11,10 @@ Future<bool> showConfirmDialog(
 }) async {
   return await showDialog<bool>(
     context: context,
+    animationStyle: const AnimationStyle(
+      duration: AppDimens.animFast,
+      reverseDuration: AppDimens.animXFast,
+    ),
     builder: (ctx) => buildAppAlertDialog(
       ctx,
       title: title,

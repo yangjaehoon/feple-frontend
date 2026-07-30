@@ -465,34 +465,38 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
       );
     }
     if (_rating != null) {
-      return GestureDetector(
-        onTap: _openRatingSheet,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ...List.generate(
-              5,
-              (i) => Icon(
-                i < _rating! ? Icons.star_rounded : Icons.star_outline_rounded,
-                size: 16,
-                color: Colors.amber,
-              ),
-            ),
-            if (_review != null && _review!.isNotEmpty) ...[
-              const SizedBox(width: 6),
-              Flexible(
-                child: Text(
-                  _review!,
-                  style: TextStyle(
-                    fontSize: AppDimens.fontSizeXxs,
-                    color: colors.textSecondary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+      return Semantics(
+        button: true,
+        label: '${'rating_star_label'.tr(args: ['$_rating'])} · ${'reviews_edit_rating'.tr()}',
+        child: GestureDetector(
+          onTap: _openRatingSheet,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ...List.generate(
+                5,
+                (i) => Icon(
+                  i < _rating! ? Icons.star_rounded : Icons.star_outline_rounded,
+                  size: 16,
+                  color: Colors.amber,
                 ),
               ),
+              if (_review != null && _review!.isNotEmpty) ...[
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    _review!,
+                    style: TextStyle(
+                      fontSize: AppDimens.fontSizeXxs,
+                      color: colors.textSecondary,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       );
     }

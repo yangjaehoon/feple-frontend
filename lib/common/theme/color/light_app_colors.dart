@@ -11,13 +11,19 @@ class LightAppColors extends AbstractThemeColors {
   Color get iconButton => AppColors.skyBlue;
 
   @override
-  Color get iconButtonInactivate => AppColors.textMuted;
+  Color get iconButtonInactivate => AppColors.textMutedLight;
 
   @override
   Color get text => AppColors.textMain;
 
   @override
-  Color get hintText => AppColors.textMuted;
+  Color get hintText => AppColors.textMutedLight;
+
+  @override
+  Color get textSecondary => AppColors.textMutedLight;
+
+  @override
+  Color get error => AppColors.errorRedLight;
 
   @override
   Color get divider => const Color(0xFFEEEEEE);
@@ -26,7 +32,10 @@ class LightAppColors extends AbstractThemeColors {
   Color get appBarBackground => AppColors.skyBlue;
 
   @override
-  Color get activate => AppColors.skyBlue;
+  Color get appBarColor => AppColors.skyBlueAction;
+
+  @override
+  Color get activate => AppColors.skyBlueAction;
 
   @override
   Color get badgeBg => AppColors.sunnyYellow;

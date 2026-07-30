@@ -13,6 +13,7 @@ class EditCommentDialog extends StatefulWidget {
 
 class _EditCommentDialogState extends State<EditCommentDialog> {
   late final TextEditingController _controller;
+  String? _errorText;
 
   @override
   void initState() {
@@ -24,6 +25,15 @@ class _EditCommentDialogState extends State<EditCommentDialog> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  void _submit() {
+    final content = _controller.text.trim();
+    if (content.isEmpty) {
+      setState(() => _errorText = 'enter_comment_please'.tr());
+      return;
+    }
+    Navigator.pop(context, content);
   }
 
   @override
@@ -45,8 +55,14 @@ class _EditCommentDialogState extends State<EditCommentDialog> {
           autofocus: true,
           maxLines: null,
           textInputAction: TextInputAction.done,
-          onSubmitted: (_) => Navigator.pop(context, _controller.text.trim()),
-          decoration: InputDecoration(hintText: 'enter_comment'.tr()),
+          onChanged: (_) {
+            if (_errorText != null) setState(() => _errorText = null);
+          },
+          onSubmitted: (_) => _submit(),
+          decoration: InputDecoration(
+            hintText: 'enter_comment'.tr(),
+            errorText: _errorText,
+          ),
         ),
       ),
       actions: [
@@ -55,7 +71,7 @@ class _EditCommentDialogState extends State<EditCommentDialog> {
           child: Text('cancel'.tr()),
         ),
         TextButton(
-          onPressed: () => Navigator.pop(context, _controller.text.trim()),
+          onPressed: _submit,
           child: Text('done'.tr()),
         ),
       ],

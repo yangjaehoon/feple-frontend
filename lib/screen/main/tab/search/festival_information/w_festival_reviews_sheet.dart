@@ -9,6 +9,7 @@ import 'package:feple/model/festival_review.dart';
 import 'package:feple/screen/main/tab/my_page/w_rating_sheet.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class FestivalReviewsSheet extends StatefulWidget {
   final int festivalId;
@@ -573,6 +574,7 @@ class _ReviewCardState extends State<_ReviewCard> {
 
   Future<void> _toggleLike() async {
     if (_isSubmitting) return;
+    unawaited(HapticFeedback.lightImpact());
     final wasLiked = _likedByMe;
     setState(() {
       _isSubmitting = true;

@@ -6,6 +6,10 @@ class AppColors {
   // Primary & Secondary
   static const Color skyBlue = Color(0xFF5CC0EB);
   static const Color skyBlueLight = Color(0xFFA1DDF5);
+
+  /// skyBlue의 액션(버튼 배경/앱바 배경) 전용 변형 — 흰 글씨/아이콘과 겹칠 때 WCAG AA(4.5:1) 충족.
+  /// skyBlue 원본은 그라디언트·배지·일러스트 등 장식적 용도에서만 그대로 사용.
+  static const Color skyBlueAction = Color(0xFF157FAC);
   static const Color sunnyYellow = Color(0xFFFDE74C);
 
   // Kawaii Accents
@@ -23,10 +27,18 @@ class AppColors {
   static const Color textMain = Color(0xFF2D3748);
   static const Color textMuted = Color(0xFF718096);
 
+  /// textMuted의 라이트 모드 전용 변형 — backgroundLight(#F6F7F8) 위에서 WCAG AA(4.5:1) 충족.
+  /// textMuted 원본은 다크 배경 위에서는 이미 기준을 만족해 다크 테마는 그대로 유지.
+  static const Color textMutedLight = Color(0xFF647388);
+
   // === Semantic UI Colors ===
 
   /// Form validation error / destructive action
   static const Color errorRed = Color(0xFFFF4D4F);
+
+  /// errorRed의 라이트 모드 전용 변형 — backgroundLight(#F6F7F8) 위에서 WCAG AA(4.5:1) 충족.
+  /// errorRed 원본은 다크 배경 위에서는 이미 기준을 만족해 다크 테마는 그대로 유지.
+  static const Color errorRedLight = Color(0xFFE50003);
 
   /// Success state (loading button, password validation)
   static const Color successGreen = Color(0xFF4CAF50);

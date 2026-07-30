@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_alert_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 Future<bool> showConfirmDialog(
   BuildContext context, {
@@ -25,7 +26,10 @@ Future<bool> showConfirmDialog(
           child: Text('cancel'.tr()),
         ),
         TextButton(
-          onPressed: () => Navigator.pop(ctx, true),
+          onPressed: () {
+            unawaited(HapticFeedback.mediumImpact());
+            Navigator.pop(ctx, true);
+          },
           child: Text(
             confirmLabel,
             style: TextStyle(color: ctx.appColors.error),

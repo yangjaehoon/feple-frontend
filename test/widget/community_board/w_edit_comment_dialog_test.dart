@@ -107,4 +107,31 @@ void main() {
       expect(result, '수정된 댓글');
     });
   });
+
+  group('EditCommentDialog 빈 내용 검증', () {
+    testWidgets('내용을 비우고 완료를 탭하면 에러를 보여주고 닫히지 않는다', (tester) async {
+      await _openDialog(tester);
+
+      await tester.enterText(find.byType(TextField), '');
+      await tester.tap(find.text('done'.tr()));
+      await tester.pumpAndSettle();
+
+      expect(find.text('enter_comment_please'.tr()), findsOneWidget);
+      expect(find.byType(EditCommentDialog), findsOneWidget);
+    });
+
+    testWidgets('에러가 보인 뒤 다시 입력하면 에러가 사라진다', (tester) async {
+      await _openDialog(tester);
+
+      await tester.enterText(find.byType(TextField), '');
+      await tester.tap(find.text('done'.tr()));
+      await tester.pumpAndSettle();
+      expect(find.text('enter_comment_please'.tr()), findsOneWidget);
+
+      await tester.enterText(find.byType(TextField), '다시 입력');
+      await tester.pumpAndSettle();
+
+      expect(find.text('enter_comment_please'.tr()), findsNothing);
+    });
+  });
 }

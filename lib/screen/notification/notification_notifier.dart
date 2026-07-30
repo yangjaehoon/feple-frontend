@@ -28,6 +28,14 @@ class NotificationNotifier extends SafeChangeNotifier {
 
   final _staleness = StaleTracker(const Duration(minutes: 3));
 
+  // 화면 재진입 시 새 Notifier 인스턴스가 만들어지므로, 서버 삭제가 아직
+  // 확정되지 않은(실행취소 대기 중인) 항목은 인스턴스가 아닌 클래스 레벨로
+  // 추적해야 재조회 목록에서도 계속 숨길 수 있다.
+  static final Set<int> _pendingDeleteIds = {};
+
+  @visibleForTesting
+  static void resetPendingDeletesForTest() => _pendingDeleteIds.clear();
+
   List<NotificationModel> get items => List.unmodifiable(_items);
   bool get hasUnread => _items.any((n) => !n.read);
 
@@ -66,7 +74,7 @@ class NotificationNotifier extends SafeChangeNotifier {
     _notify();
     try {
       final result = await _service.fetchPage(0, filter: filter);
-      _items = result.items;
+      _items = _excludePendingDeletes(result.items);
       _hasMore = result.hasMore;
       _page = 1;
       _staleness.markLoaded();
@@ -82,7 +90,7 @@ class NotificationNotifier extends SafeChangeNotifier {
   Future<void> refresh({bool force = false}) async {
     if (!force && _items.isNotEmpty && !_staleness.isStale) return;
     final result = await _service.fetchPage(0, filter: filter);
-    _items = result.items;
+    _items = _excludePendingDeletes(result.items);
     _hasMore = result.hasMore;
     _page = 1;
     hasError = false;
@@ -96,7 +104,7 @@ class NotificationNotifier extends SafeChangeNotifier {
     _notify();
     try {
       final result = await _service.fetchPage(_page, filter: filter);
-      _items = [..._items, ...result.items];
+      _items = [..._items, ..._excludePendingDeletes(result.items)];
       _hasMore = result.hasMore;
       _page++;
     } catch (e) {
@@ -145,17 +153,24 @@ class NotificationNotifier extends SafeChangeNotifier {
     }
   }
 
+  List<NotificationModel> _excludePendingDeletes(List<NotificationModel> items) {
+    if (_pendingDeleteIds.isEmpty) return items;
+    return items.where((n) => !_pendingDeleteIds.contains(n.id)).toList();
+  }
+
   // 실행취소 지원: 로컬에서 제거하고 원래 인덱스 저장
   void removeLocally(NotificationModel item) {
     final index = _items.indexWhere((n) => n.id == item.id);
     if (index < 0) return;
     _savedPositions[item.id] = index;
+    _pendingDeleteIds.add(item.id);
     _items.removeAt(index);
     _notify();
   }
 
   void undoDismiss(NotificationModel item) {
     if (_items.any((n) => n.id == item.id)) return;
+    _pendingDeleteIds.remove(item.id);
     final savedIndex = _savedPositions.remove(item.id);
     final insertAt = (savedIndex != null && savedIndex <= _items.length)
         ? savedIndex
@@ -170,6 +185,8 @@ class NotificationNotifier extends SafeChangeNotifier {
       await _service.delete(item.id);
     } catch (e) {
       debugPrint('[Notification] delete 실패: $e');
+    } finally {
+      _pendingDeleteIds.remove(item.id);
     }
   }
 
@@ -179,6 +196,7 @@ class NotificationNotifier extends SafeChangeNotifier {
   // 크므로 같은 안전장치를 반드시 제공해야 함
   void removeAllLocally() {
     _savedAllItems = List<NotificationModel>.from(_items);
+    _pendingDeleteIds.addAll(_savedAllItems!.map((n) => n.id));
     _items = [];
     _savedPositions.clear();
     _notify();
@@ -187,17 +205,21 @@ class NotificationNotifier extends SafeChangeNotifier {
   void undoDeleteAll() {
     final saved = _savedAllItems;
     if (saved == null) return;
+    _pendingDeleteIds.removeAll(saved.map((n) => n.id));
     _items = saved;
     _savedAllItems = null;
     _notify();
   }
 
   Future<void> confirmDeleteAll() async {
+    final saved = _savedAllItems;
     _savedAllItems = null;
     try {
       await _service.deleteAll();
     } catch (e) {
       debugPrint('[Notification] deleteAll 실패: $e');
+    } finally {
+      if (saved != null) _pendingDeleteIds.removeAll(saved.map((n) => n.id));
     }
   }
 }

@@ -36,6 +36,7 @@ void main() {
       sl.unregister<NotificationFeedable>();
     }
     sl.registerSingleton<NotificationFeedable>(mockService);
+    NotificationNotifier.resetPendingDeletesForTest();
     notifier = NotificationNotifier();
   });
 

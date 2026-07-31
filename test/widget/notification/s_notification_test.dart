@@ -9,6 +9,7 @@ import 'package:feple/model/notification_model.dart';
 import 'package:feple/model/notification_page.dart';
 import 'package:feple/model/notification_type.dart';
 import 'package:feple/model/post_model.dart';
+import 'package:feple/screen/notification/notification_notifier.dart';
 import 'package:feple/screen/notification/s_notification.dart';
 import 'package:feple/screen/notification/w_notification_card.dart';
 import 'package:feple/service/artist_service.dart';
@@ -60,6 +61,10 @@ void main() {
   });
 
   setUp(() {
+    // _pendingDeleteIds는 클래스(static) 레벨 상태라 테스트 간에 남아있으면
+    // 이전 테스트에서 스와이프 삭제한 id와 겹치는 fixture가 계속 숨겨짐 —
+    // 매 테스트 시작 시 반드시 초기화.
+    NotificationNotifier.resetPendingDeletesForTest();
     mockService = MockNotificationFeedable();
     mockArtistService = MockArtistService();
     mockFestivalService = MockFestivalService();

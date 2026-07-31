@@ -54,6 +54,23 @@ void main() {
     sl.unregister<ScrapService>();
   });
 
+  group('refresh', () {
+    test('조회수는 증가시키지 않고 댓글·상태만 다시 불러온다', () async {
+      when(() => mockPostService.fetchCounts(1))
+          .thenAnswer((_) async => (likeCount: 5, scrapCount: 2));
+      when(() => mockPostService.isLiked(1)).thenAnswer((_) async => true);
+      when(() => mockScrapService.isScraped(1)).thenAnswer((_) async => false);
+      when(() => mockCommentService.fetchPostComments(1))
+          .thenAnswer((_) async => [_comment(id: 1)]);
+
+      await notifier.refresh();
+
+      expect(notifier.comments.length, 1);
+      expect(notifier.likeCount, 5);
+      verifyNever(() => mockPostService.incrementPostView(1));
+    });
+  });
+
   group('fetchComments', () {
     test('성공 시 comments 목록 채움', () async {
       when(() => mockCommentService.fetchPostComments(1))

@@ -11,6 +11,7 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_list_row_skeleton.dart';
 import 'package:feple/common/widget/w_refreshable_center.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:flutter/material.dart';
@@ -290,7 +291,7 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
 
   Widget _buildList(AbstractThemeColors colors) {
     if (_isSearching && _searchResults == null) {
-      return Center(child: CircularProgressIndicator(color: colors.activate));
+      return const ListRowSkeleton(showLeading: false);
     }
     if (_searchResults != null) {
       return _buildSearchResults(colors);
@@ -306,7 +307,7 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
 
   Widget _buildSearchResults(AbstractThemeColors colors) {
     if (_isSearching) {
-      return Center(child: CircularProgressIndicator(color: colors.activate));
+      return const ListRowSkeleton(showLeading: false);
     }
     final displayPosts = _searchResults!;
     if (displayPosts.isEmpty) {

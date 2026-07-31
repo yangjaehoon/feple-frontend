@@ -105,6 +105,11 @@ class PostDetailNotifier extends SafeChangeNotifier {
     await Future.wait([loadPostState(), fetchComments(), _incrementView()]);
   }
 
+  /// pull-to-refresh 전용 — init()과 달리 조회수를 다시 올리지 않는다.
+  Future<void> refresh() async {
+    await Future.wait([loadPostState(), fetchComments()]);
+  }
+
   Future<void> _incrementView() async {
     viewCount++;
     safeNotify();

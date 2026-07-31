@@ -4,6 +4,7 @@ import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_expandable_text.dart';
+import 'package:feple/common/widget/w_list_row_skeleton.dart';
 import 'package:feple/model/poster_cert_state.dart';
 import 'package:feple/model/festival_review.dart';
 import 'package:feple/screen/main/tab/my_page/w_rating_sheet.dart';
@@ -196,7 +197,7 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
     ScrollController scrollController,
   ) {
     if (_isLoading) {
-      return Center(child: CircularProgressIndicator(color: colors.activate));
+      return const ListRowSkeleton();
     }
     if (_hasError) {
       return ErrorState(

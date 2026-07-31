@@ -346,42 +346,47 @@ class _PostDetailCardState extends State<PostDetailCard> {
   }
 
   Widget _buildScrollContent(AbstractThemeColors colors, int? userId) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          PostHeaderSection(
-            title: _title,
-            nickname: widget.nickname,
-            profileImageUrl: widget.profileImageUrl,
-            certified: widget.certified,
-            userRole: widget.userRole,
-            anonymous: widget.anonymous,
-            authorLevel: widget.authorLevel,
-            createdAt: widget.createdAt,
-            updatedAt: _updatedAt,
-            onAuthorTap: () => navigateToPostAuthor(
-              context,
-              userId: widget.postUserId,
+    return RefreshIndicator(
+      color: colors.activate,
+      onRefresh: _notifier.refresh,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            PostHeaderSection(
+              title: _title,
               nickname: widget.nickname,
               profileImageUrl: widget.profileImageUrl,
+              certified: widget.certified,
+              userRole: widget.userRole,
+              anonymous: widget.anonymous,
+              authorLevel: widget.authorLevel,
+              createdAt: widget.createdAt,
+              updatedAt: _updatedAt,
+              onAuthorTap: () => navigateToPostAuthor(
+                context,
+                userId: widget.postUserId,
+                nickname: widget.nickname,
+                profileImageUrl: widget.profileImageUrl,
+              ),
             ),
-          ),
-          Divider(thickness: 1, height: 24, color: colors.listDivider),
-          PostContentSection(
-            content: _content,
-            imageUrl: _imageUrl,
-            onImageTap: _imageUrl != null
-                ? () => _showImageViewer(context, _imageUrl!)
-                : null,
-          ),
-          Divider(thickness: 1, height: 40, color: colors.listDivider),
-          _buildInteractionArea(colors, userId),
-          const SizedBox(height: 24),
-          _buildCommentArea(userId),
-          const SizedBox(height: 16),
-        ],
+            Divider(thickness: 1, height: 24, color: colors.listDivider),
+            PostContentSection(
+              content: _content,
+              imageUrl: _imageUrl,
+              onImageTap: _imageUrl != null
+                  ? () => _showImageViewer(context, _imageUrl!)
+                  : null,
+            ),
+            Divider(thickness: 1, height: 40, color: colors.listDivider),
+            _buildInteractionArea(colors, userId),
+            const SizedBox(height: 24),
+            _buildCommentArea(userId),
+            const SizedBox(height: 16),
+          ],
+        ),
       ),
     );
   }

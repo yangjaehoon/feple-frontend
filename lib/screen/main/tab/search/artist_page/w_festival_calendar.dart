@@ -4,6 +4,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_list_row_skeleton.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_tap_loading_indicator.dart';
 import 'package:feple/injection.dart';
@@ -83,7 +84,7 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
 
   Widget _buildBody(AbstractThemeColors colors) {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator.adaptive());
+      return const ListRowSkeleton(showLeading: false);
     }
     if (_hasError) {
       return Center(child: ErrorState.network(_error!, onRetry: _fetch));

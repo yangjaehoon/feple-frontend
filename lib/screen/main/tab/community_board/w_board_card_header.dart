@@ -28,7 +28,7 @@ class BoardCardHeader extends StatelessWidget {
             style: TextStyle(
               fontSize: AppDimens.fontSizeXxl,
               color: colors.textTitle,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w800,
               letterSpacing: -0.3,
             ),
             overflow: TextOverflow.ellipsis,

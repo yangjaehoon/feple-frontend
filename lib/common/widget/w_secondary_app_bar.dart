@@ -46,7 +46,7 @@ class SecondaryAppBar extends StatelessWidget implements PreferredSizeWidget {
                 style: TextStyle(
                   color: onAppBar,
                   fontSize: AppDimens.fontSizeTitle,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w700,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),

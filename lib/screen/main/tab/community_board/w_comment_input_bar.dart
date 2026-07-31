@@ -140,7 +140,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
                 hintStyle: TextStyle(color: colors.textSecondary),
                 filled: true,
                 fillColor: Colors.transparent,
-                counterText: '',
+                counterStyle: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXxs),
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               ),

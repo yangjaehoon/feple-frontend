@@ -126,7 +126,7 @@ class NicknameFieldState extends State<NicknameField> {
       autofillHints: const [AutofillHints.nickname],
       style: TextStyle(fontSize: AppDimens.fontSizeLg, color: colors.text),
       decoration: InputDecoration(
-        counterText: '',
+        counterStyle: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXxs),
         prefixIcon: Icon(
           Icons.badge_outlined,
           color: colors.activate,

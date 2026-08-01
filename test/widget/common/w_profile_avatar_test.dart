@@ -8,16 +8,17 @@ import 'common_widget_test_harness.dart';
 
 void main() {
   group('ProfileAvatar 기본 렌더링', () {
-    testWidgets('imageUrl 없으면 닉네임 첫 글자를 보여준다', (tester) async {
+    testWidgets('imageUrl 없으면 기본 로고 이미지를 보여준다', (tester) async {
       await pumpCommonWidget(tester, const ProfileAvatar(nickname: '테스터'));
 
-      expect(find.text('테'), findsOneWidget);
+      final avatar = tester.widget<CircleAvatar>(find.byType(CircleAvatar));
+      expect(avatar.backgroundImage, isA<AssetImage>());
     });
 
-    testWidgets('nickname이 빈 문자열이면 물음표를 보여준다', (tester) async {
-      await pumpCommonWidget(tester, const ProfileAvatar(nickname: ''));
+    testWidgets('imageUrl 없으면 닉네임이 스크린리더용 라벨로 남는다', (tester) async {
+      await pumpCommonWidget(tester, const ProfileAvatar(nickname: '테스터'));
 
-      expect(find.text('?'), findsOneWidget);
+      expect(find.bySemanticsLabel('테스터'), findsOneWidget);
     });
 
     testWidgets('anonymous면 기본 로고 이미지를 사용한다', (tester) async {

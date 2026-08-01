@@ -48,14 +48,8 @@ class ProfileAvatar extends StatelessWidget {
     }
     return CircleAvatar(
       radius: radius,
-      backgroundColor: colors.activate,
-      child: Text(
-        nickname.isNotEmpty ? nickname[0] : '?',
-        style: TextStyle(
-          color: Theme.of(context).colorScheme.onPrimary,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
+      backgroundColor: colors.backgroundMain,
+      backgroundImage: const AssetImage('assets/image/feple_logo.png'),
     );
   }
 
@@ -88,7 +82,13 @@ class ProfileAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final avatar = _buildAvatar(context, colors);
+    // 이미지가 로고로 대체될 수 있어 nickname을 텍스트로 표시하지 않는 대신
+    // 스크린리더용 라벨로 남겨둔다.
+    final avatar = Semantics(
+      label: nickname,
+      image: true,
+      child: _buildAvatar(context, colors),
+    );
 
     final style = roleBadgeStyleFor(userRole: userRole, certified: certified);
     if (style == null) return avatar;

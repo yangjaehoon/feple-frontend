@@ -4,6 +4,7 @@ import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_model.dart';
 import 'package:feple/model/festival_preview.dart';
+import 'package:feple/model/festival_preview_page.dart';
 import 'package:feple/provider/festival_preview_provider.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/f_search.dart';
@@ -129,7 +130,7 @@ void main() {
             genres: any(named: 'genres'),
             regions: any(named: 'regions'),
             ageRestrictions: any(named: 'ageRestrictions'),
-          )).thenAnswer((_) async => [_preview(title: '서울재즈')]);
+          )).thenAnswer((_) async => FestivalPreviewPage(items: [_preview(title: '서울재즈')], hasMore: false));
       when(() => mockArtistService.fetchArtists())
           .thenAnswer((_) async => [Artist(id: 1, name: '아이유', genre: 'KPOP', profileImageUrl: '', followerCount: 0)]);
 
@@ -153,7 +154,7 @@ void main() {
             ageRestrictions: any(named: 'ageRestrictions'),
           )).thenAnswer((_) async {
         festivalCallCount++;
-        return [_preview(title: '축제$festivalCallCount')];
+        return FestivalPreviewPage(items: [_preview(title: '축제$festivalCallCount')], hasMore: false);
       });
       when(() => mockArtistService.fetchArtists()).thenAnswer((_) async {
         artistCallCount++;

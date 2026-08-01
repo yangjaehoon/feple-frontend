@@ -1,4 +1,5 @@
 import 'package:feple/model/festival_preview.dart';
+import 'package:feple/model/festival_preview_page.dart';
 import 'package:feple/provider/festival_preview_provider.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,8 +15,11 @@ FestivalPreview _preview(int id) => FestivalPreview(
       startDate: '2099-07-01', // 미래 날짜 → isEnded=false
     );
 
-List<FestivalPreview> _pages(int count) =>
+List<FestivalPreview> _items(int count) =>
     List.generate(count, (i) => _preview(i + 1));
+
+FestivalPreviewPage _page(int count, {bool hasMore = false}) =>
+    FestivalPreviewPage(items: _items(count), hasMore: hasMore);
 
 void main() {
   late MockFestivalService mockService;
@@ -26,7 +30,7 @@ void main() {
     mockService = MockFestivalService();
   });
 
-  void stubFetch(List<FestivalPreview> result) {
+  void stubFetch(FestivalPreviewPage result) {
     when(() => mockService.fetchPreviews(
           page: any(named: 'page'),
           size: any(named: 'size'),
@@ -37,7 +41,7 @@ void main() {
         )).thenAnswer((_) async => result);
   }
 
-  void stubFetchCallback(List<FestivalPreview> Function(int page) fn) {
+  void stubFetchCallback(FestivalPreviewPage Function(int page) fn) {
     var callCount = 0;
     when(() => mockService.fetchPreviews(
           page: any(named: 'page'),
@@ -71,7 +75,7 @@ void main() {
   // ───────────────────────────────────────────────────
   group('A. 초기 로드', () {
     test('생성 시 fetchPreviews 호출되고 아이템 채워짐', () async {
-      stubFetch(_pages(5));
+      stubFetch(_page(5));
 
       final notifier = await make();
 
@@ -80,18 +84,16 @@ void main() {
       expect(notifier.error, isNull);
     });
 
-    // 백엔드(/festivals)는 페이지네이션 없이 필터에 맞는 전체 목록을 매번
-    // 한 번에 반환하므로, 몇 개를 받든 "다음 페이지"는 존재하지 않는다.
-    test('20개 이상 수신해도 hasMore=false', () async {
-      stubFetch(_pages(20));
+    test('백엔드가 hasMore=true를 반환하면 그대로 반영', () async {
+      stubFetch(_page(20, hasMore: true));
 
       final notifier = await make();
 
-      expect(notifier.hasMore, false);
+      expect(notifier.hasMore, true);
     });
 
-    test('20개 미만 수신 시에도 hasMore=false', () async {
-      stubFetch(_pages(7));
+    test('백엔드가 hasMore=false를 반환하면 그대로 반영', () async {
+      stubFetch(_page(7, hasMore: false));
 
       final notifier = await make();
 
@@ -110,33 +112,26 @@ void main() {
   });
 
   // ───────────────────────────────────────────────────
-  // B. 페이지네이션 (백엔드가 미지원 — 중복 방지 확인)
+  // B. 페이지네이션
   // ───────────────────────────────────────────────────
   group('B. 페이지네이션', () {
-    // 회귀 방지: 예전엔 hasMore가 응답 개수(20개 이상이면 true)로 결정돼서,
-    // 스크롤로 fetchNext가 다시 호출되면 백엔드가 항상 돌려주는 같은 전체
-    // 목록을 또 append해 페스티벌이 중복으로 보이는 버그가 있었다.
-    test('초기 로드 이후 fetchNext를 다시 호출해도 중복 추가 안 됨', () async {
-      stubFetchCallback((page) => _pages(20));
+    test('hasMore=true인 동안 fetchNext 호출 시 다음 페이지가 이어붙여짐', () async {
+      stubFetchCallback((page) => page == 0
+          ? _page(20, hasMore: true)
+          : _page(5, hasMore: false));
 
       final notifier = await make();
       expect(notifier.items.length, 20);
+      expect(notifier.hasMore, true);
 
       await notifier.fetchNext();
 
-      expect(notifier.items.length, 20);
-      verify(() => mockService.fetchPreviews(
-            page: any(named: 'page'),
-            size: any(named: 'size'),
-            includeEnded: any(named: 'includeEnded'),
-            genres: any(named: 'genres'),
-            regions: any(named: 'regions'),
-            ageRestrictions: any(named: 'ageRestrictions'),
-          )).called(1); // 생성자의 1회만 — fetchNext는 hasMore=false라 무시됨
+      expect(notifier.items.length, 25); // 교체가 아니라 누적
+      expect(notifier.hasMore, false);
     });
 
-    test('hasMore=false이면 fetchNext 무시', () async {
-      stubFetch(_pages(3));
+    test('hasMore=false이면 fetchNext 호출해도 API 재요청 안 함', () async {
+      stubFetch(_page(3, hasMore: false));
 
       final notifier = await make();
       expect(notifier.hasMore, false);
@@ -154,7 +149,7 @@ void main() {
     });
 
     test('page 0 재요청 시 기존 아이템 교체', () async {
-      stubFetchCallback((page) => _pages(5));
+      stubFetchCallback((page) => _page(5));
 
       final notifier = await make();
       expect(notifier.items.length, 5);
@@ -179,7 +174,7 @@ void main() {
             regions: any(named: 'regions'),
             ageRestrictions: any(named: 'ageRestrictions'),
           )).thenAnswer((_) async {
-        if (callCount++ == 0) return _pages(5);
+        if (callCount++ == 0) return _page(5);
         throw Exception('network error');
       });
 
@@ -207,7 +202,7 @@ void main() {
             ageRestrictions: any(named: 'ageRestrictions'),
           )).thenAnswer((_) async {
         if (callCount++ == 0) throw Exception('network error');
-        return _pages(5);
+        return _page(5);
       });
 
       final notifier = await make();
@@ -230,7 +225,7 @@ void main() {
             regions: any(named: 'regions'),
             ageRestrictions: any(named: 'ageRestrictions'),
           )).thenAnswer((_) async {
-        if (callCount++ == 0) return _pages(5);
+        if (callCount++ == 0) return _page(5);
         throw Exception('network error');
       });
 
@@ -254,9 +249,9 @@ void main() {
             ageRestrictions: any(named: 'ageRestrictions'),
           )).thenAnswer((_) async {
         final c = callCount++;
-        if (c == 0) return _pages(5);
+        if (c == 0) return _page(5);
         if (c == 1) throw Exception('error');
-        return _pages(5);
+        return _page(5);
       });
 
       final notifier = await make();
@@ -281,7 +276,7 @@ void main() {
   // ───────────────────────────────────────────────────
   group('D. refresh', () {
     test('force=false이면 신선한 데이터 있을 때 skip', () async {
-      stubFetch(_pages(5));
+      stubFetch(_page(5));
 
       final notifier = await make();
       await notifier.refresh(); // force=false, 5분 이내
@@ -298,7 +293,7 @@ void main() {
     });
 
     test('force=true이면 항상 재요청', () async {
-      stubFetch(_pages(5));
+      stubFetch(_page(5));
 
       final notifier = await make();
       await notifier.refresh(force: true);
@@ -319,7 +314,7 @@ void main() {
   // ───────────────────────────────────────────────────
   group('E. 필터', () {
     test('toggleGenre로 장르 추가/제거', () async {
-      stubFetch([]);
+      stubFetch(_page(0));
 
       final notifier = await make();
 
@@ -331,7 +326,7 @@ void main() {
     });
 
     test('toggleRegion으로 지역 추가', () async {
-      stubFetch([]);
+      stubFetch(_page(0));
 
       final notifier = await make();
 
@@ -340,7 +335,7 @@ void main() {
     });
 
     test('toggleAgeRestriction으로 연령 제한 추가', () async {
-      stubFetch([]);
+      stubFetch(_page(0));
 
       final notifier = await make();
 
@@ -349,7 +344,7 @@ void main() {
     });
 
     test('여러 장르 동시 선택 가능', () async {
-      stubFetch([]);
+      stubFetch(_page(0));
 
       final notifier = await make();
 
@@ -360,7 +355,7 @@ void main() {
     });
 
     test('clearFilters로 모든 필터 초기화', () async {
-      stubFetch([]);
+      stubFetch(_page(0));
 
       final notifier = await make();
 
@@ -375,7 +370,7 @@ void main() {
     });
 
     test('필터 변경 후 debounce 경과하면 API 재호출', () async {
-      stubFetch([]);
+      stubFetch(_page(0));
 
       final notifier = await make();
       clearInteractions(mockService);
@@ -394,7 +389,7 @@ void main() {
     });
 
     test('debounce 내 연속 변경 → API 1회만 호출', () async {
-      stubFetch([]);
+      stubFetch(_page(0));
 
       final notifier = await make();
       clearInteractions(mockService);
@@ -428,9 +423,9 @@ void main() {
         final isFirstCall = callCount++ == 0;
         if (isFirstCall) {
           await Future.delayed(const Duration(milliseconds: 500));
-          return _pages(3); // 필터 적용 전(느리게 도착)
+          return _page(3); // 필터 적용 전(느리게 도착)
         }
-        return [_preview(99)]; // 필터 적용 후(빠르게 도착)
+        return FestivalPreviewPage(items: [_preview(99)], hasMore: false); // 필터 적용 후(빠르게 도착)
       });
 
       final provider = FestivalPreviewProvider(mockService);
@@ -451,7 +446,7 @@ void main() {
   // ───────────────────────────────────────────────────
   group('F. dispose', () {
     test('dispose 후 safeNotify가 예외 없이 동작', () async {
-      stubFetch([]);
+      stubFetch(_page(0));
 
       final notifier = await make();
       notifier.dispose();

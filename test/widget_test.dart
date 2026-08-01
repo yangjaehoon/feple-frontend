@@ -14,7 +14,7 @@ import 'package:feple/common/language/language.dart';
 import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_app.dart';
 import 'package:feple/model/festival_model.dart';
-import 'package:feple/model/festival_preview.dart';
+import 'package:feple/model/festival_preview_page.dart';
 import 'package:feple/model/followed_artist.dart';
 import 'package:feple/service/notification_countable.dart';
 import 'package:flutter/material.dart';
@@ -57,7 +57,7 @@ void main() {
           genres: any(named: 'genres'),
           regions: any(named: 'regions'),
           ageRestrictions: any(named: 'ageRestrictions'),
-        )).thenAnswer((_) async => <FestivalPreview>[]);
+        )).thenAnswer((_) async => const FestivalPreviewPage(items: [], hasMore: false));
     if (sl.isRegistered<FestivalService>()) sl.unregister<FestivalService>();
     sl.registerSingleton<FestivalService>(mockFestivalService);
 

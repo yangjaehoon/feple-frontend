@@ -5,6 +5,7 @@ import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/model/festival_preview.dart';
+import 'package:feple/model/festival_preview_page.dart';
 import 'package:feple/provider/festival_preview_provider.dart';
 import 'package:feple/screen/main/tab/festival_list/w_festival_list.dart';
 import 'package:feple/screen/main/tab/festival_list/w_festival_preview_card.dart';
@@ -62,7 +63,7 @@ void main() {
 
   group('FestivalListWidget 로딩', () {
     testWidgets('첫 로딩 중에는 스켈레톤을 보여준다', (tester) async {
-      final completer = Completer<List<FestivalPreview>>();
+      final completer = Completer<FestivalPreviewPage>();
       when(() => mockService.fetchPreviews(
             page: any(named: 'page'),
             size: any(named: 'size'),
@@ -77,7 +78,7 @@ void main() {
       expect(find.byType(FestivalPreviewCard), findsNothing);
       expect(find.byType(CircularProgressIndicator), findsNothing); // skeleton, not spinner
 
-      completer.complete([]);
+      completer.complete(const FestivalPreviewPage(items: [], hasMore: false));
       await tester.pump();
       await tester.pump();
     });
@@ -96,7 +97,7 @@ void main() {
           )).thenAnswer((_) async {
         callCount++;
         if (callCount == 1) throw Exception('네트워크 오류');
-        return [_festival(title: '복구된 페스티벌')];
+        return FestivalPreviewPage(items: [_festival(title: '복구된 페스티벌')], hasMore: false);
       });
 
       await _pump(tester, FestivalPreviewProvider(mockService));
@@ -122,7 +123,7 @@ void main() {
             genres: any(named: 'genres'),
             regions: any(named: 'regions'),
             ageRestrictions: any(named: 'ageRestrictions'),
-          )).thenAnswer((_) async => []);
+          )).thenAnswer((_) async => const FestivalPreviewPage(items: [], hasMore: false));
 
       await _pump(tester, FestivalPreviewProvider(mockService));
       await tester.pump();
@@ -139,7 +140,7 @@ void main() {
             genres: any(named: 'genres'),
             regions: any(named: 'regions'),
             ageRestrictions: any(named: 'ageRestrictions'),
-          )).thenAnswer((_) async => []);
+          )).thenAnswer((_) async => const FestivalPreviewPage(items: [], hasMore: false));
 
       final provider = FestivalPreviewProvider(mockService);
       await _pump(tester, provider);
@@ -170,10 +171,10 @@ void main() {
             genres: any(named: 'genres'),
             regions: any(named: 'regions'),
             ageRestrictions: any(named: 'ageRestrictions'),
-          )).thenAnswer((_) async => [
+          )).thenAnswer((_) async => FestivalPreviewPage(items: [
             _festival(id: 1, title: '락 페스티벌'),
             _festival(id: 2, title: '재즈 페스티벌'),
-          ]);
+          ], hasMore: false));
 
       await _pump(tester, FestivalPreviewProvider(mockService));
       await tester.pump();

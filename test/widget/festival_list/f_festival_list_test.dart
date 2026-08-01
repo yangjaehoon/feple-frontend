@@ -3,6 +3,7 @@ import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/festival_preview.dart';
+import 'package:feple/model/festival_preview_page.dart';
 import 'package:feple/provider/festival_preview_provider.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/festival_list/f_festival_list.dart';
@@ -97,7 +98,7 @@ void main() {
           genres: any(named: 'genres'),
           regions: any(named: 'regions'),
           ageRestrictions: any(named: 'ageRestrictions'),
-        )).thenAnswer((_) async => [_festival()]);
+        )).thenAnswer((_) async => FestivalPreviewPage(items: [_festival()], hasMore: false));
   });
 
   tearDown(() {

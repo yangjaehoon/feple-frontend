@@ -137,7 +137,7 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
     safeNotify();
 
     try {
-      final newItems = await _service.fetchPreviews(
+      final result = await _service.fetchPreviews(
         page: _page,
         size: _size,
         includeEnded: true,
@@ -148,18 +148,12 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
       // 응답 도착 전 필터가 바뀌어 이 요청이 무효화됐으면 결과를 버림
       if (myGeneration != _generation) return;
 
-      // 백엔드(/festivals)는 페이지네이션을 지원하지 않고 필터에 맞는 전체
-      // 목록(최대 200개)을 매번 한 번에 반환한다 — page/size 파라미터가 없음.
-      // 그래서 항상 응답 전체로 교체하고, "다음 페이지"가 존재하지 않으므로
-      // hasMore를 즉시 false로 고정한다. 이전엔 newItems.length < _size일
-      // 때만 false로 바꿔서, 응답이 항상 20개보다 많으면 hasMore가 절대
-      // false가 안 돼 스크롤할 때마다 같은 목록을 또 append해 페스티벌이
-      // 중복으로 보이는 버그가 있었다.
-      _items.clear();
+      // page 0은 기존 목록을 교체(새로고침·필터변경), 그 외에는 이어붙임(더 불러오기)
+      if (wasFirstPage) _items.clear();
       _refreshError = null;
-      _items.addAll(newItems);
+      _items.addAll(result.items);
       _cachedItems = List.unmodifiable(_items);
-      _hasMore = false;
+      _hasMore = result.hasMore;
       _page += 1;
       if (wasFirstPage) _staleness.markLoaded();
     } catch (e) {

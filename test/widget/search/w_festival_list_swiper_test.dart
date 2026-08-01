@@ -6,6 +6,7 @@ import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/festival_preview.dart';
+import 'package:feple/model/festival_preview_page.dart';
 import 'package:feple/provider/festival_preview_provider.dart';
 import 'package:feple/screen/main/tab/search/w_festival_list_swiper.dart';
 import 'package:feple/service/festival_service.dart';
@@ -81,7 +82,7 @@ void main() {
 
   group('FestivalListSwiperWidget 로딩', () {
     testWidgets('로딩 중에는 스켈레톤을 보여준다', (tester) async {
-      final completer = Completer<List<FestivalPreview>>();
+      final completer = Completer<FestivalPreviewPage>();
       when(() => mockService.fetchPreviews(
             page: any(named: 'page'),
             size: any(named: 'size'),
@@ -94,7 +95,7 @@ void main() {
       await _pump(tester, mockService, settle: false);
 
       expect(find.byType(SkeletonBox), findsWidgets);
-      completer.complete([]);
+      completer.complete(const FestivalPreviewPage(items: [], hasMore: false));
       await tester.pump(const Duration(milliseconds: 100));
     });
   });
@@ -108,7 +109,7 @@ void main() {
             genres: any(named: 'genres'),
             regions: any(named: 'regions'),
             ageRestrictions: any(named: 'ageRestrictions'),
-          )).thenAnswer((_) async => [_preview(ended: true)]);
+          )).thenAnswer((_) async => FestivalPreviewPage(items: [_preview(ended: true)], hasMore: false));
 
       await _pump(tester, mockService);
 
@@ -125,7 +126,8 @@ void main() {
             genres: any(named: 'genres'),
             regions: any(named: 'regions'),
             ageRestrictions: any(named: 'ageRestrictions'),
-          )).thenAnswer((_) async => [_preview(title: '서울재즈'), _preview(id: 2, title: '펜타포트')]);
+          )).thenAnswer((_) async => FestivalPreviewPage(
+              items: [_preview(title: '서울재즈'), _preview(id: 2, title: '펜타포트')], hasMore: false));
 
       await _pump(tester, mockService);
 
@@ -146,7 +148,7 @@ void main() {
           )).thenAnswer((_) async {
         callCount++;
         if (callCount == 1) throw Exception('네트워크 오류');
-        return [_preview(title: '재시도축제')];
+        return FestivalPreviewPage(items: [_preview(title: '재시도축제')], hasMore: false);
       });
 
       await _pump(tester, mockService);

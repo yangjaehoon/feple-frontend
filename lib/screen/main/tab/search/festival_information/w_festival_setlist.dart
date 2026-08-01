@@ -37,7 +37,9 @@ class FestivalSetlistState extends State<FestivalSetlist> {
 
   Future<void> refresh() {
     final future = _fetch();
-    setState(() => _future = future);
+    setState(() {
+      _future = future;
+    });
     return future;
   }
 

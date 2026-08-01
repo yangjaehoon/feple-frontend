@@ -28,6 +28,7 @@ class _ArtistSuggestionSheetState extends State<ArtistSuggestionSheet> {
   }
 
   Future<void> _submit() async {
+    if (_submitting) return;
     final name = _nameCtrl.text.trim();
     if (name.isEmpty) {
       setState(() => _nameError = 'artist_suggestion_name_required'.tr());

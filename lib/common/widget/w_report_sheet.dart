@@ -57,6 +57,7 @@ class _ReportSheetContentState extends State<_ReportSheetContent> {
   }
 
   Future<void> _handleSubmit() async {
+    if (_isSubmitting) return;
     setState(() => _isSubmitting = true);
     try {
       await widget.onSubmit(_selected!, _detailController.text.trim());

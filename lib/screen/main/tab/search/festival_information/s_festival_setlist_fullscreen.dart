@@ -438,6 +438,7 @@ class _SetlistRequestSheetState extends State<SetlistRequestSheet> {
   }
 
   Future<void> _submit() async {
+    if (_submitting) return;
     final message = _controller.text.trim();
     if (message.isEmpty) return;
     setState(() => _submitting = true);

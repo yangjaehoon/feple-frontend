@@ -47,6 +47,7 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
   }
 
   Future<void> _submit() async {
+    if (_submitting) return;
     if (_imageBytes == null) return;
     setState(() => _submitting = true);
     final success = await submitCertification(

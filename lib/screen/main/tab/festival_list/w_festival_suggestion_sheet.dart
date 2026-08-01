@@ -28,6 +28,7 @@ class _FestivalSuggestionSheetState extends State<FestivalSuggestionSheet> {
   }
 
   Future<void> _submit() async {
+    if (_submitting) return;
     final name = _nameCtrl.text.trim();
     if (name.isEmpty) {
       setState(() => _nameError = 'festival_suggestion_name_required'.tr());

@@ -62,6 +62,7 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
   }
 
   Future<void> _submit() async {
+    if (_submitting) return;
     final userId = context.read<UserProvider>().currentUserId;
     if (userId == null) {
       context.showInfoSnackbar('no_login_info'.tr());

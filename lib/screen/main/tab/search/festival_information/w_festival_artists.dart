@@ -50,7 +50,7 @@ class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
     super.dispose();
   }
 
-  void refresh() => _notifier.fetch();
+  Future<void> refresh() => _notifier.fetch();
 
   @override
   Widget build(BuildContext context) {

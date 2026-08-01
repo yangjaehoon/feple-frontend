@@ -58,7 +58,7 @@ class FestivalPosterState extends State<FestivalPoster> {
     super.dispose();
   }
 
-  void refresh() => _notifier.init();
+  Future<void> refresh() => _notifier.init();
 
   Future<void> _openKakaoMap() async {
     final lat = widget.poster.latitude;

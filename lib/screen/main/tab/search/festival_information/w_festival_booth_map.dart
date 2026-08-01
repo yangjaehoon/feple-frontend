@@ -31,7 +31,7 @@ class FestivalBoothMap extends StatefulWidget {
 }
 
 class FestivalBoothMapState extends State<FestivalBoothMap> {
-  void refresh() => _fetchBooths();
+  Future<void> refresh() => _fetchBooths();
   List<BoothModel> _booths = [];
   bool _isLoading = true;
   bool _hasError = false;

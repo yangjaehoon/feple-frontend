@@ -35,9 +35,11 @@ class FestivalSetlistState extends State<FestivalSetlist> {
   Future<List<FestivalSetlistEntry>> _fetch() =>
       sl<FestivalDetailService>().fetchSetlist(widget.festivalId);
 
-  void refresh() => setState(() {
-    _future = _fetch();
-  });
+  Future<void> refresh() {
+    final future = _fetch();
+    setState(() => _future = future);
+    return future;
+  }
 
   Future<void> _openFullPage() async {
     await Navigator.push<void>(

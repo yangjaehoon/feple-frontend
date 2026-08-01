@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:feple/common/app_events.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_selectable_chip.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -200,6 +201,7 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
       await Future.wait(
         _selectedIds.map((id) => sl<ArtistFollowService>().follow(id)),
       );
+      if (_selectedIds.isNotEmpty) AppEvents.artistFollowChanged.value++;
     } catch (e) {
       debugPrint('[Onboarding] artist follow failed: $e');
       if (mounted) {

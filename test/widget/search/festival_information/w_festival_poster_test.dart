@@ -370,7 +370,7 @@ void main() {
       await tester.pump();
       expect(callCount, 1);
 
-      key.currentState!.refresh();
+      await key.currentState!.refresh();
       await tester.pump();
       await tester.pump();
 

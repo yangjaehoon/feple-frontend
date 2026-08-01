@@ -86,7 +86,7 @@ class FestivalTimetableState extends State<FestivalTimetable>
     super.dispose();
   }
 
-  void refresh() => _notifier.fetch();
+  Future<void> refresh() => _notifier.fetch();
 
   @override
   Widget build(BuildContext context) {

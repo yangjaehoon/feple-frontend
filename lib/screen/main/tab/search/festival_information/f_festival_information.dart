@@ -33,12 +33,16 @@ class _FestivalInformationFragmentState
   final _mapKey = GlobalKey<FestivalBoothMapState>();
 
   Future<void> _onRefresh() async {
-    _posterKey.currentState?.refresh();
-    _artistsKey.currentState?.refresh();
-    unawaited(_boardKey.currentState?.refresh());
-    _timetableKey.currentState?.refresh();
-    _setlistKey.currentState?.refresh();
-    _mapKey.currentState?.refresh();
+    // 각 섹션의 refresh()가 실제로 끝날 때까지 기다려야 당겨서 새로고침 스피너가
+    // 화면 갱신 완료와 맞물려 사라짐 (artist_page의 동일 패턴 참고)
+    await Future.wait([
+      _posterKey.currentState?.refresh() ?? Future.value(),
+      _artistsKey.currentState?.refresh() ?? Future.value(),
+      _boardKey.currentState?.refresh() ?? Future.value(),
+      _timetableKey.currentState?.refresh() ?? Future.value(),
+      _setlistKey.currentState?.refresh() ?? Future.value(),
+      _mapKey.currentState?.refresh() ?? Future.value(),
+    ]);
   }
 
   @override

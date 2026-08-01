@@ -49,6 +49,20 @@ void main() {
     });
   });
 
+  group('VerifyEmailScreen 뒤로가기', () {
+    testWidgets('계정을 지우지 않고 이전 화면으로 돌아갈 수 있는 뒤로가기 버튼이 있다', (tester) async {
+      await pumpLoginScreen(
+        tester,
+        const VerifyEmailScreen(email: 'user@example.com'),
+      );
+
+      final backButton = tester.widget<IconButton>(find.byType(IconButton).first);
+      expect(backButton.onPressed, isNotNull);
+
+      await tester.pumpWidget(const SizedBox());
+    });
+  });
+
   group('VerifyEmailScreen 재전송 쿨다운', () {
     testWidgets('초기 진입 시 재전송 버튼이 쿨다운으로 비활성화된다', (tester) async {
       await pumpLoginScreen(

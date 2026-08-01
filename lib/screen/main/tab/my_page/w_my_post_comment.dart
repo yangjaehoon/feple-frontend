@@ -67,6 +67,7 @@ class MyPostCommentViewState extends State<MyPostCommentView>
     }
     final stats = snapshot.data!;
     final colors = context.appColors;
+    final lang = context.locale.languageCode;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
@@ -76,7 +77,7 @@ class MyPostCommentViewState extends State<MyPostCommentView>
               context,
               icon: Icons.verified_rounded,
               label: 'certification_badge'.tr(),
-              value: stats.certificationCount.toString(),
+              value: stats.certificationCount.toDisplayCount(lang),
               color: colors.activate,
               onTap: () => _navigate(const CertificationListScreen()),
             ),
@@ -87,7 +88,7 @@ class MyPostCommentViewState extends State<MyPostCommentView>
               context,
               icon: Icons.article_rounded,
               label: 'posts'.tr(),
-              value: stats.postCount.toString(),
+              value: stats.postCount.toDisplayCount(lang),
               color: colors.activate,
               onTap: () => _navigate(MyPostsView(userId: widget.userId)),
             ),
@@ -98,7 +99,7 @@ class MyPostCommentViewState extends State<MyPostCommentView>
               context,
               icon: Icons.chat_bubble_rounded,
               label: 'comments'.tr(),
-              value: stats.commentCount.toString(),
+              value: stats.commentCount.toDisplayCount(lang),
               color: colors.activate,
               onTap: () => _navigate(MyCommentsView(userId: widget.userId)),
             ),
@@ -109,7 +110,7 @@ class MyPostCommentViewState extends State<MyPostCommentView>
               context,
               icon: Icons.star_rounded,
               label: 'scraps'.tr(),
-              value: stats.scrapCount.toString(),
+              value: stats.scrapCount.toDisplayCount(lang),
               color: colors.accentColor,
               onTap: () => _navigate(const MyScrapsView()),
             ),
@@ -120,7 +121,7 @@ class MyPostCommentViewState extends State<MyPostCommentView>
               context,
               icon: Icons.favorite_rounded,
               label: 'liked_posts'.tr(),
-              value: stats.likedPostCount.toString(),
+              value: stats.likedPostCount.toDisplayCount(lang),
               color: colors.accentColor,
               onTap: () => _navigate(MyLikedPostsView(userId: widget.userId)),
             ),

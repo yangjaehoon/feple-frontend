@@ -105,7 +105,7 @@
   "comment_banned_word": "금칙어가 포함되어 있습니다.",
   "comment_deleted": "댓글이 삭제되었습니다.",
   "delete_comment": "댓글 삭제",
-  "delete_comment_confirm": "댓글을 삭제하시겠습니까?",
+  "delete_comment_confirm": "댓글을 삭제하시겠습니까?\n삭제된 댓글은 복구할 수 없습니다.",
   "comment_delete_failed": "댓글 삭제에 실패했습니다.",
   "delete_failed": "삭제에 실패했습니다.",
   "search_posts_hint": "제목으로 검색",

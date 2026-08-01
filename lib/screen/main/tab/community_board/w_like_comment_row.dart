@@ -19,7 +19,7 @@ class LikeCommentRow extends StatelessWidget {
     required this.onScrapTap,
   });
 
-  Widget _buildLikeButton(AbstractThemeColors colors) {
+  Widget _buildLikeButton(AbstractThemeColors colors, String lang) {
     return Semantics(
       button: true,
       label: 'like'.tr(),
@@ -38,7 +38,7 @@ class LikeCommentRow extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                interaction.likeCount.toString(),
+                interaction.likeCount.toDisplayCount(lang),
                 style: TextStyle(fontSize: AppDimens.fontSizeXl, color: colors.textTitle, fontWeight: FontWeight.w600),
               ),
             ],
@@ -48,7 +48,7 @@ class LikeCommentRow extends StatelessWidget {
     );
   }
 
-  Widget _buildScrapButton(AbstractThemeColors colors) {
+  Widget _buildScrapButton(AbstractThemeColors colors, String lang) {
     return Semantics(
       button: true,
       label: 'scrap'.tr(),
@@ -68,7 +68,7 @@ class LikeCommentRow extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                interaction.scrapCount.toString(),
+                interaction.scrapCount.toDisplayCount(lang),
                 style: TextStyle(fontSize: AppDimens.fontSizeXl, color: colors.textTitle, fontWeight: FontWeight.w600),
               ),
             ],
@@ -81,16 +81,17 @@ class LikeCommentRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final lang = context.locale.languageCode;
     return Row(
       children: [
-        _buildLikeButton(colors),
+        _buildLikeButton(colors, lang),
         const SizedBox(width: 16),
-        _buildScrapButton(colors),
+        _buildScrapButton(colors, lang),
         const SizedBox(width: 16),
         Icon(Icons.comment_rounded, color: colors.textSecondary),
         const SizedBox(width: 4),
         Text(
-          interaction.commentCount.toString(),
+          interaction.commentCount.toDisplayCount(lang),
           style: TextStyle(fontSize: AppDimens.fontSizeXl, color: colors.textTitle, fontWeight: FontWeight.w600),
         ),
       ],

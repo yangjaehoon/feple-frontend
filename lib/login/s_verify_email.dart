@@ -177,6 +177,23 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     final colors = context.appColors;
     return Scaffold(
       backgroundColor: colors.backgroundMain,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        // 계정을 지우지 않고 그냥 이전 화면(가입 폼)으로 돌아가는 안전한 경로 —
+        // "취소"/"이메일 변경"은 계정을 삭제하는 반면, 이 버튼은 나중에 다시
+        // 인증을 완료할 수 있도록 미인증 계정을 그대로 둔다.
+        leading: IconButton(
+          tooltip: 'back'.tr(),
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: colors.textTitle,
+            size: 20,
+          ),
+          onPressed: _busy ? null : () => Navigator.pop(context),
+        ),
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(

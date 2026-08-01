@@ -358,7 +358,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
                   ? SkeletonBox(width: 28, height: 20,
                       borderRadius: BorderRadius.circular(AppDimens.radiusXs))
                   : Text(
-                      _postCount.toString(),
+                      _postCount!.toDisplayCount(context.locale.languageCode),
                       style: TextStyle(
                         fontSize: AppDimens.fontSizeXl,
                         fontWeight: FontWeight.w800,

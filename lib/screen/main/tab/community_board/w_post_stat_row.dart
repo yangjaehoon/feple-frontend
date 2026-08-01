@@ -29,6 +29,7 @@ class PostStatRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final lang = context.locale.languageCode;
     final textStyle = TextStyle(
       fontSize: _fontSize,
       color: colors.textTitle,
@@ -40,19 +41,19 @@ class PostStatRow extends StatelessWidget {
         Icon(Icons.favorite_border_rounded,
             color: colors.likeActiveColor, size: _heartSize),
         const SizedBox(width: 4),
-        Text(likeCount.toString(), style: textStyle),
+        Text(likeCount.toDisplayCount(lang), style: textStyle),
         if (scrapCount != null) ...[
           SizedBox(width: _spacing),
           Icon(Icons.star_border_rounded,
               color: colors.accentColor, size: _starSize),
           const SizedBox(width: 4),
-          Text(scrapCount!.toString(), style: textStyle),
+          Text(scrapCount!.toDisplayCount(lang), style: textStyle),
         ],
         SizedBox(width: _spacing),
         Icon(Icons.chat_bubble_outline_rounded,
             color: colors.textSecondary, size: _commentSize),
         const SizedBox(width: 4),
-        Text(commentCount.toString(), style: textStyle),
+        Text(commentCount.toDisplayCount(lang), style: textStyle),
       ],
     );
   }

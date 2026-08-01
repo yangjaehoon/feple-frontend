@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:feple/common/app_events.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/comment_detail.dart';
 import 'package:feple/screen/main/tab/community_board/post_detail_notifier.dart';
@@ -156,6 +159,37 @@ void main() {
       expect(errorKey, 'comment_failed');
       expect(n.isSubmitting, false);
       n.dispose();
+    });
+
+    test('제출 중 다시 호출하면 무시 — 중복 제출 방지', () async {
+      final completer = Completer<void>();
+      when(() => mockCommentService.submitComment(
+            content: '내용',
+            postId: 1,
+            parentId: null,
+          )).thenAnswer((_) => completer.future);
+
+      final first = notifier.submitComment('내용');
+      final second = notifier.submitComment('내용');
+      completer.complete();
+      await Future.wait([first, second]);
+
+      verify(() => mockCommentService.submitComment(
+          content: '내용', postId: 1, parentId: null)).called(1);
+    });
+
+    test('성공 시 postChanged 이벤트로 postId 전달 — 게시판 목록의 댓글 수 갱신 트리거', () async {
+      when(() => mockCommentService.submitComment(
+            content: '내용',
+            postId: 1,
+            parentId: null,
+          )).thenAnswer((_) async {});
+      when(() => mockCommentService.fetchPostComments(1))
+          .thenAnswer((_) async => []);
+
+      await notifier.submitComment('내용');
+
+      expect(AppEvents.postChanged.value?.postId, 1);
     });
   });
 

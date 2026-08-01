@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:feple/common/app_events.dart';
 import 'package:feple/common/exception/banned_word_exception.dart';
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/comment_detail.dart';
+import 'package:feple/model/post_changed_event.dart';
 import 'package:feple/service/comment_service.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/service/scrap_service.dart';
@@ -148,6 +150,7 @@ class PostDetailNotifier extends SafeChangeNotifier {
   }
 
   Future<void> submitComment(String content, {int? parentId, bool anonymous = false}) async {
+    if (isSubmitting) return;
     if (content.isEmpty) {
       commentError = 'enter_comment_please';
       safeNotify();
@@ -167,6 +170,7 @@ class PostDetailNotifier extends SafeChangeNotifier {
         anonymous: anonymous,
       );
       await fetchComments();
+      AppEvents.postChanged.value = PostChangedEvent.specific(postId);
       onSuccess?.call('comment_posted');
     } on BannedWordException {
       commentError = 'comment_banned_word';
@@ -242,6 +246,7 @@ class PostDetailNotifier extends SafeChangeNotifier {
     safeNotify();
     try {
       await _commentService.deleteComment(commentId);
+      AppEvents.postChanged.value = PostChangedEvent.specific(postId);
     } catch (e) {
       if (!isDisposed) {
         // 삭제 시도 전체를 스냅샷으로 되돌리면 대기 중 fetchComments()로 반영된

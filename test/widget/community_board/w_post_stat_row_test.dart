@@ -1,8 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_stat_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> _pump(
   WidgetTester tester, {
@@ -11,17 +13,26 @@ Future<void> _pump(
   int? scrapCount,
   bool compact = true,
 }) async {
+  SharedPreferences.setMockInitialValues({});
+  await EasyLocalization.ensureInitialized();
   await tester.pumpWidget(
-    CustomThemeHolder(
-      theme: CustomTheme.light,
-      changeTheme: (_) {},
-      child: MaterialApp(
-        home: Scaffold(
-          body: PostStatRow(
-            likeCount: likeCount,
-            commentCount: commentCount,
-            scrapCount: scrapCount,
-            compact: compact,
+    EasyLocalization(
+      supportedLocales: const [Locale('ko'), Locale('en')],
+      startLocale: const Locale('ko'),
+      fallbackLocale: const Locale('ko'),
+      path: 'assets/translations',
+      useOnlyLangCode: true,
+      child: CustomThemeHolder(
+        theme: CustomTheme.light,
+        changeTheme: (_) {},
+        child: MaterialApp(
+          home: Scaffold(
+            body: PostStatRow(
+              likeCount: likeCount,
+              commentCount: commentCount,
+              scrapCount: scrapCount,
+              compact: compact,
+            ),
           ),
         ),
       ),

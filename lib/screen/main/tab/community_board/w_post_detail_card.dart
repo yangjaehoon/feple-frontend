@@ -466,7 +466,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
         ),
         const SizedBox(width: 4),
         Text(
-          'view_count'.tr(args: [_notifier.viewCount.toString()]),
+          'view_count'.tr(args: [_notifier.viewCount.toDisplayCount(context.locale.languageCode)]),
           style: TextStyle(
             fontSize: AppDimens.fontSizeXs,
             color: colors.textSecondary.withValues(alpha: 0.5),

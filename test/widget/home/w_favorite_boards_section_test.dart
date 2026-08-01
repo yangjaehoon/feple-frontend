@@ -48,8 +48,7 @@ void main() {
       await _pump(tester, allBoards: [_board(name: '아티스트')]);
       await tester.pump();
 
-      // FavoriteBoard.displayName은 entityName 뒤에 " 게시판"을 붙여 표시한다.
-      expect(find.text('아티스트 게시판'), findsOneWidget);
+      expect(find.text('favorite_board_name'.tr(args: ['아티스트'])), findsOneWidget);
       expect(find.text('favorite_boards'.tr()), findsOneWidget);
     });
 

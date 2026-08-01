@@ -63,8 +63,8 @@ void main() {
         onSave: (_) {},
       );
 
-      expect(find.text('아티스트 게시판'), findsOneWidget);
-      expect(find.text('동행 게시판'), findsOneWidget);
+      expect(find.byKey(const ValueKey('a')), findsOneWidget);
+      expect(find.byKey(const ValueKey('b')), findsOneWidget);
       expect(find.text('1/2'), findsOneWidget);
     });
   });

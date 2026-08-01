@@ -75,6 +75,11 @@ class _AppTextFieldState extends State<AppTextField> {
     );
   }
 
+  // 비밀번호·이메일 필드는 OS가 맞춤법 제안/자동완성을 띄우면 안 되는 값이라
+  // 자동수정·제안을 끈다.
+  bool get _shouldDisableAutocorrect =>
+      widget.obscureText || widget.keyboardType == TextInputType.emailAddress;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -90,6 +95,8 @@ class _AppTextFieldState extends State<AppTextField> {
             textInputAction: widget.textInputAction,
             autofocus: widget.autofocus,
             maxLength: widget.maxLength,
+            autocorrect: !_shouldDisableAutocorrect,
+            enableSuggestions: !_shouldDisableAutocorrect,
             onChanged: widget.onChanged,
             onSubmitted: widget.onSubmitted,
             autofillHints: widget.autofillHints,

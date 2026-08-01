@@ -191,7 +191,7 @@ class _BoardSettingsItem extends StatelessWidget {
           ],
         ),
         title: Text(
-          board.displayName(context.isEnglish),
+          'favorite_board_name'.tr(args: [board.entityDisplayName(context.isEnglish)]),
           style: TextStyle(
             fontSize: AppDimens.fontSizeMd,
             fontWeight: FontWeight.w600,

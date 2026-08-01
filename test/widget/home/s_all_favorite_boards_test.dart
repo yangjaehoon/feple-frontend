@@ -68,7 +68,7 @@ void main() {
         orderedSelectedIds: const ['artist_1'],
       );
 
-      expect(find.text('아이유 게시판'), findsOneWidget);
+      expect(find.text('favorite_board_name'.tr(args: ['아이유'])), findsOneWidget);
     });
 
     testWidgets('아티스트/축제 게시판이 섞여있으면 타입 필터 칩이 보인다', (tester) async {
@@ -102,14 +102,14 @@ void main() {
         orderedSelectedIds: const ['artist_1', 'festival_1'],
       );
 
-      expect(find.text('아이유 게시판'), findsOneWidget);
-      expect(find.text('서울재즈 게시판'), findsOneWidget);
+      expect(find.byKey(const ValueKey('artist_1')), findsOneWidget);
+      expect(find.byKey(const ValueKey('festival_1')), findsOneWidget);
 
       await tester.tap(find.text('artist_boards_section'.tr()));
       await tester.pump();
 
-      expect(find.text('아이유 게시판'), findsOneWidget);
-      expect(find.text('서울재즈 게시판'), findsNothing);
+      expect(find.byKey(const ValueKey('artist_1')), findsOneWidget);
+      expect(find.byKey(const ValueKey('festival_1')), findsNothing);
     });
   });
 

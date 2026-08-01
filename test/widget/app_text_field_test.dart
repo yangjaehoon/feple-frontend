@@ -79,6 +79,50 @@ void main() {
       expect(textField.obscureText, true);
     });
 
+    testWidgets('obscureText=true면 자동수정·제안이 꺼진다', (tester) async {
+      await tester.pumpWidget(_wrap(
+        AppTextField(
+          controller: TextEditingController(),
+          hintText: '비밀번호',
+          icon: Icons.lock,
+          obscureText: true,
+        ),
+      ));
+
+      final textField = tester.widget<TextField>(find.byType(TextField));
+      expect(textField.autocorrect, false);
+      expect(textField.enableSuggestions, false);
+    });
+
+    testWidgets('keyboardType이 emailAddress면 자동수정·제안이 꺼진다', (tester) async {
+      await tester.pumpWidget(_wrap(
+        AppTextField(
+          controller: TextEditingController(),
+          hintText: '이메일',
+          icon: Icons.email,
+          keyboardType: TextInputType.emailAddress,
+        ),
+      ));
+
+      final textField = tester.widget<TextField>(find.byType(TextField));
+      expect(textField.autocorrect, false);
+      expect(textField.enableSuggestions, false);
+    });
+
+    testWidgets('일반 텍스트 필드는 자동수정·제안이 켜져 있다', (tester) async {
+      await tester.pumpWidget(_wrap(
+        AppTextField(
+          controller: TextEditingController(),
+          hintText: '입력',
+          icon: Icons.text_fields,
+        ),
+      ));
+
+      final textField = tester.widget<TextField>(find.byType(TextField));
+      expect(textField.autocorrect, true);
+      expect(textField.enableSuggestions, true);
+    });
+
     testWidgets('onChanged 콜백 호출', (tester) async {
       String? changed;
       await tester.pumpWidget(_wrap(

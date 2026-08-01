@@ -156,6 +156,7 @@ class _AllFavoriteBoardsScreenState extends State<AllFavoriteBoardsScreen> {
         childAspectRatio: 1.0,
       ),
       itemBuilder: (_, index) => _GridBoardTile(
+        key: ValueKey(boards[index].boardId),
         board: boards[index],
         onTap: () => _navigateToBoard(boards[index]),
       ),
@@ -168,7 +169,7 @@ class _GridBoardTile extends StatelessWidget {
   final FavoriteBoard board;
   final VoidCallback onTap;
 
-  const _GridBoardTile({required this.board, required this.onTap});
+  const _GridBoardTile({super.key, required this.board, required this.onTap});
 
   // 2열 그리드, 좌우 padding 16 + 칸 사이 spacing 12 (_buildGrid의 GridView.builder 설정과 일치)
   static const double _gridHorizontalPadding = 16;
@@ -231,7 +232,7 @@ class _GridBoardTile extends StatelessWidget {
           ),
         ),
         child: Text(
-          board.displayName(isEnglish),
+          'favorite_board_name'.tr(args: [board.entityDisplayName(isEnglish)]),
           style: const TextStyle(
             color: Colors.white,
             fontSize: AppDimens.fontSizeSm,

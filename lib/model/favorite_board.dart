@@ -21,9 +21,4 @@ class FavoriteBoard {
 
   String entityDisplayName(bool isEnglish) =>
       pickLocalized(isEnglish, entityName, entityNameEn);
-
-  String displayName(bool isEnglish) {
-    final name = entityDisplayName(isEnglish);
-    return isEnglish ? '$name Board' : '$name 게시판';
-  }
 }

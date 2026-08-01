@@ -3,13 +3,13 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/block_action_helper.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_profile_avatar.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/blocked_user_model.dart';
 import 'package:feple/service/block_service.dart';
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class BlockedUsersScreen extends StatefulWidget {
   const BlockedUsersScreen({super.key});
@@ -122,7 +122,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
     return ListTile(
       tileColor: colors.surface,
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      leading: _buildAvatar(user, colors),
+      leading: ProfileAvatar(imageUrl: user.profileImageUrl, nickname: user.nickname, radius: 22),
       title: Text(
         user.nickname,
         style: TextStyle(
@@ -145,22 +145,6 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
         ),
         child: Text('unblock'.tr(), style: const TextStyle(fontSize: AppDimens.fontSizeSm)),
       ),
-    );
-  }
-
-  Widget _buildAvatar(BlockedUserModel user, AbstractThemeColors colors) {
-    final imageUrl = user.profileImageUrl;
-    final valid = imageUrl != null && imageUrl.isNotEmpty && !imageUrl.contains('feple_logo');
-    return CircleAvatar(
-      radius: 22,
-      backgroundColor: colors.activate.withValues(alpha: 0.15),
-      backgroundImage: valid ? CachedNetworkImageProvider(imageUrl, maxWidth: 88) : null,
-      child: !valid
-          ? Text(
-              user.nickname.isNotEmpty ? user.nickname[0] : '?',
-              style: TextStyle(fontWeight: FontWeight.w700, color: colors.activate),
-            )
-          : null,
     );
   }
 }

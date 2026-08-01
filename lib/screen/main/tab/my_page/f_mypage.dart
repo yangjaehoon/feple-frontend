@@ -1,3 +1,4 @@
+import 'package:feple/app.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
@@ -24,6 +25,20 @@ class _MyPageFragmentState extends State<MyPageFragment> with NavigationGuard {
   final _statsKey = GlobalKey<MyPostCommentViewState>();
   final _certKey = GlobalKey<FestivalCertificationWidgetState>();
   final _songsKey = GlobalKey<MySongRequestsViewState>();
+
+  @override
+  void initState() {
+    super.initState();
+    App.resumeEvent.addListener(_onAppResumed);
+  }
+
+  @override
+  void dispose() {
+    App.resumeEvent.removeListener(_onAppResumed);
+    super.dispose();
+  }
+
+  void _onAppResumed() => unawaited(_onRefresh());
 
   Future<void> _onRefresh() async {
     _profileKey.currentState?.refresh();

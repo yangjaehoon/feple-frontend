@@ -222,7 +222,7 @@ class _BoardTile extends StatelessWidget {
         child: FittedBox(
           fit: BoxFit.scaleDown,
           child: Text(
-            board.displayName(isEnglish),
+            'favorite_board_name'.tr(args: [board.entityDisplayName(isEnglish)]),
             style: const TextStyle(
               color: Colors.white,
               fontSize: AppDimens.fontSizeXs,

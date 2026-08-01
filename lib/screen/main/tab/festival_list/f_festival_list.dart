@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/constant/festival_constants.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
+import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/screen/main/tab/festival_list/w_festival_list.dart';
 import 'package:feple/screen/main/tab/festival_list/w_festival_suggestion_sheet.dart';
 import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
@@ -188,13 +189,7 @@ class _FilterPanel extends StatelessWidget {
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-        boxShadow: [
-          BoxShadow(
-            color: colors.cardShadow.withValues(alpha: 0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 3),
-          ),
-        ],
+        boxShadow: CardShadows.subtle(colors),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

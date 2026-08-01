@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:feple/common/common.dart';
@@ -324,13 +325,7 @@ class FestivalPosterState extends State<FestivalPoster> {
       height: _posterThumbnailHeight,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-        boxShadow: [
-          BoxShadow(
-            color: colors.cardShadow.withValues(alpha: 0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        boxShadow: CardShadows.elevated(colors),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),

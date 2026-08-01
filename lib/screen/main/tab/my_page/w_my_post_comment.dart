@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/user_stats_model.dart';
 import 'package:feple/service/user_activity_service.dart';
@@ -192,13 +193,7 @@ class MyPostCommentViewState extends State<MyPostCommentView>
           color: colors.statCardBg,
           borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
           border: Border.all(color: colors.listDivider),
-          boxShadow: [
-            BoxShadow(
-              color: colors.cardShadow.withValues(alpha: 0.03),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          boxShadow: CardShadows.subtle(colors),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

@@ -8,6 +8,7 @@ import 'package:feple/common/widget/w_refreshable_center.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_level_badge.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/widget/w_tap_loading_indicator.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/injection.dart';
@@ -333,13 +334,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
             color: colors.surface,
             borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
             border: Border.all(color: colors.listDivider),
-            boxShadow: [
-              BoxShadow(
-                color: colors.cardShadow.withValues(alpha: 0.04),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
+            boxShadow: CardShadows.subtle(colors),
           ),
           child: Row(
             children: [

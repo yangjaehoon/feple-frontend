@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:flutter/material.dart';
 
 /// 이미지 선택/미리보기 박스
@@ -37,13 +38,7 @@ class ImagePickerBox extends StatelessWidget {
                     width: 1.5,
                     strokeAlign: BorderSide.strokeAlignInside,
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: colors.cardShadow.withValues(alpha: 0.08),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+                  boxShadow: CardShadows.subtle(colors),
                 ),
                 child: imageData == null
                     ? _buildPlaceholder(colors)

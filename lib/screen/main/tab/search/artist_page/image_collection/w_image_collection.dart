@@ -13,6 +13,7 @@ import 'package:feple/model/artist_photo.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/popup_menu_item_builder.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/common/widget/w_surface_card.dart';
 import 'artist_photo_notifier.dart';
 import 'w_edit_photo_sheet.dart';
 import 'w_photo_fullscreen_viewer.dart';
@@ -155,13 +156,7 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
           decoration: BoxDecoration(
             color: colors.surface,
             borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-            boxShadow: [
-              BoxShadow(
-                color: colors.cardShadow.withValues(alpha: 0.08),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
+            boxShadow: CardShadows.subtle(colors),
           ),
           child: Row(
             children: [

@@ -9,6 +9,7 @@ import 'package:feple/common/widget/w_refreshable_center.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_status_filter_chip.dart';
+import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/widget/w_tap_loading_indicator.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/certification_model.dart';
@@ -333,13 +334,7 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-        boxShadow: [
-          BoxShadow(
-            color: colors.cardShadow.withValues(alpha: 0.08),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
+        boxShadow: CardShadows.subtle(colors),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

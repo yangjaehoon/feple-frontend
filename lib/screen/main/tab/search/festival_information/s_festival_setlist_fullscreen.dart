@@ -7,6 +7,7 @@ import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/festival_setlist_entry.dart';
 import 'package:feple/model/song_model.dart';
@@ -179,13 +180,7 @@ class _ArtistFullTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(AppDimens.cardRadius),
-        boxShadow: [
-          BoxShadow(
-            color: colors.cardShadow.withValues(alpha: 0.08),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        boxShadow: CardShadows.subtle(colors),
       ),
       child: Column(
         children: [

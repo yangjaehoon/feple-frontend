@@ -3,6 +3,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -96,13 +97,7 @@ class _FestivalItem extends StatelessWidget {
         margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-          boxShadow: [
-            BoxShadow(
-              color: colors.cardShadow.withValues(alpha: 0.18),
-              blurRadius: 14,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          boxShadow: CardShadows.medium(colors),
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),

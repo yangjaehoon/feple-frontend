@@ -3,6 +3,7 @@ import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/screen/main/tab/festival_list/w_festival_preview_card.dart';
@@ -129,13 +130,7 @@ class _FestivalListSkeleton extends StatelessWidget {
           decoration: BoxDecoration(
             color: colors.surface,
             borderRadius: BorderRadius.circular(AppDimens.cardRadius),
-            boxShadow: [
-              BoxShadow(
-                color: colors.cardShadow.withValues(alpha: 0.12),
-                blurRadius: 20,
-                offset: const Offset(0, 4),
-              ),
-            ],
+            boxShadow: CardShadows.elevated(colors),
           ),
           child: Row(
             children: [

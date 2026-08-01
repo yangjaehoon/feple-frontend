@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/widget/w_app_network_image.dart';
 import 'package:feple/common/widget/w_selectable_chip.dart';
+import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
@@ -185,13 +186,7 @@ class _GridBoardTile extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-          boxShadow: [
-            BoxShadow(
-              color: colors.cardShadow.withValues(alpha: 0.12),
-              blurRadius: 10,
-              offset: const Offset(0, 3),
-            ),
-          ],
+          boxShadow: CardShadows.medium(colors),
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),

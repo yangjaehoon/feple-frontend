@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/notification_model.dart';
 import 'package:feple/screen/notification/notification_time_style.dart';
@@ -74,13 +75,7 @@ class NotificationCard extends StatelessWidget {
             : colors.activate.withValues(alpha: 0.35),
         width: 1,
       ),
-      boxShadow: [
-        BoxShadow(
-          color: colors.cardShadow.withValues(alpha: 0.06),
-          blurRadius: 8,
-          offset: const Offset(0, 2),
-        ),
-      ],
+      boxShadow: CardShadows.subtle(colors),
     );
   }
 

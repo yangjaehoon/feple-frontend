@@ -5,6 +5,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
@@ -99,13 +100,7 @@ class _FestivalListSwiperWidgetState extends State<FestivalListSwiperWidget> {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(AppDimens.cardRadius),
-                  boxShadow: [
-                    BoxShadow(
-                      color: colors.cardShadow.withValues(alpha: 0.2),
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
+                  boxShadow: CardShadows.elevated(colors),
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(AppDimens.cardRadius),

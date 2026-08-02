@@ -32,10 +32,7 @@ class LightAppColors extends AbstractThemeColors {
   Color get appBarBackground => AppColors.skyBlue;
 
   @override
-  Color get appBarColor => AppColors.skyBlueAction;
-
-  @override
-  Color get activate => AppColors.skyBlueAction;
+  Color get activate => AppColors.skyBlue;
 
   @override
   Color get badgeBg => AppColors.sunnyYellow;

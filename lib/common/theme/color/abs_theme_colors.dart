@@ -16,7 +16,7 @@ abstract class AbstractThemeColors {
 
   Color get inActivate => const Color.fromARGB(255, 200, 207, 220);
 
-  Color get activate => AppColors.skyBlueAction;
+  Color get activate => AppColors.skyBlue;
 
   Color get badgeBg => AppColors.sunnyYellow;
 
@@ -44,7 +44,7 @@ abstract class AbstractThemeColors {
   /// Card/surface background
   Color get surface => AppColors.surfaceWhite;
 
-  Color get appBarColor => AppColors.skyBlueAction;
+  Color get appBarColor => AppColors.skyBlue;
 
   /// Icon/text color on top of appBarColor.
   /// Light: white on primary (skyBlue), Dark: light text on dark surface.

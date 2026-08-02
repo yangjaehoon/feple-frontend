@@ -6,10 +6,6 @@ class AppColors {
   // Primary & Secondary
   static const Color skyBlue = Color(0xFF5CC0EB);
   static const Color skyBlueLight = Color(0xFFA1DDF5);
-
-  /// skyBlue의 액션(버튼 배경/앱바 배경) 전용 변형 — 흰 글씨/아이콘과 겹칠 때 WCAG AA(4.5:1) 충족.
-  /// skyBlue 원본은 그라디언트·배지·일러스트 등 장식적 용도에서만 그대로 사용.
-  static const Color skyBlueAction = Color(0xFF157FAC);
   static const Color sunnyYellow = Color(0xFFFDE74C);
 
   // Kawaii Accents

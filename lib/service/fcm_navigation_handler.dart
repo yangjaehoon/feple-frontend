@@ -19,9 +19,10 @@ class FcmNavigationHandler {
     if (nav == null) return;
 
     final type = NotificationType.fromValue(data['type'] as String?);
-    // 백엔드가 festivalId 키에 타입에 따라 festivalId 뿐 아니라 postId/artistId도
-    // 함께 실어 보냄 (FcmPushService.sendMulticast의 linkId) — 범용 참조 ID로 취급
-    final linkIdStr = data['festivalId'] as String?;
+    // 백엔드가 linkId 키에 타입에 따라 festivalId 뿐 아니라 postId/artistId도
+    // 함께 실어 보냄 (FcmPushService.buildMulticastMessage) — 범용 참조 ID로 취급.
+    // festivalId는 linkId 도입 전 구버전 클라이언트와의 호환을 위한 폴백.
+    final linkIdStr = (data['linkId'] as String?) ?? (data['festivalId'] as String?);
     final linkId = (linkIdStr?.isNotEmpty == true) ? int.tryParse(linkIdStr!) : null;
 
     if (linkId != null) {

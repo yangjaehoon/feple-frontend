@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/safe_change_notifier.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:flutter/widgets.dart';
 
@@ -19,6 +21,8 @@ class PostCursorController extends SafeChangeNotifier {
   bool _hasMore = true;
   int? _nextCursor;
   int _loadId = 0;
+  // refresh() 실패 시 설정 — UI가 snackbar로 표시 후 clearRefreshError() 호출 (일회성)
+  String? _refreshError;
 
   List<Post> get posts => _posts;
   bool get isLoading => _isLoading;
@@ -26,6 +30,9 @@ class PostCursorController extends SafeChangeNotifier {
   Object? get error => _error;
   bool get isLoadingMore => _isLoadingMore;
   bool get hasMore => _hasMore;
+  String? get refreshError => _refreshError;
+
+  void clearRefreshError() => _refreshError = null;
 
   Future<void> load() async {
     final myId = ++_loadId;
@@ -68,7 +75,13 @@ class PostCursorController extends SafeChangeNotifier {
       _nextCursor = result.nextCursor;
       _hasError = false;
       safeNotify();
-    } catch (_) {}
+    } catch (e) {
+      if (_loadId != myId) return;
+      // 기존 목록은 유지하되(크래시 방지), 실패 사실은 알려야 한다 — 조용히 삼키면
+      // 새로고침이 실제로 실패했는데도 사용자는 성공한 줄 알게 됨
+      _refreshError = networkAwareErrorKey(e, 'err_fetch_data').tr();
+      safeNotify();
+    }
   }
 
   Future<void> loadMore() async {

@@ -117,6 +117,41 @@ void main() {
     });
   });
 
+  group('FestivalListSwiperWidget 첫 페이지가 전부 종료 축제', () {
+    testWidgets('hasMore가 true면 다음 페이지를 이어서 가져와 렌더링한다', (tester) async {
+      when(() => mockService.fetchPreviews(
+            page: 0,
+            size: any(named: 'size'),
+            includeEnded: any(named: 'includeEnded'),
+            genres: any(named: 'genres'),
+            regions: any(named: 'regions'),
+            ageRestrictions: any(named: 'ageRestrictions'),
+          )).thenAnswer((_) async => FestivalPreviewPage(items: [_preview(ended: true)], hasMore: true));
+      when(() => mockService.fetchPreviews(
+            page: 1,
+            size: any(named: 'size'),
+            includeEnded: any(named: 'includeEnded'),
+            genres: any(named: 'genres'),
+            regions: any(named: 'regions'),
+            ageRestrictions: any(named: 'ageRestrictions'),
+          )).thenAnswer((_) async => FestivalPreviewPage(items: [_preview(id: 2, title: '펜타포트')], hasMore: false));
+
+      await _pump(tester, mockService);
+      // 자동으로 이어붙인 fetchNext()가 반영되도록 한 프레임 더 진행
+      await tester.pump(const Duration(milliseconds: 100));
+
+      verify(() => mockService.fetchPreviews(
+            page: 1,
+            size: any(named: 'size'),
+            includeEnded: any(named: 'includeEnded'),
+            genres: any(named: 'genres'),
+            regions: any(named: 'regions'),
+            ageRestrictions: any(named: 'ageRestrictions'),
+          )).called(1);
+      expect(find.byType(Swiper), findsOneWidget);
+    });
+  });
+
   group('FestivalListSwiperWidget 렌더링', () {
     testWidgets('진행중 축제가 있으면 스와이퍼를 렌더링한다', (tester) async {
       when(() => mockService.fetchPreviews(

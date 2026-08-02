@@ -99,6 +99,7 @@
   "post_delete_failed": "Failed to delete post.",
   "post_updated": "Post has been updated.",
   "post_update_failed": "Failed to update post.",
+  "post_updated_image_refresh_failed": "Post updated, but the image couldn't be refreshed on screen. Please reopen it to check.",
   "enter_comment": "Enter a comment.",
   "enter_comment_please": "Please enter a comment.",
   "comment_posted": "Comment posted.",

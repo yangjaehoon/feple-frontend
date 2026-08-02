@@ -290,12 +290,17 @@ class _PostDetailCardState extends State<PostDetailCard> {
             // 새 이미지를 올린 경우 img는 CDN URL이 아닌 S3 objectKey라 그대로 쓰면
             // 화면에 깨진 이미지가 보이므로 갱신된 게시글을 다시 조회해 교체한다
             String? resolvedImageUrl = _imageUrl;
+            bool imageRefreshFailed = false;
             try {
               resolvedImageUrl = (await _postService.fetchPost(
                 widget.id,
               )).imageUrl;
             } catch (e) {
+              // 재조회 실패해도 제목·내용 수정 자체는 서버에 이미 반영됐으므로 폐기하지
+              // 않는다 — 다만 화면 피드백 없이 옛 이미지로 조용히 남는 것을 막기 위해
+              // 별도 안내 문구로 알린다
               debugPrint('post refetch after update error: $e');
+              imageRefreshFailed = true;
             }
             if (mounted) {
               setState(() {
@@ -304,7 +309,11 @@ class _PostDetailCardState extends State<PostDetailCard> {
                 _imageUrl = resolvedImageUrl;
                 _updatedAt = DateTime.now();
               });
-              context.showSuccessSnackbar('post_updated'.tr());
+              if (imageRefreshFailed) {
+                context.showErrorSnackbar('post_updated_image_refresh_failed'.tr());
+              } else {
+                context.showSuccessSnackbar('post_updated'.tr());
+              }
             }
           },
         ),

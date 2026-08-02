@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 Post _post(int id) => Post(id: id, title: '글$id', content: '내용', likeCount: 0, nickname: '작성자');
 
 void main() {
+  setUpAll(() => TestWidgetsFlutterBinding.ensureInitialized());
+
   group('PostCursorController.load', () {
     test('성공하면 posts와 hasMore/nextCursor를 채운다', () async {
       final controller = PostCursorController(
@@ -83,6 +85,28 @@ void main() {
       );
 
       await expectLater(controller.refresh(), completes);
+    });
+
+    test('실패하면 refreshError를 설정해 UI가 알림을 표시할 수 있게 한다', () async {
+      final controller = PostCursorController(
+        fetchPage: ({cursor, size = 20}) async => throw Exception('실패'),
+      );
+
+      await controller.refresh();
+
+      expect(controller.refreshError, isNotNull);
+    });
+
+    test('clearRefreshError 호출 후 refreshError는 null', () async {
+      final controller = PostCursorController(
+        fetchPage: ({cursor, size = 20}) async => throw Exception('실패'),
+      );
+
+      await controller.refresh();
+      expect(controller.refreshError, isNotNull);
+      controller.clearRefreshError();
+
+      expect(controller.refreshError, isNull);
     });
   });
 

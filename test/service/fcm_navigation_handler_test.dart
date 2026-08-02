@@ -109,6 +109,27 @@ void main() {
     expect(observer.pushCount, 1);
   });
 
+  testWidgets('linkId 키만 있어도 festivalId와 동일하게 동작', (tester) async {
+    await pumpNavHost(tester);
+    when(() => mockFestivalService.fetchById(10)).thenAnswer((_) async => _festival(10));
+
+    await handler.navigate({'type': 'NEW_FESTIVAL', 'linkId': '10'});
+
+    verify(() => mockFestivalService.fetchById(10)).called(1);
+    expect(observer.pushCount, 1);
+  });
+
+  testWidgets('linkId와 festivalId가 함께 오면 linkId 우선', (tester) async {
+    await pumpNavHost(tester);
+    when(() => mockFestivalService.fetchById(11)).thenAnswer((_) async => _festival(11));
+
+    await handler.navigate({'type': 'NEW_FESTIVAL', 'linkId': '11', 'festivalId': '10'});
+
+    verify(() => mockFestivalService.fetchById(11)).called(1);
+    verifyNever(() => mockFestivalService.fetchById(10));
+    expect(observer.pushCount, 1);
+  });
+
   testWidgets('festival 조회 실패 시 알림 화면으로 폴백', (tester) async {
     await pumpNavHost(tester);
     when(() => mockFestivalService.fetchById(10)).thenThrow(Exception('network'));

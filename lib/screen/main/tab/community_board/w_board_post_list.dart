@@ -61,7 +61,14 @@ class _BoardPostListState extends State<BoardPostList> {
     super.dispose();
   }
 
-  void _onControllerChanged() => setState(() {});
+  void _onControllerChanged() {
+    setState(() {});
+    final refreshError = _controller.refreshError;
+    if (refreshError != null) {
+      _controller.clearRefreshError();
+      context.showErrorSnackbar(refreshError);
+    }
+  }
 
   void _onScroll() => _controller.onScroll(_scrollController);
 

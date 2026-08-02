@@ -153,13 +153,27 @@ class _FestivalListSwiperWidgetState extends State<FestivalListSwiperWidget> {
     );
     final allItems = context
         .select<FestivalPreviewProvider, List<FestivalPreview>>((p) => p.items);
+    final hasMore = context.select<FestivalPreviewProvider, bool>((p) => p.hasMore);
+    final isLoadingMore = context.select<FestivalPreviewProvider, bool>((p) => p.isLoadingMore);
     final colors = context.appColors;
 
     if (isLoadingEmpty) return _buildSkeleton(context);
     if (isErrorEmpty) return _buildError(context);
 
     final items = allItems.where((f) => !f.isEnded).toList();
-    if (items.isEmpty) return _buildEmpty(colors);
+    if (items.isEmpty) {
+      // 지금까지 불러온 페이지가 전부 종료된 축제뿐이어도, 서버에 더 있으면(hasMore) 이어서
+      // 가져온다 — 그렇지 않으면 정렬이 조금만 어긋나도 캐러셀이 통째로 비어 보일 수 있다.
+      if (hasMore) {
+        if (!isLoadingMore) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) context.read<FestivalPreviewProvider>().fetchNext();
+          });
+        }
+        return _buildSkeleton(context);
+      }
+      return _buildEmpty(colors);
+    }
 
     final size = MediaQuery.sizeOf(context);
     // 화면 높이의 39% — iPhone SE(667px)→260, 기준(844px)→330, Pro Max(932px)→364

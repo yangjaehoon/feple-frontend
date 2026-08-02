@@ -204,6 +204,32 @@ void main() {
 
       expect(find.byType(WritePost), findsOneWidget);
     });
+
+    testWidgets('수정 성공 후 이미지 재조회 실패하면 안내 문구를 보여준다', (tester) async {
+      when(() => mockPostService.updatePost(
+            postId: any(named: 'postId'),
+            title: any(named: 'title'),
+            content: any(named: 'content'),
+            imageObjectKey: any(named: 'imageObjectKey'),
+          )).thenAnswer((_) async {});
+      when(() => mockPostService.fetchPost(10)).thenThrow(Exception('network'));
+
+      await pump(tester, postUserId: 1);
+      await tester.pump();
+
+      await tester.tap(find.byIcon(Icons.more_vert));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('edit_post'.tr()));
+      await tester.pumpAndSettle();
+
+      // card_swiper 테스트와 동일한 이유(제스처 레이어 우회)로, 캡처한 WritePost의
+      // onSubmit 콜백을 직접 호출해 수정 제출 로직을 검증한다.
+      final writePost = tester.widget<WritePost>(find.byType(WritePost));
+      await writePost.onSubmit('새 제목', '새 내용', false, null);
+      await tester.pump();
+
+      expect(find.text('post_updated_image_refresh_failed'.tr()), findsOneWidget);
+    });
   });
 
   group('PostDetailCard 신고', () {

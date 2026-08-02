@@ -1,3 +1,4 @@
+import 'package:feple/common/app_events.dart';
 import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/screen/main/tab/search/festival_information/festival_artists_notifier.dart';
 import 'package:feple/service/artist_follow_service.dart';
@@ -119,6 +120,57 @@ void main() {
       expect(notifier.artists, isEmpty);
       expect(notifier.isLoading, false);
       expect(notifier.hasError, true);
+    });
+  });
+
+  group('artistFollowChanged 이벤트', () {
+    test('다른 화면에서 팔로우 상태가 바뀌면 followedIds 재조회', () async {
+      when(() => mockFestivalArtistsFetcher.fetchFestivalArtists(10))
+          .thenAnswer((_) async => [_artist(1, 'A')]);
+      when(() => mockFollowService.fetchFollowingIds(99))
+          .thenAnswer((_) async => {});
+
+      final notifier = make(userId: 99);
+      await notifier.fetch();
+      expect(notifier.followedIds, isEmpty);
+
+      when(() => mockFollowService.fetchFollowingIds(99))
+          .thenAnswer((_) async => {1});
+      AppEvents.artistFollowChanged.value++;
+      await Future<void>.delayed(Duration.zero);
+
+      expect(notifier.followedIds, {1});
+      notifier.dispose();
+    });
+
+    test('userId null이면 이벤트 발생해도 재조회 안 함', () async {
+      when(() => mockFestivalArtistsFetcher.fetchFestivalArtists(10))
+          .thenAnswer((_) async => [_artist(1, 'A')]);
+
+      final notifier = make(userId: null);
+      await notifier.fetch();
+
+      AppEvents.artistFollowChanged.value++;
+      await Future<void>.delayed(Duration.zero);
+
+      verifyNever(() => mockFollowService.fetchFollowingIds(any()));
+      notifier.dispose();
+    });
+
+    test('dispose 후에는 이벤트가 와도 리스너가 반응하지 않음', () async {
+      when(() => mockFestivalArtistsFetcher.fetchFestivalArtists(10))
+          .thenAnswer((_) async => [_artist(1, 'A')]);
+      when(() => mockFollowService.fetchFollowingIds(99))
+          .thenAnswer((_) async => {});
+
+      final notifier = make(userId: 99);
+      await notifier.fetch();
+      notifier.dispose();
+
+      AppEvents.artistFollowChanged.value++;
+      await Future<void>.delayed(Duration.zero);
+
+      verify(() => mockFollowService.fetchFollowingIds(99)).called(1);
     });
   });
 }

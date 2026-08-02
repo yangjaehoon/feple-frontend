@@ -1,3 +1,4 @@
+import 'package:feple/common/app_events.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/widget/w_selectable_chip.dart';
@@ -39,7 +40,16 @@ class CircleArtistWidgetState extends State<CircleArtistWidget> {
     super.initState();
     _artistsFuture = _artistService.fetchArtists();
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadFollowedIds());
+    AppEvents.artistFollowChanged.addListener(_onArtistFollowChanged);
   }
+
+  @override
+  void dispose() {
+    AppEvents.artistFollowChanged.removeListener(_onArtistFollowChanged);
+    super.dispose();
+  }
+
+  void _onArtistFollowChanged() => _loadFollowedIds();
 
   void refresh() {
     setState(() {

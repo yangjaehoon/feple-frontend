@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:feple/common/dart/extension/datetime_extension.dart';
 import 'package:feple/common/data/preference/app_preferences.dart';
 import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
@@ -21,12 +22,17 @@ class MockFestivalDetailService extends Mock implements FestivalDetailService {}
 class MockArtistFollowService extends Mock implements ArtistFollowService {}
 class MockUserProvider extends Mock implements UserProvider {}
 
+// selectedDate 기본값이 오늘 날짜와 겹치면(dates.contains(today)) 첫날 대신
+// 오늘이 선택되어 버려 고정 리터럴 날짜는 시간이 지나면서 깨짐 — 항상 미래로 고정.
+final _day1 = DateTime.now().add(const Duration(days: 30)).toYMD;
+final _day2 = DateTime.now().add(const Duration(days: 31)).toYMD;
+
 TimetableEntry _entry({
   int id = 1,
   String stageName = 'Main',
   int stageOrder = 1,
   String artistName = 'Artist',
-  String festivalDate = '2026-08-01',
+  String? festivalDate,
   String startTime = '15:00',
   String endTime = '16:00',
 }) =>
@@ -35,7 +41,7 @@ TimetableEntry _entry({
       stageName: stageName,
       stageOrder: stageOrder,
       artistName: artistName,
-      festivalDate: festivalDate,
+      festivalDate: festivalDate ?? _day1,
       startTime: startTime,
       endTime: endTime,
     );
@@ -100,8 +106,8 @@ void main() {
               home: Scaffold(
                 body: FestivalTimetable(
                   festivalId: 1,
-                  startDate: '2026-08-01',
-                  endDate: '2026-08-02',
+                  startDate: _day1,
+                  endDate: _day2,
                 ),
               ),
             ),
@@ -161,7 +167,7 @@ void main() {
   group('FestivalTimetable 목록', () {
     testWidgets('일정이 있으면 그리드와 날짜 탭, 전체화면 버튼을 보여준다', (tester) async {
       when(() => mockDetailService.fetchTimetable(1))
-          .thenAnswer((_) async => [_entry(festivalDate: '2026-08-01')]);
+          .thenAnswer((_) async => [_entry(festivalDate: _day1)]);
 
       await pump(tester);
       await tester.pump();
@@ -172,7 +178,7 @@ void main() {
 
     testWidgets('전체화면 버튼을 탭하면 전체화면 타임테이블로 이동한다', (tester) async {
       when(() => mockDetailService.fetchTimetable(1))
-          .thenAnswer((_) async => [_entry(festivalDate: '2026-08-01')]);
+          .thenAnswer((_) async => [_entry(festivalDate: _day1)]);
 
       await pump(tester);
       await tester.pump();
@@ -215,8 +221,8 @@ void main() {
                   body: FestivalTimetable(
                     key: key,
                     festivalId: 1,
-                    startDate: '2026-08-01',
-                    endDate: '2026-08-02',
+                    startDate: _day1,
+                    endDate: _day2,
                   ),
                 ),
               ),

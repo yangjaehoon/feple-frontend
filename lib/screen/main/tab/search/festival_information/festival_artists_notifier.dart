@@ -1,3 +1,4 @@
+import 'package:feple/common/app_events.dart';
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/service/artist_follow_service.dart';
@@ -26,7 +27,31 @@ class FestivalArtistsNotifier extends SafeChangeNotifier {
     required FestivalArtistsFetcher festivalService,
     required ArtistFollowService followService,
   }) : _festivalService = festivalService,
-       _followService = followService;
+       _followService = followService {
+    AppEvents.artistFollowChanged.addListener(_onFollowChanged);
+  }
+
+  @override
+  void dispose() {
+    AppEvents.artistFollowChanged.removeListener(_onFollowChanged);
+    super.dispose();
+  }
+
+  // 다른 화면(아티스트 상세 등)에서 팔로우 상태가 바뀌면 이 화면에 캐시된
+  // followedIds도 갱신 — 라인업 전체를 다시 불러올 필요 없이 팔로우 목록만 재조회.
+  void _onFollowChanged() {
+    if (userId == null) return;
+    _refreshFollowedIds();
+  }
+
+  Future<void> _refreshFollowedIds() async {
+    try {
+      followedIds = await _followService.fetchFollowingIds(userId!);
+      safeNotify();
+    } catch (e) {
+      debugPrint('[FestivalArtists] follow refresh error: $e');
+    }
+  }
 
   bool isFollowed(int artistId) => followedIds.contains(artistId);
 

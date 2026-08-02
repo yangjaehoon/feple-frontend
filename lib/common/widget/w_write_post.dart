@@ -112,6 +112,7 @@ class _WritePostState extends State<WritePost> {
   }
 
   Future<void> _submit() async {
+    if (_isSubmitting) return;
     if (!(_formKey.currentState?.validate() ?? false)) return;
     FocusScope.of(context).unfocus();
     final title = _titleController.text.trim();

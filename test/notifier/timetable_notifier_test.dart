@@ -1,3 +1,4 @@
+import 'package:feple/common/app_events.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/screen/main/tab/search/festival_information/timetable_notifier.dart';
 import 'package:feple/service/artist_follow_service.dart';
@@ -172,6 +173,43 @@ void main() {
       expect(notifier.error, isNull);
       expect(notifier.entries.length, 1);
       expect(notifier.isLoading, false);
+    });
+  });
+
+  group('artistFollowChanged 이벤트', () {
+    test('다른 화면에서 팔로우 상태가 바뀌면 followedNames 재조회', () async {
+      when(() => mockDetailService.fetchTimetable(1))
+          .thenAnswer((_) async => [_entry()]);
+      when(() => mockFollowService.fetchFollowedArtistNames(42))
+          .thenAnswer((_) async => {});
+
+      final notifier = make(userId: 42);
+      await notifier.fetch();
+      expect(notifier.followedNames, isEmpty);
+
+      when(() => mockFollowService.fetchFollowedArtistNames(42))
+          .thenAnswer((_) async => {'Artist'});
+      AppEvents.artistFollowChanged.value++;
+      await Future<void>.delayed(Duration.zero);
+
+      expect(notifier.followedNames, {'Artist'});
+      notifier.dispose();
+    });
+
+    test('dispose 후에는 이벤트가 와도 리스너가 반응하지 않음', () async {
+      when(() => mockDetailService.fetchTimetable(1))
+          .thenAnswer((_) async => [_entry()]);
+      when(() => mockFollowService.fetchFollowedArtistNames(42))
+          .thenAnswer((_) async => {});
+
+      final notifier = make(userId: 42);
+      await notifier.fetch();
+      notifier.dispose();
+
+      AppEvents.artistFollowChanged.value++;
+      await Future<void>.delayed(Duration.zero);
+
+      verify(() => mockFollowService.fetchFollowedArtistNames(42)).called(1);
     });
   });
 }

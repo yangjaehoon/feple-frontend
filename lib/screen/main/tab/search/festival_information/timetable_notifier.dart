@@ -1,3 +1,4 @@
+import 'package:feple/common/app_events.dart';
 import 'package:feple/common/dart/extension/datetime_extension.dart';
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/model/timetable_entry.dart';
@@ -39,6 +40,30 @@ class TimetableNotifier extends SafeChangeNotifier {
   }) : _festivalService = festivalService,
        _followService = followService {
     _buildDates(startDate, endDate);
+    AppEvents.artistFollowChanged.addListener(_onFollowChanged);
+  }
+
+  @override
+  void dispose() {
+    AppEvents.artistFollowChanged.removeListener(_onFollowChanged);
+    super.dispose();
+  }
+
+  // 다른 화면에서 팔로우 상태가 바뀌면 타임테이블의 팔로우 하이라이트도 갱신 —
+  // 전체 타임테이블을 다시 불러올 필요 없이 팔로우 이름 목록만 재조회.
+  void _onFollowChanged() {
+    if (userId == null) return;
+    _refreshFollowedNames();
+  }
+
+  Future<void> _refreshFollowedNames() async {
+    try {
+      followedNames = await _safeFollowedNames();
+      _cachedRange = computeTimetableRange(entries, selectedDate);
+      safeNotify();
+    } catch (e) {
+      debugPrint('[Timetable] follow refresh error: $e');
+    }
   }
 
   void _buildDates(String startDate, String endDate) {

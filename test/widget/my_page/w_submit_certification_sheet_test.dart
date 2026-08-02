@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/theme/custom_theme.dart';
@@ -12,6 +10,7 @@ import 'package:feple/screen/main/tab/my_page/w_submit_certification_sheet.dart'
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'package:mocktail/mocktail.dart';
@@ -25,12 +24,16 @@ class FakeImagePickerPlatform extends Fake
     with MockPlatformInterfaceMixin
     implements ImagePickerPlatform {
   XFile? imageToReturn;
+  PlatformException? throwOnPick;
 
   @override
   Future<XFile?> getImageFromSource({
     required ImageSource source,
     ImagePickerOptions options = const ImagePickerOptions(),
-  }) async => imageToReturn;
+  }) async {
+    if (throwOnPick != null) throw throwOnPick!;
+    return imageToReturn;
+  }
 }
 
 FestivalModel _festival({int id = 1, String title = '펜타포트'}) {
@@ -210,6 +213,33 @@ void main() {
       tester.widget<LoadingButton>(find.byType(LoadingButton)).onPressed!();
       await tester.pumpAndSettle();
 
+      verifyNever(() => mockCertService.submit(
+            festivalId: any(named: 'festivalId'),
+            imageData: any(named: 'imageData'),
+          ));
+    });
+
+    testWidgets('이미지 선택 중 PlatformException이 나면 안내 스낵바를 보여주고 시트는 유지된다', (tester) async {
+      when(() => mockFestivalService.fetchAll())
+          .thenAnswer((_) async => [_festival(title: '펜타포트')]);
+      fakeImagePicker.throwOnPick =
+          PlatformException(code: 'photo_access_denied');
+
+      await pump(tester);
+      await tester.pump();
+      await tester.tap(find.text('tab_concert'.tr()));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('펜타포트'));
+      await tester.pumpAndSettle();
+
+      tester.widget<LoadingButton>(find.byType(LoadingButton)).onPressed!();
+      await tester.pump();
+      // snackbar가 뜨자마자 지속시간까지 다 흘러 사라지지 않도록, 등장 직후
+      // 프레임 하나만 더 진행해 잡는다 (pumpAndSettle은 자동 dismiss까지 소진함)
+      await tester.pump(const Duration(milliseconds: 100));
+
+      expect(find.text('photo_pick_failed'.tr()), findsOneWidget);
+      expect(find.byType(SubmitCertificationSheet), findsOneWidget);
       verifyNever(() => mockCertService.submit(
             festivalId: any(named: 'festivalId'),
             imageData: any(named: 'imageData'),

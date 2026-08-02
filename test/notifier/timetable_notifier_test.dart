@@ -75,10 +75,11 @@ void main() {
       expect(notifier.selectedDate, isNull);
     });
 
-    test('잘못된 날짜 형식이면 dates 비어있음', () {
+    test('잘못된 날짜 형식이면 dates 비어있고 error 설정 (fetch 실패와 구분 가능)', () {
       final notifier = make(startDate: 'not-a-date', endDate: '2025-08-03');
 
       expect(notifier.dates, isEmpty);
+      expect(notifier.error, isNotNull);
     });
   });
 
@@ -123,6 +124,19 @@ void main() {
       expect(notifier.followedNames, isEmpty);
       expect(notifier.isLoading, false);
       expect(notifier.error, isNull);
+    });
+
+    test('생성자의 날짜 파싱 실패로 남은 error도 fetch 성공 시 정리된다', () async {
+      when(() => mockDetailService.fetchTimetable(1))
+          .thenAnswer((_) async => [_entry()]);
+
+      final notifier = make(startDate: 'not-a-date', endDate: '2025-08-03');
+      expect(notifier.error, isNotNull);
+
+      await notifier.fetch();
+
+      expect(notifier.error, isNull);
+      expect(notifier.entries.length, 1);
     });
 
     test('timetable fetch 실패 시 error 설정, isLoading false, entries 비어있음', () async {

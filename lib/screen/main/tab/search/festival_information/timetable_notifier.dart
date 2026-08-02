@@ -79,7 +79,10 @@ class TimetableNotifier extends SafeChangeNotifier {
         selectedDate = dates.contains(today) ? today : dates.first;
       }
     } catch (e) {
+      // dates가 비어 hasEntries가 false가 되면 화면은 "일정 없음"으로 보이는데,
+      // 실제로는 날짜 파싱 오류다 — error를 남겨 fetch() 실패와 동일하게 구분되게 한다
       debugPrint('[Timetable] date parse failed: $e');
+      error = e;
     }
   }
 
@@ -93,6 +96,7 @@ class TimetableNotifier extends SafeChangeNotifier {
       entries = list;
       followedNames = followed;
       isLoading = false;
+      error = null; // _buildDates 실패로 남아있었을 수 있는 이전 에러 상태 정리
       _cachedRange = computeTimetableRange(entries, selectedDate);
       safeNotify();
     } catch (e) {

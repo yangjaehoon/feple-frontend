@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:feple/auth/token_store.dart';
 import 'package:feple/network/dio_client.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 
@@ -16,8 +18,9 @@ class FcmTokenService {
       }
       final token = await _messaging.getToken();
       if (token != null) await sendToServer(token, language: language);
-    } catch (e) {
+    } catch (e, st) {
       debugPrint('[FCM] 토큰 등록 실패: $e');
+      unawaited(FirebaseCrashlytics.instance.recordError(e, st, fatal: false, reason: 'FCM token register failed'));
     }
   }
 
@@ -29,8 +32,9 @@ class FcmTokenService {
         'language': language,
       });
       debugPrint('[FCM] 토큰 서버 등록 완료');
-    } catch (e) {
+    } catch (e, st) {
       debugPrint('[FCM] 토큰 서버 등록 실패');
+      unawaited(FirebaseCrashlytics.instance.recordError(e, st, fatal: false, reason: 'FCM sendToServer failed'));
     }
   }
 
@@ -42,8 +46,9 @@ class FcmTokenService {
       if (token == null) return;
       await DioClient.dio.delete('/users/device-token', data: {'token': token});
       debugPrint('[FCM] 토큰 서버 삭제 완료');
-    } catch (e) {
+    } catch (e, st) {
       debugPrint('[FCM] 토큰 서버 삭제 실패');
+      unawaited(FirebaseCrashlytics.instance.recordError(e, st, fatal: false, reason: 'FCM unregister failed'));
     }
   }
 }

@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -14,6 +12,7 @@ import 'package:feple/model/festival_model.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 class SubmitCertificationSheet extends StatefulWidget {
@@ -86,11 +85,18 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
     }
 
     final picker = ImagePicker();
-    final picked = await picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 1920,
-      maxHeight: 1920,
-    );
+    final XFile? picked;
+    try {
+      picked = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1920,
+        maxHeight: 1920,
+      );
+    } on PlatformException catch (e) {
+      debugPrint('image pick error: $e');
+      if (mounted) context.showErrorSnackbar('photo_pick_failed'.tr());
+      return;
+    }
     if (picked == null || !mounted) return;
 
     setState(() => _submitting = true);

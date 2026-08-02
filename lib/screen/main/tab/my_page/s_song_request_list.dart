@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_refreshable_center.dart';
@@ -69,7 +70,8 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
     }
   }
 
-  // RefreshIndicator용 — 기존 목록 유지, 스켈레톤 전환 없음
+  // RefreshIndicator용 — 기존 목록 유지, 스켈레톤 전환 없음. 실패해도 목록은
+  // 유지하되(크래시 방지), 실패 사실은 알려야 한다
   Future<void> _refresh() async {
     if (_userId == null) return;
     try {
@@ -80,7 +82,9 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
           _hasError = false;
         });
       }
-    } catch (_) {}
+    } catch (e) {
+      if (mounted) context.showErrorSnackbar(networkAwareErrorKey(e, 'err_fetch_data').tr());
+    }
   }
 
   Widget _buildScrollable(Widget child) => RefreshableCenter(child: child);

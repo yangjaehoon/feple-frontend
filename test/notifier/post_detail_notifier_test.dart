@@ -72,6 +72,25 @@ void main() {
       expect(notifier.likeCount, 5);
       verifyNever(() => mockPostService.incrementPostView(1));
     });
+
+    test('일부 fetch 실패 시 크래시 없이 onError로 실패를 알린다', () async {
+      String? errorKey;
+      notifier = PostDetailNotifier(
+        postId: 1,
+        initialLikeCount: 10,
+        initialViewCount: 0,
+        onError: (key) => errorKey = key,
+      );
+      when(() => mockPostService.fetchCounts(1)).thenThrow(Exception('network'));
+      when(() => mockPostService.isLiked(1)).thenThrow(Exception('network'));
+      when(() => mockScrapService.isScraped(1)).thenThrow(Exception('network'));
+      when(() => mockCommentService.fetchPostComments(1))
+          .thenAnswer((_) async => [_comment(id: 1)]);
+
+      await expectLater(notifier.refresh(), completes);
+
+      expect(errorKey, isNotNull);
+    });
   });
 
   group('fetchComments', () {

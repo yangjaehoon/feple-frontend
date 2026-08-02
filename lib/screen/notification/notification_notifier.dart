@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/common/stale_tracker.dart';
 import 'package:feple/injection.dart';
@@ -25,6 +26,12 @@ class NotificationNotifier extends SafeChangeNotifier {
 
   // 전체 삭제 실행취소용: 삭제 직전 전체 목록 스냅샷
   List<NotificationModel>? _savedAllItems;
+
+  // confirmDismiss/confirmDeleteAll의 서버 삭제가 실패했을 때 설정 — UI가
+  // snackbar로 표시 후 clearDeleteError() 호출 (일회성)
+  String? _deleteError;
+  String? get deleteError => _deleteError;
+  void clearDeleteError() => _deleteError = null;
 
   final _staleness = StaleTracker(const Duration(minutes: 3));
 
@@ -180,13 +187,22 @@ class NotificationNotifier extends SafeChangeNotifier {
   }
 
   Future<void> confirmDismiss(NotificationModel item) async {
-    _savedPositions.remove(item.id);
+    final savedIndex = _savedPositions.remove(item.id);
     try {
       await _service.delete(item.id);
     } catch (e) {
       debugPrint('[Notification] delete 실패: $e');
+      // 서버 삭제가 실패했는데 로컬에서만 지워진 채로 두면, pendingDeleteIds가
+      // finally에서 정리되므로 다음 재조회 때 서버에 남아있던 항목이 예고 없이
+      // 다시 나타난다 — 실패 시 즉시 화면에 복원하고 사용자에게 알린다
+      if (!_items.any((n) => n.id == item.id)) {
+        final insertAt = (savedIndex != null && savedIndex <= _items.length) ? savedIndex : 0;
+        _items.insert(insertAt, item);
+      }
+      _deleteError = 'delete_failed'.tr();
     } finally {
       _pendingDeleteIds.remove(item.id);
+      _notify();
     }
   }
 
@@ -218,8 +234,14 @@ class NotificationNotifier extends SafeChangeNotifier {
       await _service.deleteAll();
     } catch (e) {
       debugPrint('[Notification] deleteAll 실패: $e');
+      // 전체 삭제가 서버에서 실패했는데 로컬은 이미 비어있는 채로 두면, 다음
+      // 재조회 때 서버에 남아있던 항목들이 예고 없이 다시 나타난다 — 실패 시
+      // 즉시 화면에 복원하고 사용자에게 알린다
+      if (saved != null) _items = saved;
+      _deleteError = 'delete_failed'.tr();
     } finally {
       if (saved != null) _pendingDeleteIds.removeAll(saved.map((n) => n.id));
+      _notify();
     }
   }
 }

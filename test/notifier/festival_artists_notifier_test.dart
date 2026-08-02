@@ -13,6 +13,8 @@ FestivalArtistItem _artist(int id, String name) =>
     FestivalArtistItem(artistId: id, artistName: name);
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late MockFestivalArtistsFetcher mockFestivalArtistsFetcher;
   late MockArtistFollowService mockFollowService;
 
@@ -120,6 +122,51 @@ void main() {
       expect(notifier.artists, isEmpty);
       expect(notifier.isLoading, false);
       expect(notifier.hasError, true);
+    });
+  });
+
+  group('refresh', () {
+    test('성공하면 목록 갱신, refreshError 없음', () async {
+      when(() => mockFestivalArtistsFetcher.fetchFestivalArtists(10))
+          .thenAnswer((_) async => [_artist(1, 'A')]);
+      when(() => mockFollowService.fetchFollowingIds(99))
+          .thenAnswer((_) async => {});
+
+      final notifier = make(userId: 99);
+      await notifier.refresh();
+
+      expect(notifier.artists.map((a) => a.artistId), [1]);
+      expect(notifier.refreshError, isNull);
+    });
+
+    test('실패하면 기존 목록은 유지하고 refreshError를 설정한다', () async {
+      when(() => mockFestivalArtistsFetcher.fetchFestivalArtists(10))
+          .thenAnswer((_) async => [_artist(1, 'A')]);
+      when(() => mockFollowService.fetchFollowingIds(99))
+          .thenAnswer((_) async => {});
+      final notifier = make(userId: 99);
+      await notifier.fetch();
+
+      when(() => mockFestivalArtistsFetcher.fetchFestivalArtists(10))
+          .thenThrow(Exception('network'));
+
+      await notifier.refresh();
+
+      expect(notifier.artists.map((a) => a.artistId), [1]);
+      expect(notifier.refreshError, isNotNull);
+    });
+
+    test('clearRefreshError 호출 후 refreshError는 null', () async {
+      when(() => mockFestivalArtistsFetcher.fetchFestivalArtists(10))
+          .thenThrow(Exception('network'));
+
+      final notifier = make(userId: 99);
+      await notifier.refresh();
+      expect(notifier.refreshError, isNotNull);
+
+      notifier.clearRefreshError();
+
+      expect(notifier.refreshError, isNull);
     });
   });
 

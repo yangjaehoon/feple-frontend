@@ -127,6 +127,21 @@ void main() {
 
       expect(find.text('photo_category_other'.tr()), findsOneWidget);
     });
+
+    testWidgets('페스티벌 로딩 실패 시 안내 snackbar를 보여준다', (tester) async {
+      // pump() 헬퍼가 내부적으로 pumpAndSettle()을 호출하는데, snackbar가 즉시
+      // 뜨고 지속시간까지 다 흘러 사라져버리면 검증할 수 없다 — Completer로 시트가
+      // 완전히 열린 뒤에 실패를 발생시키고, 프레임 하나만 진행해 등장 직후를 잡는다.
+      final completer = Completer<List<FestivalPreview>>();
+      when(() => mockService.fetchFestivals(1)).thenAnswer((_) => completer.future);
+
+      await pump(tester, photo: _photo(), onSave: (_, _) {});
+      completer.completeError(Exception('network'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      expect(find.text('err_fetch_data'.tr()), findsOneWidget);
+    });
   });
 
   group('EditPhotoSheet 저장', () {

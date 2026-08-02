@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
@@ -74,7 +75,8 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
     }
   }
 
-  // RefreshIndicator용 — 기존 목록 유지, 스켈레톤 전환 없음
+  // RefreshIndicator용 — 기존 목록 유지, 스켈레톤 전환 없음. 실패해도 목록은
+  // 유지하되(크래시 방지), 실패 사실은 알려야 한다
   Future<void> _refresh() async {
     try {
       final list = await _certService.getMyCertifications();
@@ -84,7 +86,9 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
           _hasError = false;
         });
       }
-    } catch (_) {}
+    } catch (e) {
+      if (mounted) context.showErrorSnackbar(networkAwareErrorKey(e, 'err_fetch_data').tr());
+    }
   }
 
   /// 에러·빈 상태를 RefreshIndicator가 감지할 수 있도록 스크롤 가능하게 감쌉니다.

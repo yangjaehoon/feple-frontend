@@ -30,6 +30,13 @@ class FestivalArtistListScreen extends StatelessWidget {
             child: ListenableBuilder(
               listenable: notifier,
               builder: (context, _) {
+                final refreshError = notifier.refreshError;
+                if (refreshError != null) {
+                  notifier.clearRefreshError();
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (context.mounted) context.showErrorSnackbar(refreshError);
+                  });
+                }
                 if (notifier.isLoading) return _buildSkeleton();
                 if (notifier.hasError) {
                   return ErrorState.network(

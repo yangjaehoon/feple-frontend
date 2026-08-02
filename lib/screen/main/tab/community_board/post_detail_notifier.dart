@@ -104,12 +104,21 @@ class PostDetailNotifier extends SafeChangeNotifier {
   }
 
   Future<void> init() async {
-    await Future.wait([loadPostState(), fetchComments(), _incrementView()]);
+    await Future.wait<void>([
+      loadPostState().then((_) {}),
+      fetchComments().then((_) {}),
+      _incrementView(),
+    ]);
   }
 
-  /// pull-to-refresh 전용 — init()과 달리 조회수를 다시 올리지 않는다.
+  /// pull-to-refresh 전용 — init()과 달리 조회수를 다시 올리지 않는다. 개별 fetch가
+  /// 실패해도(loadPostState/fetchComments가 각자 크래시 방지용으로 예외를 삼킴)
+  /// 조용히 넘어가지 않도록, 실패 여부를 모아 기존 onError 콜백으로 알린다.
   Future<void> refresh() async {
-    await Future.wait([loadPostState(), fetchComments()]);
+    final results = await Future.wait([loadPostState(), fetchComments()]);
+    if (results.any((succeeded) => !succeeded)) {
+      onError?.call('err_fetch_data');
+    }
   }
 
   Future<void> _incrementView() async {
@@ -122,7 +131,7 @@ class PostDetailNotifier extends SafeChangeNotifier {
     }
   }
 
-  Future<void> loadPostState() async {
+  Future<bool> loadPostState() async {
     try {
       final (counts, isLiked, isScraped) = await (
         _postService.fetchCounts(postId),
@@ -134,18 +143,22 @@ class PostDetailNotifier extends SafeChangeNotifier {
       likeCount = counts.likeCount;
       scrapCount = counts.scrapCount;
       safeNotify();
+      return true;
     } catch (e) {
       debugPrint('loadPostState error: $e');
+      return false;
     }
   }
 
-  Future<void> fetchComments() async {
+  Future<bool> fetchComments() async {
     try {
       comments = await _commentService.fetchPostComments(postId);
       commentsVersion.value++;
       safeNotify();
+      return true;
     } catch (e) {
       debugPrint('fetchComments error: $e');
+      return false;
     }
   }
 

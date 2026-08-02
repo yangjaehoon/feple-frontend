@@ -60,6 +60,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     _notifier = NotificationNotifier();
     _scrollController.addListener(_onScroll);
     App.resumeEvent.addListener(_onAppResumed);
+    _notifier.addListener(_onNotifierChanged);
     _notifier.load();
   }
 
@@ -68,8 +69,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
     App.resumeEvent.removeListener(_onAppResumed);
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    _notifier.removeListener(_onNotifierChanged);
     _notifier.dispose();
     super.dispose();
+  }
+
+  void _onNotifierChanged() {
+    final deleteError = _notifier.deleteError;
+    if (deleteError == null) return;
+    _notifier.clearDeleteError();
+    if (mounted) context.showErrorSnackbar(deleteError);
   }
 
   void _onAppResumed() => _notifier.refresh();

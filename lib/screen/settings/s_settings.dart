@@ -63,9 +63,8 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
     // rootNavigator를 await 전에 캡처 — logout 후 위젯이 unmount되어 context 사용 불가
     final rootNav = Navigator.of(context, rootNavigator: true);
     final userProvider = context.read<UserProvider>();
-    try {
-      await userProvider.logout();
-    } catch (_) {}
+    // logout()은 각 정리 단계를 내부에서 개별적으로 try/catch하므로 예외를 던지지 않는다.
+    await userProvider.logout();
     // logout()이 notifyListeners → Consumer가 home을 LoginScreen으로 교체.
     // rootNavigator에 남은 extra 라우트(rootNavigator:true로 push된 것들)만 정리.
     rootNav.popUntil((route) => route.isFirst);

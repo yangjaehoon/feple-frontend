@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
@@ -330,7 +331,12 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
           _hasError = false;
         });
       }
-    } catch (_) {}
+    } catch (e) {
+      // 기존 목록은 유지하되(_hasError는 그대로 false), 실패 사실은 알려야 한다
+      if (mounted && _loadId == myId) {
+        context.showErrorSnackbar(networkAwareErrorKey(e, 'err_fetch_data').tr());
+      }
+    }
   }
 
   Future<void> _loadMore() async {

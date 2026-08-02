@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/injection.dart';
@@ -66,8 +67,13 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
           _loadingFestivals = false;
         });
       }
-    } catch (_) {
-      if (mounted) setState(() => _loadingFestivals = false);
+    } catch (e) {
+      // 실패해도 드롭다운은 빈 채로 그냥 쓸 수 있게 두되(설명 필드로 대체 가능),
+      // 실패인지 원래 목록이 없는지 사용자가 구분할 수 있도록 알린다
+      if (mounted) {
+        setState(() => _loadingFestivals = false);
+        context.showErrorSnackbar(networkAwareErrorKey(e, 'err_fetch_data').tr());
+      }
     }
   }
 

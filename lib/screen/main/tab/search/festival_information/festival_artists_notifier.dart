@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/app_events.dart';
 import 'package:feple/common/safe_change_notifier.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/festival_artists_fetcher.dart';
@@ -17,6 +19,10 @@ class FestivalArtistsNotifier extends SafeChangeNotifier {
   bool hasError = false;
   Object? error;
   List<String> allDates = [];
+
+  // refresh() 실패 시 설정 — UI가 snackbar로 표시 후 clearRefreshError() 호출 (일회성)
+  String? refreshError;
+  void clearRefreshError() => refreshError = null;
 
   // null = 전체, otherwise ISO date string
   String? selectedDate;
@@ -91,8 +97,8 @@ class FestivalArtistsNotifier extends SafeChangeNotifier {
     }
   }
 
-  /// Pull-to-refresh용 — 실패해도 기존 목록을 유지하고 조용히 무시
-  /// (다른 리스트 화면의 refresh()와 동일 패턴)
+  /// Pull-to-refresh용 — 실패해도 기존 목록은 유지하되(크래시 방지), 실패 사실은
+  /// refreshError로 알려 UI가 snackbar를 띄울 수 있게 한다.
   Future<void> refresh() async {
     try {
       await _fetchAndApply();
@@ -100,6 +106,8 @@ class FestivalArtistsNotifier extends SafeChangeNotifier {
       safeNotify();
     } catch (e) {
       debugPrint('festival artists refresh error: $e');
+      refreshError = networkAwareErrorKey(e, 'err_fetch_data').tr();
+      safeNotify();
     }
   }
 

@@ -323,6 +323,29 @@ void main() {
 
       verify(() => mockService.delete(99)).called(1);
     });
+
+    test('서버 삭제 실패 시 항목을 목록에 복원하고 deleteError를 설정한다', () async {
+      when(() => mockService.delete(1)).thenThrow(Exception('network'));
+      final item = notifier.items.first;
+      notifier.removeLocally(item);
+
+      await notifier.confirmDismiss(item);
+
+      expect(notifier.items.any((n) => n.id == 1), isTrue);
+      expect(notifier.deleteError, isNotNull);
+    });
+
+    test('clearDeleteError 호출 후 deleteError는 null', () async {
+      when(() => mockService.delete(1)).thenThrow(Exception('network'));
+      final item = notifier.items.first;
+      notifier.removeLocally(item);
+      await notifier.confirmDismiss(item);
+      expect(notifier.deleteError, isNotNull);
+
+      notifier.clearDeleteError();
+
+      expect(notifier.deleteError, isNull);
+    });
   });
 
   group('NotificationType.isDismissible', () {
@@ -360,6 +383,16 @@ void main() {
 
       expect(notifier.items.map((n) => n.id), [1, 2]);
       verifyNever(() => mockService.deleteAll());
+    });
+
+    test('confirmDeleteAll 서버 실패 시 원래 목록으로 복원하고 deleteError를 설정한다', () async {
+      when(() => mockService.deleteAll()).thenThrow(Exception('network'));
+      notifier.removeAllLocally();
+
+      await notifier.confirmDeleteAll();
+
+      expect(notifier.items.map((n) => n.id), [1, 2]);
+      expect(notifier.deleteError, isNotNull);
     });
   });
 }

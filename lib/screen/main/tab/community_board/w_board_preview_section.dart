@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_preview_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
@@ -31,27 +32,17 @@ class BoardPreviewSection extends StatefulWidget {
   State<BoardPreviewSection> createState() => BoardPreviewSectionState();
 }
 
-class BoardPreviewSectionState extends State<BoardPreviewSection> {
-  late Future<List<Post>> _postsFuture;
-
+class BoardPreviewSectionState extends State<BoardPreviewSection>
+    with FutureRefreshable<List<Post>, BoardPreviewSection> {
   @override
-  void initState() {
-    super.initState();
-    _postsFuture = widget.fetchPosts();
-  }
-
-  Future<void> refresh() async {
-    final future = widget.fetchPosts();
-    setState(() { _postsFuture = future; });
-    try { await future; } catch (_) {}
-  }
+  Future<List<Post>> fetchData() => widget.fetchPosts();
 
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
     final boardName = widget.boardName ?? 'name_board'.tr(args: [widget.name]);
     return BoardPreviewCard(
-      future: _postsFuture,
+      future: future,
       headerIcon: widget.headerIcon,
       headerTitle: boardName,
       headerColor: colors.activate,

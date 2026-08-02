@@ -42,7 +42,7 @@ class _MyPageFragmentState extends State<MyPageFragment> with NavigationGuard {
 
   Future<void> _onRefresh() async {
     _profileKey.currentState?.refresh();
-    _statsKey.currentState?.refresh();
+    unawaited(_statsKey.currentState?.refresh());
     _certKey.currentState?.refresh();
     _songsKey.currentState?.refresh();
   }

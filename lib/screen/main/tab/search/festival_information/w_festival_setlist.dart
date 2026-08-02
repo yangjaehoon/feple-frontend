@@ -10,6 +10,7 @@ import 'package:feple/injection.dart';
 import 'package:feple/model/festival_setlist_entry.dart';
 import 'package:feple/model/song_model.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/screen/main/tab/search/festival_information/s_festival_setlist_fullscreen.dart';
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:flutter/material.dart';
@@ -23,25 +24,11 @@ class FestivalSetlist extends StatefulWidget {
   State<FestivalSetlist> createState() => FestivalSetlistState();
 }
 
-class FestivalSetlistState extends State<FestivalSetlist> {
-  late Future<List<FestivalSetlistEntry>> _future;
-
+class FestivalSetlistState extends State<FestivalSetlist>
+    with FutureRefreshable<List<FestivalSetlistEntry>, FestivalSetlist> {
   @override
-  void initState() {
-    super.initState();
-    _future = _fetch();
-  }
-
-  Future<List<FestivalSetlistEntry>> _fetch() =>
+  Future<List<FestivalSetlistEntry>> fetchData() =>
       sl<FestivalDetailService>().fetchSetlist(widget.festivalId);
-
-  Future<void> refresh() {
-    final future = _fetch();
-    setState(() {
-      _future = future;
-    });
-    return future;
-  }
 
   Future<void> _openFullPage() async {
     await Navigator.push<void>(
@@ -107,15 +94,13 @@ class FestivalSetlistState extends State<FestivalSetlist> {
 
   Widget _buildContent(AbstractThemeColors colors) {
     return AsyncContentBuilder<List<FestivalSetlistEntry>>(
-      future: _future,
+      future: future,
       loadingBuilder: (_) => _buildSkeleton(),
       errorBuilder: (error) => Padding(
         padding: const EdgeInsets.only(bottom: 8),
         child: ErrorState.network(
           error ?? Exception('unknown'),
-          onRetry: () => setState(() {
-            _future = _fetch();
-          }),
+          onRetry: refresh,
         ),
       ),
       emptyBuilder: (_) => Padding(

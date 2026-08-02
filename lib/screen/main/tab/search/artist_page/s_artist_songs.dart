@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
+import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
@@ -26,27 +27,14 @@ class ArtistSongsScreen extends StatefulWidget {
   State<ArtistSongsScreen> createState() => _ArtistSongsScreenState();
 }
 
-class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
+class _ArtistSongsScreenState extends State<ArtistSongsScreen>
+    with FutureRefreshable<List<SongModel>, ArtistSongsScreen> {
   final _songService = sl<SongService>();
-  late Future<List<SongModel>> _future;
   bool _isSheetOpen = false;
 
   @override
-  void initState() {
-    super.initState();
-    _future = _fetch();
-  }
-
-  Future<List<SongModel>> _fetch() => _songService.fetchSongs(widget.artistId);
-
-  Future<void> _refresh() async {
-    setState(() {
-      _future = _fetch();
-    });
-    try {
-      await _future;
-    } catch (_) {}
-  }
+  Future<List<SongModel>> fetchData() =>
+      _songService.fetchSongs(widget.artistId);
 
   @override
   Widget build(BuildContext context) {
@@ -86,9 +74,9 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
       ),
       body: RefreshIndicator(
         color: colors.activate,
-        onRefresh: _refresh,
+        onRefresh: refresh,
         child: FutureBuilder<List<SongModel>>(
-          future: _future,
+          future: future,
           builder: (context, snapshot) => _buildBody(snapshot, colors),
         ),
       ),
@@ -103,7 +91,7 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen> {
       return const SongListSkeleton(itemCount: 6);
     }
     if (snapshot.hasError) {
-      return ErrorState.network(snapshot.error!, onRetry: _refresh);
+      return ErrorState.network(snapshot.error!, onRetry: refresh);
     }
     final songs = snapshot.data ?? [];
     if (songs.isEmpty) {

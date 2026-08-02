@@ -12,6 +12,7 @@ import 'package:feple/screen/main/tab/my_page/w_my_liked_posts.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_posts.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_scraps.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
@@ -25,21 +26,10 @@ class MyPostCommentView extends StatefulWidget {
 }
 
 class MyPostCommentViewState extends State<MyPostCommentView>
-    with NavigationGuard {
-  late Future<UserStats> _statsFuture;
-
+    with NavigationGuard, FutureRefreshable<UserStats, MyPostCommentView> {
   @override
-  void initState() {
-    super.initState();
-    _statsFuture = _fetchStats();
-  }
-
-  Future<UserStats> _fetchStats() =>
+  Future<UserStats> fetchData() =>
       sl<UserActivityService>().fetchStats(widget.userId);
-
-  void refresh() => setState(() {
-    _statsFuture = _fetchStats();
-  });
 
   Future<void> _navigate(Widget screen) => guardedNavigate(
     () => Navigator.push(context, SlideRoute(builder: (_) => screen)),
@@ -50,7 +40,7 @@ class MyPostCommentViewState extends State<MyPostCommentView>
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: FutureBuilder<UserStats>(
-        future: _statsFuture,
+        future: future,
         builder: (context, snapshot) => _buildStatRow(context, snapshot),
       ),
     );

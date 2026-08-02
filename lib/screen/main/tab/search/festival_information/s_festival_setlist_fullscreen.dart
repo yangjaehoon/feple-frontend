@@ -3,6 +3,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/url_validator.dart';
+import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
@@ -26,17 +27,14 @@ class FestivalSetlistFullscreenScreen extends StatefulWidget {
 }
 
 class _FestivalSetlistFullscreenScreenState
-    extends State<FestivalSetlistFullscreenScreen> {
-  late Future<List<FestivalSetlistEntry>> _future;
+    extends State<FestivalSetlistFullscreenScreen>
+    with
+        FutureRefreshable<List<FestivalSetlistEntry>,
+            FestivalSetlistFullscreenScreen> {
   final Set<int> _expanded = {};
 
   @override
-  void initState() {
-    super.initState();
-    _future = _fetch();
-  }
-
-  Future<List<FestivalSetlistEntry>> _fetch() =>
+  Future<List<FestivalSetlistEntry>> fetchData() =>
       sl<FestivalDetailService>().fetchSetlist(widget.festivalId);
 
   Future<void> _openYoutubeMusic(String url) async {
@@ -95,11 +93,9 @@ class _FestivalSetlistFullscreenScreenState
 
   Widget _buildBody(AbstractThemeColors colors) {
     return AsyncContentBuilder<List<FestivalSetlistEntry>>(
-      future: _future,
+      future: future,
       loadingBuilder: (_) => _buildSkeleton(colors),
-      onRetry: () => setState(() {
-        _future = _fetch();
-      }),
+      onRetry: refresh,
       emptyBuilder: (_) => Center(
         child: Text(
           'no_setlist'.tr(),

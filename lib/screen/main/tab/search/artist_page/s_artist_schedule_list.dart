@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
+import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
@@ -29,30 +30,18 @@ class ArtistScheduleListScreen extends StatefulWidget {
       _ArtistScheduleListScreenState();
 }
 
-class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
-  late Future<List<ArtistScheduleModel>> _future;
+class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen>
+    with
+        FutureRefreshable<List<ArtistScheduleModel>,
+            ArtistScheduleListScreen> {
   final _scheduleService = sl<ArtistScheduleService>();
   final _festivalService = sl<FestivalService>();
   // 행 탭 → fetchById → 화면 전환까지 아무 피드백 없이 멈춰 보이는 걸 방지
   int? _navigatingFestivalId;
 
   @override
-  void initState() {
-    super.initState();
-    _future = _fetch();
-  }
-
-  Future<List<ArtistScheduleModel>> _fetch() =>
+  Future<List<ArtistScheduleModel>> fetchData() =>
       _scheduleService.fetchSchedule(widget.artistId);
-
-  Future<void> _refresh() async {
-    setState(() {
-      _future = _fetch();
-    });
-    try {
-      await _future;
-    } catch (_) {}
-  }
 
   Future<void> _navigateToFestival(int festivalId) async {
     if (_navigatingFestivalId != null) return;
@@ -88,9 +77,9 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
           Expanded(
             child: RefreshIndicator(
               color: colors.activate,
-              onRefresh: _refresh,
+              onRefresh: refresh,
               child: FutureBuilder<List<ArtistScheduleModel>>(
-                future: _future,
+                future: future,
                 builder: (context, snapshot) => _buildBody(snapshot, colors),
               ),
             ),
@@ -108,7 +97,7 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen> {
       return const ScheduleListSkeleton(itemCount: 6);
     }
     if (snapshot.hasError) {
-      return ErrorState.network(snapshot.error!, onRetry: _refresh);
+      return ErrorState.network(snapshot.error!, onRetry: refresh);
     }
     final schedules = snapshot.data ?? [];
     if (schedules.isEmpty) {

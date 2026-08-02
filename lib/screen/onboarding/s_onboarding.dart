@@ -4,6 +4,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_selectable_chip.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/data/preference/prefs.dart';
+import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
@@ -182,17 +183,14 @@ class _ArtistPickPage extends StatefulWidget {
   State<_ArtistPickPage> createState() => _ArtistPickPageState();
 }
 
-class _ArtistPickPageState extends State<_ArtistPickPage> {
-  late Future<List<Artist>> _artistsFuture;
+class _ArtistPickPageState extends State<_ArtistPickPage>
+    with FutureRefreshable<List<Artist>, _ArtistPickPage> {
   final Set<int> _selectedIds = {};
   bool _isSubmitting = false;
   String? _selectedGenre;
 
   @override
-  void initState() {
-    super.initState();
-    _artistsFuture = sl<ArtistService>().fetchArtists();
-  }
+  Future<List<Artist>> fetchData() => sl<ArtistService>().fetchArtists();
 
   Future<void> _submit() async {
     if (_isSubmitting) return;
@@ -291,15 +289,13 @@ class _ArtistPickPageState extends State<_ArtistPickPage> {
 
   Widget _buildGrid(AbstractThemeColors colors) {
     return AsyncContentBuilder<List<Artist>>(
-      future: _artistsFuture,
+      future: future,
       loadingBuilder: (_) => _buildSkeleton(),
       errorBuilder: (error) => Center(
         child: ErrorState.network(
           error ?? Exception('unknown'),
           operationErrorKey: 'onboarding_pick_load_failed',
-          onRetry: () => setState(() {
-            _artistsFuture = sl<ArtistService>().fetchArtists();
-          }),
+          onRetry: refresh,
         ),
       ),
       isEmpty: (_) => false,

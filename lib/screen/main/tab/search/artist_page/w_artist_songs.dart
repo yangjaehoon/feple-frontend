@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/widget/w_async_content_builder.dart';
@@ -28,24 +29,13 @@ class ArtistSongs extends StatefulWidget {
   State<ArtistSongs> createState() => ArtistSongsState();
 }
 
-class ArtistSongsState extends State<ArtistSongs> with NavigationGuard {
+class ArtistSongsState extends State<ArtistSongs>
+    with NavigationGuard, FutureRefreshable<List<SongModel>, ArtistSongs> {
   final _songService = sl<SongService>();
-  late Future<List<SongModel>> _songsFuture;
 
   @override
-  void initState() {
-    super.initState();
-    _songsFuture = _fetchSongs();
-  }
-
-  Future<List<SongModel>> _fetchSongs() =>
+  Future<List<SongModel>> fetchData() =>
       _songService.fetchSongs(widget.artistId);
-
-  Future<void> refresh() async {
-    final future = _fetchSongs();
-    setState(() { _songsFuture = future; });
-    try { await future; } catch (_) {}
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,9 +66,9 @@ class ArtistSongsState extends State<ArtistSongs> with NavigationGuard {
 
   Widget _buildSongList(AbstractThemeColors colors) {
     return AsyncContentBuilder<List<SongModel>>(
-      future: _songsFuture,
+      future: future,
       loadingBuilder: (_) => const SongListSkeleton(),
-      onRetry: () => setState(() { _songsFuture = _fetchSongs(); }),
+      onRetry: refresh,
       emptyBuilder: (_) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: EmptyState(icon: Icons.music_off_rounded, title: 'no_songs'.tr()),

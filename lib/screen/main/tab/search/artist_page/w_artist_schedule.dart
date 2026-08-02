@@ -11,6 +11,7 @@ import 'package:feple/screen/main/tab/search/artist_page/s_artist_schedule_list.
 import 'package:feple/screen/main/tab/search/artist_page/w_schedule_list_skeleton.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_schedule_list_tile.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:flutter/material.dart';
 
@@ -28,24 +29,15 @@ class ArtistSchedule extends StatefulWidget {
   State<ArtistSchedule> createState() => ArtistScheduleState();
 }
 
-class ArtistScheduleState extends State<ArtistSchedule> with NavigationGuard {
+class ArtistScheduleState extends State<ArtistSchedule>
+    with
+        NavigationGuard,
+        FutureRefreshable<List<ArtistScheduleModel>, ArtistSchedule> {
   final _scheduleService = sl<ArtistScheduleService>();
-  late Future<List<ArtistScheduleModel>> _scheduleFuture;
 
   @override
-  void initState() {
-    super.initState();
-    _scheduleFuture = _fetchSchedule();
-  }
-
-  Future<List<ArtistScheduleModel>> _fetchSchedule() =>
+  Future<List<ArtistScheduleModel>> fetchData() =>
       _scheduleService.fetchSchedule(widget.artistId);
-
-  Future<void> refresh() async {
-    final future = _fetchSchedule();
-    setState(() { _scheduleFuture = future; });
-    try { await future; } catch (_) {}
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,9 +68,9 @@ class ArtistScheduleState extends State<ArtistSchedule> with NavigationGuard {
 
   Widget _buildScheduleList(AbstractThemeColors colors) {
     return AsyncContentBuilder<List<ArtistScheduleModel>>(
-      future: _scheduleFuture,
+      future: future,
       loadingBuilder: (_) => const ScheduleListSkeleton(),
-      onRetry: () => setState(() { _scheduleFuture = _fetchSchedule(); }),
+      onRetry: refresh,
       isEmpty: (data) => data.every((item) => item.isPast),
       emptyBuilder: (_) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),

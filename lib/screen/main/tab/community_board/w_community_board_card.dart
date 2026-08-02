@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_write_post.dart';
 import 'package:feple/model/post_model.dart';
@@ -40,28 +41,21 @@ class CommunityBoardCard extends StatefulWidget {
   State<CommunityBoardCard> createState() => CommunityBoardCardState();
 }
 
-class CommunityBoardCardState extends State<CommunityBoardCard> {
+class CommunityBoardCardState extends State<CommunityBoardCard>
+    with FutureRefreshable<List<Post>, CommunityBoardCard> {
   final PostService _postService = sl<PostService>();
-  late Future<List<Post>> _postsFuture;
 
   @override
   void initState() {
     super.initState();
-    _postsFuture = _postService.fetchPosts(widget.serviceBoardType);
     AppEvents.postChanged.addListener(_onPostChangedEvent);
   }
 
   void _onPostChangedEvent() => refresh();
 
-  /// 실제 데이터 갱신이 끝날 때까지 기다릴 수 있는 새로고침.
-  /// 부모(CommunityBoardFragment)가 GlobalKey로 직접 호출해 완료 시점을 알 수 있음 —
-  /// 예전엔 AppEvents.postChanged만 던지고 Future.delayed(고정 시간)로 대충
-  /// 끝났다고 가정했음.
-  Future<void> refresh() async {
-    final future = _postService.fetchPosts(widget.serviceBoardType);
-    if (mounted) setState(() { _postsFuture = future; });
-    try { await future; } catch (_) {}
-  }
+  @override
+  Future<List<Post>> fetchData() =>
+      _postService.fetchPosts(widget.serviceBoardType);
 
   @override
   void dispose() {
@@ -99,7 +93,7 @@ class CommunityBoardCardState extends State<CommunityBoardCard> {
     final colors = context.appColors;
     final responsiveSize = ResponsiveSize(context);
     return BoardPreviewCard(
-      future: _postsFuture,
+      future: future,
       headerIcon: widget.icon,
       headerTitle: widget.title,
       headerColor: widget.headerColorFn(colors),

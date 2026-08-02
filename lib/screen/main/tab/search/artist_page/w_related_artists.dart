@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_model.dart';
@@ -18,29 +19,18 @@ class RelatedArtists extends StatefulWidget {
   State<RelatedArtists> createState() => RelatedArtistsState();
 }
 
-class RelatedArtistsState extends State<RelatedArtists> {
+class RelatedArtistsState extends State<RelatedArtists>
+    with FutureRefreshable<List<Artist>, RelatedArtists> {
   final _artistService = sl<ArtistService>();
-  late Future<List<Artist>> _future;
 
   @override
-  void initState() {
-    super.initState();
-    _future = _fetch();
-  }
-
-  Future<List<Artist>> _fetch() =>
+  Future<List<Artist>> fetchData() =>
       _artistService.fetchRelatedArtists(widget.artistId);
-
-  Future<void> refresh() async {
-    final future = _fetch();
-    setState(() { _future = future; });
-    try { await future; } catch (_) {}
-  }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Artist>>(
-      future: _future,
+      future: future,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           debugPrint('related artists fetch error: ${snapshot.error}');

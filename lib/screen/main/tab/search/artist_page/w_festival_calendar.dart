@@ -1,8 +1,6 @@
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/common/util/app_route.dart';
-import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_list_row_skeleton.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
@@ -10,9 +8,8 @@ import 'package:feple/common/widget/w_tap_loading_indicator.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_schedule_model.dart';
 import 'package:feple/screen/main/tab/search/artist_page/event_type_style.dart';
-import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
+import 'package:feple/screen/main/tab/search/artist_page/festival_navigation.dart';
 import 'package:feple/service/artist_schedule_service.dart';
-import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
 
 class FestivalCalendar extends StatefulWidget {
@@ -31,7 +28,6 @@ class FestivalCalendar extends StatefulWidget {
 
 class _FestivalCalendarState extends State<FestivalCalendar> {
   final _scheduleService = sl<ArtistScheduleService>();
-  final _festivalService = sl<FestivalService>();
   List<ArtistScheduleModel> _schedules = [];
   bool _isLoading = true;
   bool _hasError = false;
@@ -291,21 +287,7 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
     if (_navigatingFestivalId != null) return;
     setState(() => _navigatingFestivalId = festivalId);
     try {
-      final festival = await _festivalService.fetchById(festivalId);
-      if (!mounted) return;
-      unawaited(Navigator.push(
-        context,
-        SlideRoute(
-          builder: (_) => FestivalInformationFragment(poster: festival),
-        ),
-      ));
-    } catch (e) {
-      debugPrint('[FestivalCalendar] festival fetch error: $e');
-      if (mounted) {
-        context.showErrorSnackbar(
-          networkAwareErrorKey(e, 'err_fetch_data').tr(),
-        );
-      }
+      await navigateToFestivalById(context, festivalId);
     } finally {
       if (mounted) setState(() => _navigatingFestivalId = null);
     }

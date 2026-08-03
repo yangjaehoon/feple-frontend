@@ -6,6 +6,7 @@ import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/followed_artist.dart';
+import 'package:feple/model/order_utils.dart';
 import 'package:feple/screen/main/tab/home/w_reorder_sheet.dart';
 import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
 import 'package:feple/screen/main/tab/search/w_artist_card.dart';
@@ -69,18 +70,10 @@ class _FollowedArtistsByGenreScreenState
     // 갱신해도 이 화면 자체는 재진입 전까지 반영되지 않았음 — 즉시 반영
     if (newOrder != null && mounted) {
       setState(() {
-        _artists = _reordered(_artists, newOrder);
+        _artists = reorderById(_artists, newOrder, (a) => a.id);
         _genres = _computeGenres();
       });
     }
-  }
-
-  List<FollowedArtist> _reordered(List<FollowedArtist> source, List<int> order) {
-    final map = {for (final a in source) a.id: a};
-    final ordered = order.where(map.containsKey).map((id) => map[id]!).toList();
-    final orderedIds = order.toSet();
-    final rest = source.where((a) => !orderedIds.contains(a.id)).toList();
-    return [...ordered, ...rest];
   }
 
   @override

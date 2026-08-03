@@ -61,13 +61,8 @@ class TimetableGrid extends StatelessWidget {
     final totalW = stages.isEmpty ? stageW : stages.length * stageW;
     final totalH = (endHour - startHour) * 60 * _minPx + _topPad + _bottomPad;
 
-    // 셀 높이가 분 단위 픽셀 환산으로 고정돼 있어(_toY) 텍스트 배율이 커지면
-    // 카드 안 텍스트가 넘침 → 이 그리드 안에서만 배율을 별도로 제한
-    final mq = MediaQuery.of(context);
-    return MediaQuery(
-      data: mq.copyWith(
-        textScaler: mq.textScaler.clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
-      ),
+    return clampTimetableTextScale(
+      context,
       child: Column(
         children: [
           _buildStageHeader(stageW),
@@ -193,10 +188,7 @@ class TimetableGrid extends StatelessWidget {
       final clampedH = (entry.durationMinutes * _minPx - 4).clamp(4.0, double.infinity);
       if (entry.isOps) {
         // 운영 항목: 별도 열 없이 모든 스테이지 열에 동일하게 표시.
-        // 그날 실제 공연 없이 운영 항목만 있으면 stages가 비어있을 수 있으므로
-        // 그 경우에도 최소 1칸은 그려서 카드가 사라지지 않게 함 (stageW의
-        // 폴백 계산과 동일한 전제)
-        final columnCount = stages.isEmpty ? 1 : stages.length;
+        final columnCount = opsColumnCount(stages);
         for (int i = 0; i < columnCount; i++) {
           cards.add(Positioned(
             left: i * stageW + 3,

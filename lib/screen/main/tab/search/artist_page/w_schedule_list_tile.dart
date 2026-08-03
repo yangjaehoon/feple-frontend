@@ -2,16 +2,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
-import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_tap_loading_indicator.dart';
-import 'package:feple/injection.dart';
 import 'package:feple/model/artist_schedule_model.dart';
 import 'package:feple/screen/main/tab/search/artist_page/event_type_style.dart';
+import 'package:feple/screen/main/tab/search/artist_page/festival_navigation.dart';
 import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_event_type_icon.dart';
-import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
-import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
 
 class ScheduleListTile extends StatefulWidget {
@@ -109,21 +106,11 @@ class _ScheduleListTileState extends State<ScheduleListTile>
     await guardedNavigate(() async {
       setState(() => _isLoadingFestival = true);
       try {
-        final festival = await sl<FestivalService>().fetchById(item.festivalId);
-        if (!mounted) return;
-        await Navigator.push(
+        await navigateToFestivalById(
           context,
-          SlideRoute(
-            builder: (_) => FestivalInformationFragment(poster: festival),
-          ),
+          item.festivalId,
+          awaitNavigation: true,
         );
-      } catch (e) {
-        debugPrint('[ScheduleListTile] festival fetch error: $e');
-        if (mounted) {
-          context.showErrorSnackbar(
-            networkAwareErrorKey(e, 'err_fetch_data').tr(),
-          );
-        }
       } finally {
         if (mounted) setState(() => _isLoadingFestival = false);
       }

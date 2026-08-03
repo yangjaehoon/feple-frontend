@@ -46,15 +46,8 @@ class PostService {
   static const postImagePresignEndpoint = '/posts/image-upload-url';
 
   /// 게시글 커서 페이지 조회 (free/mate 전용)
-  Future<PostCursorPage> fetchPostsPage(String boardType, {int? cursor, int size = 20, String sort = 'latest'}) async {
-    final endpoint = _endpointFor(boardType);
-    final response = await DioClient.dio.get(endpoint, queryParameters: {
-      'cursor': ?cursor,
-      'size': size,
-      'sort': sort,
-    });
-    return PostCursorPage.fromJson(response.data as Map<String, dynamic>);
-  }
+  Future<PostCursorPage> fetchPostsPage(String boardType, {int? cursor, int size = 20, String sort = 'latest'}) =>
+      _fetchCursorPage(_endpointFor(boardType), cursor: cursor, size: size, sort: sort);
 
   Future<void> _createPost(String endpoint, PostDraft draft) async {
     try {
@@ -164,10 +157,11 @@ class PostService {
   Future<void> incrementPostView(int postId) =>
       DioClient.dio.post('/posts/$postId/view');
 
-  Future<PostCursorPage> _fetchCursorPage(String endpoint, {int? cursor, int size = 20}) async {
+  Future<PostCursorPage> _fetchCursorPage(String endpoint, {int? cursor, int size = 20, String? sort}) async {
     final response = await DioClient.dio.get(endpoint, queryParameters: {
       'cursor': ?cursor,
       'size': size,
+      'sort': ?sort,
     });
     return PostCursorPage.fromJson(response.data as Map<String, dynamic>);
   }

@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/post_cursor_controller.dart';
 import 'package:feple/common/widget/w_selectable_chip.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
@@ -47,15 +48,11 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
   final PostService _postService = sl<PostService>();
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
+  late final _controller = PostCursorController(
+    fetchPage: _fetchPage,
+    pageSize: _pageSize,
+  );
 
-  final List<Post> _posts = [];
-  bool _isLoading = true;
-  bool _loadingMore = false;
-  bool _hasMore = true;
-  bool _hasError = false;
-  Object? _error;
-  int? _cursor;
-  int _loadId = 0;
   String _sort = _sortLatest;
   bool _isSearching = false;
   List<Post>? _searchResults;
@@ -68,10 +65,26 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
 
   bool get _showWriteButton => BoardTypes.showWriteButton(_serviceBoardType);
 
+  /// 비페이지네이션 게시판(hot 등)은 fetchPosts 결과를 hasNext:false인
+  /// 1페이지짜리 PostCursorPage로 감싸 PostCursorController와 동일하게 다룬다.
+  Future<PostCursorPage> _fetchPage({int? cursor, int size = 20}) async {
+    if (_isPaginated) {
+      return _postService.fetchPostsPage(
+        _serviceBoardType,
+        cursor: cursor,
+        size: size,
+        sort: _sort,
+      );
+    }
+    final items = await _postService.fetchPosts(_serviceBoardType);
+    return PostCursorPage(content: items, hasNext: false);
+  }
+
   @override
   void initState() {
     super.initState();
-    _load();
+    _controller.addListener(_onControllerChanged);
+    _controller.load();
     _scrollController.addListener(_onScroll);
     AppEvents.postChanged.addListener(_onPostChanged);
   }
@@ -83,17 +96,29 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _searchController.dispose();
+    _controller.removeListener(_onControllerChanged);
+    _controller.dispose();
     super.dispose();
+  }
+
+  void _onControllerChanged() {
+    setState(() {});
+    final refreshError = _controller.refreshError;
+    if (refreshError != null) {
+      _controller.clearRefreshError();
+      context.showErrorSnackbar(refreshError);
+    }
   }
 
   void _onPostChanged() {
     final event = AppEvents.postChanged.value;
     // refreshAll(null) 또는 현재 목록에 있는 게시글이 변경된 경우만 재로드.
-    // _load()가 아닌 _refresh() 사용 — 이 화면을 보고 있지 않을 때도(IndexedStack
+    // load()가 아닌 refresh() 사용 — 이 화면을 보고 있지 않을 때도(IndexedStack
     // 백그라운드 탭) 전역 이벤트로 호출될 수 있어, 스켈레톤 플래시·스크롤 위치
     // 초기화 없이 조용히 최신화해야 함
-    if (event?.postId == null || _posts.any((p) => p.id == event!.postId)) {
-      _refresh(silent: true);
+    if (event?.postId == null ||
+        _controller.posts.any((p) => p.id == event!.postId)) {
+      _controller.refresh(silent: true);
     }
   }
 
@@ -103,10 +128,7 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
     if (showScrollTop != _showScrollTop) {
       setState(() => _showScrollTop = showScrollTop);
     }
-    if (_loadingMore || !_hasMore || !_isPaginated) return;
-    if (pos.pixels >= pos.maxScrollExtent - AppDimens.loadMoreTriggerDistance) {
-      _loadMore();
-    }
+    _controller.onScroll(_scrollController);
   }
 
   Future<void> _openPost(Post post) async {
@@ -118,116 +140,6 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
         ),
       ),
     );
-  }
-
-  Future<void> _load() async {
-    final myId = ++_loadId;
-    // 진행 중이던 loadMore를 무효화 — 그 결과가 나중에 와도 _loadId 가드로 버려짐
-    setState(() {
-      _isLoading = true;
-      _hasError = false;
-      _posts.clear();
-      _cursor = null;
-      _hasMore = true;
-      _loadingMore = false;
-    });
-    try {
-      if (_isPaginated) {
-        final page = await _postService.fetchPostsPage(
-          _serviceBoardType,
-          cursor: null,
-          size: _pageSize,
-          sort: _sort,
-        );
-        if (!mounted || _loadId != myId) return;
-        setState(() {
-          _posts.addAll(page.content);
-          _cursor = page.nextCursor;
-          _hasMore = page.hasNext;
-          _isLoading = false;
-        });
-      } else {
-        final items = await _postService.fetchPosts(_serviceBoardType);
-        if (!mounted || _loadId != myId) return;
-        setState(() {
-          _posts.addAll(items);
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      debugPrint('[CommunityPost] 게시글 로드 실패: $e');
-      if (mounted && _loadId == myId) {
-        setState(() {
-          _isLoading = false;
-          _hasError = true;
-          _error = e;
-        });
-      }
-    }
-  }
-
-  /// [silent] true면 실패해도 스낵바를 띄우지 않음 — 전역 이벤트로 화면이
-  /// 보이지 않는 상태(백그라운드 탭)에서 호출될 수 있는 [_onPostChanged]용
-  Future<void> _refresh({bool silent = false}) async {
-    final myId = ++_loadId;
-    // 진행 중이던 loadMore를 무효화 — 그 결과가 나중에 와도 _loadId 가드로 버려짐
-    if (_loadingMore) setState(() => _loadingMore = false);
-    try {
-      if (_isPaginated) {
-        final page = await _postService.fetchPostsPage(
-          _serviceBoardType,
-          cursor: null,
-          size: _pageSize,
-          sort: _sort,
-        );
-        if (!mounted || _loadId != myId) return;
-        setState(() {
-          _posts
-            ..clear()
-            ..addAll(page.content);
-          _cursor = page.nextCursor;
-          _hasMore = page.hasNext;
-          _hasError = false;
-        });
-      } else {
-        final items = await _postService.fetchPosts(_serviceBoardType);
-        if (!mounted || _loadId != myId) return;
-        setState(() {
-          _posts
-            ..clear()
-            ..addAll(items);
-          _hasError = false;
-        });
-      }
-    } catch (_) {
-      if (!context.mounted || _loadId != myId || silent) return;
-      context.showErrorSnackbar('refresh_failed'.tr());
-    }
-  }
-
-  Future<void> _loadMore() async {
-    if (!_hasMore || _loadingMore) return;
-    // load/refresh가 진행 중에 끼어들면 그 결과로 이 loadMore 응답이 stale해짐
-    final myId = _loadId;
-    setState(() => _loadingMore = true);
-    try {
-      final page = await _postService.fetchPostsPage(
-        _serviceBoardType,
-        cursor: _cursor,
-        size: _pageSize,
-        sort: _sort,
-      );
-      if (!mounted || _loadId != myId) return;
-      setState(() {
-        _posts.addAll(page.content);
-        _cursor = page.nextCursor;
-        _hasMore = page.hasNext;
-        _loadingMore = false;
-      });
-    } catch (e) {
-      debugPrint('[CommunityPost] 추가 로드 실패: $e');
-      if (mounted && _loadId == myId) setState(() => _loadingMore = false);
-    }
   }
 
   void _scheduleSearch(String keyword) {
@@ -296,10 +208,10 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
     if (_searchResults != null) {
       return _buildSearchResults(colors);
     }
-    if (_hasError) {
-      return ErrorState.network(_error!, onRetry: _load);
+    if (_controller.hasError) {
+      return ErrorState.network(_controller.error!, onRetry: _controller.load);
     }
-    if (_posts.isEmpty) {
+    if (_controller.posts.isEmpty) {
       return _buildEmptyState(colors);
     }
     return _buildPostListView(colors);
@@ -369,13 +281,14 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
   }
 
   Widget _buildPostListView(AbstractThemeColors colors) {
+    final posts = _controller.posts;
     return ListView.separated(
       controller: _scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.only(bottom: 80),
-      itemCount: _posts.length + (_loadingMore ? 1 : 0),
+      itemCount: posts.length + (_controller.isLoadingMore ? 1 : 0),
       itemBuilder: (context, index) {
-        if (index == _posts.length) {
+        if (index == posts.length) {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: Center(
@@ -383,7 +296,7 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
             ),
           );
         }
-        final post = _posts[index];
+        final post = posts[index];
         return AnimatedListItem(
           index: index,
           child: PostListTile(
@@ -529,7 +442,7 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
             margin: EdgeInsets.zero,
             onTap: () {
               setState(() => _sort = _sortLatest);
-              _load();
+              _controller.load();
             },
           ),
           const SizedBox(width: 8),
@@ -539,7 +452,7 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
             margin: EdgeInsets.zero,
             onTap: () {
               setState(() => _sort = _sortPopular);
-              _load();
+              _controller.load();
             },
           ),
         ],
@@ -562,8 +475,10 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
           Expanded(
             child: RefreshIndicator(
               color: colors.activate,
-              onRefresh: _refresh,
-              child: _isLoading ? _buildSkeletonList() : _buildList(colors),
+              onRefresh: _controller.refresh,
+              child: _controller.isLoading
+                  ? _buildSkeletonList()
+                  : _buildList(colors),
             ),
           ),
         ],

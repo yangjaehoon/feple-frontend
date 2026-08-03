@@ -61,7 +61,9 @@ class PostCursorController extends SafeChangeNotifier {
     }
   }
 
-  Future<void> refresh() async {
+  /// [silent] true면 실패해도 [refreshError]를 설정하지 않음 — 화면이 보이지
+  /// 않는 상태(백그라운드 탭)에서 전역 이벤트로 호출될 수 있는 새로고침용
+  Future<void> refresh({bool silent = false}) async {
     final myId = ++_loadId;
     if (_isLoadingMore) {
       _isLoadingMore = false;
@@ -79,8 +81,10 @@ class PostCursorController extends SafeChangeNotifier {
       if (_loadId != myId) return;
       // 기존 목록은 유지하되(크래시 방지), 실패 사실은 알려야 한다 — 조용히 삼키면
       // 새로고침이 실제로 실패했는데도 사용자는 성공한 줄 알게 됨
-      _refreshError = networkAwareErrorKey(e, 'err_fetch_data').tr();
-      safeNotify();
+      if (!silent) {
+        _refreshError = networkAwareErrorKey(e, 'err_fetch_data').tr();
+        safeNotify();
+      }
     }
   }
 

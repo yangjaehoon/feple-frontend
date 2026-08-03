@@ -103,13 +103,8 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    // 셀 높이가 분 단위 픽셀 환산으로 고정돼 있어(_toY) 텍스트 배율이 커지면
-    // 카드 안 텍스트가 넘침 → 이 그리드 안에서만 배율을 별도로 제한
-    final mq = MediaQuery.of(context);
-    return MediaQuery(
-      data: mq.copyWith(
-        textScaler: mq.textScaler.clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
-      ),
+    return clampTimetableTextScale(
+      context,
       child: LayoutBuilder(builder: (_, constraints) {
         final gridH = constraints.maxHeight - _stageHeaderH;
         final totalMins = (_endHour - _startHour) * 60;
@@ -247,10 +242,7 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
       final cardH = entry.durationMinutes * pxPerMin;
       final clampedH = (cardH - 4).clamp(4.0, double.infinity);
       if (entry.isOps) {
-        // 운영 항목: 모든 스테이지 열에 동일하게 표시.
-        // 실제 공연 없이 운영 항목만 있는 날은 _stages가 비어있을 수
-        // 있으므로 그 경우에도 최소 1칸은 그림 (stageW 폴백과 동일 전제)
-        final columnCount = _stages.isEmpty ? 1 : _stages.length;
+        final columnCount = opsColumnCount(_stages);
         return List.generate(columnCount, (i) => Positioned(
           left: i * stageW + 3,
           top: _topPad + rawTop + 2,

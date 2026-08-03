@@ -5,6 +5,7 @@ import 'package:feple/injection.dart';
 import 'package:feple/model/favorite_board.dart';
 import 'package:feple/model/followed_artist.dart';
 import 'package:feple/model/festival_model.dart';
+import 'package:feple/model/order_utils.dart';
 import 'package:feple/service/cache_prefetch_service.dart';
 import 'package:feple/service/festival_cache_service.dart';
 import 'package:feple/service/user_service.dart';
@@ -218,16 +219,8 @@ class HomeStateNotifier extends SafeChangeNotifier {
   }
 
   @visibleForTesting
-  List<T> applyOrder<T>(List<T> items, List<int> order, int Function(T) getId) {
-    if (order.isEmpty) return items;
-    final map = {for (final item in items) getId(item): item};
-    final ordered = order.where(map.containsKey).map((id) => map[id]!).toList();
-    final orderedIds = order.toSet();
-    final rest = items
-        .where((item) => !orderedIds.contains(getId(item)))
-        .toList();
-    return [...ordered, ...rest];
-  }
+  List<T> applyOrder<T>(List<T> items, List<int> order, int Function(T) getId) =>
+      reorderById(items, order, getId);
 
   Future<List<int>> _loadOrder(String key) async {
     final saved = PreferenceItem<List<String>>(key, const []).get();

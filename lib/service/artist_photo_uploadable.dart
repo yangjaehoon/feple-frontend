@@ -1,11 +1,5 @@
-import 'dart:typed_data';
+import 'package:feple/model/photo_upload_draft.dart';
 
 abstract class ArtistPhotoUploadable {
-  Future<void> uploadPhoto({
-    required int artistId,
-    required Uint8List imageData,
-    required String title,
-    required String description,
-    bool isAnonymous = false,
-  });
+  Future<void> uploadPhoto(PhotoUploadDraft draft);
 }

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:feple/app.dart';
 import 'package:feple/common/language/language.dart';
 import 'package:feple/common/util/permission_rationale.dart';
-import 'package:feple/service/fcm_navigation_handler.dart';
+import 'package:feple/screen/notification/fcm_navigation_handler.dart';
 import 'package:feple/service/fcm_notification_handler.dart';
 import 'package:feple/service/fcm_token_service.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';

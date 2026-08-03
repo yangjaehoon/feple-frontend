@@ -1,6 +1,6 @@
-import 'dart:typed_data';
 import 'package:feple/common/util/image_upload_helper.dart';
 import 'package:feple/model/artist_photo.dart';
+import 'package:feple/model/photo_upload_draft.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/service/artist_photo_manageable.dart';
 import 'package:feple/service/artist_photo_uploadable.dart';
@@ -29,26 +29,20 @@ class ArtistPhotoService implements ArtistPhotoManageable, ArtistPhotoUploadable
       );
 
   @override
-  Future<void> uploadPhoto({
-    required int artistId,
-    required Uint8List imageData,
-    required String title,
-    required String description,
-    bool isAnonymous = false,
-  }) async {
+  Future<void> uploadPhoto(PhotoUploadDraft draft) async {
     final presign = await ImageUploadHelper.compressAndUpload(
-      presignEndpoint: '/artists/$artistId/photos/presign',
-      imageData: imageData,
+      presignEndpoint: '/artists/${draft.artistId}/photos/presign',
+      imageData: draft.imageData,
     );
 
     await DioClient.dio.post(
-      '/artists/$artistId/photos',
+      '/artists/${draft.artistId}/photos',
       data: {
         'objectKey': presign.objectKey,
         'contentType': 'image/jpeg',
-        'title': title,
-        'description': description,
-        'isAnonymous': isAnonymous,
+        'title': draft.title,
+        'description': draft.description,
+        'isAnonymous': draft.isAnonymous,
       },
     );
   }

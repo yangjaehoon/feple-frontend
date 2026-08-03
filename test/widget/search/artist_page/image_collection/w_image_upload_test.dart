@@ -7,6 +7,7 @@ import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/model/photo_destination.dart';
+import 'package:feple/model/photo_upload_draft.dart';
 import 'package:feple/screen/main/tab/search/artist_page/image_collection/w_image_upload.dart';
 import 'package:feple/service/artist_photo_uploadable.dart';
 import 'package:feple/service/artist_schedule_service.dart';
@@ -56,6 +57,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(Uint8List(0));
+    registerFallbackValue(PhotoUploadDraft(artistId: 0, imageData: Uint8List(0), title: '', description: ''));
   });
 
   setUp(() {
@@ -136,13 +138,7 @@ void main() {
       await tester.pump();
 
       expect(find.text('photo_select_required'.tr()), findsOneWidget);
-      verifyNever(() => mockPhotoService.uploadPhoto(
-            artistId: any(named: 'artistId'),
-            imageData: any(named: 'imageData'),
-            title: any(named: 'title'),
-            description: any(named: 'description'),
-            isAnonymous: any(named: 'isAnonymous'),
-          ));
+      verifyNever(() => mockPhotoService.uploadPhoto(any()));
     });
 
     testWidgets('사진은 선택했지만 제목이 없으면 제출되지 않는다', (tester) async {
@@ -154,25 +150,19 @@ void main() {
       await tester.pump();
 
       expect(find.text('required_field'.tr()), findsOneWidget);
-      verifyNever(() => mockPhotoService.uploadPhoto(
-            artistId: any(named: 'artistId'),
-            imageData: any(named: 'imageData'),
-            title: any(named: 'title'),
-            description: any(named: 'description'),
-            isAnonymous: any(named: 'isAnonymous'),
-          ));
+      verifyNever(() => mockPhotoService.uploadPhoto(any()));
     });
   });
 
   group('ImageUpload 제출', () {
     testWidgets('사진, 제목, 페스티벌을 모두 채우고 제출하면 업로드된다', (tester) async {
-      when(() => mockPhotoService.uploadPhoto(
-            artistId: 1,
-            imageData: any(named: 'imageData'),
-            title: '작품 제목',
-            description: '페스티벌',
-            isAnonymous: false,
-          )).thenAnswer((_) async {});
+      when(() => mockPhotoService.uploadPhoto(any(
+            that: isA<PhotoUploadDraft>()
+                .having((d) => d.artistId, 'artistId', 1)
+                .having((d) => d.title, 'title', '작품 제목')
+                .having((d) => d.description, 'description', '페스티벌')
+                .having((d) => d.isAnonymous, 'isAnonymous', false),
+          ))).thenAnswer((_) async {});
 
       await pump(tester);
       await tester.pump();
@@ -187,24 +177,19 @@ void main() {
       await tester.tap(find.byIcon(Icons.send_rounded));
       await tester.pumpAndSettle();
 
-      verify(() => mockPhotoService.uploadPhoto(
-            artistId: 1,
-            imageData: any(named: 'imageData'),
-            title: '작품 제목',
-            description: '페스티벌',
-            isAnonymous: false,
-          )).called(1);
+      verify(() => mockPhotoService.uploadPhoto(any(
+            that: isA<PhotoUploadDraft>()
+                .having((d) => d.artistId, 'artistId', 1)
+                .having((d) => d.title, 'title', '작품 제목')
+                .having((d) => d.description, 'description', '페스티벌')
+                .having((d) => d.isAnonymous, 'isAnonymous', false),
+          ))).called(1);
       expect(find.byType(ImageUpload), findsNothing);
     });
 
     testWidgets('업로드 실패(DioException) 시 상세 에러 스낵바를 보여준다', (tester) async {
-      when(() => mockPhotoService.uploadPhoto(
-            artistId: any(named: 'artistId'),
-            imageData: any(named: 'imageData'),
-            title: any(named: 'title'),
-            description: any(named: 'description'),
-            isAnonymous: any(named: 'isAnonymous'),
-          )).thenThrow(DioException(requestOptions: RequestOptions(path: '/photos')));
+      when(() => mockPhotoService.uploadPhoto(any()))
+          .thenThrow(DioException(requestOptions: RequestOptions(path: '/photos')));
 
       await pump(tester);
       await tester.pump();

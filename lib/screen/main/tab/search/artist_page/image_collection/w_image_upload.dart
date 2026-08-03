@@ -4,6 +4,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/model/photo_destination.dart';
+import 'package:feple/model/photo_upload_draft.dart';
 import 'package:feple/service/artist_schedule_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -74,13 +75,13 @@ class _ImageUploadState extends State<ImageUpload> {
     if (destination == null) return;
     setState(() => isUploading = true);
     try {
-      await _photoService.uploadPhoto(
+      await _photoService.uploadPhoto(PhotoUploadDraft(
         artistId: widget.artistId,
         imageData: imageData!,
         title: _titleCtrl.text,
         description: destination.description,
         isAnonymous: _isAnonymous,
-      );
+      ));
       if (!mounted) return;
       Navigator.pop(context, true);
     } on DioException catch (e) {

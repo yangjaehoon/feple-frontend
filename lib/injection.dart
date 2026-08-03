@@ -12,7 +12,7 @@ import 'service/artist_service.dart';
 import 'service/auth_service.dart';
 import 'service/certification_service.dart';
 import 'service/comment_service.dart';
-import 'service/fcm_navigation_handler.dart';
+import 'screen/notification/fcm_navigation_handler.dart';
 import 'service/fcm_service.dart';
 import 'service/fcm_token_service.dart';
 import 'service/festival_cache_service.dart';

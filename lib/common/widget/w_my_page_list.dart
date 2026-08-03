@@ -158,7 +158,7 @@ class _MyPageListState<T> extends State<MyPageList<T>> {
                         child: widget.itemBuilder(
                           context,
                           _items[index],
-                          _load,
+                          _refresh,
                         ),
                       ),
                     ),

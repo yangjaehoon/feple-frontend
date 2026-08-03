@@ -96,7 +96,24 @@ class _FestivalListFragmentState extends State<FestivalListFragment> {
 
     return Stack(
       children: [
-        ColoredBox(
+        _buildScaffoldBody(
+          colors,
+          selectedGenres,
+          selectedRegions,
+          selectedAgeRestrictions,
+        ),
+        if (_showScrollToTop) _buildScrollToTopButton(colors),
+      ],
+    );
+  }
+
+  Widget _buildScaffoldBody(
+    AbstractThemeColors colors,
+    Set<String> selectedGenres,
+    Set<String> selectedRegions,
+    Set<String> selectedAgeRestrictions,
+  ) {
+    return ColoredBox(
       color: colors.backgroundMain,
       child: Column(
         children: [
@@ -137,25 +154,25 @@ class _FestivalListFragmentState extends State<FestivalListFragment> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildScrollToTopButton(AbstractThemeColors colors) {
+    return Positioned(
+      bottom: 20,
+      right: 16,
+      child: FloatingActionButton.small(
+        heroTag: 'festivalScrollTop',
+        onPressed: () => _scrollController.animateTo(
+          0,
+          duration: AppDimens.animNormal,
+          curve: Curves.easeOut,
         ),
-        if (_showScrollToTop)
-          Positioned(
-            bottom: 20,
-            right: 16,
-            child: FloatingActionButton.small(
-              heroTag: 'festivalScrollTop',
-              onPressed: () => _scrollController.animateTo(
-                0,
-                duration: AppDimens.animNormal,
-                curve: Curves.easeOut,
-              ),
-              backgroundColor: colors.surface,
-              foregroundColor: colors.textTitle,
-              elevation: 6,
-              child: const Icon(Icons.arrow_upward_rounded, size: 20),
-            ),
-          ),
-      ],
+        backgroundColor: colors.surface,
+        foregroundColor: colors.textTitle,
+        elevation: 6,
+        child: const Icon(Icons.arrow_upward_rounded, size: 20),
+      ),
     );
   }
 }

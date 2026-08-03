@@ -1,3 +1,4 @@
+import 'date_format.dart';
 import 'localized_text.dart';
 
 enum EventType {
@@ -51,9 +52,9 @@ class ArtistScheduleModel {
   }
 
   String get dateRange {
-    final start = startDate;
+    final start = formatShortDate(startDate);
     if (start == null) return '';
-    final end = endDate;
+    final end = formatShortDate(endDate);
     return (end != null && end != start) ? '$start ~ $end' : start;
   }
 

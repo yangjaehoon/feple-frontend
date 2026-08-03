@@ -32,6 +32,7 @@ class FestivalListWidget extends StatelessWidget {
       index: index,
       child: TapScale(
         onTap: () {
+          if (ModalRoute.of(context)?.isCurrent != true) return;
           Navigator.push(
             context,
             SlideRoute(

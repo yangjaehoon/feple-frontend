@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/future_refreshable.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_preview_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
@@ -33,7 +34,7 @@ class BoardPreviewSection extends StatefulWidget {
 }
 
 class BoardPreviewSectionState extends State<BoardPreviewSection>
-    with FutureRefreshable<List<Post>, BoardPreviewSection> {
+    with FutureRefreshable<List<Post>, BoardPreviewSection>, NavigationGuard {
   @override
   Future<List<Post>> fetchData() => widget.fetchPosts();
 
@@ -47,18 +48,18 @@ class BoardPreviewSectionState extends State<BoardPreviewSection>
       headerTitle: boardName,
       headerColor: colors.activate,
       emptyHint: 'be_first_to_discuss'.tr(args: [widget.name]),
-      onHeaderTap: () => Navigator.push(
+      onHeaderTap: () => guardedNavigate(() => Navigator.push(
         context,
         SlideRoute(builder: (_) => widget.postListScreenFactory()),
-      ),
-      onPostTap: (context, post) async {
+      )),
+      onPostTap: (context, post) => guardedNavigate(() async {
         await Navigator.of(context, rootNavigator: true).push(
           SlideRoute(
             builder: (_) => PostDetailCard.fromPost(boardName: boardName, post: post),
           ),
         );
         if (mounted) unawaited(refresh());
-      },
+      }),
       onRetry: refresh,
       onWriteTap: widget.onWriteTap,
     );

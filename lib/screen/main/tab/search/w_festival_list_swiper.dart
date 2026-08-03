@@ -8,6 +8,7 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -22,7 +23,8 @@ class FestivalListSwiperWidget extends StatefulWidget {
       _FestivalListSwiperWidgetState();
 }
 
-class _FestivalListSwiperWidgetState extends State<FestivalListSwiperWidget> {
+class _FestivalListSwiperWidgetState extends State<FestivalListSwiperWidget>
+    with NavigationGuard {
   int _currentPage = 0;
 
   void _onPageChanged(int newPage) {
@@ -84,17 +86,15 @@ class _FestivalListSwiperWidgetState extends State<FestivalListSwiperWidget> {
         itemBuilder: (BuildContext context, int index) {
           final item = items[index];
           return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                SlideRoute(
-                  builder: (context) => FestivalInformationFragment(
-                    poster: item.toModel(),
-                    heroTag: 'swiper_fp_${item.id}',
-                  ),
+            onTap: () => guardedNavigate(() => Navigator.push(
+              context,
+              SlideRoute(
+                builder: (context) => FestivalInformationFragment(
+                  poster: item.toModel(),
+                  heroTag: 'swiper_fp_${item.id}',
                 ),
-              );
-            },
+              ),
+            )),
             child: Hero(
               tag: 'swiper_fp_${item.id}',
               child: Container(

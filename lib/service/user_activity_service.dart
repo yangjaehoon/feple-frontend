@@ -4,7 +4,9 @@ import 'package:feple/model/user_stats_model.dart';
 import 'package:feple/network/dio_client.dart';
 
 class UserActivityService {
-  Future<PostCursorPage> fetchPostsPage(int userId, {int? cursor, int size = 20}) async {
+  static const _defaultPageSize = 20;
+
+  Future<PostCursorPage> fetchPostsPage(int userId, {int? cursor, int size = _defaultPageSize}) async {
     final response = await DioClient.dio.get('/users/$userId/posts', queryParameters: {
       'cursor': ?cursor,
       'size': size,

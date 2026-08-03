@@ -13,6 +13,7 @@ import 'package:feple/model/post_changed_event.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -42,7 +43,7 @@ class CommunityBoardCard extends StatefulWidget {
 }
 
 class CommunityBoardCardState extends State<CommunityBoardCard>
-    with FutureRefreshable<List<Post>, CommunityBoardCard> {
+    with FutureRefreshable<List<Post>, CommunityBoardCard>, NavigationGuard {
   final PostService _postService = sl<PostService>();
 
   @override
@@ -100,20 +101,20 @@ class CommunityBoardCardState extends State<CommunityBoardCard>
       height: responsiveSize.h(AppDimens.boardCardHeight),
       emptyHint: widget.emptyHint ?? 'be_first_to_discuss'.tr(args: [widget.title]),
       maxItems: 5,
-      onHeaderTap: () => Navigator.push(
+      onHeaderTap: () => guardedNavigate(() => Navigator.push(
         context,
         SlideRoute(
           builder: (_) => CommunityPost(boardName: widget.boardName, boardType: widget.serviceBoardType),
         ),
-      ),
-      onPostTap: (context, post) => Navigator.of(context, rootNavigator: true).push(
+      )),
+      onPostTap: (context, post) => guardedNavigate(() => Navigator.of(context, rootNavigator: true).push(
         SlideRoute(
           builder: (_) => PostDetailCard.fromPost(
             boardName: widget.boardName,
             post: post,
           ),
         ),
-      ),
+      )),
       onRetry: refresh,
       onWriteTap: widget.showWriteButton ? _handleWriteTap : null,
     );

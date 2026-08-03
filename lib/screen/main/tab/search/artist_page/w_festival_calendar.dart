@@ -1,6 +1,7 @@
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_list_row_skeleton.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
@@ -26,43 +27,15 @@ class FestivalCalendar extends StatefulWidget {
   State<FestivalCalendar> createState() => _FestivalCalendarState();
 }
 
-class _FestivalCalendarState extends State<FestivalCalendar> {
+class _FestivalCalendarState extends State<FestivalCalendar>
+    with FutureRefreshable<List<ArtistScheduleModel>, FestivalCalendar> {
   final _scheduleService = sl<ArtistScheduleService>();
-  List<ArtistScheduleModel> _schedules = [];
-  bool _isLoading = true;
-  bool _hasError = false;
-  Object? _error;
   // 카드 탭 → fetchById → 화면 전환까지 아무 피드백 없이 멈춰 보이는 걸 방지
   int? _navigatingFestivalId;
 
   @override
-  void initState() {
-    super.initState();
-    _fetch();
-  }
-
-  Future<void> _fetch() async {
-    setState(() {
-      _isLoading = true;
-      _hasError = false;
-    });
-    try {
-      final data = await _scheduleService.fetchSchedule(widget.artistId);
-      if (!mounted) return;
-      setState(() {
-        _schedules = data;
-        _isLoading = false;
-      });
-    } catch (e) {
-      debugPrint('[FestivalCalendar] fetch error: $e');
-      if (!mounted) return;
-      setState(() {
-        _isLoading = false;
-        _hasError = true;
-        _error = e;
-      });
-    }
-  }
+  Future<List<ArtistScheduleModel>> fetchData() =>
+      _scheduleService.fetchSchedule(widget.artistId);
 
   @override
   Widget build(BuildContext context) {
@@ -72,20 +45,33 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
       body: Column(
         children: [
           SecondaryAppBar(title: widget.artistName),
-          Expanded(child: _buildBody(colors)),
+          Expanded(
+            child: RefreshIndicator(
+              color: colors.activate,
+              onRefresh: refresh,
+              child: FutureBuilder<List<ArtistScheduleModel>>(
+                future: future,
+                builder: (context, snapshot) => _buildBody(snapshot, colors),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildBody(AbstractThemeColors colors) {
-    if (_isLoading) {
+  Widget _buildBody(
+    AsyncSnapshot<List<ArtistScheduleModel>> snapshot,
+    AbstractThemeColors colors,
+  ) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
       return const ListRowSkeleton(showLeading: false);
     }
-    if (_hasError) {
-      return Center(child: ErrorState.network(_error!, onRetry: _fetch));
+    if (snapshot.hasError) {
+      return Center(child: ErrorState.network(snapshot.error!, onRetry: refresh));
     }
-    if (_schedules.isEmpty) {
+    final schedules = snapshot.data ?? [];
+    if (schedules.isEmpty) {
       return Center(
         child: Text(
           'no_schedule'.tr(),
@@ -97,31 +83,21 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
       );
     }
 
-    final upcoming = _schedules.where((s) => !s.isPast).toList();
-    final past = _schedules.where((s) => s.isPast).toList();
+    final upcoming = schedules.where((s) => !s.isPast).toList();
+    final past = schedules.where((s) => s.isPast).toList();
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        setState(() {
-          _future = _fetch();
-        });
-        try {
-          await _future;
-        } catch (_) {}
-      },
-      child: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        children: [
-          if (upcoming.isNotEmpty) ...[
-            _buildSectionHeader('schedule_upcoming'.tr(), colors),
-            ...upcoming.map((s) => _buildScheduleItem(s, colors)),
-          ],
-          if (past.isNotEmpty) ...[
-            _buildSectionHeader('schedule_past'.tr(), colors),
-            ...past.map((s) => _buildScheduleItem(s, colors)),
-          ],
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      children: [
+        if (upcoming.isNotEmpty) ...[
+          _buildSectionHeader('schedule_upcoming'.tr(), colors),
+          ...upcoming.map((s) => _buildScheduleItem(s, colors)),
         ],
-      ),
+        if (past.isNotEmpty) ...[
+          _buildSectionHeader('schedule_past'.tr(), colors),
+          ...past.map((s) => _buildScheduleItem(s, colors)),
+        ],
+      ],
     );
   }
 
@@ -141,7 +117,7 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
 
   Widget _buildScheduleItem(ArtistScheduleModel s, AbstractThemeColors colors) {
     final config = s.eventType.config(colors);
-    final dateText = _formatDateRange(s.startDate, s.endDate);
+    final dateText = s.dateRange.isEmpty ? null : s.dateRange;
     final isPast = s.isPast;
     final isLoading = _navigatingFestivalId == s.festivalId;
 
@@ -292,17 +268,4 @@ class _FestivalCalendarState extends State<FestivalCalendar> {
       if (mounted) setState(() => _navigatingFestivalId = null);
     }
   }
-
-  String? _formatDateRange(String? startDate, String? endDate) {
-    final start = startDate != null ? DateTime.tryParse(startDate) : null;
-    if (start == null) return null;
-    final startStr = start.toDisplayDate;
-    if (endDate == null) return startStr;
-    final end = DateTime.tryParse(endDate);
-    if (end == null || end == start) return startStr;
-    return '$startStr ~ ${end.toDisplayDate}';
-  }
-
-  // RefreshIndicator onRefresh 패턴
-  Future<void> _future = Future.value();
 }

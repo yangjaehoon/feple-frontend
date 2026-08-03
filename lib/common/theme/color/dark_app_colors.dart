@@ -13,12 +13,6 @@ class DarkAppColors extends AbstractThemeColors {
   static const Color _darkDivider = Color(0xFF2E4050);
 
   @override
-  Color get activate => AppColors.skyBlue;
-
-  @override
-  Color get badgeBg => AppColors.sunnyYellow;
-
-  @override
   Color get divider => _darkDivider;
 
   @override
@@ -28,9 +22,6 @@ class DarkAppColors extends AbstractThemeColors {
   Color get hintText => _darkTextSecondary;
 
   @override
-  Color get iconButton => AppColors.skyBlue;
-
-  @override
   Color get iconButtonInactivate => _darkTextSecondary;
 
   @override
@@ -38,15 +29,6 @@ class DarkAppColors extends AbstractThemeColors {
 
   @override
   Color get text => _darkTextPrimary;
-
-  @override
-  Color get focusedBorder => AppColors.skyBlue;
-
-  @override
-  Color get confirmText => AppColors.skyBlue;
-
-  @override
-  Color get snackbarBgColor => AppColors.skyBlue;
 
   @override
   Color get appBarBackground => _darkSurface;

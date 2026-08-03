@@ -4,17 +4,10 @@ import 'package:flutter/material.dart';
 class LightAppColors extends AbstractThemeColors {
   const LightAppColors();
 
-  @override
-  Color get drawerBg => AppColors.surfaceWhite;
-
-  @override
-  Color get iconButton => AppColors.skyBlue;
-
+  // WCAG AA 대비 보정을 위한 라이트 모드 전용 값 — 나머지 getter는 모두
+  // AbstractThemeColors 기본값(라이트 팔레트)을 그대로 사용
   @override
   Color get iconButtonInactivate => AppColors.textMutedLight;
-
-  @override
-  Color get text => AppColors.textMain;
 
   @override
   Color get hintText => AppColors.textMutedLight;
@@ -24,27 +17,4 @@ class LightAppColors extends AbstractThemeColors {
 
   @override
   Color get error => AppColors.errorRedLight;
-
-  @override
-  Color get divider => const Color(0xFFEEEEEE);
-
-  @override
-  Color get appBarBackground => AppColors.skyBlue;
-
-  @override
-  Color get activate => AppColors.skyBlue;
-
-  @override
-  Color get badgeBg => AppColors.sunnyYellow;
-
-  @override
-  Color get confirmText => AppColors.skyBlue;
-
-  @override
-  Color get focusedBorder => AppColors.skyBlue;
-
-  @override
-  Color get snackbarBgColor => AppColors.skyBlue;
-
-  // All theme-aware getters use defaults from AbstractThemeColors (light palette)
 }

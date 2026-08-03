@@ -85,7 +85,7 @@ void main() {
 
       expect(find.text('락 페스티벌'), findsOneWidget);
       expect(find.text('서울'), findsOneWidget);
-      expect(find.text('2026-08-01'), findsOneWidget);
+      expect(find.text('2026.08.01'), findsOneWidget);
     });
 
     testWidgets('함께 출연하는 아티스트를 보여준다', (tester) async {

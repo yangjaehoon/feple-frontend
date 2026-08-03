@@ -127,6 +127,7 @@ void main() {
       expect(find.byType(FilledButton), findsOneWidget);
       await tester.tap(find.byType(FilledButton));
       await tester.pump();
+      await tester.pump();
 
       expect(callCount, 2);
       expect(find.text('no_schedule'.tr()), findsOneWidget);

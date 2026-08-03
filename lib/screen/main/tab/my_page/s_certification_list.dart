@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
-import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
+import 'package:feple/common/util/navigate_after_fetch.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
@@ -266,25 +266,15 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
   }
 
   Future<void> _navigateToFestival() async {
-    await guardedNavigate(() async {
-      setState(() => _isLoadingFestival = true);
-      try {
-        final festival = await sl<FestivalService>().fetchById(
-          widget.cert.festivalId,
-        );
-        if (!mounted) return;
-        await Navigator.push(
-          context,
-          SlideRoute(
-            builder: (_) => FestivalInformationFragment(poster: festival),
-          ),
-        );
-      } catch (e) {
-        debugPrint('[CertCard] 페스티벌 이동 실패: $e');
-      } finally {
-        if (mounted) setState(() => _isLoadingFestival = false);
-      }
-    });
+    await guardedNavigate(() => navigateAfterFetch(
+      context,
+      fetch: () => sl<FestivalService>().fetchById(widget.cert.festivalId),
+      builder: (festival) => FestivalInformationFragment(poster: festival),
+      setLoading: (v) {
+        if (mounted) setState(() => _isLoadingFestival = v);
+      },
+      errorTag: 'CertCard',
+    ));
   }
 
   Future<void> _openRatingSheet() async {

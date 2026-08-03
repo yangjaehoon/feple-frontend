@@ -4,6 +4,7 @@ import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/model/festival_preview_page.dart';
+import 'package:feple/model/spring_page.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/service/festival_cache_service.dart';
 
@@ -40,10 +41,7 @@ class FestivalService {
       final items = (data['content'] as List)
           .map((e) => FestivalPreview.fromJson(e as Map<String, dynamic>))
           .toList();
-      final pageInfo = data['page'] as Map<String, dynamic>? ?? {};
-      final pageNumber = (pageInfo['number'] as num?)?.toInt() ?? 0;
-      final totalPages = (pageInfo['totalPages'] as num?)?.toInt() ?? 1;
-      final hasMore = pageNumber + 1 < totalPages;
+      final hasMore = springPageHasMore(data['page'] as Map<String, dynamic>?);
 
       if (isDefaultList) {
         // 필터 없는 첫 페이지만 캐시 (오프라인 폴백용)

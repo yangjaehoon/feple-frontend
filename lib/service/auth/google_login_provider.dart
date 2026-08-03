@@ -11,12 +11,23 @@ class GoogleLoginProvider {
   final AuthTokenExchanger _tokenExchanger;
 
   bool _initialized = false;
+  Future<void>? _initializing;
 
-  // GoogleSignIn.instance.initialize()는 앱 생명주기 동안 정확히 한 번만 호출돼야 함
+  // GoogleSignIn.instance.initialize()는 앱 생명주기 동안 정확히 한 번만 호출돼야 함.
+  // 버튼 연타 등으로 동시에 호출되면 in-flight Future를 공유해 중복 실행을 막는다.
   Future<void> _ensureInitialized() async {
     if (_initialized) return;
-    await GoogleSignIn.instance.initialize();
-    _initialized = true;
+    _initializing ??= _initialize();
+    await _initializing;
+  }
+
+  Future<void> _initialize() async {
+    try {
+      await GoogleSignIn.instance.initialize();
+      _initialized = true;
+    } finally {
+      _initializing = null;
+    }
   }
 
   Future<app.AppUser> login() async {

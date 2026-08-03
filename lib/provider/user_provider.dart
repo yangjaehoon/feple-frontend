@@ -27,31 +27,41 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> _loadFromSecureStorage() async {
+    final String? token;
     try {
-      final token = await TokenStore.readAccessToken();
-      if (token == null) {
-        await TokenStore.deleteUserJson();
-        return;
-      }
-
-      final jsonString = await TokenStore.readUserJson();
-      if (jsonString != null) {
-        final data = jsonDecode(jsonString);
-        final cached = AppUser.fromJson(data);
-        // JWT sub와 캐시 userId 불일치 → 다른 계정의 캐시 데이터 폐기
-        final jwtUserId = TokenStore.parseJwtSub(token);
-        if (jwtUserId != null && jwtUserId != cached.id) {
-          await TokenStore.deleteUserJson();
-          return;
-        }
-        _user = cached;
-        notifyListeners();
-      }
+      token = await TokenStore.readAccessToken();
     } catch (e) {
       // 재설치 후 Keystore 키 소실 등 복구 불가 오류 — 보안 스토리지 전체 초기화
       debugPrint('[UserProvider] 보안 스토리지 복구 불가 오류, 초기화');
       try {
         await TokenStore.clear();
+        await TokenStore.deleteUserJson();
+      } catch (_) {}
+      return;
+    }
+    if (token == null) {
+      await TokenStore.deleteUserJson();
+      return;
+    }
+
+    try {
+      final jsonString = await TokenStore.readUserJson();
+      if (jsonString == null) return;
+      final data = jsonDecode(jsonString);
+      final cached = AppUser.fromJson(data);
+      // JWT sub와 캐시 userId 불일치 → 다른 계정의 캐시 데이터 폐기
+      final jwtUserId = TokenStore.parseJwtSub(token);
+      if (jwtUserId != null && jwtUserId != cached.id) {
+        await TokenStore.deleteUserJson();
+        return;
+      }
+      _user = cached;
+      notifyListeners();
+    } catch (e) {
+      // 캐시된 유저 JSON 스키마 불일치 등 파싱 실패 — 캐시만 버리고 유효한
+      // 토큰은 보존한다(파싱 실패로 불필요한 강제 로그아웃이 발생하지 않도록)
+      debugPrint('[UserProvider] 캐시된 유저 정보 파싱 실패, 캐시만 삭제: $e');
+      try {
         await TokenStore.deleteUserJson();
       } catch (_) {}
     }

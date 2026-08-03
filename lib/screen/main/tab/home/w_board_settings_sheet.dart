@@ -2,8 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:feple/common/widget/w_app_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
-import 'package:feple/common/widget/w_loading_button.dart';
+import 'package:feple/common/widget/w_draggable_sheet_scaffold.dart';
 import 'package:feple/model/favorite_board.dart';
 import 'package:flutter/material.dart';
 
@@ -103,44 +102,17 @@ class _BoardSettingsSheetState extends State<BoardSettingsSheet> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final maxHeight = MediaQuery.of(context).size.height * 0.75;
-
-    return Material(
-      color: colors.surface,
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
-      clipBehavior: Clip.antiAlias,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: maxHeight),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 12),
-            const BottomSheetHandle(),
-          const SizedBox(height: 16),
-          _buildTitleRow(colors),
-          const SizedBox(height: 8),
-          Divider(color: colors.listDivider, height: 1),
-          _buildBoardList(colors),
-          Divider(color: colors.listDivider, height: 1),
-          Padding(
-            padding: EdgeInsets.fromLTRB(20, 12, 20, 12 + MediaQuery.of(context).padding.bottom),
-            child: LoadingButton(
-              label: 'confirm'.tr(),
-              isLoading: false,
-              backgroundColor: colors.activate,
-              onPressed: () {
-                final orderedSelected = _orderedBoards
-                    .where((b) => _checked.contains(b.boardId))
-                    .map((b) => b.boardId)
-                    .toList();
-                widget.onSave(orderedSelected);
-                Navigator.of(context).pop();
-              },
-            ),
-          ),
-        ],
-      ),
-      ),
+    return DraggableSheetScaffold(
+      header: _buildTitleRow(colors),
+      list: _buildBoardList(colors),
+      onConfirm: () {
+        final orderedSelected = _orderedBoards
+            .where((b) => _checked.contains(b.boardId))
+            .map((b) => b.boardId)
+            .toList();
+        widget.onSave(orderedSelected);
+        Navigator.of(context).pop();
+      },
     );
   }
 }

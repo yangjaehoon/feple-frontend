@@ -168,13 +168,8 @@ class _AuthAndSwrInterceptor extends Interceptor {
       DioClient._refreshWaiters.add(completer);
       final newToken = await completer.future;
       if (newToken == null) return handler.next(error);
-      final opts = error.requestOptions;
-      opts.headers['Authorization'] = 'Bearer $newToken';
-      try {
-        return handler.resolve(await DioClient._plainDio.fetch(opts));
-      } on DioException catch (retryErr) {
-        return handler.next(retryErr);
-      }
+      await _retryWithToken(error, handler, newToken);
+      return;
     }
 
     DioClient._isRefreshing = true;
@@ -197,12 +192,21 @@ class _AuthAndSwrInterceptor extends Interceptor {
       await DioClient.onSessionExpired?.call();
       return handler.next(error);
     }
+    await _retryWithToken(error, handler, newToken);
+  }
+
+  /// 새 액세스 토큰으로 헤더를 갱신해 원래 요청을 재시도한다.
+  Future<void> _retryWithToken(
+    DioException error,
+    ErrorInterceptorHandler handler,
+    String newToken,
+  ) async {
     final opts = error.requestOptions;
     opts.headers['Authorization'] = 'Bearer $newToken';
     try {
-      return handler.resolve(await DioClient._plainDio.fetch(opts));
+      handler.resolve(await DioClient._plainDio.fetch(opts));
     } on DioException catch (retryErr) {
-      return handler.next(retryErr);
+      handler.next(retryErr);
     }
   }
 }

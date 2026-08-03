@@ -46,6 +46,11 @@ class AuthTokenExchanger {
         debugPrint('[Auth] $providerLabel 서버 메시지: ${respBody['message']}');
       }
       throw Exception('auth_err_auth_failed'.tr());
+    } catch (e) {
+      // 응답 파싱 단계(_saveTokens/_parseUser)의 예상치 못한 필드 누락·타입 불일치도
+      // DioException과 동일하게 공통 예외로 통일 — raw exception이 그대로 새어나가지 않도록
+      debugPrint('[Auth] $providerLabel 응답 처리 실패: $e');
+      throw Exception('auth_err_auth_failed'.tr());
     }
   }
 

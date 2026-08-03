@@ -406,67 +406,58 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     );
   }
 
-  Future<void> signInWithApple() async {
+  /// 소셜 로그인 3종(Apple/Google/Kakao)의 공통 흐름: 로딩 체크 → provider
+  /// 캡처 → 로그인 → 취소 예외는 무시, 그 외 실패는 공통 에러 표시.
+  Future<void> _runSocialLogin({
+    required String label,
+    required Future<AppUser> Function() login,
+    required void Function(bool loading) setLoading,
+    required bool Function(Object error) isCanceled,
+  }) async {
     if (_isAnyLoading) return;
+    // async gap 전에 캡처 — OAuth 시트/브라우저 복귀 시 mounted가 false일 수 있음
     final userProvider = context.read<UserProvider>();
-    setState(() { _isAppleLoading = true; _clearErrors(); });
+    setState(() {
+      setLoading(true);
+      _clearErrors();
+    });
     try {
-      final user = await AuthService.instance.loginWithApple();
+      final user = await login();
       await _completeLogin(userProvider, user);
-    } on SignInWithAppleAuthorizationException catch (e) {
-      debugPrint('[Auth] Apple 로그인 취소/실패: $e');
-      if (e.code != AuthorizationErrorCode.canceled && mounted) {
+    } catch (e) {
+      debugPrint('[Auth] $label 로그인 실패: $e');
+      if (!isCanceled(e) && mounted) {
         setState(() => _authError = 'login_failed'.tr());
       }
-    } catch (e) {
-      debugPrint('[Auth] Apple 로그인 실패: $e');
-      if (mounted) setState(() => _authError = 'login_failed'.tr());
     } finally {
-      if (mounted) setState(() => _isAppleLoading = false);
+      if (mounted) setState(() => setLoading(false));
     }
   }
 
-  Future<void> signInWithGoogle() async {
-    if (_isAnyLoading) return;
-    // async gap 전에 캡처 — 구글 로그인 시트 표시 중 mounted가 false일 수 있음
-    final userProvider = context.read<UserProvider>();
-    setState(() { _isGoogleLoading = true; _clearErrors(); });
-    try {
-      final user = await AuthService.instance.loginWithGoogle();
-      await _completeLogin(userProvider, user);
-    } on GoogleSignInException catch (e) {
-      debugPrint('[Auth] Google GoogleSignInException: $e');
-      if (e.code != GoogleSignInExceptionCode.canceled && mounted) {
-        setState(() => _authError = 'login_failed'.tr());
-      }
-    } catch (e) {
-      debugPrint('[Auth] Google 로그인 실패: $e');
-      if (mounted) setState(() => _authError = 'login_failed'.tr());
-    } finally {
-      if (mounted) setState(() => _isGoogleLoading = false);
-    }
-  }
+  Future<void> signInWithApple() => _runSocialLogin(
+    label: 'Apple',
+    login: AuthService.instance.loginWithApple,
+    setLoading: (v) => _isAppleLoading = v,
+    isCanceled: (e) =>
+        e is SignInWithAppleAuthorizationException &&
+        e.code == AuthorizationErrorCode.canceled,
+  );
 
-  Future<void> signInWithKakao() async {
-    if (_isAnyLoading) return;
-    // async gap 전에 캡처 — 카카오 OAuth 브라우저/앱 복귀 시 mounted가 false일 수 있음
-    final userProvider = context.read<UserProvider>();
-    setState(() { _isKakaoLoading = true; _clearErrors(); });
-    try {
-      final user = await AuthService.instance.loginWithKakao();
-      await _completeLogin(userProvider, user);
-    } on PlatformException catch (e) {
-      debugPrint('[Auth] 카카오 PlatformException: $e');
-      if (e.code != 'CANCELED' && mounted) {
-        setState(() => _authError = 'login_failed'.tr());
-      }
-    } catch (e) {
-      debugPrint('[Auth] 카카오 로그인 실패: $e');
-      if (mounted) setState(() => _authError = 'login_failed'.tr());
-    } finally {
-      if (mounted) setState(() => _isKakaoLoading = false);
-    }
-  }
+  Future<void> signInWithGoogle() => _runSocialLogin(
+    label: 'Google',
+    login: AuthService.instance.loginWithGoogle,
+    setLoading: (v) => _isGoogleLoading = v,
+    isCanceled: (e) =>
+        e is GoogleSignInException &&
+        e.code == GoogleSignInExceptionCode.canceled,
+  );
+
+  Future<void> signInWithKakao() => _runSocialLogin(
+    label: '카카오',
+    login: AuthService.instance.loginWithKakao,
+    setLoading: (v) => _isKakaoLoading = v,
+    isCanceled: (e) => e is PlatformException && e.code == 'CANCELED',
+  );
 }
 
 /// 소셜 로그인 원형 아이콘 버튼. [dimmed]는 다른 소셜 버튼이 로딩 중일 때

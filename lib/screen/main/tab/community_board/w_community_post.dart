@@ -58,6 +58,9 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
   List<Post>? _searchResults;
   bool _showScrollTop = false;
   Timer? _searchDebounce;
+  // 응답이 늦게 도착했을 때 이미 지나간 키워드로 최신 결과를 덮어쓰지 않도록 가드
+  // (onSubmitted가 디바운스를 우회해 즉시 호출되면서 이전 요청과 겹칠 수 있음)
+  int _searchRequestId = 0;
 
   String get _serviceBoardType => widget.boardType;
 
@@ -148,6 +151,7 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
   }
 
   Future<void> _search(String keyword) async {
+    final requestId = ++_searchRequestId;
     if (keyword.trim().isEmpty) {
       setState(() => _searchResults = null);
       return;
@@ -158,7 +162,7 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
         keyword.trim(),
         _serviceBoardType,
       );
-      if (mounted) {
+      if (mounted && requestId == _searchRequestId) {
         setState(() {
           _searchResults = results;
           _isSearching = false;
@@ -166,7 +170,9 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
       }
     } catch (e) {
       debugPrint('[CommunityPost] 검색 실패: $e');
-      if (mounted) setState(() => _isSearching = false);
+      if (mounted && requestId == _searchRequestId) {
+        setState(() => _isSearching = false);
+      }
     }
   }
 

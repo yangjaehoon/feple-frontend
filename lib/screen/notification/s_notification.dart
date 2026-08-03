@@ -9,6 +9,7 @@ import 'package:feple/common/widget/w_refreshable_center.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
+import 'package:feple/common/util/navigate_after_fetch.dart';
 import 'package:feple/common/util/popup_menu_item_builder.dart';
 import 'package:feple/model/notification_model.dart';
 import 'package:feple/screen/notification/notification_time_style.dart';
@@ -107,68 +108,40 @@ class _NotificationScreenState extends State<NotificationScreen> {
     }
   }
 
-  Future<void> _navigateToArtist(NotificationModel item) async {
-    setState(() => _navigatingId = item.id);
-    try {
-      final artist = await _artistService.fetchArtistById(item.referenceId!);
-      if (!mounted) return;
-      await Navigator.push(
-        context,
-        SlideRoute(
-          builder: (_) => ArtistScreen(
-            artistId: artist.id,
-            artistName: artist.name,
-            artistNameEn: artist.nameEn,
-            followerCount: artist.followerCount,
-            profileImageUrl: artist.profileImageUrl,
-          ),
-        ),
-      );
-    } catch (e) {
-      debugPrint('[Notification] 아티스트 이동 실패: $e');
-    } finally {
-      if (mounted) setState(() => _navigatingId = null);
-    }
+  void _setNavigatingId(bool loading, int id) {
+    if (mounted) setState(() => _navigatingId = loading ? id : null);
   }
 
-  Future<void> _navigateToPost(NotificationModel item) async {
-    setState(() => _navigatingId = item.id);
-    try {
-      final post = await _postService.fetchPost(item.referenceId!);
-      if (!mounted) return;
-      await Navigator.push(
-        context,
-        SlideRoute(
-          builder: (_) => PostDetailCard.fromPost(
-            boardName: post.boardDisplayName,
-            post: post,
-          ),
-        ),
-      );
-    } catch (e) {
-      debugPrint('[Notification] 게시글 이동 실패: $e');
-    } finally {
-      if (mounted) setState(() => _navigatingId = null);
-    }
-  }
+  Future<void> _navigateToArtist(NotificationModel item) => navigateAfterFetch(
+    context,
+    fetch: () => _artistService.fetchArtistById(item.referenceId!),
+    builder: (artist) => ArtistScreen(
+      artistId: artist.id,
+      artistName: artist.name,
+      artistNameEn: artist.nameEn,
+      followerCount: artist.followerCount,
+      profileImageUrl: artist.profileImageUrl,
+    ),
+    setLoading: (v) => _setNavigatingId(v, item.id),
+    errorTag: 'Notification/아티스트',
+  );
 
-  Future<void> _navigateToFestival(NotificationModel item) async {
-    setState(() => _navigatingId = item.id);
-    try {
-      final festival = await _festivalService.fetchById(item.referenceId!);
-      if (!mounted) return;
-      await Navigator.push(
-        context,
-        SlideRoute(
-          builder: (_) => FestivalInformationFragment(poster: festival),
-        ),
-      );
-    } catch (e) {
-      debugPrint('[Notification] 페스티벌 이동 실패: $e');
-    } finally {
-      if (mounted) setState(() => _navigatingId = null);
-    }
-  }
+  Future<void> _navigateToPost(NotificationModel item) => navigateAfterFetch(
+    context,
+    fetch: () => _postService.fetchPost(item.referenceId!),
+    builder: (post) =>
+        PostDetailCard.fromPost(boardName: post.boardDisplayName, post: post),
+    setLoading: (v) => _setNavigatingId(v, item.id),
+    errorTag: 'Notification/게시글',
+  );
+
+  Future<void> _navigateToFestival(NotificationModel item) => navigateAfterFetch(
+    context,
+    fetch: () => _festivalService.fetchById(item.referenceId!),
+    builder: (festival) => FestivalInformationFragment(poster: festival),
+    setLoading: (v) => _setNavigatingId(v, item.id),
+    errorTag: 'Notification/페스티벌',
+  );
 
   Future<void> _onDeleteAll() async {
     final confirmed = await showConfirmDialog(

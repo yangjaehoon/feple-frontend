@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/navigate_after_fetch.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_refreshable_center.dart';
@@ -459,16 +460,18 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
 
   Future<void> _navigateToFestival(int festivalId) async {
     if (_navigatingFestivalId != null) return;
-    setState(() => _navigatingFestivalId = festivalId);
-    try {
-      final festival = await _festivalService.fetchById(festivalId);
-      if (!mounted) return;
-      unawaited(Navigator.push(context, SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival))));
-    } catch (e) {
-      debugPrint('[OtherUserProfile] festival fetch error: $e');
-    } finally {
-      if (mounted) setState(() => _navigatingFestivalId = null);
-    }
+    await navigateAfterFetch(
+      context,
+      fetch: () => _festivalService.fetchById(festivalId),
+      builder: (festival) => FestivalInformationFragment(poster: festival),
+      setLoading: (v) {
+        if (mounted) {
+          setState(() => _navigatingFestivalId = v ? festivalId : null);
+        }
+      },
+      errorTag: 'OtherUserProfile',
+      awaitNavigation: false,
+    );
   }
 
   Widget _buildCertItem(CertificationModel cert, AbstractThemeColors colors) {

@@ -101,9 +101,11 @@ class PostCursorController extends SafeChangeNotifier {
       _nextCursor = result.nextCursor;
       _isLoadingMore = false;
       safeNotify();
-    } catch (_) {
+    } catch (e) {
       if (_loadId != myId) return;
       _isLoadingMore = false;
+      // 조용히 삼키면 "더 보기"가 실패했는데도 사용자는 그냥 목록이 끝난 줄 알게 됨
+      _refreshError = networkAwareErrorKey(e, 'err_fetch_data').tr();
       safeNotify();
     }
   }

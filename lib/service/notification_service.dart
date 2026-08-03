@@ -1,5 +1,6 @@
 import 'package:feple/model/notification_model.dart';
 import 'package:feple/model/notification_page.dart';
+import 'package:feple/model/spring_page.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/service/notification_countable.dart';
 import 'package:feple/service/notification_feedable.dart';
@@ -20,10 +21,8 @@ class NotificationService implements NotificationCountable, NotificationFeedable
     final items = (data['content'] as List)
         .map((e) => NotificationModel.fromJson(e as Map<String, dynamic>))
         .toList();
-    final pageInfo = data['page'] as Map<String, dynamic>? ?? {};
-    final pageNumber = (pageInfo['number'] as num?)?.toInt() ?? 0;
-    final totalPages = (pageInfo['totalPages'] as num?)?.toInt() ?? 1;
-    return NotificationPage(items: items, hasMore: pageNumber + 1 < totalPages);
+    final hasMore = springPageHasMore(data['page'] as Map<String, dynamic>?);
+    return NotificationPage(items: items, hasMore: hasMore);
   }
 
   @override

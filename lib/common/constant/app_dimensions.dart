@@ -33,6 +33,7 @@ class AppDimens {
   static const double radiusXs = 4.0;       // 매우 작은 요소 (코드 블록 등)
   static const double barRadius = 2.0;      // 섹션 바 액센트, 드래그 핸들
   static const double boardCardHeight = 280.0;
+  static const double licenseBoxHeight = 230.0; // 오픈소스 라이선스 전문 스크롤 박스
   static const double minTouchTarget = 44.0; // HIG/M3 최소 터치 타겟
 
   // ── Spacing (8px 그리드, 4px 단위 보조) ──

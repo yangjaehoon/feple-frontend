@@ -57,7 +57,7 @@ class OpensourceItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppDimens.radiusXs),
             ),
             margin: const EdgeInsets.only(left: 20, top: 15, right: 20),
-            height: 230,
+            height: AppDimens.licenseBoxHeight,
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(10),
               child: Text(

@@ -7,7 +7,7 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_model.dart';
 import 'package:feple/provider/user_provider.dart';
-import 'package:feple/screen/main/tab/search/w_circle_artist.dart';
+import 'package:feple/screen/main/tab/search/w_artist_discovery.dart';
 import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/artist_service.dart';
 import 'package:feple/service/artist_suggestion_service.dart';
@@ -33,7 +33,7 @@ Artist _artist({int id = 1, String name = '아티스트', String genre = 'KPOP'}
 Future<void> _pump(
   WidgetTester tester, {
   int? userId = 1,
-  GlobalKey<CircleArtistWidgetState>? key,
+  GlobalKey<ArtistDiscoverySectionState>? key,
 }) async {
   SharedPreferences.setMockInitialValues({});
   await EasyLocalization.ensureInitialized();
@@ -57,7 +57,7 @@ Future<void> _pump(
         child: CustomThemeHolder(
           theme: CustomTheme.light,
           changeTheme: (_) {},
-          child: MaterialApp(home: Scaffold(body: CircleArtistWidget(key: key))),
+          child: MaterialApp(home: Scaffold(body: ArtistDiscoverySection(key: key))),
         ),
       ),
     ),
@@ -93,7 +93,7 @@ void main() {
     if (sl.isRegistered<ArtistSuggestionService>()) sl.unregister<ArtistSuggestionService>();
   });
 
-  group('CircleArtistWidget 로딩', () {
+  group('ArtistDiscoverySection 로딩', () {
     testWidgets('로딩 중에는 스켈레톤을 보여준다', (tester) async {
       final completer = Completer<List<Artist>>();
       when(() => mockArtistService.fetchArtists()).thenAnswer((_) => completer.future);
@@ -106,7 +106,7 @@ void main() {
     });
   });
 
-  group('CircleArtistWidget 렌더링', () {
+  group('ArtistDiscoverySection 렌더링', () {
     testWidgets('아티스트 목록과 팔로우 여부를 보여준다', (tester) async {
       when(() => mockArtistService.fetchArtists())
           .thenAnswer((_) async => [_artist(id: 1, name: '아이유'), _artist(id: 2, name: '뉴진스')]);
@@ -129,7 +129,7 @@ void main() {
     });
   });
 
-  group('CircleArtistWidget 장르 필터', () {
+  group('ArtistDiscoverySection 장르 필터', () {
     testWidgets('장르 칩을 선택하면 해당 장르만 표시된다', (tester) async {
       when(() => mockArtistService.fetchArtists()).thenAnswer((_) async => [
             _artist(id: 1, name: '아이유', genre: 'BALLAD'),
@@ -150,7 +150,7 @@ void main() {
     });
   });
 
-  group('CircleArtistWidget 네비게이션', () {
+  group('ArtistDiscoverySection 네비게이션', () {
     // ArtistScreen(s_artist_page.dart)은 ArtistPhotoReadable 등 별도의 무거운
     // 의존성 트리를 가진 화면 — 이 위젯의 관심사가 아니므로 여기서 깊이 검증하지
     // 않고, 자체 위젯 테스트에서 다룰 대상으로 남겨둔다.
@@ -168,7 +168,7 @@ void main() {
     });
   });
 
-  group('CircleArtistWidget 에러', () {
+  group('ArtistDiscoverySection 에러', () {
     testWidgets('로드 실패 시 에러 상태와 재시도 버튼을 보여준다', (tester) async {
       var callCount = 0;
       when(() => mockArtistService.fetchArtists()).thenAnswer((_) async {
@@ -189,7 +189,7 @@ void main() {
     });
   });
 
-  group('CircleArtistWidgetState.refresh', () {
+  group('ArtistDiscoverySectionState.refresh', () {
     testWidgets('refresh()를 호출하면 아티스트 목록과 팔로우 목록을 다시 불러온다', (tester) async {
       var artistCallCount = 0;
       when(() => mockArtistService.fetchArtists()).thenAnswer((_) async {
@@ -197,7 +197,7 @@ void main() {
         return [_artist(name: artistCallCount == 1 ? '첫아티스트' : '갱신아티스트')];
       });
 
-      final key = GlobalKey<CircleArtistWidgetState>();
+      final key = GlobalKey<ArtistDiscoverySectionState>();
       await _pump(tester, key: key);
       await tester.pumpAndSettle();
       expect(find.text('첫아티스트'), findsOneWidget);

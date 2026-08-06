@@ -1,4 +1,4 @@
-import 'package:feple/model/genre_list.dart';
+import 'package:feple/model/genre_parser.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

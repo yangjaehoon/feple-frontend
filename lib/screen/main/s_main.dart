@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_offline_banner.dart';
 import 'package:feple/screen/main/tab/tab_item.dart';
-import 'package:feple/screen/main/tab/tab_navigator.dart';
+import 'package:feple/screen/main/tab/w_tab_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../common/app_events.dart';

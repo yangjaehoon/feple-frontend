@@ -1,7 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/data/preference/app_preferences.dart';
 import 'package:feple/common/data/preference/prefs.dart';
-import 'package:feple/common/theme/custom_theme_app.dart';
+import 'package:feple/common/theme/custom_theme_scope.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/my_page/w_edit_profile.dart';
@@ -72,7 +72,7 @@ Future<void> _pump(WidgetTester tester, MockUserProvider userProvider) async {
       useOnlyLangCode: true,
       child: ChangeNotifierProvider<UserProvider>.value(
         value: userProvider,
-        child: CustomThemeApp(
+        child: CustomThemeScope(
           child: Builder(
             builder: (context) => MaterialApp(
               theme: context.themeType.themeData,

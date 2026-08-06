@@ -11,7 +11,7 @@ import 'package:feple/model/followed_artist.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/home/f_home.dart';
 import 'package:feple/screen/main/tab/home/s_liked_festivals.dart';
-import 'package:feple/screen/main/tab/home/w_boards_section_skeleton.dart';
+import 'package:feple/screen/main/tab/home/w_favorite_boards_section_skeleton.dart';
 import 'package:feple/screen/notification/notification_count_notifier.dart';
 import 'package:feple/service/cache_prefetch_service.dart';
 import 'package:feple/service/festival_cache_service.dart';
@@ -163,7 +163,7 @@ void main() {
 
       await _pump(tester);
 
-      expect(find.byType(BoardsSectionSkeleton), findsOneWidget);
+      expect(find.byType(FavoriteBoardsSectionSkeleton), findsOneWidget);
       completer.complete([]);
       await tester.pumpAndSettle();
     });

@@ -4,7 +4,7 @@ import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/screen/main/tab/home/s_all_favorite_boards.dart';
-import 'package:feple/screen/main/tab/home/w_boards_section_skeleton.dart';
+import 'package:feple/screen/main/tab/home/w_favorite_boards_section_skeleton.dart';
 import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
 import 'package:feple/model/favorite_board.dart';
 import 'package:feple/screen/main/tab/home/favorite_board_navigation.dart';
@@ -102,7 +102,7 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
     final colors = context.appColors;
 
     if (!_prefsLoaded) {
-      return const BoardsSectionSkeleton();
+      return const FavoriteBoardsSectionSkeleton();
     }
 
     final boardMap = {for (final b in widget.allBoards) b.boardId: b};

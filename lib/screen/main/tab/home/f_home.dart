@@ -3,7 +3,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/screen/main/tab/home/s_followed_artists_by_genre.dart';
 import 'package:feple/screen/main/tab/home/s_liked_festivals.dart';
 import 'package:feple/screen/main/tab/home/home_state_notifier.dart';
-import 'package:feple/screen/main/tab/home/w_boards_section_skeleton.dart';
+import 'package:feple/screen/main/tab/home/w_favorite_boards_section_skeleton.dart';
 import 'package:feple/screen/main/tab/home/w_favorite_boards_section.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/screen/main/tab/home/w_home_artists_section.dart';
@@ -265,7 +265,7 @@ class _HomeFragmentState extends State<HomeFragment> {
         ),
       );
     } else if (_notifier.boards == null) {
-      return const BoardsSectionSkeleton();
+      return const FavoriteBoardsSectionSkeleton();
     } else {
       return FavoriteBoardsSection(
         allBoards: _notifier.boards!,

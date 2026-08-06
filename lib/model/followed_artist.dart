@@ -1,4 +1,4 @@
-import 'genre_list.dart';
+import 'genre_parser.dart';
 import 'localized_text.dart';
 
 class FollowedArtist {

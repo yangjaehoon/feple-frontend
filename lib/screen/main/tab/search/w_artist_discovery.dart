@@ -21,14 +21,14 @@ import '../../../../service/artist_service.dart';
 import '../../../../service/artist_follow_service.dart';
 import 'artist_page/s_artist_page.dart';
 
-class CircleArtistWidget extends StatefulWidget {
-  const CircleArtistWidget({super.key});
+class ArtistDiscoverySection extends StatefulWidget {
+  const ArtistDiscoverySection({super.key});
 
   @override
-  State<CircleArtistWidget> createState() => CircleArtistWidgetState();
+  State<ArtistDiscoverySection> createState() => ArtistDiscoverySectionState();
 }
 
-class CircleArtistWidgetState extends State<CircleArtistWidget> {
+class ArtistDiscoverySectionState extends State<ArtistDiscoverySection> {
   final _artistService = sl<ArtistService>();
   final _followService = sl<ArtistFollowService>();
 
@@ -66,7 +66,7 @@ class CircleArtistWidgetState extends State<CircleArtistWidget> {
       final ids = await _followService.fetchFollowingIds(userId);
       if (mounted) setState(() => _followedIds = ids);
     } catch (e) {
-      debugPrint('[CircleArtist] follow ids load failed: $e');
+      debugPrint('[ArtistDiscovery] follow ids load failed: $e');
     }
   }
 
@@ -168,7 +168,7 @@ class CircleArtistWidgetState extends State<CircleArtistWidget> {
 }
 
 // Owns _selectedGenre so genre chip taps only rebuild this widget,
-// not the FutureBuilder in CircleArtistWidgetState.
+// not the FutureBuilder in ArtistDiscoverySectionState.
 class _ArtistContent extends StatefulWidget {
   final List<Artist> allArtists;
   final Set<int> followedIds;

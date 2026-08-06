@@ -5,16 +5,16 @@ import 'custom_theme.dart';
 import 'custom_theme_holder.dart';
 import 'theme_util.dart';
 
-class CustomThemeApp extends StatefulWidget {
+class CustomThemeScope extends StatefulWidget {
   final Widget child;
 
-  const CustomThemeApp({super.key, required this.child});
+  const CustomThemeScope({super.key, required this.child});
 
   @override
-  State<CustomThemeApp> createState() => _CustomThemeAppState();
+  State<CustomThemeScope> createState() => _CustomThemeScopeState();
 }
 
-class _CustomThemeAppState extends State<CustomThemeApp> {
+class _CustomThemeScopeState extends State<CustomThemeScope> {
   late CustomTheme theme = savedTheme ?? systemTheme;
 
   void handleChangeTheme(CustomTheme theme) {

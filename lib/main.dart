@@ -23,7 +23,7 @@ import 'package:dio/dio.dart' show DioException;
 import 'network/api_cache_store.dart';
 import 'network/dio_client.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'common/theme/custom_theme_app.dart';
+import 'common/theme/custom_theme_scope.dart';
 import 'screen/onboarding/s_onboarding.dart';
 
 void main() async {
@@ -179,7 +179,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomThemeApp(
+    return CustomThemeScope(
       child: Builder(
         builder: (context) {
           return MaterialApp(

@@ -12,7 +12,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/data/preference/app_preferences.dart';
 import 'package:feple/common/language/language.dart';
 import 'package:feple/common/theme/custom_theme.dart';
-import 'package:feple/common/theme/custom_theme_app.dart';
+import 'package:feple/common/theme/custom_theme_scope.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/festival_preview_page.dart';
 import 'package:feple/model/followed_artist.dart';
@@ -119,7 +119,7 @@ Future<void> pumpApp(WidgetTester tester) async {
           ChangeNotifierProvider(
               create: (_) => FestivalPreviewProvider(sl<FestivalService>())),
         ],
-        child: CustomThemeApp(
+        child: CustomThemeScope(
           child: Builder(
             builder: (context) => MaterialApp(
               navigatorKey: App.navigatorKey,

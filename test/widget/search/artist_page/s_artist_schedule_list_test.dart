@@ -85,7 +85,7 @@ void main() {
           ]);
 
       await pump(tester);
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.text('schedule_upcoming'.tr()), findsOneWidget);
       expect(find.text('schedule_past'.tr()), findsOneWidget);
@@ -145,7 +145,7 @@ void main() {
           .thenAnswer((_) => Completer<FestivalModel>().future);
 
       await pump(tester);
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text('일정'));
       await tester.pump();

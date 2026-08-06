@@ -100,7 +100,7 @@ void main() {
           .thenAnswer((_) async => [_entry(artistName: '아티스트A'), _entry(artistName: '아티스트B')]);
 
       await pump(tester);
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.text('아티스트A'), findsOneWidget);
       expect(find.text('아티스트B'), findsOneWidget);

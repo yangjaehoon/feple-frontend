@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/screen/main/tab/search/festival_information/weather_style.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/weather_model.dart';
@@ -94,10 +95,7 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
       future: _future,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 32),
-            child: CircularProgressIndicator(color: colors.activate),
-          );
+          return const _WeatherSkeleton();
         }
         if (snapshot.hasError) {
           return ErrorState.network(
@@ -153,6 +151,50 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
         ),
         const SizedBox(height: 8),
       ],
+    );
+  }
+}
+
+class _WeatherSkeleton extends StatelessWidget {
+  const _WeatherSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        children: [
+          const SkeletonBox(
+            width: 64,
+            height: 64,
+            borderRadius: BorderRadius.all(Radius.circular(32)),
+          ),
+          const SizedBox(height: 8),
+          SkeletonBox(
+            width: 100,
+            height: AppDimens.fontSizeXxl,
+            borderRadius: BorderRadius.circular(AppDimens.radiusXs),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SkeletonBox(
+                width: 110,
+                height: 34,
+                borderRadius: BorderRadius.circular(AppDimens.cardRadius),
+              ),
+              const SizedBox(width: 12),
+              SkeletonBox(
+                width: 110,
+                height: 34,
+                borderRadius: BorderRadius.circular(AppDimens.cardRadius),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+        ],
+      ),
     );
   }
 }

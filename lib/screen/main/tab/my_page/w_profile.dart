@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_level_badge.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/screen/main/tab/my_page/w_edit_profile.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -61,12 +62,7 @@ class ProfileWidgetState extends State<ProfileWidget> {
     }
 
     if (user == null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: CircularProgressIndicator(color: colors.loadingIndicator),
-        ),
-      );
+      return _buildSkeleton();
     }
 
     return Container(
@@ -114,6 +110,34 @@ class ProfileWidgetState extends State<ProfileWidget> {
                     builder: (context) => const EditProfileWidget()),
               );
             },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSkeleton() {
+    final avatarSize = MediaQuery.sizeOf(context).width * 0.282; // 110/390
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+      child: Column(
+        children: [
+          SkeletonBox(
+            width: avatarSize,
+            height: avatarSize,
+            borderRadius: BorderRadius.circular(avatarSize / 2),
+          ),
+          const SizedBox(height: 16),
+          SkeletonBox(
+            width: 120,
+            height: AppDimens.fontSizeDisplay + 4,
+            borderRadius: BorderRadius.circular(AppDimens.radiusXs),
+          ),
+          const SizedBox(height: 16),
+          SkeletonBox(
+            width: 110,
+            height: 38,
+            borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
           ),
         ],
       ),

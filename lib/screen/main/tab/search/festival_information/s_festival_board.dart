@@ -3,6 +3,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/post_cursor_controller.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
+import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_refreshable_center.dart';
@@ -399,14 +400,17 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
           );
         }
         final post = posts[i];
-        return PostListTile(
-          post: post,
-          onTap: () => _openPost(post),
-          onAuthorTap: () => navigateToPostAuthor(
-            context,
-            userId: post.userId,
-            nickname: post.nickname,
-            profileImageUrl: post.profileImageUrl,
+        return AnimatedListItem(
+          index: i,
+          child: PostListTile(
+            post: post,
+            onTap: () => _openPost(post),
+            onAuthorTap: () => navigateToPostAuthor(
+              context,
+              userId: post.userId,
+              nickname: post.nickname,
+              profileImageUrl: post.profileImageUrl,
+            ),
           ),
         );
       },

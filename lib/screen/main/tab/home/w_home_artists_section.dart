@@ -45,8 +45,9 @@ class HomeArtistsSection extends StatelessWidget {
     final preview = artists!.take(maxPreview).toList();
     final remaining = artists!.length - maxPreview;
     final showMoreItem = remaining > 0 && onShowMore != null;
-    // 기준 390px: 아티스트 섹션 높이 110(0.282) — avatar 74 + text 12 + 간격 24
-    final listHeight = MediaQuery.sizeOf(context).width * 0.282;
+    // 기준 390px: 아티스트 섹션 높이 124(0.318) — avatar 74 + 2줄 이름 26 + 간격 24.
+    // 영문 아티스트명(예: "ASH ISLAND")이 한 줄엔 안 들어가 2줄까지 허용.
+    final listHeight = MediaQuery.sizeOf(context).width * 0.318;
     return SizedBox(
       height: listHeight,
       child: ListView.builder(
@@ -69,7 +70,7 @@ class HomeArtistsSection extends StatelessWidget {
 
   Widget _buildSkeleton(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
-    final listHeight = screenWidth * 0.282;
+    final listHeight = screenWidth * 0.318;
     const avatarSize = 74.0;
     return SizedBox(
       height: listHeight,
@@ -230,9 +231,10 @@ class _ArtistItem extends StatelessWidget {
                   fontSize: AppDimens.fontSizeXs,
                   fontWeight: FontWeight.w600,
                   color: colors.textTitle,
+                  height: 1.15,
                 ),
                 textAlign: TextAlign.center,
-                maxLines: 1,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ),

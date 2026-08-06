@@ -178,7 +178,7 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
 
   Widget _buildSkeletonList() {
     return ListView.separated(
-      padding: const EdgeInsets.only(bottom: 80),
+      padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottomLarge),
       itemCount: 8,
       itemBuilder: (_, _) => Padding(
         padding: const EdgeInsets.symmetric(
@@ -238,7 +238,7 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
     }
     return ListView.separated(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(bottom: 80),
+      padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottomLarge),
       itemCount: displayPosts.length,
       itemBuilder: (context, index) {
         final post = displayPosts[index];
@@ -291,7 +291,7 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
     return ListView.separated(
       controller: _scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(bottom: 80),
+      padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottomLarge),
       itemCount: posts.length + (_controller.isLoadingMore ? 1 : 0),
       itemBuilder: (context, index) {
         if (index == posts.length) {

@@ -60,13 +60,6 @@ class DarkAppColors extends AbstractThemeColors {
   Color get textSecondary => _darkTextSecondary;
 
   @override
-  Color get hotBoardHeader => _darkCard;
-  @override
-  Color get freeBoardHeader => _darkCard;
-  @override
-  Color get getUserBoardHeader => _darkCard;
-
-  @override
   Color get cardShadow => Colors.black;
 
   @override

@@ -172,14 +172,16 @@ void main() {
 
       await pump(tester, poster: _poster(id: 1, attendingCount: 0));
 
-      // attendingCount가 0이면 카운트 라벨도 'attend_toggle' 텍스트를 쓰므로
-      // 실제 토글 버튼(마지막 위젯)을 탭한다
-      await tester.tap(find.text('attend_toggle'.tr()).last);
+      // attendingCount가 0이면 카운트 라벨은 'attend_none'을 쓰므로
+      // 토글 버튼('attend_toggle')과 겹치지 않는다
+      expect(find.text('attend_none'.tr()), findsOneWidget);
+      await tester.tap(find.text('attend_toggle'.tr()));
       await tester.pump();
       await tester.pump();
 
       expect(find.text('attending_count'.tr(args: ['1'])), findsNothing);
-      expect(find.text('attend_toggle'.tr()), findsNWidgets(2));
+      expect(find.text('attend_none'.tr()), findsOneWidget);
+      expect(find.text('attend_toggle'.tr()), findsOneWidget);
     });
   });
 

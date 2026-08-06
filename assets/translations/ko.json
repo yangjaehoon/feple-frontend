@@ -403,6 +403,7 @@
   "action_map": "지도",
   "action_cert": "인증",
   "attending_count": "{}명 참석 예정",
+  "attend_none": "아직 참석자가 없어요",
   "attend_toggle": "참석 예정",
   "lineup_all": "전체",
   "select_festival_required_msg": "페스티벌을 선택해주세요.",

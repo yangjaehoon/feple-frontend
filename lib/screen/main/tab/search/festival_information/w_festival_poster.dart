@@ -481,7 +481,7 @@ class FestivalPosterState extends State<FestivalPoster> {
           child: Text(
             count > 0
                 ? 'attending_count'.tr(args: ['$count'])
-                : 'attend_toggle'.tr(),
+                : 'attend_none'.tr(),
             style: const TextStyle(
               fontSize: AppDimens.fontSizeSm,
               color: Colors.white70,

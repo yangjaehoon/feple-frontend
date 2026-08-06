@@ -162,12 +162,16 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
                   fontSize: AppDimens.fontSizeLg,
                   fontWeight: FontWeight.w700,
                   color: colors.textTitle)),
-          const SizedBox(width: 10),
-          _LegendDot(color: AppColors.boothFood, label: 'booth_food'.tr()),
-          const SizedBox(width: 8),
-          _LegendDot(color: AppColors.boothAlcohol, label: 'booth_alcohol'.tr()),
-          const SizedBox(width: 8),
-          _LegendDot(color: AppColors.boothEvent, label: 'booth_event'.tr()),
+          // 등록된 부스가 있을 때만 범례를 보여준다 — 빈 상태에서 색상 범례부터
+          // 먼저 보여주면 아직 아무것도 없는데 뭔가 있는 것처럼 앞서가 보임
+          if (_booths.isNotEmpty) ...[
+            const SizedBox(width: 10),
+            _LegendDot(color: AppColors.boothFood, label: 'booth_food'.tr()),
+            const SizedBox(width: 8),
+            _LegendDot(color: AppColors.boothAlcohol, label: 'booth_alcohol'.tr()),
+            const SizedBox(width: 8),
+            _LegendDot(color: AppColors.boothEvent, label: 'booth_event'.tr()),
+          ],
         ],
       ),
     );

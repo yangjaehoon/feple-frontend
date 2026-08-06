@@ -5,6 +5,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/url_validator.dart';
 import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
+import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -107,19 +108,22 @@ class _FestivalSetlistFullscreenScreenState
         padding: const EdgeInsets.symmetric(vertical: 12),
         itemCount: entries.length,
         separatorBuilder: (_, _) => const SizedBox(height: 8),
-        itemBuilder: (_, i) => _ArtistFullTile(
-          entry: entries[i],
-          isExpanded: _expanded.contains(entries[i].artistId),
-          onToggle: () => setState(() {
-            final id = entries[i].artistId;
-            if (_expanded.contains(id)) {
-              _expanded.remove(id);
-            } else {
-              _expanded.add(id);
-            }
-          }),
-          onSongTap: _openYoutubeMusic,
-          onRequest: () => _openRequestSheet(entries[i]),
+        itemBuilder: (_, i) => AnimatedListItem(
+          index: i,
+          child: _ArtistFullTile(
+            entry: entries[i],
+            isExpanded: _expanded.contains(entries[i].artistId),
+            onToggle: () => setState(() {
+              final id = entries[i].artistId;
+              if (_expanded.contains(id)) {
+                _expanded.remove(id);
+              } else {
+                _expanded.add(id);
+              }
+            }),
+            onSongTap: _openYoutubeMusic,
+            onRequest: () => _openRequestSheet(entries[i]),
+          ),
         ),
       ),
     );

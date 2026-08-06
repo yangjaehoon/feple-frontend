@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
+import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_refreshable_center.dart';
@@ -162,7 +163,10 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
               itemCount: displayed.length,
               separatorBuilder: (_, _) =>
                   Divider(height: 1, color: colors.listDivider),
-              itemBuilder: (_, index) => SongRequestItem(req: displayed[index]),
+              itemBuilder: (_, index) => AnimatedListItem(
+                index: index,
+                child: SongRequestItem(req: displayed[index]),
+              ),
             ),
     );
   }

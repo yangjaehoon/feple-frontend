@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/block_action_helper.dart';
+import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_profile_avatar.dart';
@@ -85,7 +86,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
       child: ListView.separated(
         itemCount: _list!.length,
         separatorBuilder: (_, _) => Divider(height: 1, color: colors.listDivider),
-        itemBuilder: (_, i) => _buildItem(_list![i], colors),
+        itemBuilder: (_, i) => AnimatedListItem(index: i, child: _buildItem(_list![i], colors)),
       ),
     );
   }

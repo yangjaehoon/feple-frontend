@@ -4,6 +4,7 @@ import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/util/navigate_after_fetch.dart';
 import 'package:feple/common/util/navigation_guard.dart';
+import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_refreshable_center.dart';
@@ -192,10 +193,13 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
               separatorBuilder: (_, _) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
                 final cert = displayed[index];
-                return _CertCard(
-                  key: ValueKey(cert.id),
-                  cert: cert,
-                  certService: _certService,
+                return AnimatedListItem(
+                  index: index,
+                  child: _CertCard(
+                    key: ValueKey(cert.id),
+                    cert: cert,
+                    certService: _certService,
+                  ),
                 );
               },
             ),

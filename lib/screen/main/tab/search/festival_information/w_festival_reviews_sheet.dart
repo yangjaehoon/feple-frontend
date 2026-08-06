@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
+import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_expandable_text.dart';
@@ -237,11 +238,14 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
           if (_reviews.isEmpty) return _buildEmpty(colors);
           if (reviewIndex < _reviews.length) {
             final review = _reviews[reviewIndex];
-            return _ReviewCard(
-              key: ValueKey(review.reviewId),
-              review: review,
-              colors: colors,
-              certService: widget.certService,
+            return AnimatedListItem(
+              index: reviewIndex,
+              child: _ReviewCard(
+                key: ValueKey(review.reviewId),
+                review: review,
+                colors: colors,
+                certService: widget.certService,
+              ),
             );
           }
           return const Padding(

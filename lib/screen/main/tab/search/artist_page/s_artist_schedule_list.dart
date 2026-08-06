@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/future_refreshable.dart';
+import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
@@ -126,10 +127,18 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen>
       itemCount: rows.length,
       itemBuilder: (_, index) {
         final row = rows[index];
-        if (row.isHeader) return _buildSectionHeader(row.label!, colors);
+        if (row.isHeader) {
+          return AnimatedListItem(
+            index: index,
+            child: _buildSectionHeader(row.label!, colors),
+          );
+        }
         final showDivider =
             index < rows.length - 1 && !rows[index + 1].isHeader;
-        return _buildItem(row.item!, row.isPast, showDivider, colors);
+        return AnimatedListItem(
+          index: index,
+          child: _buildItem(row.item!, row.isPast, showDivider, colors),
+        );
       },
     );
   }

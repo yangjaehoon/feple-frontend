@@ -3,6 +3,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
+import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -343,21 +344,24 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
               itemCount: _recentSearches.length,
               itemBuilder: (_, index) {
                 final keyword = _recentSearches[index];
-                return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                  dense: true,
-                  leading: Icon(Icons.history_rounded, size: 18, color: colors.textSecondary),
-                  title: Text(keyword, style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textTitle)),
-                  trailing: IconButton(
-                    tooltip: 'delete'.tr(),
-                    icon: Icon(Icons.close_rounded, size: 16, color: colors.textSecondary),
-                    onPressed: () => _removeRecentSearch(keyword),
+                return AnimatedListItem(
+                  index: index,
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                    dense: true,
+                    leading: Icon(Icons.history_rounded, size: 18, color: colors.textSecondary),
+                    title: Text(keyword, style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textTitle)),
+                    trailing: IconButton(
+                      tooltip: 'delete'.tr(),
+                      icon: Icon(Icons.close_rounded, size: 16, color: colors.textSecondary),
+                      onPressed: () => _removeRecentSearch(keyword),
+                    ),
+                    onTap: () {
+                      _controller.text = keyword;
+                      _controller.selection = TextSelection.collapsed(offset: keyword.length);
+                      _search(keyword);
+                    },
                   ),
-                  onTap: () {
-                    _controller.text = keyword;
-                    _controller.selection = TextSelection.collapsed(offset: keyword.length);
-                    _search(keyword);
-                  },
                 );
               },
             ),
@@ -625,7 +629,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
       itemCount: items.length,
-      itemBuilder: (_, i) => builder(items[i]),
+      itemBuilder: (_, i) => AnimatedListItem(index: i, child: builder(items[i])),
       separatorBuilder: (_, _) => Divider(height: 1, color: colors.listDivider),
     );
   }

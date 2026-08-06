@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
@@ -114,7 +115,10 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen>
         indent: AppDimens.paddingHorizontal,
         endIndent: AppDimens.paddingHorizontal,
       ),
-      itemBuilder: (_, index) => SongListTile(song: songs[index], index: index),
+      itemBuilder: (_, index) => AnimatedListItem(
+        index: index,
+        child: SongListTile(song: songs[index], index: index),
+      ),
     );
   }
 }

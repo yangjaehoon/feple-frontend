@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/common/widget/w_level_badge.dart';
+import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/user_model.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/injection.dart';
@@ -103,13 +104,13 @@ void main() {
   }
 
   group('ProfileWidget 로딩', () {
-    testWidgets('조회 중에는 로딩 스피너를 보여준다', (tester) async {
+    testWidgets('조회 중에는 스켈레톤을 보여준다', (tester) async {
       final completer = Completer<AppUser>();
       when(() => mockUserService.fetchUser(1)).thenAnswer((_) => completer.future);
 
       await pump(tester);
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.byType(SkeletonBox), findsWidgets);
 
       completer.complete(_user());
       await tester.pump();

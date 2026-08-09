@@ -96,6 +96,88 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
     colorValue: _color.toARGB32(),
   );
 
+  Widget _buildDialogTitle(AbstractThemeColors colors) {
+    return Text(
+      widget.isEditing ? 'timetable_edit_entry'.tr() : 'timetable_add_entry'.tr(),
+      style: TextStyle(
+        fontSize: AppDimens.fontSizeXl,
+        fontWeight: FontWeight.w700,
+        color: colors.textTitle,
+      ),
+    );
+  }
+
+  Widget _buildDialogContent(AbstractThemeColors colors) {
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildLabelField(colors),
+          const SizedBox(height: 16),
+          _buildStageDropdown(colors),
+          const SizedBox(height: 16),
+          _buildTimeRow(colors),
+          if (_labelCtrl.text.trim().isNotEmpty &&
+              _toMins(_end) <= _toMins(_start))
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                'timetable_invalid_time_range'.tr(),
+                style: TextStyle(
+                  fontSize: AppDimens.fontSizeXs,
+                  color: colors.error,
+                ),
+              ),
+            ),
+          const SizedBox(height: 16),
+          _buildColorPicker(colors),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    final confirmed = await showConfirmDialog(
+      context,
+      title: 'timetable_delete_title'.tr(),
+      content: 'timetable_delete_confirm'.tr(),
+      confirmLabel: 'msg_delete'.tr(),
+    );
+    if (confirmed && context.mounted) {
+      Navigator.pop(context, const TimetableEntryDeleted());
+    }
+  }
+
+  List<Widget> _buildActions(AbstractThemeColors colors, bool valid) {
+    return [
+      if (widget.isEditing)
+        TextButton(
+          onPressed: () => _confirmDelete(context),
+          child: Text('msg_delete'.tr(), style: TextStyle(color: colors.error)),
+        ),
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: Text('cancel'.tr(), style: TextStyle(color: colors.textSecondary)),
+      ),
+      FilledButton(
+        onPressed: valid
+            ? () => Navigator.pop(context, TimetableEntrySaved(_result))
+            : null,
+        style: FilledButton.styleFrom(
+          backgroundColor: colors.activate,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+          ),
+        ),
+        child: Text(
+          widget.isEditing ? 'photo_edit_action'.tr() : 'timetable_add'.tr(),
+        ),
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -107,85 +189,9 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDimens.cardRadius),
       ),
-      title: Text(
-        widget.isEditing
-            ? 'timetable_edit_entry'.tr()
-            : 'timetable_add_entry'.tr(),
-        style: TextStyle(
-          fontSize: AppDimens.fontSizeXl,
-          fontWeight: FontWeight.w700,
-          color: colors.textTitle,
-        ),
-      ),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildLabelField(colors),
-            const SizedBox(height: 16),
-            _buildStageDropdown(colors),
-            const SizedBox(height: 16),
-            _buildTimeRow(colors),
-            if (_labelCtrl.text.trim().isNotEmpty &&
-                _toMins(_end) <= _toMins(_start))
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  'timetable_invalid_time_range'.tr(),
-                  style: TextStyle(
-                    fontSize: AppDimens.fontSizeXs,
-                    color: colors.error,
-                  ),
-                ),
-              ),
-            const SizedBox(height: 16),
-            _buildColorPicker(colors),
-          ],
-        ),
-      ),
-      actions: [
-        if (widget.isEditing)
-          TextButton(
-            onPressed: () async {
-              final confirmed = await showConfirmDialog(
-                context,
-                title: 'timetable_delete_title'.tr(),
-                content: 'timetable_delete_confirm'.tr(),
-                confirmLabel: 'msg_delete'.tr(),
-              );
-              if (confirmed && context.mounted) {
-                Navigator.pop(context, const TimetableEntryDeleted());
-              }
-            },
-            child: Text(
-              'msg_delete'.tr(),
-              style: TextStyle(color: colors.error),
-            ),
-          ),
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(
-            'cancel'.tr(),
-            style: TextStyle(color: colors.textSecondary),
-          ),
-        ),
-        FilledButton(
-          onPressed: valid
-              ? () => Navigator.pop(context, TimetableEntrySaved(_result))
-              : null,
-          style: FilledButton.styleFrom(
-            backgroundColor: colors.activate,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-            ),
-          ),
-          child: Text(
-            widget.isEditing ? 'photo_edit_action'.tr() : 'timetable_add'.tr(),
-          ),
-        ),
-      ],
+      title: _buildDialogTitle(colors),
+      content: _buildDialogContent(colors),
+      actions: _buildActions(colors, valid),
     );
   }
 

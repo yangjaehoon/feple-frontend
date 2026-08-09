@@ -176,10 +176,7 @@ class _FestivalListSwiperWidgetState extends State<FestivalListSwiperWidget>
     }
 
     final size = MediaQuery.sizeOf(context);
-    // 화면 높이의 39% — iPhone SE(667px)→260, 기준(844px)→330, Pro Max(932px)→364
-    final swiperHeight = size.height * 0.39;
-    final itemWidth = size.width * 0.46;
-    final itemHeight = swiperHeight * 0.818;
+    final (:swiperHeight, :itemWidth, :itemHeight) = _swiperSizes(size);
     // 카드 옆에 숨은 카드 위치: 화면 너비만큼 밀어냄
     final translateOffset = size.width * 0.95;
 
@@ -205,11 +202,19 @@ class _FestivalListSwiperWidgetState extends State<FestivalListSwiperWidget>
     );
   }
 
+  // 화면 높이의 39% — iPhone SE(667px)→260, 기준(844px)→330, Pro Max(932px)→364
+  ({double swiperHeight, double itemWidth, double itemHeight}) _swiperSizes(Size size) {
+    final swiperHeight = size.height * 0.39;
+    return (
+      swiperHeight: swiperHeight,
+      itemWidth: size.width * 0.46,
+      itemHeight: swiperHeight * 0.818,
+    );
+  }
+
   Widget _buildSkeleton(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final swiperHeight = size.height * 0.39;
-    final itemWidth = size.width * 0.46;
-    final itemHeight = swiperHeight * 0.818;
+    final (:swiperHeight, :itemWidth, :itemHeight) = _swiperSizes(size);
     return SizedBox(
       height: swiperHeight,
       child: Stack(

@@ -6,6 +6,7 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
+import 'package:feple/common/widget/w_settings_item.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/my_page/w_edit_profile.dart';
 import 'package:feple/screen/opensource/s_opensource.dart';
@@ -157,23 +158,23 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
   List<Widget> _buildAccountSection(AbstractThemeColors colors) {
     return [
       _SectionHeader(label: 'settings_account'.tr()),
-      _SettingsItem(
+      SettingsItem(
         icon: Icons.edit_rounded,
         label: 'edit_profile'.tr(),
         onTap: () => guardedNavigate(() =>
             Navigator.push(context, SlideRoute(builder: (_) => const EditProfileWidget()))),
       ),
-      const _ItemDivider(),
-      _SettingsItem(
+      const SettingsItemDivider(),
+      SettingsItem(
         icon: Icons.block_rounded,
         label: 'blocked_users'.tr(),
         onTap: () => guardedNavigate(() =>
             Navigator.push(context, SlideRoute(builder: (_) => const BlockedUsersScreen()))),
       ),
-      const _ItemDivider(),
+      const SettingsItemDivider(),
       // 로그아웃은 자주 쓰는 되돌릴 수 있는 행동이라 중립 스타일 유지 —
       // 회원탈퇴(영구 삭제)와 동일한 빨간색을 쓰면 위험도 구분이 안 됨
-      _SettingsItem(
+      SettingsItem(
         icon: Icons.logout_rounded,
         label: 'logout'.tr(),
         onTap: _logout,
@@ -181,7 +182,7 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
       // 되돌릴 수 없는 회원탈퇴는 실수로 위 항목들과 헷갈려 눌리지 않도록
       // 얇은 구분선 대신 여백으로 물리적으로 떼어놓는다.
       const SizedBox(height: AppDimens.space20),
-      _SettingsItem(
+      SettingsItem(
         icon: Icons.person_remove_rounded,
         label: 'delete_account'.tr(),
         onTap: _deleteAccount,
@@ -193,7 +194,7 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
   List<Widget> _buildAppSection(AbstractThemeColors colors, bool isDark) {
     return [
       _SectionHeader(label: 'settings_app'.tr()),
-      _SettingsItem(
+      SettingsItem(
         icon: isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
         label: 'dark_mode'.tr(),
         trailing: Switch(
@@ -202,8 +203,8 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
           activeThumbColor: colors.activate,
         ),
       ),
-      const _ItemDivider(),
-      _SettingsItem(
+      const SettingsItemDivider(),
+      SettingsItem(
         icon: Icons.schedule_rounded,
         label: 'timetable_current_time_line'.tr(),
         trailing: Switch(
@@ -212,10 +213,10 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
           activeThumbColor: colors.activate,
         ),
       ),
-      const _ItemDivider(),
+      const SettingsItemDivider(),
       const _LanguageItem(),
-      const _ItemDivider(),
-      _SettingsItem(
+      const SettingsItemDivider(),
+      SettingsItem(
         icon: Icons.cleaning_services_rounded,
         label: 'clear_cache'.tr(),
         trailing: _clearingCache
@@ -227,8 +228,8 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
             : null,
         onTap: _clearingCache ? null : _clearCache,
       ),
-      const _ItemDivider(),
-      _SettingsItem(
+      const SettingsItemDivider(),
+      SettingsItem(
         icon: Icons.notifications_rounded,
         label: 'notif_settings'.tr(),
         onTap: () => guardedNavigate(() =>
@@ -240,25 +241,25 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
   List<Widget> _buildSupportSection(AbstractThemeColors colors) {
     return [
       _SectionHeader(label: 'settings_support'.tr()),
-      _SettingsItem(
+      SettingsItem(
         icon: Icons.headset_mic_rounded,
         label: 'customer_service'.tr(),
         onTap: () => _openExternalLink('https://open.kakao.com/o/guLhbJki'),
       ),
-      const _ItemDivider(),
-      _SettingsItem(
+      const SettingsItemDivider(),
+      SettingsItem(
         icon: Icons.privacy_tip_rounded,
         label: 'privacy_policy'.tr(),
         onTap: () => _openExternalLink('https://yangjae.notion.site/feple-privacy?source=copy_link'),
       ),
-      const _ItemDivider(),
-      _SettingsItem(
+      const SettingsItemDivider(),
+      SettingsItem(
         icon: Icons.code_rounded,
         label: 'opensource'.tr(),
         onTap: () => guardedNavigate(() =>
             Navigator.push(context, SlideRoute(builder: (_) => const OpensourceScreen()))),
       ),
-      const _ItemDivider(),
+      const SettingsItemDivider(),
       _VersionItem(version: _appVersion),
     ];
   }
@@ -266,7 +267,7 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
   List<Widget> _buildDevSection(AbstractThemeColors colors) {
     return [
       const _SectionHeader(label: 'DEV'),
-      _SettingsItem(
+      SettingsItem(
         icon: Icons.replay_rounded,
         label: 'onboarding_replay'.tr(),
         onTap: _resetOnboarding,
@@ -298,74 +299,6 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-class _ItemDivider extends StatelessWidget {
-  const _ItemDivider();
-
-  @override
-  Widget build(BuildContext context) {
-    return Divider(
-      height: 1,
-      indent: 50,
-      color: context.appColors.listDivider,
-    );
-  }
-}
-
-class _SettingsItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback? onTap;
-  final Widget? trailing;
-  final bool isDestructive;
-
-  const _SettingsItem({
-    required this.icon,
-    required this.label,
-    this.onTap,
-    this.trailing,
-    this.isDestructive = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-    final iconColor = isDestructive
-        ? colors.error
-        : colors.activate;
-    final textColor = isDestructive
-        ? colors.error
-        : colors.textTitle;
-
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        color: colors.surface,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-        child: Row(
-          children: [
-            Icon(icon, size: 20, color: iconColor),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: AppDimens.fontSizeLg,
-                  fontWeight: FontWeight.w500,
-                  color: textColor,
-                ),
-              ),
-            ),
-            if (trailing != null)
-              trailing!
-            else if (onTap != null)
-              Icon(Icons.arrow_forward_ios_rounded,
-                  size: 13, color: colors.textSecondary),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class _LanguageItem extends StatefulWidget {
   const _LanguageItem();

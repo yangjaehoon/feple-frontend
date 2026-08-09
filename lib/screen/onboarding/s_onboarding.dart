@@ -16,6 +16,31 @@ import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/artist_service.dart';
 import 'package:flutter/material.dart';
 
+/// 온보딩 진행 상태 도트 — 인포 페이지(_OnboardingScreenState)와 아티스트
+/// 선택 페이지(_ArtistPickPageState)가 activeIndex/totalDots만 다르게 공유.
+Widget _buildProgressDots(
+  AbstractThemeColors colors, {
+  required int totalDots,
+  required int activeIndex,
+}) {
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    children: List.generate(totalDots, (index) {
+      final isActive = index == activeIndex;
+      return AnimatedContainer(
+        duration: AppDimens.animNormal,
+        margin: const EdgeInsets.only(right: 8),
+        width: isActive ? 24 : 8,
+        height: 8,
+        decoration: BoxDecoration(
+          color: isActive ? colors.activate : colors.inActivate,
+          borderRadius: BorderRadius.circular(AppDimens.radiusXs),
+        ),
+      );
+    }),
+  );
+}
+
 class OnboardingScreen extends StatefulWidget {
   final VoidCallback onComplete;
 
@@ -116,7 +141,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       padding: const EdgeInsets.fromLTRB(24, 24, 16, 0),
       child: Row(
         children: [
-          _buildDots(colors),
+          _buildProgressDots(colors, totalDots: _pageCount + 1, activeIndex: _currentPage),
           const Spacer(),
           TextButton(
             onPressed: _finish,
@@ -151,25 +176,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Widget _buildDots(AbstractThemeColors colors) {
-    final totalDots = _pageCount + 1; // 마지막 도트 = 아티스트 선택 단계
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(totalDots, (index) {
-        final isActive = index == _currentPage;
-        return AnimatedContainer(
-          duration: AppDimens.animNormal,
-          margin: const EdgeInsets.only(right: 8),
-          width: isActive ? 24 : 8,
-          height: 8,
-          decoration: BoxDecoration(
-            color: isActive ? colors.activate : colors.inActivate,
-            borderRadius: BorderRadius.circular(AppDimens.radiusXs),
-          ),
-        );
-      }),
-    );
-  }
 }
 
 // ─── 아티스트 선택 전체 화면 ───────────────────────────────────────────────────
@@ -242,7 +248,7 @@ class _ArtistPickPageState extends State<_ArtistPickPage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 진행 도트 (4번째 활성)
-          _buildDots(colors),
+          _buildProgressDots(colors, totalDots: 4, activeIndex: 3),
           const SizedBox(height: 24),
           Text(
             'onboarding_pick_title'.tr(),
@@ -268,24 +274,6 @@ class _ArtistPickPageState extends State<_ArtistPickPage>
     );
   }
 
-  Widget _buildDots(AbstractThemeColors colors) {
-    // 4번째(인덱스 3) 도트가 활성
-    return Row(
-      children: List.generate(4, (index) {
-        final isActive = index == 3;
-        return AnimatedContainer(
-          duration: AppDimens.animNormal,
-          margin: const EdgeInsets.only(right: 8),
-          width: isActive ? 24 : 8,
-          height: 8,
-          decoration: BoxDecoration(
-            color: isActive ? colors.activate : colors.inActivate,
-            borderRadius: BorderRadius.circular(AppDimens.radiusXs),
-          ),
-        );
-      }),
-    );
-  }
 
   Widget _buildGrid(AbstractThemeColors colors) {
     return AsyncContentBuilder<List<Artist>>(

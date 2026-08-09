@@ -1,7 +1,7 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
+import 'package:feple/common/widget/w_settings_item.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/notification_preference_model.dart';
@@ -85,89 +85,54 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
         if (_prefs == null)
           const _NotificationSettingsSkeleton()
         else ...[
-          _NotificationSettingsItem(
+          _buildToggleItem(
             icon: Icons.verified_rounded,
             label: 'notif_cert'.tr(),
             value: _prefs!.certEnabled,
-            onChanged: _saving ? null : (_) => _togglePref(_prefs!.toggleCert()),
+            onChanged: (_) => _togglePref(_prefs!.toggleCert()),
           ),
-          const _Divider(),
-          _NotificationSettingsItem(
+          const SettingsItemDivider(),
+          _buildToggleItem(
             icon: Icons.chat_bubble_rounded,
             label: 'notif_comment'.tr(),
             value: _prefs!.commentEnabled,
-            onChanged: _saving ? null : (_) => _togglePref(_prefs!.toggleComment()),
+            onChanged: (_) => _togglePref(_prefs!.toggleComment()),
           ),
-          const _Divider(),
-          _NotificationSettingsItem(
+          const SettingsItemDivider(),
+          _buildToggleItem(
             icon: Icons.festival_rounded,
             label: 'notif_festival'.tr(),
             value: _prefs!.festivalEnabled,
-            onChanged: _saving ? null : (_) => _togglePref(_prefs!.toggleFestival()),
+            onChanged: (_) => _togglePref(_prefs!.toggleFestival()),
           ),
-          const _Divider(),
-          _NotificationSettingsItem(
+          const SettingsItemDivider(),
+          _buildToggleItem(
             icon: Icons.music_note_rounded,
             label: 'notif_song_request'.tr(),
             value: _prefs!.songRequestEnabled,
-            onChanged: _saving ? null : (_) => _togglePref(_prefs!.toggleSongRequest()),
+            onChanged: (_) => _togglePref(_prefs!.toggleSongRequest()),
           ),
         ],
       ],
     );
   }
-}
 
-class _NotificationSettingsItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool value;
-  final ValueChanged<bool>? onChanged;
-
-  const _NotificationSettingsItem({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildToggleItem({
+    required IconData icon,
+    required String label,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+  }) {
     final colors = context.appColors;
-    return Container(
-      color: colors.surface,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: colors.activate),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: AppDimens.fontSizeLg,
-                fontWeight: FontWeight.w500,
-                color: colors.textTitle,
-              ),
-            ),
-          ),
-          Switch(
-            value: value,
-            onChanged: onChanged,
-            activeThumbColor: colors.activate,
-          ),
-        ],
+    return SettingsItem(
+      icon: icon,
+      label: label,
+      trailing: Switch(
+        value: value,
+        onChanged: _saving ? null : onChanged,
+        activeThumbColor: colors.activate,
       ),
     );
-  }
-}
-
-class _Divider extends StatelessWidget {
-  const _Divider();
-
-  @override
-  Widget build(BuildContext context) {
-    return Divider(height: 1, indent: 50, color: context.appColors.listDivider);
   }
 }
 

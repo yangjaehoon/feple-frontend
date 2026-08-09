@@ -1,10 +1,10 @@
 import 'package:feple/common/app_events.dart';
 import 'package:feple/common/common.dart';
-import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/widget/w_selectable_chip.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
+import 'package:feple/common/widget/w_suggestion_banner.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/future_refreshable.dart';
@@ -307,64 +307,13 @@ double gridColumnWidth(double maxWidth) => (maxWidth - 24) / 3;
 class _ArtistSuggestionBanner extends StatelessWidget {
   const _ArtistSuggestionBanner();
 
-  void _openSheet(BuildContext context) {
-    if (ModalRoute.of(context)?.isCurrent != true) return;
-    final userId = context.read<UserProvider>().currentUserId;
-    if (userId == null) {
-      context.showInfoSnackbar('no_login_info'.tr());
-      return;
-    }
-    showAppBottomSheet(context, builder: (_) => const ArtistSuggestionSheet());
-  }
-
   @override
   Widget build(BuildContext context) {
-    final colors = context.appColors;
-    return GestureDetector(
-      onTap: () => _openSheet(context),
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-          border: Border.all(color: colors.activate.withValues(alpha: 0.25)),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.person_add_rounded, color: colors.activate, size: 22),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'artist_suggestion_banner'.tr(),
-                    style: TextStyle(
-                      fontSize: AppDimens.fontSizeSm,
-                      fontWeight: FontWeight.w600,
-                      color: colors.textTitle,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'artist_suggestion_banner_sub'.tr(),
-                    style: TextStyle(
-                      fontSize: AppDimens.fontSizeXs,
-                      color: colors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: colors.textSecondary,
-              size: 20,
-            ),
-          ],
-        ),
-      ),
+    return SuggestionBanner(
+      icon: Icons.person_add_rounded,
+      titleKey: 'artist_suggestion_banner',
+      subtitleKey: 'artist_suggestion_banner_sub',
+      sheetBuilder: (_) => const ArtistSuggestionSheet(),
     );
   }
 }

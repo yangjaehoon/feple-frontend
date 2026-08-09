@@ -1,7 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/constant/festival_constants.dart';
-import 'package:feple/common/util/bottom_sheet_helper.dart';
+import 'package:feple/common/widget/w_suggestion_banner.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/screen/main/tab/festival_list/w_festival_list.dart';
 import 'package:feple/screen/main/tab/festival_list/w_festival_suggestion_sheet.dart';
@@ -11,7 +11,6 @@ import 'package:provider/provider.dart';
 
 import '../../../../app.dart';
 import '../../../../provider/festival_preview_provider.dart';
-import '../../../../provider/user_provider.dart';
 
 class FestivalListFragment extends StatefulWidget {
   const FestivalListFragment({super.key});
@@ -395,64 +394,14 @@ class _LoadMoreIndicator extends StatelessWidget {
 class _FestivalSuggestionBanner extends StatelessWidget {
   const _FestivalSuggestionBanner();
 
-  void _openSheet(BuildContext context) {
-    if (ModalRoute.of(context)?.isCurrent != true) return;
-    final userId = context.read<UserProvider>().currentUserId;
-    if (userId == null) {
-      context.showInfoSnackbar('no_login_info'.tr());
-      return;
-    }
-    showAppBottomSheet(context, builder: (_) => const FestivalSuggestionSheet());
-  }
-
   @override
   Widget build(BuildContext context) {
-    final colors = context.appColors;
-    return GestureDetector(
-      onTap: () => _openSheet(context),
-      child: Container(
-        margin: const EdgeInsets.fromLTRB(20, 8, 20, 20),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-          border: Border.all(color: colors.activate.withValues(alpha: 0.25)),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.add_location_alt_rounded, color: colors.activate, size: 22),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'festival_suggestion_banner'.tr(),
-                    style: TextStyle(
-                      fontSize: AppDimens.fontSizeSm,
-                      fontWeight: FontWeight.w600,
-                      color: colors.textTitle,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'festival_suggestion_banner_sub'.tr(),
-                    style: TextStyle(
-                      fontSize: AppDimens.fontSizeXs,
-                      color: colors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: colors.textSecondary,
-              size: 20,
-            ),
-          ],
-        ),
-      ),
+    return SuggestionBanner(
+      icon: Icons.add_location_alt_rounded,
+      titleKey: 'festival_suggestion_banner',
+      subtitleKey: 'festival_suggestion_banner_sub',
+      margin: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+      sheetBuilder: (_) => const FestivalSuggestionSheet(),
     );
   }
 }

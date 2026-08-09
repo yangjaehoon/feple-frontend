@@ -26,10 +26,7 @@ class HomeFestivalsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (error != null) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: ErrorState.network(error!, onRetry: onRetry),
-      );
+      return ErrorState.section(error!, onRetry: onRetry);
     }
 
     final screenWidth = MediaQuery.sizeOf(context).width;

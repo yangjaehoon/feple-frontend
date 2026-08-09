@@ -1,5 +1,4 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
@@ -9,6 +8,7 @@ import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/model/order_utils.dart';
 import 'package:feple/screen/main/tab/festival_list/w_festival_preview_card.dart';
+import 'package:feple/screen/main/tab/home/reorder_settings_flow.dart';
 import 'package:feple/screen/main/tab/home/w_reorder_sheet.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -44,9 +44,9 @@ class LikedFestivalsScreen extends StatefulWidget {
   State<LikedFestivalsScreen> createState() => _LikedFestivalsScreenState();
 }
 
-class _LikedFestivalsScreenState extends State<LikedFestivalsScreen> with NavigationGuard {
+class _LikedFestivalsScreenState extends State<LikedFestivalsScreen>
+    with NavigationGuard, ReorderSettingsFlow<LikedFestivalsScreen> {
   bool _showEnded = false;
-  bool _isSheetOpen = false;
   late List<FestivalModel> _festivals;
 
   @override
@@ -55,30 +55,30 @@ class _LikedFestivalsScreenState extends State<LikedFestivalsScreen> with Naviga
     _festivals = widget.festivals;
   }
 
-  void _openSettings() async {
-    if (_isSheetOpen) return;
-    _isSheetOpen = true;
+  @override
+  Future<void> Function(List<int>)? get onSaveOrder => widget.onSaveOrder;
+
+  @override
+  String get reorderSheetTitle => 'liked_festivals'.tr();
+
+  @override
+  String? get reorderSheetSubtitle => 'reorder_liked_festivals_hint'.tr();
+
+  @override
+  List<ReorderItem> buildReorderItems() {
     final isEnglish = context.isEnglish;
-    final items = _festivals
+    return _festivals
         .where((f) => !f.isEnded)
         .map((f) => ReorderItem(id: f.id, name: f.displayTitle(isEnglish), imageUrl: f.posterUrl))
         .toList();
-    final newOrder = await showAppBottomSheet<List<int>>(
-      context,
-      builder: (_) => ReorderSheet(
-        title: 'liked_festivals'.tr(),
-        subtitle: 'reorder_liked_festivals_hint'.tr(),
-        items: items,
-        onSave: widget.onSaveOrder ?? (_) {},
-      ),
-    );
-    if (mounted) _isSheetOpen = false;
-    // 저장 성공 여부와 무관하게 화면에 방금 지정한 순서를 즉시 반영 —
-    // widget.festivals는 화면 진입 시점의 스냅샷이라 onSaveOrder가 상위
-    // notifier를 갱신해도 이 화면 자체는 재진입 전까지 반영되지 않았음
-    if (newOrder != null && mounted) {
-      setState(() => _festivals = reorderById(_festivals, newOrder, (f) => f.id));
-    }
+  }
+
+  // 저장 성공 여부와 무관하게 화면에 방금 지정한 순서를 즉시 반영 —
+  // widget.festivals는 화면 진입 시점의 스냅샷이라 onSaveOrder가 상위
+  // notifier를 갱신해도 이 화면 자체는 재진입 전까지 반영되지 않았음
+  @override
+  void applyReorder(List<int> newOrder) {
+    setState(() => _festivals = reorderById(_festivals, newOrder, (f) => f.id));
   }
 
   List<FestivalModel> get _filtered =>
@@ -112,7 +112,7 @@ class _LikedFestivalsScreenState extends State<LikedFestivalsScreen> with Naviga
             IconButton(
               tooltip: 'settings'.tr(),
               icon: Icon(Icons.settings_rounded, color: colors.textSecondary, size: 20),
-              onPressed: _openSettings,
+              onPressed: openReorderSettings,
             ),
         ],
       ),

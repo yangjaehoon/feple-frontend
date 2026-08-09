@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 /// FavoriteBoard 탭 시 타입별 게시판 화면으로 이동 — 즐겨찾는 게시판 목록의
 /// 여러 화면(전체보기/홈 섹션)에서 동일 라우팅 로직을 반복하지 않도록 공용화.
 extension FavoriteBoardNavigation on FavoriteBoard {
-  void navigate(BuildContext context) {
+  Future<void> navigate(BuildContext context) {
     final displayEntityName = entityDisplayName(context.isEnglish);
     final route = switch (type) {
       FavoriteBoardType.artist => SlideRoute(
@@ -24,6 +24,6 @@ extension FavoriteBoardNavigation on FavoriteBoard {
           ),
         ),
     };
-    Navigator.push(context, route);
+    return Navigator.push(context, route);
   }
 }

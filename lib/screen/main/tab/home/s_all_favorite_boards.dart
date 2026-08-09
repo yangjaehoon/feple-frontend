@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
+import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_app_network_image.dart';
 import 'package:feple/common/widget/w_selectable_chip.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
@@ -28,18 +29,14 @@ class AllFavoriteBoardsScreen extends StatefulWidget {
   State<AllFavoriteBoardsScreen> createState() => _AllFavoriteBoardsScreenState();
 }
 
-class _AllFavoriteBoardsScreenState extends State<AllFavoriteBoardsScreen> {
+class _AllFavoriteBoardsScreenState extends State<AllFavoriteBoardsScreen>
+    with NavigationGuard {
   late List<String> _orderedSelectedIds;
   FavoriteBoardType? _selectedType;
   bool _isSheetOpen = false;
 
-  List<FavoriteBoard> get _selectedBoards {
-    final boardMap = {for (final b in widget.allBoards) b.boardId: b};
-    return _orderedSelectedIds
-        .map((id) => boardMap[id])
-        .whereType<FavoriteBoard>()
-        .toList();
-  }
+  List<FavoriteBoard> get _selectedBoards =>
+      widget.allBoards.resolveOrdered(_orderedSelectedIds);
 
   List<FavoriteBoard> get _filteredBoards {
     final boards = _selectedBoards;
@@ -71,7 +68,8 @@ class _AllFavoriteBoardsScreenState extends State<AllFavoriteBoardsScreen> {
     ).whenComplete(() { if (mounted) _isSheetOpen = false; });
   }
 
-  void _navigateToBoard(FavoriteBoard board) => board.navigate(context);
+  Future<void> _navigateToBoard(FavoriteBoard board) =>
+      guardedNavigate(() => board.navigate(context));
 
   @override
   Widget build(BuildContext context) {

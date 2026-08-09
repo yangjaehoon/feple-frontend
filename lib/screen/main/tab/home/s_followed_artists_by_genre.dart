@@ -1,5 +1,4 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/widget/w_selectable_chip.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
@@ -7,6 +6,7 @@ import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/followed_artist.dart';
 import 'package:feple/model/order_utils.dart';
+import 'package:feple/screen/main/tab/home/reorder_settings_flow.dart';
 import 'package:feple/screen/main/tab/home/w_reorder_sheet.dart';
 import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
 import 'package:feple/screen/main/tab/search/w_artist_card.dart';
@@ -29,9 +29,9 @@ class FollowedArtistsByGenreScreen extends StatefulWidget {
 }
 
 class _FollowedArtistsByGenreScreenState
-    extends State<FollowedArtistsByGenreScreen> with NavigationGuard {
+    extends State<FollowedArtistsByGenreScreen>
+    with NavigationGuard, ReorderSettingsFlow<FollowedArtistsByGenreScreen> {
   String? _selectedGenre;
-  bool _isSheetOpen = false;
   late List<FollowedArtist> _artists;
   late List<String> _genres;
 
@@ -49,31 +49,29 @@ class _FollowedArtistsByGenreScreenState
       ? _artists
       : _artists.where((a) => a.genres.contains(_selectedGenre)).toList();
 
-  void _openSettings() async {
-    if (_isSheetOpen) return;
-    _isSheetOpen = true;
+  @override
+  Future<void> Function(List<int>)? get onSaveOrder => widget.onSaveOrder;
+
+  @override
+  String get reorderSheetTitle => 'followed_artists'.tr();
+
+  @override
+  String? get reorderSheetSubtitle => 'reorder_followed_artists_hint'.tr();
+
+  @override
+  List<ReorderItem> buildReorderItems() {
     final isEnglish = context.isEnglish;
-    final items = _artists
+    return _artists
         .map((a) => ReorderItem(id: a.id, name: a.displayName(isEnglish), imageUrl: a.profileImageUrl))
         .toList();
-    final newOrder = await showAppBottomSheet<List<int>>(
-      context,
-      builder: (_) => ReorderSheet(
-        title: 'followed_artists'.tr(),
-        subtitle: 'reorder_followed_artists_hint'.tr(),
-        items: items,
-        onSave: widget.onSaveOrder ?? (_) {},
-      ),
-    );
-    if (mounted) _isSheetOpen = false;
-    // widget.artists는 화면 진입 시점의 스냅샷이라 onSaveOrder가 상위 notifier를
-    // 갱신해도 이 화면 자체는 재진입 전까지 반영되지 않았음 — 즉시 반영
-    if (newOrder != null && mounted) {
-      setState(() {
-        _artists = reorderById(_artists, newOrder, (a) => a.id);
-        _genres = _computeGenres();
-      });
-    }
+  }
+
+  @override
+  void applyReorder(List<int> newOrder) {
+    setState(() {
+      _artists = reorderById(_artists, newOrder, (a) => a.id);
+      _genres = _computeGenres();
+    });
   }
 
   @override
@@ -105,7 +103,7 @@ class _FollowedArtistsByGenreScreenState
             IconButton(
               tooltip: 'settings'.tr(),
               icon: Icon(Icons.settings_rounded, color: colors.textSecondary, size: 20),
-              onPressed: _openSettings,
+              onPressed: openReorderSettings,
             ),
         ],
       ),

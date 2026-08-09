@@ -1,9 +1,9 @@
 import 'package:collection/collection.dart';
-import 'package:feple/common/widget/w_app_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_draggable_sheet_scaffold.dart';
 import 'package:feple/model/favorite_board.dart';
+import 'package:feple/screen/main/tab/home/w_reorder_sheet.dart';
 import 'package:flutter/material.dart';
 
 // ── 설정 바텀시트 ──
@@ -66,7 +66,7 @@ class _BoardSettingsSheetState extends State<BoardSettingsSheet> {
     );
   }
 
-  Widget _buildBoardList(AbstractThemeColors colors) {
+  Widget _buildBoardList() {
     return Flexible(
       child: ReorderableListView.builder(
         itemCount: _orderedBoards.length,
@@ -79,20 +79,24 @@ class _BoardSettingsSheetState extends State<BoardSettingsSheet> {
         itemBuilder: (context, index) {
           final board = _orderedBoards[index];
           final checked = _checked.contains(board.boardId);
-          return _BoardSettingsItem(
+          return ReorderListTile(
             key: ValueKey(board.boardId),
-            board: board,
-            checked: checked,
             index: index,
-            onChanged: (val) {
-              setState(() {
-                if (val == true) {
-                  _checked.add(board.boardId);
-                } else {
-                  _checked.remove(board.boardId);
-                }
-              });
-            },
+            imageUrl: board.imageUrl,
+            title: 'favorite_board_name'.tr(args: [board.entityDisplayName(context.isEnglish)]),
+            trailing: Checkbox(
+              value: checked,
+              onChanged: (val) {
+                setState(() {
+                  if (val == true) {
+                    _checked.add(board.boardId);
+                  } else {
+                    _checked.remove(board.boardId);
+                  }
+                });
+              },
+              activeColor: context.appColors.activate,
+            ),
           );
         },
       ),
@@ -104,7 +108,7 @@ class _BoardSettingsSheetState extends State<BoardSettingsSheet> {
     final colors = context.appColors;
     return DraggableSheetScaffold(
       header: _buildTitleRow(colors),
-      list: _buildBoardList(colors),
+      list: _buildBoardList(),
       onConfirm: () {
         final orderedSelected = _orderedBoards
             .where((b) => _checked.contains(b.boardId))
@@ -115,68 +119,4 @@ class _BoardSettingsSheetState extends State<BoardSettingsSheet> {
       },
     );
   }
-}
-
-class _BoardSettingsItem extends StatelessWidget {
-  final FavoriteBoard board;
-  final bool checked;
-  final int index;
-  final ValueChanged<bool?> onChanged;
-
-  const _BoardSettingsItem({
-    super.key,
-    required this.board,
-    required this.checked,
-    required this.index,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: colors.listDivider, width: 0.5),
-        ),
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-        leading: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ReorderableDragStartListener(
-              index: index,
-              child: Icon(Icons.drag_handle_rounded,
-                  color: colors.textSecondary, size: 22),
-            ),
-            const SizedBox(width: 12),
-            AppNetworkImage(
-              imageUrl: board.imageUrl,
-              width: 40,
-              height: 40,
-              errorIcon: Icons.forum_rounded,
-              errorIconSize: 20,
-              borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-              excludeFromSemantics: true,
-            ),
-          ],
-        ),
-        title: Text(
-          'favorite_board_name'.tr(args: [board.entityDisplayName(context.isEnglish)]),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeMd,
-            fontWeight: FontWeight.w600,
-            color: colors.textTitle,
-          ),
-        ),
-        trailing: Checkbox(
-          value: checked,
-          onChanged: onChanged,
-          activeColor: colors.activate,
-        ),
-      ),
-    );
-  }
-
 }

@@ -13,6 +13,60 @@ class ReorderItem {
   const ReorderItem({required this.id, required this.name, this.imageUrl});
 }
 
+/// 재정렬 바텀시트 항목 공통 타일 — 드래그 핸들 + 썸네일 + 제목(+선택적 trailing).
+/// [ReorderSheet]와 [BoardSettingsSheet](체크박스 추가)가 공유한다.
+class ReorderListTile extends StatelessWidget {
+  final int index;
+  final String? imageUrl;
+  final String title;
+  final Widget? trailing;
+
+  const ReorderListTile({
+    super.key,
+    required this.index,
+    required this.imageUrl,
+    required this.title,
+    this.trailing,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: colors.listDivider, width: 0.5)),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+        leading: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ReorderableDragStartListener(
+              index: index,
+              child: Icon(Icons.drag_handle_rounded, color: colors.textSecondary, size: 22),
+            ),
+            const SizedBox(width: 12),
+            AppNetworkImage(
+              imageUrl: imageUrl,
+              width: 40,
+              height: 40,
+              errorIcon: Icons.forum_rounded,
+              errorIconSize: 20,
+              borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+              excludeFromSemantics: true,
+            ),
+          ],
+        ),
+        title: Text(
+          title,
+          style: TextStyle(fontSize: AppDimens.fontSizeMd, fontWeight: FontWeight.w600, color: colors.textTitle),
+        ),
+        trailing: trailing,
+      ),
+    );
+  }
+}
+
 /// 드래그 앤 드롭으로 순서를 변경할 수 있는 바텀시트
 class ReorderSheet extends StatefulWidget {
   final String title;
@@ -60,7 +114,7 @@ class _ReorderSheetState extends State<ReorderSheet> {
     );
   }
 
-  Widget _buildList(AbstractThemeColors colors) {
+  Widget _buildList() {
     return Flexible(
       child: ReorderableListView.builder(
         itemCount: _items.length,
@@ -72,37 +126,11 @@ class _ReorderSheetState extends State<ReorderSheet> {
         },
         itemBuilder: (context, index) {
           final item = _items[index];
-          return Container(
+          return ReorderListTile(
             key: ValueKey(item.id),
-            decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: colors.listDivider, width: 0.5)),
-            ),
-            child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-              leading: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ReorderableDragStartListener(
-                    index: index,
-                    child: Icon(Icons.drag_handle_rounded, color: colors.textSecondary, size: 22),
-                  ),
-                  const SizedBox(width: 12),
-                  AppNetworkImage(
-                    imageUrl: item.imageUrl,
-                    width: 40,
-                    height: 40,
-                    errorIcon: Icons.forum_rounded,
-                    errorIconSize: 20,
-                    borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-                    excludeFromSemantics: true,
-                  ),
-                ],
-              ),
-              title: Text(
-                item.name,
-                style: TextStyle(fontSize: AppDimens.fontSizeMd, fontWeight: FontWeight.w600, color: colors.textTitle),
-              ),
-            ),
+            index: index,
+            imageUrl: item.imageUrl,
+            title: item.name,
           );
         },
       ),
@@ -114,7 +142,7 @@ class _ReorderSheetState extends State<ReorderSheet> {
     final colors = context.appColors;
     return DraggableSheetScaffold(
       header: _buildHeader(colors),
-      list: _buildList(colors),
+      list: _buildList(),
       onConfirm: () {
         final newOrder = _items.map((e) => e.id).toList();
         widget.onSave(newOrder);

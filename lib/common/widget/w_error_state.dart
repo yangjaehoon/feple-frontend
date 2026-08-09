@@ -37,6 +37,15 @@ class ErrorState extends StatelessWidget {
     );
   }
 
+  /// 홈 탭 섹션처럼 화면 전체가 아니라 한 구획에만 들어가는 자리에서
+  /// 위아래 여백을 살짝 두고 쓰는 축소 래퍼.
+  static Widget section(Object error, {VoidCallback? onRetry}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: ErrorState.network(error, onRetry: onRetry),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;

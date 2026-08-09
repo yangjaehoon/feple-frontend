@@ -105,11 +105,7 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
       return const FavoriteBoardsSectionSkeleton();
     }
 
-    final boardMap = {for (final b in widget.allBoards) b.boardId: b};
-    final selectedBoards = _orderedSelectedIds
-        .map((id) => boardMap[id])
-        .whereType<FavoriteBoard>()
-        .toList();
+    final selectedBoards = widget.allBoards.resolveOrdered(_orderedSelectedIds);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,7 +155,11 @@ class _BoardTile extends StatelessWidget {
     // 기준 390px: 보드 카드 110(0.282)
     final cardSize = MediaQuery.sizeOf(context).width * 0.282;
     return TapScale(
-      onTap: () => board.navigate(context),
+      onTap: () {
+        // 화면 전환 애니메이션 도중 재탭으로 같은 화면이 중복 push되는 것을 방지
+        if (ModalRoute.of(context)?.isCurrent != true) return;
+        board.navigate(context);
+      },
       child: Container(
         width: cardSize,
         height: cardSize,

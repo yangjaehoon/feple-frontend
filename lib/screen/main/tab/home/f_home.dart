@@ -251,13 +251,7 @@ class _HomeFragmentState extends State<HomeFragment> {
 
   Widget _buildBoardsSection(AbstractThemeColors colors) {
     if (_notifier.hasError) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: ErrorState.network(
-          _notifier.error!,
-          onRetry: _notifier.retry,
-        ),
-      );
+      return ErrorState.section(_notifier.error!, onRetry: _notifier.retry);
     } else if (_notifier.boards == null) {
       return const FavoriteBoardsSectionSkeleton();
     } else {

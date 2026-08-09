@@ -6,6 +6,7 @@ import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_expandable_text.dart';
 import 'package:feple/common/widget/w_list_row_skeleton.dart';
+import 'package:feple/common/widget/w_star_rating_row.dart';
 import 'package:feple/model/poster_cert_state.dart';
 import 'package:feple/model/festival_review.dart';
 import 'package:feple/screen/main/tab/my_page/w_rating_sheet.dart';
@@ -407,7 +408,7 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
                 ),
               ),
               const SizedBox(height: 6),
-              _StarRow(rating: _averageRating, size: 16),
+              StarRatingRow(rating: _averageRating, size: 16),
               const SizedBox(height: 6),
               Text(
                 'reviews_count'.tr(args: ['$_ratingCount']),
@@ -520,31 +521,6 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _StarRow extends StatelessWidget {
-  final double rating;
-  final double size;
-
-  const _StarRow({required this.rating, this.size = 14});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(5, (i) {
-        final filled = i < rating.floor();
-        final half = !filled && (rating - i) >= 0.5;
-        return Icon(
-          filled
-              ? Icons.star_rounded
-              : (half ? Icons.star_half_rounded : Icons.star_outline_rounded),
-          color: Colors.amber,
-          size: size,
-        );
-      }),
     );
   }
 }
@@ -664,7 +640,7 @@ class _ReviewCardState extends State<_ReviewCard> {
                       ],
                     ),
                     const SizedBox(height: 3),
-                    _StarRow(rating: review.rating.toDouble(), size: 13),
+                    StarRatingRow(rating: review.rating.toDouble(), size: 13),
                     if (hasReviewText) ...[
                       const SizedBox(height: 6),
                       ExpandableText(

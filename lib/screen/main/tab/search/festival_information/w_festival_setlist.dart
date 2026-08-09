@@ -9,6 +9,7 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/festival_setlist_entry.dart';
 import 'package:feple/model/song_model.dart';
+import 'package:feple/screen/main/tab/search/festival_information/w_setlist_artist_avatar.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/screen/main/tab/search/festival_information/s_festival_setlist_fullscreen.dart';
@@ -211,7 +212,7 @@ class _ArtistCompactRow extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             children: [
-              _buildAvatar(colors),
+              SetlistArtistAvatar(profileImageUrl: entry.profileImageUrl, size: 36),
               const SizedBox(width: 12),
               Expanded(
                 child: _buildTextColumn(topSong, context.isEnglish, colors),
@@ -303,43 +304,6 @@ class _ArtistCompactRow extends StatelessWidget {
             ),
           ),
       ],
-    );
-  }
-
-  Widget _buildAvatar(AbstractThemeColors colors) {
-    const size = 36.0;
-    if (entry.profileImageUrl != null && entry.profileImageUrl!.isNotEmpty) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(size / 2),
-        child: CachedNetworkImage(
-          imageUrl: entry.profileImageUrl!,
-          width: size,
-          height: size,
-          memCacheWidth: 72,
-          fit: BoxFit.cover,
-          fadeInDuration: AppDimens.animXFast,
-          fadeOutDuration: AppDimens.animTapFeedback,
-          placeholder: (_, _) => _placeholder(size, colors),
-          errorWidget: (_, _, _) => _placeholder(size, colors),
-        ),
-      );
-    }
-    return _placeholder(size, colors);
-  }
-
-  Widget _placeholder(double size, AbstractThemeColors colors) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: colors.backgroundMain,
-        borderRadius: BorderRadius.circular(size / 2),
-      ),
-      child: Icon(
-        Icons.person_rounded,
-        size: size * 0.55,
-        color: colors.textSecondary,
-      ),
     );
   }
 }

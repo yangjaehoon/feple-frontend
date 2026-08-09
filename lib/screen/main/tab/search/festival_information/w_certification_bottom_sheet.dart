@@ -74,7 +74,7 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
       padding: EdgeInsets.fromLTRB(24, 20, 24, 24 + bottomInset),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

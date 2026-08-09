@@ -13,6 +13,7 @@ import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/festival_setlist_entry.dart';
 import 'package:feple/model/song_model.dart';
+import 'package:feple/screen/main/tab/search/festival_information/w_setlist_artist_avatar.dart';
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -210,7 +211,7 @@ class _ArtistFullTile extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 14, 0, 14),
               child: Row(
                 children: [
-                  _buildAvatar(colors),
+                  SetlistArtistAvatar(profileImageUrl: entry.profileImageUrl, size: 40),
                   const SizedBox(width: 12),
                   Expanded(child: _buildArtistInfo(isEnglish, colors)),
                   AnimatedRotation(
@@ -267,43 +268,6 @@ class _ArtistFullTile extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildAvatar(AbstractThemeColors colors) {
-    const size = 40.0;
-    if (entry.profileImageUrl != null && entry.profileImageUrl!.isNotEmpty) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(size / 2),
-        child: CachedNetworkImage(
-          imageUrl: entry.profileImageUrl!,
-          width: size,
-          height: size,
-          memCacheWidth: 80,
-          fit: BoxFit.cover,
-          fadeInDuration: AppDimens.animXFast,
-          fadeOutDuration: AppDimens.animTapFeedback,
-          placeholder: (_, _) => _avatarPlaceholder(size, colors),
-          errorWidget: (_, _, _) => _avatarPlaceholder(size, colors),
-        ),
-      );
-    }
-    return _avatarPlaceholder(size, colors);
-  }
-
-  Widget _avatarPlaceholder(double size, AbstractThemeColors colors) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: colors.backgroundMain,
-        borderRadius: BorderRadius.circular(size / 2),
-      ),
-      child: Icon(
-        Icons.person_rounded,
-        size: size * 0.55,
-        color: colors.textSecondary,
-      ),
     );
   }
 

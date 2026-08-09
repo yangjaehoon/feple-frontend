@@ -14,7 +14,7 @@ Post _post({
   String content = '내용',
   String nickname = '작성자',
   bool anonymous = false,
-  String? imageUrl,
+  List<String> imageUrls = const [],
 }) =>
     Post(
       id: id,
@@ -25,7 +25,7 @@ Post _post({
       commentCount: 3,
       nickname: nickname,
       anonymous: anonymous,
-      imageUrl: imageUrl,
+      imageUrls: imageUrls,
     );
 
 Future<void> _pump(
@@ -80,10 +80,10 @@ void main() {
       expect(find.text('3'), findsOneWidget);
     });
 
-    testWidgets('imageUrl이 있으면 썸네일을 보여준다', (tester) async {
+    testWidgets('imageUrls가 있으면 썸네일을 보여준다', (tester) async {
       await _pump(
         tester,
-        post: _post(imageUrl: 'https://example.com/img.jpg'),
+        post: _post(imageUrls: const ['https://example.com/img.jpg']),
         onTap: () {},
       );
 

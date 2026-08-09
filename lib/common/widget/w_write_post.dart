@@ -10,6 +10,7 @@ import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/service/app_review_service.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -20,13 +21,13 @@ class WritePost extends StatefulWidget {
     String title,
     String content,
     bool anonymous,
-    String? imageObjectKey,
+    List<String> imageObjectKeys,
   )
   onSubmit;
   final String? initialTitle;
   final String? initialContent;
   final bool showAnonymous;
-  final String? initialImageUrl;
+  final List<String> initialImageUrls;
 
   const WritePost({
     super.key,
@@ -35,7 +36,7 @@ class WritePost extends StatefulWidget {
     this.initialTitle,
     this.initialContent,
     this.showAnonymous = true,
-    this.initialImageUrl,
+    this.initialImageUrls = const [],
   });
 
   @override
@@ -43,6 +44,8 @@ class WritePost extends StatefulWidget {
 }
 
 class _WritePostState extends State<WritePost> {
+  static const _maxImages = 10; // 백엔드 PostRequestDto.MAX_IMAGES와 동일
+
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
@@ -50,16 +53,16 @@ class _WritePostState extends State<WritePost> {
   bool _titleHasBannedWord = false;
   bool _contentHasBannedWord = false;
   bool _anonymous = false;
-  Uint8List? _selectedImage;
-  String? _existingImageUrl;
+  final List<Uint8List> _selectedImages = [];
+  late List<String> _existingImageUrls;
 
-  bool get _hasImage => _selectedImage != null || _existingImageUrl != null;
+  int get _totalImageCount => _existingImageUrls.length + _selectedImages.length;
 
   bool get _isDirty =>
       _titleController.text != (widget.initialTitle ?? '') ||
       _contentController.text != (widget.initialContent ?? '') ||
-      _selectedImage != null ||
-      _existingImageUrl != widget.initialImageUrl;
+      _selectedImages.isNotEmpty ||
+      !listEquals(_existingImageUrls, widget.initialImageUrls);
 
   @override
   void initState() {
@@ -70,7 +73,7 @@ class _WritePostState extends State<WritePost> {
     if (widget.initialContent != null) {
       _contentController.text = widget.initialContent!;
     }
-    _existingImageUrl = widget.initialImageUrl;
+    _existingImageUrls = [...widget.initialImageUrls];
     _titleController.addListener(_clearTitleBannedWord);
     _contentController.addListener(_clearContentBannedWord);
   }
@@ -94,17 +97,27 @@ class _WritePostState extends State<WritePost> {
     super.dispose();
   }
 
-  Future<void> _pickImage() async {
+  Future<void> _pickImages() async {
+    final remaining = _maxImages - _totalImageCount;
+    if (remaining <= 0) {
+      context.showErrorSnackbar('max_images_exceeded'.tr(args: ['$_maxImages']));
+      return;
+    }
     try {
       final picker = ImagePicker();
-      final picked = await picker.pickImage(
-        source: ImageSource.gallery,
+      final picked = await picker.pickMultiImage(
         maxWidth: 1080,
         imageQuality: 85,
+        limit: remaining,
       );
-      if (picked == null) return;
-      final bytes = await picked.readAsBytes();
-      if (mounted) setState(() => _selectedImage = bytes);
+      if (picked.isEmpty) return;
+      final toAdd = picked.take(remaining).toList();
+      final bytesList = await Future.wait(toAdd.map((x) => x.readAsBytes()));
+      if (!mounted) return;
+      setState(() => _selectedImages.addAll(bytesList));
+      if (picked.length > remaining) {
+        context.showErrorSnackbar('max_images_exceeded'.tr(args: ['$_maxImages']));
+      }
     } on PlatformException catch (e) {
       debugPrint('image pick error: $e');
       if (mounted) context.showErrorSnackbar('photo_pick_failed'.tr());
@@ -119,17 +132,17 @@ class _WritePostState extends State<WritePost> {
     final content = _contentController.text.trim();
     setState(() => _isSubmitting = true);
     try {
-      String? imageObjectKey;
-      if (_selectedImage != null) {
-        final presign = await ImageUploadHelper.compressAndUpload(
+      final uploaded = await Future.wait(_selectedImages.map(
+        (bytes) => ImageUploadHelper.compressAndUpload(
           presignEndpoint: PostService.postImagePresignEndpoint,
-          imageData: _selectedImage!,
-        );
-        imageObjectKey = presign.objectKey;
-      } else if (_existingImageUrl != null) {
-        imageObjectKey = _existingImageUrl;
-      }
-      await widget.onSubmit(title, content, _anonymous, imageObjectKey);
+          imageData: bytes,
+        ),
+      ));
+      final imageObjectKeys = [
+        ..._existingImageUrls,
+        ...uploaded.map((p) => p.objectKey),
+      ];
+      await widget.onSubmit(title, content, _anonymous, imageObjectKeys);
       unawaited(AppReviewService.recordPostCreated());
       if (!mounted) return;
       context.showSuccessSnackbar('post_success'.tr());
@@ -197,70 +210,115 @@ class _WritePostState extends State<WritePost> {
     );
   }
 
-  Widget _buildImagePicker(AbstractThemeColors colors) {
-    Widget? preview;
-    if (_selectedImage != null) {
-      preview = ClipRRect(
-        borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-        child: ExcludeSemantics(
-          child: Image.memory(
-            _selectedImage!,
-            fit: BoxFit.cover,
-            width: 72,
-            height: 72,
+  Widget _buildImageThumbnail(AbstractThemeColors colors, {
+    required Widget preview,
+    required VoidCallback onRemove,
+  }) {
+    return SizedBox(
+      width: 72,
+      height: 72,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+            child: preview,
           ),
-        ),
-      );
-    } else if (_existingImageUrl != null) {
-      preview = AppNetworkImage(
-        imageUrl: _existingImageUrl,
-        width: 72,
-        height: 72,
-        borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-        excludeFromSemantics: true,
-      );
-    }
-
-    return Row(
-      children: [
-        Semantics(
-          button: true,
-          label: _hasImage ? 'change_photo'.tr() : 'photo_add'.tr(),
-          child: GestureDetector(
-            onTap: _pickImage,
-            child: Container(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(
-                border: Border.all(color: colors.listDivider),
-                borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-              ),
-              child:
-                  preview ??
-                  Icon(
-                    Icons.add_photo_alternate_outlined,
-                    color: colors.textSecondary,
-                    size: 32,
+          Positioned(
+            top: -6,
+            right: -6,
+            child: Semantics(
+              button: true,
+              label: 'remove_image'.tr(),
+              child: GestureDetector(
+                onTap: onRemove,
+                child: Container(
+                  width: 22,
+                  height: 22,
+                  decoration: BoxDecoration(
+                    color: colors.surface,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.16),
+                        blurRadius: 3,
+                      ),
+                    ],
                   ),
+                  child: Icon(
+                    Icons.close_rounded,
+                    size: 15,
+                    color: colors.textSecondary,
+                  ),
+                ),
+              ),
             ),
-          ),
-        ),
-        if (_hasImage) ...[
-          const SizedBox(width: 8),
-          IconButton(
-            tooltip: 'remove_image'.tr(),
-            icon: Icon(
-              Icons.close_rounded,
-              color: colors.textSecondary,
-              size: 20,
-            ),
-            onPressed: () => setState(() {
-              _selectedImage = null;
-              _existingImageUrl = null;
-            }),
           ),
         ],
-      ],
+      ),
+    );
+  }
+
+  Widget _buildAddImageTile(AbstractThemeColors colors) {
+    return Semantics(
+      button: true,
+      label: 'photo_add'.tr(),
+      child: GestureDetector(
+        onTap: _pickImages,
+        child: Container(
+          width: 72,
+          height: 72,
+          decoration: BoxDecoration(
+            border: Border.all(color: colors.listDivider),
+            borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+          ),
+          child: Icon(
+            Icons.add_photo_alternate_outlined,
+            color: colors.textSecondary,
+            size: 32,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImagePicker(AbstractThemeColors colors) {
+    final tiles = <Widget>[
+      for (var i = 0; i < _existingImageUrls.length; i++)
+        _buildImageThumbnail(
+          colors,
+          preview: AppNetworkImage(
+            imageUrl: _existingImageUrls[i],
+            width: 72,
+            height: 72,
+            excludeFromSemantics: true,
+          ),
+          onRemove: () => setState(() => _existingImageUrls.removeAt(i)),
+        ),
+      for (var i = 0; i < _selectedImages.length; i++)
+        _buildImageThumbnail(
+          colors,
+          preview: ExcludeSemantics(
+            child: Image.memory(
+              _selectedImages[i],
+              fit: BoxFit.cover,
+              width: 72,
+              height: 72,
+            ),
+          ),
+          onRemove: () => setState(() => _selectedImages.removeAt(i)),
+        ),
+      if (_totalImageCount < _maxImages) _buildAddImageTile(colors),
+    ];
+
+    return SizedBox(
+      height: 72,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: tiles.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 12),
+        itemBuilder: (_, i) => tiles[i],
+      ),
     );
   }
 

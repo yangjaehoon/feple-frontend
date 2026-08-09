@@ -8,7 +8,7 @@ class Post {
   final int commentCount;
   final String nickname;
   final String? profileImageUrl;
-  final String? imageUrl;
+  final List<String> imageUrls;
   final int? artistId;
   final String boardDisplayName;
   final bool certified;
@@ -30,7 +30,7 @@ class Post {
     this.commentCount = 0,
     required this.nickname,
     this.profileImageUrl,
-    this.imageUrl,
+    this.imageUrls = const [],
     this.artistId,
     this.boardDisplayName = '',
     this.certified = false,
@@ -55,7 +55,9 @@ class Post {
       commentCount: json['commentCount'] as int? ?? 0,
       nickname: json['nickname'] as String,
       profileImageUrl: json['profileImageUrl'] as String?,
-      imageUrl: json['imageUrl'] as String?,
+      imageUrls: ((json['imageUrls'] as List<dynamic>?) ?? [])
+          .map((e) => e as String)
+          .toList(),
       artistId: json['artistId'] as int?,
       boardDisplayName: json['boardDisplayName'] as String? ?? '',
       certified: json['certified'] as bool? ?? false,

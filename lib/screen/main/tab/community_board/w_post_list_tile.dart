@@ -106,36 +106,53 @@ class PostListTile extends StatelessWidget {
                 ],
               ),
             ),
-            if (post.imageUrl != null) ...[
+            if (post.imageUrls.isNotEmpty) ...[
               const SizedBox(width: 12),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-                child: CachedNetworkImage(
-                  imageUrl: post.imageUrl!,
-                  width: 56,
-                  height: 56,
-                  memCacheWidth: 112, // 56px * 2 (Retina)
-                  fit: BoxFit.cover,
-                  fadeInDuration: AppDimens.animXFast,
-                  fadeOutDuration: AppDimens.animTapFeedback,
-                  placeholder: (context, _) {
-                    final c = context.appColors;
-                    return Container(width: 56, height: 56, color: c.surface);
-                  },
-                  errorWidget: (context, url, error) {
-                    final c = context.appColors;
-                    return Container(
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+                    child: CachedNetworkImage(
+                      imageUrl: post.imageUrls.first,
                       width: 56,
                       height: 56,
-                      color: c.surface,
+                      memCacheWidth: 112, // 56px * 2 (Retina)
+                      fit: BoxFit.cover,
+                      fadeInDuration: AppDimens.animXFast,
+                      fadeOutDuration: AppDimens.animTapFeedback,
+                      placeholder: (context, _) {
+                        final c = context.appColors;
+                        return Container(width: 56, height: 56, color: c.surface);
+                      },
+                      errorWidget: (context, url, error) {
+                        final c = context.appColors;
+                        return Container(
+                          width: 56,
+                          height: 56,
+                          color: c.surface,
+                          child: Icon(
+                            Icons.broken_image_rounded,
+                            size: 20,
+                            color: c.textSecondary.withValues(alpha: 0.4),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  if (post.imageUrls.length > 1)
+                    Positioned(
+                      top: 3,
+                      right: 3,
                       child: Icon(
-                        Icons.broken_image_rounded,
-                        size: 20,
-                        color: c.textSecondary.withValues(alpha: 0.4),
+                        Icons.photo_library_rounded,
+                        size: 14,
+                        color: Colors.white,
+                        shadows: [
+                          Shadow(color: Colors.black.withValues(alpha: 0.6), blurRadius: 3),
+                        ],
                       ),
-                    );
-                  },
-                ),
+                    ),
+                ],
               ),
             ],
           ],

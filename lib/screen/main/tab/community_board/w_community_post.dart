@@ -354,14 +354,14 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
                   builder: (_) => WritePost(
                     title: 'write_post'.tr(),
                     onSubmit:
-                        (title, content, anonymous, imageObjectKey) async {
+                        (title, content, anonymous, imageObjectKeys) async {
                           await _postService.createPost(
                             boardType: _serviceBoardType,
                             draft: PostDraft(
                               title: title,
                               content: content,
                               anonymous: anonymous,
-                              imageObjectKey: imageObjectKey,
+                              imageObjectKeys: imageObjectKeys,
                             ),
                           );
                           AppEvents.postChanged.value =

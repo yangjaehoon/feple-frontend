@@ -57,7 +57,7 @@ class PostService {
         'title': draft.title,
         'content': draft.content,
         'anonymous': draft.anonymous,
-        'imageUrl': ?draft.imageObjectKey,
+        'imageUrls': draft.imageObjectKeys,
       });
     } on DioException catch (e) {
       throwIfBannedWord(e);
@@ -142,13 +142,13 @@ class PostService {
     required int postId,
     required String title,
     required String content,
-    String? imageObjectKey,
+    List<String> imageObjectKeys = const [],
   }) async {
     try {
       await DioClient.dio.put('/posts/$postId', data: {
         'title': title,
         'content': content,
-        'imageUrl': imageObjectKey,
+        'imageUrls': imageObjectKeys,
       });
     } on DioException catch (e) {
       throwIfBannedWord(e);

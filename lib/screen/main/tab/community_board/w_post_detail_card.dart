@@ -40,7 +40,7 @@ class PostDetailCard extends StatefulWidget {
   final bool certified;
   final String? userRole;
   final String? profileImageUrl;
-  final String? imageUrl;
+  final List<String> imageUrls;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final int? postUserId;
@@ -59,7 +59,7 @@ class PostDetailCard extends StatefulWidget {
     this.certified = false,
     this.userRole,
     this.profileImageUrl,
-    this.imageUrl,
+    this.imageUrls = const [],
     this.createdAt,
     this.updatedAt,
     this.postUserId,
@@ -80,7 +80,7 @@ class PostDetailCard extends StatefulWidget {
        certified = post.certified,
        userRole = post.userRole,
        profileImageUrl = post.profileImageUrl,
-       imageUrl = post.imageUrl,
+       imageUrls = post.imageUrls,
        createdAt = post.createdAt,
        updatedAt = post.updatedAt,
        postUserId = post.userId,
@@ -102,7 +102,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
 
   late String _title;
   late String _content;
-  String? _imageUrl;
+  late List<String> _imageUrls;
   DateTime? _updatedAt;
 
   void _setReplyTo(int commentId, String nickname) {
@@ -125,7 +125,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
     super.initState();
     _title = widget.title;
     _content = widget.content;
-    _imageUrl = widget.imageUrl;
+    _imageUrls = widget.imageUrls;
     _updatedAt = widget.updatedAt;
     _notifier = PostDetailNotifier(
       postId: widget.id,
@@ -158,41 +158,12 @@ class _PostDetailCardState extends State<PostDetailCard> {
     super.dispose();
   }
 
-  void _showImageViewer(BuildContext context, String imageUrl) {
+  void _showImageViewer(BuildContext context, List<String> images, int initialIndex) {
     Navigator.of(context).push(
       PageRouteBuilder(
         opaque: false,
         barrierColor: Colors.black87,
-        pageBuilder: (_, _, _) => GestureDetector(
-          onTap: () => Navigator.of(context).pop(),
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: Center(
-              child: InteractiveViewer(
-                minScale: 0.5,
-                maxScale: 4.0,
-                child: CachedNetworkImage(
-                  imageUrl: imageUrl,
-                  fadeInDuration: AppDimens.animXFast,
-                  fadeOutDuration: AppDimens.animTapFeedback,
-                  placeholder: (_, _) => const Center(
-                    child: CircularProgressIndicator(
-                      color: Colors.white54,
-                      strokeWidth: 2,
-                    ),
-                  ),
-                  errorWidget: (_, _, _) => const Center(
-                    child: Icon(
-                      Icons.broken_image_rounded,
-                      color: Colors.white38,
-                      size: 56,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
+        pageBuilder: (_, _, _) => _ImageViewer(images: images, initialIndex: initialIndex),
       ),
     );
   }
@@ -276,25 +247,25 @@ class _PostDetailCardState extends State<PostDetailCard> {
           title: 'edit_post'.tr(),
           initialTitle: _title,
           initialContent: _content,
-          initialImageUrl: _imageUrl,
+          initialImageUrls: _imageUrls,
           showAnonymous: false,
-          onSubmit: (t, c, _, img) async {
+          onSubmit: (t, c, _, imgs) async {
             await _postService.updatePost(
               postId: widget.id,
               title: t,
               content: c,
-              imageObjectKey: img,
+              imageObjectKeys: imgs,
             );
             AppEvents.postChanged.value = PostChangedEvent.specific(widget.id);
-            // updatePost는 응답 바디가 없어 서버가 계산한 imageUrl을 알 수 없음 —
-            // 새 이미지를 올린 경우 img는 CDN URL이 아닌 S3 objectKey라 그대로 쓰면
+            // updatePost는 응답 바디가 없어 서버가 계산한 imageUrls를 알 수 없음 —
+            // 새 이미지를 올린 경우 imgs는 CDN URL이 아닌 S3 objectKey라 그대로 쓰면
             // 화면에 깨진 이미지가 보이므로 갱신된 게시글을 다시 조회해 교체한다
-            String? resolvedImageUrl = _imageUrl;
+            List<String> resolvedImageUrls = _imageUrls;
             bool imageRefreshFailed = false;
             try {
-              resolvedImageUrl = (await _postService.fetchPost(
+              resolvedImageUrls = (await _postService.fetchPost(
                 widget.id,
-              )).imageUrl;
+              )).imageUrls;
             } catch (e) {
               // 재조회 실패해도 제목·내용 수정 자체는 서버에 이미 반영됐으므로 폐기하지
               // 않는다 — 다만 화면 피드백 없이 옛 이미지로 조용히 남는 것을 막기 위해
@@ -306,7 +277,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
               setState(() {
                 _title = t;
                 _content = c;
-                _imageUrl = resolvedImageUrl;
+                _imageUrls = resolvedImageUrls;
                 _updatedAt = DateTime.now();
               });
               if (imageRefreshFailed) {
@@ -384,10 +355,8 @@ class _PostDetailCardState extends State<PostDetailCard> {
             Divider(thickness: 1, height: 24, color: colors.listDivider),
             PostContentSection(
               content: _content,
-              imageUrl: _imageUrl,
-              onImageTap: _imageUrl != null
-                  ? () => _showImageViewer(context, _imageUrl!)
-                  : null,
+              imageUrls: _imageUrls,
+              onImageTap: (i) => _showImageViewer(context, _imageUrls, i),
             ),
             Divider(thickness: 1, height: 40, color: colors.listDivider),
             _buildInteractionArea(colors, userId),
@@ -546,6 +515,90 @@ class _PostDetailCardState extends State<PostDetailCard> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ImageViewer extends StatefulWidget {
+  final List<String> images;
+  final int initialIndex;
+
+  const _ImageViewer({required this.images, required this.initialIndex});
+
+  @override
+  State<_ImageViewer> createState() => _ImageViewerState();
+}
+
+class _ImageViewerState extends State<_ImageViewer> {
+  late final _pageController = PageController(initialPage: widget.initialIndex);
+  late int _currentIndex = widget.initialIndex;
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).pop(),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            PageView.builder(
+              controller: _pageController,
+              itemCount: widget.images.length,
+              onPageChanged: (i) => setState(() => _currentIndex = i),
+              itemBuilder: (_, i) => Center(
+                child: InteractiveViewer(
+                  minScale: 0.5,
+                  maxScale: 4.0,
+                  child: CachedNetworkImage(
+                    imageUrl: widget.images[i],
+                    fadeInDuration: AppDimens.animXFast,
+                    fadeOutDuration: AppDimens.animTapFeedback,
+                    placeholder: (_, _) => const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.white54,
+                        strokeWidth: 2,
+                      ),
+                    ),
+                    errorWidget: (_, _, _) => const Center(
+                      child: Icon(
+                        Icons.broken_image_rounded,
+                        color: Colors.white38,
+                        size: 56,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            if (widget.images.length > 1)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 32),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${_currentIndex + 1}/${widget.images.length}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: AppDimens.fontSizeXxs,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

@@ -49,14 +49,14 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
               cursor: cursor,
               size: size,
             ),
-        submit: (title, content, anonymous, imageObjectKey) =>
+        submit: (title, content, anonymous, imageObjectKeys) =>
             postService.createFestivalPost(
               festivalId: widget.festivalId,
               draft: PostDraft(
                 title: title,
                 content: content,
                 anonymous: anonymous,
-                imageObjectKey: imageObjectKey,
+                imageObjectKeys: imageObjectKeys,
               ),
             ),
       ),
@@ -68,14 +68,14 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
               cursor: cursor,
               size: size,
             ),
-        submit: (title, content, anonymous, imageObjectKey) =>
+        submit: (title, content, anonymous, imageObjectKeys) =>
             postService.createFestivalCompanionPost(
               festivalId: widget.festivalId,
               draft: PostDraft(
                 title: title,
                 content: content,
                 anonymous: anonymous,
-                imageObjectKey: imageObjectKey,
+                imageObjectKeys: imageObjectKeys,
               ),
             ),
       ),
@@ -87,14 +87,14 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
               cursor: cursor,
               size: size,
             ),
-        submit: (title, content, anonymous, imageObjectKey) =>
+        submit: (title, content, anonymous, imageObjectKeys) =>
             postService.createFestivalTicketPost(
               festivalId: widget.festivalId,
               draft: PostDraft(
                 title: title,
                 content: content,
                 anonymous: anonymous,
-                imageObjectKey: imageObjectKey,
+                imageObjectKeys: imageObjectKeys,
               ),
             ),
       ),
@@ -420,7 +420,7 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
   }
 }
 
-typedef _SubmitFn = Future<void> Function(String, String, bool, String?);
+typedef _SubmitFn = Future<void> Function(String, String, bool, List<String>);
 
 class _BoardTab {
   final String name;

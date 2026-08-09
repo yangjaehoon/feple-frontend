@@ -210,7 +210,7 @@ void main() {
             postId: any(named: 'postId'),
             title: any(named: 'title'),
             content: any(named: 'content'),
-            imageObjectKey: any(named: 'imageObjectKey'),
+            imageObjectKeys: any(named: 'imageObjectKeys'),
           )).thenAnswer((_) async {});
       when(() => mockPostService.fetchPost(10)).thenThrow(Exception('network'));
 
@@ -225,7 +225,7 @@ void main() {
       // card_swiper 테스트와 동일한 이유(제스처 레이어 우회)로, 캡처한 WritePost의
       // onSubmit 콜백을 직접 호출해 수정 제출 로직을 검증한다.
       final writePost = tester.widget<WritePost>(find.byType(WritePost));
-      await writePost.onSubmit('새 제목', '새 내용', false, null);
+      await writePost.onSubmit('새 제목', '새 내용', false, const []);
       await tester.pump();
 
       expect(find.text('post_updated_image_refresh_failed'.tr()), findsOneWidget);

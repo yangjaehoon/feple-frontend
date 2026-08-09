@@ -24,7 +24,7 @@ class BoardPostList extends StatefulWidget {
     String title,
     String content,
     bool anonymous,
-    String? imageObjectKey,
+    List<String> imageObjectKeys,
   )
   onSubmitPost;
 

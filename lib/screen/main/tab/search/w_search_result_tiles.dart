@@ -46,13 +46,7 @@ class SearchArtistTile extends StatelessWidget {
       onTap: () {
         if (ModalRoute.of(context)?.isCurrent != true) return;
         Navigator.push(context, SlideRoute(
-          builder: (_) => ArtistScreen(
-            artistName: data.name,
-            artistNameEn: data.nameEn,
-            artistId: data.id,
-            followerCount: data.followerCount,
-            profileImageUrl: data.profileImageUrl,
-          ),
+          builder: (_) => ArtistScreen.fromArtist(data),
         ));
       },
     );

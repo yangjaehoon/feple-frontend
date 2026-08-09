@@ -207,13 +207,7 @@ class _HomeFragmentState extends State<HomeFragment> {
           onTap: (artist) => Navigator.push(
             context,
             SlideRoute(
-              builder: (_) => ArtistScreen(
-                artistId: artist.id,
-                artistName: artist.name,
-                artistNameEn: artist.nameEn,
-                followerCount: artist.followerCount,
-                profileImageUrl: artist.profileImageUrl,
-              ),
+              builder: (_) => ArtistScreen.fromFollowedArtist(artist),
             ),
           ),
         ),

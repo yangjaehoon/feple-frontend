@@ -96,13 +96,7 @@ class RelatedArtistsState extends State<RelatedArtists>
       onTap: () => Navigator.push(
         context,
         SlideRoute(
-          builder: (_) => ArtistScreen(
-            artistId: artist.id,
-            artistName: artist.name,
-            artistNameEn: artist.nameEn,
-            followerCount: artist.followerCount,
-            profileImageUrl: artist.profileImageUrl,
-          ),
+          builder: (_) => ArtistScreen.fromArtist(artist),
         ),
       ),
       child: Container(

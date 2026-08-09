@@ -115,13 +115,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Future<void> _navigateToArtist(NotificationModel item) => navigateAfterFetch(
     context,
     fetch: () => _artistService.fetchArtistById(item.referenceId!),
-    builder: (artist) => ArtistScreen(
-      artistId: artist.id,
-      artistName: artist.name,
-      artistNameEn: artist.nameEn,
-      followerCount: artist.followerCount,
-      profileImageUrl: artist.profileImageUrl,
-    ),
+    builder: (artist) => ArtistScreen.fromArtist(artist),
     setLoading: (v) => _setNavigatingId(v, item.id),
     errorTag: 'Notification/아티스트',
   );

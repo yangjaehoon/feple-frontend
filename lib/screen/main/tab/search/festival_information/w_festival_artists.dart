@@ -210,13 +210,7 @@ class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
         () => Navigator.push(
           context,
           SlideRoute(
-            builder: (_) => ArtistScreen(
-              artistId: artist.artistId,
-              artistName: artist.artistName,
-              artistNameEn: artist.artistNameEn,
-              followerCount: 0,
-              profileImageUrl: artist.profileImageUrl,
-            ),
+            builder: (_) => ArtistScreen.fromFestivalArtist(artist),
           ),
         ),
       ),

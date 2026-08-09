@@ -50,8 +50,10 @@ class _SearchFragmentState extends State<SearchFragment> {
   }
 
   Future<void> _onRefresh() async {
-    await context.read<FestivalPreviewProvider>().refresh(force: true);
-    _artistDiscoveryKey.currentState?.refresh();
+    await Future.wait([
+      context.read<FestivalPreviewProvider>().refresh(force: true),
+      _artistDiscoveryKey.currentState?.refresh() ?? Future.value(),
+    ]);
   }
 
   @override

@@ -1,5 +1,9 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
+import 'package:feple/model/artist_model.dart';
+import 'package:feple/model/artist_schedule_model.dart';
+import 'package:feple/model/festival_artist_item.dart';
+import 'package:feple/model/followed_artist.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_preview_section.dart';
 import 'package:feple/screen/main/tab/search/artist_page/artist_follow_notifier.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_board.dart';
@@ -18,6 +22,46 @@ class ArtistScreen extends StatefulWidget {
     required this.followerCount,
     this.profileImageUrl,
   });
+
+  /// 여러 화면에서 반복되던 Artist → ArtistScreen 필드 매핑을 공용화.
+  factory ArtistScreen.fromArtist(Artist artist, {Key? key}) => ArtistScreen(
+        key: key,
+        artistId: artist.id,
+        artistName: artist.name,
+        artistNameEn: artist.nameEn,
+        followerCount: artist.followerCount,
+        profileImageUrl: artist.profileImageUrl,
+      );
+
+  factory ArtistScreen.fromFollowedArtist(FollowedArtist artist, {Key? key}) =>
+      ArtistScreen(
+        key: key,
+        artistId: artist.id,
+        artistName: artist.name,
+        artistNameEn: artist.nameEn,
+        followerCount: artist.followerCount,
+        profileImageUrl: artist.profileImageUrl,
+      );
+
+  /// 페스티벌 컨텍스트의 아티스트는 팔로워 수를 내려주지 않아 0으로 고정.
+  factory ArtistScreen.fromFestivalArtist(FestivalArtistItem artist, {Key? key}) =>
+      ArtistScreen(
+        key: key,
+        artistId: artist.artistId,
+        artistName: artist.artistName,
+        artistNameEn: artist.artistNameEn,
+        followerCount: 0,
+        profileImageUrl: artist.profileImageUrl,
+      );
+
+  factory ArtistScreen.fromCoArtist(CoArtistInfo artist, {Key? key}) => ArtistScreen(
+        key: key,
+        artistId: artist.artistId,
+        artistName: artist.artistName,
+        artistNameEn: artist.artistNameEn,
+        followerCount: 0,
+        profileImageUrl: artist.profileImageUrl,
+      );
 
   final String artistName;
   final String artistNameEn;

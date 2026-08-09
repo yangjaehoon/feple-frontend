@@ -7,6 +7,7 @@ import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/artist_genre_style.dart';
@@ -28,17 +29,19 @@ class ArtistDiscoverySection extends StatefulWidget {
   State<ArtistDiscoverySection> createState() => ArtistDiscoverySectionState();
 }
 
-class ArtistDiscoverySectionState extends State<ArtistDiscoverySection> {
+class ArtistDiscoverySectionState extends State<ArtistDiscoverySection>
+    with FutureRefreshable<List<Artist>, ArtistDiscoverySection> {
   final _artistService = sl<ArtistService>();
   final _followService = sl<ArtistFollowService>();
 
-  late Future<List<Artist>> _artistsFuture;
   Set<int> _followedIds = {};
+
+  @override
+  Future<List<Artist>> fetchData() => _artistService.fetchArtists();
 
   @override
   void initState() {
     super.initState();
-    _artistsFuture = _artistService.fetchArtists();
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadFollowedIds());
     AppEvents.artistFollowChanged.addListener(_onArtistFollowChanged);
   }
@@ -51,12 +54,10 @@ class ArtistDiscoverySectionState extends State<ArtistDiscoverySection> {
 
   void _onArtistFollowChanged() => _loadFollowedIds();
 
-  void refresh() {
-    setState(() {
-      _artistsFuture = _artistService.fetchArtists();
-    });
-    _loadFollowedIds();
-  }
+  // 부모(SearchFragment)가 GlobalKey로 refresh()를 호출해 완료 시점을 기다리므로
+  // 목록/팔로우 상태를 함께 새로고침하고 끝날 때까지 기다린다.
+  @override
+  Future<void> refresh() => Future.wait([super.refresh(), _loadFollowedIds()]);
 
   Future<void> _loadFollowedIds() async {
     if (!mounted) return;
@@ -73,18 +74,13 @@ class ArtistDiscoverySectionState extends State<ArtistDiscoverySection> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Artist>>(
-      future: _artistsFuture,
+      future: future,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return _buildSkeleton();
         }
         if (snapshot.hasError) {
-          return ErrorState.network(
-            snapshot.error!,
-            onRetry: () => setState(() {
-              _artistsFuture = _artistService.fetchArtists();
-            }),
-          );
+          return ErrorState.network(snapshot.error!, onRetry: refresh);
         }
         return _ArtistContent(
           allArtists: snapshot.data ?? [],
@@ -136,7 +132,7 @@ class ArtistDiscoverySectionState extends State<ArtistDiscoverySection> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final colWidth = (constraints.maxWidth - 24) / 3;
+          final colWidth = gridColumnWidth(constraints.maxWidth);
           return Wrap(
             spacing: 12,
             runSpacing: 16,
@@ -213,6 +209,88 @@ class _ArtistContentState extends State<_ArtistContent> with NavigationGuard {
     return _buildContent(artists, _genres, colors);
   }
 
+  Future<void> _navigateToArtist(Artist artist) => guardedNavigate(
+        () => Navigator.push(
+          context,
+          SlideRoute(builder: (context) => ArtistScreen.fromArtist(artist)),
+        ).then((_) {
+          if (mounted) widget.onRefreshFollowedIds();
+        }),
+      );
+
+  Widget _buildTitle(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Text(
+        'artist'.tr(),
+        style: TextStyle(
+          fontSize: AppDimens.fontSizeTitle,
+          fontWeight: FontWeight.w800,
+          color: colors.textTitle,
+          letterSpacing: -0.3,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGenreChips(List<String> genres) {
+    return SizedBox(
+      height: 36,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        children: [
+          SelectableChip(
+            label: 'filter_all'.tr(),
+            selected: _selectedGenre == null,
+            onTap: () => setState(() => _selectedGenre = null),
+          ),
+          ...genres.map(
+            (genre) => SelectableChip(
+              label: artistGenreLabel(genre),
+              selected: _selectedGenre == genre,
+              onTap: () => setState(() => _selectedGenre = genre),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildArtistGrid(List<Artist> artists) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final colWidth = gridColumnWidth(constraints.maxWidth);
+          return Wrap(
+            spacing: 12,
+            runSpacing: 16,
+            children: [
+              for (int index = 0; index < artists.length; index++)
+                SizedBox(
+                  width: colWidth,
+                  child: AnimatedListItem(
+                    index: index,
+                    child: TapScale(
+                      onTap: () => _navigateToArtist(artists[index]),
+                      child: ArtistCard(
+                        profileImageUrl: artists[index].profileImageUrl,
+                        name: artists[index].displayName(context.isEnglish),
+                        isFollowed: widget.followedIds.contains(
+                          artists[index].id,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildContent(
     List<Artist> artists,
     List<String> genres,
@@ -223,92 +301,11 @@ class _ArtistContentState extends State<_ArtistContent> with NavigationGuard {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Text(
-              'artist'.tr(),
-              style: TextStyle(
-                fontSize: AppDimens.fontSizeTitle,
-                fontWeight: FontWeight.w800,
-                color: colors.textTitle,
-                letterSpacing: -0.3,
-              ),
-            ),
-          ),
+          _buildTitle(colors),
           const SizedBox(height: 10),
-          SizedBox(
-            height: 36,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              children: [
-                SelectableChip(
-                  label: 'filter_all'.tr(),
-                  selected: _selectedGenre == null,
-                  onTap: () => setState(() => _selectedGenre = null),
-                ),
-                ...genres.map(
-                  (genre) => SelectableChip(
-                    label: artistGenreLabel(genre),
-                    selected: _selectedGenre == genre,
-                    onTap: () => setState(() => _selectedGenre = genre),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _buildGenreChips(genres),
           const SizedBox(height: 12),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final colWidth = (constraints.maxWidth - 24) / 3;
-                return Wrap(
-                  spacing: 12,
-                  runSpacing: 16,
-                  children: [
-                    for (int index = 0; index < artists.length; index++)
-                      SizedBox(
-                        width: colWidth,
-                        child: AnimatedListItem(
-                          index: index,
-                          child: TapScale(
-                            onTap: () => guardedNavigate(
-                              () =>
-                                  Navigator.push(
-                                    context,
-                                    SlideRoute(
-                                      builder: (context) => ArtistScreen(
-                                        artistName: artists[index].name,
-                                        artistNameEn: artists[index].nameEn,
-                                        artistId: artists[index].id,
-                                        followerCount:
-                                            artists[index].followerCount,
-                                        profileImageUrl:
-                                            artists[index].profileImageUrl,
-                                      ),
-                                    ),
-                                  ).then((_) {
-                                    if (mounted) widget.onRefreshFollowedIds();
-                                  }),
-                            ),
-                            child: ArtistCard(
-                              profileImageUrl: artists[index].profileImageUrl,
-                              name: artists[index].displayName(
-                                context.isEnglish,
-                              ),
-                              isFollowed: widget.followedIds.contains(
-                                artists[index].id,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                );
-              },
-            ),
-          ),
+          _buildArtistGrid(artists),
           const SizedBox(height: 20),
           const _ArtistSuggestionBanner(),
           const SizedBox(height: 8),
@@ -317,6 +314,9 @@ class _ArtistContentState extends State<_ArtistContent> with NavigationGuard {
     );
   }
 }
+
+/// 3열 아티스트 그리드의 컬럼 폭 — 스켈레톤과 실제 그리드가 동일하게 사용.
+double gridColumnWidth(double maxWidth) => (maxWidth - 24) / 3;
 
 class _ArtistSuggestionBanner extends StatelessWidget {
   const _ArtistSuggestionBanner();

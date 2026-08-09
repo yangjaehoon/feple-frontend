@@ -140,13 +140,7 @@ class FestivalArtistListScreen extends StatelessWidget {
           Navigator.push(
             context,
             SlideRoute(
-              builder: (_) => ArtistScreen(
-                artistId: artist.artistId,
-                artistName: artist.artistName,
-                artistNameEn: artist.artistNameEn,
-                followerCount: 0,
-                profileImageUrl: artist.profileImageUrl,
-              ),
+              builder: (_) => ArtistScreen.fromFestivalArtist(artist),
             ),
           );
         },

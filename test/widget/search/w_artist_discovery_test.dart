@@ -202,7 +202,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('첫아티스트'), findsOneWidget);
 
-      key.currentState!.refresh();
+      unawaited(key.currentState!.refresh());
       await tester.pumpAndSettle();
 
       expect(find.text('갱신아티스트'), findsOneWidget);

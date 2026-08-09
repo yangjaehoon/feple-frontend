@@ -187,13 +187,7 @@ class _ScheduleListTileState extends State<ScheduleListTile>
                 onTap: () => Navigator.push(
                   context,
                   SlideRoute(
-                    builder: (_) => ArtistScreen(
-                      artistId: coArtist.artistId,
-                      artistName: coArtist.artistName,
-                      artistNameEn: coArtist.artistNameEn,
-                      followerCount: 0,
-                      profileImageUrl: coArtist.profileImageUrl,
-                    ),
+                    builder: (_) => ArtistScreen.fromCoArtist(coArtist),
                   ),
                 ),
                 child: Padding(

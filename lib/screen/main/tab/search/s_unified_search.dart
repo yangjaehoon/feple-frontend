@@ -3,6 +3,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
+import 'package:feple/common/util/text_highlight.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
@@ -169,13 +170,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
           final artist = await _artistService.fetchArtistById(suggestion.id!);
           if (!mounted) return;
           await Navigator.push(context, SlideRoute(
-            builder: (_) => ArtistScreen(
-              artistId: artist.id,
-              artistName: artist.name,
-              artistNameEn: artist.nameEn,
-              followerCount: artist.followerCount,
-              profileImageUrl: artist.profileImageUrl,
-            ),
+            builder: (_) => ArtistScreen.fromArtist(artist),
           ));
         } else {
           final festival = await _festivalService.fetchById(suggestion.id!);
@@ -442,7 +437,12 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
           ListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
             leading: _buildSuggestionLeading(suggestion, colors),
-            title: _buildHighlightedSuggestion(suggestion.displayLabel(context.isEnglish), _controller.text.trim(), colors),
+            title: buildHighlightedText(
+              suggestion.displayLabel(context.isEnglish),
+              _controller.text.trim(),
+              TextStyle(color: colors.textTitle, fontSize: AppDimens.fontSizeLg),
+              colors.activate,
+            ),
             trailing: isLoading
                 ? const TapLoadingIndicator()
                 : Icon(Icons.north_west_rounded, size: 16, color: colors.textSecondary),
@@ -484,29 +484,6 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
         ),
       );
     }
-  }
-
-  Widget _buildHighlightedSuggestion(String label, String query, AbstractThemeColors colors) {
-    final lowerLabel = label.toLowerCase();
-    final lowerQuery = query.toLowerCase();
-    final matchIndex = lowerLabel.indexOf(lowerQuery);
-    if (matchIndex == -1 || query.isEmpty) {
-      return Text(label, style: TextStyle(color: colors.textTitle, fontSize: AppDimens.fontSizeLg));
-    }
-    return RichText(
-      text: TextSpan(
-        style: TextStyle(color: colors.textTitle, fontSize: AppDimens.fontSizeLg),
-        children: [
-          if (matchIndex > 0) TextSpan(text: label.substring(0, matchIndex)),
-          TextSpan(
-            text: label.substring(matchIndex, matchIndex + query.length),
-            style: TextStyle(color: colors.activate, fontWeight: FontWeight.w700),
-          ),
-          if (matchIndex + query.length < label.length)
-            TextSpan(text: label.substring(matchIndex + query.length)),
-        ],
-      ),
-    );
   }
 
   Widget _buildError() {

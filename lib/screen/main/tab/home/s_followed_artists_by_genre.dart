@@ -161,13 +161,7 @@ class _FollowedArtistsByGenreScreenState
           child: TapScale(
             onTap: () => guardedNavigate(() => Navigator.push(
               context,
-              SlideRoute(builder: (_) => ArtistScreen(
-                artistId: artist.id,
-                artistName: artist.name,
-                artistNameEn: artist.nameEn,
-                followerCount: artist.followerCount,
-                profileImageUrl: artist.profileImageUrl,
-              )),
+              SlideRoute(builder: (_) => ArtistScreen.fromFollowedArtist(artist)),
             )),
             child: ArtistCard(
               profileImageUrl: artist.profileImageUrl,

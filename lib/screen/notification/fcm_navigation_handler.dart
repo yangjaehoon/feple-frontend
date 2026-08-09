@@ -60,13 +60,7 @@ class FcmNavigationHandler {
         label: '아티스트',
         buildScreen: () async {
           final artist = await sl<ArtistService>().fetchArtistById(artistId);
-          return ArtistScreen(
-            artistId: artist.id,
-            artistName: artist.name,
-            artistNameEn: artist.nameEn,
-            followerCount: artist.followerCount,
-            profileImageUrl: artist.profileImageUrl,
-          );
+          return ArtistScreen.fromArtist(artist);
         },
       );
 

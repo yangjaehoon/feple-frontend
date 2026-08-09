@@ -17,6 +17,7 @@ import 'package:feple/common/widget/w_list_row_skeleton.dart';
 import 'package:feple/common/widget/w_refreshable_center.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/screen/main/tab/community_board/board_search_controller.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
 import 'package:feple/screen/main/tab/my_page/s_other_user_profile.dart';
@@ -54,15 +55,13 @@ class _CommunityPostState extends State<CommunityPost>
     fetchPage: _fetchPage,
     pageSize: _pageSize,
   );
+  late final _search = BoardSearchController(
+    postService: _postService,
+    boardType: widget.boardType,
+  );
 
   String _sort = _sortLatest;
-  bool _isSearching = false;
-  List<Post>? _searchResults;
   bool _showScrollTop = false;
-  Timer? _searchDebounce;
-  // 응답이 늦게 도착했을 때 이미 지나간 키워드로 최신 결과를 덮어쓰지 않도록 가드
-  // (onSubmitted가 디바운스를 우회해 즉시 호출되면서 이전 요청과 겹칠 수 있음)
-  int _searchRequestId = 0;
 
   @override
   PostCursorController get postCursorController => _controller;
@@ -95,12 +94,14 @@ class _CommunityPostState extends State<CommunityPost>
     _controller.load();
     _scrollController.addListener(_onScroll);
     AppEvents.postChanged.addListener(_onPostChanged);
+    _search.addListener(_onSearchChanged);
   }
 
   @override
   void dispose() {
+    _search.removeListener(_onSearchChanged);
+    _search.dispose();
     AppEvents.postChanged.removeListener(_onPostChanged);
-    _searchDebounce?.cancel();
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _searchController.dispose();
@@ -108,6 +109,8 @@ class _CommunityPostState extends State<CommunityPost>
     _controller.dispose();
     super.dispose();
   }
+
+  void _onSearchChanged() => setState(() {});
 
   void _onPostChanged() {
     final event = AppEvents.postChanged.value;
@@ -139,37 +142,6 @@ class _CommunityPostState extends State<CommunityPost>
         ),
       ),
     );
-  }
-
-  void _scheduleSearch(String keyword) {
-    _searchDebounce?.cancel();
-    _searchDebounce = Timer(AppDimens.animNormal, () => _search(keyword));
-  }
-
-  Future<void> _search(String keyword) async {
-    final requestId = ++_searchRequestId;
-    if (keyword.trim().isEmpty) {
-      setState(() => _searchResults = null);
-      return;
-    }
-    setState(() => _isSearching = true);
-    try {
-      final results = await _postService.searchInBoard(
-        keyword.trim(),
-        _serviceBoardType,
-      );
-      if (mounted && requestId == _searchRequestId) {
-        setState(() {
-          _searchResults = results;
-          _isSearching = false;
-        });
-      }
-    } catch (e) {
-      debugPrint('[CommunityPost] 검색 실패: $e');
-      if (mounted && requestId == _searchRequestId) {
-        setState(() => _isSearching = false);
-      }
-    }
   }
 
   Widget _buildSkeletonList() {
@@ -204,10 +176,10 @@ class _CommunityPostState extends State<CommunityPost>
   }
 
   Widget _buildList(AbstractThemeColors colors) {
-    if (_isSearching && _searchResults == null) {
+    if (_search.isSearching && !_search.isActive) {
       return const ListRowSkeleton(showLeading: false);
     }
-    if (_searchResults != null) {
+    if (_search.isActive) {
       return _buildSearchResults(colors);
     }
     if (_controller.hasError) {
@@ -220,10 +192,10 @@ class _CommunityPostState extends State<CommunityPost>
   }
 
   Widget _buildSearchResults(AbstractThemeColors colors) {
-    if (_isSearching) {
+    if (_search.isSearching) {
       return const ListRowSkeleton(showLeading: false);
     }
-    final displayPosts = _searchResults!;
+    final displayPosts = _search.results!;
     if (displayPosts.isEmpty) {
       return Center(
         child: Text(
@@ -232,26 +204,10 @@ class _CommunityPostState extends State<CommunityPost>
         ),
       );
     }
-    return ListView.separated(
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottomLarge),
-      itemCount: displayPosts.length,
-      itemBuilder: (context, index) {
-        final post = displayPosts[index];
-        return PostListTile(
-          post: post,
-          highlightKeyword: _searchController.text.trim(),
-          onTap: () => _openPost(post),
-          onAuthorTap: () => navigateToPostAuthor(
-            context,
-            userId: post.userId,
-            nickname: post.nickname,
-            profileImageUrl: post.profileImageUrl,
-          ),
-        );
-      },
-      separatorBuilder: (_, _) =>
-          Divider(thickness: 1, color: colors.listDivider),
+    return _buildPostTileList(
+      colors,
+      displayPosts,
+      highlightKeyword: _searchController.text.trim(),
     );
   }
 
@@ -283,12 +239,30 @@ class _CommunityPostState extends State<CommunityPost>
   }
 
   Widget _buildPostListView(AbstractThemeColors colors) {
-    final posts = _controller.posts;
+    return _buildPostTileList(
+      colors,
+      _controller.posts,
+      animate: true,
+      scrollController: _scrollController,
+      showLoadingMore: _controller.isLoadingMore,
+    );
+  }
+
+  /// 검색 결과 목록과 일반 게시글 목록이 공유하는 ListView 빌더 —
+  /// highlightKeyword 유무·AnimatedListItem 래핑·무한스크롤 "더 보기" 표시만 다름.
+  Widget _buildPostTileList(
+    AbstractThemeColors colors,
+    List<Post> posts, {
+    String? highlightKeyword,
+    bool animate = false,
+    ScrollController? scrollController,
+    bool showLoadingMore = false,
+  }) {
     return ListView.separated(
-      controller: _scrollController,
+      controller: scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottomLarge),
-      itemCount: posts.length + (_controller.isLoadingMore ? 1 : 0),
+      itemCount: posts.length + (showLoadingMore ? 1 : 0),
       itemBuilder: (context, index) {
         if (index == posts.length) {
           return Padding(
@@ -299,19 +273,18 @@ class _CommunityPostState extends State<CommunityPost>
           );
         }
         final post = posts[index];
-        return AnimatedListItem(
-          index: index,
-          child: PostListTile(
-            post: post,
-            onTap: () => _openPost(post),
-            onAuthorTap: () => navigateToPostAuthor(
-              context,
-              userId: post.userId,
-              nickname: post.nickname,
-              profileImageUrl: post.profileImageUrl,
-            ),
+        final tile = PostListTile(
+          post: post,
+          highlightKeyword: highlightKeyword,
+          onTap: () => _openPost(post),
+          onAuthorTap: () => navigateToPostAuthor(
+            context,
+            userId: post.userId,
+            nickname: post.nickname,
+            profileImageUrl: post.profileImageUrl,
           ),
         );
+        return animate ? AnimatedListItem(index: index, child: tile) : tile;
       },
       separatorBuilder: (_, _) =>
           Divider(thickness: 1, color: colors.listDivider),
@@ -360,13 +333,9 @@ class _CommunityPostState extends State<CommunityPost>
   }
 
   void _clearSearch(StateSetter setSearchState) {
-    _searchDebounce?.cancel();
     _searchController.clear();
     setSearchState(() {});
-    setState(() {
-      _searchResults = null;
-      _isSearching = false;
-    });
+    _search.clear();
   }
 
   InputDecoration _searchFieldDecoration(
@@ -410,12 +379,9 @@ class _CommunityPostState extends State<CommunityPost>
           controller: _searchController,
           onChanged: (v) {
             setSearchState(() {});
-            _scheduleSearch(v);
+            _search.schedule(v);
           },
-          onSubmitted: (v) {
-            _searchDebounce?.cancel();
-            _search(v);
-          },
+          onSubmitted: (v) => _search.search(v),
           style: TextStyle(
             color: colors.textTitle,
             fontSize: AppDimens.fontSizeMd,

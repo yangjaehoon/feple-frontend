@@ -31,24 +31,13 @@ class ArtistScheduleListScreen extends StatefulWidget {
 class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen>
     with
         FutureRefreshable<List<ArtistScheduleModel>,
-            ArtistScheduleListScreen> {
+            ArtistScheduleListScreen>,
+        FestivalNavigationGuard<ArtistScheduleListScreen> {
   final _scheduleService = sl<ArtistScheduleService>();
-  // 행 탭 → fetchById → 화면 전환까지 아무 피드백 없이 멈춰 보이는 걸 방지
-  int? _navigatingFestivalId;
 
   @override
   Future<List<ArtistScheduleModel>> fetchData() =>
       _scheduleService.fetchSchedule(widget.artistId);
-
-  Future<void> _navigateToFestival(int festivalId) async {
-    if (_navigatingFestivalId != null) return;
-    setState(() => _navigatingFestivalId = festivalId);
-    try {
-      await navigateToFestivalById(context, festivalId);
-    } finally {
-      if (mounted) setState(() => _navigatingFestivalId = null);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,8 +93,8 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen>
     List<ArtistScheduleModel> schedules,
     AbstractThemeColors colors,
   ) {
-    final upcoming = schedules.where((e) => !e.isPast).toList();
-    final past = schedules.where((e) => e.isPast).toList().reversed.toList();
+    final upcoming = schedules.upcoming;
+    final past = schedules.past.reversed.toList();
 
     final rows = <_ScheduleRow>[];
     if (upcoming.isNotEmpty) {
@@ -180,8 +169,8 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen>
         ScheduleListTile(
           item: item,
           isPast: isPast,
-          isLoading: _navigatingFestivalId == item.festivalId,
-          onTap: () => _navigateToFestival(item.festivalId),
+          isLoading: navigatingFestivalId == item.festivalId,
+          onTap: () => navigateToFestival(item.festivalId),
         ),
         if (showDivider)
           Divider(

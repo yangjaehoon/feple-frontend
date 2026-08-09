@@ -10,6 +10,8 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/model/artist_photo.dart';
 
+import 'w_festival_destination_dropdown.dart';
+
 // ── 사진 수정 바텀시트 ──
 
 class EditPhotoSheet extends StatefulWidget {
@@ -105,7 +107,7 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
           const SizedBox(height: 16),
           _buildTitleField(colors),
           const SizedBox(height: 12),
-          _buildFestivalDropdown(colors),
+          _buildFestivalDropdown(),
           const SizedBox(height: 16),
           _buildSaveButton(colors),
         ],
@@ -128,31 +130,11 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
     );
   }
 
-  Widget _buildFestivalDropdown(AbstractThemeColors colors) {
-    return DropdownButtonFormField<PhotoDestination>(
-      initialValue: _selectedDestination,
-      decoration: InputDecoration(
-        labelText: 'festival_label'.tr(),
-        labelStyle: TextStyle(color: colors.textSecondary),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny)),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-          borderSide: BorderSide(color: colors.activate, width: 2),
-        ),
-      ),
-      hint: _loadingFestivals
-          ? Text('loading'.tr())
-          : Text('select_festival_hint'.tr()),
-      items: [
-        ..._festivals.map((f) => DropdownMenuItem(
-              value: FestivalDestination(f),
-              child: Text(f.displayTitle(context.isEnglish), overflow: TextOverflow.ellipsis),
-            )),
-        ...PhotoDestination.categories.map((c) => DropdownMenuItem(
-              value: c,
-              child: Text(c.labelKey.tr()),
-            )),
-      ],
+  Widget _buildFestivalDropdown() {
+    return FestivalDestinationDropdown(
+      festivals: _festivals,
+      value: _selectedDestination,
+      isLoading: _loadingFestivals,
       onChanged: (d) => setState(() {
         _selectedDestination = d;
         _userChangedDestination = true;

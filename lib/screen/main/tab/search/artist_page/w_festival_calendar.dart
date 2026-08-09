@@ -28,10 +28,10 @@ class FestivalCalendar extends StatefulWidget {
 }
 
 class _FestivalCalendarState extends State<FestivalCalendar>
-    with FutureRefreshable<List<ArtistScheduleModel>, FestivalCalendar> {
+    with
+        FutureRefreshable<List<ArtistScheduleModel>, FestivalCalendar>,
+        FestivalNavigationGuard<FestivalCalendar> {
   final _scheduleService = sl<ArtistScheduleService>();
-  // 카드 탭 → fetchById → 화면 전환까지 아무 피드백 없이 멈춰 보이는 걸 방지
-  int? _navigatingFestivalId;
 
   @override
   Future<List<ArtistScheduleModel>> fetchData() =>
@@ -83,8 +83,8 @@ class _FestivalCalendarState extends State<FestivalCalendar>
       );
     }
 
-    final upcoming = schedules.where((s) => !s.isPast).toList();
-    final past = schedules.where((s) => s.isPast).toList();
+    final upcoming = schedules.upcoming;
+    final past = schedules.past;
 
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -119,7 +119,7 @@ class _FestivalCalendarState extends State<FestivalCalendar>
     final config = s.eventType.config(colors);
     final dateText = s.dateRange.isEmpty ? null : s.dateRange;
     final isPast = s.isPast;
-    final isLoading = _navigatingFestivalId == s.festivalId;
+    final isLoading = navigatingFestivalId == s.festivalId;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
@@ -131,7 +131,7 @@ class _FestivalCalendarState extends State<FestivalCalendar>
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-        onTap: isLoading ? null : () => _navigateToFestival(s.festivalId),
+        onTap: isLoading ? null : () => navigateToFestival(s.festivalId),
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Row(
@@ -257,15 +257,5 @@ class _FestivalCalendarState extends State<FestivalCalendar>
       allDay: true,
     );
     await Add2Calendar.addEvent2Cal(event);
-  }
-
-  Future<void> _navigateToFestival(int festivalId) async {
-    if (_navigatingFestivalId != null) return;
-    setState(() => _navigatingFestivalId = festivalId);
-    try {
-      await navigateToFestivalById(context, festivalId);
-    } finally {
-      if (mounted) setState(() => _navigatingFestivalId = null);
-    }
   }
 }

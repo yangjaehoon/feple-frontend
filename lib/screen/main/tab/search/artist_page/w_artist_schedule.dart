@@ -78,7 +78,7 @@ class ArtistScheduleState extends State<ArtistSchedule>
       ),
       useListViewForEmptyState: false,
       builder: (_, data) {
-        final upcoming = data.where((item) => !item.isPast).toList();
+        final upcoming = data.upcoming;
         return Column(
           children: [
             for (int i = 0; i < upcoming.length; i++) ...[

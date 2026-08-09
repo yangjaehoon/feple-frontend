@@ -76,6 +76,12 @@ class ArtistScheduleModel {
   }
 }
 
+/// 아티스트 일정 목록에서 반복되던 지난/예정 분류를 공용화.
+extension ArtistScheduleListExtension on List<ArtistScheduleModel> {
+  List<ArtistScheduleModel> get upcoming => where((e) => !e.isPast).toList();
+  List<ArtistScheduleModel> get past => where((e) => e.isPast).toList();
+}
+
 class CoArtistInfo {
   final int artistId;
   final String artistName;

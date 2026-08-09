@@ -12,6 +12,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/artist_photo_uploadable.dart';
 
+import 'w_festival_destination_dropdown.dart';
 import 'w_image_picker_box.dart';
 
 class ImageUpload extends StatefulWidget {
@@ -192,39 +193,16 @@ class _ImageUploadState extends State<ImageUpload> {
     );
   }
 
-  Widget _buildFestivalDropdown(AbstractThemeColors colors) {
+  Widget _buildFestivalDropdown() {
     return FutureBuilder<List<FestivalPreview>>(
       future: _festivalsFuture,
-      builder: (context, snapshot) {
-        final festivals = snapshot.data ?? [];
-        return DropdownButtonFormField<PhotoDestination>(
-          initialValue: _selectedDestination,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny)),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-              borderSide: BorderSide(color: colors.activate, width: 2),
-            ),
-            labelText: 'festival_label'.tr(),
-            labelStyle: TextStyle(color: colors.textSecondary),
-          ),
-          hint: snapshot.connectionState != ConnectionState.done
-              ? Text('loading'.tr())
-              : Text('select_festival_hint'.tr()),
-          items: [
-            ...festivals.map((f) => DropdownMenuItem(
-                  value: FestivalDestination(f),
-                  child: Text(f.displayTitle(context.isEnglish), overflow: TextOverflow.ellipsis),
-                )),
-            ...PhotoDestination.categories.map((c) => DropdownMenuItem(
-                  value: c,
-                  child: Text(c.labelKey.tr()),
-                )),
-          ],
-          onChanged: (d) => setState(() => _selectedDestination = d),
-          validator: (_) => _selectedDestination == null ? 'select_festival_required'.tr() : null,
-        );
-      },
+      builder: (context, snapshot) => FestivalDestinationDropdown(
+        festivals: snapshot.data ?? [],
+        value: _selectedDestination,
+        isLoading: snapshot.connectionState != ConnectionState.done,
+        onChanged: (d) => setState(() => _selectedDestination = d),
+        validator: (_) => _selectedDestination == null ? 'select_festival_required'.tr() : null,
+      ),
     );
   }
 
@@ -304,7 +282,7 @@ class _ImageUploadState extends State<ImageUpload> {
           ),
           _buildTitleField(colors),
           const SizedBox(height: 12),
-          _buildFestivalDropdown(colors),
+          _buildFestivalDropdown(),
           const SizedBox(height: 4),
           _buildAnonymousToggle(colors),
         ],

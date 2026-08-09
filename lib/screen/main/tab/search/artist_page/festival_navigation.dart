@@ -33,3 +33,22 @@ Future<void> navigateToFestivalById(
     }
   }
 }
+
+/// "탭 → fetchById → 화면 전환까지 아무 피드백 없이 멈춰 보이는 걸 방지" 패턴 공용화.
+/// [navigatingFestivalId]로 현재 로딩 중인 festivalId를 노출해, 그 항목에만
+/// 로딩 인디케이터를 표시하고 재탭은 무시할 수 있다.
+mixin FestivalNavigationGuard<T extends StatefulWidget> on State<T> {
+  int? _navigatingFestivalId;
+
+  int? get navigatingFestivalId => _navigatingFestivalId;
+
+  Future<void> navigateToFestival(int festivalId) async {
+    if (_navigatingFestivalId != null) return;
+    setState(() => _navigatingFestivalId = festivalId);
+    try {
+      await navigateToFestivalById(context, festivalId);
+    } finally {
+      if (mounted) setState(() => _navigatingFestivalId = null);
+    }
+  }
+}

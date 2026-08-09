@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/post_cursor_controller.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/post_cursor_controller_listener.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
@@ -40,14 +41,18 @@ class BoardPostList extends StatefulWidget {
   State<BoardPostList> createState() => _BoardPostListState();
 }
 
-class _BoardPostListState extends State<BoardPostList> {
+class _BoardPostListState extends State<BoardPostList>
+    with PostCursorControllerListener<BoardPostList> {
   final _scrollController = ScrollController();
   late final _controller = PostCursorController(fetchPage: widget.fetchPage);
 
   @override
+  PostCursorController get postCursorController => _controller;
+
+  @override
   void initState() {
     super.initState();
-    _controller.addListener(_onControllerChanged);
+    _controller.addListener(onPostCursorControllerChanged);
     _scrollController.addListener(_onScroll);
     _controller.load();
   }
@@ -56,18 +61,9 @@ class _BoardPostListState extends State<BoardPostList> {
   void dispose() {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
-    _controller.removeListener(_onControllerChanged);
+    _controller.removeListener(onPostCursorControllerChanged);
     _controller.dispose();
     super.dispose();
-  }
-
-  void _onControllerChanged() {
-    setState(() {});
-    final refreshError = _controller.refreshError;
-    if (refreshError != null) {
-      _controller.clearRefreshError();
-      context.showErrorSnackbar(refreshError);
-    }
   }
 
   void _onScroll() => _controller.onScroll(_scrollController);
@@ -170,43 +166,49 @@ class _BoardPostListState extends State<BoardPostList> {
         ),
       );
     }
+    return _buildPostList(colors, posts);
+  }
+
+  Future<void> _openPost(BuildContext context, Post post) async {
+    await Navigator.of(context, rootNavigator: true).push(
+      SlideRoute(
+        builder: (_) =>
+            PostDetailCard.fromPost(boardName: widget.boardName, post: post),
+      ),
+    );
+    if (mounted) unawaited(_controller.refresh());
+  }
+
+  Widget _buildPostItem(BuildContext context, List<Post> posts, int index) {
+    if (index == posts.length) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 16),
+        child: Center(child: CircularProgressIndicator.adaptive()),
+      );
+    }
+    final post = posts[index];
+    return AnimatedListItem(
+      index: index,
+      child: PostListTile(
+        post: post,
+        onTap: () => _openPost(context, post),
+        onAuthorTap: () => navigateToPostAuthor(
+          context,
+          userId: post.userId,
+          nickname: post.nickname,
+          profileImageUrl: post.profileImageUrl,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPostList(AbstractThemeColors colors, List<Post> posts) {
     return ListView.separated(
       controller: _scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
       itemCount: posts.length + (_controller.isLoadingMore ? 1 : 0),
-      itemBuilder: (context, index) {
-        if (index == posts.length) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: Center(child: CircularProgressIndicator.adaptive()),
-          );
-        }
-        final post = posts[index];
-        return AnimatedListItem(
-          index: index,
-          child: PostListTile(
-            post: post,
-            onTap: () async {
-              await Navigator.of(context, rootNavigator: true).push(
-                SlideRoute(
-                  builder: (_) => PostDetailCard.fromPost(
-                    boardName: widget.boardName,
-                    post: post,
-                  ),
-                ),
-              );
-              if (mounted) unawaited(_controller.refresh());
-            },
-            onAuthorTap: () => navigateToPostAuthor(
-              context,
-              userId: post.userId,
-              nickname: post.nickname,
-              profileImageUrl: post.profileImageUrl,
-            ),
-          ),
-        );
-      },
+      itemBuilder: (context, index) => _buildPostItem(context, posts, index),
       separatorBuilder: (_, _) =>
           Divider(thickness: 1, color: colors.listDivider),
     );

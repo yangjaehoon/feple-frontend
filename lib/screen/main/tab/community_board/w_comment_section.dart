@@ -43,6 +43,34 @@ class CommentSection extends StatelessWidget {
     );
   }
 
+  Widget _buildTile(CommentDetail comment, {required bool isReply}) {
+    return _CommentTile(
+      comment: comment,
+      isReply: isReply,
+      isOwn: currentUserId != null && comment.userId == currentUserId,
+      onReport: onReport != null ? () => onReport!(comment.id) : null,
+      onReply: (!isReply && onReply != null)
+          ? () => onReply!(comment.id, comment.nickname)
+          : null,
+      onToggleLike: onToggleLike != null
+          ? () => onToggleLike!(comment.id)
+          : null,
+      onDelete: onDeleteComment != null
+          ? () => onDeleteComment!(comment.id)
+          : null,
+      onEdit: onEditComment != null
+          ? () => onEditComment!(comment.id, comment.content)
+          : null,
+      onAuthorTap: onAuthorTap != null && !comment.anonymous
+          ? () => onAuthorTap!(
+              comment.userId,
+              comment.nickname,
+              comment.profileImageUrl,
+            )
+          : null,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -58,32 +86,7 @@ class CommentSection extends StatelessWidget {
       if (commentIndex > 0) {
         items.add(Divider(color: colors.listDivider, height: 1));
       }
-      items.add(
-        _CommentTile(
-          comment: root,
-          isOwn: currentUserId != null && root.userId == currentUserId,
-          onReport: onReport != null ? () => onReport!(root.id) : null,
-          onReply: onReply != null
-              ? () => onReply!(root.id, root.nickname)
-              : null,
-          onToggleLike: onToggleLike != null
-              ? () => onToggleLike!(root.id)
-              : null,
-          onDelete: onDeleteComment != null
-              ? () => onDeleteComment!(root.id)
-              : null,
-          onEdit: onEditComment != null
-              ? () => onEditComment!(root.id, root.content)
-              : null,
-          onAuthorTap: onAuthorTap != null && !root.anonymous
-              ? () => onAuthorTap!(
-                  root.userId,
-                  root.nickname,
-                  root.profileImageUrl,
-                )
-              : null,
-        ),
-      );
+      items.add(_buildTile(root, isReply: false));
 
       final replies = repliesMap[root.id] ?? [];
       for (final reply in replies) {
@@ -98,28 +101,7 @@ class CommentSection extends StatelessWidget {
         items.add(
           Padding(
             padding: const EdgeInsets.only(left: 32),
-            child: _CommentTile(
-              comment: reply,
-              isReply: true,
-              isOwn: currentUserId != null && reply.userId == currentUserId,
-              onReport: onReport != null ? () => onReport!(reply.id) : null,
-              onToggleLike: onToggleLike != null
-                  ? () => onToggleLike!(reply.id)
-                  : null,
-              onDelete: onDeleteComment != null
-                  ? () => onDeleteComment!(reply.id)
-                  : null,
-              onEdit: onEditComment != null
-                  ? () => onEditComment!(reply.id, reply.content)
-                  : null,
-              onAuthorTap: onAuthorTap != null && !reply.anonymous
-                  ? () => onAuthorTap!(
-                      reply.userId,
-                      reply.nickname,
-                      reply.profileImageUrl,
-                    )
-                  : null,
-            ),
+            child: _buildTile(reply, isReply: true),
           ),
         );
       }

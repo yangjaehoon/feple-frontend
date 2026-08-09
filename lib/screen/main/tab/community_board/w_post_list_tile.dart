@@ -32,6 +32,114 @@ class PostListTile extends StatelessWidget {
     );
   }
 
+  Widget _buildAvatar() {
+    return Semantics(
+      button: !post.anonymous && onAuthorTap != null,
+      label: post.anonymous ? null : 'view_author_profile'.tr(args: [post.nickname]),
+      child: GestureDetector(
+        onTap: (!post.anonymous && onAuthorTap != null) ? onAuthorTap : null,
+        child: Padding(
+          padding: const EdgeInsets.all(4),
+          child: ProfileAvatar(
+            imageUrl: post.profileImageUrl,
+            nickname: post.nickname,
+            certified: post.certified,
+            userRole: post.userRole,
+            anonymous: post.anonymous,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextColumn(AbstractThemeColors colors) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildTitle(colors),
+          const SizedBox(height: 4),
+          Text(
+            post.content,
+            style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              Expanded(
+                child: PostStatRow(
+                  likeCount: post.likeCount,
+                  commentCount: post.commentCount,
+                  scrapCount: post.scrapCount,
+                  compact: true,
+                ),
+              ),
+              if (post.createdAt != null)
+                Text(
+                  post.createdAt!.relativeTime,
+                  style: TextStyle(
+                    fontSize: AppDimens.fontSizeXxs,
+                    color: colors.textSecondary.withValues(alpha: 0.55),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildThumbnail() {
+    return Stack(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+          child: CachedNetworkImage(
+            imageUrl: post.imageUrls.first,
+            width: 56,
+            height: 56,
+            memCacheWidth: 112, // 56px * 2 (Retina)
+            fit: BoxFit.cover,
+            fadeInDuration: AppDimens.animXFast,
+            fadeOutDuration: AppDimens.animTapFeedback,
+            placeholder: (context, _) {
+              final c = context.appColors;
+              return Container(width: 56, height: 56, color: c.surface);
+            },
+            errorWidget: (context, url, error) {
+              final c = context.appColors;
+              return Container(
+                width: 56,
+                height: 56,
+                color: c.surface,
+                child: Icon(
+                  Icons.broken_image_rounded,
+                  size: 20,
+                  color: c.textSecondary.withValues(alpha: 0.4),
+                ),
+              );
+            },
+          ),
+        ),
+        if (post.imageUrls.length > 1)
+          Positioned(
+            top: 3,
+            right: 3,
+            child: Icon(
+              Icons.photo_library_rounded,
+              size: 14,
+              color: Colors.white,
+              shadows: [
+                Shadow(color: Colors.black.withValues(alpha: 0.6), blurRadius: 3),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -45,115 +153,12 @@ class PostListTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Semantics(
-              button: !post.anonymous && onAuthorTap != null,
-              label: post.anonymous
-                  ? null
-                  : 'view_author_profile'.tr(args: [post.nickname]),
-              child: GestureDetector(
-                onTap: (!post.anonymous && onAuthorTap != null)
-                    ? onAuthorTap
-                    : null,
-                child: Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: ProfileAvatar(
-                    imageUrl: post.profileImageUrl,
-                    nickname: post.nickname,
-                    certified: post.certified,
-                    userRole: post.userRole,
-                    anonymous: post.anonymous,
-                  ),
-                ),
-              ),
-            ),
+            _buildAvatar(),
             const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildTitle(colors),
-                  const SizedBox(height: 4),
-                  Text(
-                    post.content,
-                    style: TextStyle(
-                      fontSize: AppDimens.fontSizeSm,
-                      color: colors.textSecondary,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: PostStatRow(
-                          likeCount: post.likeCount,
-                          commentCount: post.commentCount,
-                          scrapCount: post.scrapCount,
-                          compact: true,
-                        ),
-                      ),
-                      if (post.createdAt != null)
-                        Text(
-                          post.createdAt!.relativeTime,
-                          style: TextStyle(
-                            fontSize: AppDimens.fontSizeXxs,
-                            color: colors.textSecondary.withValues(alpha: 0.55),
-                          ),
-                        ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            _buildTextColumn(colors),
             if (post.imageUrls.isNotEmpty) ...[
               const SizedBox(width: 12),
-              Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-                    child: CachedNetworkImage(
-                      imageUrl: post.imageUrls.first,
-                      width: 56,
-                      height: 56,
-                      memCacheWidth: 112, // 56px * 2 (Retina)
-                      fit: BoxFit.cover,
-                      fadeInDuration: AppDimens.animXFast,
-                      fadeOutDuration: AppDimens.animTapFeedback,
-                      placeholder: (context, _) {
-                        final c = context.appColors;
-                        return Container(width: 56, height: 56, color: c.surface);
-                      },
-                      errorWidget: (context, url, error) {
-                        final c = context.appColors;
-                        return Container(
-                          width: 56,
-                          height: 56,
-                          color: c.surface,
-                          child: Icon(
-                            Icons.broken_image_rounded,
-                            size: 20,
-                            color: c.textSecondary.withValues(alpha: 0.4),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  if (post.imageUrls.length > 1)
-                    Positioned(
-                      top: 3,
-                      right: 3,
-                      child: Icon(
-                        Icons.photo_library_rounded,
-                        size: 14,
-                        color: Colors.white,
-                        shadows: [
-                          Shadow(color: Colors.black.withValues(alpha: 0.6), blurRadius: 3),
-                        ],
-                      ),
-                    ),
-                ],
-              ),
+              _buildThumbnail(),
             ],
           ],
         ),

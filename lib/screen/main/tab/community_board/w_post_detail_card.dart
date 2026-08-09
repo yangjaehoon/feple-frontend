@@ -7,6 +7,7 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/block_action_helper.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/popup_menu_item_builder.dart';
+import 'package:feple/common/widget/w_page_indicator_pill.dart';
 import 'package:feple/common/widget/w_write_post.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/common/widget/w_report_sheet.dart';
@@ -581,20 +582,9 @@ class _ImageViewerState extends State<_ImageViewer> {
             if (widget.images.length > 1)
               Padding(
                 padding: const EdgeInsets.only(bottom: 32),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    '${_currentIndex + 1}/${widget.images.length}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: AppDimens.fontSizeXxs,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                child: PageIndicatorPill(
+                  currentIndex: _currentIndex,
+                  total: widget.images.length,
                 ),
               ),
           ],

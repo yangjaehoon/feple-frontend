@@ -110,76 +110,86 @@ class BoardPreviewCard extends StatelessWidget {
     );
   }
 
+  Widget _buildEmptyState(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: AppDimens.paddingHorizontal),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.chat_bubble_outline_rounded,
+                size: 32,
+                color: colors.textSecondary.withValues(alpha: 0.3)),
+            const SizedBox(height: 10),
+            Text(
+              emptyHint ?? 'no_posts_yet'.tr(),
+              style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
+              textAlign: TextAlign.center,
+            ),
+            if (onWriteTap != null)
+              TextButton.icon(
+                onPressed: onWriteTap,
+                icon: const Icon(Icons.edit_outlined, size: 16),
+                label: Text('write_post'.tr(), style: const TextStyle(fontSize: AppDimens.fontSizeSm)),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPostRow(BuildContext ctx, AbstractThemeColors colors, Post post) {
+    return Material(
+      color: Colors.transparent,
+      child: ListTile(
+        dense: true,
+        visualDensity: const VisualDensity(vertical: -3),
+        minVerticalPadding: 0,
+        contentPadding: const EdgeInsets.symmetric(
+            horizontal: AppDimens.paddingHorizontal, vertical: 0),
+        onTap: () => onPostTap(ctx, post),
+        title: Text(
+          post.title,
+          style: TextStyle(
+            color: colors.textTitle,
+            fontWeight: FontWeight.w600,
+            fontSize: AppDimens.fontSizeMd,
+          ),
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: (trailingBuilder ?? _defaultTrailing)(post, colors),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPostListBody(BuildContext ctx, AbstractThemeColors colors, List<Post> posts) {
+    final displayPosts = maxItems != null ? posts.take(maxItems!).toList() : posts;
+    return Column(
+      children: [
+        for (int i = 0; i < displayPosts.length; i++) ...[
+          _buildPostRow(ctx, colors, displayPosts[i]),
+          if (i < displayPosts.length - 1)
+            Divider(
+              thickness: 1,
+              color: colors.listDivider,
+              indent: AppDimens.paddingHorizontal,
+              endIndent: AppDimens.paddingHorizontal,
+            ),
+        ],
+      ],
+    );
+  }
+
   Widget _buildPostList(BuildContext context, AbstractThemeColors colors) {
     return AsyncContentBuilder<List<Post>>(
       future: future,
       useListViewForEmptyState: false,
       loadingBuilder: (_) => _buildSkeletonList(),
       onRetry: onRetry,
-      emptyBuilder: (_) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: AppDimens.paddingHorizontal),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.chat_bubble_outline_rounded,
-                  size: 32,
-                  color: colors.textSecondary.withValues(alpha: 0.3)),
-              const SizedBox(height: 10),
-              Text(
-                emptyHint ?? 'no_posts_yet'.tr(),
-                style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
-                textAlign: TextAlign.center,
-              ),
-              if (onWriteTap != null)
-                TextButton.icon(
-                  onPressed: onWriteTap,
-                  icon: const Icon(Icons.edit_outlined, size: 16),
-                  label: Text('write_post'.tr(), style: const TextStyle(fontSize: AppDimens.fontSizeSm)),
-                ),
-            ],
-          ),
-        ),
-      ),
-      builder: (ctx, posts) {
-        final displayPosts = maxItems != null ? posts.take(maxItems!).toList() : posts;
-        return Column(
-          children: [
-            for (int i = 0; i < displayPosts.length; i++) ...[
-              Material(
-                color: Colors.transparent,
-                child: ListTile(
-                  dense: true,
-                  visualDensity: const VisualDensity(vertical: -3),
-                  minVerticalPadding: 0,
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: AppDimens.paddingHorizontal, vertical: 0),
-                  onTap: () => onPostTap(ctx, displayPosts[i]),
-                  title: Text(
-                    displayPosts[i].title,
-                    style: TextStyle(
-                      color: colors.textTitle,
-                      fontWeight: FontWeight.w600,
-                      fontSize: AppDimens.fontSizeMd,
-                    ),
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: (trailingBuilder ?? _defaultTrailing)(displayPosts[i], colors),
-                  ),
-                ),
-              ),
-              if (i < displayPosts.length - 1)
-                Divider(
-                  thickness: 1,
-                  color: colors.listDivider,
-                  indent: AppDimens.paddingHorizontal,
-                  endIndent: AppDimens.paddingHorizontal,
-                ),
-            ],
-          ],
-        );
-      },
+      emptyBuilder: (_) => _buildEmptyState(colors),
+      builder: (ctx, posts) => _buildPostListBody(ctx, colors, posts),
     );
   }
 }

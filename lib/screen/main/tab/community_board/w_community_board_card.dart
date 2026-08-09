@@ -9,11 +9,11 @@ import 'package:feple/screen/main/tab/community_board/w_board_preview_card.dart'
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_post.dart';
 import 'package:feple/common/app_events.dart';
-import 'package:feple/model/post_changed_event.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
+import 'package:feple/common/util/write_post_submit_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -77,13 +77,7 @@ class CommunityBoardCardState extends State<CommunityBoardCard>
       SlideRoute(
         builder: (_) => WritePost(
           title: 'write_post'.tr(),
-          onSubmit: (title, content, anonymous, imageObjectKeys) async {
-            await _postService.createPost(
-              boardType: widget.serviceBoardType,
-              draft: PostDraft(title: title, content: content, anonymous: anonymous, imageObjectKeys: imageObjectKeys),
-            );
-            AppEvents.postChanged.value = PostChangedEvent.refreshAll();
-          },
+          onSubmit: createPostSubmitHandler(_postService, widget.serviceBoardType),
         ),
       ),
     );

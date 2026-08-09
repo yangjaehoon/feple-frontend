@@ -7,9 +7,10 @@ import 'package:feple/common/widget/w_write_post_fab.dart';
 import 'package:feple/common/widget/w_write_post.dart';
 import 'package:feple/common/constant/board_types.dart';
 import 'package:feple/common/app_events.dart';
-import 'package:feple/model/post_changed_event.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
+import 'package:feple/common/util/post_cursor_controller_listener.dart';
+import 'package:feple/common/util/write_post_submit_handler.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_list_row_skeleton.dart';
@@ -40,7 +41,8 @@ class CommunityPost extends StatefulWidget {
   State<CommunityPost> createState() => _CommunityPostState();
 }
 
-class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
+class _CommunityPostState extends State<CommunityPost>
+    with NavigationGuard, PostCursorControllerListener {
   static const _pageSize = 20;
   static const _sortLatest = 'latest';
   static const _sortPopular = 'popular';
@@ -61,6 +63,9 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
   // 응답이 늦게 도착했을 때 이미 지나간 키워드로 최신 결과를 덮어쓰지 않도록 가드
   // (onSubmitted가 디바운스를 우회해 즉시 호출되면서 이전 요청과 겹칠 수 있음)
   int _searchRequestId = 0;
+
+  @override
+  PostCursorController get postCursorController => _controller;
 
   String get _serviceBoardType => widget.boardType;
 
@@ -86,7 +91,7 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
   @override
   void initState() {
     super.initState();
-    _controller.addListener(_onControllerChanged);
+    _controller.addListener(onPostCursorControllerChanged);
     _controller.load();
     _scrollController.addListener(_onScroll);
     AppEvents.postChanged.addListener(_onPostChanged);
@@ -99,18 +104,9 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _searchController.dispose();
-    _controller.removeListener(_onControllerChanged);
+    _controller.removeListener(onPostCursorControllerChanged);
     _controller.dispose();
     super.dispose();
-  }
-
-  void _onControllerChanged() {
-    setState(() {});
-    final refreshError = _controller.refreshError;
-    if (refreshError != null) {
-      _controller.clearRefreshError();
-      context.showErrorSnackbar(refreshError);
-    }
   }
 
   void _onPostChanged() {
@@ -353,26 +349,56 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
                 SlideRoute(
                   builder: (_) => WritePost(
                     title: 'write_post'.tr(),
-                    onSubmit:
-                        (title, content, anonymous, imageObjectKeys) async {
-                          await _postService.createPost(
-                            boardType: _serviceBoardType,
-                            draft: PostDraft(
-                              title: title,
-                              content: content,
-                              anonymous: anonymous,
-                              imageObjectKeys: imageObjectKeys,
-                            ),
-                          );
-                          AppEvents.postChanged.value =
-                              PostChangedEvent.refreshAll();
-                        },
+                    onSubmit: createPostSubmitHandler(_postService, _serviceBoardType),
                   ),
                 ),
               );
             },
           ),
       ],
+    );
+  }
+
+  void _clearSearch(StateSetter setSearchState) {
+    _searchDebounce?.cancel();
+    _searchController.clear();
+    setSearchState(() {});
+    setState(() {
+      _searchResults = null;
+      _isSearching = false;
+    });
+  }
+
+  InputDecoration _searchFieldDecoration(
+    AbstractThemeColors colors,
+    StateSetter setSearchState,
+  ) {
+    return InputDecoration(
+      hintText: 'search_posts_hint'.tr(),
+      prefixIcon: Icon(
+        Icons.search_rounded,
+        color: colors.textSecondary,
+        size: 20,
+      ),
+      suffixIcon: _searchController.text.isNotEmpty
+          ? IconButton(
+              tooltip: 'clear'.tr(),
+              icon: Icon(
+                Icons.close_rounded,
+                size: 18,
+                color: colors.textSecondary,
+              ),
+              onPressed: () => _clearSearch(setSearchState),
+            )
+          : null,
+      isDense: true,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      filled: true,
+      fillColor: colors.surface,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
+        borderSide: BorderSide.none,
+      ),
     );
   }
 
@@ -394,44 +420,7 @@ class _CommunityPostState extends State<CommunityPost> with NavigationGuard {
             color: colors.textTitle,
             fontSize: AppDimens.fontSizeMd,
           ),
-          decoration: InputDecoration(
-            hintText: 'search_posts_hint'.tr(),
-            prefixIcon: Icon(
-              Icons.search_rounded,
-              color: colors.textSecondary,
-              size: 20,
-            ),
-            suffixIcon: _searchController.text.isNotEmpty
-                ? IconButton(
-                    tooltip: 'clear'.tr(),
-                    icon: Icon(
-                      Icons.close_rounded,
-                      size: 18,
-                      color: colors.textSecondary,
-                    ),
-                    onPressed: () {
-                      _searchDebounce?.cancel();
-                      _searchController.clear();
-                      setSearchState(() {});
-                      setState(() {
-                        _searchResults = null;
-                        _isSearching = false;
-                      });
-                    },
-                  )
-                : null,
-            isDense: true,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 10,
-            ),
-            filled: true,
-            fillColor: colors.surface,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
-              borderSide: BorderSide.none,
-            ),
-          ),
+          decoration: _searchFieldDecoration(colors, setSearchState),
         ),
       ),
     );

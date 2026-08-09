@@ -3,6 +3,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/post_cursor_controller.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
+import 'package:feple/common/util/post_cursor_controller_listener.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
@@ -250,7 +251,7 @@ class _FestivalBoardTabContent extends StatefulWidget {
 }
 
 class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
-    with AutomaticKeepAliveClientMixin, NavigationGuard {
+    with AutomaticKeepAliveClientMixin, NavigationGuard, PostCursorControllerListener {
   final _scrollController = ScrollController();
   late final _controller = PostCursorController(fetchPage: widget.tab.fetchPage);
 
@@ -258,9 +259,12 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
   bool get wantKeepAlive => true;
 
   @override
+  PostCursorController get postCursorController => _controller;
+
+  @override
   void initState() {
     super.initState();
-    _controller.addListener(_onControllerChanged);
+    _controller.addListener(onPostCursorControllerChanged);
     _scrollController.addListener(_onScroll);
     _controller.load();
   }
@@ -269,18 +273,9 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
   void dispose() {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
-    _controller.removeListener(_onControllerChanged);
+    _controller.removeListener(onPostCursorControllerChanged);
     _controller.dispose();
     super.dispose();
-  }
-
-  void _onControllerChanged() {
-    setState(() {});
-    final refreshError = _controller.refreshError;
-    if (refreshError != null) {
-      _controller.clearRefreshError();
-      context.showErrorSnackbar(refreshError);
-    }
   }
 
   void _onScroll() => _controller.onScroll(_scrollController);

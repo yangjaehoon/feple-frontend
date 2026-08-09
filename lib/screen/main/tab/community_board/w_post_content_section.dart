@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_page_indicator_pill.dart';
 import 'package:flutter/material.dart';
 
 class PostContentSection extends StatefulWidget {
@@ -104,27 +105,12 @@ class _PostContentSectionState extends State<PostContentSection> {
           ),
           Positioned(
             bottom: 10,
-            child: _buildPageIndicator(),
+            child: PageIndicatorPill(
+              currentIndex: _currentPage,
+              total: widget.imageUrls.length,
+            ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildPageIndicator() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        '${_currentPage + 1}/${widget.imageUrls.length}',
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: AppDimens.fontSizeXxs,
-          fontWeight: FontWeight.w600,
-        ),
       ),
     );
   }

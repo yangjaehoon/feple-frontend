@@ -71,6 +71,57 @@ class _HomeFragmentState extends State<HomeFragment> {
   void _onArtistFollowChanged() => _notifier.refreshArtists();
   void _onAppResumed() => _notifier.refresh();
 
+  Future<void> _onRefresh(BuildContext context) async {
+    try {
+      await _notifier.refresh(force: true);
+    } catch (_) {
+      if (!context.mounted) return;
+      context.showErrorSnackbar('refresh_failed'.tr());
+    }
+  }
+
+  Widget _buildBody(AbstractThemeColors colors) {
+    return ListenableBuilder(
+      listenable: _notifier,
+      builder: (context, _) {
+        if (_notifier.userId == null) {
+          return Center(
+            child: CircularProgressIndicator(color: colors.loadingIndicator),
+          );
+        }
+        return RefreshIndicator(
+          color: colors.activate,
+          onRefresh: () => _onRefresh(context),
+          child: SingleChildScrollView(
+            controller: _scrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
+            child: _buildScrollContent(context, colors),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildScrollToTopButton(AbstractThemeColors colors) {
+    return Positioned(
+      bottom: 20,
+      right: 16,
+      child: FloatingActionButton.small(
+        heroTag: 'homeScrollTop',
+        onPressed: () => _scrollController.animateTo(
+          0,
+          duration: AppDimens.animNormal,
+          curve: Curves.easeOut,
+        ),
+        backgroundColor: colors.surface,
+        foregroundColor: colors.textTitle,
+        elevation: 6,
+        child: const Icon(Icons.arrow_upward_rounded, size: 20),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     context
@@ -83,59 +134,11 @@ class _HomeFragmentState extends State<HomeFragment> {
           child: Column(
             children: [
               const FepleAppBar('Feple'),
-              Expanded(
-                child: ListenableBuilder(
-                  listenable: _notifier,
-                  builder: (context, _) {
-                    if (_notifier.userId == null) {
-                      return Center(
-                        child: CircularProgressIndicator(
-                          color: colors.loadingIndicator,
-                        ),
-                      );
-                    }
-                    return RefreshIndicator(
-                      color: colors.activate,
-                      onRefresh: () async {
-                        try {
-                          await _notifier.refresh(force: true);
-                        } catch (_) {
-                          if (!context.mounted) return;
-                          context.showErrorSnackbar('refresh_failed'.tr());
-                        }
-                      },
-                      child: SingleChildScrollView(
-                        controller: _scrollController,
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.only(
-                          bottom: AppDimens.scrollPaddingBottom,
-                        ),
-                        child: _buildScrollContent(context, colors),
-                      ),
-                    );
-                  },
-                ),
-              ),
+              Expanded(child: _buildBody(colors)),
             ],
           ),
         ),
-        if (_showScrollToTop)
-          Positioned(
-            bottom: 20,
-            right: 16,
-            child: FloatingActionButton.small(
-              heroTag: 'homeScrollTop',
-              onPressed: () => _scrollController.animateTo(
-                0,
-                duration: AppDimens.animNormal,
-                curve: Curves.easeOut,
-              ),
-              backgroundColor: colors.surface,
-              foregroundColor: colors.textTitle,
-              elevation: 6,
-              child: const Icon(Icons.arrow_upward_rounded, size: 20),
-            ),
-          ),
+        if (_showScrollToTop) _buildScrollToTopButton(colors),
       ],
     );
   }

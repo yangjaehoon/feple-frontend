@@ -120,24 +120,12 @@ class _FollowedArtistsByGenreScreenState
   Widget _buildGenreChips(List<String> genres) {
     return Padding(
       padding: const EdgeInsets.only(top: 12, bottom: 4),
-      child: SizedBox(
-        height: 36,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          children: [
-            SelectableChip(
-              label: 'filter_all'.tr(),
-              selected: _selectedGenre == null,
-              onTap: () => setState(() => _selectedGenre = null),
-            ),
-            ...genres.map((genre) => SelectableChip(
-                  label: genre,
-                  selected: _selectedGenre == genre,
-                  onTap: () => setState(() => _selectedGenre = genre),
-                )),
-          ],
-        ),
+      child: SelectableChipRow<String>(
+        values: genres,
+        selected: _selectedGenre,
+        allLabel: 'filter_all'.tr(),
+        labelOf: (genre) => genre,
+        onChanged: (genre) => setState(() => _selectedGenre = genre),
       ),
     );
   }

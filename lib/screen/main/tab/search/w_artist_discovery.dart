@@ -234,26 +234,12 @@ class _ArtistContentState extends State<_ArtistContent> with NavigationGuard {
   }
 
   Widget _buildGenreChips(List<String> genres) {
-    return SizedBox(
-      height: 36,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        children: [
-          SelectableChip(
-            label: 'filter_all'.tr(),
-            selected: _selectedGenre == null,
-            onTap: () => setState(() => _selectedGenre = null),
-          ),
-          ...genres.map(
-            (genre) => SelectableChip(
-              label: artistGenreLabel(genre),
-              selected: _selectedGenre == genre,
-              onTap: () => setState(() => _selectedGenre = genre),
-            ),
-          ),
-        ],
-      ),
+    return SelectableChipRow<String>(
+      values: genres,
+      selected: _selectedGenre,
+      allLabel: 'filter_all'.tr(),
+      labelOf: artistGenreLabel,
+      onChanged: (genre) => setState(() => _selectedGenre = genre),
     );
   }
 

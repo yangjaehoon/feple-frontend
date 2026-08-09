@@ -101,39 +101,24 @@ class _AllFavoriteBoardsScreenState extends State<AllFavoriteBoardsScreen>
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (showChips) _buildTypeChips(colors),
+                if (showChips) _buildTypeChips(),
                 Expanded(child: _buildGrid(colors)),
               ],
             ),
     );
   }
 
-  Widget _buildTypeChips(AbstractThemeColors colors) {
+  Widget _buildTypeChips() {
     return Padding(
       padding: const EdgeInsets.only(top: 12, bottom: 4),
-      child: SizedBox(
-        height: 36,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          children: [
-            SelectableChip(
-              label: 'filter_all'.tr(),
-              selected: _selectedType == null,
-              onTap: () => setState(() => _selectedType = null),
-            ),
-            SelectableChip(
-              label: 'artist_boards_section'.tr(),
-              selected: _selectedType == FavoriteBoardType.artist,
-              onTap: () => setState(() => _selectedType = FavoriteBoardType.artist),
-            ),
-            SelectableChip(
-              label: 'festival_boards_section'.tr(),
-              selected: _selectedType == FavoriteBoardType.festival,
-              onTap: () => setState(() => _selectedType = FavoriteBoardType.festival),
-            ),
-          ],
-        ),
+      child: SelectableChipRow<FavoriteBoardType>(
+        values: FavoriteBoardType.values,
+        selected: _selectedType,
+        allLabel: 'filter_all'.tr(),
+        labelOf: (type) => type == FavoriteBoardType.artist
+            ? 'artist_boards_section'.tr()
+            : 'festival_boards_section'.tr(),
+        onChanged: (type) => setState(() => _selectedType = type),
       ),
     );
   }

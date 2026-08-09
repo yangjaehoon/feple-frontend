@@ -10,14 +10,14 @@ Color rainProbColor(int prob) {
 
 extension WeatherConditionIcon on WeatherModel {
   String get conditionIcon => switch (ptyCode) {
-        '1' => '🌧',
-        '2' => '🌨',
-        '3' => '❄️',
-        '4' => '🌦',
-        _ => switch (skyCode) {
-          '3' => '🌤',
-          '4' => '☁️',
-          _ => '☀️',
+        PtyCode.rain => '🌧',
+        PtyCode.rainSnow => '🌨',
+        PtyCode.snow => '❄️',
+        PtyCode.shower => '🌦',
+        PtyCode.none => switch (skyCode) {
+          SkyCode.cloudy => '🌤',
+          SkyCode.overcast => '☁️',
+          SkyCode.sunny => '☀️',
         },
       };
 }

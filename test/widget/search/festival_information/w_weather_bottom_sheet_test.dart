@@ -21,8 +21,8 @@ WeatherModel _weather({
   double minTemp = 20,
   double maxTemp = 28,
   int rainProb = 30,
-  String skyCode = '1',
-  String ptyCode = '0',
+  SkyCode skyCode = SkyCode.sunny,
+  PtyCode ptyCode = PtyCode.none,
 }) {
   return WeatherModel(
     fcstDate: _isoDate(0),

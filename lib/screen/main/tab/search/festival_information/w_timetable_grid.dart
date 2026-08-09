@@ -190,11 +190,18 @@ class TimetableGrid extends StatelessWidget {
         // 운영 항목: 별도 열 없이 모든 스테이지 열에 동일하게 표시.
         final columnCount = opsColumnCount(stages);
         for (int i = 0; i < columnCount; i++) {
-          cards.add(Positioned(
-            left: i * stageW + 3,
-            top: _topPad + rawTop + 2,
-            width: stageW - 6,
+          final rect = timetableCardRect(
+            columnIndex: i,
+            stageW: stageW,
+            topPad: _topPad,
+            rawTop: rawTop,
             height: clampedH,
+          );
+          cards.add(Positioned(
+            left: rect.left,
+            top: rect.top,
+            width: rect.width,
+            height: rect.height,
             child: _PerformanceCard(
               entry: entry,
               color: kOpsColor,
@@ -206,11 +213,18 @@ class TimetableGrid extends StatelessWidget {
       } else {
         final stageIndex = stages.indexOf(entry.stageName);
         if (stageIndex < 0) continue;
-        cards.add(Positioned(
-          left: stageIndex * stageW + 3,
-          top: _topPad + rawTop + 2,
-          width: stageW - 6,
+        final rect = timetableCardRect(
+          columnIndex: stageIndex,
+          stageW: stageW,
+          topPad: _topPad,
+          rawTop: rawTop,
           height: clampedH,
+        );
+        cards.add(Positioned(
+          left: rect.left,
+          top: rect.top,
+          width: rect.width,
+          height: rect.height,
           child: _PerformanceCard(
             entry: entry,
             color: _colorFor(entry.stageName),

@@ -22,3 +22,20 @@ Widget clampTimetableTextScale(BuildContext context, {required Widget child}) {
 /// 운영 항목(공연이 아닌 행사 등)은 스테이지 구분 없이 모든 열에 걸쳐 표시된다.
 /// 그날 실제 공연이 없어 stages가 비어있어도 카드가 사라지지 않도록 최소 1칸을 보장한다.
 int opsColumnCount(List<String> stages) => stages.isEmpty ? 1 : stages.length;
+
+/// 타임테이블 카드 한 칸의 배치 좌표/크기. compact/fullscreen 그리드가 카드
+/// 위젯 자체는 각자 다르게 그리지만(폰트 크기 적응 여부 등), 열 안에서의
+/// 위치 계산(좌우 3px/6px 인셋, 상하 2px 인셋)은 동일하다.
+({double left, double top, double width, double height}) timetableCardRect({
+  required int columnIndex,
+  required double stageW,
+  required double topPad,
+  required double rawTop,
+  required double height,
+}) =>
+    (
+      left: columnIndex * stageW + 3,
+      top: topPad + rawTop + 2,
+      width: stageW - 6,
+      height: height,
+    );

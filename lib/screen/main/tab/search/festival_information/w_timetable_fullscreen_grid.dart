@@ -241,26 +241,42 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
       final clampedH = (cardH - 4).clamp(4.0, double.infinity);
       if (entry.isOps) {
         final columnCount = opsColumnCount(_stages);
-        return List.generate(columnCount, (i) => Positioned(
-          left: i * stageW + 3,
-          top: _topPad + rawTop + 2,
-          width: stageW - 6,
-          height: clampedH,
-          child: _OfficialCard(
-            entry: entry,
-            color: kOpsColor,
-            followed: false,
-            cardH: cardH - 4,
-          ),
-        ));
+        return List.generate(columnCount, (i) {
+          final rect = timetableCardRect(
+            columnIndex: i,
+            stageW: stageW,
+            topPad: _topPad,
+            rawTop: rawTop,
+            height: clampedH,
+          );
+          return Positioned(
+            left: rect.left,
+            top: rect.top,
+            width: rect.width,
+            height: rect.height,
+            child: _OfficialCard(
+              entry: entry,
+              color: kOpsColor,
+              followed: false,
+              cardH: cardH - 4,
+            ),
+          );
+        });
       }
       final stageIndex = _stages.indexOf(entry.stageName);
       if (stageIndex < 0) return const <Widget>[];
-      return [Positioned(
-        left: stageIndex * stageW + 3,
-        top: _topPad + rawTop + 2,
-        width: stageW - 6,
+      final rect = timetableCardRect(
+        columnIndex: stageIndex,
+        stageW: stageW,
+        topPad: _topPad,
+        rawTop: rawTop,
         height: clampedH,
+      );
+      return [Positioned(
+        left: rect.left,
+        top: rect.top,
+        width: rect.width,
+        height: rect.height,
         child: _OfficialCard(
           entry: entry,
           color: _stageColor(entry.stageName),

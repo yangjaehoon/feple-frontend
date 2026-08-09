@@ -19,56 +19,31 @@ class LikeCommentRow extends StatelessWidget {
     required this.onScrapTap,
   });
 
-  Widget _buildLikeButton(AbstractThemeColors colors, String lang) {
+  Widget _buildStatButton(
+    AbstractThemeColors colors,
+    String lang, {
+    required String label,
+    required IconData icon,
+    required Color iconColor,
+    required int count,
+    required VoidCallback onTap,
+  }) {
     return Semantics(
       button: true,
-      label: 'like'.tr(),
+      label: label,
       child: GestureDetector(
         onTap: () {
           HapticFeedback.lightImpact();
-          onLikeTap();
+          onTap();
         },
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: Row(
             children: [
-              Icon(
-                interaction.liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                color: colors.likeActiveColor,
-              ),
+              Icon(icon, color: iconColor),
               const SizedBox(width: 4),
               Text(
-                interaction.likeCount.toDisplayCount(lang),
-                style: TextStyle(fontSize: AppDimens.fontSizeXl, color: colors.textTitle, fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildScrapButton(AbstractThemeColors colors, String lang) {
-    return Semantics(
-      button: true,
-      label: 'scrap'.tr(),
-      child: GestureDetector(
-        onTap: () {
-          HapticFeedback.lightImpact();
-          onScrapTap();
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Row(
-            children: [
-              Icon(
-                interaction.scraped ? Icons.star_rounded : Icons.star_border_rounded,
-                color: colors.accentColor,
-                size: 24,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                interaction.scrapCount.toDisplayCount(lang),
+                count.toDisplayCount(lang),
                 style: TextStyle(fontSize: AppDimens.fontSizeXl, color: colors.textTitle, fontWeight: FontWeight.w600),
               ),
             ],
@@ -84,9 +59,23 @@ class LikeCommentRow extends StatelessWidget {
     final lang = context.locale.languageCode;
     return Row(
       children: [
-        _buildLikeButton(colors, lang),
+        _buildStatButton(
+          colors, lang,
+          label: 'like'.tr(),
+          icon: interaction.liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+          iconColor: colors.likeActiveColor,
+          count: interaction.likeCount,
+          onTap: onLikeTap,
+        ),
         const SizedBox(width: 16),
-        _buildScrapButton(colors, lang),
+        _buildStatButton(
+          colors, lang,
+          label: 'scrap'.tr(),
+          icon: interaction.scraped ? Icons.star_rounded : Icons.star_border_rounded,
+          iconColor: colors.accentColor,
+          count: interaction.scrapCount,
+          onTap: onScrapTap,
+        ),
         const SizedBox(width: 16),
         Icon(Icons.comment_rounded, color: colors.textSecondary),
         const SizedBox(width: 4),

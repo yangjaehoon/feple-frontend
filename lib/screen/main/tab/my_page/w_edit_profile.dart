@@ -10,6 +10,7 @@ import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_nickname_field.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/screen/main/tab/my_page/w_profile_avatar_ring.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
@@ -236,34 +237,16 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
 
   Widget _buildAvatarRing(String? profileImageUrl, AbstractThemeColors colors) {
     final avatarSize = MediaQuery.sizeOf(context).width * 0.282; // 110/390
-    return Container(
-      width: avatarSize,
-      height: avatarSize,
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: colors.profileRingColor,
-        boxShadow: [
-          BoxShadow(
-            color: colors.cardShadow.withValues(alpha: 0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Container(
-        padding: const EdgeInsets.all(3),
-        decoration: BoxDecoration(shape: BoxShape.circle, color: colors.surface),
-        child: CircleAvatar(
-          radius: (avatarSize - 12) / 2,
-          backgroundColor: colors.backgroundMain,
-          backgroundImage: _pickedImage != null
-              ? FileImage(File(_pickedImage!.path)) as ImageProvider
-              : (profileImageUrl != null && profileImageUrl.isNotEmpty)
-                  ? CachedNetworkImageProvider(profileImageUrl, maxWidth: 144) as ImageProvider
-                  : const AssetImage('assets/image/feple_logo.png'),
-          child: null,
-        ),
+    return ProfileAvatarRing(
+      size: avatarSize,
+      child: CircleAvatar(
+        radius: (avatarSize - 12) / 2,
+        backgroundColor: colors.backgroundMain,
+        backgroundImage: _pickedImage != null
+            ? FileImage(File(_pickedImage!.path)) as ImageProvider
+            : (profileImageUrl != null && profileImageUrl.isNotEmpty)
+                ? CachedNetworkImageProvider(profileImageUrl, maxWidth: 144) as ImageProvider
+                : const AssetImage('assets/image/feple_logo.png'),
       ),
     );
   }

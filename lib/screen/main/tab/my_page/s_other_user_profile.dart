@@ -16,7 +16,9 @@ import 'package:feple/injection.dart';
 import 'package:feple/model/certification_model.dart';
 import 'package:feple/model/user_model.dart';
 import 'package:feple/screen/main/tab/my_page/cert_status_style.dart';
+import 'package:feple/screen/main/tab/my_page/w_certification_ring.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_posts.dart';
+import 'package:feple/screen/main/tab/my_page/w_profile_avatar_ring.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/service/block_service.dart';
 import 'package:feple/service/certification_service.dart';
@@ -273,43 +275,26 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
         ? imageUrl
         : null;
     final avatarSize = MediaQuery.sizeOf(context).width * 0.282; // 110/390
-    return Container(
-      width: avatarSize,
-      height: avatarSize,
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: colors.profileRingColor,
-        boxShadow: [
-          BoxShadow(
-            color: colors.cardShadow.withValues(alpha: 0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Container(
-        padding: const EdgeInsets.all(3),
-        decoration: BoxDecoration(shape: BoxShape.circle, color: colors.surface),
-        child: validImageUrl != null
-            ? CircleAvatar(
-                radius: (avatarSize - 12) / 2,
-                backgroundImage: CachedNetworkImageProvider(validImageUrl, maxWidth: 144),
-                backgroundColor: colors.backgroundMain,
-              )
-            : CircleAvatar(
-                radius: (avatarSize - 12) / 2,
-                backgroundColor: colors.activate,
-                child: Text(
-                  nickname.isNotEmpty ? nickname[0] : '?',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 32,
-                  ),
+    return ProfileAvatarRing(
+      size: avatarSize,
+      child: validImageUrl != null
+          ? CircleAvatar(
+              radius: (avatarSize - 12) / 2,
+              backgroundImage: CachedNetworkImageProvider(validImageUrl, maxWidth: 144),
+              backgroundColor: colors.backgroundMain,
+            )
+          : CircleAvatar(
+              radius: (avatarSize - 12) / 2,
+              backgroundColor: colors.activate,
+              child: Text(
+                nickname.isNotEmpty ? nickname[0] : '?',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 32,
                 ),
               ),
-      ),
+            ),
     );
   }
 
@@ -485,35 +470,10 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              padding: const EdgeInsets.all(3),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: ringColor.withValues(alpha: 0.6),
-                boxShadow: [
-                  BoxShadow(
-                    color: colors.cardShadow.withValues(alpha: 0.08),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Container(
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(shape: BoxShape.circle, color: colors.surface),
-                child: CircleAvatar(
-                  radius: MediaQuery.sizeOf(context).width * 0.113, // 44/390
-                  backgroundColor: ringColor.withValues(alpha: 0.15),
-                  backgroundImage: cert.posterUrl != null
-                      ? CachedNetworkImageProvider(cert.posterUrl!, maxWidth: 132)
-                      : null,
-                  child: isLoading
-                      ? const TapLoadingIndicator()
-                      : cert.posterUrl == null
-                      ? Icon(Icons.photo_rounded, size: 26, color: colors.textTitle.withValues(alpha: 0.3))
-                      : null,
-                ),
-              ),
+            CertificationRing(
+              imageUrl: cert.posterUrl,
+              ringColor: ringColor,
+              overlay: isLoading ? const TapLoadingIndicator() : null,
             ),
             const SizedBox(height: 6),
             SizedBox(

@@ -1,5 +1,4 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
@@ -10,7 +9,9 @@ import 'package:feple/common/widget/w_status_filter_chip.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/song_request_model.dart';
 import 'package:feple/provider/user_provider.dart';
+import 'package:feple/screen/main/tab/my_page/filtered_status_list_state.dart';
 import 'package:feple/screen/main/tab/my_page/song_request_status_style.dart';
+import 'package:feple/screen/main/tab/my_page/w_status_badge.dart';
 import 'package:feple/service/song_request_service.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
@@ -23,18 +24,19 @@ class SongRequestListScreen extends StatefulWidget {
   State<SongRequestListScreen> createState() => _SongRequestListScreenState();
 }
 
-class _SongRequestListScreenState extends State<SongRequestListScreen> {
+class _SongRequestListScreenState extends State<SongRequestListScreen>
+    with
+        FilteredStatusListState<SongRequestModel, SongRequestStatus,
+            SongRequestListScreen> {
   final _service = sl<SongRequestService>();
-  List<SongRequestModel> _requests = [];
-  bool _isLoading = true;
-  bool _hasError = false;
-  Object? _error;
   int? _userId;
-  SongRequestStatus? _filter; // null = 전체
 
-  List<SongRequestModel> get _filtered => _filter == null
-      ? _requests
-      : _requests.where((r) => r.status == _filter).toList();
+  @override
+  Future<List<SongRequestModel>> fetchItems() =>
+      _service.fetchAllMyRequests(_userId!);
+
+  @override
+  SongRequestStatus statusOf(SongRequestModel item) => item.status;
 
   @override
   void didChangeDependencies() {
@@ -42,49 +44,7 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
     final userId = context.read<UserProvider>().currentUserId;
     if (userId != null && userId != _userId) {
       _userId = userId;
-      _load();
-    }
-  }
-
-  Future<void> _load() async {
-    if (_userId == null) return;
-    setState(() {
-      _isLoading = true;
-      _hasError = false;
-    });
-    try {
-      final list = await _service.fetchAllMyRequests(_userId!);
-      if (mounted) {
-        setState(() {
-          _requests = list;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _hasError = true;
-          _error = e;
-        });
-      }
-    }
-  }
-
-  // RefreshIndicator용 — 기존 목록 유지, 스켈레톤 전환 없음. 실패해도 목록은
-  // 유지하되(크래시 방지), 실패 사실은 알려야 한다
-  Future<void> _refresh() async {
-    if (_userId == null) return;
-    try {
-      final list = await _service.fetchAllMyRequests(_userId!);
-      if (mounted) {
-        setState(() {
-          _requests = list;
-          _hasError = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) context.showErrorSnackbar(networkAwareErrorKey(e, 'err_fetch_data').tr());
+      loadItems();
     }
   }
 
@@ -130,29 +90,29 @@ class _SongRequestListScreenState extends State<SongRequestListScreen> {
   Widget _buildFilterChips() {
     return StatusFilterChipRow<SongRequestStatus>(
       values: SongRequestStatus.values,
-      selected: _filter,
+      selected: filter,
       allLabel: 'filter_all'.tr(),
       labelOf: (status) => status.labelKey.tr(),
       colorOf: (status, colors) => status.displayColor(colors),
-      onChanged: (status) => setState(() => _filter = status),
+      onChanged: (status) => setState(() => filter = status),
     );
   }
 
   Widget _buildBody(AbstractThemeColors colors) {
-    final displayed = _filtered;
+    final displayed = filteredItems;
     return RefreshIndicator(
-      onRefresh: _refresh,
+      onRefresh: refreshItems,
       color: colors.activate,
-      child: _isLoading
+      child: isLoadingItems
           ? _buildSkeleton(colors)
-          : _hasError
-          ? _buildScrollable(ErrorState.network(_error!, onRetry: _load))
+          : hasLoadError
+          ? _buildScrollable(ErrorState.network(loadError!, onRetry: loadItems))
           : displayed.isEmpty
           ? _buildScrollable(
               EmptyState(
                 icon: Icons.music_off_rounded,
                 title: 'song_request_no_history'.tr(),
-                subtitle: _filter == null
+                subtitle: filter == null
                     ? 'song_request_no_history_hint'.tr()
                     : null,
               ),
@@ -253,27 +213,6 @@ class SongRequestItem extends StatelessWidget {
   }
 
   Widget _buildStatusBadge(Color statusColor, String statusLabel) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-      decoration: BoxDecoration(
-        color: statusColor.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.circle, size: 7, color: statusColor),
-          const SizedBox(width: 4),
-          Text(
-            statusLabel,
-            style: TextStyle(
-              fontSize: AppDimens.fontSizeXxs,
-              fontWeight: FontWeight.w600,
-              color: statusColor,
-            ),
-          ),
-        ],
-      ),
-    );
+    return StatusBadge(color: statusColor, label: statusLabel);
   }
 }

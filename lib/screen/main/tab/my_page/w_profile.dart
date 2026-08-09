@@ -3,6 +3,7 @@ import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_level_badge.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/screen/main/tab/my_page/w_edit_profile.dart';
+import 'package:feple/screen/main/tab/my_page/w_profile_avatar_ring.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
@@ -146,36 +147,16 @@ class ProfileWidgetState extends State<ProfileWidget> {
 
   Widget _buildProfileImage(AppUser user, AbstractThemeColors colors) {
     final avatarSize = MediaQuery.sizeOf(context).width * 0.282; // 110/390
-    return Container(
-      width: avatarSize,
-      height: avatarSize,
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: colors.profileRingColor,
-        boxShadow: [
-          BoxShadow(
-            color: colors.cardShadow.withValues(alpha: 0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Container(
-        padding: const EdgeInsets.all(3),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: colors.surface,
-        ),
-        child: CircleAvatar(
-          radius: (avatarSize - 12) / 2,
-          backgroundImage: (user.profileImageUrl != null &&
-                  user.profileImageUrl!.isNotEmpty)
-              ? CachedNetworkImageProvider(user.profileImageUrl!,
-                  maxWidth: 144) as ImageProvider
-              : const AssetImage('assets/image/feple_logo.png'),
-          backgroundColor: colors.backgroundMain,
-        ),
+    return ProfileAvatarRing(
+      size: avatarSize,
+      child: CircleAvatar(
+        radius: (avatarSize - 12) / 2,
+        backgroundImage: (user.profileImageUrl != null &&
+                user.profileImageUrl!.isNotEmpty)
+            ? CachedNetworkImageProvider(user.profileImageUrl!,
+                maxWidth: 144) as ImageProvider
+            : const AssetImage('assets/image/feple_logo.png'),
+        backgroundColor: colors.backgroundMain,
       ),
     );
   }

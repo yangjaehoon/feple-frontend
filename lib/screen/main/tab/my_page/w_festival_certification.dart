@@ -6,12 +6,12 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/certification_model.dart';
 import 'package:feple/screen/main/tab/my_page/cert_status_style.dart';
 import 'package:feple/screen/main/tab/my_page/s_certification_list.dart';
+import 'package:feple/screen/main/tab/my_page/w_certification_ring.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class FestivalCertificationWidget extends StatefulWidget {
   const FestivalCertificationWidget({super.key});
@@ -196,7 +196,11 @@ class FestivalCertificationWidgetState extends State<FestivalCertificationWidget
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildCertRing(cert.posterUrl, ringColor, isApproved, colors),
+            CertificationRing(
+              imageUrl: cert.posterUrl,
+              ringColor: ringColor,
+              ringAlpha: isApproved ? 0.6 : 0.3,
+            ),
             const SizedBox(height: 4),
             SizedBox(
               width: MediaQuery.sizeOf(context).width * 0.272, // 106/390
@@ -220,35 +224,6 @@ class FestivalCertificationWidgetState extends State<FestivalCertificationWidget
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCertRing(String? imageUrl, Color ringColor, bool isApproved, AbstractThemeColors colors) {
-    return Container(
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: ringColor.withValues(alpha: isApproved ? 0.6 : 0.3),
-        boxShadow: [
-          BoxShadow(
-            color: colors.cardShadow.withValues(alpha: 0.08),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Container(
-        padding: const EdgeInsets.all(2),
-        decoration: BoxDecoration(shape: BoxShape.circle, color: colors.surface),
-        child: CircleAvatar(
-          radius: MediaQuery.sizeOf(context).width * 0.113, // 44/390
-          backgroundColor: ringColor.withValues(alpha: 0.15),
-          backgroundImage: imageUrl != null ? CachedNetworkImageProvider(imageUrl, maxWidth: 132) : null,
-          child: imageUrl == null
-              ? Icon(Icons.photo_rounded, size: 26, color: colors.textTitle.withValues(alpha: 0.3))
-              : null,
         ),
       ),
     );

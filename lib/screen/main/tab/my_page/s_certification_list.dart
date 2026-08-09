@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
-import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/util/navigate_after_fetch.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
@@ -22,7 +21,9 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 import 'cert_status_style.dart';
+import 'filtered_status_list_state.dart';
 import 'w_rating_sheet.dart';
+import 'w_status_badge.dart';
 import 'w_submit_certification_sheet.dart';
 
 class CertificationListScreen extends StatefulWidget {
@@ -33,63 +34,23 @@ class CertificationListScreen extends StatefulWidget {
       _CertificationListScreenState();
 }
 
-class _CertificationListScreenState extends State<CertificationListScreen> {
+class _CertificationListScreenState extends State<CertificationListScreen>
+    with
+        FilteredStatusListState<CertificationModel, CertStatus,
+            CertificationListScreen> {
   final _certService = sl<CertificationService>();
-  List<CertificationModel> _certifications = [];
-  bool _isLoading = true;
-  bool _hasError = false;
-  Object? _error;
-  CertStatus? _filter; // null = 전체
 
-  List<CertificationModel> get _filtered => _filter == null
-      ? _certifications
-      : _certifications.where((c) => c.status == _filter).toList();
+  @override
+  Future<List<CertificationModel>> fetchItems() =>
+      _certService.getMyCertifications();
+
+  @override
+  CertStatus statusOf(CertificationModel item) => item.status;
 
   @override
   void initState() {
     super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
-    setState(() {
-      _isLoading = true;
-      _hasError = false;
-    });
-    try {
-      final list = await _certService.getMyCertifications();
-      if (mounted) {
-        setState(() {
-          _certifications = list;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _certifications = [];
-          _isLoading = false;
-          _hasError = true;
-          _error = e;
-        });
-      }
-    }
-  }
-
-  // RefreshIndicator용 — 기존 목록 유지, 스켈레톤 전환 없음. 실패해도 목록은
-  // 유지하되(크래시 방지), 실패 사실은 알려야 한다
-  Future<void> _refresh() async {
-    try {
-      final list = await _certService.getMyCertifications();
-      if (mounted) {
-        setState(() {
-          _certifications = list;
-          _hasError = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) context.showErrorSnackbar(networkAwareErrorKey(e, 'err_fetch_data').tr());
-    }
+    loadItems();
   }
 
   /// 에러·빈 상태를 RefreshIndicator가 감지할 수 있도록 스크롤 가능하게 감쌉니다.
@@ -155,35 +116,35 @@ class _CertificationListScreenState extends State<CertificationListScreen> {
       context,
       builder: (_) => SubmitCertificationSheet(certService: _certService),
     );
-    if (result == true) unawaited(_load());
+    if (result == true) unawaited(loadItems());
   }
 
   Widget _buildFilterChips() {
     return StatusFilterChipRow<CertStatus>(
       values: CertStatus.values,
-      selected: _filter,
+      selected: filter,
       allLabel: 'filter_all'.tr(),
       labelOf: (status) => status.labelKey.tr(),
       colorOf: (status, colors) => status.displayColor(colors),
-      onChanged: (status) => setState(() => _filter = status),
+      onChanged: (status) => setState(() => filter = status),
     );
   }
 
   Widget _buildBody(AbstractThemeColors colors) {
-    final displayed = _filtered;
+    final displayed = filteredItems;
     return RefreshIndicator(
-      onRefresh: _refresh,
+      onRefresh: refreshItems,
       color: colors.activate,
-      child: _isLoading
+      child: isLoadingItems
           ? _buildSkeleton(colors)
-          : _hasError
-          ? _buildScrollable(ErrorState.network(_error!, onRetry: _load))
+          : hasLoadError
+          ? _buildScrollable(ErrorState.network(loadError!, onRetry: loadItems))
           : displayed.isEmpty
           ? _buildScrollable(
               EmptyState(
                 icon: Icons.verified_outlined,
                 title: 'cert_no_history'.tr(),
-                subtitle: _filter == null ? 'cert_no_history_hint'.tr() : null,
+                subtitle: filter == null ? 'cert_no_history_hint'.tr() : null,
               ),
             )
           : ListView.separated(
@@ -379,27 +340,12 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
   }
 
   Widget _buildStatusBadge(Color statusColor, String statusLabel) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-      decoration: BoxDecoration(
-        color: statusColor.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(AppDimens.cardRadius),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.circle, size: 7, color: statusColor),
-          const SizedBox(width: 4),
-          Text(
-            statusLabel,
-            style: TextStyle(
-              fontSize: AppDimens.fontSizeXs,
-              fontWeight: FontWeight.w600,
-              color: statusColor,
-            ),
-          ),
-        ],
-      ),
+    return StatusBadge(
+      color: statusColor,
+      label: statusLabel,
+      backgroundAlpha: 0.15,
+      borderRadius: AppDimens.cardRadius,
+      fontSize: AppDimens.fontSizeXs,
     );
   }
 

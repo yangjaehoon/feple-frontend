@@ -3,6 +3,7 @@ import 'package:feple/common/constant/timetable_colors.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/dart/extension/time_of_day_extension.dart';
 import 'package:feple/model/my_timetable_entry.dart';
+import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
@@ -61,11 +62,8 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
   }
 
   TimeOfDay _parse(String t) {
-    final parts = t.split(':');
-    return TimeOfDay(
-      hour: int.tryParse(parts.isNotEmpty ? parts[0] : '0') ?? 0,
-      minute: int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0,
-    );
+    final parsed = parseHHmm(t);
+    return TimeOfDay(hour: parsed.hour, minute: parsed.minute);
   }
 
   Future<void> _pickStartTime() async {

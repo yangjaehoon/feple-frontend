@@ -16,12 +16,19 @@ class TimetableRange {
 
 String formatTimeRange(String startTime, String endTime) => '$startTime – $endTime';
 
+/// 'HH:mm' 문자열을 (hour, minute)으로 파싱. 형식이 잘못되면 0으로 처리.
+({int hour, int minute}) parseHHmm(String time) {
+  final parts = time.split(':');
+  return (
+    hour: int.tryParse(parts.isNotEmpty ? parts[0] : '0') ?? 0,
+    minute: int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0,
+  );
+}
+
 /// 'HH:mm' 시각을 그리드 시작 시각(startHour) 기준 Y좌표(px)로 환산.
 double timetableMinutesToY(String time, int startHour, double pxPerMin) {
-  final parts = time.split(':');
-  final hour = int.tryParse(parts.isNotEmpty ? parts[0] : '0') ?? 0;
-  final minute = int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0;
-  return ((hour - startHour) * 60 + minute) * pxPerMin;
+  final t = parseHHmm(time);
+  return ((t.hour - startHour) * 60 + t.minute) * pxPerMin;
 }
 
 TimetableRange computeTimetableRange(List<TimetableEntry> entries, String? date) {

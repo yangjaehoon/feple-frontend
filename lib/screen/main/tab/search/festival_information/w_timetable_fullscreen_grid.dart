@@ -49,10 +49,8 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
   Color _stageColor(String stage) => timetableStageColor(stage, _stages);
 
   int _minutesOf(String time) {
-    final parts = time.split(':');
-    final hour = int.tryParse(parts.isNotEmpty ? parts[0] : '0') ?? 0;
-    final minute = int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0;
-    return hour * 60 + minute;
+    final t = parseHHmm(time);
+    return t.hour * 60 + t.minute;
   }
 
   // 오늘 날짜 탭이 선택돼 있고 현재 시각이 그리드 범위 안에 있을 때만

@@ -17,13 +17,7 @@ import 'package:image_picker/image_picker.dart';
 
 class WritePost extends StatefulWidget {
   final String title;
-  final Future<void> Function(
-    String title,
-    String content,
-    bool anonymous,
-    List<String> imageObjectKeys,
-  )
-  onSubmit;
+  final Future<void> Function(PostDraft draft) onSubmit;
   final String? initialTitle;
   final String? initialContent;
   final bool showAnonymous;
@@ -142,7 +136,12 @@ class _WritePostState extends State<WritePost> {
         ..._existingImageUrls,
         ...uploaded.map((p) => p.objectKey),
       ];
-      await widget.onSubmit(title, content, _anonymous, imageObjectKeys);
+      await widget.onSubmit(PostDraft(
+        title: title,
+        content: content,
+        anonymous: _anonymous,
+        imageObjectKeys: imageObjectKeys,
+      ));
       unawaited(AppReviewService.recordPostCreated());
       if (!mounted) return;
       context.showSuccessSnackbar('post_success'.tr());

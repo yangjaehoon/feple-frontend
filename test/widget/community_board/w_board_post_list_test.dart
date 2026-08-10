@@ -37,7 +37,7 @@ Future<void> _pump(
             boardName: '자유 게시판',
             fetchPage: fetchPage,
             writeScreenTitle: '자유 게시판 글쓰기',
-            onSubmitPost: (_, _, _, _) async {},
+            onSubmitPost: (_) async {},
           ),
         ),
       ),

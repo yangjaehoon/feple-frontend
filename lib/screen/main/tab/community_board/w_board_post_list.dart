@@ -11,6 +11,7 @@ import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_write_post_fab.dart';
 import 'package:feple/common/widget/w_write_post.dart';
+import 'package:feple/model/post_draft.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
@@ -21,13 +22,7 @@ class BoardPostList extends StatefulWidget {
   final String boardName;
   final Future<PostCursorPage> Function({int? cursor, int size}) fetchPage;
   final String writeScreenTitle;
-  final Future<void> Function(
-    String title,
-    String content,
-    bool anonymous,
-    List<String> imageObjectKeys,
-  )
-  onSubmitPost;
+  final Future<void> Function(PostDraft draft) onSubmitPost;
 
   const BoardPostList({
     super.key,

@@ -64,52 +64,12 @@ class ErrorState extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(
-                      width: 88,
-                      height: 88,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: colors.error.withValues(alpha: 0.08),
-                      ),
-                      child: Icon(
-                        icon,
-                        size: 42,
-                        color: colors.error.withValues(alpha: 0.55),
-                      ),
-                    ),
+                    _buildIconBadge(colors),
                     const SizedBox(height: 16),
-                    Text(
-                      message,
-                      style: TextStyle(
-                        fontSize: AppDimens.fontSizeMd,
-                        color: colors.textSecondary,
-                        height: 1.5,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
+                    _buildMessage(colors),
                     if (onRetry != null) ...[
                       const SizedBox(height: 20),
-                      FilledButton.icon(
-                        onPressed: onRetry,
-                        icon: const Icon(Icons.refresh_rounded, size: 18),
-                        label: Text('retry'.tr()),
-                        style: FilledButton.styleFrom(
-                          backgroundColor: colors.activate,
-                          foregroundColor: Theme.of(
-                            context,
-                          ).colorScheme.onPrimary,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 10,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              AppDimens.shapeButton,
-                            ),
-                          ),
-                        ),
-                      ),
+                      _buildRetryButton(context, colors),
                     ],
                   ],
                 ),
@@ -118,6 +78,47 @@ class ErrorState extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildIconBadge(AbstractThemeColors colors) {
+    return Container(
+      width: 88,
+      height: 88,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: colors.error.withValues(alpha: 0.08),
+      ),
+      child: Icon(icon, size: 42, color: colors.error.withValues(alpha: 0.55)),
+    );
+  }
+
+  Widget _buildMessage(AbstractThemeColors colors) {
+    return Text(
+      message,
+      style: TextStyle(
+        fontSize: AppDimens.fontSizeMd,
+        color: colors.textSecondary,
+        height: 1.5,
+      ),
+      textAlign: TextAlign.center,
+    );
+  }
+
+  Widget _buildRetryButton(BuildContext context, AbstractThemeColors colors) {
+    return FilledButton.icon(
+      onPressed: onRetry,
+      icon: const Icon(Icons.refresh_rounded, size: 18),
+      label: Text('retry'.tr()),
+      style: FilledButton.styleFrom(
+        backgroundColor: colors.activate,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppDimens.shapeButton),
+        ),
+      ),
     );
   }
 }

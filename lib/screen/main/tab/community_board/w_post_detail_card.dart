@@ -250,12 +250,14 @@ class _PostDetailCardState extends State<PostDetailCard> {
           initialContent: _content,
           initialImageUrls: _imageUrls,
           showAnonymous: false,
-          onSubmit: (t, c, _, imgs) async {
+          onSubmit: (draft) async {
+            final t = draft.title;
+            final c = draft.content;
             await _postService.updatePost(
               postId: widget.id,
               title: t,
               content: c,
-              imageObjectKeys: imgs,
+              imageObjectKeys: draft.imageObjectKeys,
             );
             AppEvents.postChanged.value = PostChangedEvent.specific(widget.id);
             // updatePost는 응답 바디가 없어 서버가 계산한 imageUrls를 알 수 없음 —

@@ -50,16 +50,10 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
               cursor: cursor,
               size: size,
             ),
-        submit: (title, content, anonymous, imageObjectKeys) =>
-            postService.createFestivalPost(
-              festivalId: widget.festivalId,
-              draft: PostDraft(
-                title: title,
-                content: content,
-                anonymous: anonymous,
-                imageObjectKeys: imageObjectKeys,
-              ),
-            ),
+        submit: (draft) => postService.createFestivalPost(
+          festivalId: widget.festivalId,
+          draft: draft,
+        ),
       ),
       _BoardTab(
         name: 'companion_board'.tr(),
@@ -69,16 +63,10 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
               cursor: cursor,
               size: size,
             ),
-        submit: (title, content, anonymous, imageObjectKeys) =>
-            postService.createFestivalCompanionPost(
-              festivalId: widget.festivalId,
-              draft: PostDraft(
-                title: title,
-                content: content,
-                anonymous: anonymous,
-                imageObjectKeys: imageObjectKeys,
-              ),
-            ),
+        submit: (draft) => postService.createFestivalCompanionPost(
+          festivalId: widget.festivalId,
+          draft: draft,
+        ),
       ),
       _BoardTab(
         name: 'ticket_board'.tr(),
@@ -88,16 +76,10 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
               cursor: cursor,
               size: size,
             ),
-        submit: (title, content, anonymous, imageObjectKeys) =>
-            postService.createFestivalTicketPost(
-              festivalId: widget.festivalId,
-              draft: PostDraft(
-                title: title,
-                content: content,
-                anonymous: anonymous,
-                imageObjectKeys: imageObjectKeys,
-              ),
-            ),
+        submit: (draft) => postService.createFestivalTicketPost(
+          festivalId: widget.festivalId,
+          draft: draft,
+        ),
       ),
     ];
     _tabController = TabController(length: _tabs.length, vsync: this);
@@ -415,7 +397,7 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
   }
 }
 
-typedef _SubmitFn = Future<void> Function(String, String, bool, List<String>);
+typedef _SubmitFn = Future<void> Function(PostDraft draft);
 
 class _BoardTab {
   final String name;

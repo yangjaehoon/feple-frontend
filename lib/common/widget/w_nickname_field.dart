@@ -125,33 +125,16 @@ class NicknameFieldState extends State<NicknameField> {
       },
       autofillHints: const [AutofillHints.nickname],
       style: TextStyle(fontSize: AppDimens.fontSizeLg, color: colors.text),
-      decoration: InputDecoration(
-        counterStyle: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXxs),
-        prefixIcon: Icon(
-          Icons.badge_outlined,
-          color: colors.activate,
-          size: 22,
-        ),
+      decoration: buildAppFieldDecoration(
+        colors: colors,
+        icon: Icons.badge_outlined,
         hintText: 'nickname_hint_format'.tr(),
-        hintStyle: TextStyle(
-          color: colors.hintText,
-          fontSize: AppDimens.fontSizeLg,
-        ),
-        filled: true,
-        fillColor: colors.surface,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 16,
-        ),
-        border: appInputBorder(colors.divider),
-        enabledBorder: appInputBorder(
-          _available == false
-              ? colors.error
-              : _available == true
-              ? colors.activate
-              : colors.divider,
-        ),
-        focusedBorder: appInputBorder(colors.focusedBorder, width: 2),
+        counterStyle: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXxs),
+        borderColor: _available == false
+            ? colors.error
+            : _available == true
+            ? colors.activate
+            : null,
       ),
     );
   }

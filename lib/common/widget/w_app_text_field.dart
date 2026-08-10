@@ -49,9 +49,12 @@ class _AppTextFieldState extends State<AppTextField> {
   }
 
   InputDecoration _buildInputDecoration(AbstractThemeColors colors) {
-    return InputDecoration(
+    return buildAppFieldDecoration(
+      colors: colors,
+      icon: widget.icon,
+      hintText: widget.hintText,
+      borderColor: widget.errorText != null ? colors.error : null,
       counterText: widget.maxLength != null ? '' : null,
-      prefixIcon: Icon(widget.icon, color: colors.activate, size: 22),
       suffixIcon: widget.obscureText
           ? IconButton(
               tooltip: _isObscured ? 'show_password'.tr() : 'hide_password'.tr(),
@@ -64,14 +67,6 @@ class _AppTextFieldState extends State<AppTextField> {
               splashRadius: 20,
             )
           : null,
-      hintText: widget.hintText,
-      hintStyle: TextStyle(color: colors.hintText, fontSize: AppDimens.fontSizeLg),
-      filled: true,
-      fillColor: colors.surface,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      border: appInputBorder(colors.divider),
-      enabledBorder: appInputBorder(widget.errorText != null ? colors.error : colors.divider),
-      focusedBorder: appInputBorder(colors.focusedBorder, width: 2),
     );
   }
 

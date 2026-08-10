@@ -18,7 +18,7 @@ class PageIndicatorPill extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.black.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
       ),
       child: Text(
         '${currentIndex + 1}/$total',

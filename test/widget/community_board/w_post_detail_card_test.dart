@@ -225,7 +225,9 @@ void main() {
       // card_swiper 테스트와 동일한 이유(제스처 레이어 우회)로, 캡처한 WritePost의
       // onSubmit 콜백을 직접 호출해 수정 제출 로직을 검증한다.
       final writePost = tester.widget<WritePost>(find.byType(WritePost));
-      await writePost.onSubmit('새 제목', '새 내용', false, const []);
+      await writePost.onSubmit(
+        const PostDraft(title: '새 제목', content: '새 내용'),
+      );
       await tester.pump();
 
       expect(find.text('post_updated_image_refresh_failed'.tr()), findsOneWidget);

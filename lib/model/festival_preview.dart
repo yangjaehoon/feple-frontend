@@ -1,4 +1,5 @@
 import 'package:feple/common/util/festival_date_utils.dart';
+import 'artist_schedule_model.dart';
 import 'festival_model.dart';
 import 'localized_text.dart';
 
@@ -34,6 +35,16 @@ class FestivalPreview {
     this.longitude,
     this.attendingCount = 0,
   });
+
+  /// 아티스트 일정(ArtistScheduleModel)을 페스티벌 미리보기 형태로 변환.
+  factory FestivalPreview.fromArtistSchedule(ArtistScheduleModel schedule) => FestivalPreview(
+        id: schedule.festivalId,
+        title: schedule.title,
+        location: schedule.location ?? '',
+        posterUrl: schedule.posterUrl ?? '',
+        startDate: schedule.startDate ?? '',
+        endDate: schedule.endDate,
+      );
 
   String displayTitle(bool isEnglish) => pickLocalized(isEnglish, title, titleEn);
 

@@ -10,15 +10,6 @@ class ArtistScheduleService {
 
   Future<List<FestivalPreview>> fetchFestivals(int artistId) async {
     final schedules = await fetchSchedule(artistId);
-    return schedules
-        .map((s) => FestivalPreview(
-              id: s.festivalId,
-              title: s.title,
-              location: s.location ?? '',
-              posterUrl: s.posterUrl ?? '',
-              startDate: s.startDate ?? '',
-              endDate: s.endDate,
-            ))
-        .toList();
+    return schedules.map(FestivalPreview.fromArtistSchedule).toList();
   }
 }

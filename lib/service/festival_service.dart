@@ -1,11 +1,11 @@
 import 'dart:async' show unawaited;
 
-import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/model/festival_preview_page.dart';
 import 'package:feple/model/spring_page.dart';
 import 'package:feple/network/dio_client.dart';
+import 'package:feple/service/cache_fallback_fetcher.dart';
 import 'package:feple/service/festival_cache_service.dart';
 
 class FestivalService {
@@ -35,26 +35,24 @@ class FestivalService {
     if (regions.isNotEmpty) params['regions'] = regions;
     if (ageRestrictions.isNotEmpty) params['ageRestrictions'] = ageRestrictions;
 
-    try {
-      final response = await DioClient.dio.get('/festivals/page', queryParameters: params);
-      final data = response.data as Map<String, dynamic>;
-      final items = (data['content'] as List)
-          .map((e) => FestivalPreview.fromJson(e as Map<String, dynamic>))
-          .toList();
-      final hasMore = springPageHasMore(data['page'] as Map<String, dynamic>?);
-
-      if (isDefaultList) {
-        // 필터 없는 첫 페이지만 캐시 (오프라인 폴백용)
-        unawaited(_cache.savePreviewList(items));
-      }
-      return FestivalPreviewPage(items: items, hasMore: hasMore);
-    } catch (e) {
-      if (isDefaultList && isOffline(e)) {
-        final cached = await _cache.loadPreviewList();
-        if (cached != null) return FestivalPreviewPage(items: cached, hasMore: false);
-      }
-      rethrow;
-    }
+    // 캐시 폴백 시 hasMore는 알 수 없어 false로 취급 — parse가 호출될 때만 갱신됨
+    var hasMore = false;
+    final items = await fetchWithCacheFallback<FestivalPreview>(
+      request: () => DioClient.dio.get('/festivals/page', queryParameters: params),
+      parse: (data) {
+        final map = data as Map<String, dynamic>;
+        hasMore = springPageHasMore(map['page'] as Map<String, dynamic>?);
+        return (map['content'] as List)
+            .map((e) => FestivalPreview.fromJson(e as Map<String, dynamic>))
+            .toList();
+      },
+      // 필터 없는 첫 페이지만 캐시 (오프라인 폴백용) — 응답 지연을 막기 위해 fire-and-forget
+      save: (items) async {
+        if (isDefaultList) unawaited(_cache.savePreviewList(items));
+      },
+      load: () => isDefaultList ? _cache.loadPreviewList() : Future.value(null),
+    );
+    return FestivalPreviewPage(items: items, hasMore: hasMore);
   }
 
   Future<FestivalModel> fetchById(int festivalId) async {

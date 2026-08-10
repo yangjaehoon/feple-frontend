@@ -18,7 +18,7 @@ class PerformanceInterceptor extends Interceptor {
         options.extra[_kMetricKey] = metric;
       }
     } catch (e) {
-      debugPrint('[Perf] metric start error');
+      debugPrint('[Perf] metric start error: $e');
     }
     handler.next(options);
   }
@@ -48,7 +48,7 @@ class PerformanceInterceptor extends Interceptor {
       if (statusCode != null) metric.httpResponseCode = statusCode;
       await metric.stop();
     } catch (e) {
-      debugPrint('[Perf] metric stop error');
+      debugPrint('[Perf] metric stop error: $e');
     }
   }
 

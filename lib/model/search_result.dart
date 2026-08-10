@@ -14,14 +14,14 @@ class SearchResult {
   });
 
   factory SearchResult.fromJson(Map<String, dynamic> json) => SearchResult(
-        artists: (json['artists'] as List? ?? [])
-            .map((e) => Artist.fromJson(e as Map<String, dynamic>))
-            .toList(),
-        festivals: (json['festivals'] as List? ?? [])
-            .map((e) => FestivalPreview.fromJson(e as Map<String, dynamic>))
-            .toList(),
-        posts: (json['posts'] as List? ?? [])
-            .map((e) => Post.fromJson(e as Map<String, dynamic>))
-            .toList(),
+        artists: _parseList(json['artists'], Artist.fromJson),
+        festivals: _parseList(json['festivals'], FestivalPreview.fromJson),
+        posts: _parseList(json['posts'], Post.fromJson),
       );
+
+  static List<T> _parseList<T>(
+    dynamic raw,
+    T Function(Map<String, dynamic>) fromJson,
+  ) =>
+      ((raw as List?) ?? []).map((e) => fromJson(e as Map<String, dynamic>)).toList();
 }

@@ -1,4 +1,8 @@
 class CommentDetail {
+  // 작성 직후 서버 응답의 createdAt/updatedAt 미세한 시간차로 "수정됨"이
+  // 잘못 표시되지 않도록 하는 임계값
+  static const _editThreshold = Duration(seconds: 10);
+
   final int id;
   final int postId;
   final int userId;
@@ -69,7 +73,7 @@ class CommentDetail {
 
   bool get isEdited {
     if (updatedAt == null) return false;
-    return updatedAt!.difference(createdAt).inSeconds > 10;
+    return updatedAt!.difference(createdAt) > _editThreshold;
   }
 
   bool get isReply => parentId != null;

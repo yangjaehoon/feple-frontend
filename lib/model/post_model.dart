@@ -51,14 +51,14 @@ class Post {
       content: json['content'] as String,
       boardType: json['boardType'] as String?,
       likeCount: (json['likeCount'] as num).toInt(),
-      scrapCount: json['scrapCount'] as int? ?? 0,
-      commentCount: json['commentCount'] as int? ?? 0,
+      scrapCount: (json['scrapCount'] as num?)?.toInt() ?? 0,
+      commentCount: (json['commentCount'] as num?)?.toInt() ?? 0,
       nickname: json['nickname'] as String,
       profileImageUrl: json['profileImageUrl'] as String?,
       imageUrls: ((json['imageUrls'] as List<dynamic>?) ?? [])
           .map((e) => e as String)
           .toList(),
-      artistId: json['artistId'] as int?,
+      artistId: (json['artistId'] as num?)?.toInt(),
       boardDisplayName: json['boardDisplayName'] as String? ?? '',
       certified: json['certified'] as bool? ?? false,
       userRole: json['userRole'] as String?,

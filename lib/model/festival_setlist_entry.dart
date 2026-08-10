@@ -21,8 +21,6 @@ class FestivalSetlistEntry {
 
   String displayName(bool isEnglish) => pickLocalized(isEnglish, artistName, artistNameEn);
 
-  Set<int> get songIds => songs.map((s) => s.id).toSet();
-
   Map<String, dynamic> toJson() => {
         'artistFestivalId': artistFestivalId,
         'artistId': artistId,

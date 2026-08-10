@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:feple/common/constant/board_types.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/model/post_draft.dart';
@@ -51,19 +50,13 @@ class PostService {
   Future<PostCursorPage> fetchPostsPage(String boardType, {int? cursor, int size = _defaultPageSize, String sort = 'latest'}) =>
       _fetchCursorPage(_endpointFor(boardType), cursor: cursor, size: size, sort: sort);
 
-  Future<void> _createPost(String endpoint, PostDraft draft) async {
-    try {
-      await DioClient.dio.post(endpoint, data: {
-        'title': draft.title,
-        'content': draft.content,
-        'anonymous': draft.anonymous,
-        'imageUrls': draft.imageObjectKeys,
-      });
-    } on DioException catch (e) {
-      throwIfBannedWord(e);
-      rethrow;
-    }
-  }
+  Future<void> _createPost(String endpoint, PostDraft draft) =>
+      withBannedWordCheck(() => DioClient.dio.post(endpoint, data: {
+            'title': draft.title,
+            'content': draft.content,
+            'anonymous': draft.anonymous,
+            'imageUrls': draft.imageObjectKeys,
+          }));
 
   /// 게시글 단건 조회
   Future<Post> fetchPost(int postId) async {
@@ -143,18 +136,11 @@ class PostService {
     required String title,
     required String content,
     List<String> imageObjectKeys = const [],
-  }) async {
-    try {
-      await DioClient.dio.put('/posts/$postId', data: {
+  }) => withBannedWordCheck(() => DioClient.dio.put('/posts/$postId', data: {
         'title': title,
         'content': content,
         'imageUrls': imageObjectKeys,
-      });
-    } on DioException catch (e) {
-      throwIfBannedWord(e);
-      rethrow;
-    }
-  }
+      }));
 
   Future<void> incrementPostView(int postId) =>
       DioClient.dio.post('/posts/$postId/view');

@@ -25,6 +25,20 @@ void throwIfBannedWord(DioException e, {String defaultField = 'content'}) {
   }
 }
 
+/// [request] 실행 중 DioException이 BAD_WORD 응답이면 [BannedWordException]으로 변환해 던짐.
+/// 게시글/댓글 작성·수정 등 금칙어 검사가 필요한 서비스 메서드에서 공통으로 사용.
+Future<T> withBannedWordCheck<T>(
+  Future<T> Function() request, {
+  String defaultField = 'content',
+}) async {
+  try {
+    return await request();
+  } on DioException catch (e) {
+    throwIfBannedWord(e, defaultField: defaultField);
+    rethrow;
+  }
+}
+
 /// 타임아웃·연결 오류면 'connection_error', 그 외(서버 에러 포함)면 [operationErrorKey] 반환.
 String networkAwareErrorKey(Object e, String operationErrorKey) {
   if (e is DioException) {

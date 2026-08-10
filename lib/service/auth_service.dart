@@ -1,5 +1,5 @@
+import 'package:feple/common/util/silent_failure.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
@@ -72,22 +72,9 @@ class AuthService {
   // ── 로그아웃: Firebase + Kakao 세션 정리 (두 제공자를 함께 정리해야 해서 파사드에 남김) ──
 
   Future<void> signOut() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-    } catch (e) {
-      debugPrint('[Auth] Firebase signOut 실패: $e');
-    }
-    try {
-      await UserApi.instance.logout();
-    } catch (e) {
-      // Kakao 세션이 없는 경우(이메일 로그인) 예외 무시
-      debugPrint('[Auth] Kakao logout 실패: $e');
-    }
-    try {
-      await GoogleSignIn.instance.signOut();
-    } catch (e) {
-      // Google 세션이 없는 경우(이메일/카카오/Apple 로그인) 예외 무시
-      debugPrint('[Auth] Google signOut 실패: $e');
-    }
+    await runIgnoringErrors('[Auth] Firebase signOut 실패', FirebaseAuth.instance.signOut);
+    // Kakao/Google 세션이 없는 경우(다른 방식으로 로그인)도 여기서 함께 무시됨
+    await runIgnoringErrors('[Auth] Kakao logout 실패', UserApi.instance.logout);
+    await runIgnoringErrors('[Auth] Google signOut 실패', GoogleSignIn.instance.signOut);
   }
 }

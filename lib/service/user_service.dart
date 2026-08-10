@@ -49,14 +49,10 @@ class UserService {
   Future<void> updateNickname(int userId, String nickname) =>
       DioClient.dio.put('/users/$userId', data: {'nickname': nickname});
 
-  Future<void> updateBio(int userId, String bio) async {
-    try {
-      await DioClient.dio.patch('/users/$userId/bio', data: {'bio': bio});
-    } on DioException catch (e) {
-      throwIfBannedWord(e, defaultField: 'bio');
-      rethrow;
-    }
-  }
+  Future<void> updateBio(int userId, String bio) => withBannedWordCheck(
+        () => DioClient.dio.patch('/users/$userId/bio', data: {'bio': bio}),
+        defaultField: 'bio',
+      );
 
   Future<NicknameCheckResult> checkNicknameAvailability(
     String nickname, {

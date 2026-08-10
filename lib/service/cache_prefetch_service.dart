@@ -1,5 +1,5 @@
+import 'package:feple/common/util/silent_failure.dart';
 import 'package:feple/model/festival_model.dart';
-import 'package:flutter/foundation.dart';
 import 'festival_detail_service.dart';
 
 /// 홈 로드 직후 백그라운드에서 주요 엔드포인트를 미리 캐싱.
@@ -20,19 +20,12 @@ class CachePrefetchService {
   }
 
   Future<void> _prefetchOne(int festivalId) async {
+    const tag = '[Prefetch] 캐시 프리페치 실패 (무시)';
     await Future.wait([
-      _safe(() => _detail.fetchTimetable(festivalId)),
-      _safe(() => _detail.fetchSetlist(festivalId)),
-      _safe(() => _detail.fetchWeather(festivalId)),
-      _safe(() => _detail.fetchFestivalArtists(festivalId)),
+      runIgnoringErrors(tag, () => _detail.fetchTimetable(festivalId)),
+      runIgnoringErrors(tag, () => _detail.fetchSetlist(festivalId)),
+      runIgnoringErrors(tag, () => _detail.fetchWeather(festivalId)),
+      runIgnoringErrors(tag, () => _detail.fetchFestivalArtists(festivalId)),
     ]);
-  }
-
-  Future<void> _safe(Future<dynamic> Function() fn) async {
-    try {
-      await fn();
-    } catch (e) {
-      debugPrint('[Prefetch] 캐시 프리페치 실패 (무시): $e');
-    }
   }
 }

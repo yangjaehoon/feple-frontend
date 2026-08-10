@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/model/comment_detail.dart';
 import 'package:feple/network/dio_client.dart';
@@ -23,29 +22,17 @@ class CommentService {
     required int postId,
     int? parentId,
     bool anonymous = false,
-  }) async {
-    try {
-      await DioClient.dio.post('/comments', data: {
+  }) => withBannedWordCheck(() => DioClient.dio.post('/comments', data: {
         'content': content,
         'postId': postId,
         'parentId': ?parentId,
         'anonymous': anonymous,
-      });
-    } on DioException catch (e) {
-      throwIfBannedWord(e);
-      rethrow;
-    }
-  }
+      }));
 
   Future<void> toggleCommentLike(int commentId) =>
       DioClient.dio.post('/comments/$commentId/like');
 
-  Future<void> updateComment(int commentId, String content) async {
-    try {
-      await DioClient.dio.put('/comments/$commentId', data: {'content': content});
-    } on DioException catch (e) {
-      throwIfBannedWord(e);
-      rethrow;
-    }
-  }
+  Future<void> updateComment(int commentId, String content) =>
+      withBannedWordCheck(() =>
+          DioClient.dio.put('/comments/$commentId', data: {'content': content}));
 }

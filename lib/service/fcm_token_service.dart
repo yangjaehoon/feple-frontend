@@ -19,8 +19,7 @@ class FcmTokenService {
       final token = await _messaging.getToken();
       if (token != null) await sendToServer(token, language: language);
     } catch (e, st) {
-      debugPrint('[FCM] 토큰 등록 실패: $e');
-      unawaited(FirebaseCrashlytics.instance.recordError(e, st, fatal: false, reason: 'FCM token register failed'));
+      _reportFailure('토큰 등록', e, st);
     }
   }
 
@@ -33,8 +32,7 @@ class FcmTokenService {
       });
       debugPrint('[FCM] 토큰 서버 등록 완료');
     } catch (e, st) {
-      debugPrint('[FCM] 토큰 서버 등록 실패');
-      unawaited(FirebaseCrashlytics.instance.recordError(e, st, fatal: false, reason: 'FCM sendToServer failed'));
+      _reportFailure('토큰 서버 등록', e, st);
     }
   }
 
@@ -47,8 +45,12 @@ class FcmTokenService {
       await DioClient.dio.delete('/users/device-token', data: {'token': token});
       debugPrint('[FCM] 토큰 서버 삭제 완료');
     } catch (e, st) {
-      debugPrint('[FCM] 토큰 서버 삭제 실패');
-      unawaited(FirebaseCrashlytics.instance.recordError(e, st, fatal: false, reason: 'FCM unregister failed'));
+      _reportFailure('토큰 서버 삭제', e, st);
     }
+  }
+
+  void _reportFailure(String action, Object e, StackTrace st) {
+    debugPrint('[FCM] $action 실패: $e');
+    unawaited(FirebaseCrashlytics.instance.recordError(e, st, fatal: false, reason: 'FCM $action failed'));
   }
 }

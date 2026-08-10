@@ -62,13 +62,13 @@ class AppColors {
   static const Color badgeCertified = Color(0xFF009688);  // teal
 
   // === Notification Colors ===
-  static const Color notificationReminder = Color(0xFFFF7043); // festival reminder
-  static const Color infoBlue = Color(0xFF4A90E2);             // info snackbar
+  static const Color notificationReminder = boothFood; // festival reminder
+  static const Color infoBlue = Color(0xFF4A90E2);      // info snackbar
 
   // === Age Restriction Colors ===
-  static const Color ageRatingBlue = Color(0xFF5CC0EB);       // ALL_AGES
+  static const Color ageRatingBlue = skyBlue;                 // ALL_AGES
   static const Color ageRatingLightGreen = Color(0xFF81C784); // AGE_8
-  static const Color ageRatingGreen = Color(0xFF4CAF50);      // AGE_12
+  static const Color ageRatingGreen = successGreen;           // AGE_12
   static const Color ageRatingOrange = statusPending;         // AGE_15
   static const Color ageRatingRed = Color(0xFFF44336);        // AGE_19
 

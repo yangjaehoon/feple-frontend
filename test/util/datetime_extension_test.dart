@@ -15,12 +15,6 @@ void main() {
     });
   });
 
-  group('DateTimeExtension.toDisplayDate', () {
-    test('yyyy.MM.dd 형식으로 변환한다', () {
-      expect(DateTime(2026, 1, 5).toDisplayDate, '2026.01.05');
-    });
-  });
-
   group('DateTimeExtension.relativeTime', () {
     test('1분 미만이면 방금 전으로 표시한다', () {
       final now = DateTime.now();

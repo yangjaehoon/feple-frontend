@@ -271,7 +271,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
       dimmed: _isEmailLoading || _isAppleLoading || _isGoogleLoading,
       disabled: _isAnyLoading,
       backgroundColor: AppColors.kakaoYellow,
-      indicatorColor: const Color(0xFF3C1E1E),
+      indicatorColor: AppColors.kakaoText,
       onPressed: signInWithKakao,
       // 카카오 공식 아이콘 로그인 버튼 에셋(19x20 talk 심볼) — kakao_flutter_sdk_user 패키지 번들
       child: SvgPicture.asset(

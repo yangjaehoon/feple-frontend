@@ -179,8 +179,8 @@ ThemeData lightTheme = ThemeData(
   ),
 );
 
-const _darkBg = Color(0xFF111C21);
-const _darkSurface = Color(0xFF1A2C38);
+const _darkBg = DarkAppColors.darkBackground;
+const _darkSurface = DarkAppColors.darkSurface;
 
 ThemeData darkTheme = ThemeData(
   useMaterial3: true,

@@ -3,12 +3,14 @@ class NotificationPreferenceModel {
   final bool commentEnabled;
   final bool festivalEnabled;
   final bool songRequestEnabled;
+  final bool quietHoursEnabled;
 
   const NotificationPreferenceModel({
     required this.certEnabled,
     required this.commentEnabled,
     required this.festivalEnabled,
     required this.songRequestEnabled,
+    required this.quietHoursEnabled,
   });
 
   factory NotificationPreferenceModel.fromJson(Map<String, dynamic> json) {
@@ -17,6 +19,7 @@ class NotificationPreferenceModel {
       commentEnabled: json['commentEnabled'] as bool? ?? true,
       festivalEnabled: json['festivalEnabled'] as bool? ?? true,
       songRequestEnabled: json['songRequestEnabled'] as bool? ?? true,
+      quietHoursEnabled: json['quietHoursEnabled'] as bool? ?? false,
     );
   }
 
@@ -25,12 +28,14 @@ class NotificationPreferenceModel {
     bool? commentEnabled,
     bool? festivalEnabled,
     bool? songRequestEnabled,
+    bool? quietHoursEnabled,
   }) {
     return NotificationPreferenceModel(
       certEnabled: certEnabled ?? this.certEnabled,
       commentEnabled: commentEnabled ?? this.commentEnabled,
       festivalEnabled: festivalEnabled ?? this.festivalEnabled,
       songRequestEnabled: songRequestEnabled ?? this.songRequestEnabled,
+      quietHoursEnabled: quietHoursEnabled ?? this.quietHoursEnabled,
     );
   }
 
@@ -38,4 +43,5 @@ class NotificationPreferenceModel {
   NotificationPreferenceModel toggleComment() => copyWith(commentEnabled: !commentEnabled);
   NotificationPreferenceModel toggleFestival() => copyWith(festivalEnabled: !festivalEnabled);
   NotificationPreferenceModel toggleSongRequest() => copyWith(songRequestEnabled: !songRequestEnabled);
+  NotificationPreferenceModel toggleQuietHours() => copyWith(quietHoursEnabled: !quietHoursEnabled);
 }

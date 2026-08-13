@@ -15,6 +15,7 @@ class NotificationPreferenceService {
           'commentEnabled': prefs.commentEnabled,
           'festivalEnabled': prefs.festivalEnabled,
           'songRequestEnabled': prefs.songRequestEnabled,
+          'quietHoursEnabled': prefs.quietHoursEnabled,
         },
       );
 }

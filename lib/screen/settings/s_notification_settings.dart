@@ -112,6 +112,13 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
             value: _prefs!.songRequestEnabled,
             onChanged: (_) => _togglePref(_prefs!.toggleSongRequest()),
           ),
+          const SettingsItemDivider(),
+          _buildToggleItem(
+            icon: Icons.bedtime_rounded,
+            label: 'notif_quiet_hours'.tr(),
+            value: _prefs!.quietHoursEnabled,
+            onChanged: (_) => _togglePref(_prefs!.toggleQuietHours()),
+          ),
         ],
       ],
     );
@@ -142,7 +149,7 @@ class _NotificationSettingsSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return Column(children: List.generate(4, (index) => _buildRow(index, colors)));
+    return Column(children: List.generate(5, (index) => _buildRow(index, colors)));
   }
 
   Widget _buildRow(int index, AbstractThemeColors colors) {
@@ -161,7 +168,7 @@ class _NotificationSettingsSkeleton extends StatelessWidget {
             ],
           ),
         ),
-        if (index < 3)
+        if (index < 4)
           Divider(height: 1, indent: 50, color: colors.listDivider),
       ],
     );

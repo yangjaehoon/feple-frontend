@@ -557,6 +557,7 @@
   "notif_comment": "댓글 알림",
   "notif_festival": "페스티벌 알림",
   "notif_song_request": "곡 신청 알림",
+  "notif_quiet_hours": "심야시간(00:00~07:00) 알림 끄기",
   "notif_delete_all_title": "알림을 모두 삭제할까요?",
   "notif_delete_all_content": "알림 목록에서 모두 사라집니다.",
   "notif_delete_all_confirm": "모두 삭제",

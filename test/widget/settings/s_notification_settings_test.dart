@@ -20,6 +20,7 @@ const _allEnabled = NotificationPreferenceModel(
   commentEnabled: true,
   festivalEnabled: true,
   songRequestEnabled: true,
+  quietHoursEnabled: true,
 );
 
 Future<void> _pump(WidgetTester tester) async {
@@ -77,13 +78,14 @@ void main() {
   });
 
   group('NotificationSettingsScreen 렌더링', () {
-    testWidgets('4개 항목과 현재 값이 Switch에 반영된다', (tester) async {
+    testWidgets('5개 항목과 현재 값이 Switch에 반영된다', (tester) async {
       when(() => mockService.getPreferences()).thenAnswer((_) async =>
           const NotificationPreferenceModel(
             certEnabled: true,
             commentEnabled: false,
             festivalEnabled: true,
             songRequestEnabled: false,
+            quietHoursEnabled: true,
           ));
 
       await _pump(tester);
@@ -93,9 +95,10 @@ void main() {
       expect(find.text('notif_comment'.tr()), findsOneWidget);
       expect(find.text('notif_festival'.tr()), findsOneWidget);
       expect(find.text('notif_song_request'.tr()), findsOneWidget);
+      expect(find.text('notif_quiet_hours'.tr()), findsOneWidget);
 
       final switches = tester.widgetList<Switch>(find.byType(Switch)).toList();
-      expect(switches.map((s) => s.value).toList(), [true, false, true, false]);
+      expect(switches.map((s) => s.value).toList(), [true, false, true, false, true]);
     });
   });
 
@@ -119,6 +122,7 @@ void main() {
       expect(captured.commentEnabled, true);
       expect(captured.festivalEnabled, true);
       expect(captured.songRequestEnabled, true);
+      expect(captured.quietHoursEnabled, true);
     });
 
     testWidgets('저장 실패 시 이전 값으로 롤백되고 에러 스낵바를 보여준다', (tester) async {

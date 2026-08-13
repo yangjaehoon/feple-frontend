@@ -557,6 +557,7 @@
   "notif_comment": "Comment notifications",
   "notif_festival": "Festival notifications",
   "notif_song_request": "Song request notifications",
+  "notif_quiet_hours": "Mute notifications 12AM-7AM",
   "notif_delete_all_title": "Delete all notifications?",
   "notif_delete_all_content": "This will remove all notifications from your list.",
   "notif_delete_all_confirm": "Delete all",

@@ -10,6 +10,7 @@ String? genreI18nKey(String genre) => switch (genre) {
       'RNB'     => 'genre_rnb',
       'DANCE'   => 'genre_dance',
       'IDOL'    => 'genre_idol',
+      'GUGAK'   => 'genre_gugak',
       'ETC'     => 'genre_etc',
       _         => null,
     };

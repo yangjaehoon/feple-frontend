@@ -16,6 +16,7 @@ const kGenreOptions = [
   ('RNB', 'genre_rnb'),
   ('DANCE', 'genre_dance'),
   ('IDOL', 'genre_idol'),
+  ('GUGAK', 'genre_gugak'),
   ('ETC', 'genre_etc'),
 ];
 

@@ -12,6 +12,7 @@ import 'service/artist_service.dart';
 import 'service/auth_service.dart';
 import 'service/certification_service.dart';
 import 'service/comment_service.dart';
+import 'service/festival_diary_service.dart';
 import 'screen/notification/fcm_navigation_handler.dart';
 import 'service/fcm_service.dart';
 import 'service/fcm_token_service.dart';
@@ -55,6 +56,7 @@ void setupDependencies() {
   sl.registerLazySingleton<ArtistService>(() => ArtistService());
   sl.registerLazySingleton<CertificationService>(() => CertificationService());
   sl.registerLazySingleton<CommentService>(() => CommentService());
+  sl.registerLazySingleton<FestivalDiaryService>(() => FestivalDiaryService());
   sl.registerLazySingleton<FestivalService>(() => FestivalService(sl<FestivalCacheService>()));
   sl.registerLazySingleton<FestivalCacheService>(() => FestivalCacheService());
   sl.registerLazySingleton<FestivalDetailService>(() => FestivalDetailService(sl<FestivalCacheService>()));

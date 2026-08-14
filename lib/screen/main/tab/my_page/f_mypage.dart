@@ -4,6 +4,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/screen/main/tab/my_page/w_festival_certification.dart';
+import 'package:feple/screen/main/tab/my_page/w_festival_diary.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_post_comment.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_song_requests.dart';
 import 'package:feple/screen/main/tab/my_page/w_profile.dart';
@@ -24,6 +25,7 @@ class _MyPageFragmentState extends State<MyPageFragment> with NavigationGuard {
   final _profileKey = GlobalKey<ProfileWidgetState>();
   final _statsKey = GlobalKey<MyPostCommentViewState>();
   final _certKey = GlobalKey<FestivalCertificationWidgetState>();
+  final _diaryKey = GlobalKey<FestivalDiaryWidgetState>();
   final _songsKey = GlobalKey<MySongRequestsViewState>();
 
   @override
@@ -44,6 +46,7 @@ class _MyPageFragmentState extends State<MyPageFragment> with NavigationGuard {
     _profileKey.currentState?.refresh();
     unawaited(_statsKey.currentState?.refresh());
     _certKey.currentState?.refresh();
+    _diaryKey.currentState?.refresh();
     _songsKey.currentState?.refresh();
   }
 
@@ -77,6 +80,7 @@ class _MyPageFragmentState extends State<MyPageFragment> with NavigationGuard {
                       ProfileWidget(key: _profileKey, userId: userId),
                       MyPostCommentView(key: _statsKey, userId: userId),
                       FestivalCertificationWidget(key: _certKey),
+                      FestivalDiaryWidget(key: _diaryKey),
                       MySongRequestsView(key: _songsKey),
                     ],
                   ),

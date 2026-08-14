@@ -9,6 +9,7 @@ import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
+import 'package:feple/service/festival_diary_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +19,7 @@ import 'festival_poster_notifier.dart';
 import 'festival_poster_style.dart';
 import 'w_certification_bottom_sheet.dart';
 import 'w_festival_action_button.dart';
+import 'w_festival_diary_feed_sheet.dart';
 import 'w_festival_reviews_sheet.dart';
 import 'w_weather_bottom_sheet.dart';
 
@@ -307,6 +309,20 @@ class FestivalPosterState extends State<FestivalPoster> {
     });
   }
 
+  void _showDiaryFeed() {
+    if (_isSheetOpen) return;
+    _isSheetOpen = true;
+    showAppBottomSheet(
+      context,
+      builder: (_) => FestivalDiaryFeedSheet(
+        festivalId: widget.poster.id,
+        diaryService: sl<FestivalDiaryService>(),
+      ),
+    ).whenComplete(() {
+      if (mounted) _isSheetOpen = false;
+    });
+  }
+
   Widget _buildPosterThumbnail(AbstractThemeColors colors) {
     final child = Container(
       width: _posterThumbnailWidth,
@@ -569,6 +585,11 @@ class FestivalPosterState extends State<FestivalPoster> {
           color: _certButtonColor(colors),
           bgColor: _certButtonBgColor(colors),
           label: 'action_cert'.tr(),
+        ),
+        FestivalActionButton(
+          onTap: _showDiaryFeed,
+          icon: Icons.menu_book_outlined,
+          label: 'action_diary'.tr(),
         ),
       ],
     );

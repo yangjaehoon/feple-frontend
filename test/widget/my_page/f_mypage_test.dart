@@ -4,18 +4,21 @@ import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/certification_model.dart';
+import 'package:feple/model/festival_diary_model.dart';
 import 'package:feple/model/song_request_model.dart';
 import 'package:feple/model/user_model.dart';
 import 'package:feple/model/user_stats_model.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/my_page/f_mypage.dart';
 import 'package:feple/screen/main/tab/my_page/w_festival_certification.dart';
+import 'package:feple/screen/main/tab/my_page/w_festival_diary.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_post_comment.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_song_requests.dart';
 import 'package:feple/screen/main/tab/my_page/w_profile.dart';
 import 'package:feple/screen/notification/notification_count_notifier.dart';
 import 'package:feple/screen/settings/s_settings.dart';
 import 'package:feple/service/certification_service.dart';
+import 'package:feple/service/festival_diary_service.dart';
 import 'package:feple/service/notification_countable.dart';
 import 'package:feple/service/song_request_service.dart';
 import 'package:feple/service/user_activity_service.dart';
@@ -30,6 +33,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class MockUserService extends Mock implements UserService {}
 class MockUserActivityService extends Mock implements UserActivityService {}
 class MockCertificationService extends Mock implements CertificationService {}
+class MockFestivalDiaryService extends Mock implements FestivalDiaryService {}
 class MockSongRequestService extends Mock implements SongRequestService {}
 class MockNotificationCountable extends Mock implements NotificationCountable {}
 
@@ -82,6 +86,7 @@ void main() {
   late MockUserService mockUserService;
   late MockUserActivityService mockUserActivityService;
   late MockCertificationService mockCertService;
+  late MockFestivalDiaryService mockDiaryService;
   late MockSongRequestService mockSongRequestService;
   late MockNotificationCountable mockNotificationCountable;
 
@@ -90,6 +95,7 @@ void main() {
     mockUserService = MockUserService();
     mockUserActivityService = MockUserActivityService();
     mockCertService = MockCertificationService();
+    mockDiaryService = MockFestivalDiaryService();
     mockSongRequestService = MockSongRequestService();
     mockNotificationCountable = MockNotificationCountable();
     _setupSecureStorageMock();
@@ -102,6 +108,10 @@ void main() {
       sl.unregister<CertificationService>();
     }
     sl.registerSingleton<CertificationService>(mockCertService);
+    if (sl.isRegistered<FestivalDiaryService>()) {
+      sl.unregister<FestivalDiaryService>();
+    }
+    sl.registerSingleton<FestivalDiaryService>(mockDiaryService);
     if (sl.isRegistered<SongRequestService>()) {
       sl.unregister<SongRequestService>();
     }
@@ -120,6 +130,8 @@ void main() {
         .thenAnswer((_) async => _stats());
     when(() => mockCertService.getMyCertifications())
         .thenAnswer((_) async => <CertificationModel>[]);
+    when(() => mockDiaryService.getMyDiaries())
+        .thenAnswer((_) async => <FestivalDiaryModel>[]);
     when(() => mockSongRequestService.fetchAllMyRequests(1))
         .thenAnswer((_) async => <SongRequestModel>[]);
   });
@@ -130,6 +142,9 @@ void main() {
     }
     if (sl.isRegistered<CertificationService>()) {
       sl.unregister<CertificationService>();
+    }
+    if (sl.isRegistered<FestivalDiaryService>()) {
+      sl.unregister<FestivalDiaryService>();
     }
     if (sl.isRegistered<SongRequestService>()) {
       sl.unregister<SongRequestService>();
@@ -199,6 +214,7 @@ void main() {
       expect(find.byType(ProfileWidget), findsOneWidget);
       expect(find.byType(MyPostCommentView), findsOneWidget);
       expect(find.byType(FestivalCertificationWidget), findsOneWidget);
+      expect(find.byType(FestivalDiaryWidget), findsOneWidget);
       expect(find.byType(MySongRequestsView), findsOneWidget);
       expect(find.text('테스터'), findsOneWidget);
     });
@@ -226,6 +242,7 @@ void main() {
 
       verify(() => mockUserActivityService.fetchStats(1)).called(2);
       verify(() => mockCertService.getMyCertifications()).called(2);
+      verify(() => mockDiaryService.getMyDiaries()).called(2);
       verify(() => mockSongRequestService.fetchAllMyRequests(1)).called(2);
     });
   });

@@ -12,6 +12,7 @@ String artistGenreLabel(String genre) => switch (genre) {
   '댄스'     => 'genre_dance'.tr(),
   '아이돌'   => 'genre_idol'.tr(),
   '국악'     => 'genre_gugak'.tr(),
+  '트로트'   => 'genre_trot'.tr(),
   _         => genre,
 };
 

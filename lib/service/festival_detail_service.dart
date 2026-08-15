@@ -28,8 +28,12 @@ class FestivalDetailService
 
   Future<List<BoothModel>> fetchBooths(int festivalId) => fetchWithCacheFallback(
         request: () => DioClient.dio.get('/festivals/$festivalId/booths'),
-        parse: (data) => (data as List)
-            .map((json) => BoothModel.fromJson(json as Map<String, dynamic>))
+        // 좌표 없는 부스 하나가 섞여 있어도 전체 목록 조회가 실패하지 않도록,
+        // 지도에 표시할 수 없는 항목은 조용히 걸러내고 나머지는 정상 표시한다.
+        parse: (data) => (data is List ? data : <dynamic>[])
+            .whereType<Map<String, dynamic>>()
+            .where((j) => j['latitude'] is num && j['longitude'] is num)
+            .map(BoothModel.fromJson)
             .toList(),
         save: (items) => _cache.saveBooths(festivalId, items),
         load: () => _cache.loadBooths(festivalId),

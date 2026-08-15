@@ -104,19 +104,21 @@ void main() {
 
       await tester.tap(find.byType(FilledButton));
       await tester.pump();
+      await tester.pump();
 
-      expect(find.text('no_booth'.tr()), findsOneWidget);
+      expect(find.byType(GoogleMap), findsOneWidget);
     });
   });
 
   group('FestivalBoothMap 빈 목록', () {
-    testWidgets('부스가 없으면 안내 문구를 보여준다', (tester) async {
+    testWidgets('부스가 없어도 페스티벌 위치를 중심으로 지도를 보여준다', (tester) async {
       when(() => mockService.fetchBooths(1)).thenAnswer((_) async => []);
 
       await pump(tester);
       await tester.pump();
+      await tester.pump();
 
-      expect(find.text('no_booth'.tr()), findsOneWidget);
+      expect(find.byType(GoogleMap), findsOneWidget);
     });
   });
 

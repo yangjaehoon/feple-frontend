@@ -144,7 +144,7 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildHeader(colors),
-          _buildBody(colors),
+          _buildBody(),
         ],
       ),
     );
@@ -177,7 +177,7 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
     );
   }
 
-  Widget _buildBody(AbstractThemeColors colors) {
+  Widget _buildBody() {
     if (_isLoading) {
       return _buildSkeleton();
     }
@@ -187,15 +187,7 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
         child: ErrorState(message: 'load_error'.tr(), onRetry: _fetchBooths),
       );
     }
-    if (_booths.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.all(32),
-        child: Center(
-          child: Text('no_booth'.tr(),
-              style: TextStyle(color: colors.textSecondary)),
-        ),
-      );
-    }
+    // 부스가 없어도 페스티벌 위치를 중심으로 지도는 보여준다 (마커만 없음)
     return _buildMap();
   }
 

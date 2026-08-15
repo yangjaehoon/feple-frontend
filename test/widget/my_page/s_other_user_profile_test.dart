@@ -7,12 +7,14 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/blocked_user_model.dart';
 import 'package:feple/model/certification_model.dart';
+import 'package:feple/model/festival_diary_page.dart';
 import 'package:feple/model/user_model.dart';
 import 'package:feple/model/user_stats_model.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/my_page/s_other_user_profile.dart';
 import 'package:feple/service/block_service.dart';
 import 'package:feple/service/certification_service.dart';
+import 'package:feple/service/festival_diary_service.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:feple/service/user_activity_service.dart';
 import 'package:feple/service/user_service.dart';
@@ -27,6 +29,7 @@ class MockUserActivityService extends Mock implements UserActivityService {}
 class MockCertificationService extends Mock implements CertificationService {}
 class MockFestivalService extends Mock implements FestivalService {}
 class MockBlockService extends Mock implements BlockService {}
+class MockFestivalDiaryService extends Mock implements FestivalDiaryService {}
 class MockUserProvider extends Mock implements UserProvider {}
 
 const _stats = UserStats(
@@ -89,6 +92,7 @@ void main() {
   late MockCertificationService mockCertService;
   late MockFestivalService mockFestivalService;
   late MockBlockService mockBlockService;
+  late MockFestivalDiaryService mockDiaryService;
 
   setUp(() {
     mockUserService = MockUserService();
@@ -96,6 +100,7 @@ void main() {
     mockCertService = MockCertificationService();
     mockFestivalService = MockFestivalService();
     mockBlockService = MockBlockService();
+    mockDiaryService = MockFestivalDiaryService();
 
     if (sl.isRegistered<UserService>()) sl.unregister<UserService>();
     sl.registerSingleton<UserService>(mockUserService);
@@ -107,6 +112,8 @@ void main() {
     sl.registerSingleton<FestivalService>(mockFestivalService);
     if (sl.isRegistered<BlockService>()) sl.unregister<BlockService>();
     sl.registerSingleton<BlockService>(mockBlockService);
+    if (sl.isRegistered<FestivalDiaryService>()) sl.unregister<FestivalDiaryService>();
+    sl.registerSingleton<FestivalDiaryService>(mockDiaryService);
 
     // 기본: 차단 목록 비어있음
     when(() => mockBlockService.getBlockedUsers()).thenAnswer((_) async => []);
@@ -119,6 +126,7 @@ void main() {
       () => sl.unregister<CertificationService>(),
       () => sl.unregister<FestivalService>(),
       () => sl.unregister<BlockService>(),
+      () => sl.unregister<FestivalDiaryService>(),
     ]) {
       try {
         u();
@@ -226,6 +234,23 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.block_rounded), findsOneWidget);
+    });
+  });
+
+  group('OtherUserProfileScreen 일기', () {
+    testWidgets('일기 카드를 탭하면 해당 유저의 공개 일기 시트가 열린다', (tester) async {
+      stubSuccess();
+      when(() => mockDiaryService.getUserPublicDiaries(7, page: any(named: 'page')))
+          .thenAnswer((_) async => const FestivalDiaryPage(diaries: [], hasNext: false));
+
+      await _pump(tester);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('festival_diary'.tr()));
+      await tester.pumpAndSettle();
+
+      expect(find.text('diary_public_feed_empty'.tr()), findsOneWidget);
+      verify(() => mockDiaryService.getUserPublicDiaries(7, page: 0)).called(1);
     });
   });
 }

@@ -410,6 +410,7 @@
   "festival_performed_count": "{} performances",
   "follower_count": "{} Followers",
   "booth_map_title": "Booth Map",
+  "booth_map_location_unavailable": "Location info is unavailable.",
   "booth_food": "Food",
   "booth_alcohol": "Drinks",
   "booth_event": "Event",

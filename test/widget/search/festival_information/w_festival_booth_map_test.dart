@@ -122,6 +122,40 @@ void main() {
     });
   });
 
+  group('FestivalBoothMap 위치 정보 없음', () {
+    testWidgets('페스티벌 좌표도 부스도 없으면 지도 대신 안내 문구를 보여준다', (tester) async {
+      when(() => mockService.fetchBooths(1)).thenAnswer((_) async => []);
+      SharedPreferences.setMockInitialValues({});
+      await EasyLocalization.ensureInitialized();
+
+      await tester.pumpWidget(
+        EasyLocalization(
+          supportedLocales: const [Locale('ko'), Locale('en')],
+          startLocale: const Locale('ko'),
+          fallbackLocale: const Locale('ko'),
+          path: 'assets/translations',
+          useOnlyLangCode: true,
+          child: CustomThemeHolder(
+            theme: CustomTheme.light,
+            changeTheme: (_) {},
+            child: MaterialApp(
+              home: Scaffold(
+                body: SingleChildScrollView(
+                  child: FestivalBoothMap(festivalId: 1),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.byType(GoogleMap), findsNothing);
+      expect(find.text('booth_map_location_unavailable'.tr()), findsOneWidget);
+    });
+  });
+
   group('FestivalBoothMap 지도', () {
     testWidgets('부스가 있으면 지도와 범례를 보여준다', (tester) async {
       when(() => mockService.fetchBooths(1))

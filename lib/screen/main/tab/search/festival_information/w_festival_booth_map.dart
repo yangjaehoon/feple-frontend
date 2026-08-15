@@ -97,24 +97,33 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
   }
 
   Future<void> _buildMarkers() async {
+    // await 도중 refresh()가 다시 호출되면 _booths 필드가 새 리스트로
+    // 재할당될 수 있어 로컬로 스냅샷을 캡처 — 아래에서 계속 이 스냅샷만 사용
+    final booths = _booths;
     // 부스마다 이미지 다운로드+마커 생성이 독립적이므로 병렬로 처리 —
     // 순차 await는 부스 수만큼 네트워크 왕복 시간이 그대로 누적됨
-    final icons = await Future.wait(_booths.map(BoothMarkerFactory.create));
+    final icons = await Future.wait(booths.map(BoothMarkerFactory.create));
     final markers = <Marker>{
-      for (var i = 0; i < _booths.length; i++)
+      for (var i = 0; i < booths.length; i++)
         Marker(
-          markerId: MarkerId('booth_${_booths[i].id}'),
-          position: LatLng(_booths[i].latitude, _booths[i].longitude),
+          markerId: MarkerId('booth_${booths[i].id}'),
+          position: LatLng(booths[i].latitude, booths[i].longitude),
           icon: icons[i],
           infoWindow: InfoWindow(
-            title: _booths[i].name,
-            snippet: _booths[i].boothTypeName +
-                (_booths[i].description != null ? ' · ${_booths[i].description}' : ''),
+            title: booths[i].name,
+            snippet: booths[i].boothTypeName +
+                (booths[i].description != null ? ' · ${booths[i].description}' : ''),
           ),
         ),
     };
-    if (mounted) setState(() => _markers = markers);
+    // 마커 계산이 끝나기 전에 새로운 fetch가 _booths를 이미 교체했다면
+    // 이 결과는 낡은 스냅샷 기준이므로 버린다 — 그 fetch의 _buildMarkers()가
+    // 곧 올바른 마커로 다시 채운다.
+    if (mounted && identical(_booths, booths)) setState(() => _markers = markers);
   }
+
+  bool get _hasKnownLocation =>
+      (widget.festivalLat != null && widget.festivalLng != null) || _booths.isNotEmpty;
 
   LatLng get _initialPosition {
     if (widget.festivalLat != null && widget.festivalLng != null) {
@@ -185,6 +194,17 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
       return SizedBox(
         height: MediaQuery.sizeOf(context).width * 0.513, // 200/390
         child: ErrorState(message: 'load_error'.tr(), onRetry: _fetchBooths),
+      );
+    }
+    // 페스티벌 좌표도, 부스도 없어 지도를 그릴 근거가 전혀 없는 경우 —
+    // 이럴 때 임의 좌표(서울시청)를 실제 위치처럼 보여주면 사용자를 오도한다.
+    if (!_hasKnownLocation) {
+      return Padding(
+        padding: const EdgeInsets.all(32),
+        child: Center(
+          child: Text('booth_map_location_unavailable'.tr(),
+              style: TextStyle(color: context.appColors.textSecondary)),
+        ),
       );
     }
     // 부스가 없어도 페스티벌 위치를 중심으로 지도는 보여준다 (마커만 없음)

@@ -7,23 +7,25 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
+class _BoothTypeStyle {
+  final double hue;
+  final Color color;
+
+  const _BoothTypeStyle(this.hue, this.color);
+}
+
 class BoothMarkerFactory {
   BoothMarkerFactory._();
 
-  static const _boothHues = {
-    'FOOD': 14.0,
-    'BEER': 38.0,
-    'EVENT': BitmapDescriptor.hueViolet,
-  };
-
-  static const _boothColorValues = {
-    'FOOD': AppColors.boothFood,
-    'BEER': AppColors.boothAlcohol,
-    'EVENT': AppColors.boothEvent,
+  static const _boothStyles = {
+    'FOOD': _BoothTypeStyle(14.0, AppColors.boothFood),
+    'BEER': _BoothTypeStyle(38.0, AppColors.boothAlcohol),
+    'EVENT': _BoothTypeStyle(BitmapDescriptor.hueViolet, AppColors.boothEvent),
   };
 
   static Future<BitmapDescriptor> create(BoothModel booth) async {
-    final hue = _boothHues[booth.boothType] ?? BitmapDescriptor.hueRed;
+    final style = _boothStyles[booth.boothType];
+    final hue = style?.hue ?? BitmapDescriptor.hueRed;
 
     if (kIsWeb) return BitmapDescriptor.defaultMarker;
 
@@ -40,7 +42,7 @@ class BoothMarkerFactory {
 
       const w = 80.0, imgH = 60.0, tailH = 12.0;
       const totalH = imgH + tailH;
-      final color = _boothColorValues[booth.boothType] ?? AppColors.markerGray;
+      final color = style?.color ?? AppColors.markerGray;
 
       ui.Codec? codec;
       ui.Image? img;

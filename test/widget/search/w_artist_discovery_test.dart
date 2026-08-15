@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
+import 'package:feple/common/widget/w_selectable_chip.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_model.dart';
 import 'package:feple/provider/user_provider.dart';
+import 'package:feple/screen/main/tab/search/artist_genre_style.dart';
 import 'package:feple/screen/main/tab/search/w_artist_discovery.dart';
 import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/artist_service.dart';
@@ -147,6 +149,56 @@ void main() {
 
       expect(find.text('뉴진스'), findsOneWidget);
       expect(find.text('아이유'), findsNothing);
+    });
+  });
+
+  group('ArtistDiscoverySection 장르 칩 정렬', () {
+    testWidgets('전체, 밴드, 인디, 힙합, R&B, 발라드 순으로 표시된다', (tester) async {
+      when(() => mockArtistService.fetchArtists()).thenAnswer((_) async => [
+            _artist(id: 1, name: 'A', genre: 'Ballad'),
+            _artist(id: 2, name: 'B', genre: 'R&B'),
+            _artist(id: 3, name: 'C', genre: 'Hip-hop'),
+            _artist(id: 4, name: 'D', genre: 'Indie'),
+            _artist(id: 5, name: 'E', genre: 'Band'),
+          ]);
+
+      await _pump(tester);
+      await tester.pumpAndSettle();
+
+      final labels = tester
+          .widgetList<SelectableChip>(find.byType(SelectableChip))
+          .map((c) => c.label)
+          .toList();
+
+      expect(labels, [
+        'filter_all'.tr(),
+        artistGenreLabel('Band'),
+        artistGenreLabel('Indie'),
+        artistGenreLabel('Hip-hop'),
+        artistGenreLabel('R&B'),
+        artistGenreLabel('Ballad'),
+      ]);
+    });
+
+    testWidgets('우선순위에 없는 장르는 뒤에 붙는다', (tester) async {
+      when(() => mockArtistService.fetchArtists()).thenAnswer((_) async => [
+            _artist(id: 1, name: 'A', genre: 'Band'),
+            _artist(id: 2, name: 'B', genre: '댄스'),
+          ]);
+
+      await _pump(tester);
+      await tester.pumpAndSettle();
+
+      final labels = tester
+          .widgetList<SelectableChip>(find.byType(SelectableChip))
+          .map((c) => c.label)
+          .toList();
+
+      expect(labels, [
+        'filter_all'.tr(),
+        artistGenreLabel('Band'),
+        artistGenreLabel('댄스'),
+      ]);
     });
   });
 

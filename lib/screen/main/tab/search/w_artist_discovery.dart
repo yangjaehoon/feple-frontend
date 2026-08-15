@@ -180,6 +180,15 @@ class _ArtistContent extends StatefulWidget {
   State<_ArtistContent> createState() => _ArtistContentState();
 }
 
+// 전체 다음에 노출할 우선순위 — 나머지 장르는 그 뒤에 기존 정렬 순서대로 붙는다.
+const List<String> _genrePriorityOrder = ['Band', 'Indie', 'Hip-hop', 'R&B', 'Ballad'];
+
+List<String> _sortGenresByPriority(List<String> genres) {
+  final prioritized = _genrePriorityOrder.where(genres.contains);
+  final rest = genres.where((g) => !_genrePriorityOrder.contains(g));
+  return [...prioritized, ...rest];
+}
+
 class _ArtistContentState extends State<_ArtistContent> with NavigationGuard {
   String? _selectedGenre;
   late List<String> _genres;
@@ -187,14 +196,14 @@ class _ArtistContentState extends State<_ArtistContent> with NavigationGuard {
   @override
   void initState() {
     super.initState();
-    _genres = extractArtistGenres(widget.allArtists);
+    _genres = _sortGenresByPriority(extractArtistGenres(widget.allArtists));
   }
 
   @override
   void didUpdateWidget(_ArtistContent oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!identical(oldWidget.allArtists, widget.allArtists)) {
-      _genres = extractArtistGenres(widget.allArtists);
+      _genres = _sortGenresByPriority(extractArtistGenres(widget.allArtists));
     }
   }
 

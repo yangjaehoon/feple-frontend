@@ -179,15 +179,6 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
         label: 'logout'.tr(),
         onTap: _logout,
       ),
-      // 되돌릴 수 없는 회원탈퇴는 실수로 위 항목들과 헷갈려 눌리지 않도록
-      // 얇은 구분선 대신 여백으로 물리적으로 떼어놓는다.
-      const SizedBox(height: AppDimens.space20),
-      SettingsItem(
-        icon: Icons.person_remove_rounded,
-        label: 'delete_account'.tr(),
-        onTap: _deleteAccount,
-        isDestructive: true,
-      ),
     ];
   }
 
@@ -261,6 +252,15 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
       ),
       const SettingsItemDivider(),
       _VersionItem(version: _appVersion),
+      // 되돌릴 수 없는 회원탈퇴는 실수로 위 항목들과 헷갈려 눌리지 않도록
+      // 얇은 구분선 대신 여백으로 물리적으로 떼어놓는다.
+      const SizedBox(height: AppDimens.space20),
+      SettingsItem(
+        icon: Icons.person_remove_rounded,
+        label: 'delete_account'.tr(),
+        onTap: _deleteAccount,
+        isDestructive: true,
+      ),
     ];
   }
 

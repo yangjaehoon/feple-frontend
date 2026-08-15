@@ -10,21 +10,24 @@ import 'package:feple/model/festival_diary_model.dart';
 import 'package:feple/service/festival_diary_service.dart';
 import 'package:flutter/material.dart';
 
-class FestivalDiaryFeedSheet extends StatefulWidget {
-  final int festivalId;
+/// 다른 유저 프로필에서 그 유저가 쓴 공개 일기 목록을 보여주는 바텀시트.
+class UserDiaryFeedSheet extends StatefulWidget {
+  final int userId;
+  final String nickname;
   final FestivalDiaryService diaryService;
 
-  const FestivalDiaryFeedSheet({
+  const UserDiaryFeedSheet({
     super.key,
-    required this.festivalId,
+    required this.userId,
+    required this.nickname,
     required this.diaryService,
   });
 
   @override
-  State<FestivalDiaryFeedSheet> createState() => _FestivalDiaryFeedSheetState();
+  State<UserDiaryFeedSheet> createState() => _UserDiaryFeedSheetState();
 }
 
-class _FestivalDiaryFeedSheetState extends State<FestivalDiaryFeedSheet> {
+class _UserDiaryFeedSheetState extends State<UserDiaryFeedSheet> {
   bool _isLoading = true;
   bool _isLoadingMore = false;
   bool _hasError = false;
@@ -46,7 +49,7 @@ class _FestivalDiaryFeedSheetState extends State<FestivalDiaryFeedSheet> {
       setState(() => _isLoadingMore = true);
     }
     try {
-      final data = await widget.diaryService.getPublicFeed(widget.festivalId, page: page);
+      final data = await widget.diaryService.getUserPublicDiaries(widget.userId, page: page);
       if (!mounted) return;
       setState(() {
         if (page == 0) {
@@ -60,7 +63,7 @@ class _FestivalDiaryFeedSheetState extends State<FestivalDiaryFeedSheet> {
         _hasNext = data.hasNext;
       });
     } catch (e) {
-      debugPrint('[DiaryFeedSheet] load error: $e');
+      debugPrint('[UserDiaryFeedSheet] load error: $e');
       if (!mounted) return;
       setState(() {
         _isLoading = false;
@@ -102,7 +105,7 @@ class _FestivalDiaryFeedSheetState extends State<FestivalDiaryFeedSheet> {
           const Center(child: BottomSheetHandle()),
           const SizedBox(height: 14),
           Text(
-            'diary_public_feed_title'.tr(),
+            'user_diary_feed_title'.tr(args: [widget.nickname]),
             style: TextStyle(fontSize: AppDimens.fontSizeXxl, fontWeight: FontWeight.w800, color: colors.textTitle),
           ),
           const SizedBox(height: 12),
@@ -159,6 +162,7 @@ class _DiaryFeedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final isEnglish = context.isEnglish;
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 0, 20, 12),
       padding: const EdgeInsets.all(14),
@@ -173,7 +177,7 @@ class _DiaryFeedCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  diary.authorNickname ?? '',
+                  diary.displayFestivalTitle(isEnglish),
                   style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w700, color: colors.textTitle),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

@@ -57,10 +57,10 @@ class FestivalDiaryService {
   /// 일기 삭제 (command only — CQS)
   Future<void> delete(int diaryId) => DioClient.dio.delete('/diaries/$diaryId');
 
-  /// 페스티벌 상세의 공개 일기 피드 조회
-  Future<FestivalDiaryPage> getPublicFeed(int festivalId, {int page = 0}) async {
+  /// 특정 유저가 쓴 공개 일기 목록 조회 (다른 유저 프로필용)
+  Future<FestivalDiaryPage> getUserPublicDiaries(int userId, {int page = 0}) async {
     final response = await DioClient.dio.get(
-      '/diaries/festival/$festivalId/public',
+      '/diaries/user/$userId/public',
       queryParameters: {'page': page},
     );
     return FestivalDiaryPage.fromJson(response.data as Map<String, dynamic>);

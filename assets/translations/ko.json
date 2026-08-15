@@ -91,7 +91,7 @@
   "diary_delete_confirm_msg": "이 일기를 삭제할까요? 삭제하면 되돌릴 수 없습니다.",
   "diary_delete_success": "일기가 삭제되었습니다.",
   "diary_delete_failed": "일기 삭제에 실패했습니다.",
-  "diary_public_feed_title": "다른 유저의 일기",
+  "user_diary_feed_title": "{}님의 일기",
   "diary_public_feed_empty": "아직 공개된 일기가 없습니다.",
   "diary_load_failed": "일기를 불러오지 못했습니다.",
   "board": "게시판",

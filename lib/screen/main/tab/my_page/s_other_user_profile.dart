@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/util/navigate_after_fetch.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_error_state.dart';
@@ -19,9 +20,11 @@ import 'package:feple/screen/main/tab/my_page/cert_status_style.dart';
 import 'package:feple/screen/main/tab/my_page/w_certification_ring.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_posts.dart';
 import 'package:feple/screen/main/tab/my_page/w_profile_avatar_ring.dart';
+import 'package:feple/screen/main/tab/my_page/w_user_diary_feed_sheet.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/service/block_service.dart';
 import 'package:feple/service/certification_service.dart';
+import 'package:feple/service/festival_diary_service.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:feple/service/user_activity_service.dart';
 import 'package:feple/service/user_service.dart';
@@ -53,6 +56,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
   final _certService = sl<CertificationService>();
   final _festivalService = sl<FestivalService>();
   final _blockService = sl<BlockService>();
+  final _diaryService = sl<FestivalDiaryService>();
 
   AppUser? _user;
   int? _postCount;
@@ -205,6 +209,8 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
           _buildProfileHeader(colors),
           const SizedBox(height: 8),
           _buildPostsCard(colors),
+          const SizedBox(height: 8),
+          _buildDiaryCard(colors),
           const SizedBox(height: 16),
           _buildCertificationSection(colors),
         ],
@@ -354,6 +360,50 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
       ),
     );
   }
+  Widget _buildDiaryCard(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: TapScale(
+        onTap: () {
+          final nickname = _user?.nickname ?? widget.nickname;
+          showAppBottomSheet(
+            context,
+            builder: (_) => UserDiaryFeedSheet(
+              userId: widget.userId,
+              nickname: nickname,
+              diaryService: _diaryService,
+            ),
+          );
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
+            border: Border.all(color: colors.listDivider),
+            boxShadow: CardShadows.subtle(colors),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.menu_book_outlined, color: colors.activate, size: 22),
+              const SizedBox(width: 12),
+              Text(
+                'festival_diary'.tr(),
+                style: TextStyle(
+                  fontSize: AppDimens.fontSizeMd,
+                  fontWeight: FontWeight.w600,
+                  color: colors.textTitle,
+                ),
+              ),
+              const Spacer(),
+              Icon(Icons.chevron_right_rounded, color: colors.textSecondary, size: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildCertificationSection(AbstractThemeColors colors) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

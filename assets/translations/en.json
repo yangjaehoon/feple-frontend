@@ -91,7 +91,7 @@
   "diary_delete_confirm_msg": "Delete this diary? This cannot be undone.",
   "diary_delete_success": "Diary deleted.",
   "diary_delete_failed": "Failed to delete diary.",
-  "diary_public_feed_title": "Diaries from other users",
+  "user_diary_feed_title": "{}'s Diary",
   "diary_public_feed_empty": "No public diaries yet.",
   "diary_load_failed": "Failed to load diaries.",
   "board": "Board",

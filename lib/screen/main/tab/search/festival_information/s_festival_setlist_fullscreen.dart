@@ -261,20 +261,17 @@ class _ArtistFullTile extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 2),
-        Row(
-          children: [
-            Text(
-              'total_songs'.tr(args: ['${entry.songs.length}']),
-              style: TextStyle(
-                fontSize: AppDimens.fontSizeXxs,
-                color: colors.textSecondary,
-              ),
+        SetlistLabelWithPredictedBadge(
+          predicted: entry.predicted,
+          label: Text(
+            'total_songs'.tr(args: ['${entry.songs.length}']),
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeXxs,
+              color: colors.textSecondary,
             ),
-            if (entry.predicted) ...[
-              const SizedBox(width: 6),
-              const PredictedSetlistBadge(),
-            ],
-          ],
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ],
     );

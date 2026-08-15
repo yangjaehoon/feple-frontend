@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/screen/main/tab/my_page/w_status_badge.dart';
 import 'package:flutter/material.dart';
 
 /// 관리자가 실제 셋리스트를 등록하지 않아, 아티스트가 평소 부르는 곡으로
@@ -10,20 +11,36 @@ class PredictedSetlistBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: colors.textSecondary.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(AppDimens.radiusBadge),
-      ),
-      child: Text(
-        'setlist_predicted_badge'.tr(),
-        style: TextStyle(
-          fontSize: AppDimens.fontSizeTiny,
-          fontWeight: FontWeight.w700,
-          color: colors.textSecondary,
-        ),
-      ),
+    return StatusBadge(
+      color: colors.textSecondary,
+      label: 'setlist_predicted_badge'.tr(),
+      fontSize: AppDimens.fontSizeTiny,
+    );
+  }
+}
+
+/// 라벨(아티스트명/곡 수 등) 옆에 [predicted]일 때만 [PredictedSetlistBadge]를
+/// 붙이는 Row — 미리보기 카드와 전체화면 양쪽에서 동일한 배치 로직을 공유.
+class SetlistLabelWithPredictedBadge extends StatelessWidget {
+  final Widget label;
+  final bool predicted;
+
+  const SetlistLabelWithPredictedBadge({
+    super.key,
+    required this.label,
+    required this.predicted,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Flexible(child: label),
+        if (predicted) ...[
+          const SizedBox(width: 6),
+          const PredictedSetlistBadge(),
+        ],
+      ],
     );
   }
 }

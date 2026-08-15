@@ -241,25 +241,18 @@ class _ArtistCompactRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Flexible(
-              child: Text(
-                entry.displayName(isEnglish),
-                style: TextStyle(
-                  fontSize: AppDimens.fontSizeMd,
-                  fontWeight: FontWeight.w600,
-                  color: colors.textTitle,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
+        SetlistLabelWithPredictedBadge(
+          predicted: entry.predicted,
+          label: Text(
+            entry.displayName(isEnglish),
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeMd,
+              fontWeight: FontWeight.w600,
+              color: colors.textTitle,
             ),
-            if (entry.predicted) ...[
-              const SizedBox(width: 6),
-              const PredictedSetlistBadge(),
-            ],
-          ],
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
         const SizedBox(height: 3),
         if (topSong != null)

@@ -382,6 +382,7 @@
   "setlist": "셋리스트",
   "setlist_card_title": "예상 셋리스트",
   "no_setlist": "등록된 셋리스트가 없습니다.",
+  "setlist_predicted_badge": "예상",
   "edit_setlist": "셋리스트 수정",
   "setlist_saved": "셋리스트가 저장되었습니다.",
   "setlist_save_failed": "셋리스트 저장에 실패했습니다.",

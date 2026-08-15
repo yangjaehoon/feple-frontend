@@ -9,6 +9,8 @@ class FestivalSetlistEntry {
   final String artistNameEn;
   final String? profileImageUrl;
   final List<SongModel> songs;
+  /// 관리자가 이 공연의 실제 셋리스트를 등록하지 않아, 아티스트가 평소 부르는 곡으로 대체 표시 중인지 여부
+  final bool predicted;
 
   const FestivalSetlistEntry({
     required this.artistFestivalId,
@@ -17,6 +19,7 @@ class FestivalSetlistEntry {
     this.artistNameEn = '',
     this.profileImageUrl,
     required this.songs,
+    this.predicted = false,
   });
 
   String displayName(bool isEnglish) => pickLocalized(isEnglish, artistName, artistNameEn);
@@ -28,6 +31,7 @@ class FestivalSetlistEntry {
         'artistNameEn': artistNameEn,
         'profileImageUrl': profileImageUrl,
         'songs': songs.map((s) => s.toJson()).toList(),
+        'predicted': predicted,
       };
 
   factory FestivalSetlistEntry.fromJson(Map<String, dynamic> json) {
@@ -40,6 +44,7 @@ class FestivalSetlistEntry {
       songs: ((json['songs'] as List?) ?? [])
           .map((e) => SongModel.fromJson(e as Map<String, dynamic>))
           .toList(),
+      predicted: json['predicted'] as bool? ?? false,
     );
   }
 }

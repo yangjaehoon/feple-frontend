@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
+import 'package:feple/common/util/widget_image_capturer.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
@@ -19,6 +20,7 @@ import 'festival_poster_style.dart';
 import 'w_certification_bottom_sheet.dart';
 import 'w_festival_action_button.dart';
 import 'w_festival_reviews_sheet.dart';
+import 'w_festival_share_card.dart';
 import 'w_weather_bottom_sheet.dart';
 
 class FestivalPoster extends StatefulWidget {
@@ -37,6 +39,7 @@ class FestivalPosterState extends State<FestivalPoster> {
 
   late final FestivalPosterNotifier _notifier;
   bool _isSheetOpen = false;
+  bool _isSharing = false;
 
   @override
   void initState() {
@@ -91,13 +94,33 @@ class FestivalPosterState extends State<FestivalPoster> {
     fn();
   }
 
-  void _shareFestival() {
-    SharePlus.instance.share(
-      ShareParams(
-        text:
-            '${widget.poster.displayTitle(context.isEnglish)}\n${widget.poster.location}\n${widget.poster.startDate}',
-      ),
-    );
+  // 포스터 이미지+정보를 합성한 카드 이미지를 만들어 텍스트와 함께 공유한다.
+  // 카드 생성이 실패해도(네트워크 오류 등) 예전처럼 텍스트만으로는 공유되게 한다.
+  Future<void> _shareFestival() async {
+    if (_isSharing) return;
+    setState(() => _isSharing = true);
+    final isEnglish = context.isEnglish;
+    final text =
+        '${widget.poster.displayTitle(isEnglish)}\n${widget.poster.location}\n${widget.poster.startDate}';
+    try {
+      await precacheImage(NetworkImage(widget.poster.posterUrl), context);
+      if (!mounted) return;
+      final bytes = await captureWidgetAsPng(
+        context,
+        FestivalShareCard(poster: widget.poster, isEnglish: isEnglish),
+      );
+      await SharePlus.instance.share(ShareParams(
+        text: text,
+        files: bytes != null
+            ? [XFile.fromData(bytes, name: 'feple_festival.png', mimeType: 'image/png')]
+            : null,
+      ));
+    } catch (e) {
+      debugPrint('[FestivalPoster] share error: $e');
+      if (mounted) await SharePlus.instance.share(ShareParams(text: text));
+    } finally {
+      if (mounted) setState(() => _isSharing = false);
+    }
   }
 
   void _showWeather() {

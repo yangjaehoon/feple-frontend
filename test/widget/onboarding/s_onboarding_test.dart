@@ -431,11 +431,15 @@ void main() {
       // 성공했던 1번(펜타포트)은 선택 목록에서 빠지고, 실패했던 2번(워터밤)만 남는다.
       expect(find.text('onboarding_pick_selected'.tr(args: ['1'])), findsOneWidget);
 
-      // 에러 스낵바가 화면 하단에 남아있으면 같은 자리의 재시도 버튼 탭을 가로채므로,
-      // 스낵바의 표시+사라짐 애니메이션이 완전히 끝날 때까지 기다린 뒤 재시도한다.
-      // (이 페이지엔 무한 shimmer 스켈레톤이 없어 pumpAndSettle이 안전하다 — 있는
-      // 화면에서 pumpAndSettle을 쓰면 타임아웃난다는 점은 다른 테스트의 주석 참고)
-      await tester.pumpAndSettle();
+      // 에러 스낵바가 화면 하단에 남아있으면 같은 자리의 재시도 버튼 탭을 가로채므로
+      // 즉시 제거한다. 카드 포스터가 빈 URL이라 placeholder shimmer가 끝나지 않아
+      // pumpAndSettle은 타임아웃나고, 애니메이션 시간을 어림잡아 pump하는 것도
+      // 신뢰할 수 없어(스낵바 등장 애니메이션이 다시 트리거될 수 있음) 애니메이션 없이
+      // 바로 치우는 removeCurrentSnackBar를 쓴다.
+      ScaffoldMessenger.of(
+        tester.element(find.text('onboarding_festival_like_failed'.tr())),
+      ).removeCurrentSnackBar();
+      await tester.pump();
 
       // 2번도 성공하도록 바꾸고 재시도.
       when(() => mockFestivalInteractionService.toggleLike(2)).thenAnswer((_) async {});
@@ -443,10 +447,11 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
 
-      // 1번은 재시도에서 다시 호출되지 않아 누적 호출 수가 여전히 1회여야 한다.
-      verify(() => mockFestivalInteractionService.toggleLike(1)).called(1);
-      // 2번은 이번 재시도로 1회 더 호출되어 누적 2회.
-      verify(() => mockFestivalInteractionService.toggleLike(2)).called(2);
+      // mocktail의 verify()는 이미 검증한 호출을 소비한다 — 위에서 한 번 검증했으므로
+      // 여기서는 "그 이후 새로 발생한 호출"만 센다. 1번은 재시도에서 다시 호출되지
+      // 않아야 하고(0회), 2번은 재시도로 1회 더 호출돼야 한다.
+      verifyNever(() => mockFestivalInteractionService.toggleLike(1));
+      verify(() => mockFestivalInteractionService.toggleLike(2)).called(1);
       expect(completed, true);
     });
   });

@@ -39,6 +39,7 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
   // 로딩 중 사용자가 드롭다운을 직접 조작했으면 true — 이후 fetch 완료 시
   // preSelected로 덮어쓰지 않기 위한 가드
   bool _userChangedDestination = false;
+  String? _titleError;
 
   @override
   void initState() {
@@ -119,8 +120,12 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
   Widget _buildTitleField(AbstractThemeColors colors) {
     return TextField(
       controller: _titleCtrl,
+      onChanged: (_) {
+        if (_titleError != null) setState(() => _titleError = null);
+      },
       decoration: InputDecoration(
         labelText: 'photo_title_label'.tr(),
+        errorText: _titleError,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny)),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
@@ -150,7 +155,10 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
       isLoading: false,
       onPressed: () {
         final newTitle = _titleCtrl.text.trim();
-        if (newTitle.isEmpty) return;
+        if (newTitle.isEmpty) {
+          setState(() => _titleError = 'required_field'.tr());
+          return;
+        }
         // fetch 실패 등으로 선택값이 없으면 기존 description을 그대로 유지 —
         // 빈 문자열로 저장해 페스티벌 태그를 지워버리는 것을 방지
         final newDesc = _selectedDestination?.description ?? widget.photo.description;

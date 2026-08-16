@@ -100,7 +100,7 @@ void main() {
 
   group('MainImageSwiper 렌더링', () {
     testWidgets('사진이 있으면 캐러셀과 팔로우 헤더를 보여준다', (tester) async {
-      when(() => mockPhotoService.fetchPhotos(1))
+      when(() => mockPhotoService.fetchPhotos(1, limit: 10))
           .thenAnswer((_) async => [_photo(1), _photo(2), _photo(3)]);
 
       await pump(tester);
@@ -111,7 +111,7 @@ void main() {
     });
 
     testWidgets('사진이 없으면 캐러셀 없이 기본 배경만 보여준다', (tester) async {
-      when(() => mockPhotoService.fetchPhotos(1)).thenAnswer((_) async => []);
+      when(() => mockPhotoService.fetchPhotos(1, limit: 10)).thenAnswer((_) async => []);
 
       await pump(tester);
       await tester.pump();
@@ -121,7 +121,7 @@ void main() {
     });
 
     testWidgets('로드 실패해도 크래시 없이 기본 배경을 보여준다', (tester) async {
-      when(() => mockPhotoService.fetchPhotos(1))
+      when(() => mockPhotoService.fetchPhotos(1, limit: 10))
           .thenAnswer((_) async => throw Exception('네트워크 오류'));
 
       await pump(tester);
@@ -135,7 +135,7 @@ void main() {
   group('MainImageSwiper 새로고침', () {
     testWidgets('refresh를 호출하면 사진을 다시 불러온다', (tester) async {
       var callCount = 0;
-      when(() => mockPhotoService.fetchPhotos(1)).thenAnswer((_) async {
+      when(() => mockPhotoService.fetchPhotos(1, limit: 10)).thenAnswer((_) async {
         callCount++;
         return [_photo(1)];
       });

@@ -42,7 +42,7 @@ void main() {
   group('load', () {
     test('성공 시 최대 10장까지만 photos에 채우고 loaded true', () async {
       final photos = List.generate(15, (i) => _photo(i));
-      when(() => mockService.fetchPhotos(1)).thenAnswer((_) async => photos);
+      when(() => mockService.fetchPhotos(1, limit: 10)).thenAnswer((_) async => photos);
 
       await notifier.load();
 
@@ -53,7 +53,7 @@ void main() {
 
     test('10장 미만이면 있는 만큼만 채움', () async {
       final photos = [_photo(1), _photo(2)];
-      when(() => mockService.fetchPhotos(1)).thenAnswer((_) async => photos);
+      when(() => mockService.fetchPhotos(1, limit: 10)).thenAnswer((_) async => photos);
 
       await notifier.load();
 
@@ -62,7 +62,7 @@ void main() {
     });
 
     test('서비스 예외 시 photos 비어있고 loaded true (크래시 없음)', () async {
-      when(() => mockService.fetchPhotos(1)).thenThrow(Exception('network'));
+      when(() => mockService.fetchPhotos(1, limit: 10)).thenThrow(Exception('network'));
 
       await expectLater(notifier.load(), completes);
 

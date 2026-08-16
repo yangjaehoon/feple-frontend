@@ -7,8 +7,11 @@ import 'package:feple/service/artist_photo_uploadable.dart';
 
 class ArtistPhotoService implements ArtistPhotoManageable, ArtistPhotoUploadable {
   @override
-  Future<List<ArtistPhoto>> fetchPhotos(int artistId) async {
-    final response = await DioClient.dio.get('/artists/$artistId/photos');
+  Future<List<ArtistPhoto>> fetchPhotos(int artistId, {int? limit}) async {
+    final response = await DioClient.dio.get(
+      '/artists/$artistId/photos',
+      queryParameters: limit != null ? {'limit': limit} : null,
+    );
     return response.toModelList(ArtistPhoto.fromJson);
   }
 

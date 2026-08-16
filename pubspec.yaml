@@ -111,7 +111,7 @@ dev_dependencies:
 
   #test - platform interface mock
   firebase_auth_platform_interface: ^9.0.5
-  firebase_core_platform_interface: ^8.0.0
+  firebase_core_platform_interface: ^8.1.0
   image_picker_platform_interface: ^2.11.1
   plugin_platform_interface: ^2.1.8
   url_launcher_platform_interface: ^2.3.2

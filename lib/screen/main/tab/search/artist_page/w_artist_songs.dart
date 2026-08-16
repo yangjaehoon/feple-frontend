@@ -1,5 +1,4 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/common/util/navigation_guard.dart';
@@ -33,6 +32,9 @@ class ArtistSongsState extends State<ArtistSongs>
     with NavigationGuard, FutureRefreshable<List<SongModel>, ArtistSongs> {
   final _songService = sl<SongService>();
 
+  // 전체 목록 화면 진입 시 동일 API를 다시 호출하지 않도록 최근 로드 결과를 보관해 넘겨준다.
+  List<SongModel>? _loadedSongs;
+
   @override
   Future<List<SongModel>> fetchData() =>
       _songService.fetchSongs(widget.artistId);
@@ -54,17 +56,18 @@ class ArtistSongsState extends State<ArtistSongs>
                 builder: (_) => ArtistSongsScreen(
                   artistId: widget.artistId,
                   artistName: widget.artistName,
+                  initialSongs: _loadedSongs,
                 ),
               ),
             )),
           ),
-          _buildSongList(colors),
+          _buildSongList(),
         ],
       ),
     );
   }
 
-  Widget _buildSongList(AbstractThemeColors colors) {
+  Widget _buildSongList() {
     return AsyncContentBuilder<List<SongModel>>(
       future: future,
       loadingBuilder: (_) => const SongListSkeleton(),
@@ -75,18 +78,13 @@ class ArtistSongsState extends State<ArtistSongs>
       ),
       useListViewForEmptyState: false,
       builder: (_, songs) {
+        _loadedSongs = songs;
         final preview = songs.take(5).toList();
         return Column(
           children: [
             for (int i = 0; i < preview.length; i++) ...[
               SongListTile(song: preview[i], index: i),
-              if (i < preview.length - 1)
-                Divider(
-                  thickness: 1,
-                  color: colors.listDivider,
-                  indent: AppDimens.paddingHorizontal,
-                  endIndent: AppDimens.paddingHorizontal,
-                ),
+              if (i < preview.length - 1) const SongListDivider(),
             ],
           ],
         );

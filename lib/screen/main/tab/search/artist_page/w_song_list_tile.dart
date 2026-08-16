@@ -137,3 +137,22 @@ class SongListTile extends StatelessWidget {
     );
   }
 }
+
+/// 곡 목록 아이템 사이 구분선 — 프리뷰 카드와 전체 목록 화면에서 공용으로 사용.
+/// [height]는 화면마다 다른 항목 간격을 그대로 유지하기 위한 파라미터.
+class SongListDivider extends StatelessWidget {
+  final double height;
+
+  const SongListDivider({super.key, this.height = 16});
+
+  @override
+  Widget build(BuildContext context) {
+    return Divider(
+      height: height,
+      thickness: 1,
+      color: context.appColors.listDivider,
+      indent: AppDimens.paddingHorizontal,
+      endIndent: AppDimens.paddingHorizontal,
+    );
+  }
+}

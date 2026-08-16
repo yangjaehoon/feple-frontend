@@ -3,8 +3,8 @@ import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
+import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
-import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/song_model.dart';
@@ -18,10 +18,14 @@ class ArtistSongsScreen extends StatefulWidget {
   final int artistId;
   final String artistName;
 
+  /// 프리뷰 카드에서 이미 로드된 목록 — 있으면 첫 진입 시 재요청 없이 바로 보여준다.
+  final List<SongModel>? initialSongs;
+
   const ArtistSongsScreen({
     super.key,
     required this.artistId,
     required this.artistName,
+    this.initialSongs,
   });
 
   @override
@@ -32,10 +36,16 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen>
     with FutureRefreshable<List<SongModel>, ArtistSongsScreen> {
   final _songService = sl<SongService>();
   bool _isSheetOpen = false;
+  bool _initialSongsConsumed = false;
 
   @override
-  Future<List<SongModel>> fetchData() =>
-      _songService.fetchSongs(widget.artistId);
+  Future<List<SongModel>> fetchData() {
+    if (!_initialSongsConsumed && widget.initialSongs != null) {
+      _initialSongsConsumed = true;
+      return Future.value(widget.initialSongs!);
+    }
+    return _songService.fetchSongs(widget.artistId);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,48 +86,29 @@ class _ArtistSongsScreenState extends State<ArtistSongsScreen>
       body: RefreshIndicator(
         color: colors.activate,
         onRefresh: refresh,
-        child: FutureBuilder<List<SongModel>>(
+        child: AsyncContentBuilder<List<SongModel>>(
           future: future,
-          builder: (context, snapshot) => _buildBody(snapshot, colors),
+          loadingBuilder: (_) => const SongListSkeleton(itemCount: 6),
+          onRetry: refresh,
+          emptyBuilder: (_) => ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: [
+              const SizedBox(height: 80),
+              EmptyState(icon: Icons.music_off_rounded, title: 'no_songs'.tr()),
+            ],
+          ),
+          useListViewForEmptyState: false,
+          builder: (_, songs) => ListView.separated(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.only(top: 8, bottom: 24),
+            itemCount: songs.length,
+            separatorBuilder: (_, _) => const SongListDivider(height: 1),
+            itemBuilder: (_, index) => AnimatedListItem(
+              index: index,
+              child: SongListTile(song: songs[index], index: index),
+            ),
+          ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildBody(
-    AsyncSnapshot<List<SongModel>> snapshot,
-    AbstractThemeColors colors,
-  ) {
-    if (snapshot.connectionState == ConnectionState.waiting) {
-      return const SongListSkeleton(itemCount: 6);
-    }
-    if (snapshot.hasError) {
-      return ErrorState.network(snapshot.error!, onRetry: refresh);
-    }
-    final songs = snapshot.data ?? [];
-    if (songs.isEmpty) {
-      return ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        children: [
-          const SizedBox(height: 80),
-          EmptyState(icon: Icons.music_off_rounded, title: 'no_songs'.tr()),
-        ],
-      );
-    }
-    return ListView.separated(
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(top: 8, bottom: 24),
-      itemCount: songs.length,
-      separatorBuilder: (_, _) => Divider(
-        height: 1,
-        thickness: 1,
-        color: colors.listDivider,
-        indent: AppDimens.paddingHorizontal,
-        endIndent: AppDimens.paddingHorizontal,
-      ),
-      itemBuilder: (_, index) => AnimatedListItem(
-        index: index,
-        child: SongListTile(song: songs[index], index: index),
       ),
     );
   }

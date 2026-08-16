@@ -52,13 +52,14 @@ TimetableRange computeTimetableRange(List<TimetableEntry> entries, String? date)
     if (hour != null && hour < startHour) startHour = hour;
   }
 
+  // durationMinutes는 자정을 넘기는 공연도 감안해 실제 소요 시간을 계산하므로,
+  // endTime을 그대로 파싱하는 대신 "시작 시각 + 소요 시간"으로 종료 시각을 구해야
+  // 자정 넘김 카드가 그리드 하단에서 잘리지 않는다.
   int endHour = startHour + 1;
   for (final e in filtered) {
-    final parts = e.endTime.split(':');
-    final hour = int.tryParse(parts[0]);
-    final minute = int.tryParse(parts.length > 1 ? parts[1] : '0');
-    if (hour == null || minute == null) continue;
-    final candidateEnd = minute > 0 ? hour + 1 : hour;
+    final start = parseHHmm(e.startTime);
+    final endMinutesFromMidnight = start.hour * 60 + start.minute + e.durationMinutes;
+    final candidateEnd = (endMinutesFromMidnight / 60).ceil();
     if (candidateEnd > endHour) endHour = candidateEnd;
   }
 

@@ -194,5 +194,17 @@ void main() {
 
       expect(result.endHour, 20);
     });
+
+    test('endHour — 자정을 넘기는 공연은 그리드가 다음날 시각까지 확장된다', () {
+      // 23:30 시작, 00:30(다음날) 종료 — endTime을 그대로 파싱하면 endHour가
+      // 1로 잡혀 카드가 그리드 하단에서 잘리므로, durationMinutes 기반으로
+      // 24시를 넘는 종료 시각(24.5h → ceil 25)까지 그리드를 확장해야 한다.
+      final result = computeTimetableRange(
+        [_entry(startTime: '23:30', endTime: '00:30')],
+        '2025-08-01',
+      );
+
+      expect(result.endHour, 25);
+    });
   });
 }

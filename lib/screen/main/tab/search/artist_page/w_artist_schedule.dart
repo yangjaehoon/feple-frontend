@@ -78,7 +78,8 @@ class ArtistScheduleState extends State<ArtistSchedule>
       ),
       useListViewForEmptyState: false,
       builder: (_, data) {
-        final upcoming = data.upcoming;
+        // 프리뷰 카드는 상위 3개만 보여주고 전체는 헤더 탭 → ArtistScheduleListScreen에서 확인
+        final upcoming = data.upcoming.take(3).toList();
         return Column(
           children: [
             for (int i = 0; i < upcoming.length; i++) ...[

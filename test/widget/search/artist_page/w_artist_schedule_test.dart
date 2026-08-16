@@ -5,6 +5,7 @@ import 'package:feple/injection.dart';
 import 'package:feple/model/artist_schedule_model.dart';
 import 'package:feple/screen/main/tab/search/artist_page/s_artist_schedule_list.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_schedule.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_schedule_list_tile.dart';
 import 'package:feple/service/artist_schedule_service.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
@@ -89,6 +90,25 @@ void main() {
 
       expect(find.text('다가올 일정'), findsOneWidget);
       expect(find.text('지난 일정'), findsNothing);
+    });
+
+    testWidgets('다가오는 일정이 3개보다 많으면 상위 3개만 보여준다', (tester) async {
+      final future = DateTime.now().add(const Duration(days: 10));
+      when(() => mockService.fetchSchedule(1)).thenAnswer((_) async => [
+            for (var i = 1; i <= 4; i++)
+              _schedule(
+                festivalId: i,
+                title: '일정$i',
+                startDate: future.add(Duration(days: i)).toIso8601String(),
+              ),
+          ]);
+
+      await pump(tester);
+      await tester.pump();
+
+      expect(find.byType(ScheduleListTile), findsNWidgets(3));
+      expect(find.text('일정1'), findsOneWidget);
+      expect(find.text('일정4'), findsNothing);
     });
 
     testWidgets('다가오는 일정이 없으면 안내 문구를 보여준다', (tester) async {

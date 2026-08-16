@@ -69,20 +69,23 @@ class FestivalPosterState extends State<FestivalPoster> {
     final lng = widget.poster.longitude;
     final name = Uri.encodeComponent(widget.poster.location);
     try {
+      var launched = false;
       if (lat != null && lng != null) {
         final appUri = Uri.parse('kakaomap://look?p=$lat,$lng');
         final webUri = Uri.parse(
           'https://map.kakao.com/link/map/$name,$lat,$lng',
         );
         if (await canLaunchUrl(appUri)) {
-          await launchUrl(appUri);
-        } else {
-          await launchUrl(webUri, mode: LaunchMode.externalApplication);
+          launched = await launchUrl(appUri);
+        }
+        if (!launched) {
+          launched = await launchUrl(webUri, mode: LaunchMode.externalApplication);
         }
       } else {
         final webUri = Uri.parse('https://map.kakao.com/link/search/$name');
-        await launchUrl(webUri, mode: LaunchMode.externalApplication);
+        launched = await launchUrl(webUri, mode: LaunchMode.externalApplication);
       }
+      if (!launched && mounted) context.showErrorSnackbar('map_open_failed'.tr());
     } catch (e) {
       debugPrint('map launch error: $e');
       if (mounted) context.showErrorSnackbar('map_open_failed'.tr());
@@ -172,6 +175,7 @@ class FestivalPosterState extends State<FestivalPoster> {
         certService: sl<CertificationService>(),
       ),
     );
+    if (mounted) unawaited(_notifier.loadMyCertificationStatus());
   }
 
   @override

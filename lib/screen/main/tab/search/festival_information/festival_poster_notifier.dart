@@ -183,21 +183,21 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
     unawaited(HapticFeedback.lightImpact());
     final prevAttending = attending;
     final prevCount = attendingCount;
-    attending = !attending;
-    attendingCount = attending
-        ? attendingCount + 1
-        : max(0, attendingCount - 1);
-    safeNotify();
-    _pingAttending();
     try {
-      await festivalService.toggleAttending(festivalId);
-    } catch (e) {
-      attending = prevAttending;
-      attendingCount = prevCount;
-      safeNotify();
-      _pingAttending();
-      debugPrint('toggleAttending error: $e');
-      onError?.call('attend_failed');
+      await optimisticToggle(
+        attending,
+        apply: (v) {
+          attending = v;
+          // apply는 낙관적 적용(반대값)과 실패 시 롤백(원래값) 양쪽에서 호출된다 —
+          // 롤백 호출(v == prevAttending)은 공식으로 재계산하지 않고 원래 카운트를 그대로 복원
+          attendingCount = v == prevAttending
+              ? prevCount
+              : (v ? prevCount + 1 : max(0, prevCount - 1));
+          _pingAttending();
+        },
+        action: () => festivalService.toggleAttending(festivalId),
+        onError: () => onError?.call('attend_failed'),
+      );
     } finally {
       isTogglingAttend = false;
       safeNotify();
@@ -207,6 +207,14 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
   void toggleDesc() {
     descExpanded = !descExpanded;
     safeNotify();
-    saveDescState(descExpanded);
+    unawaited(_saveDescStateSafely(descExpanded));
+  }
+
+  Future<void> _saveDescStateSafely(bool expanded) async {
+    try {
+      await saveDescState(expanded);
+    } catch (e) {
+      debugPrint('saveDescState error: $e');
+    }
   }
 }

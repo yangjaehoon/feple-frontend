@@ -11,9 +11,12 @@ import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_model.dart';
+import 'package:feple/model/festival_preview.dart';
 import 'package:feple/screen/main/tab/search/artist_genre_style.dart';
 import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/artist_service.dart';
+import 'package:feple/service/festival_interaction_service.dart';
+import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
 
 /// 온보딩 진행 상태 도트 — 인포 페이지(_OnboardingScreenState)와 아티스트
@@ -54,8 +57,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final _pageController = PageController();
   int _currentPage = 0;
   bool _showArtistPick = false;
+  bool _showFestivalPick = false;
 
   static const _pageCount = 3;
+  // 인포 페이지 3개 + 아티스트 선택 + 페스티벌 선택 = 총 5단계
+  static const _totalSteps = _pageCount + 2;
   bool get _isLastInfoPage => _currentPage == _pageCount - 1;
 
   List<_PageData> _buildPages(AbstractThemeColors colors) => [
@@ -107,10 +113,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     widget.onComplete();
   }
 
+  Future<void> _goToFestivalPick() async {
+    setState(() => _showFestivalPick = true);
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_showFestivalPick) {
+      return _FestivalPickPage(onComplete: _finish);
+    }
     if (_showArtistPick) {
-      return _ArtistPickPage(onComplete: _finish);
+      return _ArtistPickPage(onComplete: _goToFestivalPick);
     }
 
     final colors = context.appColors;
@@ -141,7 +154,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       padding: const EdgeInsets.fromLTRB(24, 24, 16, 0),
       child: Row(
         children: [
-          _buildProgressDots(colors, totalDots: _pageCount + 1, activeIndex: _currentPage),
+          _buildProgressDots(colors, totalDots: _totalSteps, activeIndex: _currentPage),
           const Spacer(),
           TextButton(
             onPressed: _finish,
@@ -247,8 +260,8 @@ class _ArtistPickPageState extends State<_ArtistPickPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 진행 도트 (4번째 활성)
-          _buildProgressDots(colors, totalDots: 4, activeIndex: 3),
+          // 진행 도트 (4번째 활성, 총 5단계 중)
+          _buildProgressDots(colors, totalDots: 5, activeIndex: 3),
           const SizedBox(height: 24),
           Text(
             'onboarding_pick_title'.tr(),
@@ -525,6 +538,319 @@ class _ArtistSelectCard extends StatelessWidget {
 }
 
 // ─── 장르 필터 칩 ────────────────────────────────────────────────────────────
+
+// ─── 페스티벌 선택 전체 화면 ───────────────────────────────────────────────────
+
+class _FestivalPickPage extends StatefulWidget {
+  final Future<void> Function() onComplete;
+
+  const _FestivalPickPage({required this.onComplete});
+
+  @override
+  State<_FestivalPickPage> createState() => _FestivalPickPageState();
+}
+
+class _FestivalPickPageState extends State<_FestivalPickPage>
+    with FutureRefreshable<List<FestivalPreview>, _FestivalPickPage> {
+  final Set<int> _selectedIds = {};
+  bool _isSubmitting = false;
+
+  @override
+  Future<List<FestivalPreview>> fetchData() async {
+    final page = await sl<FestivalService>().fetchPreviews(
+      page: 0,
+      size: 30,
+      includeEnded: false,
+    );
+    return page.items.where((f) => !f.isEnded).toList();
+  }
+
+  Future<void> _submit() async {
+    if (_isSubmitting) return;
+    setState(() => _isSubmitting = true);
+    try {
+      await Future.wait(
+        _selectedIds.map((id) => sl<FestivalInteractionService>().toggleLike(id)),
+      );
+      if (_selectedIds.isNotEmpty) AppEvents.festivalLikeChanged.value++;
+    } catch (e) {
+      debugPrint('[Onboarding] festival like failed: $e');
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+        context.showErrorSnackbar('onboarding_festival_like_failed'.tr());
+      }
+      return;
+    }
+    if (!mounted) return;
+    try {
+      await widget.onComplete();
+    } catch (e) {
+      debugPrint('[Onboarding] onComplete failed: $e');
+      if (mounted) setState(() => _isSubmitting = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    return Scaffold(
+      backgroundColor: colors.backgroundMain,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(colors),
+            Expanded(child: _buildGrid(colors)),
+            _buildBottomBar(colors),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 진행 도트 (5번째 활성, 총 5단계 중)
+          _buildProgressDots(colors, totalDots: 5, activeIndex: 4),
+          const SizedBox(height: 24),
+          Text(
+            'onboarding_festival_pick_title'.tr(),
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeDisplay,
+              fontWeight: FontWeight.w800,
+              color: colors.textTitle,
+              height: 1.3,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'onboarding_festival_pick_subtitle'.tr(),
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeMd,
+              color: colors.textSecondary,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGrid(AbstractThemeColors colors) {
+    return AsyncContentBuilder<List<FestivalPreview>>(
+      future: future,
+      loadingBuilder: (_) => _buildSkeleton(),
+      errorBuilder: (error) => Center(
+        child: ErrorState.network(
+          error ?? Exception('unknown'),
+          operationErrorKey: 'onboarding_festival_pick_load_failed',
+          onRetry: refresh,
+        ),
+      ),
+      isEmpty: (_) => false,
+      builder: (_, festivals) {
+        return GridView.builder(
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 12,
+            childAspectRatio: 0.62,
+          ),
+          itemCount: festivals.length,
+          itemBuilder: (_, index) {
+            final festival = festivals[index];
+            final selected = _selectedIds.contains(festival.id);
+            return _FestivalSelectCard(
+              festival: festival,
+              selected: selected,
+              onTap: () => setState(() {
+                if (selected) {
+                  _selectedIds.remove(festival.id);
+                } else {
+                  _selectedIds.add(festival.id);
+                }
+              }),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildSkeleton() {
+    return GridView.builder(
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 16,
+        crossAxisSpacing: 12,
+        childAspectRatio: 0.62,
+      ),
+      itemCount: 6,
+      itemBuilder: (_, _) => Column(
+        children: const [
+          AspectRatio(
+            aspectRatio: 0.75,
+            child: SkeletonBox(
+              height: double.infinity,
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+            ),
+          ),
+          SizedBox(height: 8),
+          SkeletonBox(width: 96, height: 13),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomBar(AbstractThemeColors colors) {
+    final count = _selectedIds.length;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 12, 24, 36),
+      decoration: BoxDecoration(
+        color: colors.backgroundMain,
+        border: Border(top: BorderSide(color: colors.listDivider)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (count > 0) ...[
+            AnimatedContainer(
+              duration: AppDimens.animFast,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: colors.activate.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppDimens.cardRadius),
+              ),
+              child: Text(
+                'onboarding_pick_selected'.tr(args: ['$count']),
+                style: TextStyle(
+                  fontSize: AppDimens.fontSizeSm,
+                  fontWeight: FontWeight.w600,
+                  color: colors.activate,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+          LoadingButton(
+            label: count == 0
+                ? 'onboarding_pick_skip'.tr()
+                : 'onboarding_start'.tr(),
+            onPressed: _submit,
+            isLoading: _isSubmitting,
+            backgroundColor: colors.activate,
+            borderRadius: AppDimens.shapeButton,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── 페스티벌 선택 카드 ────────────────────────────────────────────────────────
+
+class _FestivalSelectCard extends StatelessWidget {
+  final FestivalPreview festival;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _FestivalSelectCard({
+    required this.festival,
+    required this.selected,
+    required this.onTap,
+  });
+
+  Widget _buildPoster(BuildContext context, AbstractThemeColors colors) {
+    return AspectRatio(
+      aspectRatio: 0.75,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: AnimatedContainer(
+              duration: AppDimens.animFast,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
+                border: Border.all(
+                  color: selected ? colors.activate : Colors.transparent,
+                  width: 2.5,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
+                child: CachedNetworkImage(
+                  imageUrl: festival.posterUrl,
+                  fit: BoxFit.cover,
+                  memCacheWidth: 260,
+                  placeholder: (_, _) =>
+                      const SkeletonBox(height: double.infinity),
+                  errorWidget: (_, _, _) => Container(
+                    color: colors.activate.withValues(alpha: 0.08),
+                    child: Icon(
+                      Icons.festival_rounded,
+                      color: colors.activate,
+                      size: 36,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          if (selected)
+            Positioned(
+              top: 6,
+              right: 6,
+              child: Container(
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                  color: colors.activate,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.check_rounded,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  size: 14,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          _buildPoster(context, colors),
+          const SizedBox(height: 6),
+          Text(
+            festival.displayTitle(context.isEnglish),
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeSm,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+              color: selected ? colors.activate : colors.textTitle,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 // ─── 인포 페이지 데이터 & 위젯 ────────────────────────────────────────────────
 

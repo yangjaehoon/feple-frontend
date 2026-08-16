@@ -7,9 +7,13 @@ import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_model.dart';
+import 'package:feple/model/festival_preview.dart';
+import 'package:feple/model/festival_preview_page.dart';
 import 'package:feple/screen/onboarding/s_onboarding.dart';
 import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/artist_service.dart';
+import 'package:feple/service/festival_interaction_service.dart';
+import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -17,6 +21,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class MockArtistService extends Mock implements ArtistService {}
 class MockArtistFollowService extends Mock implements ArtistFollowService {}
+class MockFestivalService extends Mock implements FestivalService {}
+class MockFestivalInteractionService extends Mock implements FestivalInteractionService {}
 
 Artist _artist({int id = 1, String name = '아티스트', String genre = 'KPOP'}) =>
     Artist(
@@ -25,6 +31,15 @@ Artist _artist({int id = 1, String name = '아티스트', String genre = 'KPOP'}
       genre: genre,
       profileImageUrl: '',
       followerCount: 0,
+    );
+
+FestivalPreview _festival({int id = 1, String title = '페스티벌'}) =>
+    FestivalPreview(
+      id: id,
+      title: title,
+      location: '서울',
+      posterUrl: '',
+      startDate: '2099-01-01',
     );
 
 Future<void> _pump(WidgetTester tester, {VoidCallback? onComplete}) async {
@@ -62,21 +77,61 @@ void main() {
 
   late MockArtistService mockArtistService;
   late MockArtistFollowService mockFollowService;
+  late MockFestivalService mockFestivalService;
+  late MockFestivalInteractionService mockFestivalInteractionService;
 
   setUp(() {
     Prefs.onboardingCompleted.set(false);
     mockArtistService = MockArtistService();
     mockFollowService = MockArtistFollowService();
+    mockFestivalService = MockFestivalService();
+    mockFestivalInteractionService = MockFestivalInteractionService();
     if (sl.isRegistered<ArtistService>()) sl.unregister<ArtistService>();
     sl.registerSingleton<ArtistService>(mockArtistService);
     if (sl.isRegistered<ArtistFollowService>()) sl.unregister<ArtistFollowService>();
     sl.registerSingleton<ArtistFollowService>(mockFollowService);
+    if (sl.isRegistered<FestivalService>()) sl.unregister<FestivalService>();
+    sl.registerSingleton<FestivalService>(mockFestivalService);
+    if (sl.isRegistered<FestivalInteractionService>()) sl.unregister<FestivalInteractionService>();
+    sl.registerSingleton<FestivalInteractionService>(mockFestivalInteractionService);
   });
 
   tearDown(() {
     if (sl.isRegistered<ArtistService>()) sl.unregister<ArtistService>();
     if (sl.isRegistered<ArtistFollowService>()) sl.unregister<ArtistFollowService>();
+    if (sl.isRegistered<FestivalService>()) sl.unregister<FestivalService>();
+    if (sl.isRegistered<FestivalInteractionService>()) sl.unregister<FestivalInteractionService>();
   });
+
+  // 정보 페이지 3개를 지나 아티스트 선택 페이지로 진입한다.
+  // ArtistPickPage 로딩 스켈레톤이 무한 shimmer라 마지막은 pumpAndSettle 대신
+  // 고정 프레임만 진행시킨다.
+  Future<void> goToArtistPick(WidgetTester tester) async {
+    await tester.tap(find.text('onboarding_next'.tr()));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('onboarding_next'.tr()));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('onboarding_next'.tr()));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+  }
+
+  // 아티스트를 선택하지 않고 건너뛰어 페스티벌 선택 페이지까지 진입한다.
+  // mockArtistService.fetchArtists()는 호출부에서 미리 스텁해야 한다.
+  Future<void> goToFestivalPick(WidgetTester tester) async {
+    await goToArtistPick(tester);
+    await tester.tap(find.text('onboarding_pick_skip'.tr()));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+  }
+
+  void stubFestivalPreviews(List<FestivalPreview> items) {
+    when(() => mockFestivalService.fetchPreviews(
+          page: any(named: 'page'),
+          size: any(named: 'size'),
+          includeEnded: any(named: 'includeEnded'),
+        )).thenAnswer((_) async => FestivalPreviewPage(items: items, hasMore: false));
+  }
 
   group('OnboardingScreen 정보 페이지', () {
     testWidgets('첫 페이지에 첫 안내 문구와 다음/건너뛰기 버튼이 보인다', (tester) async {
@@ -128,19 +183,6 @@ void main() {
   });
 
   group('OnboardingScreen 아티스트 선택', () {
-    // 정보 페이지 3개를 지나 아티스트 선택 페이지로 진입한다.
-    // ArtistPickPage 로딩 스켈레톤이 무한 shimmer라 마지막은 pumpAndSettle 대신
-    // 고정 프레임만 진행시킨다.
-    Future<void> goToArtistPick(WidgetTester tester) async {
-      await tester.tap(find.text('onboarding_next'.tr()));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('onboarding_next'.tr()));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('onboarding_next'.tr()));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 300));
-    }
-
     testWidgets('로딩 중에는 스켈레톤을 보여준다', (tester) async {
       final completer = Completer<List<Artist>>();
       when(() => mockArtistService.fetchArtists()).thenAnswer((_) => completer.future);
@@ -169,11 +211,12 @@ void main() {
       expect(find.text('onboarding_pick_selected'.tr(args: ['1'])), findsOneWidget);
     });
 
-    testWidgets('선택한 아티스트를 팔로우하고 완료 콜백을 호출한다', (tester) async {
+    testWidgets('선택한 아티스트를 팔로우한 뒤 완료 대신 페스티벌 선택 단계로 이동한다', (tester) async {
       var completed = false;
       when(() => mockArtistService.fetchArtists())
           .thenAnswer((_) async => [_artist(id: 7, name: '아이유')]);
       when(() => mockFollowService.follow(any())).thenAnswer((_) async {});
+      stubFestivalPreviews(const []);
       await _pump(tester, onComplete: () => completed = true);
       await goToArtistPick(tester);
 
@@ -185,14 +228,24 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
 
       verify(() => mockFollowService.follow(7)).called(1);
+      // 아티스트 선택만으로는 끝나지 않고 페스티벌 선택 페이지가 이어서 나온다.
+      expect(find.text('onboarding_festival_pick_title'.tr()), findsOneWidget);
+      expect(completed, false);
+      expect(Prefs.onboardingCompleted.get(), false);
+
+      await tester.tap(find.text('onboarding_pick_skip'.tr()));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
       expect(completed, true);
       expect(Prefs.onboardingCompleted.get(), true);
     });
 
-    testWidgets('아티스트를 선택하지 않고 건너뛰면 follow 없이 완료된다', (tester) async {
+    testWidgets('아티스트를 선택하지 않고 건너뛰면 follow 없이 페스티벌 선택 단계로 이동한다', (tester) async {
       var completed = false;
       when(() => mockArtistService.fetchArtists())
           .thenAnswer((_) async => [_artist()]);
+      stubFestivalPreviews(const []);
       await _pump(tester, onComplete: () => completed = true);
       await goToArtistPick(tester);
 
@@ -201,6 +254,13 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
 
       verifyNever(() => mockFollowService.follow(any()));
+      expect(completed, false);
+      expect(find.text('onboarding_festival_pick_title'.tr()), findsOneWidget);
+
+      await tester.tap(find.text('onboarding_pick_skip'.tr()));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
       expect(completed, true);
     });
 
@@ -240,6 +300,120 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.text('재시도아티스트'), findsOneWidget);
+    });
+  });
+
+  group('OnboardingScreen 페스티벌 선택', () {
+    // 아티스트 선택은 건너뛰고 페스티벌 선택 페이지까지 진입한다.
+    Future<void> reachFestivalPick(WidgetTester tester) async {
+      when(() => mockArtistService.fetchArtists()).thenAnswer((_) async => []);
+      await goToFestivalPick(tester);
+    }
+
+    testWidgets('로딩 중에는 스켈레톤을 보여준다', (tester) async {
+      final completer = Completer<FestivalPreviewPage>();
+      when(() => mockFestivalService.fetchPreviews(
+            page: any(named: 'page'),
+            size: any(named: 'size'),
+            includeEnded: any(named: 'includeEnded'),
+          )).thenAnswer((_) => completer.future);
+      await _pump(tester);
+      await reachFestivalPick(tester);
+
+      expect(find.text('onboarding_pick_skip'.tr()), findsOneWidget); // 선택 0개면 skip 라벨
+      completer.complete(FestivalPreviewPage(items: [_festival()], hasMore: false));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+    });
+
+    testWidgets('페스티벌을 선택하지 않으면 버튼 라벨이 건너뛰기이고, 선택하면 시작하기로 바뀐다', (tester) async {
+      stubFestivalPreviews([_festival(id: 1, title: '펜타포트')]);
+      await _pump(tester);
+      await reachFestivalPick(tester);
+
+      expect(find.text('onboarding_pick_skip'.tr()), findsOneWidget);
+
+      await tester.tap(find.text('펜타포트'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.text('onboarding_start'.tr()), findsOneWidget);
+      expect(find.text('onboarding_pick_selected'.tr(args: ['1'])), findsOneWidget);
+    });
+
+    testWidgets('선택한 페스티벌을 관심 등록하고 완료 콜백을 호출한다', (tester) async {
+      var completed = false;
+      stubFestivalPreviews([_festival(id: 9, title: '펜타포트')]);
+      when(() => mockFestivalInteractionService.toggleLike(any())).thenAnswer((_) async {});
+      await _pump(tester, onComplete: () => completed = true);
+      await reachFestivalPick(tester);
+
+      await tester.tap(find.text('펜타포트'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.tap(find.text('onboarding_start'.tr()));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      verify(() => mockFestivalInteractionService.toggleLike(9)).called(1);
+      expect(completed, true);
+      expect(Prefs.onboardingCompleted.get(), true);
+    });
+
+    testWidgets('페스티벌을 선택하지 않고 건너뛰면 관심 등록 없이 완료된다', (tester) async {
+      var completed = false;
+      stubFestivalPreviews([_festival()]);
+      await _pump(tester, onComplete: () => completed = true);
+      await reachFestivalPick(tester);
+
+      await tester.tap(find.text('onboarding_pick_skip'.tr()));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      verifyNever(() => mockFestivalInteractionService.toggleLike(any()));
+      expect(completed, true);
+    });
+
+    testWidgets('관심 등록 실패 시 에러 스낵바를 보여주고 완료되지 않는다', (tester) async {
+      var completed = false;
+      stubFestivalPreviews([_festival(id: 9, title: '펜타포트')]);
+      when(() => mockFestivalInteractionService.toggleLike(any()))
+          .thenThrow(Exception('네트워크 오류'));
+      await _pump(tester, onComplete: () => completed = true);
+      await reachFestivalPick(tester);
+
+      await tester.tap(find.text('펜타포트'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.tap(find.text('onboarding_start'.tr()));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.text('onboarding_festival_like_failed'.tr()), findsOneWidget);
+      expect(completed, false);
+    });
+
+    testWidgets('페스티벌 로드 실패 시 에러 상태와 재시도 버튼을 보여준다', (tester) async {
+      var callCount = 0;
+      when(() => mockFestivalService.fetchPreviews(
+            page: any(named: 'page'),
+            size: any(named: 'size'),
+            includeEnded: any(named: 'includeEnded'),
+          )).thenAnswer((_) async {
+        callCount++;
+        if (callCount == 1) throw Exception('네트워크 오류');
+        return FestivalPreviewPage(items: [_festival(title: '재시도페스티벌')], hasMore: false);
+      });
+      await _pump(tester);
+      await reachFestivalPick(tester);
+
+      expect(find.text('onboarding_festival_pick_load_failed'.tr()), findsOneWidget);
+
+      await tester.tap(find.byType(FilledButton).first);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.text('재시도페스티벌'), findsOneWidget);
     });
   });
 }

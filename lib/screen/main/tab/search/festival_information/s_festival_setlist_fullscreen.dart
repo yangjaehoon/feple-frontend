@@ -113,9 +113,9 @@ class _FestivalSetlistFullscreenScreenState
           index: i,
           child: _ArtistFullTile(
             entry: entries[i],
-            isExpanded: _expanded.contains(entries[i].artistId),
+            isExpanded: _expanded.contains(entries[i].artistFestivalId),
             onToggle: () => setState(() {
-              final id = entries[i].artistId;
+              final id = entries[i].artistFestivalId;
               if (_expanded.contains(id)) {
                 _expanded.remove(id);
               } else {
@@ -199,31 +199,37 @@ class _ArtistFullTile extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: InkWell(
-            onTap: onToggle,
-            borderRadius: BorderRadius.vertical(
-              top: const Radius.circular(AppDimens.cardRadius),
-              bottom: isExpanded
-                  ? Radius.zero
-                  : const Radius.circular(AppDimens.cardRadius),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 14, 0, 14),
-              child: Row(
-                children: [
-                  SetlistArtistAvatar(profileImageUrl: entry.profileImageUrl, size: 40),
-                  const SizedBox(width: 12),
-                  Expanded(child: _buildArtistInfo(isEnglish, colors)),
-                  AnimatedRotation(
-                    turns: isExpanded ? 0.5 : 0,
-                    duration: AppDimens.animXFast,
-                    child: Icon(
-                      Icons.keyboard_arrow_down_rounded,
-                      size: 20,
-                      color: colors.textSecondary,
+          child: Semantics(
+            button: true,
+            toggled: isExpanded,
+            label: (isExpanded ? 'setlist_collapse' : 'setlist_expand')
+                .tr(args: [entry.displayName(isEnglish)]),
+            child: InkWell(
+              onTap: onToggle,
+              borderRadius: BorderRadius.vertical(
+                top: const Radius.circular(AppDimens.cardRadius),
+                bottom: isExpanded
+                    ? Radius.zero
+                    : const Radius.circular(AppDimens.cardRadius),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 14, 0, 14),
+                child: Row(
+                  children: [
+                    SetlistArtistAvatar(profileImageUrl: entry.profileImageUrl, size: 40),
+                    const SizedBox(width: 12),
+                    Expanded(child: _buildArtistInfo(isEnglish, colors)),
+                    AnimatedRotation(
+                      turns: isExpanded ? 0.5 : 0,
+                      duration: AppDimens.animXFast,
+                      child: Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        size: 20,
+                        color: colors.textSecondary,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -407,7 +413,6 @@ class _SetlistRequestSheetState extends State<SetlistRequestSheet> {
       await sl<FestivalDetailService>().submitSetlistRequest(
         festivalId: widget.festivalId,
         artistFestivalId: widget.entry.artistFestivalId,
-        artistName: widget.entry.artistName,
         message: message,
       );
       if (mounted) {

@@ -39,14 +39,12 @@ FestivalSetlistEntry _entry({
   int artistId = 1,
   String artistName = '아티스트',
   List<SongModel> songs = const [],
-  bool predicted = false,
 }) =>
     FestivalSetlistEntry(
       artistFestivalId: artistFestivalId,
       artistId: artistId,
       artistName: artistName,
       songs: songs,
-      predicted: predicted,
     );
 
 void main() {
@@ -204,7 +202,6 @@ void main() {
       when(() => mockService.submitSetlistRequest(
             festivalId: 1,
             artistFestivalId: 5,
-            artistName: '아티스트A',
             message: '이 곡 틀어주세요',
           )).thenAnswer((_) async {});
 
@@ -220,7 +217,6 @@ void main() {
       verify(() => mockService.submitSetlistRequest(
             festivalId: 1,
             artistFestivalId: 5,
-            artistName: '아티스트A',
             message: '이 곡 틀어주세요',
           )).called(1);
       expect(find.text('setlist_request_sent'.tr()), findsOneWidget);
@@ -233,7 +229,6 @@ void main() {
       when(() => mockService.submitSetlistRequest(
             festivalId: any(named: 'festivalId'),
             artistFestivalId: any(named: 'artistFestivalId'),
-            artistName: any(named: 'artistName'),
             message: any(named: 'message'),
           )).thenThrow(Exception('네트워크 오류'));
 
@@ -265,7 +260,6 @@ void main() {
       verifyNever(() => mockService.submitSetlistRequest(
             festivalId: any(named: 'festivalId'),
             artistFestivalId: any(named: 'artistFestivalId'),
-            artistName: any(named: 'artistName'),
             message: any(named: 'message'),
           ));
       expect(find.byType(SetlistRequestSheet), findsOneWidget);

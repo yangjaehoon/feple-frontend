@@ -27,14 +27,12 @@ FestivalSetlistEntry _entry({
   int artistId = 1,
   String artistName = '아티스트',
   List<SongModel> songs = const [],
-  bool predicted = false,
 }) =>
     FestivalSetlistEntry(
       artistFestivalId: artistFestivalId,
       artistId: artistId,
       artistName: artistName,
       songs: songs,
-      predicted: predicted,
     );
 
 void main() {

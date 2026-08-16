@@ -386,6 +386,8 @@
   "setlist_saved": "Setlist saved.",
   "setlist_save_failed": "Failed to save setlist.",
   "select_songs_hint": "Select songs performed at this festival.",
+  "setlist_expand": "Expand {} setlist",
+  "setlist_collapse": "Collapse {} setlist",
   "setlist_request": "Setlist Change Request",
   "setlist_request_hint": "Describe what you'd like to change.\nEx) Please add the song 'Cat'.",
   "setlist_request_submit": "Submit Request",

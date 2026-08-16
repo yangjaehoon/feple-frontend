@@ -386,6 +386,8 @@
   "setlist_saved": "셋리스트가 저장되었습니다.",
   "setlist_save_failed": "셋리스트 저장에 실패했습니다.",
   "select_songs_hint": "이 페스티벌에서 부른 곡을 선택하세요.",
+  "setlist_expand": "{} 셋리스트 펼치기",
+  "setlist_collapse": "{} 셋리스트 접기",
   "setlist_request": "셋리스트 수정 요청",
   "setlist_request_hint": "수정을 원하는 내용을 입력해주세요.\n예) '고양이' 곡을 추가해주세요.",
   "setlist_request_submit": "요청 보내기",

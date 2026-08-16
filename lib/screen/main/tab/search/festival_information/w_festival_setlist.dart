@@ -9,7 +9,6 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/festival_setlist_entry.dart';
 import 'package:feple/model/song_model.dart';
-import 'package:feple/screen/main/tab/search/festival_information/w_predicted_setlist_badge.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_setlist_artist_avatar.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/future_refreshable.dart';
@@ -241,18 +240,15 @@ class _ArtistCompactRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SetlistLabelWithPredictedBadge(
-          predicted: entry.predicted,
-          label: Text(
-            entry.displayName(isEnglish),
-            style: TextStyle(
-              fontSize: AppDimens.fontSizeMd,
-              fontWeight: FontWeight.w600,
-              color: colors.textTitle,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+        Text(
+          entry.displayName(isEnglish),
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeMd,
+            fontWeight: FontWeight.w600,
+            color: colors.textTitle,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 3),
         if (topSong != null)

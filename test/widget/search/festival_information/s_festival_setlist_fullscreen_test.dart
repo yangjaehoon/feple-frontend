@@ -118,30 +118,6 @@ void main() {
     });
   });
 
-  group('FestivalSetlistFullscreenScreen 예상 셋리스트 배지', () {
-    testWidgets('예상 셋리스트(대체 표시)면 예상 배지를 보여준다', (tester) async {
-      when(() => mockService.fetchSetlist(1)).thenAnswer(
-        (_) async => [_entry(artistName: '아티스트A', songs: [_song(title: '평소곡')], predicted: true)],
-      );
-
-      await pump(tester);
-      await tester.pumpAndSettle();
-
-      expect(find.text('setlist_predicted_badge'.tr()), findsOneWidget);
-    });
-
-    testWidgets('실제 셋리스트가 등록됐으면 예상 배지를 보여주지 않는다', (tester) async {
-      when(() => mockService.fetchSetlist(1)).thenAnswer(
-        (_) async => [_entry(artistName: '아티스트A', songs: [_song(title: '실제곡')], predicted: false)],
-      );
-
-      await pump(tester);
-      await tester.pumpAndSettle();
-
-      expect(find.text('setlist_predicted_badge'.tr()), findsNothing);
-    });
-  });
-
   group('FestivalSetlistFullscreenScreen 확장/축소', () {
     testWidgets('아티스트 헤더를 탭하면 곡 목록이 펼쳐진다', (tester) async {
       when(() => mockService.fetchSetlist(1)).thenAnswer(

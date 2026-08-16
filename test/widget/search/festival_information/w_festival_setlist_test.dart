@@ -113,28 +113,6 @@ void main() {
       expect(find.text('no_setlist'.tr()), findsOneWidget);
     });
 
-    testWidgets('예상 셋리스트(대체 표시)면 예상 배지를 보여준다', (tester) async {
-      when(() => mockService.fetchSetlist(1)).thenAnswer(
-        (_) async => [_entry(artistName: '아티스트', songs: [_song(title: '평소곡')], predicted: true)],
-      );
-
-      await pump(tester);
-      await tester.pump();
-
-      expect(find.text('setlist_predicted_badge'.tr()), findsOneWidget);
-    });
-
-    testWidgets('실제 셋리스트가 등록됐으면 예상 배지를 보여주지 않는다', (tester) async {
-      when(() => mockService.fetchSetlist(1)).thenAnswer(
-        (_) async => [_entry(artistName: '아티스트', songs: [_song(title: '실제곡')], predicted: false)],
-      );
-
-      await pump(tester);
-      await tester.pump();
-
-      expect(find.text('setlist_predicted_badge'.tr()), findsNothing);
-    });
-
     testWidgets('5명을 초과하면 더보기 버튼을 보여준다', (tester) async {
       when(() => mockService.fetchSetlist(1)).thenAnswer(
         (_) async => List.generate(7, (i) => _entry(artistId: i, artistFestivalId: i, artistName: '아티스트$i')),

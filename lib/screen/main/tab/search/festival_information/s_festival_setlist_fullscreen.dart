@@ -13,7 +13,6 @@ import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/festival_setlist_entry.dart';
 import 'package:feple/model/song_model.dart';
-import 'package:feple/screen/main/tab/search/festival_information/w_predicted_setlist_badge.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_setlist_artist_avatar.dart';
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:flutter/material.dart';
@@ -261,17 +260,14 @@ class _ArtistFullTile extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 2),
-        SetlistLabelWithPredictedBadge(
-          predicted: entry.predicted,
-          label: Text(
-            'total_songs'.tr(args: ['${entry.songs.length}']),
-            style: TextStyle(
-              fontSize: AppDimens.fontSizeXxs,
-              color: colors.textSecondary,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+        Text(
+          'total_songs'.tr(args: ['${entry.songs.length}']),
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeXxs,
+            color: colors.textSecondary,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ],
     );

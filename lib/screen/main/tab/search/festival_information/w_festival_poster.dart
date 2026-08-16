@@ -103,7 +103,7 @@ class FestivalPosterState extends State<FestivalPoster> {
     final text =
         '${widget.poster.displayTitle(isEnglish)}\n${widget.poster.location}\n${widget.poster.startDate}';
     try {
-      await precacheImage(NetworkImage(widget.poster.posterUrl), context);
+      await precacheImage(CachedNetworkImageProvider(widget.poster.posterUrl), context);
       if (!mounted) return;
       final bytes = await captureWidgetAsPng(
         context,
@@ -117,7 +117,13 @@ class FestivalPosterState extends State<FestivalPoster> {
       ));
     } catch (e) {
       debugPrint('[FestivalPoster] share error: $e');
-      if (mounted) await SharePlus.instance.share(ShareParams(text: text));
+      if (!mounted) return;
+      try {
+        await SharePlus.instance.share(ShareParams(text: text));
+      } catch (e2) {
+        debugPrint('[FestivalPoster] fallback share error: $e2');
+        if (mounted) context.showErrorSnackbar('share_failed'.tr());
+      }
     } finally {
       if (mounted) setState(() => _isSharing = false);
     }
@@ -578,6 +584,7 @@ class FestivalPosterState extends State<FestivalPoster> {
             onTap: _shareFestival,
             icon: Icons.share_outlined,
             label: 'action_share'.tr(),
+            isLoading: _isSharing,
           ),
         ),
         Expanded(

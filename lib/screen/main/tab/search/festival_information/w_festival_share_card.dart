@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/widget/w_day_badge.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class FestivalShareCard extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          Image(image: NetworkImage(poster.posterUrl), fit: BoxFit.cover),
+          Image(image: CachedNetworkImageProvider(poster.posterUrl), fit: BoxFit.cover),
           DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(

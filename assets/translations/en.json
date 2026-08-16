@@ -358,6 +358,7 @@
   "photo_pick_failed": "Could not access the gallery. Please check your permissions.",
   "max_images_exceeded": "You can attach up to {} photos.",
   "map_open_failed": "Could not open the map.",
+  "share_failed": "Failed to share.",
   "photo_upload_title": "Upload Photo",
   "artist_photo_add_label": "Add Artist Photo",
   "photo_artwork_label": "Artwork Title",

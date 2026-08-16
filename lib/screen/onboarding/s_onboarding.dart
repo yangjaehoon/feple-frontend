@@ -19,8 +19,16 @@ import 'package:feple/service/festival_interaction_service.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
 
-/// 온보딩 진행 상태 도트 — 인포 페이지(_OnboardingScreenState)와 아티스트
-/// 선택 페이지(_ArtistPickPageState)가 activeIndex/totalDots만 다르게 공유.
+// 온보딩 전체 단계 수 (인포 3 + 아티스트 선택 + 페스티벌 선택) — 진행 도트를
+// 그리는 세 위젯(_OnboardingScreenState/_ArtistPickPage/_FestivalPickPage)이 공유.
+const _onboardingTotalSteps = 5;
+
+// 페스티벌 선택 단계를 보여주기 위한 최소 다가오는 페스티벌 수 — 이보다 적으면
+// 고를 게 마땅치 않아 그 단계 자체를 건너뛴다.
+const _minUpcomingFestivalsForPick = 3;
+
+/// 온보딩 진행 상태 도트 — 인포 페이지(_OnboardingScreenState)와 아티스트/페스티벌
+/// 선택 페이지가 activeIndex만 다르게 공유.
 Widget _buildProgressDots(
   AbstractThemeColors colors, {
   required int totalDots,
@@ -58,10 +66,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   int _currentPage = 0;
   bool _showArtistPick = false;
   bool _showFestivalPick = false;
+  List<FestivalPreview> _festivals = const [];
 
   static const _pageCount = 3;
-  // 인포 페이지 3개 + 아티스트 선택 + 페스티벌 선택 = 총 5단계
-  static const _totalSteps = _pageCount + 2;
   bool get _isLastInfoPage => _currentPage == _pageCount - 1;
 
   List<_PageData> _buildPages(AbstractThemeColors colors) => [
@@ -113,14 +120,37 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     widget.onComplete();
   }
 
+  // 다가오는 페스티벌을 미리 받아 개수를 확인한다 — 여기서 받아온 목록을
+  // _FestivalPickPage에 그대로 넘겨주므로 그 화면이 같은 API를 다시 호출하지 않는다.
+  // 조회 실패 시에도(사용자에게 에러를 보여줄 만큼 중요한 단계가 아니므로) 조용히
+  // 건너뛰고 완료 처리한다.
   Future<void> _goToFestivalPick() async {
-    setState(() => _showFestivalPick = true);
+    List<FestivalPreview> festivals = const [];
+    try {
+      final page = await sl<FestivalService>().fetchPreviews(
+        page: 0,
+        size: 30,
+        includeEnded: false,
+      );
+      festivals = page.items;
+    } catch (e) {
+      debugPrint('[Onboarding] festival preview fetch failed: $e');
+    }
+    if (!mounted) return;
+    if (festivals.length < _minUpcomingFestivalsForPick) {
+      await _finish();
+      return;
+    }
+    setState(() {
+      _festivals = festivals;
+      _showFestivalPick = true;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     if (_showFestivalPick) {
-      return _FestivalPickPage(onComplete: _finish);
+      return _FestivalPickPage(onComplete: _finish, festivals: _festivals);
     }
     if (_showArtistPick) {
       return _ArtistPickPage(onComplete: _goToFestivalPick);
@@ -154,7 +184,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       padding: const EdgeInsets.fromLTRB(24, 24, 16, 0),
       child: Row(
         children: [
-          _buildProgressDots(colors, totalDots: _totalSteps, activeIndex: _currentPage),
+          _buildProgressDots(colors, totalDots: _onboardingTotalSteps, activeIndex: _currentPage),
           const Spacer(),
           TextButton(
             onPressed: _finish,
@@ -260,8 +290,8 @@ class _ArtistPickPageState extends State<_ArtistPickPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 진행 도트 (4번째 활성, 총 5단계 중)
-          _buildProgressDots(colors, totalDots: 5, activeIndex: 3),
+          // 진행 도트 (4번째 활성)
+          _buildProgressDots(colors, totalDots: _onboardingTotalSteps, activeIndex: 3),
           const SizedBox(height: 24),
           Text(
             'onboarding_pick_title'.tr(),
@@ -543,36 +573,34 @@ class _ArtistSelectCard extends StatelessWidget {
 
 class _FestivalPickPage extends StatefulWidget {
   final Future<void> Function() onComplete;
+  final List<FestivalPreview> festivals;
 
-  const _FestivalPickPage({required this.onComplete});
+  const _FestivalPickPage({required this.onComplete, required this.festivals});
 
   @override
   State<_FestivalPickPage> createState() => _FestivalPickPageState();
 }
 
-class _FestivalPickPageState extends State<_FestivalPickPage>
-    with FutureRefreshable<List<FestivalPreview>, _FestivalPickPage> {
+class _FestivalPickPageState extends State<_FestivalPickPage> {
   final Set<int> _selectedIds = {};
   bool _isSubmitting = false;
-
-  @override
-  Future<List<FestivalPreview>> fetchData() async {
-    final page = await sl<FestivalService>().fetchPreviews(
-      page: 0,
-      size: 30,
-      includeEnded: false,
-    );
-    return page.items.where((f) => !f.isEnded).toList();
-  }
 
   Future<void> _submit() async {
     if (_isSubmitting) return;
     setState(() => _isSubmitting = true);
+    // toggleLike는 호출할 때마다 좋아요 상태가 뒤집히는 순수 토글이라(멱등 아님),
+    // 실패한 항목만 남기고 성공한 항목은 선택 목록에서 제거해야 재시도 시
+    // 이미 성공한 좋아요가 다시 눌려서 취소되는 걸 막을 수 있다.
+    final targets = _selectedIds.toList();
     try {
       await Future.wait(
-        _selectedIds.map((id) => sl<FestivalInteractionService>().toggleLike(id)),
+        targets.map((id) async {
+          await sl<FestivalInteractionService>().toggleLike(id);
+          _selectedIds.remove(id);
+        }),
+        eagerError: false,
       );
-      if (_selectedIds.isNotEmpty) AppEvents.festivalLikeChanged.value++;
+      if (targets.isNotEmpty) AppEvents.festivalLikeChanged.value++;
     } catch (e) {
       debugPrint('[Onboarding] festival like failed: $e');
       if (mounted) {
@@ -600,7 +628,7 @@ class _FestivalPickPageState extends State<_FestivalPickPage>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(colors),
-            Expanded(child: _buildGrid(colors)),
+            Expanded(child: _buildGrid()),
             _buildBottomBar(colors),
           ],
         ),
@@ -614,8 +642,8 @@ class _FestivalPickPageState extends State<_FestivalPickPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 진행 도트 (5번째 활성, 총 5단계 중)
-          _buildProgressDots(colors, totalDots: 5, activeIndex: 4),
+          // 진행 도트 (5번째 활성)
+          _buildProgressDots(colors, totalDots: _onboardingTotalSteps, activeIndex: 4),
           const SizedBox(height: 24),
           Text(
             'onboarding_festival_pick_title'.tr(),
@@ -641,72 +669,34 @@ class _FestivalPickPageState extends State<_FestivalPickPage>
     );
   }
 
-  Widget _buildGrid(AbstractThemeColors colors) {
-    return AsyncContentBuilder<List<FestivalPreview>>(
-      future: future,
-      loadingBuilder: (_) => _buildSkeleton(),
-      errorBuilder: (error) => Center(
-        child: ErrorState.network(
-          error ?? Exception('unknown'),
-          operationErrorKey: 'onboarding_festival_pick_load_failed',
-          onRetry: refresh,
-        ),
-      ),
-      isEmpty: (_) => false,
-      builder: (_, festivals) {
-        return GridView.builder(
-          padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 12,
-            childAspectRatio: 0.62,
-          ),
-          itemCount: festivals.length,
-          itemBuilder: (_, index) {
-            final festival = festivals[index];
-            final selected = _selectedIds.contains(festival.id);
-            return _FestivalSelectCard(
-              festival: festival,
-              selected: selected,
-              onTap: () => setState(() {
-                if (selected) {
-                  _selectedIds.remove(festival.id);
-                } else {
-                  _selectedIds.add(festival.id);
-                }
-              }),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildSkeleton() {
+  Widget _buildGrid() {
+    // 목록은 부모(_OnboardingScreenState)가 이미 받아와 넘겨준 것을 그대로 쓴다 —
+    // 여기서 다시 조회하지 않는다(_minUpcomingFestivalsForPick 개수 확인을 위해
+    // 어차피 한 번 미리 받아와야 해서, 이 화면은 로딩/에러 상태를 갖지 않는다).
     return GridView.builder(
       padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
-      physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         mainAxisSpacing: 16,
         crossAxisSpacing: 12,
         childAspectRatio: 0.62,
       ),
-      itemCount: 6,
-      itemBuilder: (_, _) => Column(
-        children: const [
-          AspectRatio(
-            aspectRatio: 0.75,
-            child: SkeletonBox(
-              height: double.infinity,
-              borderRadius: BorderRadius.all(Radius.circular(12)),
-            ),
-          ),
-          SizedBox(height: 8),
-          SkeletonBox(width: 96, height: 13),
-        ],
-      ),
+      itemCount: widget.festivals.length,
+      itemBuilder: (_, index) {
+        final festival = widget.festivals[index];
+        final selected = _selectedIds.contains(festival.id);
+        return _FestivalSelectCard(
+          festival: festival,
+          selected: selected,
+          onTap: () => setState(() {
+            if (selected) {
+              _selectedIds.remove(festival.id);
+            } else {
+              _selectedIds.add(festival.id);
+            }
+          }),
+        );
+      },
     );
   }
 

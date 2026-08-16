@@ -116,21 +116,23 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
   }
 
-  // 아티스트를 선택하지 않고 건너뛰어 페스티벌 선택 페이지까지 진입한다.
-  // mockArtistService.fetchArtists()는 호출부에서 미리 스텁해야 한다.
-  Future<void> goToFestivalPick(WidgetTester tester) async {
-    await goToArtistPick(tester);
-    await tester.tap(find.text('onboarding_pick_skip'.tr()));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
-  }
-
   void stubFestivalPreviews(List<FestivalPreview> items) {
     when(() => mockFestivalService.fetchPreviews(
           page: any(named: 'page'),
           size: any(named: 'size'),
           includeEnded: any(named: 'includeEnded'),
         )).thenAnswer((_) async => FestivalPreviewPage(items: items, hasMore: false));
+  }
+
+  // 아티스트를 선택하지 않고 건너뛰어, _OnboardingScreenState._goToFestivalPick()이
+  // 페스티벌 목록을 조회해 페스티벌 선택 여부를 결정하는 지점까지 진행한다.
+  // mockArtistService.fetchArtists()/mockFestivalService.fetchPreviews()는
+  // 호출부에서 미리 스텁해야 한다.
+  Future<void> goToFestivalPick(WidgetTester tester) async {
+    await goToArtistPick(tester);
+    await tester.tap(find.text('onboarding_pick_skip'.tr()));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
   }
 
   group('OnboardingScreen 정보 페이지', () {
@@ -216,7 +218,7 @@ void main() {
       when(() => mockArtistService.fetchArtists())
           .thenAnswer((_) async => [_artist(id: 7, name: '아이유')]);
       when(() => mockFollowService.follow(any())).thenAnswer((_) async {});
-      stubFestivalPreviews(const []);
+      stubFestivalPreviews([_festival(id: 1), _festival(id: 2), _festival(id: 3)]);
       await _pump(tester, onComplete: () => completed = true);
       await goToArtistPick(tester);
 
@@ -239,29 +241,6 @@ void main() {
 
       expect(completed, true);
       expect(Prefs.onboardingCompleted.get(), true);
-    });
-
-    testWidgets('아티스트를 선택하지 않고 건너뛰면 follow 없이 페스티벌 선택 단계로 이동한다', (tester) async {
-      var completed = false;
-      when(() => mockArtistService.fetchArtists())
-          .thenAnswer((_) async => [_artist()]);
-      stubFestivalPreviews(const []);
-      await _pump(tester, onComplete: () => completed = true);
-      await goToArtistPick(tester);
-
-      await tester.tap(find.text('onboarding_pick_skip'.tr()));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 300));
-
-      verifyNever(() => mockFollowService.follow(any()));
-      expect(completed, false);
-      expect(find.text('onboarding_festival_pick_title'.tr()), findsOneWidget);
-
-      await tester.tap(find.text('onboarding_pick_skip'.tr()));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 300));
-
-      expect(completed, true);
     });
 
     testWidgets('follow 실패 시 에러 스낵바를 보여주고 완료되지 않는다', (tester) async {
@@ -303,39 +282,68 @@ void main() {
     });
   });
 
-  group('OnboardingScreen 페스티벌 선택', () {
-    // 아티스트 선택은 건너뛰고 페스티벌 선택 페이지까지 진입한다.
-    Future<void> reachFestivalPick(WidgetTester tester) async {
+  group('OnboardingScreen 페스티벌 선택 단계 진입 조건', () {
+    testWidgets('다가오는 페스티벌이 3개 미만이면 페스티벌 선택 화면을 건너뛰고 완료된다', (tester) async {
+      var completed = false;
       when(() => mockArtistService.fetchArtists()).thenAnswer((_) async => []);
+      stubFestivalPreviews([_festival(id: 1), _festival(id: 2)]); // 2개 — 기준 미달
+      await _pump(tester, onComplete: () => completed = true);
       await goToFestivalPick(tester);
-    }
 
-    testWidgets('로딩 중에는 스켈레톤을 보여준다', (tester) async {
-      final completer = Completer<FestivalPreviewPage>();
+      expect(find.text('onboarding_festival_pick_title'.tr()), findsNothing);
+      expect(completed, true);
+      expect(Prefs.onboardingCompleted.get(), true);
+    });
+
+    testWidgets('다가오는 페스티벌이 3개 이상이면 페스티벌 선택 화면이 보인다', (tester) async {
+      when(() => mockArtistService.fetchArtists()).thenAnswer((_) async => []);
+      stubFestivalPreviews([_festival(id: 1), _festival(id: 2), _festival(id: 3)]);
+      await _pump(tester);
+      await goToFestivalPick(tester);
+
+      expect(find.text('onboarding_festival_pick_title'.tr()), findsOneWidget);
+    });
+
+    testWidgets('페스티벌 목록 조회에 실패하면 페스티벌 선택 없이 완료된다', (tester) async {
+      var completed = false;
+      when(() => mockArtistService.fetchArtists()).thenAnswer((_) async => []);
       when(() => mockFestivalService.fetchPreviews(
             page: any(named: 'page'),
             size: any(named: 'size'),
             includeEnded: any(named: 'includeEnded'),
-          )).thenAnswer((_) => completer.future);
-      await _pump(tester);
-      await reachFestivalPick(tester);
+          )).thenThrow(Exception('네트워크 오류'));
+      await _pump(tester, onComplete: () => completed = true);
+      await goToFestivalPick(tester);
 
-      expect(find.text('onboarding_pick_skip'.tr()), findsOneWidget); // 선택 0개면 skip 라벨
-      completer.complete(FestivalPreviewPage(items: [_festival()], hasMore: false));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.text('onboarding_festival_pick_title'.tr()), findsNothing);
+      expect(completed, true);
     });
+  });
+
+  group('OnboardingScreen 페스티벌 선택', () {
+    // 아티스트 선택은 건너뛰고, 기준(3개)을 충족하는 페스티벌 목록으로 선택 페이지에 진입한다.
+    Future<void> reachFestivalPick(
+      WidgetTester tester, {
+      List<FestivalPreview>? festivals,
+    }) async {
+      when(() => mockArtistService.fetchArtists()).thenAnswer((_) async => []);
+      stubFestivalPreviews(
+        festivals ?? [_festival(id: 1), _festival(id: 2), _festival(id: 3)],
+      );
+      await goToFestivalPick(tester);
+    }
 
     testWidgets('페스티벌을 선택하지 않으면 버튼 라벨이 건너뛰기이고, 선택하면 시작하기로 바뀐다', (tester) async {
-      stubFestivalPreviews([_festival(id: 1, title: '펜타포트')]);
       await _pump(tester);
-      await reachFestivalPick(tester);
+      await reachFestivalPick(
+        tester,
+        festivals: [_festival(id: 1, title: '펜타포트'), _festival(id: 2), _festival(id: 3)],
+      );
 
       expect(find.text('onboarding_pick_skip'.tr()), findsOneWidget);
 
       await tester.tap(find.text('펜타포트'));
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.text('onboarding_start'.tr()), findsOneWidget);
       expect(find.text('onboarding_pick_selected'.tr(args: ['1'])), findsOneWidget);
@@ -343,14 +351,15 @@ void main() {
 
     testWidgets('선택한 페스티벌을 관심 등록하고 완료 콜백을 호출한다', (tester) async {
       var completed = false;
-      stubFestivalPreviews([_festival(id: 9, title: '펜타포트')]);
       when(() => mockFestivalInteractionService.toggleLike(any())).thenAnswer((_) async {});
       await _pump(tester, onComplete: () => completed = true);
-      await reachFestivalPick(tester);
+      await reachFestivalPick(
+        tester,
+        festivals: [_festival(id: 9, title: '펜타포트'), _festival(id: 2), _festival(id: 3)],
+      );
 
       await tester.tap(find.text('펜타포트'));
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 300));
       await tester.tap(find.text('onboarding_start'.tr()));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
@@ -362,7 +371,6 @@ void main() {
 
     testWidgets('페스티벌을 선택하지 않고 건너뛰면 관심 등록 없이 완료된다', (tester) async {
       var completed = false;
-      stubFestivalPreviews([_festival()]);
       await _pump(tester, onComplete: () => completed = true);
       await reachFestivalPick(tester);
 
@@ -374,17 +382,18 @@ void main() {
       expect(completed, true);
     });
 
-    testWidgets('관심 등록 실패 시 에러 스낵바를 보여주고 완료되지 않는다', (tester) async {
+    testWidgets('관심 등록이 전부 실패하면 에러 스낵바를 보여주고 완료되지 않는다', (tester) async {
       var completed = false;
-      stubFestivalPreviews([_festival(id: 9, title: '펜타포트')]);
       when(() => mockFestivalInteractionService.toggleLike(any()))
           .thenThrow(Exception('네트워크 오류'));
       await _pump(tester, onComplete: () => completed = true);
-      await reachFestivalPick(tester);
+      await reachFestivalPick(
+        tester,
+        festivals: [_festival(id: 9, title: '펜타포트'), _festival(id: 2), _festival(id: 3)],
+      );
 
       await tester.tap(find.text('펜타포트'));
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 300));
       await tester.tap(find.text('onboarding_start'.tr()));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
@@ -393,27 +402,46 @@ void main() {
       expect(completed, false);
     });
 
-    testWidgets('페스티벌 로드 실패 시 에러 상태와 재시도 버튼을 보여준다', (tester) async {
-      var callCount = 0;
-      when(() => mockFestivalService.fetchPreviews(
-            page: any(named: 'page'),
-            size: any(named: 'size'),
-            includeEnded: any(named: 'includeEnded'),
-          )).thenAnswer((_) async {
-        callCount++;
-        if (callCount == 1) throw Exception('네트워크 오류');
-        return FestivalPreviewPage(items: [_festival(title: '재시도페스티벌')], hasMore: false);
-      });
-      await _pump(tester);
-      await reachFestivalPick(tester);
+    testWidgets('일부만 실패해 재시도하면 이미 성공한 항목은 다시 토글되지 않는다', (tester) async {
+      var completed = false;
+      when(() => mockFestivalInteractionService.toggleLike(1)).thenAnswer((_) async {});
+      when(() => mockFestivalInteractionService.toggleLike(2)).thenThrow(Exception('네트워크 오류'));
+      await _pump(tester, onComplete: () => completed = true);
+      await reachFestivalPick(
+        tester,
+        festivals: [
+          _festival(id: 1, title: '펜타포트'),
+          _festival(id: 2, title: '워터밤'),
+          _festival(id: 3),
+        ],
+      );
 
-      expect(find.text('onboarding_festival_pick_load_failed'.tr()), findsOneWidget);
-
-      await tester.tap(find.byType(FilledButton).first);
+      await tester.tap(find.text('펜타포트'));
+      await tester.pump();
+      await tester.tap(find.text('워터밤'));
+      await tester.pump();
+      await tester.tap(find.text('onboarding_start'.tr()));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.text('재시도페스티벌'), findsOneWidget);
+      expect(find.text('onboarding_festival_like_failed'.tr()), findsOneWidget);
+      expect(completed, false);
+      verify(() => mockFestivalInteractionService.toggleLike(1)).called(1);
+      verify(() => mockFestivalInteractionService.toggleLike(2)).called(1);
+      // 성공했던 1번(펜타포트)은 선택 목록에서 빠지고, 실패했던 2번(워터밤)만 남는다.
+      expect(find.text('onboarding_pick_selected'.tr(args: ['1'])), findsOneWidget);
+
+      // 2번도 성공하도록 바꾸고 재시도.
+      when(() => mockFestivalInteractionService.toggleLike(2)).thenAnswer((_) async {});
+      await tester.tap(find.text('onboarding_start'.tr()));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      // 1번은 재시도에서 다시 호출되지 않아 누적 호출 수가 여전히 1회여야 한다.
+      verify(() => mockFestivalInteractionService.toggleLike(1)).called(1);
+      // 2번은 이번 재시도로 1회 더 호출되어 누적 2회.
+      verify(() => mockFestivalInteractionService.toggleLike(2)).called(2);
+      expect(completed, true);
     });
   });
 }

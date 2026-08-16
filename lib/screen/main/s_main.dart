@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/widget/w_offline_banner.dart';
 import 'package:feple/screen/main/tab/tab_item.dart';
 import 'package:feple/screen/main/tab/w_tab_navigator.dart';
@@ -97,7 +98,7 @@ class MainScreenState extends State<MainScreen>
     return OfflineBanner(
       child: PopScope(
         canPop: false,
-        onPopInvokedWithResult: (didPop, result) {
+        onPopInvokedWithResult: (didPop, result) async {
           if (didPop) return;
           final navigator = _currentTabNavigationKey.currentState;
           if (navigator != null && navigator.canPop()) {
@@ -105,7 +106,13 @@ class MainScreenState extends State<MainScreen>
           } else if (_currentTab != TabItem.home) {
             _changeTab(tabs.indexOf(TabItem.home));
           } else {
-            SystemNavigator.pop();
+            final confirmed = await showConfirmDialog(
+              context,
+              title: 'exit_app'.tr(),
+              content: 'exit_app_confirm'.tr(),
+              confirmLabel: 'confirm'.tr(),
+            );
+            if (confirmed) unawaited(SystemNavigator.pop());
           }
         },
         child: Scaffold(

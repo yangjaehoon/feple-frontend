@@ -26,10 +26,15 @@
     </queries>
 
 
+    <!-- Android 16(API 36) predictive back(true)에서는 Activity의 기본 종료 콜백이
+         Flutter PopScope 콜백보다 나중에 재등록되어 우선순위를 가로채는 레이스가 있어
+         뒤로가기가 PopScope를 거치지 않고 바로 앱을 종료시켰다. legacy 방식(false)에서는
+         재현되지 않아 이 값으로 고정한다. -->
     <application
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:label="FEPLE"
+        android:enableOnBackInvokedCallback="false"
         android:allowBackup="false"
         android:usesCleartextTraffic="true"
         android:roundIcon="@mipmap/ic_launcher_round">

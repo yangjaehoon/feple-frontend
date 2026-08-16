@@ -21,6 +21,8 @@
   "delete": "삭제",
   "cancel": "취소",
   "confirm": "확인",
+  "exit_app": "앱 종료",
+  "exit_app_confirm": "정말 종료하시겠어요?",
   "account_banned_title": "계정 정지 안내",
   "account_banned_message": "계정이 정지되었습니다.\n고객센터로 문의해주세요.",
   "save": "저장",

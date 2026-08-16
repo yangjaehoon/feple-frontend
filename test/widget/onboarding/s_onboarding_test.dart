@@ -432,8 +432,10 @@ void main() {
       expect(find.text('onboarding_pick_selected'.tr(args: ['1'])), findsOneWidget);
 
       // 에러 스낵바가 화면 하단에 남아있으면 같은 자리의 재시도 버튼 탭을 가로채므로,
-      // 기본 표시 시간(4초)이 지나 스낵바가 사라질 때까지 기다린 뒤 재시도한다.
-      await tester.pump(const Duration(seconds: 5));
+      // 스낵바의 표시+사라짐 애니메이션이 완전히 끝날 때까지 기다린 뒤 재시도한다.
+      // (이 페이지엔 무한 shimmer 스켈레톤이 없어 pumpAndSettle이 안전하다 — 있는
+      // 화면에서 pumpAndSettle을 쓰면 타임아웃난다는 점은 다른 테스트의 주석 참고)
+      await tester.pumpAndSettle();
 
       // 2번도 성공하도록 바꾸고 재시도.
       when(() => mockFestivalInteractionService.toggleLike(2)).thenAnswer((_) async {});

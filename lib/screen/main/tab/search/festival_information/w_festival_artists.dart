@@ -50,7 +50,9 @@ class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
     super.dispose();
   }
 
-  Future<void> refresh() => _notifier.fetch();
+  // notifier.refresh()는 fetch()와 달리 실패해도 이미 보이는 목록을 지우지 않고
+  // 스낵바로만 알린다 — 페스티벌 상세 화면의 전체 pull-to-refresh가 이 경로를 탄다.
+  Future<void> refresh() => _notifier.refresh();
 
   @override
   Widget build(BuildContext context) {
@@ -102,13 +104,7 @@ class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (_notifier.hasDateFilter) _buildDateTabs(colors),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppDimens.paddingHorizontal,
-                vertical: 12,
-              ),
-              child: _buildArtistRow(colors),
-            ),
+            _padContent(_buildArtistRow(colors)),
           ],
         );
       },

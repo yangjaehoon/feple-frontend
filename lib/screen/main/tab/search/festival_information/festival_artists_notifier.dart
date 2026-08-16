@@ -119,9 +119,10 @@ class FestivalArtistsNotifier extends SafeChangeNotifier {
           : Future<Set<int>>.value({}),
     ).wait;
 
-    // Dart List.sort는 stable 정렬 미보장 — 같은 순위(팔로우 여부) 그룹 내
-    // 원래 서버 순서가 fetch마다 흔들릴 수 있음에 유의
-    fetched.sort((a, b) {
+    // List.sort는 stable 정렬을 보장하지 않아 같은 순위(팔로우 여부) 그룹 내
+    // 원래 서버 순서가 fetch마다 흔들릴 수 있다 — dart:ui(flutter/foundation)의
+    // stable 정렬 mergeSort 사용
+    mergeSort(fetched, compare: (a, b) {
       final aRank = followed.contains(a.artistId) ? 0 : 1;
       final bRank = followed.contains(b.artistId) ? 0 : 1;
       return aRank.compareTo(bRank);
@@ -130,6 +131,11 @@ class FestivalArtistsNotifier extends SafeChangeNotifier {
     artists = fetched;
     followedIds = followed;
     allDates = _computeAllDates(fetched);
+    // 새로 불러온 결과에 더 이상 존재하지 않는 날짜가 선택돼 있으면, 목록이
+    // 아무 이유 없이 텅 비어 보이는 걸 막기 위해 "전체" 상태로 되돌린다.
+    if (selectedDate != null && !allDates.contains(selectedDate)) {
+      selectedDate = null;
+    }
   }
 
   static List<String> _computeAllDates(List<FestivalArtistItem> artists) {

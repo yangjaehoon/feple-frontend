@@ -241,5 +241,49 @@ void main() {
 
       expect(callCount, 2);
     });
+
+    testWidgets('refresh() 실패해도 이미 보이는 목록을 지우지 않는다', (tester) async {
+      var callCount = 0;
+      when(() => mockDetailService.fetchFestivalArtists(1)).thenAnswer((_) async {
+        callCount++;
+        if (callCount == 1) return [_artist(artistId: 1, artistName: '아티스트A')];
+        throw Exception('네트워크 오류');
+      });
+
+      final key = GlobalKey<FestivalArtistsState>();
+      SharedPreferences.setMockInitialValues({});
+      await EasyLocalization.ensureInitialized();
+      final userProvider = MockUserProvider();
+      when(() => userProvider.currentUserId).thenReturn(1);
+
+      await tester.pumpWidget(
+        EasyLocalization(
+          supportedLocales: const [Locale('ko'), Locale('en')],
+          startLocale: const Locale('ko'),
+          fallbackLocale: const Locale('ko'),
+          path: 'assets/translations',
+          useOnlyLangCode: true,
+          child: CustomThemeHolder(
+            theme: CustomTheme.light,
+            changeTheme: (_) {},
+            child: ChangeNotifierProvider<UserProvider>.value(
+              value: userProvider,
+              child: MaterialApp(
+                home: Scaffold(body: FestivalArtists(key: key, festivalId: 1)),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+      expect(find.text('아티스트A'), findsOneWidget);
+
+      await key.currentState!.refresh();
+      await tester.pump();
+
+      expect(find.text('아티스트A'), findsOneWidget);
+      expect(find.byType(ErrorState), findsNothing);
+    });
   });
 }

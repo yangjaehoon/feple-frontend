@@ -29,54 +29,57 @@ class FestivalArtistListScreen extends StatelessWidget {
           Expanded(
             child: ListenableBuilder(
               listenable: notifier,
-              builder: (context, _) {
-                final refreshError = notifier.refreshError;
-                if (refreshError != null) {
-                  notifier.clearRefreshError();
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (context.mounted) context.showErrorSnackbar(refreshError);
-                  });
-                }
-                if (notifier.isLoading) return _buildSkeleton();
-                if (notifier.hasError) {
-                  return ErrorState.network(
-                    notifier.error!,
-                    onRetry: notifier.retry,
-                  );
-                }
-                if (notifier.artists.isEmpty) {
-                  return RefreshIndicator(
-                    color: colors.activate,
-                    onRefresh: notifier.refresh,
-                    child: ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      children: [
-                        SizedBox(
-                          height: 300,
-                          child: Center(
-                            child: Text(
-                              'no_participating_artists'.tr(),
-                              style: TextStyle(
-                                fontSize: AppDimens.fontSizeMd,
-                                color: colors.textSecondary,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-                return RefreshIndicator(
-                  color: colors.activate,
-                  onRefresh: notifier.refresh,
-                  child: _buildContent(colors),
-                );
-              },
+              builder: (context, _) => _buildBody(context, colors),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildBody(BuildContext context, AbstractThemeColors colors) {
+    final refreshError = notifier.refreshError;
+    if (refreshError != null) {
+      notifier.clearRefreshError();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (context.mounted) context.showErrorSnackbar(refreshError);
+      });
+    }
+    if (notifier.isLoading) return _buildSkeleton();
+    if (notifier.hasError) {
+      return ErrorState.network(notifier.error!, onRetry: notifier.retry);
+    }
+    if (notifier.artists.isEmpty) {
+      return RefreshIndicator(
+        color: colors.activate,
+        onRefresh: notifier.refresh,
+        child: _buildEmptyList(colors),
+      );
+    }
+    return RefreshIndicator(
+      color: colors.activate,
+      onRefresh: notifier.refresh,
+      child: _buildContent(colors),
+    );
+  }
+
+  Widget _buildEmptyList(AbstractThemeColors colors) {
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      children: [
+        SizedBox(
+          height: 300,
+          child: Center(
+            child: Text(
+              'no_participating_artists'.tr(),
+              style: TextStyle(
+                fontSize: AppDimens.fontSizeMd,
+                color: colors.textSecondary,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

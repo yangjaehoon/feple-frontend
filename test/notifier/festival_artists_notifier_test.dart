@@ -9,8 +9,8 @@ import 'package:mocktail/mocktail.dart';
 class MockFestivalArtistsFetcher extends Mock implements FestivalArtistsFetcher {}
 class MockArtistFollowService extends Mock implements ArtistFollowService {}
 
-FestivalArtistItem _artist(int id, String name) =>
-    FestivalArtistItem(artistId: id, artistName: name);
+FestivalArtistItem _artist(int id, String name, {List<String> performanceDates = const []}) =>
+    FestivalArtistItem(artistId: id, artistName: name, performanceDates: performanceDates);
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -110,6 +110,21 @@ void main() {
       expect(notifier.followedIds, {1, 2, 3});
     });
 
+    test('정렬은 stable — 32개 초과 동일순위 그룹도 원래 서버 순서를 유지', () async {
+      // Dart List.sort는 32개 초과 리스트에서 stable을 보장하지 않아, 팔로우
+      // 여부가 전부 같은 대규모 라인업에서 서버 순서가 fetch마다 흔들릴 수 있었다.
+      final artists = List.generate(40, (i) => _artist(i, 'Artist$i'));
+      when(() => mockFestivalArtistsFetcher.fetchFestivalArtists(10))
+          .thenAnswer((_) async => artists);
+      when(() => mockFollowService.fetchFollowingIds(99))
+          .thenAnswer((_) async => {});
+
+      final notifier = make(userId: 99);
+      await notifier.fetch();
+
+      expect(notifier.artists.map((a) => a.artistId).toList(), List.generate(40, (i) => i));
+    });
+
     test('fetchFollowingIds 예외 시 아티스트 데이터도 버려지고 hasError true', () async {
       when(() => mockFestivalArtistsFetcher.fetchFestivalArtists(10))
           .thenAnswer((_) async => [_artist(1, 'A')]);
@@ -167,6 +182,40 @@ void main() {
       notifier.clearRefreshError();
 
       expect(notifier.refreshError, isNull);
+    });
+  });
+
+  group('selectedDate', () {
+    test('새로 불러온 결과에 선택된 날짜가 더 이상 없으면 전체로 리셋', () async {
+      when(() => mockFestivalArtistsFetcher.fetchFestivalArtists(10)).thenAnswer(
+        (_) async => [_artist(1, 'A', performanceDates: ['2026-08-01', '2026-08-02'])],
+      );
+      when(() => mockFollowService.fetchFollowingIds(99)).thenAnswer((_) async => {});
+      final notifier = make(userId: 99);
+      await notifier.fetch();
+      notifier.selectDate('2026-08-02');
+      expect(notifier.selectedDate, '2026-08-02');
+
+      when(() => mockFestivalArtistsFetcher.fetchFestivalArtists(10))
+          .thenAnswer((_) async => [_artist(1, 'A', performanceDates: ['2026-08-01'])]);
+
+      await notifier.refresh();
+
+      expect(notifier.selectedDate, isNull);
+    });
+
+    test('새로 불러온 결과에 선택된 날짜가 여전히 있으면 유지', () async {
+      when(() => mockFestivalArtistsFetcher.fetchFestivalArtists(10)).thenAnswer(
+        (_) async => [_artist(1, 'A', performanceDates: ['2026-08-01', '2026-08-02'])],
+      );
+      when(() => mockFollowService.fetchFollowingIds(99)).thenAnswer((_) async => {});
+      final notifier = make(userId: 99);
+      await notifier.fetch();
+      notifier.selectDate('2026-08-02');
+
+      await notifier.refresh();
+
+      expect(notifier.selectedDate, '2026-08-02');
     });
   });
 

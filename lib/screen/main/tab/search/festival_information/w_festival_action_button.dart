@@ -45,12 +45,16 @@ class FestivalActionButton extends StatelessWidget {
           ),
           if (label != null) ...[
             const SizedBox(height: 4),
-            Text(
-              label!,
-              style: TextStyle(
-                fontSize: AppDimens.fontSizeXs,
-                fontWeight: FontWeight.w600,
-                color: color ?? Colors.white,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label!,
+                maxLines: 1,
+                style: TextStyle(
+                  fontSize: AppDimens.fontSizeXs,
+                  fontWeight: FontWeight.w600,
+                  color: color ?? Colors.white,
+                ),
               ),
             ),
           ],

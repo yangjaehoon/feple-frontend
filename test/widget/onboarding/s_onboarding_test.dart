@@ -431,6 +431,10 @@ void main() {
       // 성공했던 1번(펜타포트)은 선택 목록에서 빠지고, 실패했던 2번(워터밤)만 남는다.
       expect(find.text('onboarding_pick_selected'.tr(args: ['1'])), findsOneWidget);
 
+      // 에러 스낵바가 화면 하단에 남아있으면 같은 자리의 재시도 버튼 탭을 가로채므로,
+      // 기본 표시 시간(4초)이 지나 스낵바가 사라질 때까지 기다린 뒤 재시도한다.
+      await tester.pump(const Duration(seconds: 5));
+
       // 2번도 성공하도록 바꾸고 재시도.
       when(() => mockFestivalInteractionService.toggleLike(2)).thenAnswer((_) async {});
       await tester.tap(find.text('onboarding_start'.tr()));

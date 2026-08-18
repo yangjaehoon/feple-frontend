@@ -140,6 +140,20 @@ void main() {
       expect(ApiCacheStore.getSync(freshUrl), isNotNull);
     });
 
+    test('검색: 10분 초과 데이터는 만료 처리', () async {
+      const url = 'http://api/search?keyword=락';
+      await _putWithAge(url, [], 11 * 60 * 1000); // 11분 전
+
+      expect(ApiCacheStore.getSync(url), isNull);
+    });
+
+    test('검색: 9분 된 데이터는 유효', () async {
+      const url = 'http://api/search?keyword=락';
+      await _putWithAge(url, ['결과'], 9 * 60 * 1000); // 9분 전
+
+      expect(ApiCacheStore.getSync(url), isNotNull);
+    });
+
     test('기본(페스티벌 목록): 7일 초과 만료', () async {
       const url = 'http://api/festivals';
       await _putWithAge(url, [], 8 * 24 * 60 * 60 * 1000); // 8일 전

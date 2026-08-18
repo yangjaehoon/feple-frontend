@@ -24,6 +24,9 @@ class ApiCacheStore {
   // 새 엔드포인트 TTL 추가 시 이 표에 행만 추가하면 됨 (분기 추가 불필요).
   static const _ttlTable = <(List<String> patterns, int ttlMs)>[
     (['/notifications'], 2 * 60 * 1000), // 실시간성 높은 상태값 — 2분
+    // 신규 등록된 아티스트/페스티벌이 기본 TTL(7일)까지 검색에 안 잡히면
+    // 안 되므로 짧게 유지 — 10분
+    (['/search'], 10 * 60 * 1000),
     (['/liked', '/follow', '/attending', '/scraped'], 10 * 60 * 1000), // 10분
     (['/posts', '/comments'], 30 * 60 * 1000), // 게시글·댓글 — 30분
     (['/weather'], 3 * 60 * 60 * 1000), // 3시간

@@ -125,6 +125,13 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
       return EmptyState(
         icon: Icons.view_list_rounded,
         title: 'select_boards_prompt'.tr(),
+        action: widget.allBoards.isEmpty
+            ? null
+            : FilledButton(
+                onPressed: _openAllBoards,
+                style: FilledButton.styleFrom(backgroundColor: colors.activate),
+                child: Text('favorite_boards_select_cta'.tr()),
+              ),
       );
     }
     // 기준 390px: 리스트 높이 120(0.308)

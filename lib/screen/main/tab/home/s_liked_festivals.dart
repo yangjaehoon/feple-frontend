@@ -11,6 +11,7 @@ import 'package:feple/screen/main/tab/festival_list/w_festival_preview_card.dart
 import 'package:feple/screen/main/tab/home/reorder_settings_flow.dart';
 import 'package:feple/screen/main/tab/home/w_reorder_sheet.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
+import 'package:feple/screen/onboarding/s_festival_pick.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
@@ -84,6 +85,22 @@ class _LikedFestivalsScreenState extends State<LikedFestivalsScreen>
   List<FestivalModel> get _filtered =>
       _festivals.where((f) => f.isEnded == _showEnded).toList();
 
+  // 종료된 페스티벌은 새로 찜할 대상이 아니므로(FestivalPickScreen도 다가오는
+  // 페스티벌만 조회) "예정" 탭이 비었을 때만 CTA를 보여준다. 여기서 찜해도
+  // widget.festivals는 진입 시점 스냅샷이라 이 화면엔 바로 반영되지 않는데,
+  // 홈으로 돌아가면 이미 있는 AppEvents.festivalLikeChanged 리스너로 갱신된다.
+  void _openFestivalPick() {
+    Navigator.push(
+      context,
+      SlideRoute(
+        builder: (_) => FestivalPickScreen(
+          onComplete: () async => Navigator.pop(context),
+          progressDotIndex: null,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -155,6 +172,13 @@ class _LikedFestivalsScreenState extends State<LikedFestivalsScreen>
         icon: Icons.favorite_border_rounded,
         title: _showEnded ? 'tab_ended_festivals'.tr() : 'tab_upcoming_festivals'.tr(),
         subtitle: 'no_liked_in_tab'.tr(),
+        action: _showEnded
+            ? null
+            : FilledButton(
+                onPressed: _openFestivalPick,
+                style: FilledButton.styleFrom(backgroundColor: colors.activate),
+                child: Text('home_add_festivals_cta'.tr()),
+              ),
       );
     }
     return ListView.builder(

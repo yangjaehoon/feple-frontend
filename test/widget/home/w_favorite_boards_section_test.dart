@@ -46,6 +46,25 @@ Future<void> _pump(
   await tester.pump();
 }
 
+// FavoriteBoardsPrefsManager.load()는 저장된 선택 ID 중 현재 게시판 목록에 없는
+// 것은 걸러내고, "이전에 본 적 없는" 새 게시판만 자동으로 선택에 추가한다 —
+// 존재하지 않는 ID 하나만 저장해두면 유효한 선택이 하나도 없는 상태(사용자가
+// 전부 선택 해제한 경우)를 재현할 수 있다. 이 트릭은 매니저의 저장 키 포맷
+// ('fav_boards_$userId')과 폴백 규칙에 결합돼 있으므로, 그 로직이 바뀌면 이
+// 헬퍼도 함께 확인해야 한다.
+Future<void> _pumpWithNoSelection(
+  WidgetTester tester, {
+  required List<FavoriteBoard> allBoards,
+}) {
+  return _pump(
+    tester,
+    allBoards: allBoards,
+    prefsValues: {
+      'fav_boards_1': ['nonexistent_board_id'],
+    },
+  );
+}
+
 void main() {
   group('FavoriteBoardsSection 렌더링', () {
     testWidgets('저장된 선택이 없으면 전체 게시판을 보여준다', (tester) async {
@@ -65,32 +84,18 @@ void main() {
     });
 
     testWidgets('게시판은 있지만 선택된 게 없으면 CTA 버튼을 보여준다', (tester) async {
-      // 저장된 선택 ID가 실제 게시판 중 어느 것과도 일치하지 않아, 로드 시
-      // selectedBoards가 빈 목록이 되는 상태(사용자가 전부 선택 해제한 경우)를 재현.
-      await _pump(
-        tester,
-        allBoards: [_board()],
-        prefsValues: {
-          'fav_boards_1': ['nonexistent_board_id'],
-        },
-      );
+      await _pumpWithNoSelection(tester, allBoards: [_board()]);
       await tester.pump();
 
       expect(find.text('select_boards_prompt'.tr()), findsOneWidget);
-      expect(find.text('favorite_boards_select_cta'.tr()), findsOneWidget);
+      expect(find.text('select_boards'.tr()), findsOneWidget);
     });
 
     testWidgets('CTA 버튼을 탭하면 전체 목록 화면으로 이동한다', (tester) async {
-      await _pump(
-        tester,
-        allBoards: [_board()],
-        prefsValues: {
-          'fav_boards_1': ['nonexistent_board_id'],
-        },
-      );
+      await _pumpWithNoSelection(tester, allBoards: [_board()]);
       await tester.pump();
 
-      await tester.tap(find.text('favorite_boards_select_cta'.tr()));
+      await tester.tap(find.text('select_boards'.tr()));
       await tester.pumpAndSettle();
 
       expect(find.byType(AllFavoriteBoardsScreen), findsOneWidget);

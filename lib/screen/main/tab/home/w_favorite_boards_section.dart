@@ -81,6 +81,10 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
     }
   }
 
+  // 홈의 다른 빈 상태 CTA(HomeArtistsSection/HomeFestivalsSection)는 내비게이션을
+  // 콜백으로 주입받아 부모(f_home.dart)가 소유하지만, 이 위젯은 "더보기" 버튼도
+  // 이미 자체적으로 _openAllBoards()를 호출하던 기존 구조라 CTA도 그 패턴을
+  // 그대로 따른다 — 이 파일 안에서의 일관성을 우선함.
   void _openAllBoards() {
     Navigator.push(
       context,
@@ -130,7 +134,7 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
             : FilledButton(
                 onPressed: _openAllBoards,
                 style: FilledButton.styleFrom(backgroundColor: colors.activate),
-                child: Text('favorite_boards_select_cta'.tr()),
+                child: Text('select_boards'.tr()),
               ),
       );
     }

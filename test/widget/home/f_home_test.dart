@@ -7,14 +7,19 @@ import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/festival_model.dart';
+import 'package:feple/model/festival_preview_page.dart';
 import 'package:feple/model/followed_artist.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/home/f_home.dart';
 import 'package:feple/screen/main/tab/home/s_liked_festivals.dart';
 import 'package:feple/screen/main/tab/home/w_favorite_boards_section_skeleton.dart';
 import 'package:feple/screen/notification/notification_count_notifier.dart';
+import 'package:feple/screen/onboarding/s_artist_pick.dart';
+import 'package:feple/screen/onboarding/s_festival_pick.dart';
+import 'package:feple/service/artist_service.dart';
 import 'package:feple/service/cache_prefetch_service.dart';
 import 'package:feple/service/festival_cache_service.dart';
+import 'package:feple/service/festival_service.dart';
 import 'package:feple/service/notification_countable.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +33,8 @@ class MockFestivalCacheService extends Mock implements FestivalCacheService {}
 class MockCachePrefetchService extends Mock implements CachePrefetchService {}
 class MockNotificationCountable extends Mock implements NotificationCountable {}
 class MockUserProvider extends Mock implements UserProvider {}
+class MockArtistService extends Mock implements ArtistService {}
+class MockFestivalService extends Mock implements FestivalService {}
 
 FollowedArtist _artist({int id = 1, String name = '아티스트'}) =>
     FollowedArtist(id: id, name: name);
@@ -88,24 +95,32 @@ void main() {
   late MockFestivalCacheService mockCacheService;
   late MockCachePrefetchService mockPrefetchService;
   late MockNotificationCountable mockNotificationCountable;
+  late MockArtistService mockArtistService;
+  late MockFestivalService mockFestivalService;
 
   setUp(() {
     mockUserService = MockUserService();
     mockCacheService = MockFestivalCacheService();
     mockPrefetchService = MockCachePrefetchService();
     mockNotificationCountable = MockNotificationCountable();
+    mockArtistService = MockArtistService();
+    mockFestivalService = MockFestivalService();
 
     if (sl.isRegistered<UserService>()) sl.unregister<UserService>();
     if (sl.isRegistered<FestivalCacheService>()) sl.unregister<FestivalCacheService>();
     if (sl.isRegistered<CachePrefetchService>()) sl.unregister<CachePrefetchService>();
     if (sl.isRegistered<NotificationCountable>()) sl.unregister<NotificationCountable>();
     if (sl.isRegistered<NotificationCountNotifier>()) sl.unregister<NotificationCountNotifier>();
+    if (sl.isRegistered<ArtistService>()) sl.unregister<ArtistService>();
+    if (sl.isRegistered<FestivalService>()) sl.unregister<FestivalService>();
 
     sl.registerSingleton<UserService>(mockUserService);
     sl.registerSingleton<FestivalCacheService>(mockCacheService);
     sl.registerSingleton<CachePrefetchService>(mockPrefetchService);
     sl.registerSingleton<NotificationCountable>(mockNotificationCountable);
     sl.registerFactory<NotificationCountNotifier>(() => NotificationCountNotifier());
+    sl.registerSingleton<ArtistService>(mockArtistService);
+    sl.registerSingleton<FestivalService>(mockFestivalService);
 
     when(() => mockCacheService.loadHomeFestivals(any())).thenAnswer((_) async => null);
     when(() => mockCacheService.loadHomeArtists(any())).thenAnswer((_) async => null);
@@ -113,9 +128,17 @@ void main() {
     when(() => mockCacheService.saveHomeArtists(any(), any())).thenAnswer((_) async {});
     when(() => mockPrefetchService.prefetchForFestivals(any())).thenAnswer((_) async {});
     when(() => mockNotificationCountable.getUnreadCount()).thenAnswer((_) async => 0);
+    when(() => mockArtistService.fetchArtists()).thenAnswer((_) async => []);
+    when(() => mockFestivalService.fetchPreviews(
+          page: any(named: 'page'),
+          size: any(named: 'size'),
+          includeEnded: any(named: 'includeEnded'),
+        )).thenAnswer((_) async => const FestivalPreviewPage(items: [], hasMore: false));
   });
 
   tearDown(() {
+    if (sl.isRegistered<ArtistService>()) sl.unregister<ArtistService>();
+    if (sl.isRegistered<FestivalService>()) sl.unregister<FestivalService>();
     if (sl.isRegistered<UserService>()) sl.unregister<UserService>();
     if (sl.isRegistered<FestivalCacheService>()) sl.unregister<FestivalCacheService>();
     if (sl.isRegistered<CachePrefetchService>()) sl.unregister<CachePrefetchService>();
@@ -206,6 +229,36 @@ void main() {
 
       expect(find.text('복구된아티스트'), findsOneWidget);
       expect(find.byType(ErrorState), findsNothing);
+    });
+  });
+
+  group('HomeFragment 빈 상태 재참여 CTA', () {
+    testWidgets('팔로우한 아티스트가 없으면 CTA를 탭해 ArtistPickScreen으로 이동한다', (tester) async {
+      when(() => mockUserService.fetchFollowingArtists(1)).thenAnswer((_) async => []);
+      when(() => mockUserService.fetchLikedFestivals(1))
+          .thenAnswer((_) async => [_festival(title: '서울재즈')]);
+
+      await _pump(tester);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('home_add_artists_cta'.tr()));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ArtistPickScreen), findsOneWidget);
+    });
+
+    testWidgets('찜한 페스티벌이 없으면 CTA를 탭해 FestivalPickScreen으로 이동한다', (tester) async {
+      when(() => mockUserService.fetchFollowingArtists(1))
+          .thenAnswer((_) async => [_artist(name: '아이유')]);
+      when(() => mockUserService.fetchLikedFestivals(1)).thenAnswer((_) async => []);
+
+      await _pump(tester);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('home_add_festivals_cta'.tr()));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(FestivalPickScreen), findsOneWidget);
     });
   });
 }

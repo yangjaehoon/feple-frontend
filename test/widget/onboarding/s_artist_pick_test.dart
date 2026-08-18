@@ -18,7 +18,11 @@ Artist _artist({int id = 1, String name = '아티스트', String genre = 'KPOP'}
     Artist(id: id, name: name, genre: genre, profileImageUrl: '', followerCount: 0);
 
 // 로딩 스켈레톤이 무한 shimmer라 마지막은 pumpAndSettle 대신 고정 프레임만 진행시킨다.
-Future<void> _pump(WidgetTester tester, {Future<void> Function()? onComplete}) async {
+Future<void> _pump(
+  WidgetTester tester, {
+  Future<void> Function()? onComplete,
+  int? progressDotIndex,
+}) async {
   SharedPreferences.setMockInitialValues({});
   await EasyLocalization.ensureInitialized();
   tester.view.physicalSize = const Size(1080, 2400);
@@ -39,6 +43,7 @@ Future<void> _pump(WidgetTester tester, {Future<void> Function()? onComplete}) a
         child: MaterialApp(
           home: ArtistPickScreen(
             onComplete: onComplete ?? () async {},
+            progressDotIndex: progressDotIndex,
           ),
         ),
       ),
@@ -69,13 +74,23 @@ void main() {
   });
 
   group('ArtistPickScreen 독립 진입', () {
-    testWidgets('showProgressDots 기본값(false)에서도 정상 렌더링된다', (tester) async {
+    testWidgets('progressDotIndex가 null이면 정상 렌더링되고 진행 도트가 없다', (tester) async {
       when(() => mockArtistService.fetchArtists())
           .thenAnswer((_) async => [_artist(name: '아이유')]);
 
       await _pump(tester);
 
       expect(find.text('아이유'), findsOneWidget);
+      expect(find.byKey(const Key('onboardingProgressDots')), findsNothing);
+    });
+
+    testWidgets('progressDotIndex가 있으면 진행 도트를 보여준다', (tester) async {
+      when(() => mockArtistService.fetchArtists())
+          .thenAnswer((_) async => [_artist(name: '아이유')]);
+
+      await _pump(tester, progressDotIndex: 3);
+
+      expect(find.byKey(const Key('onboardingProgressDots')), findsOneWidget);
     });
 
     testWidgets('아티스트를 선택하고 시작하면 follow 후 onComplete가 호출된다', (tester) async {

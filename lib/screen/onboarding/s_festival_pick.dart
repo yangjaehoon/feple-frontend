@@ -15,21 +15,28 @@ import 'package:feple/service/festival_interaction_service.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
 
+// 페스티벌 선택 화면(온보딩 진입/홈에서의 독립 진입 모두)이 한 번에 조회하는
+// 다가오는 페스티벌 개수 상한. "고를 만한 페스티벌을 빠르게 보여주는" 화면의
+// 목적상 목록 화면(FestivalPreviewProvider)처럼 스크롤 무한 로드를 붙이기보다
+// 상한을 넉넉히 잡는 쪽을 택했다 — "다가오는 페스티벌"은 시간상 자연히 개수가
+// 제한되는 데이터라 이 상한을 넘길 가능성이 낮다는 전제.
+const upcomingFestivalsFetchSize = 100;
+
 /// 페스티벌 좋아요 선택 화면 — 온보딩 흐름에서는 부모(OnboardingScreen)가
 /// 개수를 확인하려고 미리 받아온 목록을 [initialFestivals]로 그대로 넘겨받아
-/// 중복 조회 없이 표시하고([showProgressDots]=true), 홈 화면 빈 상태에서의
-/// 독립 재진입에서는 [initialFestivals]가 없으므로 직접 조회한다(false, 완료 시
-/// 화면을 닫음).
+/// 중복 조회 없이 표시하고(뒤이어 [progressDotIndex]로 5단계 중 자신의 위치를
+/// 표시), 홈 화면 빈 상태에서의 독립 재진입에서는 [initialFestivals]가 없으므로
+/// 직접 조회한다([progressDotIndex]는 null, 완료 시 화면을 닫음).
 class FestivalPickScreen extends StatefulWidget {
   final Future<void> Function() onComplete;
   final List<FestivalPreview>? initialFestivals;
-  final bool showProgressDots;
+  final int? progressDotIndex;
 
   const FestivalPickScreen({
     super.key,
     required this.onComplete,
     this.initialFestivals,
-    this.showProgressDots = false,
+    required this.progressDotIndex,
   });
 
   @override
@@ -49,7 +56,7 @@ class _FestivalPickScreenState extends State<FestivalPickScreen>
       return Future.value(widget.initialFestivals!);
     }
     return sl<FestivalService>()
-        .fetchPreviews(page: 0, size: 30, includeEnded: false)
+        .fetchPreviews(page: 0, size: upcomingFestivalsFetchSize, includeEnded: false)
         .then((page) => page.items);
   }
 
@@ -110,8 +117,8 @@ class _FestivalPickScreenState extends State<FestivalPickScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (widget.showProgressDots) ...[
-            buildOnboardingProgressDots(colors, activeIndex: 4),
+          if (widget.progressDotIndex != null) ...[
+            buildOnboardingProgressDots(colors, activeIndex: widget.progressDotIndex!),
             const SizedBox(height: 24),
           ],
           Text(

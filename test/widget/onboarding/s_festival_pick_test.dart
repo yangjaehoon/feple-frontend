@@ -18,7 +18,11 @@ class MockFestivalInteractionService extends Mock implements FestivalInteraction
 FestivalPreview _festival({int id = 1, String title = '페스티벌'}) =>
     FestivalPreview(id: id, title: title, location: '서울', posterUrl: '', startDate: '2099-01-01');
 
-Future<void> _pump(WidgetTester tester, {Future<void> Function()? onComplete}) async {
+Future<void> _pump(
+  WidgetTester tester, {
+  Future<void> Function()? onComplete,
+  int? progressDotIndex,
+}) async {
   SharedPreferences.setMockInitialValues({});
   await EasyLocalization.ensureInitialized();
   tester.view.physicalSize = const Size(1080, 2400);
@@ -39,6 +43,7 @@ Future<void> _pump(WidgetTester tester, {Future<void> Function()? onComplete}) a
         child: MaterialApp(
           home: FestivalPickScreen(
             onComplete: onComplete ?? () async {},
+            progressDotIndex: progressDotIndex,
           ),
         ),
       ),
@@ -83,6 +88,38 @@ void main() {
       await _pump(tester);
 
       expect(find.text('펜타포트'), findsOneWidget);
+      expect(find.byKey(const Key('onboardingProgressDots')), findsNothing);
+    });
+
+    testWidgets('progressDotIndex가 있으면 진행 도트를 보여준다', (tester) async {
+      when(() => mockFestivalService.fetchPreviews(
+            page: any(named: 'page'),
+            size: any(named: 'size'),
+            includeEnded: any(named: 'includeEnded'),
+          )).thenAnswer((_) async => FestivalPreviewPage(
+            items: [_festival(title: '펜타포트')],
+            hasMore: false,
+          ));
+
+      await _pump(tester, progressDotIndex: 4);
+
+      expect(find.byKey(const Key('onboardingProgressDots')), findsOneWidget);
+    });
+
+    testWidgets('조회 시 상한(upcomingFestivalsFetchSize)을 size로 전달한다', (tester) async {
+      when(() => mockFestivalService.fetchPreviews(
+            page: any(named: 'page'),
+            size: any(named: 'size'),
+            includeEnded: any(named: 'includeEnded'),
+          )).thenAnswer((_) async => const FestivalPreviewPage(items: [], hasMore: false));
+
+      await _pump(tester);
+
+      verify(() => mockFestivalService.fetchPreviews(
+            page: 0,
+            size: upcomingFestivalsFetchSize,
+            includeEnded: false,
+          )).called(1);
     });
 
     testWidgets('빈 목록이면 안내 문구를 보여준다', (tester) async {

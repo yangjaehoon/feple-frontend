@@ -16,17 +16,19 @@ import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/artist_service.dart';
 import 'package:flutter/material.dart';
 
-/// 아티스트 팔로우 선택 화면 — 온보딩 흐름( [showProgressDots]=true, 뒤이어
-/// 페스티벌 선택 단계로 진행) 과 홈 화면 빈 상태에서의 독립 재진입(false, 완료 시
-/// 그냥 화면을 닫음) 양쪽에서 재사용된다.
+/// 아티스트 팔로우 선택 화면 — 온보딩 흐름(뒤이어 페스티벌 선택 단계로 진행,
+/// [progressDotIndex]로 5단계 중 자신의 위치를 표시)과 홈 화면 빈 상태에서의
+/// 독립 재진입(완료 시 그냥 화면을 닫음, [progressDotIndex]는 null) 양쪽에서
+/// 재사용된다. 진행 도트를 몇 번째에 표시할지는 호출하는 쪽(온보딩 흐름의
+/// 구성)만 아는 정보라 여기서 기본값을 두지 않고 매번 명시적으로 받는다.
 class ArtistPickScreen extends StatefulWidget {
   final Future<void> Function() onComplete;
-  final bool showProgressDots;
+  final int? progressDotIndex;
 
   const ArtistPickScreen({
     super.key,
     required this.onComplete,
-    this.showProgressDots = false,
+    required this.progressDotIndex,
   });
 
   @override
@@ -91,8 +93,8 @@ class _ArtistPickScreenState extends State<ArtistPickScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (widget.showProgressDots) ...[
-            buildOnboardingProgressDots(colors, activeIndex: 3),
+          if (widget.progressDotIndex != null) ...[
+            buildOnboardingProgressDots(colors, activeIndex: widget.progressDotIndex!),
             const SizedBox(height: 24),
           ],
           Text(

@@ -13,6 +13,7 @@ Widget buildOnboardingProgressDots(
   required int activeIndex,
 }) {
   return Row(
+    key: const Key('onboardingProgressDots'),
     mainAxisSize: MainAxisSize.min,
     children: List.generate(onboardingTotalSteps, (index) {
       final isActive = index == activeIndex;

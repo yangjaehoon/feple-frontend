@@ -91,7 +91,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     try {
       final page = await sl<FestivalService>().fetchPreviews(
         page: 0,
-        size: 30,
+        size: upcomingFestivalsFetchSize,
         includeEnded: false,
       );
       festivals = page.items;
@@ -115,13 +115,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       return FestivalPickScreen(
         onComplete: _finish,
         initialFestivals: _festivals,
-        showProgressDots: true,
+        progressDotIndex: 4,
       );
     }
     if (_showArtistPick) {
       return ArtistPickScreen(
         onComplete: _goToFestivalPick,
-        showProgressDots: true,
+        progressDotIndex: 3,
       );
     }
 

@@ -90,7 +90,7 @@ class _HomeFragmentState extends State<HomeFragment> {
       context,
       SlideRoute(
         builder: (_) => FestivalPickScreen(
-          onComplete: () async => Navigator.pop(context),
+          onComplete: (_) async => Navigator.pop(context),
           progressDotIndex: null,
         ),
       ),

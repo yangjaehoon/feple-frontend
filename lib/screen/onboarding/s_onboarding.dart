@@ -113,7 +113,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     if (_showFestivalPick) {
       return FestivalPickScreen(
-        onComplete: _finish,
+        onComplete: (_) => _finish(),
         initialFestivals: _festivals,
         progressDotIndex: 4,
       );

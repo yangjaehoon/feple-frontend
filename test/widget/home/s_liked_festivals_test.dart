@@ -5,7 +5,9 @@ import 'package:feple/injection.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/festival_preview_page.dart';
 import 'package:feple/screen/main/tab/home/s_liked_festivals.dart';
+import 'package:feple/model/festival_preview.dart';
 import 'package:feple/screen/onboarding/s_festival_pick.dart';
+import 'package:feple/service/festival_interaction_service.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,6 +15,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MockFestivalService extends Mock implements FestivalService {}
+class MockFestivalInteractionService extends Mock implements FestivalInteractionService {}
 
 FestivalModel _festival({
   int id = 1,
@@ -37,6 +40,11 @@ FestivalModel _festival({
   );
 }
 
+// LikedFestivalsScreen은 실제로는 항상 홈 위에 push되므로(단독 루트 화면인 적이
+// 없음), CTA로 좋아요에 성공했을 때 이 화면까지 함께 닫아 홈으로 돌아가는
+// 동작(Navigator.canPop 가드)을 제대로 검증하려면 테스트에서도 뒤에 화면이
+// 하나 있는 실제 구조를 흉내내야 한다 — 그래서 더미 홈 위에 push하는 방식으로
+// 띄운다.
 Future<void> _pump(
   WidgetTester tester, {
   required List<FestivalModel> festivals,
@@ -60,21 +68,44 @@ Future<void> _pump(
         theme: CustomTheme.light,
         changeTheme: (_) {},
         child: MaterialApp(
-          home: LikedFestivalsScreen(festivals: festivals, onSaveOrder: onSaveOrder),
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: Center(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => LikedFestivalsScreen(
+                        festivals: festivals,
+                        onSaveOrder: onSaveOrder,
+                      ),
+                    ),
+                  ),
+                  child: const Text('fakeHomeOpenButton'),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     ),
   );
   await tester.pump();
+  await tester.tap(find.text('fakeHomeOpenButton'));
+  await tester.pumpAndSettle();
 }
 
 void main() {
   late MockFestivalService mockFestivalService;
+  late MockFestivalInteractionService mockFestivalInteractionService;
 
   setUp(() {
     mockFestivalService = MockFestivalService();
+    mockFestivalInteractionService = MockFestivalInteractionService();
     if (sl.isRegistered<FestivalService>()) sl.unregister<FestivalService>();
     sl.registerSingleton<FestivalService>(mockFestivalService);
+    if (sl.isRegistered<FestivalInteractionService>()) sl.unregister<FestivalInteractionService>();
+    sl.registerSingleton<FestivalInteractionService>(mockFestivalInteractionService);
     when(() => mockFestivalService.fetchPreviews(
           page: any(named: 'page'),
           size: any(named: 'size'),
@@ -84,6 +115,7 @@ void main() {
 
   tearDown(() {
     if (sl.isRegistered<FestivalService>()) sl.unregister<FestivalService>();
+    if (sl.isRegistered<FestivalInteractionService>()) sl.unregister<FestivalInteractionService>();
   });
 
   group('LikedFestivalsScreen 렌더링', () {
@@ -153,6 +185,77 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(FestivalPickScreen), findsOneWidget);
+    });
+
+    testWidgets('아무것도 찜하지 않고 건너뛰면 이 화면에 그대로 남는다', (tester) async {
+      when(() => mockFestivalService.fetchPreviews(
+            page: any(named: 'page'),
+            size: any(named: 'size'),
+            includeEnded: any(named: 'includeEnded'),
+          )).thenAnswer((_) async => FestivalPreviewPage(
+            items: [
+              FestivalPreview(
+                id: 9,
+                title: '둘러볼페스티벌',
+                location: '서울',
+                posterUrl: '',
+                startDate: '2099-01-01',
+              ),
+            ],
+            hasMore: false,
+          ));
+
+      await _pump(tester, festivals: [_festival(ended: true)]);
+      await tester.tap(find.text('home_add_festivals_cta'.tr()));
+      await tester.pump();
+      // 카드 포스터가 빈 URL이라 무한 shimmer가 뜬다 — pumpAndSettle 대신 고정 프레임만 진행.
+      await tester.pump(const Duration(milliseconds: 300));
+
+      await tester.tap(find.text('onboarding_pick_skip'.tr()));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.byType(FestivalPickScreen), findsNothing);
+      expect(find.text('liked_festivals'.tr()), findsOneWidget);
+      expect(find.text('fakeHomeOpenButton'), findsNothing);
+    });
+
+    testWidgets('CTA로 실제로 찜하면 이 화면까지 함께 닫혀 홈으로 돌아간다', (tester) async {
+      when(() => mockFestivalService.fetchPreviews(
+            page: any(named: 'page'),
+            size: any(named: 'size'),
+            includeEnded: any(named: 'includeEnded'),
+          )).thenAnswer((_) async => FestivalPreviewPage(
+            items: [
+              FestivalPreview(
+                id: 9,
+                title: '찜할페스티벌',
+                location: '서울',
+                posterUrl: '',
+                startDate: '2099-01-01',
+              ),
+            ],
+            hasMore: false,
+          ));
+      when(() => mockFestivalInteractionService.toggleLike(9)).thenAnswer((_) async {});
+
+      await _pump(tester, festivals: [_festival(ended: true)]);
+      await tester.tap(find.text('home_add_festivals_cta'.tr()));
+      await tester.pump();
+      // 카드 포스터가 빈 URL이라 무한 shimmer가 뜬다 — pumpAndSettle 대신 고정 프레임만 진행.
+      await tester.pump(const Duration(milliseconds: 300));
+
+      await tester.tap(find.text('찜할페스티벌'));
+      await tester.pump();
+      await tester.tap(find.text('onboarding_start'.tr()));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pumpAndSettle();
+
+      verify(() => mockFestivalInteractionService.toggleLike(9)).called(1);
+      expect(find.byType(FestivalPickScreen), findsNothing);
+      expect(find.byType(LikedFestivalsScreen), findsNothing);
+      expect(find.text('fakeHomeOpenButton'), findsOneWidget);
     });
   });
 

@@ -27,8 +27,13 @@ const upcomingFestivalsFetchSize = 100;
 /// 중복 조회 없이 표시하고(뒤이어 [progressDotIndex]로 5단계 중 자신의 위치를
 /// 표시), 홈 화면 빈 상태에서의 독립 재진입에서는 [initialFestivals]가 없으므로
 /// 직접 조회한다([progressDotIndex]는 null, 완료 시 화면을 닫음).
+///
+/// [onComplete]는 실제로 하나 이상 좋아요에 성공했는지(didLike)를 넘겨준다 —
+/// 이 화면을 부모 스냅샷 위에 띄운 화면(예: LikedFestivalsScreen)이라면, 뭔가
+/// 새로 좋아요됐을 때만 자신도 함께 닫고 데이터가 최신인 홈으로 보내는 식으로
+/// 활용할 수 있다.
 class FestivalPickScreen extends StatefulWidget {
-  final Future<void> Function() onComplete;
+  final Future<void> Function(bool didLike) onComplete;
   final List<FestivalPreview>? initialFestivals;
   final int? progressDotIndex;
 
@@ -86,7 +91,7 @@ class _FestivalPickScreenState extends State<FestivalPickScreen>
     }
     if (!mounted) return;
     try {
-      await widget.onComplete();
+      await widget.onComplete(targets.isNotEmpty);
     } catch (e) {
       debugPrint('[FestivalPick] onComplete failed: $e');
       if (mounted) setState(() => _isSubmitting = false);

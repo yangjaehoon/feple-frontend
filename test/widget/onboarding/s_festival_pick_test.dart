@@ -20,7 +20,7 @@ FestivalPreview _festival({int id = 1, String title = '페스티벌'}) =>
 
 Future<void> _pump(
   WidgetTester tester, {
-  Future<void> Function()? onComplete,
+  Future<void> Function(bool didLike)? onComplete,
   int? progressDotIndex,
 }) async {
   SharedPreferences.setMockInitialValues({});
@@ -42,7 +42,7 @@ Future<void> _pump(
         changeTheme: (_) {},
         child: MaterialApp(
           home: FestivalPickScreen(
-            onComplete: onComplete ?? () async {},
+            onComplete: onComplete ?? (_) async {},
             progressDotIndex: progressDotIndex,
           ),
         ),
@@ -167,8 +167,15 @@ void main() {
           ));
       when(() => mockFestivalInteractionService.toggleLike(3)).thenAnswer((_) async {});
       var completed = false;
+      bool? didLikeArg;
 
-      await _pump(tester, onComplete: () async => completed = true);
+      await _pump(
+        tester,
+        onComplete: (didLike) async {
+          completed = true;
+          didLikeArg = didLike;
+        },
+      );
       await tester.tap(find.text('선택할페스티벌'));
       await tester.pump();
       await tester.tap(find.text('onboarding_start'.tr()));
@@ -177,6 +184,27 @@ void main() {
 
       verify(() => mockFestivalInteractionService.toggleLike(3)).called(1);
       expect(completed, isTrue);
+      expect(didLikeArg, isTrue);
+    });
+
+    testWidgets('아무것도 선택하지 않고 건너뛰면 onComplete에 didLike=false를 전달한다', (tester) async {
+      when(() => mockFestivalService.fetchPreviews(
+            page: any(named: 'page'),
+            size: any(named: 'size'),
+            includeEnded: any(named: 'includeEnded'),
+          )).thenAnswer((_) async => FestivalPreviewPage(
+            items: [_festival(title: '건너뛸페스티벌')],
+            hasMore: false,
+          ));
+      bool? didLikeArg;
+
+      await _pump(tester, onComplete: (didLike) async => didLikeArg = didLike);
+      await tester.tap(find.text('onboarding_pick_skip'.tr()));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      verifyNever(() => mockFestivalInteractionService.toggleLike(any()));
+      expect(didLikeArg, isFalse);
     });
   });
 }

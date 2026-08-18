@@ -86,15 +86,25 @@ class _LikedFestivalsScreenState extends State<LikedFestivalsScreen>
       _festivals.where((f) => f.isEnded == _showEnded).toList();
 
   // 종료된 페스티벌은 새로 찜할 대상이 아니므로(FestivalPickScreen도 다가오는
-  // 페스티벌만 조회) "예정" 탭이 비었을 때만 CTA를 보여준다. 여기서 찜해도
-  // widget.festivals는 진입 시점 스냅샷이라 이 화면엔 바로 반영되지 않는데,
-  // 홈으로 돌아가면 이미 있는 AppEvents.festivalLikeChanged 리스너로 갱신된다.
+  // 페스티벌만 조회) "예정" 탭이 비었을 때만 CTA를 보여준다. widget.festivals는
+  // 진입 시점 스냅샷이라 이 화면 자체는 새로 찜한 항목을 반영할 방법이 없다 —
+  // 그냥 이 화면만 닫으면 방금 찜한 게 여전히 안 보이는 것처럼 보이므로,
+  // 실제로 뭔가 찜했을 때(didLike)만 이 화면까지 함께 닫아 데이터가 항상
+  // 최신인 홈으로 보낸다. 아무것도 안 고르고 나가는 경우(didLike=false)까지
+  // 홈으로 튕겨내면 불필요한 이탈이라 이 화면에 그대로 남는다.
   void _openFestivalPick() {
     Navigator.push(
       context,
       SlideRoute(
         builder: (_) => FestivalPickScreen(
-          onComplete: () async => Navigator.pop(context),
+          onComplete: (didLike) async {
+            Navigator.pop(context);
+            // canPop 가드: 이 화면이 (테스트 등에서) 최상위 라우트로 떠 있는
+            // 경우 popUntil 대상이 없어 팝을 시도하면 안 되므로 방어.
+            if (didLike && mounted && Navigator.canPop(context)) {
+              Navigator.pop(context);
+            }
+          },
           progressDotIndex: null,
         ),
       ),

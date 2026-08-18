@@ -18,6 +18,7 @@ class HomeArtistsSection extends StatelessWidget {
     this.error,
     this.onRetry,
     this.onShowMore,
+    this.onAddArtists,
   });
 
   final List<FollowedArtist>? artists;
@@ -25,6 +26,7 @@ class HomeArtistsSection extends StatelessWidget {
   final Object? error;
   final VoidCallback? onRetry;
   final VoidCallback? onShowMore;
+  final VoidCallback? onAddArtists;
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +36,17 @@ class HomeArtistsSection extends StatelessWidget {
 
     if (artists == null) return _buildSkeleton(context);
     if (artists!.isEmpty) {
+      final colors = context.appColors;
       return EmptyState(
         icon: Icons.people_outline_rounded,
         title: 'no_followed_artists'.tr(),
+        action: onAddArtists == null
+            ? null
+            : FilledButton(
+                onPressed: onAddArtists,
+                style: FilledButton.styleFrom(backgroundColor: colors.activate),
+                child: Text('home_add_artists_cta'.tr()),
+              ),
       );
     }
     final preview = artists!.take(maxPreview).toList();

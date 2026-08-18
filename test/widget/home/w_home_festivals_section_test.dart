@@ -24,6 +24,7 @@ Future<void> _pump(
   void Function(FestivalModel)? onTap,
   Object? error,
   VoidCallback? onRetry,
+  VoidCallback? onAddFestivals,
 }) async {
   SharedPreferences.setMockInitialValues({});
   await EasyLocalization.ensureInitialized();
@@ -45,6 +46,7 @@ Future<void> _pump(
               onTap: onTap ?? (_) {},
               error: error,
               onRetry: onRetry,
+              onAddFestivals: onAddFestivals,
             ),
           ),
         ),
@@ -66,6 +68,22 @@ void main() {
       await _pump(tester, festivals: []);
 
       expect(find.text('no_liked_festivals'.tr()), findsOneWidget);
+    });
+
+    testWidgets('빈 목록이고 onAddFestivals가 없으면 CTA 버튼을 보여주지 않는다', (tester) async {
+      await _pump(tester, festivals: []);
+
+      expect(find.byType(FilledButton), findsNothing);
+    });
+
+    testWidgets('빈 목록이고 onAddFestivals가 있으면 CTA 버튼을 보여준다', (tester) async {
+      var tapped = false;
+      await _pump(tester, festivals: [], onAddFestivals: () => tapped = true);
+
+      expect(find.text('home_add_festivals_cta'.tr()), findsOneWidget);
+      await tester.tap(find.text('home_add_festivals_cta'.tr()));
+      await tester.pump();
+      expect(tapped, isTrue);
     });
 
     testWidgets('페스티벌 목록을 보여준다', (tester) async {

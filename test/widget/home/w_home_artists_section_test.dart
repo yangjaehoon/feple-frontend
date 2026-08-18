@@ -18,6 +18,7 @@ Future<void> _pump(
   Object? error,
   VoidCallback? onRetry,
   VoidCallback? onShowMore,
+  VoidCallback? onAddArtists,
 }) async {
   SharedPreferences.setMockInitialValues({});
   await EasyLocalization.ensureInitialized();
@@ -40,6 +41,7 @@ Future<void> _pump(
               error: error,
               onRetry: onRetry,
               onShowMore: onShowMore,
+              onAddArtists: onAddArtists,
             ),
           ),
         ),
@@ -61,6 +63,22 @@ void main() {
       await _pump(tester, artists: []);
 
       expect(find.text('no_followed_artists'.tr()), findsOneWidget);
+    });
+
+    testWidgets('빈 목록이고 onAddArtists가 없으면 CTA 버튼을 보여주지 않는다', (tester) async {
+      await _pump(tester, artists: []);
+
+      expect(find.byType(FilledButton), findsNothing);
+    });
+
+    testWidgets('빈 목록이고 onAddArtists가 있으면 CTA 버튼을 보여준다', (tester) async {
+      var tapped = false;
+      await _pump(tester, artists: [], onAddArtists: () => tapped = true);
+
+      expect(find.text('home_add_artists_cta'.tr()), findsOneWidget);
+      await tester.tap(find.text('home_add_artists_cta'.tr()));
+      await tester.pump();
+      expect(tapped, isTrue);
     });
 
     testWidgets('아티스트 목록을 보여준다', (tester) async {

@@ -16,12 +16,14 @@ class HomeFestivalsSection extends StatelessWidget {
     required this.onTap,
     this.error,
     this.onRetry,
+    this.onAddFestivals,
   });
 
   final List<FestivalModel>? festivals;
   final void Function(FestivalModel) onTap;
   final Object? error;
   final VoidCallback? onRetry;
+  final VoidCallback? onAddFestivals;
 
   @override
   Widget build(BuildContext context) {
@@ -55,9 +57,17 @@ class HomeFestivalsSection extends StatelessWidget {
       );
     }
     if (festivals!.isEmpty) {
+      final colors = context.appColors;
       return EmptyState(
         icon: Icons.favorite_border_rounded,
         title: 'no_liked_festivals'.tr(),
+        action: onAddFestivals == null
+            ? null
+            : FilledButton(
+                onPressed: onAddFestivals,
+                style: FilledButton.styleFrom(backgroundColor: colors.activate),
+                child: Text('home_add_festivals_cta'.tr()),
+              ),
       );
     }
     return SizedBox(

@@ -9,6 +9,8 @@ import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/screen/main/tab/home/w_home_artists_section.dart';
 import 'package:feple/screen/main/tab/home/w_home_festivals_section.dart';
 import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
+import 'package:feple/screen/onboarding/s_artist_pick.dart';
+import 'package:feple/screen/onboarding/s_festival_pick.dart';
 import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
@@ -70,6 +72,28 @@ class _HomeFragmentState extends State<HomeFragment> {
   void _onFestivalLikeChanged() => _notifier.refreshFestivals();
   void _onArtistFollowChanged() => _notifier.refreshArtists();
   void _onAppResumed() => _notifier.refresh();
+
+  void _openArtistPick(BuildContext context) {
+    Navigator.push(
+      context,
+      SlideRoute(
+        builder: (_) => ArtistPickScreen(
+          onComplete: () async => Navigator.pop(context),
+        ),
+      ),
+    );
+  }
+
+  void _openFestivalPick(BuildContext context) {
+    Navigator.push(
+      context,
+      SlideRoute(
+        builder: (_) => FestivalPickScreen(
+          onComplete: () async => Navigator.pop(context),
+        ),
+      ),
+    );
+  }
 
   Future<void> _onRefresh(BuildContext context) async {
     try {
@@ -213,6 +237,7 @@ class _HomeFragmentState extends State<HomeFragment> {
               builder: (_) => ArtistScreen.fromFollowedArtist(artist),
             ),
           ),
+          onAddArtists: () => _openArtistPick(context),
         ),
       ],
     );
@@ -247,6 +272,7 @@ class _HomeFragmentState extends State<HomeFragment> {
               builder: (_) => FestivalInformationFragment(poster: festival),
             ),
           ),
+          onAddFestivals: () => _openFestivalPick(context),
         ),
       ],
     );

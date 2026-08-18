@@ -57,6 +57,11 @@ flutter build appbundle --release  # Play Store 제출용 AAB 빌드
 - enum 표시 extension: `labelKey`·`displayColor(colors)` 등 UI 표시 로직은 `lib/screen/`의 `*_style.dart`에 extension으로 분리 (model 레이어에 flutter 의존성 금지)
 - 외부 앱 async gap (OAuth/ImagePicker): 외부 앱을 여는 `await` 전에 Provider를 캡처할 것 (`final p = context.read<P>();`) — 복귀 시 `mounted`가 false일 수 있어 `context.read<>()` 불가. ImagePicker 후 `setState`도 `if (mounted)` 필요
 - `DioClient` 인터셉터: per-request `Authorization` 헤더가 이미 있으면 JWT로 덮어쓰지 않음 (예: `/auth/kakao`에 카카오 토큰 전달 시 보존됨)
+- 빈 상태 재참여 CTA(`EmptyState(action: FilledButton(...))`) 추가 시, 완료 후 데이터 반영 방식은 화면의 데이터 구조에 따라 다르게 결정할 것 — 스타일(`FilledButton` + `colors.activate`)은 항상 통일하되 새로고침 전략은 강제 통일하지 말 것:
+  - 화면이 `AppEvents` 리스너로 자체 새로고침됨(예: `HomeFragment`) → `onComplete`에서 그냥 `Navigator.pop(context)`만 하면 됨
+  - 화면이 생성자로 받은 스냅샷이라 자체 새로고침 수단이 없음(예: `LikedFestivalsScreen`) → pick 화면의 `onComplete(bool didX)`가 실제로 뭔가 성공했는지 알려주므로, `didX`일 때만 이 화면까지 함께 pop해 새로고침되는 상위 화면으로 보낼 것(`Navigator.canPop` 가드 필수, 아무것도 안 골랐으면 불필요한 이탈이므로 이 화면에 남길 것)
+  - 화면에 이미 동기 콜백으로 로컬 상태를 patch하는 기존 진입점이 있음(예: `FavoriteBoardsSection._openAllBoards`의 `onSave`) → 새 CTA도 그 기존 진입점을 그대로 재사용
+  - `ArtistPickScreen`/`FestivalPickScreen`의 `onComplete(bool didFollow/didLike)`는 항상 대칭 유지 — 한쪽만 bool을 받고 다른 쪽은 안 받는 상태로 두지 말 것
 
 ### i18n
 다국어 문자열: `assets/translations/ko.json`, `assets/translations/en.json`

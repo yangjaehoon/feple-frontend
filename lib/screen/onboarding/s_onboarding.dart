@@ -120,7 +120,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
     if (_showArtistPick) {
       return ArtistPickScreen(
-        onComplete: _goToFestivalPick,
+        onComplete: (_) => _goToFestivalPick(),
         progressDotIndex: 3,
       );
     }

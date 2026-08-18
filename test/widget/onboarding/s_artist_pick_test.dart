@@ -20,7 +20,7 @@ Artist _artist({int id = 1, String name = '아티스트', String genre = 'KPOP'}
 // 로딩 스켈레톤이 무한 shimmer라 마지막은 pumpAndSettle 대신 고정 프레임만 진행시킨다.
 Future<void> _pump(
   WidgetTester tester, {
-  Future<void> Function()? onComplete,
+  Future<void> Function(bool didFollow)? onComplete,
   int? progressDotIndex,
 }) async {
   SharedPreferences.setMockInitialValues({});
@@ -42,7 +42,7 @@ Future<void> _pump(
         changeTheme: (_) {},
         child: MaterialApp(
           home: ArtistPickScreen(
-            onComplete: onComplete ?? () async {},
+            onComplete: onComplete ?? (_) async {},
             progressDotIndex: progressDotIndex,
           ),
         ),
@@ -98,8 +98,15 @@ void main() {
           .thenAnswer((_) async => [_artist(id: 7, name: '선택할아티스트')]);
       when(() => mockFollowService.follow(7)).thenAnswer((_) async {});
       var completed = false;
+      bool? didFollowArg;
 
-      await _pump(tester, onComplete: () async => completed = true);
+      await _pump(
+        tester,
+        onComplete: (didFollow) async {
+          completed = true;
+          didFollowArg = didFollow;
+        },
+      );
       await tester.tap(find.text('선택할아티스트'));
       await tester.pump();
       await tester.tap(find.text('onboarding_start'.tr()));
@@ -108,20 +115,21 @@ void main() {
 
       verify(() => mockFollowService.follow(7)).called(1);
       expect(completed, isTrue);
+      expect(didFollowArg, isTrue);
     });
 
-    testWidgets('아무것도 선택하지 않고 건너뛰면 follow 없이 onComplete가 호출된다', (tester) async {
+    testWidgets('아무것도 선택하지 않고 건너뛰면 follow 없이 onComplete에 didFollow=false를 전달한다', (tester) async {
       when(() => mockArtistService.fetchArtists())
           .thenAnswer((_) async => [_artist(name: '건너뛸아티스트')]);
-      var completed = false;
+      bool? didFollowArg;
 
-      await _pump(tester, onComplete: () async => completed = true);
+      await _pump(tester, onComplete: (didFollow) async => didFollowArg = didFollow);
       await tester.tap(find.text('onboarding_pick_skip'.tr()));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
 
       verifyNever(() => mockFollowService.follow(any()));
-      expect(completed, isTrue);
+      expect(didFollowArg, isFalse);
     });
   });
 }

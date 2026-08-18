@@ -21,8 +21,13 @@ import 'package:flutter/material.dart';
 /// 독립 재진입(완료 시 그냥 화면을 닫음, [progressDotIndex]는 null) 양쪽에서
 /// 재사용된다. 진행 도트를 몇 번째에 표시할지는 호출하는 쪽(온보딩 흐름의
 /// 구성)만 아는 정보라 여기서 기본값을 두지 않고 매번 명시적으로 받는다.
+///
+/// [onComplete]는 실제로 하나 이상 팔로우에 성공했는지(didFollow)를 넘겨준다 —
+/// FestivalPickScreen.onComplete(didLike)와 대칭을 맞춘 것으로, 이 화면을 부모
+/// 스냅샷 위에 띄운 화면이 있다면 뭔가 새로 팔로우됐을 때만 자신도 함께 닫고
+/// 데이터가 최신인 화면으로 보내는 식으로 활용할 수 있다.
 class ArtistPickScreen extends StatefulWidget {
-  final Future<void> Function() onComplete;
+  final Future<void> Function(bool didFollow) onComplete;
   final int? progressDotIndex;
 
   const ArtistPickScreen({
@@ -47,11 +52,12 @@ class _ArtistPickScreenState extends State<ArtistPickScreen>
   Future<void> _submit() async {
     if (_isSubmitting) return;
     setState(() => _isSubmitting = true);
+    final targets = _selectedIds.toList();
     try {
       await Future.wait(
-        _selectedIds.map((id) => sl<ArtistFollowService>().follow(id)),
+        targets.map((id) => sl<ArtistFollowService>().follow(id)),
       );
-      if (_selectedIds.isNotEmpty) AppEvents.artistFollowChanged.value++;
+      if (targets.isNotEmpty) AppEvents.artistFollowChanged.value++;
     } catch (e) {
       debugPrint('[ArtistPick] artist follow failed: $e');
       if (mounted) {
@@ -62,7 +68,7 @@ class _ArtistPickScreenState extends State<ArtistPickScreen>
     }
     if (!mounted) return;
     try {
-      await widget.onComplete();
+      await widget.onComplete(targets.isNotEmpty);
     } catch (e) {
       debugPrint('[ArtistPick] onComplete failed: $e');
       if (mounted) setState(() => _isSubmitting = false);

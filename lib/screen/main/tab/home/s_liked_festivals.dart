@@ -97,7 +97,11 @@ class _LikedFestivalsScreenState extends State<LikedFestivalsScreen>
       context,
       SlideRoute(
         builder: (_) => FestivalPickScreen(
+          // mounted 가드: FestivalPickScreen이 열려 있는 동안 이 화면(조상 위젯)이
+          // 다른 경로로 이미 사라졌을 수 있어(예: 로그아웃 시 전역 popUntil) 두
+          // pop 모두 방어한다.
           onComplete: (didLike) async {
+            if (!mounted) return;
             Navigator.pop(context);
             // canPop 가드: 이 화면이 (테스트 등에서) 최상위 라우트로 떠 있는
             // 경우 popUntil 대상이 없어 팝을 시도하면 안 되므로 방어.

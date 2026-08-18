@@ -7,6 +7,7 @@ import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/followed_artist.dart';
 import 'package:feple/model/nickname_check_result.dart';
 import 'package:feple/model/user_model.dart';
+import 'package:feple/model/withdrawal_reason.dart';
 import 'package:feple/network/dio_client.dart';
 
 class UserService {
@@ -25,8 +26,11 @@ class UserService {
     return AppUser.fromJson(response.data);
   }
 
-  Future<void> deleteUser(int userId) async {
-    await DioClient.dio.delete('/users/$userId');
+  Future<void> deleteUser(int userId, WithdrawalReason reason, {String? detail}) async {
+    await DioClient.dio.delete('/users/$userId', data: {
+      'reason': reason.apiValue,
+      if (detail != null && detail.isNotEmpty) 'detail': detail,
+    });
   }
 
   Future<List<FollowedArtist>> fetchFollowingArtists(int userId) async {

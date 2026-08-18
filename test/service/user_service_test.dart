@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:feple/model/withdrawal_reason.dart';
 import 'package:feple/network/api_cache_store.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/service/user_service.dart';
@@ -152,7 +153,10 @@ void main() {
     test('deleteUser completes normally', () async {
       server.enqueue(httpCode: 200);
 
-      await expectLater(service.deleteUser(1), completes);
+      await expectLater(
+        service.deleteUser(1, WithdrawalReason.rarelyUsed),
+        completes,
+      );
     });
   });
 }

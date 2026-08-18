@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:feple/common/data/preference/prefs.dart';
+import 'package:feple/model/withdrawal_reason.dart';
 import 'package:feple/service/auth_service.dart';
 import 'package:feple/service/fcm_service.dart';
 import 'package:feple/service/user_service.dart';
@@ -103,10 +104,10 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  Future<void> deleteAccount() async {
+  Future<void> deleteAccount(WithdrawalReason reason, {String? detail}) async {
     final id = _user?.id;
     if (id == null) return;
-    await _userService.deleteUser(id);
+    await _userService.deleteUser(id, reason, detail: detail);
     await logout();
   }
 

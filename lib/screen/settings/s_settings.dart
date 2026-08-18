@@ -13,6 +13,7 @@ import 'package:feple/screen/notice/s_notice_list.dart';
 import 'package:feple/screen/opensource/s_opensource.dart';
 import 'package:feple/screen/settings/s_notification_settings.dart';
 import 'package:feple/screen/settings/s_blocked_users.dart';
+import 'package:feple/screen/settings/w_withdrawal_reason_sheet.dart';
 import 'package:feple/common/data/preference/prefs.dart';
 import 'package:feple/screen/onboarding/s_onboarding.dart';
 import 'package:flutter/foundation.dart';
@@ -73,6 +74,12 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
   }
 
   Future<void> _deleteAccount() async {
+    // 탈퇴 사유를 먼저 받고(선택 안 하면 취소), 그 다음 파괴적 확인 다이얼로그로
+    // 한 번 더 확인 — 되돌릴 수 없는 작업이라 2단계로 나눔.
+    final reasonResult = await showWithdrawalReasonSheet(context);
+    if (reasonResult == null || !mounted) return;
+    final (reason, detail) = reasonResult;
+
     final confirmed = await showConfirmDialog(
       context,
       title: 'delete_account'.tr(),
@@ -83,7 +90,7 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
     final rootNav = Navigator.of(context, rootNavigator: true);
     final userProvider = context.read<UserProvider>();
     try {
-      await userProvider.deleteAccount();
+      await userProvider.deleteAccount(reason, detail: detail);
     } catch (_) {
       if (mounted) context.showErrorSnackbar('delete_account_error'.tr());
       return;

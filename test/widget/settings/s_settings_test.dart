@@ -3,6 +3,7 @@ import 'package:feple/common/data/preference/app_preferences.dart';
 import 'package:feple/common/data/preference/prefs.dart';
 import 'package:feple/common/theme/custom_theme_scope.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/model/withdrawal_reason.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/my_page/w_edit_profile.dart';
 import 'package:feple/screen/opensource/s_opensource.dart';
@@ -92,6 +93,7 @@ void main() {
   setUpAll(() async {
     SharedPreferences.setMockInitialValues({});
     await AppPreferences.init();
+    registerFallbackValue(WithdrawalReason.other);
   });
 
   late MockUserProvider mockUserProvider;
@@ -275,26 +277,40 @@ void main() {
   });
 
   group('SettingsScreen 회원탈퇴', () {
+    // 회원탈퇴 버튼 → 탈퇴 사유 선택 시트(사유 선택 필수) → 파괴적 확인 다이얼로그
+    // 순서로 진행된다.
+    Future<void> goThroughReasonSheet(WidgetTester tester) async {
+      await tester.tap(find.text('delete_account'.tr()));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('withdrawal_reason_rarely_used'.tr()));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('withdrawal_reason_continue'.tr()));
+      await tester.pumpAndSettle();
+    }
+
     testWidgets('회원탈퇴 확인하면 UserProvider.deleteAccount()가 호출된다', (tester) async {
-      when(() => mockUserProvider.deleteAccount()).thenAnswer((_) async {});
+      when(() => mockUserProvider.deleteAccount(any(), detail: any(named: 'detail')))
+          .thenAnswer((_) async {});
       await _pump(tester, mockUserProvider);
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('delete_account'.tr()));
-      await tester.pumpAndSettle();
+      await goThroughReasonSheet(tester);
       await tester.tap(find.text('delete_account'.tr()).last);
       await tester.pumpAndSettle();
 
-      verify(() => mockUserProvider.deleteAccount()).called(1);
+      verify(() => mockUserProvider.deleteAccount(
+            WithdrawalReason.rarelyUsed,
+            detail: any(named: 'detail'),
+          )).called(1);
     });
 
     testWidgets('회원탈퇴 실패 시 에러 스낵바를 보여준다', (tester) async {
-      when(() => mockUserProvider.deleteAccount()).thenThrow(Exception('실패'));
+      when(() => mockUserProvider.deleteAccount(any(), detail: any(named: 'detail')))
+          .thenThrow(Exception('실패'));
       await _pump(tester, mockUserProvider);
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('delete_account'.tr()));
-      await tester.pumpAndSettle();
+      await goThroughReasonSheet(tester);
       await tester.tap(find.text('delete_account'.tr()).last);
       await tester.pumpAndSettle();
 

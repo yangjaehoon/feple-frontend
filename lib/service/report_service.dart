@@ -13,6 +13,9 @@ class ReportService {
   Future<void> submitPhotoReport(int artistId, int photoId, ReportReason reason, {String? detail}) =>
       _submit('/artists/$artistId/photos/$photoId/report', reason, detail: detail);
 
+  Future<void> submitUserReport(int userId, ReportReason reason, {String? detail}) =>
+      _submit('/users/$userId/report', reason, detail: detail);
+
   Future<void> _submit(String endpoint, ReportReason reason, {String? detail}) =>
       DioClient.dio.post(endpoint, data: {
         'reason': reason.name.toUpperCase(),

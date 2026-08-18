@@ -9,6 +9,7 @@ import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_refreshable_center.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_level_badge.dart';
+import 'package:feple/common/widget/w_report_sheet.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/widget/w_tap_loading_indicator.dart';
@@ -26,6 +27,7 @@ import 'package:feple/service/block_service.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_diary_service.dart';
 import 'package:feple/service/festival_service.dart';
+import 'package:feple/service/report_service.dart';
 import 'package:feple/service/user_activity_service.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:feple/common/util/block_action_helper.dart';
@@ -57,6 +59,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
   final _festivalService = sl<FestivalService>();
   final _blockService = sl<BlockService>();
   final _diaryService = sl<FestivalDiaryService>();
+  final _reportService = sl<ReportService>();
 
   AppUser? _user;
   int? _postCount;
@@ -178,6 +181,14 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
+              leading: Icon(Icons.flag_outlined, color: colors.textTitle),
+              title: Text('report_user'.tr()),
+              onTap: () {
+                Navigator.pop(ctx);
+                _showReportSheet();
+              },
+            ),
+            ListTile(
               leading: Icon(Icons.block_rounded, color: colors.error),
               title: Text(
                 'block'.tr(),
@@ -191,6 +202,16 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
           ],
         ),
       ),
+    );
+  }
+
+  void _showReportSheet() {
+    showReportSheet(
+      context,
+      titleKey: 'report_user',
+      onSubmit: (reason, detail) =>
+          _reportService.submitUserReport(widget.userId, reason, detail: detail),
+      duplicateErrorKey: 'report_user_duplicate',
     );
   }
 

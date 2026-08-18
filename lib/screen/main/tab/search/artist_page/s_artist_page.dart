@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/model/artist_model.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:feple/model/artist_schedule_model.dart';
 import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/model/followed_artist.dart';
@@ -96,6 +97,17 @@ class _ArtistScreenState extends State<ArtistScreen> {
     super.dispose();
   }
 
+  Future<void> _shareArtist(String displayName) async {
+    try {
+      await SharePlus.instance.share(
+        ShareParams(text: 'artist_share_text'.tr(args: [displayName])),
+      );
+    } catch (e) {
+      debugPrint('[ArtistScreen] share error: $e');
+      if (mounted) context.showErrorSnackbar('share_failed'.tr());
+    }
+  }
+
   Future<void> _onRefresh() async {
     // 각 섹션의 refresh()가 실제로 끝날 때까지 기다려야 당겨서 새로고침
     // 스피너가 화면 갱신 완료와 맞물려 사라짐 (예전엔 팔로우 상태만 기다려서
@@ -120,7 +132,16 @@ class _ArtistScreenState extends State<ArtistScreen> {
       backgroundColor: colors.backgroundMain,
       body: Column(
         children: [
-          SecondaryAppBar(title: displayName),
+          SecondaryAppBar(
+            title: displayName,
+            actions: [
+              IconButton(
+                tooltip: 'action_share'.tr(),
+                icon: Icon(Icons.share_rounded, color: colors.appBarIconColor),
+                onPressed: () => _shareArtist(displayName),
+              ),
+            ],
+          ),
           Expanded(
             child: SafeArea(
               top: false,

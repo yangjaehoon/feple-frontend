@@ -16,6 +16,7 @@ import 'package:feple/service/block_service.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_diary_service.dart';
 import 'package:feple/service/festival_service.dart';
+import 'package:feple/service/report_service.dart';
 import 'package:feple/service/user_activity_service.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,7 @@ class MockCertificationService extends Mock implements CertificationService {}
 class MockFestivalService extends Mock implements FestivalService {}
 class MockBlockService extends Mock implements BlockService {}
 class MockFestivalDiaryService extends Mock implements FestivalDiaryService {}
+class MockReportService extends Mock implements ReportService {}
 class MockUserProvider extends Mock implements UserProvider {}
 
 const _stats = UserStats(
@@ -87,12 +89,17 @@ Future<void> _pump(
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  setUpAll(() {
+    registerFallbackValue(ReportReason.other);
+  });
+
   late MockUserService mockUserService;
   late MockUserActivityService mockActivityService;
   late MockCertificationService mockCertService;
   late MockFestivalService mockFestivalService;
   late MockBlockService mockBlockService;
   late MockFestivalDiaryService mockDiaryService;
+  late MockReportService mockReportService;
 
   setUp(() {
     mockUserService = MockUserService();
@@ -101,6 +108,7 @@ void main() {
     mockFestivalService = MockFestivalService();
     mockBlockService = MockBlockService();
     mockDiaryService = MockFestivalDiaryService();
+    mockReportService = MockReportService();
 
     if (sl.isRegistered<UserService>()) sl.unregister<UserService>();
     sl.registerSingleton<UserService>(mockUserService);
@@ -114,6 +122,8 @@ void main() {
     sl.registerSingleton<BlockService>(mockBlockService);
     if (sl.isRegistered<FestivalDiaryService>()) sl.unregister<FestivalDiaryService>();
     sl.registerSingleton<FestivalDiaryService>(mockDiaryService);
+    if (sl.isRegistered<ReportService>()) sl.unregister<ReportService>();
+    sl.registerSingleton<ReportService>(mockReportService);
 
     // 기본: 차단 목록 비어있음
     when(() => mockBlockService.getBlockedUsers()).thenAnswer((_) async => []);
@@ -127,6 +137,7 @@ void main() {
       () => sl.unregister<FestivalService>(),
       () => sl.unregister<BlockService>(),
       () => sl.unregister<FestivalDiaryService>(),
+      () => sl.unregister<ReportService>(),
     ]) {
       try {
         u();
@@ -214,7 +225,7 @@ void main() {
   });
 
   group('OtherUserProfileScreen 차단', () {
-    testWidgets('메뉴 버튼을 탭하면 차단 옵션 시트가 뜬다', (tester) async {
+    testWidgets('메뉴 버튼을 탭하면 차단/신고 옵션 시트가 뜬다', (tester) async {
       stubSuccess();
       await _pump(tester);
       await tester.pumpAndSettle();
@@ -223,6 +234,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('block'.tr()), findsWidgets);
+      expect(find.text('report_user'.tr()), findsOneWidget);
     });
 
     testWidgets('이미 차단한 유저면 차단 아이콘이 표시된다', (tester) async {
@@ -234,6 +246,32 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.block_rounded), findsOneWidget);
+    });
+  });
+
+  group('OtherUserProfileScreen 신고', () {
+    testWidgets('신고 사유를 선택하고 제출하면 ReportService가 호출된다', (tester) async {
+      stubSuccess();
+      when(() => mockReportService.submitUserReport(7, any(), detail: any(named: 'detail')))
+          .thenAnswer((_) async {});
+      await _pump(tester);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.more_vert_rounded));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('report_user'.tr()));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('report_reason_abuse'.tr()));
+      await tester.pump();
+      await tester.tap(find.text('report_submit'.tr()));
+      await tester.pumpAndSettle();
+
+      verify(() => mockReportService.submitUserReport(
+            7,
+            ReportReason.abuse,
+            detail: any(named: 'detail'),
+          )).called(1);
     });
   });
 

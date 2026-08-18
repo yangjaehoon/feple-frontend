@@ -122,6 +122,26 @@ void main() {
     _unregisterService<SongRequestService>();
   });
 
+  group('ArtistScreen 공유', () {
+    testWidgets('공유 버튼이 앱바에 있고 탭해도 크래시하지 않는다', (tester) async {
+      when(() => mockPostService.fetchArtistPosts(1)).thenAnswer((_) async => []);
+      when(() => mockScheduleService.fetchSchedule(1)).thenAnswer((_) async => []);
+      when(() => mockSongService.fetchSongs(1)).thenAnswer((_) async => []);
+      when(() => mockArtistService.fetchRelatedArtists(1)).thenAnswer((_) async => []);
+
+      await _pump(tester);
+
+      expect(find.byTooltip('action_share'.tr()), findsOneWidget);
+      await tester.tap(find.byTooltip('action_share'.tr()));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      // share_plus 실제 동작은 플랫폼 채널에 의존하므로 여기서는 버튼이 있고
+      // 탭해도 앱이 죽지 않는지(예외가 위로 새지 않는지)만 확인한다.
+      expect(tester.takeException(), isNull);
+    });
+  });
+
   group('ArtistScreen 렌더링', () {
     testWidgets('팔로우/사진 로드가 실패해도 나머지 섹션은 정상 렌더링된다', (tester) async {
       // ArtistFollowNotifier.init()/ArtistSwiperPhotosNotifier.load()는 async 메서드

@@ -26,6 +26,7 @@ import 'service/notification_countable.dart';
 import 'service/notification_feedable.dart';
 import 'service/notification_preference_service.dart';
 import 'service/notification_service.dart';
+import 'service/notice_service.dart';
 import 'service/post_service.dart';
 import 'service/block_service.dart';
 import 'service/report_service.dart';
@@ -67,6 +68,7 @@ void setupDependencies() {
   sl.registerLazySingleton<NotificationService>(() => NotificationService());
   sl.registerLazySingleton<NotificationCountable>(() => sl<NotificationService>());
   sl.registerLazySingleton<NotificationFeedable>(() => sl<NotificationService>());
+  sl.registerLazySingleton<NoticeService>(() => NoticeService());
   sl.registerLazySingleton<PostService>(() => PostService());
   sl.registerLazySingleton<BlockService>(() => BlockService());
   sl.registerLazySingleton<ReportService>(() => ReportService());

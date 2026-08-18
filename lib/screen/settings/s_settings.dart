@@ -9,6 +9,7 @@ import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_settings_item.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/my_page/w_edit_profile.dart';
+import 'package:feple/screen/notice/s_notice_list.dart';
 import 'package:feple/screen/opensource/s_opensource.dart';
 import 'package:feple/screen/settings/s_notification_settings.dart';
 import 'package:feple/screen/settings/s_blocked_users.dart';
@@ -232,6 +233,13 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
   List<Widget> _buildSupportSection(AbstractThemeColors colors) {
     return [
       _SectionHeader(label: 'settings_support'.tr()),
+      SettingsItem(
+        icon: Icons.campaign_outlined,
+        label: 'notices'.tr(),
+        onTap: () => guardedNavigate(() =>
+            Navigator.push(context, SlideRoute(builder: (_) => const NoticeListScreen()))),
+      ),
+      const SettingsItemDivider(),
       SettingsItem(
         icon: Icons.headset_mic_rounded,
         label: 'customer_service'.tr(),

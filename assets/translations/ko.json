@@ -445,6 +445,7 @@
   "action_cert": "인증",
   "action_diary": "일기",
   "attending_count": "{}명 참석 예정",
+  "attending_count_short": "{}명",
   "attend_none": "아직 참석자가 없어요",
   "attend_toggle": "참석 예정",
   "lineup_all": "전체",

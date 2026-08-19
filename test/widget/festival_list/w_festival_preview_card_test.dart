@@ -17,6 +17,8 @@ FestivalPreview _festival({
   String location = '서울 올림픽공원',
   String? startDate,
   String? endDate,
+  List<String> genres = const [],
+  int attendingCount = 0,
 }) {
   return FestivalPreview(
     id: id,
@@ -25,6 +27,8 @@ FestivalPreview _festival({
     posterUrl: '',
     startDate: startDate ?? _isoDate(3),
     endDate: endDate,
+    genres: genres,
+    attendingCount: attendingCount,
   );
 }
 
@@ -78,6 +82,40 @@ void main() {
 
       expect(find.text('status_ended'.tr()), findsOneWidget);
       expect(find.byType(DayBadge), findsNothing);
+    });
+
+    testWidgets('참석 인원이 있으면 참석자 수를 보여준다', (tester) async {
+      await _pump(tester, _festival(attendingCount: 42));
+
+      expect(find.text('attending_count_short'.tr(args: ['42'])), findsOneWidget);
+    });
+
+    testWidgets('참석 인원이 0이면 참석자 수를 숨긴다', (tester) async {
+      await _pump(tester, _festival());
+
+      expect(find.text('attending_count_short'.tr(args: ['0'])), findsNothing);
+      expect(find.byIcon(Icons.people_outline_rounded), findsNothing);
+    });
+
+    testWidgets('장르가 있으면 장르 태그를 보여준다', (tester) async {
+      await _pump(tester, _festival(genres: ['BAND', 'DANCE']));
+
+      expect(find.text('genre_band'.tr()), findsOneWidget);
+      expect(find.text('genre_dance'.tr()), findsOneWidget);
+    });
+
+    testWidgets('장르가 없으면 태그 영역을 숨긴다', (tester) async {
+      await _pump(tester, _festival());
+
+      expect(find.text('genre_band'.tr()), findsNothing);
+    });
+
+    testWidgets('장르가 2개를 넘으면 앞의 2개만 보여준다', (tester) async {
+      await _pump(tester, _festival(genres: ['BAND', 'DANCE', 'INDIE']));
+
+      expect(find.text('genre_band'.tr()), findsOneWidget);
+      expect(find.text('genre_dance'.tr()), findsOneWidget);
+      expect(find.text('genre_indie'.tr()), findsNothing);
     });
   });
 }

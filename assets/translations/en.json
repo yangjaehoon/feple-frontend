@@ -445,6 +445,7 @@
   "action_cert": "Verify",
   "action_diary": "Diary",
   "attending_count": "{} attending",
+  "attending_count_short": "{} going",
   "attend_none": "No one yet",
   "attend_toggle": "Attend",
   "lineup_all": "All",

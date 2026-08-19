@@ -60,6 +60,7 @@ FestivalModel _poster({
 void main() {
   late MockCertificationService mockCertService;
   late MockFestivalInteractionService mockFestivalService;
+  final calendarCalls = <MethodCall>[];
 
   setUpAll(() async {
     SharedPreferences.setMockInitialValues({});
@@ -86,10 +87,14 @@ void main() {
       (_) async => const FestivalRatingSummary(averageRating: 0, ratingCount: 0),
     );
 
+    calendarCalls.clear();
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
       const MethodChannel('add_2_calendar'),
-      (call) async => true,
+      (call) async {
+        calendarCalls.add(call);
+        return true;
+      },
     );
   });
 
@@ -345,13 +350,23 @@ void main() {
     testWidgets('캘린더 버튼을 탭하면 달력에 저장한다', (tester) async {
       await pump(
         tester,
-        poster: _poster(id: 1, startDate: '2099-08-01', endDate: '2099-08-03'),
+        poster: _poster(
+          id: 1,
+          title: '펜타포트',
+          location: '인천 송도달빛축제공원',
+          startDate: '2099-08-01',
+          endDate: '2099-08-03',
+        ),
       );
 
       await tester.tap(find.text('action_calendar'.tr()));
       await tester.pump();
 
-      // MethodChannel 예외 없이 완료되면 성공
+      expect(tester.takeException(), isNull);
+      expect(calendarCalls, hasLength(1));
+      expect(calendarCalls.single.method, 'add2Cal');
+      expect(calendarCalls.single.arguments['title'], '펜타포트');
+      expect(calendarCalls.single.arguments['location'], '인천 송도달빛축제공원');
     });
   });
 

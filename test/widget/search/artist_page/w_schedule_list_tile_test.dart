@@ -36,16 +36,21 @@ ArtistScheduleModel _schedule({
 
 void main() {
   late MockFestivalService mockFestivalService;
+  final calendarCalls = <MethodCall>[];
 
   setUp(() {
     mockFestivalService = MockFestivalService();
     if (sl.isRegistered<FestivalService>()) sl.unregister<FestivalService>();
     sl.registerSingleton<FestivalService>(mockFestivalService);
 
+    calendarCalls.clear();
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
       const MethodChannel('add_2_calendar'),
-      (call) async => true,
+      (call) async {
+        calendarCalls.add(call);
+        return true;
+      },
     );
   });
 
@@ -168,14 +173,18 @@ void main() {
     testWidgets('날짜가 있으면 달력에 저장한다', (tester) async {
       await pump(
         tester,
-        item: _schedule(startDate: '2026-08-01'),
+        item: _schedule(title: '락페스티벌', location: '인천 송도', startDate: '2026-08-01'),
         showCalendarAction: true,
       );
 
       await tester.tap(find.byIcon(Icons.event_available_rounded));
       await tester.pump();
 
-      // MethodChannel 예외 없이 완료되면 성공
+      expect(tester.takeException(), isNull);
+      expect(calendarCalls, hasLength(1));
+      expect(calendarCalls.single.method, 'add2Cal');
+      expect(calendarCalls.single.arguments['title'], '락페스티벌');
+      expect(calendarCalls.single.arguments['location'], '인천 송도');
     });
 
     testWidgets('날짜가 없으면 에러 스낵바를 보여주고 저장하지 않는다', (tester) async {
@@ -189,6 +198,7 @@ void main() {
       await tester.pump();
 
       expect(find.text('add_to_calendar_no_date'.tr()), findsOneWidget);
+      expect(calendarCalls, isEmpty);
     });
   });
 }

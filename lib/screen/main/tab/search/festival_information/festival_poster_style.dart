@@ -2,18 +2,7 @@ import 'package:feple/common/theme/color/abs_theme_colors.dart';
 import 'package:feple/model/poster_cert_state.dart';
 import 'package:flutter/material.dart';
 
-String? genreI18nKey(String genre) => switch (genre) {
-      'BAND'    => 'genre_band',
-      'HIP_HOP' => 'genre_hip_hop',
-      'INDIE'   => 'genre_indie',
-      'BALLAD'  => 'genre_ballad',
-      'RNB'     => 'genre_rnb',
-      'DANCE'   => 'genre_dance',
-      'IDOL'    => 'genre_idol',
-      'GUGAK'   => 'genre_gugak',
-      'ETC'     => 'genre_etc',
-      _         => null,
-    };
+export 'package:feple/model/festival_genre_style.dart';
 
 String? ageI18nKey(String age) => switch (age) {
       'ALL_AGES' => 'age_all',

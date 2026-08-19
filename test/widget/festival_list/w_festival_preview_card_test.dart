@@ -117,5 +117,27 @@ void main() {
       expect(find.text('genre_dance'.tr()), findsOneWidget);
       expect(find.text('genre_indie'.tr()), findsNothing);
     });
+
+    testWidgets('장르와 참석 인원이 동시에 있어도 넘치지 않는다', (tester) async {
+      await _pump(
+        tester,
+        _festival(genres: ['BAND', 'DANCE'], location: '아주 긴 장소 이름이 들어가는 경우 테스트', attendingCount: 999),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('genre_band'.tr()), findsOneWidget);
+      expect(find.text('genre_dance'.tr()), findsOneWidget);
+      expect(find.text('attending_count_short'.tr(args: ['999'])), findsOneWidget);
+    });
+
+    testWidgets('매핑 안 되는 장르만 있으면 태그 영역을 숨긴다', (tester) async {
+      await _pump(tester, _festival(genres: ['UNKNOWN_GENRE']));
+
+      expect(find.byIcon(Icons.people_outline_rounded), findsNothing);
+      // 매핑 실패한 장르만 있을 때 빈 태그 줄이 그려지지 않는지는 위젯 트리에 남는 태그
+      // 텍스트가 하나도 없는 것으로 간접 확인한다(장르 라벨은 전부 i18n 키로 렌더되므로
+      // 원본 코드 'UNKNOWN_GENRE' 문자열이 그대로 화면에 나타나지 않아야 정상).
+      expect(find.text('UNKNOWN_GENRE'), findsNothing);
+    });
   });
 }

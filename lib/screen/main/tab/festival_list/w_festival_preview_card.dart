@@ -5,8 +5,8 @@ import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
+import 'package:feple/model/festival_genre_style.dart';
 import 'package:feple/model/festival_preview.dart';
-import 'package:feple/screen/main/tab/search/festival_information/festival_poster_style.dart';
 
 /// 카드에 노출할 장르 태그 최대 개수 — 카드가 작아 3개 이상이면 줄바꿈으로 높이가 넘칠 수 있음.
 const int _maxGenreTags = 2;
@@ -87,6 +87,7 @@ class FestivalPreviewCard extends StatelessWidget {
   }
 
   Widget _buildInfo(AbstractThemeColors colors, bool isEnglish) {
+    final genreLabels = _genreLabels();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
       child: Column(
@@ -137,22 +138,32 @@ class FestivalPreviewCard extends StatelessWidget {
               ),
             ],
           ),
-          if (festival.genres.isNotEmpty || festival.attendingCount > 0) ...[
+          if (genreLabels.isNotEmpty || festival.attendingCount > 0) ...[
             const SizedBox(height: 6),
-            _buildTagsRow(colors),
+            _buildTagsRow(colors, genreLabels),
           ],
         ],
       ),
     );
   }
 
+  // 매핑 안 되는 장르 코드는 여기서 걸러지므로, 위 _buildInfo의 표시 여부 가드도
+  // 이 필터링된 라벨 목록을 그대로 써야 한다 — 원본 genres 리스트 기준으로 판단하면
+  // 전부 매핑 실패한 코드만 있을 때 빈 줄바꿈 영역만 그려지는 죽은 공간이 생긴다.
+  List<String> _genreLabels() => festival.genres
+      .map(genreI18nKey)
+      .whereType<String>()
+      .take(_maxGenreTags)
+      .map((key) => key.tr())
+      .toList();
+
   // 장르 태그는 개수가 가변적이라 Expanded(Wrap)으로 감싸 남은 폭 안에서만 줄바꿈되게 하고,
   // 참석 인원은 고정 길이 텍스트라 그 옆에 남는 공간을 그대로 차지하게 둔다 — Row가 두 가변
   // 콘텐츠를 나란히 놓아도 폭을 넘기지 않는다(Expanded가 먼저 남은 폭을 계산해줌).
-  Widget _buildTagsRow(AbstractThemeColors colors) {
+  Widget _buildTagsRow(AbstractThemeColors colors, List<String> genreLabels) {
     return Row(
       children: [
-        if (festival.genres.isNotEmpty) Expanded(child: _buildGenreTags(colors)),
+        if (genreLabels.isNotEmpty) Expanded(child: _buildGenreTags(colors, genreLabels)),
         if (festival.attendingCount > 0) ...[
           const SizedBox(width: 8),
           Icon(Icons.people_outline_rounded, color: colors.activate, size: 14),
@@ -170,32 +181,27 @@ class FestivalPreviewCard extends StatelessWidget {
     );
   }
 
-  Widget _buildGenreTags(AbstractThemeColors colors) {
-    final labels = festival.genres
-        .map(genreI18nKey)
-        .whereType<String>()
-        .take(_maxGenreTags)
-        .map((key) => key.tr());
+  Widget _buildGenreTags(AbstractThemeColors colors, List<String> labels) {
     return Wrap(
       spacing: 6,
       runSpacing: 4,
-      children: labels.map((label) => _GenreTag(label: label, colors: colors)).toList(),
+      children: labels.map((label) => _GenreTag(label: label, color: colors.activate)).toList(),
     );
   }
 }
 
 class _GenreTag extends StatelessWidget {
   final String label;
-  final AbstractThemeColors colors;
+  final Color color;
 
-  const _GenreTag({required this.label, required this.colors});
+  const _GenreTag({required this.label, required this.color});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: colors.activate.withValues(alpha: 0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(AppDimens.radiusBadge),
       ),
       child: Text(
@@ -203,7 +209,7 @@ class _GenreTag extends StatelessWidget {
         style: TextStyle(
           fontSize: AppDimens.fontSizeXxs,
           fontWeight: FontWeight.w600,
-          color: colors.activate,
+          color: color,
         ),
       ),
     );

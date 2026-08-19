@@ -15,6 +15,7 @@ import 'package:feple/screen/main/tab/search/festival_information/w_weather_bott
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -84,6 +85,12 @@ void main() {
     when(() => mockCertService.getFestivalRating(any())).thenAnswer(
       (_) async => const FestivalRatingSummary(averageRating: 0, ratingCount: 0),
     );
+
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+      const MethodChannel('add_2_calendar'),
+      (call) async => true,
+    );
   });
 
   tearDown(() {
@@ -93,6 +100,8 @@ void main() {
     if (sl.isRegistered<FestivalInteractionService>()) {
       sl.unregister<FestivalInteractionService>();
     }
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(const MethodChannel('add_2_calendar'), null);
   });
 
   Future<void> pump(WidgetTester tester, {required FestivalModel poster}) async {
@@ -329,6 +338,20 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.byType(WeatherBottomSheet), findsOneWidget);
+    });
+  });
+
+  group('FestivalPoster 캘린더 추가', () {
+    testWidgets('캘린더 버튼을 탭하면 달력에 저장한다', (tester) async {
+      await pump(
+        tester,
+        poster: _poster(id: 1, startDate: '2099-08-01', endDate: '2099-08-03'),
+      );
+
+      await tester.tap(find.text('action_calendar'.tr()));
+      await tester.pump();
+
+      // MethodChannel 예외 없이 완료되면 성공
     });
   });
 

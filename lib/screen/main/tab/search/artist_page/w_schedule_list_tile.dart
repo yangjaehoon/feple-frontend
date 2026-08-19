@@ -84,7 +84,14 @@ class _ScheduleListTileState extends State<ScheduleListTile>
         padding: EdgeInsets.zero,
         constraints: const BoxConstraints(),
         color: _c(colors.activate),
-        onPressed: () => CalendarHelper.addToDeviceCalendar(context, item),
+        onPressed: () => CalendarHelper.addToDeviceCalendar(
+          context,
+          title: item.title,
+          startDate: item.startDate,
+          endDate: item.endDate,
+          description: item.description ?? '',
+          location: item.location ?? '',
+        ),
       ),
     );
   }

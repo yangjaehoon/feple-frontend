@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
+import 'package:feple/common/util/calendar_helper.dart';
 import 'package:feple/common/util/widget_image_capturer.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/injection.dart';
@@ -91,6 +92,15 @@ class FestivalPosterState extends State<FestivalPoster> {
       if (mounted) context.showErrorSnackbar('map_open_failed'.tr());
     }
   }
+
+  Future<void> _addToCalendar() => CalendarHelper.addToDeviceCalendar(
+    context,
+    title: widget.poster.displayTitle(context.isEnglish),
+    startDate: widget.poster.startDate,
+    endDate: widget.poster.endDate,
+    description: widget.poster.description,
+    location: widget.poster.location,
+  );
 
   void _withHaptic(VoidCallback fn) {
     HapticFeedback.lightImpact();
@@ -600,9 +610,9 @@ class FestivalPosterState extends State<FestivalPoster> {
         ),
         Expanded(
           child: FestivalActionButton(
-            onTap: _openKakaoMap,
-            icon: Icons.location_on_rounded,
-            label: 'action_map'.tr(),
+            onTap: _addToCalendar,
+            icon: Icons.event_available_rounded,
+            label: 'action_calendar'.tr(),
           ),
         ),
         Expanded(

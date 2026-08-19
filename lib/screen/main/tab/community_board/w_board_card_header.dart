@@ -8,6 +8,7 @@ class BoardCardHeader extends StatelessWidget {
   final String title;
   final Color headerColor;
   final VoidCallback onTap;
+  final Widget? trailing;
 
   const BoardCardHeader({
     super.key,
@@ -15,6 +16,7 @@ class BoardCardHeader extends StatelessWidget {
     required this.title,
     required this.headerColor,
     required this.onTap,
+    this.trailing,
   });
 
   Widget _buildLeading(AbstractThemeColors colors) {
@@ -74,7 +76,16 @@ class BoardCardHeader extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(child: _buildLeading(colors)),
-                _buildMore(colors),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (trailing != null) ...[
+                      trailing!,
+                      const SizedBox(width: 4),
+                    ],
+                    _buildMore(colors),
+                  ],
+                ),
               ],
             ),
           ),

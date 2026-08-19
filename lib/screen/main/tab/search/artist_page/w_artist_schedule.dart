@@ -50,21 +50,31 @@ class ArtistScheduleState extends State<ArtistSchedule>
             icon: Icons.calendar_month_rounded,
             title: 'artist_schedule_title'.tr(args: [widget.artistName]),
             headerColor: colors.activate,
-            onTap: () => guardedNavigate(() => Navigator.push(
-              context,
-              SlideRoute(
-                builder: (_) => ArtistScheduleListScreen(
-                  artistId: widget.artistId,
-                  artistName: widget.artistName,
-                ),
-              ),
-            )),
+            onTap: _openScheduleList,
+            trailing: IconButton(
+              icon: const Icon(Icons.event_available_rounded),
+              iconSize: 20,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              color: colors.activate,
+              onPressed: _openScheduleList,
+            ),
           ),
           _buildScheduleList(colors),
         ],
       ),
     );
   }
+
+  void _openScheduleList() => guardedNavigate(() => Navigator.push(
+        context,
+        SlideRoute(
+          builder: (_) => ArtistScheduleListScreen(
+            artistId: widget.artistId,
+            artistName: widget.artistName,
+          ),
+        ),
+      ));
 
   Widget _buildScheduleList(AbstractThemeColors colors) {
     return AsyncContentBuilder<List<ArtistScheduleModel>>(

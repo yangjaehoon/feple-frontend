@@ -171,6 +171,7 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen>
           isPast: isPast,
           isLoading: navigatingFestivalId == item.festivalId,
           onTap: () => navigateToFestival(item.festivalId),
+          showCalendarAction: true,
         ),
         if (showDivider)
           Divider(

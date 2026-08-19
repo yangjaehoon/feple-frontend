@@ -2,7 +2,6 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/artist_page/artist_follow_notifier.dart';
-import 'package:feple/screen/main/tab/search/artist_page/w_festival_calendar.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:flutter/material.dart';
@@ -116,15 +115,6 @@ class _ArtistFollowHeaderState extends State<ArtistFollowHeader>
           ),
         ),
         const Spacer(),
-        _buildActionIcon(
-          icon: Icons.calendar_month_rounded,
-          label: 'action_schedule'.tr(),
-          onTap: () => guardedNavigate(() => Navigator.push(
-            context,
-            SlideRoute(builder: (context) => FestivalCalendar(artistId: widget.artistId, artistName: widget.artistName)),
-          )),
-        ),
-        const SizedBox(width: 4),
         _buildActionIcon(
           icon: Icons.photo_library_rounded,
           label: 'action_gallery'.tr(),

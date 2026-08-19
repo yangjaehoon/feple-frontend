@@ -1,14 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
-import 'package:feple/injection.dart';
-import 'package:feple/model/artist_schedule_model.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/artist_page/artist_follow_notifier.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_follow_header.dart';
-import 'package:feple/screen/main/tab/search/artist_page/w_festival_calendar.dart';
-import 'package:feple/service/artist_schedule_service.dart';
-import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -17,8 +12,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class MockArtistFollowNotifier extends Mock implements ArtistFollowNotifier {}
 class MockUserProvider extends Mock implements UserProvider {}
-class MockArtistScheduleService extends Mock implements ArtistScheduleService {}
-class MockFestivalService extends Mock implements FestivalService {}
 
 void main() {
   late MockArtistFollowNotifier mockNotifier;
@@ -34,23 +27,6 @@ void main() {
 
     mockUserProvider = MockUserProvider();
     when(() => mockUserProvider.currentUserId).thenReturn(1);
-
-    final mockScheduleService = MockArtistScheduleService();
-    when(() => mockScheduleService.fetchSchedule(any()))
-        .thenAnswer((_) async => <ArtistScheduleModel>[]);
-    if (sl.isRegistered<ArtistScheduleService>()) {
-      sl.unregister<ArtistScheduleService>();
-    }
-    sl.registerSingleton<ArtistScheduleService>(mockScheduleService);
-    if (sl.isRegistered<FestivalService>()) sl.unregister<FestivalService>();
-    sl.registerSingleton<FestivalService>(MockFestivalService());
-  });
-
-  tearDown(() {
-    if (sl.isRegistered<ArtistScheduleService>()) {
-      sl.unregister<ArtistScheduleService>();
-    }
-    if (sl.isRegistered<FestivalService>()) sl.unregister<FestivalService>();
   });
 
   Future<void> pump(WidgetTester tester) async {
@@ -142,18 +118,7 @@ void main() {
     });
   });
 
-  group('ArtistFollowHeader 네비게이션', () {
-    testWidgets('일정 아이콘을 탭하면 일정 캘린더 화면으로 이동한다', (tester) async {
-      await pump(tester);
-
-      await tester.tap(find.byIcon(Icons.calendar_month_rounded));
-      await tester.pumpAndSettle();
-
-      expect(find.byType(FestivalCalendar), findsOneWidget);
-    });
-
-    // 갤러리 아이콘을 탭하면 이동하는 ImageCollectionScreen은 ArtistPhotoNotifier/
-    // ReportService 등 별도 기능 클러스터(image_collection)의 다수 의존성이 필요해
-    // 이 테스트에서는 다루지 않는다(기존 컨벤션) — image_collection 전용 테스트에서 다룰 것
-  });
+  // 갤러리 아이콘을 탭하면 이동하는 ImageCollectionScreen은 ArtistPhotoNotifier/
+  // ReportService 등 별도 기능 클러스터(image_collection)의 다수 의존성이 필요해
+  // 이 테스트에서는 다루지 않는다(기존 컨벤션) — image_collection 전용 테스트에서 다룰 것
 }

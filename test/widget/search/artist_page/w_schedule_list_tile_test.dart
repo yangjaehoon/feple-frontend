@@ -11,6 +11,7 @@ import 'package:feple/screen/main/tab/search/artist_page/w_event_type_icon.dart'
 import 'package:feple/screen/main/tab/search/artist_page/w_schedule_list_tile.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -40,10 +41,18 @@ void main() {
     mockFestivalService = MockFestivalService();
     if (sl.isRegistered<FestivalService>()) sl.unregister<FestivalService>();
     sl.registerSingleton<FestivalService>(mockFestivalService);
+
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+      const MethodChannel('add_2_calendar'),
+      (call) async => true,
+    );
   });
 
   tearDown(() {
     if (sl.isRegistered<FestivalService>()) sl.unregister<FestivalService>();
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(const MethodChannel('add_2_calendar'), null);
   });
 
   Future<void> pump(
@@ -51,6 +60,7 @@ void main() {
     required ArtistScheduleModel item,
     VoidCallback? onTap,
     bool isLoading = false,
+    bool showCalendarAction = false,
   }) async {
     SharedPreferences.setMockInitialValues({});
     await EasyLocalization.ensureInitialized();
@@ -67,7 +77,12 @@ void main() {
           changeTheme: (_) {},
           child: MaterialApp(
             home: Scaffold(
-              body: ScheduleListTile(item: item, onTap: onTap, isLoading: isLoading),
+              body: ScheduleListTile(
+                item: item,
+                onTap: onTap,
+                isLoading: isLoading,
+                showCalendarAction: showCalendarAction,
+              ),
             ),
           ),
         ),
@@ -140,6 +155,40 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('err_fetch_data'.tr()), findsOneWidget);
+    });
+  });
+
+  group('ScheduleListTile 캘린더 추가', () {
+    testWidgets('showCalendarAction이 false면 버튼을 보여주지 않는다', (tester) async {
+      await pump(tester, item: _schedule(startDate: '2026-08-01'));
+
+      expect(find.byIcon(Icons.event_available_rounded), findsNothing);
+    });
+
+    testWidgets('날짜가 있으면 달력에 저장한다', (tester) async {
+      await pump(
+        tester,
+        item: _schedule(startDate: '2026-08-01'),
+        showCalendarAction: true,
+      );
+
+      await tester.tap(find.byIcon(Icons.event_available_rounded));
+      await tester.pump();
+
+      // MethodChannel 예외 없이 완료되면 성공
+    });
+
+    testWidgets('날짜가 없으면 에러 스낵바를 보여주고 저장하지 않는다', (tester) async {
+      await pump(
+        tester,
+        item: _schedule(startDate: null),
+        showCalendarAction: true,
+      );
+
+      await tester.tap(find.byIcon(Icons.event_available_rounded));
+      await tester.pump();
+
+      expect(find.text('add_to_calendar_no_date'.tr()), findsOneWidget);
     });
   });
 }

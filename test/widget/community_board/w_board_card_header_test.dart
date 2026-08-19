@@ -6,7 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<void> _pump(WidgetTester tester, {required VoidCallback onTap}) async {
+Future<void> _pump(
+  WidgetTester tester, {
+  required VoidCallback onTap,
+  Widget? trailing,
+}) async {
   SharedPreferences.setMockInitialValues({});
   await EasyLocalization.ensureInitialized();
 
@@ -27,6 +31,7 @@ Future<void> _pump(WidgetTester tester, {required VoidCallback onTap}) async {
               title: '자유 게시판',
               headerColor: Colors.blue,
               onTap: onTap,
+              trailing: trailing,
             ),
           ),
         ),
@@ -43,6 +48,17 @@ void main() {
 
       expect(find.text('자유 게시판'), findsOneWidget);
       expect(find.byIcon(Icons.forum_rounded), findsOneWidget);
+      expect(find.text('see_more'.tr()), findsOneWidget);
+    });
+
+    testWidgets('trailing이 있으면 더보기 문구 옆에 함께 보여준다', (tester) async {
+      await _pump(
+        tester,
+        onTap: () {},
+        trailing: const Icon(Icons.event_available_rounded),
+      );
+
+      expect(find.byIcon(Icons.event_available_rounded), findsOneWidget);
       expect(find.text('see_more'.tr()), findsOneWidget);
     });
   });

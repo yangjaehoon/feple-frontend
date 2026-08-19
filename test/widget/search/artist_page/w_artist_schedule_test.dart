@@ -154,6 +154,18 @@ void main() {
 
       expect(find.byType(ArtistScheduleListScreen), findsOneWidget);
     });
+
+    testWidgets('캘린더 아이콘을 탭하면 일정 전체 목록으로 이동한다', (tester) async {
+      when(() => mockService.fetchSchedule(1)).thenAnswer((_) async => []);
+
+      await pump(tester);
+      await tester.pump();
+
+      await tester.tap(find.byIcon(Icons.event_available_rounded));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ArtistScheduleListScreen), findsOneWidget);
+    });
   });
 
   group('ArtistSchedule 새로고침', () {

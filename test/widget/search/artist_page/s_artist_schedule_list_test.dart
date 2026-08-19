@@ -91,6 +91,7 @@ void main() {
       expect(find.text('schedule_past'.tr()), findsOneWidget);
       expect(find.text('다가올 일정'), findsOneWidget);
       expect(find.text('지난 일정'), findsOneWidget);
+      expect(find.byIcon(Icons.event_available_rounded), findsNWidgets(2));
     });
 
     testWidgets('일정이 없으면 안내 문구를 보여준다', (tester) async {

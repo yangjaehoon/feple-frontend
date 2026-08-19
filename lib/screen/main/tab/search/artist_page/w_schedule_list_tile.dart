@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/calendar_helper.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_tap_loading_indicator.dart';
 import 'package:feple/model/artist_schedule_model.dart';
@@ -17,6 +18,7 @@ class ScheduleListTile extends StatefulWidget {
   final bool isPast;
   // 부모가 같은 festivalId로 별도 fetch(행 전체 탭)를 진행 중일 때 표시
   final bool isLoading;
+  final bool showCalendarAction;
 
   const ScheduleListTile({
     super.key,
@@ -24,6 +26,7 @@ class ScheduleListTile extends StatefulWidget {
     this.onTap,
     this.isPast = false,
     this.isLoading = false,
+    this.showCalendarAction = false,
   });
 
   @override
@@ -62,8 +65,26 @@ class _ScheduleListTileState extends State<ScheduleListTile>
             _buildPoster(context, colors),
             const SizedBox(width: 12),
             Expanded(child: _buildContent(context, colors)),
+            if (widget.showCalendarAction) ...[
+              const SizedBox(width: 4),
+              _buildCalendarButton(context, colors),
+            ],
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildCalendarButton(BuildContext context, AbstractThemeColors colors) {
+    return Tooltip(
+      message: 'add_to_calendar'.tr(),
+      child: IconButton(
+        icon: const Icon(Icons.event_available_rounded),
+        iconSize: 18,
+        padding: EdgeInsets.zero,
+        constraints: const BoxConstraints(),
+        color: _c(colors.activate),
+        onPressed: () => CalendarHelper.addToDeviceCalendar(context, item),
       ),
     );
   }

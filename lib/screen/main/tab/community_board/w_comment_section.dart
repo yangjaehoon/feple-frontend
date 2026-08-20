@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/popup_menu_item_builder.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_expandable_text.dart';
 import 'package:feple/common/widget/w_inline_badge.dart';
@@ -160,7 +161,7 @@ class _CommentTile extends StatelessWidget {
                   nickname: comment.nickname,
                   certified: comment.anonymous ? false : comment.certified,
                   userRole: comment.anonymous ? null : comment.userRole,
-                  radius: isReply ? 13 : 16,
+                  radius: ResponsiveSize(context).w(isReply ? 13 : 16),
                   anonymous: comment.anonymous,
                 ),
               ),

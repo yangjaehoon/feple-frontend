@@ -11,6 +11,7 @@ import 'package:feple/screen/main/tab/search/festival_information/f_festival_inf
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/text_highlight.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/util/responsive_size.dart';
 
 class SearchArtistTile extends StatelessWidget {
   final Artist data;
@@ -25,7 +26,7 @@ class SearchArtistTile extends StatelessWidget {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       leading: CircleAvatar(
-        radius: MediaQuery.sizeOf(context).width * (24 / 390),
+        radius: ResponsiveSize(context).w(24),
         backgroundColor: colors.certRingColor.withValues(alpha: 0.15),
         backgroundImage: hasImage
             ? CachedNetworkImageProvider(data.profileImageUrl, maxWidth: 96)
@@ -130,7 +131,7 @@ class SearchPostTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final tileSize = MediaQuery.sizeOf(context).width * (44 / 390);
+    final tileSize = ResponsiveSize(context).w(44);
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),

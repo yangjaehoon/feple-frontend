@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/bounded_responsive_size.dart';
 import 'package:flutter/material.dart';
 
 class ArtistCircleImage extends StatelessWidget {
@@ -16,8 +17,11 @@ class ArtistCircleImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    if (!isFollowed) return _buildPlainImage(colors);
-    return _buildFollowedImage(colors);
+    // w_festival_artists.dart의 가로 스크롤 행에서 쓰이므로 boundedResponsiveSize로
+    // 태블릿급 너비에서 항목이 과도하게 넓어지는 걸 막는다(위젯 테스트로 재현·확인).
+    final screenWidth = boundedWidthBasis(context);
+    if (!isFollowed) return _buildPlainImage(colors, screenWidth);
+    return _buildFollowedImage(colors, screenWidth);
   }
 
   Widget _buildAvatarContent(AbstractThemeColors colors, double size) {
@@ -45,10 +49,11 @@ class ArtistCircleImage extends StatelessWidget {
     return fallback(colors);
   }
 
-  Widget _buildPlainImage(AbstractThemeColors colors) {
+  Widget _buildPlainImage(AbstractThemeColors colors, double screenWidth) {
+    final size = screenWidth * (56 / 390);
     return Container(
-      width: 56,
-      height: 56,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: colors.activate.withValues(alpha: 0.08),
@@ -60,14 +65,15 @@ class ArtistCircleImage extends StatelessWidget {
           ),
         ],
       ),
-      child: ClipOval(child: _buildAvatarContent(colors, 56)),
+      child: ClipOval(child: _buildAvatarContent(colors, size)),
     );
   }
 
-  Widget _buildFollowedImage(AbstractThemeColors colors) {
+  Widget _buildFollowedImage(AbstractThemeColors colors, double screenWidth) {
+    final size = screenWidth * (56 / 390);
     return Container(
-      width: 56,
-      height: 56,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: LinearGradient(
@@ -83,7 +89,7 @@ class ArtistCircleImage extends StatelessWidget {
           color: colors.backgroundMain,
         ),
         padding: const EdgeInsets.all(1.5),
-        child: ClipOval(child: _buildAvatarContent(colors, 48)),
+        child: ClipOval(child: _buildAvatarContent(colors, screenWidth * (48 / 390))),
       ),
     );
   }

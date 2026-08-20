@@ -14,6 +14,7 @@ import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:feple/common/util/responsive_size.dart';
 
 class WritePost extends StatefulWidget {
   final String title;
@@ -213,9 +214,10 @@ class _WritePostState extends State<WritePost> {
     required Widget preview,
     required VoidCallback onRemove,
   }) {
+    final size = ResponsiveSize(context).w(72);
     return SizedBox(
-      width: 72,
-      height: 72,
+      width: size,
+      height: size,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -265,8 +267,8 @@ class _WritePostState extends State<WritePost> {
       child: GestureDetector(
         onTap: _pickImages,
         child: Container(
-          width: 72,
-          height: 72,
+          width: ResponsiveSize(context).w(72),
+          height: ResponsiveSize(context).w(72),
           decoration: BoxDecoration(
             border: Border.all(color: colors.listDivider),
             borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
@@ -282,14 +284,15 @@ class _WritePostState extends State<WritePost> {
   }
 
   Widget _buildImagePicker(AbstractThemeColors colors) {
+    final size = ResponsiveSize(context).w(72);
     final tiles = <Widget>[
       for (var i = 0; i < _existingImageUrls.length; i++)
         _buildImageThumbnail(
           colors,
           preview: AppNetworkImage(
             imageUrl: _existingImageUrls[i],
-            width: 72,
-            height: 72,
+            width: size,
+            height: size,
             excludeFromSemantics: true,
           ),
           onRemove: () => setState(() => _existingImageUrls.removeAt(i)),
@@ -301,8 +304,8 @@ class _WritePostState extends State<WritePost> {
             child: Image.memory(
               _selectedImages[i],
               fit: BoxFit.cover,
-              width: 72,
-              height: 72,
+              width: size,
+              height: size,
             ),
           ),
           onRemove: () => setState(() => _selectedImages.removeAt(i)),
@@ -311,7 +314,7 @@ class _WritePostState extends State<WritePost> {
     ];
 
     return SizedBox(
-      height: 72,
+      height: size,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: tiles.length,

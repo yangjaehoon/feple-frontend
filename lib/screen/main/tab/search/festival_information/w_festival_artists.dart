@@ -18,6 +18,7 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:feple/common/util/bounded_responsive_size.dart';
 
 class FestivalArtists extends StatefulWidget {
   final int festivalId;
@@ -159,13 +160,13 @@ class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
         ),
       ),
       child: SizedBox(
-        width: 64,
+        width: boundedResponsiveSize(context, 64),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 56,
-              height: 56,
+              width: boundedResponsiveSize(context, 56),
+              height: boundedResponsiveSize(context, 56),
               decoration: BoxDecoration(
                 color: colors.backgroundMain,
                 shape: BoxShape.circle,
@@ -211,7 +212,7 @@ class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
         ),
       ),
       child: SizedBox(
-        width: 64,
+        width: boundedResponsiveSize(context, 64),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -238,25 +239,27 @@ class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
   }
 
   Widget _buildSkeletonRow() {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final avatarSize = boundedResponsiveSize(context, 56);
     return SizedBox(
-      height: MediaQuery.sizeOf(context).width * 0.205, // 80/390
+      height: screenWidth * 0.205, // 80/390
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: 4,
         separatorBuilder: (_, _) => const SizedBox(width: 16),
-        itemBuilder: (_, _) => const SizedBox(
-          width: 64,
+        itemBuilder: (_, _) => SizedBox(
+          width: boundedResponsiveSize(context, 64),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SkeletonBox(
-                width: 56,
-                height: 56,
-                borderRadius: BorderRadius.all(Radius.circular(28)),
+                width: avatarSize,
+                height: avatarSize,
+                borderRadius: BorderRadius.all(Radius.circular(avatarSize / 2)),
               ),
-              SizedBox(height: 6),
-              SkeletonBox(width: 40, height: 10),
+              const SizedBox(height: 6),
+              const SkeletonBox(width: 40, height: 10),
             ],
           ),
         ),

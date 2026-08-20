@@ -7,6 +7,7 @@ import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_stat_row.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/util/responsive_size.dart';
 
 /// 게시글 목록에서 한 줄 타일
 class PostListTile extends StatelessWidget {
@@ -91,28 +92,29 @@ class PostListTile extends StatelessWidget {
     );
   }
 
-  Widget _buildThumbnail() {
+  Widget _buildThumbnail(BuildContext context) {
+    final size = ResponsiveSize(context).w(56);
     return Stack(
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
           child: CachedNetworkImage(
             imageUrl: post.imageUrls.first,
-            width: 56,
-            height: 56,
+            width: size,
+            height: size,
             memCacheWidth: 112, // 56px * 2 (Retina)
             fit: BoxFit.cover,
             fadeInDuration: AppDimens.animXFast,
             fadeOutDuration: AppDimens.animTapFeedback,
             placeholder: (context, _) {
               final c = context.appColors;
-              return Container(width: 56, height: 56, color: c.surface);
+              return Container(width: size, height: size, color: c.surface);
             },
             errorWidget: (context, url, error) {
               final c = context.appColors;
               return Container(
-                width: 56,
-                height: 56,
+                width: size,
+                height: size,
                 color: c.surface,
                 child: Icon(
                   Icons.broken_image_rounded,
@@ -158,7 +160,7 @@ class PostListTile extends StatelessWidget {
             _buildTextColumn(colors),
             if (post.imageUrls.isNotEmpty) ...[
               const SizedBox(width: 12),
-              _buildThumbnail(),
+              _buildThumbnail(context),
             ],
           ],
         ),

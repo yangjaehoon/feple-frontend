@@ -14,6 +14,7 @@ import 'package:feple/model/festival_diary_model.dart';
 import 'package:feple/screen/main/tab/my_page/s_write_festival_diary.dart';
 import 'package:feple/service/festival_diary_service.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/util/responsive_size.dart';
 
 class FestivalDiaryListScreen extends StatefulWidget {
   const FestivalDiaryListScreen({super.key});
@@ -73,12 +74,13 @@ class _FestivalDiaryListScreenState extends State<FestivalDiaryListScreen> {
   }
 
   Widget _buildSkeleton(AbstractThemeColors colors) {
+    final size = ResponsiveSize(context).w(96);
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       itemCount: 3,
       separatorBuilder: (_, _) => const SizedBox(height: 10),
       itemBuilder: (_, _) => Container(
-        height: 96,
+        height: size,
         decoration: BoxDecoration(
           color: colors.surface,
           borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
@@ -87,8 +89,8 @@ class _FestivalDiaryListScreenState extends State<FestivalDiaryListScreen> {
         child: Row(
           children: [
             SkeletonBox(
-              width: 96,
-              height: 96,
+              width: size,
+              height: size,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(16),
                 bottomLeft: Radius.circular(16),
@@ -199,10 +201,14 @@ class _DiaryCard extends StatelessWidget {
             ClipRRect(
               borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
               child: SizedBox(
-                width: 96,
-                height: 96,
+                width: ResponsiveSize(context).w(96),
+                height: ResponsiveSize(context).w(96),
                 child: diary.photoUrls.isNotEmpty
-                    ? AppNetworkImage(imageUrl: diary.photoUrls.first, width: 96, height: 96)
+                    ? AppNetworkImage(
+                        imageUrl: diary.photoUrls.first,
+                        width: ResponsiveSize(context).w(96),
+                        height: ResponsiveSize(context).w(96),
+                      )
                     : Container(
                         color: colors.activate.withValues(alpha: 0.1),
                         child: Icon(Icons.menu_book_outlined, color: colors.activate.withValues(alpha: 0.4), size: 28),

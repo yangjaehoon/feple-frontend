@@ -18,6 +18,7 @@ import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:feple/common/util/responsive_size.dart';
 
 class WriteFestivalDiaryScreen extends StatefulWidget {
   final FestivalDiaryModel? existing;
@@ -188,9 +189,10 @@ class _WriteFestivalDiaryScreenState extends State<WriteFestivalDiaryScreen> {
   }
 
   Widget _buildImageThumbnail(AbstractThemeColors colors, {required Widget preview, VoidCallback? onRemove}) {
+    final size = ResponsiveSize(context).w(72);
     return SizedBox(
-      width: 72,
-      height: 72,
+      width: size,
+      height: size,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -219,11 +221,12 @@ class _WriteFestivalDiaryScreenState extends State<WriteFestivalDiaryScreen> {
   }
 
   Widget _buildAddImageTile(AbstractThemeColors colors) {
+    final size = ResponsiveSize(context).w(72);
     return GestureDetector(
       onTap: _pickImages,
       child: Container(
-        width: 72,
-        height: 72,
+        width: size,
+        height: size,
         decoration: BoxDecoration(
           border: Border.all(color: colors.listDivider),
           borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
@@ -234,17 +237,18 @@ class _WriteFestivalDiaryScreenState extends State<WriteFestivalDiaryScreen> {
   }
 
   Widget _buildImagePicker(AbstractThemeColors colors) {
+    final size = ResponsiveSize(context).w(72);
     if (_isEditMode) {
       if (widget.existing!.photoUrls.isEmpty) return const SizedBox.shrink();
       return SizedBox(
-        height: 72,
+        height: size,
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemCount: widget.existing!.photoUrls.length,
           separatorBuilder: (_, _) => const SizedBox(width: 12),
           itemBuilder: (_, i) => _buildImageThumbnail(
             colors,
-            preview: AppNetworkImage(imageUrl: widget.existing!.photoUrls[i], width: 72, height: 72),
+            preview: AppNetworkImage(imageUrl: widget.existing!.photoUrls[i], width: size, height: size),
           ),
         ),
       );
@@ -253,13 +257,13 @@ class _WriteFestivalDiaryScreenState extends State<WriteFestivalDiaryScreen> {
       for (var i = 0; i < _selectedImages.length; i++)
         _buildImageThumbnail(
           colors,
-          preview: Image.memory(_selectedImages[i], fit: BoxFit.cover, width: 72, height: 72),
+          preview: Image.memory(_selectedImages[i], fit: BoxFit.cover, width: size, height: size),
           onRemove: () => setState(() => _selectedImages.removeAt(i)),
         ),
       if (_selectedImages.length < _maxPhotos) _buildAddImageTile(colors),
     ];
     return SizedBox(
-      height: 72,
+      height: size,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: tiles.length,

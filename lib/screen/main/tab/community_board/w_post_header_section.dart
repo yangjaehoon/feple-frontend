@@ -4,6 +4,7 @@ import 'package:feple/common/widget/w_inline_badge.dart';
 import 'package:feple/common/widget/w_level_badge.dart';
 import 'package:feple/common/widget/w_profile_avatar.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/util/responsive_size.dart';
 
 class PostHeaderSection extends StatelessWidget {
   final String title;
@@ -31,7 +32,7 @@ class PostHeaderSection extends StatelessWidget {
     this.onAuthorTap,
   });
 
-  Widget _buildAvatar() {
+  Widget _buildAvatar(BuildContext context) {
     return Semantics(
       button: !anonymous && onAuthorTap != null,
       label: anonymous ? null : 'view_author_profile'.tr(args: [nickname]),
@@ -44,7 +45,7 @@ class PostHeaderSection extends StatelessWidget {
             nickname: nickname,
             certified: certified,
             userRole: userRole,
-            radius: 16,
+            radius: ResponsiveSize(context).w(16),
             anonymous: anonymous,
           ),
         ),
@@ -120,7 +121,7 @@ class PostHeaderSection extends StatelessWidget {
         const SizedBox(height: 12),
         Row(
           children: [
-            _buildAvatar(),
+            _buildAvatar(context),
             const SizedBox(width: 10),
             Expanded(
               child: Column(

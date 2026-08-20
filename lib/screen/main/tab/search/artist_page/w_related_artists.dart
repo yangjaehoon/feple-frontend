@@ -9,6 +9,7 @@ import 'package:feple/model/artist_model.dart';
 import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
 import 'package:feple/service/artist_service.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/util/responsive_size.dart';
 
 class RelatedArtists extends StatefulWidget {
   final int artistId;
@@ -100,12 +101,12 @@ class RelatedArtistsState extends State<RelatedArtists>
         ),
       ),
       child: Container(
-        width: 76,
+        width: ResponsiveSize(context).w(76),
         margin: const EdgeInsets.only(right: 12),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildAvatar(artist, colors),
+            _buildAvatar(context, artist, colors),
             const SizedBox(height: 6),
             Text(
               artist.displayName(context.isEnglish),
@@ -135,10 +136,10 @@ class RelatedArtistsState extends State<RelatedArtists>
     );
   }
 
-  Widget _buildAvatar(Artist artist, AbstractThemeColors colors) {
+  Widget _buildAvatar(BuildContext context, Artist artist, AbstractThemeColors colors) {
     final hasImage = artist.profileImageUrl.isNotEmpty;
     return CircleAvatar(
-      radius: 30,
+      radius: ResponsiveSize(context).w(30),
       backgroundColor: colors.activate.withValues(alpha: 0.1),
       backgroundImage: hasImage
           ? CachedNetworkImageProvider(artist.profileImageUrl, maxWidth: 120)

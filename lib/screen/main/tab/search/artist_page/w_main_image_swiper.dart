@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:feple/common/util/responsive_size.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
@@ -27,9 +28,10 @@ class MainImageSwiper extends StatefulWidget {
 }
 
 class MainImageSwiperState extends State<MainImageSwiper> {
-  static const double _swiperHeight = 350.0;
-  static const double _pageViewHeight = 250.0;
-  static const double _photoCardSize = 200.0;
+  // 화면 폭에 비례하는 크기(기준 390px) — 다른 화면 카드들과 동일한 관례.
+  double get _swiperHeight => ResponsiveSize(context).w(350);
+  double get _pageViewHeight => ResponsiveSize(context).w(250);
+  double get _photoCardSize => ResponsiveSize(context).w(200);
   // 가상 페이지 수를 크게 잡아 양방향 무한 스크롤처럼 보이게 함
   static const int _loopMultiplier = 10000;
 

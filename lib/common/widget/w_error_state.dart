@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/util/responsive_size.dart';
 
 /// 에러 발생 시 아이콘 + 메시지 + 재시도 버튼을 보여주는 공용 위젯.
 /// [onRetry]를 넘기지 않으면 재시도 버튼이 표시되지 않습니다.
@@ -64,7 +65,7 @@ class ErrorState extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _buildIconBadge(colors),
+                    _buildIconBadge(context, colors),
                     const SizedBox(height: 16),
                     _buildMessage(colors),
                     if (onRetry != null) ...[
@@ -81,10 +82,10 @@ class ErrorState extends StatelessWidget {
     );
   }
 
-  Widget _buildIconBadge(AbstractThemeColors colors) {
+  Widget _buildIconBadge(BuildContext context, AbstractThemeColors colors) {
     return Container(
-      width: 88,
-      height: 88,
+      width: ResponsiveSize(context).w(88),
+      height: ResponsiveSize(context).w(88),
       alignment: Alignment.center,
       decoration: BoxDecoration(
         shape: BoxShape.circle,

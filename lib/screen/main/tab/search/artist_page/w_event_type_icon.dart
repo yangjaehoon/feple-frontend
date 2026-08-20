@@ -8,9 +8,10 @@ class EventTypeIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
     return Container(
-      width: 42,
-      height: 60,
+      width: screenWidth * (42 / 390),
+      height: screenWidth * (60 / 390),
       decoration: BoxDecoration(
         color: config.color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),

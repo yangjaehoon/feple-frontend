@@ -17,6 +17,7 @@ import 'package:feple/screen/main/tab/search/festival_information/w_setlist_arti
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:feple/common/util/responsive_size.dart';
 
 class FestivalSetlistFullscreenScreen extends StatefulWidget {
   final int festivalId;
@@ -131,6 +132,7 @@ class _FestivalSetlistFullscreenScreenState
   }
 
   Widget _buildSkeleton(AbstractThemeColors colors) {
+    final avatarSize = ResponsiveSize(context).w(40);
     return ListView.separated(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       itemCount: 4,
@@ -143,10 +145,10 @@ class _FestivalSetlistFullscreenScreenState
         ),
         child: Row(
           children: [
-            const SkeletonBox(
-              width: 40,
-              height: 40,
-              borderRadius: BorderRadius.all(Radius.circular(20)),
+            SkeletonBox(
+              width: avatarSize,
+              height: avatarSize,
+              borderRadius: BorderRadius.all(Radius.circular(avatarSize / 2)),
             ),
             const SizedBox(width: 12),
             const Expanded(child: SkeletonBox(height: 14)),
@@ -176,6 +178,7 @@ class _ArtistFullTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     final isEnglish = context.isEnglish;
+    final screenWidth = MediaQuery.sizeOf(context).width;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
@@ -185,17 +188,17 @@ class _ArtistFullTile extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _buildHeaderRow(isEnglish, colors),
+          _buildHeaderRow(isEnglish, colors, screenWidth),
           if (isExpanded) ...[
             Divider(height: 1, color: colors.listDivider),
-            _buildSongList(colors),
+            _buildSongList(colors, screenWidth),
           ],
         ],
       ),
     );
   }
 
-  Widget _buildHeaderRow(bool isEnglish, AbstractThemeColors colors) {
+  Widget _buildHeaderRow(bool isEnglish, AbstractThemeColors colors, double screenWidth) {
     return Row(
       children: [
         Expanded(
@@ -216,7 +219,10 @@ class _ArtistFullTile extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(16, 14, 0, 14),
                 child: Row(
                   children: [
-                    SetlistArtistAvatar(profileImageUrl: entry.profileImageUrl, size: 40),
+                    SetlistArtistAvatar(
+                      profileImageUrl: entry.profileImageUrl,
+                      size: screenWidth * (40 / 390),
+                    ),
                     const SizedBox(width: 12),
                     Expanded(child: _buildArtistInfo(isEnglish, colors)),
                     AnimatedRotation(
@@ -279,7 +285,7 @@ class _ArtistFullTile extends StatelessWidget {
     );
   }
 
-  Widget _buildSongList(AbstractThemeColors colors) {
+  Widget _buildSongList(AbstractThemeColors colors, double screenWidth) {
     if (entry.songs.isEmpty) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
@@ -296,12 +302,13 @@ class _ArtistFullTile extends StatelessWidget {
       children: entry.songs
           .asMap()
           .entries
-          .map((e) => _buildSongRow(e.value, e.key, colors))
+          .map((e) => _buildSongRow(e.value, e.key, colors, screenWidth))
           .toList(),
     );
   }
 
-  Widget _buildSongRow(SongModel song, int index, AbstractThemeColors colors) {
+  Widget _buildSongRow(SongModel song, int index, AbstractThemeColors colors, double screenWidth) {
+    final thumbSize = screenWidth * (38 / 390);
     return InkWell(
       onTap: () => onSongTap(song.youtubeUrl),
       child: Padding(
@@ -326,18 +333,18 @@ class _ArtistFullTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
                 child: CachedNetworkImage(
                   imageUrl: song.thumbnailUrl!,
-                  width: 38,
-                  height: 38,
+                  width: thumbSize,
+                  height: thumbSize,
                   memCacheWidth: 76,
                   fit: BoxFit.cover,
                   fadeInDuration: AppDimens.animXFast,
                   fadeOutDuration: AppDimens.animTapFeedback,
-                  placeholder: (_, _) => _thumbPlaceholder(colors),
-                  errorWidget: (_, _, _) => _thumbPlaceholder(colors),
+                  placeholder: (_, _) => _thumbPlaceholder(colors, thumbSize),
+                  errorWidget: (_, _, _) => _thumbPlaceholder(colors, thumbSize),
                 ),
               )
             else
-              _thumbPlaceholder(colors),
+              _thumbPlaceholder(colors, thumbSize),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
@@ -363,10 +370,10 @@ class _ArtistFullTile extends StatelessWidget {
     );
   }
 
-  Widget _thumbPlaceholder(AbstractThemeColors colors) {
+  Widget _thumbPlaceholder(AbstractThemeColors colors, double size) {
     return Container(
-      width: 38,
-      height: 38,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         color: colors.backgroundMain,
         borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),

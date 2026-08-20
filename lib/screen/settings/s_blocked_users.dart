@@ -11,6 +11,7 @@ import 'package:feple/injection.dart';
 import 'package:feple/model/blocked_user_model.dart';
 import 'package:feple/service/block_service.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/util/responsive_size.dart';
 
 class BlockedUsersScreen extends StatefulWidget {
   const BlockedUsersScreen({super.key});
@@ -92,6 +93,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
   }
 
   Widget _buildSkeleton(AbstractThemeColors colors) {
+    final avatarSize = ResponsiveSize(context).w(44);
     return ListView.separated(
       padding: const EdgeInsets.symmetric(vertical: 4),
       itemCount: 6,
@@ -100,10 +102,10 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         child: Row(
           children: [
-            const SkeletonBox(
-              width: 44,
-              height: 44,
-              borderRadius: BorderRadius.all(Radius.circular(22)),
+            SkeletonBox(
+              width: avatarSize,
+              height: avatarSize,
+              borderRadius: BorderRadius.all(Radius.circular(avatarSize / 2)),
             ),
             const SizedBox(width: 16),
             const Expanded(child: SkeletonBox(width: 120, height: 15)),
@@ -123,7 +125,11 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
     return ListTile(
       tileColor: colors.surface,
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      leading: ProfileAvatar(imageUrl: user.profileImageUrl, nickname: user.nickname, radius: 22),
+      leading: ProfileAvatar(
+        imageUrl: user.profileImageUrl,
+        nickname: user.nickname,
+        radius: ResponsiveSize(context).w(22),
+      ),
       title: Text(
         user.nickname,
         style: TextStyle(

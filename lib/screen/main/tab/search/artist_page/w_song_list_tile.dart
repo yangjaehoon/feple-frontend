@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/bounded_responsive_size.dart';
 import 'package:feple/common/util/url_validator.dart';
 import 'package:feple/model/song_model.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,9 @@ class SongListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    // w_artist_songs.dart의 미리보기 영역은 스크롤 없는 Column이라
+    // boundedResponsiveSize로 태블릿급 너비에서의 오버플로를 막는다.
+    final thumbnailSize = boundedResponsiveSize(context, 52);
     return InkWell(
       onTap: () => _open(context),
       child: Padding(
@@ -50,7 +54,7 @@ class SongListTile extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
-            _buildThumbnail(song.thumbnailUrl, colors),
+            _buildThumbnail(song.thumbnailUrl, colors, thumbnailSize),
             const SizedBox(width: 12),
             Expanded(child: _buildInfo(colors)),
             const SizedBox(width: 8),
@@ -65,20 +69,20 @@ class SongListTile extends StatelessWidget {
     );
   }
 
-  Widget _buildThumbnail(String? url, AbstractThemeColors colors) {
-    if (url == null) return _placeholder(colors);
+  Widget _buildThumbnail(String? url, AbstractThemeColors colors, double size) {
+    if (url == null) return _placeholder(colors, size);
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
       child: CachedNetworkImage(
         imageUrl: url,
-        width: 52,
-        height: 52,
+        width: size,
+        height: size,
         memCacheWidth: 104,
         fit: BoxFit.cover,
         fadeInDuration: AppDimens.animXFast,
         fadeOutDuration: AppDimens.animTapFeedback,
-        placeholder: (_, _) => _placeholder(colors),
-        errorWidget: (_, _, _) => _placeholder(colors),
+        placeholder: (_, _) => _placeholder(colors, size),
+        errorWidget: (_, _, _) => _placeholder(colors, size),
       ),
     );
   }
@@ -121,10 +125,10 @@ class SongListTile extends StatelessWidget {
     );
   }
 
-  Widget _placeholder(AbstractThemeColors colors) {
+  Widget _placeholder(AbstractThemeColors colors, double size) {
     return Container(
-      width: 52,
-      height: 52,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         color: colors.backgroundMain,
         borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),

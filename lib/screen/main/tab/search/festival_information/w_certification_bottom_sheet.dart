@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:feple/common/util/responsive_size.dart';
 
 import 'package:feple/common/util/certification_submit_helper.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
@@ -29,7 +30,9 @@ class CertificationBottomSheet extends StatefulWidget {
 
 class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
   static const int _maxImageDimension = 1920;
-  static const double _photoAreaHeight = 160.0;
+  // 화면 폭에 비례하는 크기(기준 390px) — 다른 화면 카드들과 동일한 관례.
+  double get _photoAreaHeight => ResponsiveSize(context).w(160);
+  double get _changeBadgeSize => ResponsiveSize(context).w(32);
 
   Uint8List? _imageBytes;
   bool _submitting = false;
@@ -125,8 +128,8 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
   // ImagePickerBox(image_collection)와 동일한 패턴
   Widget _buildChangeBadge(AbstractThemeColors colors) {
     return Container(
-      width: 32,
-      height: 32,
+      width: _changeBadgeSize,
+      height: _changeBadgeSize,
       decoration: BoxDecoration(
         color: colors.activate,
         shape: BoxShape.circle,

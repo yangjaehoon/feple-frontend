@@ -3,6 +3,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_app_network_image.dart';
 import 'package:feple/common/widget/w_draggable_sheet_scaffold.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/util/responsive_size.dart';
 
 /// 순서 변경에 사용할 아이템
 class ReorderItem {
@@ -48,8 +49,8 @@ class ReorderListTile extends StatelessWidget {
             const SizedBox(width: 12),
             AppNetworkImage(
               imageUrl: imageUrl,
-              width: 40,
-              height: 40,
+              width: ResponsiveSize(context).w(40),
+              height: ResponsiveSize(context).w(40),
               errorIcon: Icons.forum_rounded,
               errorIconSize: 20,
               borderRadius: BorderRadius.circular(AppDimens.radiusSmall),

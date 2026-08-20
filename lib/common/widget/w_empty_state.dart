@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/responsive_size.dart';
 
 /// 데이터가 없을 때 아이콘 + 제목 + 선택적 부제목을 보여주는 공용 위젯.
 class EmptyState extends StatelessWidget {
@@ -27,8 +28,8 @@ class EmptyState extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 96,
-              height: 96,
+              width: ResponsiveSize(context).w(96),
+              height: ResponsiveSize(context).w(96),
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,

@@ -22,6 +22,7 @@ import 'package:feple/service/artist_service.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:feple/service/search_service.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/util/responsive_size.dart';
 
 class UnifiedSearchScreen extends StatefulWidget {
   const UnifiedSearchScreen({super.key});
@@ -460,9 +461,10 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     if (imageUrl == null || imageUrl.isEmpty) {
       return Icon(suggestion.type.icon, color: colors.textSecondary, size: 20);
     }
+    final size = ResponsiveSize(context).w(40);
     if (suggestion.type == SearchType.artist) {
       return CircleAvatar(
-        radius: 20,
+        radius: size / 2,
         backgroundColor: colors.textSecondary.withValues(alpha: 0.2),
         backgroundImage: CachedNetworkImageProvider(imageUrl, maxWidth: 80),
       );
@@ -471,13 +473,13 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
         borderRadius: BorderRadius.circular(6),
         child: CachedNetworkImage(
           imageUrl: imageUrl,
-          width: 40,
-          height: 40,
+          width: size,
+          height: size,
           memCacheWidth: 80,
           fit: BoxFit.cover,
           placeholder: (_, _) => Container(
-            width: 40,
-            height: 40,
+            width: size,
+            height: size,
             color: colors.textSecondary.withValues(alpha: 0.2),
           ),
           errorWidget: (_, _, _) => Icon(suggestion.type.icon, color: colors.textSecondary, size: 20),

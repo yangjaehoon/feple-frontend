@@ -25,6 +25,7 @@ import 'package:feple/service/festival_service.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/util/responsive_size.dart';
 
 // 섹션 헤더 또는 알림 카드를 구분하는 sealed class
 sealed class _ListItem {}
@@ -514,6 +515,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Widget _buildScrollable(Widget child) => RefreshableCenter(child: child);
 
   Widget _buildSkeleton(AbstractThemeColors colors) {
+    final avatarSize = ResponsiveSize(context).w(40);
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       itemCount: 5,
@@ -528,10 +530,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SkeletonBox(
-              width: 40,
-              height: 40,
-              borderRadius: BorderRadius.all(Radius.circular(20)),
+            SkeletonBox(
+              width: avatarSize,
+              height: avatarSize,
+              borderRadius: BorderRadius.all(Radius.circular(avatarSize / 2)),
             ),
             const SizedBox(width: 12),
             Expanded(

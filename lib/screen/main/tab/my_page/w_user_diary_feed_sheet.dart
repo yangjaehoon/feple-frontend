@@ -9,6 +9,7 @@ import 'package:feple/common/widget/w_list_row_skeleton.dart';
 import 'package:feple/model/festival_diary_model.dart';
 import 'package:feple/service/festival_diary_service.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/util/responsive_size.dart';
 
 /// 다른 유저 프로필에서 그 유저가 쓴 공개 일기 목록을 보여주는 바텀시트.
 class UserDiaryFeedSheet extends StatefulWidget {
@@ -198,14 +199,18 @@ class _DiaryFeedCard extends StatelessWidget {
           if (diary.photoUrls.isNotEmpty) ...[
             const SizedBox(height: 10),
             SizedBox(
-              height: 84,
+              height: ResponsiveSize(context).w(84),
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: diary.photoUrls.length,
                 separatorBuilder: (_, _) => const SizedBox(width: 8),
                 itemBuilder: (_, i) => ClipRRect(
                   borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-                  child: AppNetworkImage(imageUrl: diary.photoUrls[i], width: 84, height: 84),
+                  child: AppNetworkImage(
+                    imageUrl: diary.photoUrls[i],
+                    width: ResponsiveSize(context).w(84),
+                    height: ResponsiveSize(context).w(84),
+                  ),
                 ),
               ),
             ),

@@ -78,7 +78,7 @@ class HomeArtistsSection extends StatelessWidget {
   Widget _buildSkeleton(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
     final listHeight = screenWidth * 0.318;
-    const avatarSize = 74.0;
+    final avatarSize = screenWidth * (74 / 390);
     return SizedBox(
       height: listHeight,
       child: ListView.builder(
@@ -89,7 +89,7 @@ class HomeArtistsSection extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Column(
             children: [
-              const SkeletonBox(
+              SkeletonBox(
                 width: avatarSize,
                 height: avatarSize,
                 borderRadius: BorderRadius.all(Radius.circular(avatarSize / 2)),
@@ -113,6 +113,9 @@ class _ShowMoreItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final avatarSize = screenWidth * (74 / 390);
+    final labelWidth = screenWidth * (64 / 390);
     return TapScale(
       onTap: onTap,
       child: Padding(
@@ -120,8 +123,8 @@ class _ShowMoreItem extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              width: 74,
-              height: 74,
+              width: avatarSize,
+              height: avatarSize,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: colors.activate.withValues(alpha: 0.1),
@@ -146,7 +149,7 @@ class _ShowMoreItem extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             SizedBox(
-              width: 64,
+              width: labelWidth,
               child: Text(
                 'see_more'.tr(),
                 style: TextStyle(
@@ -174,7 +177,7 @@ class _ArtistItem extends StatelessWidget {
   String _displayName(BuildContext context) =>
       artist.displayName(context.isEnglish);
 
-  Widget _buildAvatar(AbstractThemeColors colors) {
+  Widget _buildAvatar(AbstractThemeColors colors, double screenWidth) {
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
@@ -195,7 +198,7 @@ class _ArtistItem extends StatelessWidget {
           color: colors.surface,
         ),
         child: CircleAvatar(
-          radius: 32,
+          radius: screenWidth * (32 / 390),
           backgroundColor: colors.backgroundMain,
           backgroundImage:
               (artist.profileImageUrl != null &&
@@ -222,16 +225,17 @@ class _ArtistItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final screenWidth = MediaQuery.sizeOf(context).width;
     return TapScale(
       onTap: () => onTap(artist),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Column(
           children: [
-            _buildAvatar(colors),
+            _buildAvatar(colors, screenWidth),
             const SizedBox(height: 6),
             SizedBox(
-              width: 64,
+              width: screenWidth * (64 / 390),
               child: Text(
                 _displayName(context),
                 style: TextStyle(

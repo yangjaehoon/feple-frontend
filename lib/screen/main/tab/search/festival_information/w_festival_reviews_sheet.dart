@@ -13,6 +13,7 @@ import 'package:feple/screen/main/tab/my_page/w_rating_sheet.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:feple/common/util/responsive_size.dart';
 
 class FestivalReviewsSheet extends StatefulWidget {
   final int festivalId;
@@ -597,7 +598,7 @@ class _ReviewCardState extends State<_ReviewCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CircleAvatar(
-                radius: 19,
+                radius: ResponsiveSize(context).w(19),
                 backgroundColor: colors.surface,
                 child: Text(
                   initial,

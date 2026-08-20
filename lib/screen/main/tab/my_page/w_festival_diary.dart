@@ -11,6 +11,7 @@ import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
 import 'package:feple/screen/main/tab/my_page/s_festival_diary_list.dart';
 import 'package:feple/service/festival_diary_service.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/util/responsive_size.dart';
 
 class FestivalDiaryWidget extends StatefulWidget {
   const FestivalDiaryWidget({super.key});
@@ -93,6 +94,7 @@ class FestivalDiaryWidgetState extends State<FestivalDiaryWidget> {
   }
 
   Widget _buildSkeletonList() {
+    final size = ResponsiveSize(context).w(98);
     return ListView.builder(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -102,7 +104,7 @@ class FestivalDiaryWidgetState extends State<FestivalDiaryWidget> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SkeletonBox(width: 98, height: 98, borderRadius: BorderRadius.all(Radius.circular(16))),
+            SkeletonBox(width: size, height: size, borderRadius: const BorderRadius.all(Radius.circular(16))),
             const SizedBox(height: 6),
             const SkeletonBox(width: 72, height: 11),
           ],
@@ -156,6 +158,7 @@ class FestivalDiaryWidgetState extends State<FestivalDiaryWidget> {
   }
 
   Widget _buildDiaryItem(FestivalDiaryModel diary, bool isEnglish, AbstractThemeColors colors) {
+    final size = ResponsiveSize(context).w(98);
     return TapScale(
       onTap: _openList,
       child: Padding(
@@ -166,10 +169,10 @@ class FestivalDiaryWidgetState extends State<FestivalDiaryWidget> {
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: SizedBox(
-                width: 98,
-                height: 98,
+                width: size,
+                height: size,
                 child: diary.photoUrls.isNotEmpty
-                    ? AppNetworkImage(imageUrl: diary.photoUrls.first, width: 98, height: 98)
+                    ? AppNetworkImage(imageUrl: diary.photoUrls.first, width: size, height: size)
                     : Container(
                         color: colors.activate.withValues(alpha: 0.1),
                         child: Icon(Icons.menu_book_outlined, color: colors.activate.withValues(alpha: 0.4), size: 28),

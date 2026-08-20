@@ -15,6 +15,7 @@ import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/screen/main/tab/search/festival_information/s_festival_setlist_fullscreen.dart';
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/util/responsive_size.dart';
 
 class FestivalSetlist extends StatefulWidget {
   final int festivalId;
@@ -166,16 +167,17 @@ class FestivalSetlistState extends State<FestivalSetlist>
   }
 
   Widget _buildSkeleton() {
+    final avatarSize = ResponsiveSize(context).w(36);
     return Column(
       children: List.generate(3, (i) {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             children: [
-              const SkeletonBox(
-                width: 36,
-                height: 36,
-                borderRadius: BorderRadius.all(Radius.circular(18)),
+              SkeletonBox(
+                width: avatarSize,
+                height: avatarSize,
+                borderRadius: BorderRadius.all(Radius.circular(avatarSize / 2)),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -205,6 +207,7 @@ class _ArtistCompactRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final screenWidth = MediaQuery.sizeOf(context).width;
     final topSong = entry.songs.isNotEmpty ? entry.songs.first : null;
     return Column(
       children: [
@@ -212,10 +215,13 @@ class _ArtistCompactRow extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             children: [
-              SetlistArtistAvatar(profileImageUrl: entry.profileImageUrl, size: 36),
+              SetlistArtistAvatar(
+                profileImageUrl: entry.profileImageUrl,
+                size: screenWidth * (36 / 390),
+              ),
               const SizedBox(width: 12),
               Expanded(
-                child: _buildTextColumn(topSong, context.isEnglish, colors),
+                child: _buildTextColumn(topSong, context.isEnglish, colors, screenWidth),
               ),
             ],
           ),
@@ -236,6 +242,7 @@ class _ArtistCompactRow extends StatelessWidget {
     SongModel? topSong,
     bool isEnglish,
     AbstractThemeColors colors,
+    double screenWidth,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -252,7 +259,7 @@ class _ArtistCompactRow extends StatelessWidget {
         ),
         const SizedBox(height: 3),
         if (topSong != null)
-          _buildTopSongRow(topSong, colors)
+          _buildTopSongRow(topSong, colors, screenWidth)
         else
           Text(
             'no_setlist'.tr(),
@@ -265,7 +272,8 @@ class _ArtistCompactRow extends StatelessWidget {
     );
   }
 
-  Widget _buildTopSongRow(SongModel topSong, AbstractThemeColors colors) {
+  Widget _buildTopSongRow(SongModel topSong, AbstractThemeColors colors, double screenWidth) {
+    final thumbSize = screenWidth * (20 / 390);
     return Row(
       children: [
         if (topSong.thumbnailUrl != null)
@@ -275,8 +283,8 @@ class _ArtistCompactRow extends StatelessWidget {
               borderRadius: BorderRadius.circular(3),
               child: CachedNetworkImage(
                 imageUrl: topSong.thumbnailUrl!,
-                width: 20,
-                height: 20,
+                width: thumbSize,
+                height: thumbSize,
                 memCacheWidth: 40,
                 fit: BoxFit.cover,
                 fadeInDuration: AppDimens.animXFast,

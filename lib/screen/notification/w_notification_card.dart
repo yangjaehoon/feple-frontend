@@ -98,7 +98,7 @@ class NotificationCard extends StatelessWidget {
         errorWidget: (_, _, _) => _buildIconFallback(colors, isFestival),
       );
       return isFestival
-          ? ClipRRect(borderRadius: BorderRadius.circular(AppDimens.radiusMedium), child: image)
+          ? ClipRRect(borderRadius: BorderRadius.circular(AppDimens.radiusSmall), child: image)
           : ClipOval(child: image);
     }
     return _buildIconFallback(colors, isFestival);
@@ -113,10 +113,13 @@ class NotificationCard extends StatelessWidget {
         color: (item.type?.iconColor(colors) ?? colors.certRingColor)
             .withValues(alpha: 0.15),
         shape: isFestival ? BoxShape.rectangle : BoxShape.circle,
-        borderRadius: isFestival ? BorderRadius.circular(AppDimens.radiusMedium) : null,
+        borderRadius: isFestival ? BorderRadius.circular(AppDimens.radiusSmall) : null,
       ),
       child: Icon(
-        item.type?.iconData ?? Icons.festival_rounded,
+        // 타입을 알 수 없는 알림(백엔드가 앱이 아직 모르는 새 타입을 먼저 보낸 경우)은
+        // isFestivalType이 항상 false라 원형 배지로 그려진다 — 기본 아이콘도 원형과
+        // 어울리는 범용 알림 아이콘으로 맞춘다(페스티벌 아이콘을 원형 안에 넣지 않음).
+        item.type?.iconData ?? Icons.notifications_rounded,
         color: item.type?.iconColor(colors) ?? colors.certRingColor,
         size: 20,
       ),

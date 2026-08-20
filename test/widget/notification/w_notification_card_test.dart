@@ -146,6 +146,27 @@ void main() {
       expect(find.byType(ClipOval), findsOneWidget);
       expect(find.byType(ClipRRect), findsNothing);
     });
+
+    testWidgets('타입을 알 수 없으면 원형 배지에 범용 알림 아이콘을 보여준다', (tester) async {
+      // _item()은 type을 안 넘기면 newComment로 기본값을 채우므로, 백엔드가 앱이
+      // 아직 모르는 타입을 보내 NotificationType.fromValue가 null을 반환하는
+      // 상황을 재현하려면 모델을 직접 만들어야 한다.
+      await _pump(
+        tester,
+        item: NotificationModel(
+          id: 1,
+          type: null,
+          title: '알림 제목',
+          body: '알림 본문',
+          read: false,
+        ),
+      );
+
+      final badge = find.byKey(const Key('notification_icon_badge'));
+      final decoration = tester.widget<Container>(badge).decoration as BoxDecoration;
+      expect(decoration.shape, BoxShape.circle);
+      expect(find.byIcon(Icons.notifications_rounded), findsOneWidget);
+    });
   });
 
   group('NotificationCard 탭', () {

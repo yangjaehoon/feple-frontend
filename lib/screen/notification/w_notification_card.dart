@@ -12,11 +12,17 @@ class NotificationCard extends StatelessWidget {
   final NotificationModel item;
   final VoidCallback onTap;
   final bool isLoading;
+  // 화면 폭에 비례한 배지 크기 계산에 쓰는 값 — 화면(리스트) 단위에서 한 번만
+  // MediaQuery.sizeOf(context)로 구해 내려받는다. 스크롤로 빠르게 생성/폐기되는
+  // 카드마다 MediaQuery를 직접 구독하면(이전에 시도했다가) 큰 폭 스크롤 시 위젯이
+  // 생성과 동시에 폐기되며 타이머가 정리되지 않는 문제가 있었다(위젯 테스트로 확인).
+  final double screenWidth;
 
   const NotificationCard({
     super.key,
     required this.item,
     required this.onTap,
+    required this.screenWidth,
     this.isLoading = false,
   });
 
@@ -84,14 +90,15 @@ class NotificationCard extends StatelessWidget {
   // 모서리만 둥글어졌을 뿐 여전히 포스터 대부분이 잘려나간다 — 실제 포스터
   // 비율(2:3)로 표시해야 다른 화면과 시각적으로 맞고, "원형=사람(상호작용),
   // 세로 직사각형=이벤트"로 한눈에 구분된다.
-  static const double _avatarSize = 40;
-  static const double _posterWidth = 40;
-  static const double _posterHeight = 60; // 2:3
+  // 화면 폭에 비례하는 크기(기준 390px)로 계산 — 다른 화면 카드들과 동일한 관례.
+  static const double _avatarSizeRatio = 40 / 390;
+  static const double _posterWidthRatio = 40 / 390;
+  static const double _posterHeightRatio = 60 / 390; // 2:3
 
   Widget _buildIconBadge(AbstractThemeColors colors) {
     final isFestival = item.type?.isFestivalType ?? false;
-    final width = isFestival ? _posterWidth : _avatarSize;
-    final height = isFestival ? _posterHeight : _avatarSize;
+    final width = (isFestival ? _posterWidthRatio : _avatarSizeRatio) * screenWidth;
+    final height = (isFestival ? _posterHeightRatio : _avatarSizeRatio) * screenWidth;
     if (item.imageUrl != null) {
       final image = CachedNetworkImage(
         imageUrl: item.imageUrl!,
@@ -101,21 +108,26 @@ class NotificationCard extends StatelessWidget {
         fit: BoxFit.cover,
         fadeInDuration: AppDimens.animXFast,
         fadeOutDuration: AppDimens.animTapFeedback,
-        placeholder: (_, _) => _buildIconFallback(colors, isFestival),
-        errorWidget: (_, _, _) => _buildIconFallback(colors, isFestival),
+        placeholder: (_, _) => _buildIconFallback(colors, isFestival, width, height),
+        errorWidget: (_, _, _) => _buildIconFallback(colors, isFestival, width, height),
       );
       return isFestival
           ? ClipRRect(borderRadius: BorderRadius.circular(AppDimens.radiusSmall), child: image)
           : ClipOval(child: image);
     }
-    return _buildIconFallback(colors, isFestival);
+    return _buildIconFallback(colors, isFestival, width, height);
   }
 
-  Widget _buildIconFallback(AbstractThemeColors colors, bool isFestival) {
+  Widget _buildIconFallback(
+    AbstractThemeColors colors,
+    bool isFestival,
+    double width,
+    double height,
+  ) {
     return Container(
       key: const Key('notification_icon_badge'),
-      width: isFestival ? _posterWidth : _avatarSize,
-      height: isFestival ? _posterHeight : _avatarSize,
+      width: width,
+      height: height,
       decoration: BoxDecoration(
         color: (item.type?.iconColor(colors) ?? colors.certRingColor)
             .withValues(alpha: 0.15),

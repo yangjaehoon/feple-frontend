@@ -25,7 +25,7 @@ class SearchArtistTile extends StatelessWidget {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       leading: CircleAvatar(
-        radius: 24,
+        radius: MediaQuery.sizeOf(context).width * (24 / 390),
         backgroundColor: colors.certRingColor.withValues(alpha: 0.15),
         backgroundImage: hasImage
             ? CachedNetworkImageProvider(data.profileImageUrl, maxWidth: 96)
@@ -61,14 +61,15 @@ class SearchFestivalTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final screenWidth = MediaQuery.sizeOf(context).width;
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       leading: ClipRRect(
         borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
         child: SizedBox(
-          width: 44,
-          height: 66,
+          width: screenWidth * (44 / 390),
+          height: screenWidth * (66 / 390),
           child: data.posterUrl.isNotEmpty
               ? CachedNetworkImage(
                   imageUrl: data.posterUrl,
@@ -129,12 +130,13 @@ class SearchPostTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final tileSize = MediaQuery.sizeOf(context).width * (44 / 390);
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       leading: Container(
-        width: 44,
-        height: 44,
+        width: tileSize,
+        height: tileSize,
         decoration: BoxDecoration(
           color: colors.activate.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(AppDimens.radiusSmall),

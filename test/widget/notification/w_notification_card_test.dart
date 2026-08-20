@@ -52,6 +52,7 @@ Future<void> _pump(
               item: item,
               onTap: onTap ?? () {},
               isLoading: isLoading,
+              screenWidth: 390,
             ),
           ),
         ),

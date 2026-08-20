@@ -91,10 +91,13 @@ void main() {
     if (sl.isRegistered<PostService>()) sl.unregister<PostService>();
   });
 
-  Future<void> pump(WidgetTester tester) async {
+  Future<void> pump(
+    WidgetTester tester, {
+    Size physicalSize = const Size(1080, 2400),
+  }) async {
     SharedPreferences.setMockInitialValues({});
     await EasyLocalization.ensureInitialized();
-    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.physicalSize = physicalSize;
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -353,9 +356,11 @@ void main() {
                 List.generate(20, (i) => _item(i, title: '알림 $i')),
               ));
 
-      await pump(tester);
-      await tester.pump();
-      tester.view.physicalSize = const Size(1080, 700);
+      // 화면 폭에 비례한 배지 크기 계산이 MediaQuery를 구독하게 되면서, 위젯
+      // 트리가 이미 만들어진 뒤 physicalSize를 재할당하면(이전 방식) 드래그와
+      // 같은 프레임에 다수 카드가 동시에 리빌드/폐기되며 타이머가 정리되지
+      // 않는 문제가 있었다 — 위젯을 만들기 전에 작은 화면 크기로 pump한다.
+      await pump(tester, physicalSize: const Size(390, 700));
       await tester.pump();
 
       await tester.drag(

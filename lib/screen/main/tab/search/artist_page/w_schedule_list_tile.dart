@@ -99,6 +99,7 @@ class _ScheduleListTileState extends State<ScheduleListTile>
   Widget _buildPoster(BuildContext context, AbstractThemeColors colors) {
     final typeConfig = item.eventType.config(colors);
     final hasPoster = item.posterUrl != null && item.posterUrl!.isNotEmpty;
+    final screenWidth = MediaQuery.sizeOf(context).width;
     return GestureDetector(
       onTap: _loading ? null : _navigateToFestival,
       child: Padding(
@@ -110,8 +111,8 @@ class _ScheduleListTileState extends State<ScheduleListTile>
               : hasPoster
               ? CachedNetworkImage(
                   imageUrl: item.posterUrl!,
-                  width: 42,
-                  height: 63,
+                  width: screenWidth * (42 / 390),
+                  height: screenWidth * (63 / 390),
                   memCacheWidth: 84,
                   fit: BoxFit.cover,
                   // CachedNetworkImage color 파라미터로 alpha 적용 — Opacity 위젯(saveLayer) 불필요
@@ -200,6 +201,7 @@ class _ScheduleListTileState extends State<ScheduleListTile>
   }
 
   Widget _buildCoArtists(BuildContext context, AbstractThemeColors colors) {
+    final avatarSize = MediaQuery.sizeOf(context).width * (26 / 390);
     return SizedBox(
       height: 48,
       child: ListView.builder(
@@ -221,16 +223,16 @@ class _ScheduleListTileState extends State<ScheduleListTile>
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 11),
                   child: SizedBox(
-                    width: 26,
-                    height: 26,
+                    width: avatarSize,
+                    height: avatarSize,
                     child: ClipOval(
                       child:
                           (coArtist.profileImageUrl != null &&
                               coArtist.profileImageUrl!.isNotEmpty)
                           ? CachedNetworkImage(
                               imageUrl: coArtist.profileImageUrl!,
-                              width: 26,
-                              height: 26,
+                              width: avatarSize,
+                              height: avatarSize,
                               memCacheWidth: 52,
                               fit: BoxFit.cover,
                               color: isPast

@@ -393,6 +393,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   Widget _buildNotificationList(AbstractThemeColors colors) {
     final sectioned = _buildSectionedItems(_notifier.items);
+    // 카드 배지 크기를 화면 폭에 비례해 계산 — 스크롤로 리스트 항목이 빠르게
+    // 생성/폐기되는 itemBuilder 안에서 매번 MediaQuery.sizeOf(context)를 부르면
+    // 각 항목이 개별적으로 MediaQuery 의존성을 등록하게 되어, 큰 폭으로 스크롤할
+    // 때 위젯이 생성과 동시에 폐기되며 타이머가 정리되지 않는 문제가 있었다
+    // (위젯 테스트로 재현·확인). 화면 단위에서 한 번만 계산해 내려준다.
+    final screenWidth = MediaQuery.sizeOf(context).width;
 
     if (sectioned.isEmpty) {
       return _buildScrollable(
@@ -444,6 +450,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
             item: item,
             isLoading: _navigatingId == item.id,
             onTap: () => _onTap(item),
+            screenWidth: screenWidth,
           ),
         );
         final isDismissible = item.type?.isDismissible ?? true;

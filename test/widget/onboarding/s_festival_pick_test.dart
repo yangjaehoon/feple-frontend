@@ -22,10 +22,11 @@ Future<void> _pump(
   WidgetTester tester, {
   Future<void> Function(bool didLike)? onComplete,
   int? progressDotIndex,
+  Size physicalSize = const Size(1080, 2400),
 }) async {
   SharedPreferences.setMockInitialValues({});
   await EasyLocalization.ensureInitialized();
-  tester.view.physicalSize = const Size(1080, 2400);
+  tester.view.physicalSize = physicalSize;
   tester.view.devicePixelRatio = 1.0;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
@@ -132,6 +133,22 @@ void main() {
       await _pump(tester);
 
       expect(find.text('no_upcoming_festivals'.tr()), findsOneWidget);
+    });
+
+    testWidgets('좁은 화면 폭에서도 그리드 카드가 넘치지 않는다', (tester) async {
+      when(() => mockFestivalService.fetchPreviews(
+            page: any(named: 'page'),
+            size: any(named: 'size'),
+            includeEnded: any(named: 'includeEnded'),
+          )).thenAnswer((_) async => FestivalPreviewPage(
+            items: [_festival(title: '펜타포트'), _festival(id: 2, title: '워터밤')],
+            hasMore: false,
+          ));
+
+      await _pump(tester, physicalSize: const Size(390, 844));
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('펜타포트'), findsOneWidget);
     });
 
     testWidgets('조회 실패 시 에러와 재시도 버튼을 보여준다', (tester) async {

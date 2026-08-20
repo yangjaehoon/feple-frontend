@@ -173,7 +173,7 @@ class _FestivalPickScreenState extends State<FestivalPickScreen>
           crossAxisCount: 2,
           mainAxisSpacing: 16,
           crossAxisSpacing: 12,
-          childAspectRatio: 0.62,
+          childAspectRatio: 0.56,
         ),
         itemCount: festivals.length,
         itemBuilder: (_, index) {
@@ -203,13 +203,13 @@ class _FestivalPickScreenState extends State<FestivalPickScreen>
         crossAxisCount: 2,
         mainAxisSpacing: 16,
         crossAxisSpacing: 12,
-        childAspectRatio: 0.62,
+        childAspectRatio: 0.56,
       ),
       itemCount: 6,
       itemBuilder: (_, _) => Column(
         children: const [
           AspectRatio(
-            aspectRatio: 0.75,
+            aspectRatio: 2 / 3,
             child: SkeletonBox(
               height: double.infinity,
               borderRadius: BorderRadius.all(Radius.circular(12)),
@@ -282,7 +282,7 @@ class _FestivalSelectCard extends StatelessWidget {
 
   Widget _buildPoster(BuildContext context, AbstractThemeColors colors) {
     return AspectRatio(
-      aspectRatio: 0.75,
+      aspectRatio: 2 / 3,
       child: Stack(
         children: [
           Positioned.fill(

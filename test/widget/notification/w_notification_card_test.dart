@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/model/notification_model.dart';
-import 'package:feple/model/notification_type.dart';
+import 'package:feple/screen/notification/notification_type_style.dart';
 import 'package:feple/screen/notification/w_notification_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -100,6 +100,51 @@ void main() {
       await _pump(tester, item: _item(), isLoading: true);
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    });
+  });
+
+  group('NotificationCard 아이콘 모양', () {
+    testWidgets('페스티벌 알림이고 이미지가 없으면 둥근 사각형 배지를 보여준다', (tester) async {
+      await _pump(tester, item: _item(type: NotificationType.newFestival));
+
+      final badge = find.byKey(const Key('notification_icon_badge'));
+      final decoration = tester.widget<Container>(badge).decoration as BoxDecoration;
+      expect(decoration.shape, BoxShape.rectangle);
+      expect(decoration.borderRadius, isNotNull);
+    });
+
+    testWidgets('페스티벌이 아닌 알림이고 이미지가 없으면 원형 배지를 보여준다', (tester) async {
+      await _pump(tester, item: _item(type: NotificationType.newComment));
+
+      final badge = find.byKey(const Key('notification_icon_badge'));
+      final decoration = tester.widget<Container>(badge).decoration as BoxDecoration;
+      expect(decoration.shape, BoxShape.circle);
+    });
+
+    testWidgets('페스티벌 알림이고 이미지가 있으면 둥근 사각형으로 자른다', (tester) async {
+      await _pump(
+        tester,
+        item: _item(
+          type: NotificationType.festivalReminder,
+          imageUrl: 'https://example.com/poster.jpg',
+        ),
+      );
+
+      expect(find.byType(ClipRRect), findsOneWidget);
+      expect(find.byType(ClipOval), findsNothing);
+    });
+
+    testWidgets('페스티벌이 아닌 알림이고 이미지가 있으면 원형으로 자른다', (tester) async {
+      await _pump(
+        tester,
+        item: _item(
+          type: NotificationType.newComment,
+          imageUrl: 'https://example.com/avatar.jpg',
+        ),
+      );
+
+      expect(find.byType(ClipOval), findsOneWidget);
+      expect(find.byType(ClipRRect), findsNothing);
     });
   });
 

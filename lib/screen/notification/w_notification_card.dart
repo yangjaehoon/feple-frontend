@@ -79,33 +79,41 @@ class NotificationCard extends StatelessWidget {
     );
   }
 
+  // 페스티벌 알림(festivalReminder/newFestival)의 이미지는 카드/상세화면 어디서나
+  // 세로 포스터로 보여주는 것과 같은 원본이라, 원형으로 자르면 포스터 대부분이
+  // 잘려나가고 다른 화면과도 시각적으로 어긋난다 — 이 경우만 둥근 사각형으로 표시해
+  // "원형=사람(상호작용), 사각형=이벤트"로 한눈에 구분되게 한다.
   Widget _buildIconBadge(AbstractThemeColors colors) {
+    final isFestival = item.type?.isFestivalType ?? false;
     if (item.imageUrl != null) {
-      return ClipOval(
-        child: CachedNetworkImage(
-          imageUrl: item.imageUrl!,
-          width: 40,
-          height: 40,
-          memCacheWidth: 80,
-          fit: BoxFit.cover,
-          fadeInDuration: AppDimens.animXFast,
-          fadeOutDuration: AppDimens.animTapFeedback,
-          placeholder: (_, _) => _buildIconFallback(colors),
-          errorWidget: (_, _, _) => _buildIconFallback(colors),
-        ),
+      final image = CachedNetworkImage(
+        imageUrl: item.imageUrl!,
+        width: 40,
+        height: 40,
+        memCacheWidth: 80,
+        fit: BoxFit.cover,
+        fadeInDuration: AppDimens.animXFast,
+        fadeOutDuration: AppDimens.animTapFeedback,
+        placeholder: (_, _) => _buildIconFallback(colors, isFestival),
+        errorWidget: (_, _, _) => _buildIconFallback(colors, isFestival),
       );
+      return isFestival
+          ? ClipRRect(borderRadius: BorderRadius.circular(AppDimens.radiusMedium), child: image)
+          : ClipOval(child: image);
     }
-    return _buildIconFallback(colors);
+    return _buildIconFallback(colors, isFestival);
   }
 
-  Widget _buildIconFallback(AbstractThemeColors colors) {
+  Widget _buildIconFallback(AbstractThemeColors colors, bool isFestival) {
     return Container(
+      key: const Key('notification_icon_badge'),
       width: 40,
       height: 40,
       decoration: BoxDecoration(
         color: (item.type?.iconColor(colors) ?? colors.certRingColor)
             .withValues(alpha: 0.15),
-        shape: BoxShape.circle,
+        shape: isFestival ? BoxShape.rectangle : BoxShape.circle,
+        borderRadius: isFestival ? BorderRadius.circular(AppDimens.radiusMedium) : null,
       ),
       child: Icon(
         item.type?.iconData ?? Icons.festival_rounded,

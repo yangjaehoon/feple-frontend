@@ -36,11 +36,6 @@ class FestivalPoster extends StatefulWidget {
 }
 
 class FestivalPosterState extends State<FestivalPoster> {
-  // 2:3 비율(120x180 기준) 유지하며 화면 너비에 비례 — SingleChildScrollView
-  // 안이라 오버플로우 위험 없이 캡 없는 ResponsiveSize 사용 가능
-  double get _posterThumbnailWidth => ResponsiveSize(context).w(120);
-  double get _posterThumbnailHeight => _posterThumbnailWidth * 1.5;
-
   late final FestivalPosterNotifier _notifier;
   bool _isSheetOpen = false;
   bool _isSharing = false;
@@ -249,6 +244,11 @@ class FestivalPosterState extends State<FestivalPoster> {
   ];
 
   Widget _buildInfoRow(AbstractThemeColors colors) {
+    // 2:3 비율(120x180 기준) 유지하며 화면 너비에 비례 — SingleChildScrollView
+    // 안이라 오버플로우 위험 없이 캡 없는 ResponsiveSize 사용 가능. build당 한 번만
+    // 계산해 아래 두 곳(썸네일/평점 배지)에 그대로 전달한다.
+    final posterWidth = ResponsiveSize(context).w(120);
+    final posterHeight = posterWidth * 1.5;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
       child: Row(
@@ -257,11 +257,11 @@ class FestivalPosterState extends State<FestivalPoster> {
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildPosterThumbnail(colors),
+              _buildPosterThumbnail(colors, posterWidth, posterHeight),
               const SizedBox(height: 8),
               ListenableBuilder(
                 listenable: _notifier,
-                builder: (_, _) => _buildRatingBadge(),
+                builder: (_, _) => _buildRatingBadge(posterWidth),
               ),
             ],
           ),
@@ -272,7 +272,7 @@ class FestivalPosterState extends State<FestivalPoster> {
     );
   }
 
-  Widget _buildRatingBadge() {
+  Widget _buildRatingBadge(double posterWidth) {
     if (!_notifier.ratingLoaded) return const SizedBox.shrink();
     if (_notifier.ratingLoadFailed) return const SizedBox.shrink();
     if (_notifier.ratingCount == 0) {
@@ -282,7 +282,7 @@ class FestivalPosterState extends State<FestivalPoster> {
         child: GestureDetector(
           onTap: _showReviews,
           child: SizedBox(
-            width: _posterThumbnailWidth,
+            width: posterWidth,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
@@ -309,7 +309,7 @@ class FestivalPosterState extends State<FestivalPoster> {
       child: GestureDetector(
         onTap: _showReviews,
         child: SizedBox(
-          width: _posterThumbnailWidth,
+          width: posterWidth,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -353,10 +353,10 @@ class FestivalPosterState extends State<FestivalPoster> {
     });
   }
 
-  Widget _buildPosterThumbnail(AbstractThemeColors colors) {
+  Widget _buildPosterThumbnail(AbstractThemeColors colors, double width, double height) {
     final child = Container(
-      width: _posterThumbnailWidth,
-      height: _posterThumbnailHeight,
+      width: width,
+      height: height,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
         boxShadow: CardShadows.elevated(colors),

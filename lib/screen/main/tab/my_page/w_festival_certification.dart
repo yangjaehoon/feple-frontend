@@ -106,15 +106,17 @@ class FestivalCertificationWidgetState extends State<FestivalCertificationWidget
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       itemCount: 3,
-      itemBuilder: (_, _) => Padding(
+      itemBuilder: (_, _) {
+        final ringSize = _certRingSize(context);
+        return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             SkeletonBox(
-              width: _certRingSize(context),
-              height: _certRingSize(context),
-              borderRadius: BorderRadius.circular(_certRingSize(context) / 2),
+              width: ringSize,
+              height: ringSize,
+              borderRadius: BorderRadius.circular(ringSize / 2),
             ),
             const SizedBox(height: 6),
             const SkeletonBox(width: 72, height: 11),
@@ -122,7 +124,8 @@ class FestivalCertificationWidgetState extends State<FestivalCertificationWidget
             const SkeletonBox(width: 48, height: 10, borderRadius: BorderRadius.all(Radius.circular(20))),
           ],
         ),
-      ),
+        );
+      },
     );
   }
 

@@ -2,7 +2,6 @@ import 'dart:typed_data';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
-import 'package:feple/common/util/responsive_size.dart';
 import 'package:flutter/material.dart';
 
 /// 이미지 선택/미리보기 박스
@@ -30,33 +29,40 @@ class ImagePickerBox extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 240),
             child: AspectRatio(
               aspectRatio: 1.0,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: colors.surface,
-                  borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-                  border: Border.all(
-                    color: colors.activate.withValues(alpha: 0.4),
-                    width: 1.5,
-                    strokeAlign: BorderSide.strokeAlignInside,
-                  ),
-                  boxShadow: CardShadows.subtle(colors),
-                ),
-                child: imageData == null
-                    ? _buildPlaceholder(colors)
-                    : ClipRRect(
-                        borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            Image.memory(imageData!, fit: BoxFit.cover),
-                            Positioned(
-                              right: 8,
-                              bottom: 8,
-                              child: _buildChangeBadge(context, colors),
-                            ),
-                          ],
-                        ),
+              // maxWidth 캡이 있어 박스 폭이 화면 너비와 비례하지 않으므로,
+              // 배지 크기도 화면 너비가 아니라 이 박스의 실제 렌더 폭에서 파생
+              child: LayoutBuilder(
+                builder: (_, constraints) {
+                  final badgeSize = constraints.maxWidth * (32 / 240);
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: colors.surface,
+                      borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
+                      border: Border.all(
+                        color: colors.activate.withValues(alpha: 0.4),
+                        width: 1.5,
+                        strokeAlign: BorderSide.strokeAlignInside,
                       ),
+                      boxShadow: CardShadows.subtle(colors),
+                    ),
+                    child: imageData == null
+                        ? _buildPlaceholder(colors)
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                Image.memory(imageData!, fit: BoxFit.cover),
+                                Positioned(
+                                  right: 8,
+                                  bottom: 8,
+                                  child: _buildChangeBadge(badgeSize, colors),
+                                ),
+                              ],
+                            ),
+                          ),
+                  );
+                },
               ),
             ),
           ),
@@ -67,8 +73,7 @@ class ImagePickerBox extends StatelessWidget {
 
   // 사진 선택 후에도 다시 탭해서 바꿀 수 있다는 어포던스가 없어 추가 —
   // 프로필 사진 수정(w_edit_profile.dart)의 카메라 뱃지와 동일한 패턴
-  Widget _buildChangeBadge(BuildContext context, AbstractThemeColors colors) {
-    final size = ResponsiveSize(context).w(32);
+  Widget _buildChangeBadge(double size, AbstractThemeColors colors) {
     return Container(
       width: size,
       height: size,

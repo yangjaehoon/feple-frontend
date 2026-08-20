@@ -12,6 +12,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../../model/poster_cert_state.dart';
@@ -35,8 +36,10 @@ class FestivalPoster extends StatefulWidget {
 }
 
 class FestivalPosterState extends State<FestivalPoster> {
-  static const double _posterThumbnailWidth = 120.0;
-  static const double _posterThumbnailHeight = 180.0;
+  // 2:3 비율(120x180 기준) 유지하며 화면 너비에 비례 — SingleChildScrollView
+  // 안이라 오버플로우 위험 없이 캡 없는 ResponsiveSize 사용 가능
+  double get _posterThumbnailWidth => ResponsiveSize(context).w(120);
+  double get _posterThumbnailHeight => _posterThumbnailWidth * 1.5;
 
   late final FestivalPosterNotifier _notifier;
   bool _isSheetOpen = false;

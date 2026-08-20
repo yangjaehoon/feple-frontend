@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:flutter/material.dart';
 
 /// 이미지 선택/미리보기 박스
@@ -51,7 +52,7 @@ class ImagePickerBox extends StatelessWidget {
                             Positioned(
                               right: 8,
                               bottom: 8,
-                              child: _buildChangeBadge(colors),
+                              child: _buildChangeBadge(context, colors),
                             ),
                           ],
                         ),
@@ -66,16 +67,17 @@ class ImagePickerBox extends StatelessWidget {
 
   // 사진 선택 후에도 다시 탭해서 바꿀 수 있다는 어포던스가 없어 추가 —
   // 프로필 사진 수정(w_edit_profile.dart)의 카메라 뱃지와 동일한 패턴
-  Widget _buildChangeBadge(AbstractThemeColors colors) {
+  Widget _buildChangeBadge(BuildContext context, AbstractThemeColors colors) {
+    final size = ResponsiveSize(context).w(32);
     return Container(
-      width: 32,
-      height: 32,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         color: colors.activate,
         shape: BoxShape.circle,
         border: Border.all(color: colors.surface, width: 2),
       ),
-      child: const Icon(Icons.edit_rounded, color: Colors.white, size: 16),
+      child: Icon(Icons.edit_rounded, color: Colors.white, size: size * 0.5),
     );
   }
 

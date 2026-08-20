@@ -13,6 +13,7 @@ import 'package:feple/injection.dart';
 import 'package:feple/screen/main/tab/my_page/w_profile_avatar_ring.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/service/user_service.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -252,15 +253,16 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
   }
 
   Widget _buildCameraOverlay(AbstractThemeColors colors) {
+    final size = ResponsiveSize(context).w(30);
     return Container(
-      width: 30,
-      height: 30,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         color: colors.activate,
         shape: BoxShape.circle,
         border: Border.all(color: colors.surface, width: 2),
       ),
-      child: Icon(Icons.camera_alt_rounded, color: Theme.of(context).colorScheme.onPrimary, size: 15),
+      child: Icon(Icons.camera_alt_rounded, color: Theme.of(context).colorScheme.onPrimary, size: size * 0.5),
     );
   }
 

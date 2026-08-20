@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
+import 'package:feple/common/widget/w_icon_circle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:flutter/material.dart';
 
@@ -75,15 +76,7 @@ class _PermissionSheet extends StatelessWidget {
               const SizedBox(height: 12),
               const BottomSheetHandle(),
               const SizedBox(height: 32),
-              Container(
-                width: 76,
-                height: 76,
-                decoration: BoxDecoration(
-                  color: colors.activate.withValues(alpha: 0.12),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(config.icon, size: 38, color: colors.activate),
-              ),
+              IconCircle(icon: config.icon, sizeAt390: 76),
               const SizedBox(height: 20),
               Text(
                 config.titleKey.tr(),

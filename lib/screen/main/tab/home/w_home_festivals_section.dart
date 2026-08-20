@@ -7,6 +7,7 @@ import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/bounded_responsive_size.dart';
 import 'package:flutter/material.dart';
 
 class HomeFestivalsSection extends StatelessWidget {
@@ -31,10 +32,11 @@ class HomeFestivalsSection extends StatelessWidget {
       return ErrorState.section(error!, onRetry: onRetry);
     }
 
-    final screenWidth = MediaQuery.sizeOf(context).width;
     // 기준 390px: 카드 너비 130(1/3), 카드 높이 195(0.5)
-    final cardWidth = screenWidth / 3;
-    final cardHeight = screenWidth * 0.5;
+    // 가로 ListView.builder(itemExtent 사용) — 캡 없이 쓰면 큰 화면에서 카드가
+    // 커져 초기 뷰포트 밖 아이템이 지연 생성될 위험 → boundedResponsiveSize
+    final cardWidth = boundedResponsiveSize(context, 130);
+    final cardHeight = boundedResponsiveSize(context, 195);
     final itemExtent = cardWidth + 12;
 
     if (festivals == null) {
@@ -96,7 +98,7 @@ class _FestivalItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final cardWidth = MediaQuery.sizeOf(context).width / 3;
+    final cardWidth = boundedResponsiveSize(context, 130);
     return TapScale(
       onTap: () => onTap(festival),
       child: Container(

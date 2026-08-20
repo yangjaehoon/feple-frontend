@@ -14,6 +14,7 @@ import 'package:feple/screen/main/tab/search/artist_genre_style.dart';
 import 'package:feple/screen/onboarding/w_onboarding_progress_dots.dart';
 import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/artist_service.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:flutter/material.dart';
 
 /// 아티스트 팔로우 선택 화면 — 온보딩 흐름(뒤이어 페스티벌 선택 단계로 진행,
@@ -294,6 +295,7 @@ class _ArtistSelectCard extends StatelessWidget {
   });
 
   Widget _buildCardImage(BuildContext context, AbstractThemeColors colors) {
+    final checkSize = ResponsiveSize(context).w(22);
     return AspectRatio(
       aspectRatio: 1.0,
       child: Stack(
@@ -333,8 +335,8 @@ class _ArtistSelectCard extends StatelessWidget {
               top: 6,
               right: 6,
               child: Container(
-                width: 22,
-                height: 22,
+                width: checkSize,
+                height: checkSize,
                 decoration: BoxDecoration(
                   color: colors.activate,
                   shape: BoxShape.circle,
@@ -342,7 +344,7 @@ class _ArtistSelectCard extends StatelessWidget {
                 child: Icon(
                   Icons.check_rounded,
                   color: Theme.of(context).colorScheme.onPrimary,
-                  size: 14,
+                  size: checkSize * (14 / 22),
                 ),
               ),
             ),

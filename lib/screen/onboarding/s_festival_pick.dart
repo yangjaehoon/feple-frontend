@@ -13,6 +13,7 @@ import 'package:feple/model/festival_preview.dart';
 import 'package:feple/screen/onboarding/w_onboarding_progress_dots.dart';
 import 'package:feple/service/festival_interaction_service.dart';
 import 'package:feple/service/festival_service.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:flutter/material.dart';
 
 // 페스티벌 선택 화면(온보딩 진입/홈에서의 독립 진입 모두)이 한 번에 조회하는
@@ -281,6 +282,7 @@ class _FestivalSelectCard extends StatelessWidget {
   });
 
   Widget _buildPoster(BuildContext context, AbstractThemeColors colors) {
+    final checkSize = ResponsiveSize(context).w(22);
     return AspectRatio(
       aspectRatio: 2 / 3,
       child: Stack(
@@ -320,8 +322,8 @@ class _FestivalSelectCard extends StatelessWidget {
               top: 6,
               right: 6,
               child: Container(
-                width: 22,
-                height: 22,
+                width: checkSize,
+                height: checkSize,
                 decoration: BoxDecoration(
                   color: colors.activate,
                   shape: BoxShape.circle,
@@ -329,7 +331,7 @@ class _FestivalSelectCard extends StatelessWidget {
                 child: Icon(
                   Icons.check_rounded,
                   color: Theme.of(context).colorScheme.onPrimary,
-                  size: 14,
+                  size: checkSize * (14 / 22),
                 ),
               ),
             ),

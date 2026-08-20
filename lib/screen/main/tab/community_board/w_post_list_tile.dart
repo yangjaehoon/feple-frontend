@@ -33,7 +33,7 @@ class PostListTile extends StatelessWidget {
     );
   }
 
-  Widget _buildAvatar() {
+  Widget _buildAvatar(BuildContext context) {
     return Semantics(
       button: !post.anonymous && onAuthorTap != null,
       label: post.anonymous ? null : 'view_author_profile'.tr(args: [post.nickname]),
@@ -47,6 +47,7 @@ class PostListTile extends StatelessWidget {
             certified: post.certified,
             userRole: post.userRole,
             anonymous: post.anonymous,
+            radius: ResponsiveSize(context).w(20),
           ),
         ),
       ),
@@ -155,7 +156,7 @@ class PostListTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildAvatar(),
+            _buildAvatar(context),
             const SizedBox(width: 12),
             _buildTextColumn(colors),
             if (post.imageUrls.isNotEmpty) ...[

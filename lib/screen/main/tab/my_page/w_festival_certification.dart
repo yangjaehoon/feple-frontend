@@ -96,6 +96,11 @@ class FestivalCertificationWidgetState extends State<FestivalCertificationWidget
     );
   }
 
+  // CertificationRing 실제 렌더 크기(반지름 44/390 + 안쪽 padding 2*2 + 바깥
+  // padding 3*2)와 일치시켜 로딩→콘텐츠 전환 시 크기가 튀지 않게 한다.
+  double _certRingSize(BuildContext context) =>
+      MediaQuery.sizeOf(context).width * 0.226 + 10;
+
   Widget _buildSkeletonList() {
     return ListView.builder(
       scrollDirection: Axis.horizontal,
@@ -106,10 +111,10 @@ class FestivalCertificationWidgetState extends State<FestivalCertificationWidget
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SkeletonBox(
-              width: 98,
-              height: 98,
-              borderRadius: BorderRadius.all(Radius.circular(49)),
+            SkeletonBox(
+              width: _certRingSize(context),
+              height: _certRingSize(context),
+              borderRadius: BorderRadius.circular(_certRingSize(context) / 2),
             ),
             const SizedBox(height: 6),
             const SkeletonBox(width: 72, height: 11),

@@ -80,16 +80,23 @@ class NotificationCard extends StatelessWidget {
   }
 
   // 페스티벌 알림(festivalReminder/newFestival)의 이미지는 카드/상세화면 어디서나
-  // 세로 포스터로 보여주는 것과 같은 원본이라, 원형으로 자르면 포스터 대부분이
-  // 잘려나가고 다른 화면과도 시각적으로 어긋난다 — 이 경우만 둥근 사각형으로 표시해
-  // "원형=사람(상호작용), 사각형=이벤트"로 한눈에 구분되게 한다.
+  // 세로 포스터(2:3)로 보여주는 것과 같은 원본이라, 40x40 정사각형으로 자르면
+  // 모서리만 둥글어졌을 뿐 여전히 포스터 대부분이 잘려나간다 — 실제 포스터
+  // 비율(2:3)로 표시해야 다른 화면과 시각적으로 맞고, "원형=사람(상호작용),
+  // 세로 직사각형=이벤트"로 한눈에 구분된다.
+  static const double _avatarSize = 40;
+  static const double _posterWidth = 40;
+  static const double _posterHeight = 60; // 2:3
+
   Widget _buildIconBadge(AbstractThemeColors colors) {
     final isFestival = item.type?.isFestivalType ?? false;
+    final width = isFestival ? _posterWidth : _avatarSize;
+    final height = isFestival ? _posterHeight : _avatarSize;
     if (item.imageUrl != null) {
       final image = CachedNetworkImage(
         imageUrl: item.imageUrl!,
-        width: 40,
-        height: 40,
+        width: width,
+        height: height,
         memCacheWidth: 80,
         fit: BoxFit.cover,
         fadeInDuration: AppDimens.animXFast,
@@ -107,8 +114,8 @@ class NotificationCard extends StatelessWidget {
   Widget _buildIconFallback(AbstractThemeColors colors, bool isFestival) {
     return Container(
       key: const Key('notification_icon_badge'),
-      width: 40,
-      height: 40,
+      width: isFestival ? _posterWidth : _avatarSize,
+      height: isFestival ? _posterHeight : _avatarSize,
       decoration: BoxDecoration(
         color: (item.type?.iconColor(colors) ?? colors.certRingColor)
             .withValues(alpha: 0.15),

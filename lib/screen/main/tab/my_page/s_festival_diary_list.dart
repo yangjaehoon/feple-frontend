@@ -186,6 +186,7 @@ class _DiaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final thumbnailSize = ResponsiveSize(context).w(96);
     return Container(
       decoration: BoxDecoration(
         color: colors.surface,
@@ -201,13 +202,13 @@ class _DiaryCard extends StatelessWidget {
             ClipRRect(
               borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
               child: SizedBox(
-                width: ResponsiveSize(context).w(96),
-                height: ResponsiveSize(context).w(96),
+                width: thumbnailSize,
+                height: thumbnailSize,
                 child: diary.photoUrls.isNotEmpty
                     ? AppNetworkImage(
                         imageUrl: diary.photoUrls.first,
-                        width: ResponsiveSize(context).w(96),
-                        height: ResponsiveSize(context).w(96),
+                        width: thumbnailSize,
+                        height: thumbnailSize,
                       )
                     : Container(
                         color: colors.activate.withValues(alpha: 0.1),

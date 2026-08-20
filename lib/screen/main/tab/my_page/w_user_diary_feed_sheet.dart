@@ -164,6 +164,7 @@ class _DiaryFeedCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     final isEnglish = context.isEnglish;
+    final photoSize = ResponsiveSize(context).w(84);
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 0, 20, 12),
       padding: const EdgeInsets.all(14),
@@ -199,7 +200,7 @@ class _DiaryFeedCard extends StatelessWidget {
           if (diary.photoUrls.isNotEmpty) ...[
             const SizedBox(height: 10),
             SizedBox(
-              height: ResponsiveSize(context).w(84),
+              height: photoSize,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: diary.photoUrls.length,
@@ -208,8 +209,8 @@ class _DiaryFeedCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
                   child: AppNetworkImage(
                     imageUrl: diary.photoUrls[i],
-                    width: ResponsiveSize(context).w(84),
-                    height: ResponsiveSize(context).w(84),
+                    width: photoSize,
+                    height: photoSize,
                   ),
                 ),
               ),

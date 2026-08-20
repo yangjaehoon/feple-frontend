@@ -33,6 +33,7 @@ class ReorderListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final thumbnailSize = ResponsiveSize(context).w(40);
     return Container(
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: colors.listDivider, width: 0.5)),
@@ -49,8 +50,8 @@ class ReorderListTile extends StatelessWidget {
             const SizedBox(width: 12),
             AppNetworkImage(
               imageUrl: imageUrl,
-              width: ResponsiveSize(context).w(40),
-              height: ResponsiveSize(context).w(40),
+              width: thumbnailSize,
+              height: thumbnailSize,
               errorIcon: Icons.forum_rounded,
               errorIconSize: 20,
               borderRadius: BorderRadius.circular(AppDimens.radiusSmall),

@@ -83,9 +83,10 @@ class ErrorState extends StatelessWidget {
   }
 
   Widget _buildIconBadge(BuildContext context, AbstractThemeColors colors) {
+    final size = ResponsiveSize(context).w(88);
     return Container(
-      width: ResponsiveSize(context).w(88),
-      height: ResponsiveSize(context).w(88),
+      width: size,
+      height: size,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         shape: BoxShape.circle,

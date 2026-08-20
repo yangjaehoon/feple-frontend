@@ -213,8 +213,8 @@ class _WritePostState extends State<WritePost> {
   Widget _buildImageThumbnail(AbstractThemeColors colors, {
     required Widget preview,
     required VoidCallback onRemove,
+    required double size,
   }) {
-    final size = ResponsiveSize(context).w(72);
     return SizedBox(
       width: size,
       height: size,
@@ -260,15 +260,15 @@ class _WritePostState extends State<WritePost> {
     );
   }
 
-  Widget _buildAddImageTile(AbstractThemeColors colors) {
+  Widget _buildAddImageTile(AbstractThemeColors colors, double size) {
     return Semantics(
       button: true,
       label: 'photo_add'.tr(),
       child: GestureDetector(
         onTap: _pickImages,
         child: Container(
-          width: ResponsiveSize(context).w(72),
-          height: ResponsiveSize(context).w(72),
+          width: size,
+          height: size,
           decoration: BoxDecoration(
             border: Border.all(color: colors.listDivider),
             borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
@@ -289,6 +289,7 @@ class _WritePostState extends State<WritePost> {
       for (var i = 0; i < _existingImageUrls.length; i++)
         _buildImageThumbnail(
           colors,
+          size: size,
           preview: AppNetworkImage(
             imageUrl: _existingImageUrls[i],
             width: size,
@@ -300,6 +301,7 @@ class _WritePostState extends State<WritePost> {
       for (var i = 0; i < _selectedImages.length; i++)
         _buildImageThumbnail(
           colors,
+          size: size,
           preview: ExcludeSemantics(
             child: Image.memory(
               _selectedImages[i],
@@ -310,7 +312,7 @@ class _WritePostState extends State<WritePost> {
           ),
           onRemove: () => setState(() => _selectedImages.removeAt(i)),
         ),
-      if (_totalImageCount < _maxImages) _buildAddImageTile(colors),
+      if (_totalImageCount < _maxImages) _buildAddImageTile(colors, size),
     ];
 
     return SizedBox(

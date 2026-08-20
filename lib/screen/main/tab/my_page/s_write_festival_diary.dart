@@ -188,8 +188,12 @@ class _WriteFestivalDiaryScreenState extends State<WriteFestivalDiaryScreen> {
     );
   }
 
-  Widget _buildImageThumbnail(AbstractThemeColors colors, {required Widget preview, VoidCallback? onRemove}) {
-    final size = ResponsiveSize(context).w(72);
+  Widget _buildImageThumbnail(
+    AbstractThemeColors colors, {
+    required Widget preview,
+    VoidCallback? onRemove,
+    required double size,
+  }) {
     return SizedBox(
       width: size,
       height: size,
@@ -220,8 +224,7 @@ class _WriteFestivalDiaryScreenState extends State<WriteFestivalDiaryScreen> {
     );
   }
 
-  Widget _buildAddImageTile(AbstractThemeColors colors) {
-    final size = ResponsiveSize(context).w(72);
+  Widget _buildAddImageTile(AbstractThemeColors colors, double size) {
     return GestureDetector(
       onTap: _pickImages,
       child: Container(
@@ -248,6 +251,7 @@ class _WriteFestivalDiaryScreenState extends State<WriteFestivalDiaryScreen> {
           separatorBuilder: (_, _) => const SizedBox(width: 12),
           itemBuilder: (_, i) => _buildImageThumbnail(
             colors,
+            size: size,
             preview: AppNetworkImage(imageUrl: widget.existing!.photoUrls[i], width: size, height: size),
           ),
         ),
@@ -257,10 +261,11 @@ class _WriteFestivalDiaryScreenState extends State<WriteFestivalDiaryScreen> {
       for (var i = 0; i < _selectedImages.length; i++)
         _buildImageThumbnail(
           colors,
+          size: size,
           preview: Image.memory(_selectedImages[i], fit: BoxFit.cover, width: size, height: size),
           onRemove: () => setState(() => _selectedImages.removeAt(i)),
         ),
-      if (_selectedImages.length < _maxPhotos) _buildAddImageTile(colors),
+      if (_selectedImages.length < _maxPhotos) _buildAddImageTile(colors, size),
     ];
     return SizedBox(
       height: size,

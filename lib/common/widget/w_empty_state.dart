@@ -21,6 +21,7 @@ class EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final iconBadgeSize = ResponsiveSize(context).w(96);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(40),
@@ -28,8 +29,8 @@ class EmptyState extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: ResponsiveSize(context).w(96),
-              height: ResponsiveSize(context).w(96),
+              width: iconBadgeSize,
+              height: iconBadgeSize,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,

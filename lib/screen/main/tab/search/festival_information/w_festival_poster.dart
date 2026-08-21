@@ -23,6 +23,7 @@ import 'w_certification_bottom_sheet.dart';
 import 'w_festival_action_button.dart';
 import 'w_festival_reviews_sheet.dart';
 import 'w_festival_share_card.dart';
+import 'w_ticket_link_sheet.dart';
 import 'w_weather_bottom_sheet.dart';
 
 class FestivalPoster extends StatefulWidget {
@@ -156,6 +157,18 @@ class FestivalPosterState extends State<FestivalPoster> {
     });
   }
 
+  void _showTicketLinks() {
+    if (_isSheetOpen) return;
+    _isSheetOpen = true;
+    showAppBottomSheet(
+      context,
+      isScrollControlled: false,
+      builder: (_) => TicketLinkSheet(links: widget.poster.ticketLinks),
+    ).whenComplete(() {
+      if (mounted) _isSheetOpen = false;
+    });
+  }
+
   VoidCallback? _certButtonTap() => switch (_notifier.certState) {
     PosterCertState.certified => () => context.showInfoSnackbar(
       'cert_already_approved'.tr(),
@@ -203,6 +216,13 @@ class FestivalPosterState extends State<FestivalPoster> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 _buildInfoRow(colors),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  child: ListenableBuilder(
+                    listenable: _notifier.actionButtonsChanges,
+                    builder: (_, _) => _buildActionButtons(colors),
+                  ),
+                ),
                 if (hasDescription)
                   ListenableBuilder(
                     listenable: _notifier,
@@ -438,8 +458,7 @@ class FestivalPosterState extends State<FestivalPoster> {
     );
   }
 
-  // attending/action buttons를 각각 attendingChanges/actionButtonsChanges로
-  // 개별 구독 — 참석 토글이 좋아요·인증 버튼까지, 좋아요 토글이 참석 행까지
+  // attending row를 attendingChanges로 개별 구독 — 참석 토글이 다른 정보까지
   // 리빌드시키지 않게 함. 초기화 에러는 여러 로더가 공통으로 건드리므로 전체
   // notifier 구독 유지(자주 발생하지 않고 위젯도 가벼움).
   Widget _buildInfoColumnBottom(AbstractThemeColors colors) {
@@ -459,11 +478,6 @@ class FestivalPosterState extends State<FestivalPoster> {
                   child: _buildInitErrorRow(),
                 )
               : const SizedBox.shrink(),
-        ),
-        const SizedBox(height: 12),
-        ListenableBuilder(
-          listenable: _notifier.actionButtonsChanges,
-          builder: (_, _) => _buildActionButtons(colors),
         ),
       ],
     );
@@ -580,6 +594,7 @@ class FestivalPosterState extends State<FestivalPoster> {
   }
 
   Widget _buildActionButtons(AbstractThemeColors colors) {
+    final hasTicketLinks = widget.poster.ticketLinks.isNotEmpty;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -627,6 +642,14 @@ class FestivalPosterState extends State<FestivalPoster> {
             label: 'action_cert'.tr(),
           ),
         ),
+        if (hasTicketLinks)
+          Expanded(
+            child: FestivalActionButton(
+              onTap: _showTicketLinks,
+              icon: Icons.confirmation_number_outlined,
+              label: 'action_ticket'.tr(),
+            ),
+          ),
       ],
     );
   }

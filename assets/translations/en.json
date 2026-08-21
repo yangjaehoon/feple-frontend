@@ -442,6 +442,8 @@
   "action_weather": "Weather",
   "action_calendar": "Calendar",
   "action_cert": "Verify",
+  "action_ticket": "Tickets",
+  "ticket_links_title": "Ticket Links",
   "action_diary": "Diary",
   "attending_count": "{} attending",
   "attending_count_short": "{} going",

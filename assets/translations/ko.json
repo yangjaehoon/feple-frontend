@@ -442,6 +442,8 @@
   "action_weather": "날씨",
   "action_calendar": "캘린더",
   "action_cert": "인증",
+  "action_ticket": "티켓",
+  "ticket_links_title": "예매 링크",
   "action_diary": "일기",
   "attending_count": "{}명 참석 예정",
   "attending_count_short": "{}명",

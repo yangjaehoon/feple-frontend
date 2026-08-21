@@ -19,6 +19,7 @@ import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
+import 'package:feple/service/festival_service.dart';
 import 'package:feple/service/notification_countable.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class MockCertificationService extends Mock implements CertificationService {}
 class MockFestivalInteractionService extends Mock implements FestivalInteractionService {}
 class MockFestivalDetailService extends Mock implements FestivalDetailService {}
+class MockFestivalService extends Mock implements FestivalService {}
 class MockArtistFollowService extends Mock implements ArtistFollowService {}
 class MockPostService extends Mock implements PostService {}
 class MockNotificationCountable extends Mock implements NotificationCountable {}
@@ -51,6 +53,7 @@ void main() {
   late MockCertificationService mockCertService;
   late MockFestivalInteractionService mockFestivalInteractionService;
   late MockFestivalDetailService mockDetailService;
+  late MockFestivalService mockFestivalDataService;
   late MockArtistFollowService mockFollowService;
   late MockPostService mockPostService;
   late MockNotificationCountable mockNotificationCountable;
@@ -64,6 +67,7 @@ void main() {
     mockCertService = MockCertificationService();
     mockFestivalInteractionService = MockFestivalInteractionService();
     mockDetailService = MockFestivalDetailService();
+    mockFestivalDataService = MockFestivalService();
     mockFollowService = MockArtistFollowService();
     mockPostService = MockPostService();
     mockNotificationCountable = MockNotificationCountable();
@@ -73,6 +77,7 @@ void main() {
       sl.unregister<FestivalInteractionService>();
     }
     if (sl.isRegistered<FestivalDetailService>()) sl.unregister<FestivalDetailService>();
+    if (sl.isRegistered<FestivalService>()) sl.unregister<FestivalService>();
     if (sl.isRegistered<ArtistFollowService>()) sl.unregister<ArtistFollowService>();
     if (sl.isRegistered<PostService>()) sl.unregister<PostService>();
     if (sl.isRegistered<NotificationCountable>()) sl.unregister<NotificationCountable>();
@@ -83,6 +88,7 @@ void main() {
     sl.registerSingleton<CertificationService>(mockCertService);
     sl.registerSingleton<FestivalInteractionService>(mockFestivalInteractionService);
     sl.registerSingleton<FestivalDetailService>(mockDetailService);
+    sl.registerSingleton<FestivalService>(mockFestivalDataService);
     sl.registerSingleton<ArtistFollowService>(mockFollowService);
     sl.registerSingleton<PostService>(mockPostService);
     sl.registerSingleton<NotificationCountable>(mockNotificationCountable);
@@ -101,6 +107,7 @@ void main() {
     when(() => mockDetailService.fetchTimetable(any())).thenAnswer((_) async => []);
     when(() => mockDetailService.fetchBooths(any())).thenAnswer((_) async => []);
     when(() => mockDetailService.fetchSetlist(any())).thenAnswer((_) async => []);
+    when(() => mockFestivalDataService.fetchById(any())).thenAnswer((_) async => _poster());
     when(() => mockPostService.fetchFestivalPopularPosts(any())).thenAnswer((_) async => []);
     when(() => mockNotificationCountable.getUnreadCount()).thenAnswer((_) async => 0);
   });
@@ -111,6 +118,7 @@ void main() {
       sl.unregister<FestivalInteractionService>();
     }
     if (sl.isRegistered<FestivalDetailService>()) sl.unregister<FestivalDetailService>();
+    if (sl.isRegistered<FestivalService>()) sl.unregister<FestivalService>();
     if (sl.isRegistered<ArtistFollowService>()) sl.unregister<ArtistFollowService>();
     if (sl.isRegistered<PostService>()) sl.unregister<PostService>();
     if (sl.isRegistered<NotificationCountable>()) sl.unregister<NotificationCountable>();

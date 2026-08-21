@@ -13,6 +13,7 @@ import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
+import 'package:feple/service/festival_service.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -46,11 +47,11 @@ class FestivalPosterState extends State<FestivalPoster> {
   void initState() {
     super.initState();
     _notifier = FestivalPosterNotifier(
-      festivalId: widget.poster.id,
+      poster: widget.poster,
       certService: sl<CertificationService>(),
       festivalService: sl<FestivalInteractionService>(),
       detailService: sl<FestivalDetailService>(),
-      attendingCount: widget.poster.attendingCount,
+      festivalDataService: sl<FestivalService>(),
       onError: (key) {
         if (mounted) context.showErrorSnackbar(key.tr());
       },
@@ -67,9 +68,9 @@ class FestivalPosterState extends State<FestivalPoster> {
   Future<void> refresh() => _notifier.init();
 
   Future<void> _openKakaoMap() async {
-    final lat = widget.poster.latitude;
-    final lng = widget.poster.longitude;
-    final name = Uri.encodeComponent(widget.poster.location);
+    final lat = _notifier.poster.latitude;
+    final lng = _notifier.poster.longitude;
+    final name = Uri.encodeComponent(_notifier.poster.location);
     try {
       var launched = false;
       if (lat != null && lng != null) {
@@ -96,11 +97,11 @@ class FestivalPosterState extends State<FestivalPoster> {
 
   Future<void> _addToCalendar() => CalendarHelper.addToDeviceCalendar(
     context,
-    title: widget.poster.displayTitle(context.isEnglish),
-    startDate: widget.poster.startDate,
-    endDate: widget.poster.endDate,
-    description: widget.poster.description,
-    location: widget.poster.location,
+    title: _notifier.poster.displayTitle(context.isEnglish),
+    startDate: _notifier.poster.startDate,
+    endDate: _notifier.poster.endDate,
+    description: _notifier.poster.description,
+    location: _notifier.poster.location,
   );
 
   void _withHaptic(VoidCallback fn) {
@@ -115,13 +116,13 @@ class FestivalPosterState extends State<FestivalPoster> {
     setState(() => _isSharing = true);
     final isEnglish = context.isEnglish;
     final text =
-        '${widget.poster.displayTitle(isEnglish)}\n${widget.poster.location}\n${widget.poster.startDate}';
+        '${_notifier.poster.displayTitle(isEnglish)}\n${_notifier.poster.location}\n${_notifier.poster.startDate}';
     try {
-      await precacheImage(CachedNetworkImageProvider(widget.poster.posterUrl), context);
+      await precacheImage(CachedNetworkImageProvider(_notifier.poster.posterUrl), context);
       if (!mounted) return;
       final bytes = await captureWidgetAsPng(
         context,
-        FestivalShareCard(poster: widget.poster, isEnglish: isEnglish),
+        FestivalShareCard(poster: _notifier.poster, isEnglish: isEnglish),
       );
       await SharePlus.instance.share(ShareParams(
         text: text,
@@ -150,9 +151,9 @@ class FestivalPosterState extends State<FestivalPoster> {
       context,
       isScrollControlled: false,
       builder: (_) => WeatherBottomSheet(
-        festivalId: widget.poster.id,
-        startDate: widget.poster.startDate,
-        endDate: widget.poster.endDate,
+        festivalId: _notifier.festivalId,
+        startDate: _notifier.poster.startDate,
+        endDate: _notifier.poster.endDate,
       ),
     ).whenComplete(() {
       if (mounted) _isSheetOpen = false;
@@ -193,8 +194,8 @@ class FestivalPosterState extends State<FestivalPoster> {
     await showAppBottomSheet(
       context,
       builder: (ctx) => CertificationBottomSheet(
-        festivalName: widget.poster.displayTitle(context.isEnglish),
-        festivalId: widget.poster.id,
+        festivalName: _notifier.poster.displayTitle(context.isEnglish),
+        festivalId: _notifier.festivalId,
         certService: sl<CertificationService>(),
       ),
     );
@@ -204,41 +205,50 @@ class FestivalPosterState extends State<FestivalPoster> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final hasDescription = widget.poster.description.isNotEmpty;
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        ..._buildBackground(colors),
-        SafeArea(
-          top: false,
-          bottom: false,
-          child: Padding(
-            padding: const EdgeInsets.only(top: AppDimens.appBarHeight),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildInfoRow(colors),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: ListenableBuilder(
-                    listenable: _notifier.actionButtonsChanges,
-                    builder: (_, _) => _buildActionButtons(colors),
-                  ),
-                ),
-                if (hasDescription)
-                  ListenableBuilder(
-                    listenable: _notifier,
-                    builder: (_, _) => Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: _buildDescriptionSection(colors),
+    // poster(제목/설명/날짜/위치 등)는 refreshPoster()로 뒤늦게 통째로 교체될
+    // 수 있으므로 posterChanges를 구독해 최신 값으로 다시 그린다. 좋아요·참석
+    // 등 나머지 상태는 각자의 좁은 리스너블을 그대로 쓰므로 이 래핑과 무관하게
+    // 불필요한 리빌드가 늘어나지 않는다.
+    return ListenableBuilder(
+      listenable: _notifier.posterChanges,
+      builder: (context, _) {
+        final hasDescription = _notifier.poster.description.isNotEmpty;
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            ..._buildBackground(colors),
+            SafeArea(
+              top: false,
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.only(top: AppDimens.appBarHeight),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildInfoRow(colors),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                      child: ListenableBuilder(
+                        listenable: _notifier.actionButtonsChanges,
+                        builder: (_, _) => _buildActionButtons(colors),
+                      ),
                     ),
-                  ),
-                if (!hasDescription) const SizedBox(height: 8),
-              ],
+                    if (hasDescription)
+                      ListenableBuilder(
+                        listenable: _notifier,
+                        builder: (_, _) => Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: _buildDescriptionSection(colors),
+                        ),
+                      ),
+                    if (!hasDescription) const SizedBox(height: 8),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
 
@@ -246,7 +256,7 @@ class FestivalPosterState extends State<FestivalPoster> {
     Positioned.fill(
       child: ClipRect(
         child: CachedNetworkImage(
-          imageUrl: widget.poster.posterUrl,
+          imageUrl: _notifier.poster.posterUrl,
           memCacheWidth: 100,
           fit: BoxFit.cover,
           fadeInDuration: AppDimens.animXFast,
@@ -358,10 +368,10 @@ class FestivalPosterState extends State<FestivalPoster> {
     showAppBottomSheet(
       context,
       builder: (_) => FestivalReviewsSheet(
-        festivalId: widget.poster.id,
+        festivalId: _notifier.festivalId,
         certService: sl<CertificationService>(),
         certState: _notifier.certState,
-        festivalTitle: widget.poster.displayTitle(isEn),
+        festivalTitle: _notifier.poster.displayTitle(isEn),
         certId: _notifier.certId,
         initialRating: _notifier.myRating,
         initialReview: _notifier.myReview,
@@ -386,7 +396,7 @@ class FestivalPosterState extends State<FestivalPoster> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
         child: CachedNetworkImage(
-          imageUrl: widget.poster.posterUrl,
+          imageUrl: _notifier.poster.posterUrl,
           memCacheWidth: 300,
           fit: BoxFit.cover,
           placeholder: (context, url) =>
@@ -412,7 +422,7 @@ class FestivalPosterState extends State<FestivalPoster> {
       children: [
         const SizedBox(height: 4),
         Text(
-          widget.poster.displayTitle(context.isEnglish),
+          _notifier.poster.displayTitle(context.isEnglish),
           softWrap: true,
           style: const TextStyle(
             fontSize: AppDimens.fontSizeTitle,
@@ -427,9 +437,9 @@ class FestivalPosterState extends State<FestivalPoster> {
           icon: Icons.calendar_today_rounded,
           color: colors.accentColor,
           child: Text(
-            widget.poster.endDate.isNotEmpty
-                ? '${widget.poster.startDate} ~ ${widget.poster.endDate}'
-                : widget.poster.startDate,
+            _notifier.poster.endDate.isNotEmpty
+                ? '${_notifier.poster.startDate} ~ ${_notifier.poster.endDate}'
+                : _notifier.poster.startDate,
             style: const TextStyle(
               fontSize: AppDimens.fontSizeMd,
               color: Colors.white,
@@ -443,7 +453,7 @@ class FestivalPosterState extends State<FestivalPoster> {
             icon: Icons.location_on_rounded,
             color: colors.accentColor,
             child: Text(
-              widget.poster.location,
+              _notifier.poster.location,
               softWrap: true,
               style: const TextStyle(
                 fontSize: AppDimens.fontSizeMd,
@@ -502,13 +512,13 @@ class FestivalPosterState extends State<FestivalPoster> {
   Widget _buildTagRow() {
     final tags = <Widget>[];
 
-    for (final genre in widget.poster.genres) {
+    for (final genre in _notifier.poster.genres) {
       final key = genreI18nKey(genre);
       if (key == null) continue;
       tags.add(_Tag(label: key.tr()));
     }
 
-    final age = widget.poster.ageRestriction;
+    final age = _notifier.poster.ageRestriction;
     if (age != null && age != 'NONE') {
       final key = ageI18nKey(age);
       if (key != null) {
@@ -697,7 +707,7 @@ class FestivalPosterState extends State<FestivalPoster> {
       firstChild: Padding(
         padding: const EdgeInsets.fromLTRB(20, 4, 20, 14),
         child: Text(
-          widget.poster.description,
+          _notifier.poster.description,
           style: TextStyle(
             fontSize: AppDimens.fontSizeMd,
             height: 1.6,

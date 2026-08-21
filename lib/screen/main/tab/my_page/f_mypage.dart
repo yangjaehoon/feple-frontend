@@ -3,6 +3,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
+import 'package:feple/common/widget/w_adaptive_refresh_view.dart';
 import 'package:feple/screen/main/tab/my_page/w_festival_certification.dart';
 import 'package:feple/screen/main/tab/my_page/w_festival_diary.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_post_comment.dart';
@@ -69,21 +70,18 @@ class _MyPageFragmentState extends State<MyPageFragment> with NavigationGuard {
             Expanded(child: Center(child: CircularProgressIndicator(color: colors.activate)))
           else
             Expanded(
-              child: RefreshIndicator(
-                color: colors.activate,
+              child: AdaptiveRefreshView(
+                indicatorColor: colors.activate,
                 onRefresh: _onRefresh,
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
-                  child: Column(
-                    children: [
-                      ProfileWidget(key: _profileKey, userId: userId),
-                      MyPostCommentView(key: _statsKey, userId: userId),
-                      FestivalCertificationWidget(key: _certKey),
-                      FestivalDiaryWidget(key: _diaryKey),
-                      MySongRequestsView(key: _songsKey),
-                    ],
-                  ),
+                padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
+                child: Column(
+                  children: [
+                    ProfileWidget(key: _profileKey, userId: userId),
+                    MyPostCommentView(key: _statsKey, userId: userId),
+                    FestivalCertificationWidget(key: _certKey),
+                    FestivalDiaryWidget(key: _diaryKey),
+                    MySongRequestsView(key: _songsKey),
+                  ],
                 ),
               ),
             ),

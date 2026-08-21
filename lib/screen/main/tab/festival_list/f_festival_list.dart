@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/constant/festival_constants.dart';
@@ -6,6 +8,7 @@ import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/screen/main/tab/festival_list/w_festival_list.dart';
 import 'package:feple/screen/main/tab/festival_list/w_festival_suggestion_sheet.dart';
 import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -118,42 +121,58 @@ class _FestivalListFragmentState extends State<FestivalListFragment> {
         children: [
           FepleAppBar('festival_schedule'.tr()),
           Expanded(
-            child: RefreshIndicator(
-              onRefresh: () => context.read<FestivalPreviewProvider>().refresh(force: true),
-              color: colors.activate,
-              child: CustomScrollView(
-                controller: _scrollController,
-                slivers: [
-                  SliverPadding(
-                    padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
-                    // FestivalListWidget이 SliverList.builder를 반환해 카드가 화면에
-                    // 보일 때만 지연 빌드되도록 함 — SliverMainAxisGroup으로 필터 패널·
-                    // 로드모어 표시기와 하나의 스크롤 흐름으로 묶음
-                    sliver: SliverMainAxisGroup(
-                      slivers: [
-                        SliverToBoxAdapter(
-                          child: _FilterPanel(
-                            expanded: _filterExpanded,
-                            onToggle: () =>
-                                setState(() => _filterExpanded = !_filterExpanded),
-                            selectedGenres: selectedGenres,
-                            selectedRegions: selectedRegions,
-                            selectedAgeRestrictions: selectedAgeRestrictions,
-                          ),
-                        ),
-                        const FestivalListWidget(),
-                        const SliverToBoxAdapter(child: _LoadMoreIndicator()),
-                        const SliverToBoxAdapter(child: _FestivalSuggestionBanner()),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            child: _buildRefreshableScroll(
+              colors,
+              selectedGenres,
+              selectedRegions,
+              selectedAgeRestrictions,
             ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildRefreshableScroll(
+    AbstractThemeColors colors,
+    Set<String> selectedGenres,
+    Set<String> selectedRegions,
+    Set<String> selectedAgeRestrictions,
+  ) {
+    Future<void> onRefresh() =>
+        context.read<FestivalPreviewProvider>().refresh(force: true);
+
+    final scrollView = CustomScrollView(
+      controller: _scrollController,
+      slivers: [
+        if (Platform.isIOS) CupertinoSliverRefreshControl(onRefresh: onRefresh),
+        SliverPadding(
+          padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
+          // FestivalListWidget이 SliverList.builder를 반환해 카드가 화면에
+          // 보일 때만 지연 빌드되도록 함 — SliverMainAxisGroup으로 필터 패널·
+          // 로드모어 표시기와 하나의 스크롤 흐름으로 묶음
+          sliver: SliverMainAxisGroup(
+            slivers: [
+              SliverToBoxAdapter(
+                child: _FilterPanel(
+                  expanded: _filterExpanded,
+                  onToggle: () => setState(() => _filterExpanded = !_filterExpanded),
+                  selectedGenres: selectedGenres,
+                  selectedRegions: selectedRegions,
+                  selectedAgeRestrictions: selectedAgeRestrictions,
+                ),
+              ),
+              const FestivalListWidget(),
+              const SliverToBoxAdapter(child: _LoadMoreIndicator()),
+              const SliverToBoxAdapter(child: _FestivalSuggestionBanner()),
+            ],
+          ),
+        ),
+      ],
+    );
+
+    if (Platform.isIOS) return scrollView;
+    return RefreshIndicator(onRefresh: onRefresh, color: colors.activate, child: scrollView);
   }
 
   Widget _buildScrollToTopButton(AbstractThemeColors colors) {

@@ -5,6 +5,7 @@ import 'package:feple/screen/main/tab/home/s_liked_festivals.dart';
 import 'package:feple/screen/main/tab/home/home_state_notifier.dart';
 import 'package:feple/screen/main/tab/home/w_favorite_boards_section_skeleton.dart';
 import 'package:feple/screen/main/tab/home/w_favorite_boards_section.dart';
+import 'package:feple/common/widget/w_adaptive_refresh_view.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/screen/main/tab/home/w_home_artists_section.dart';
 import 'package:feple/screen/main/tab/home/w_home_festivals_section.dart';
@@ -115,15 +116,12 @@ class _HomeFragmentState extends State<HomeFragment> {
             child: CircularProgressIndicator(color: colors.loadingIndicator),
           );
         }
-        return RefreshIndicator(
-          color: colors.activate,
+        return AdaptiveRefreshView(
+          indicatorColor: colors.activate,
           onRefresh: () => _onRefresh(context),
-          child: SingleChildScrollView(
-            controller: _scrollController,
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
-            child: _buildScrollContent(context, colors),
-          ),
+          controller: _scrollController,
+          padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
+          child: _buildScrollContent(context, colors),
         );
       },
     );

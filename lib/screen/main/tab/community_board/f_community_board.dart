@@ -1,6 +1,7 @@
 import 'package:feple/app.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_adaptive_refresh_view.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_board_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_hot_board.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_free_board.dart';
@@ -57,21 +58,16 @@ class _CommunityBoardFragmentState extends State<CommunityBoardFragment> {
         children: [
           FepleAppBar('board'.tr()),
           Expanded(
-            child: RefreshIndicator(
-              color: colors.activate,
+            child: AdaptiveRefreshView(
+              indicatorColor: colors.activate,
               onRefresh: _onRefresh,
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottomLarge),
-                  child: Column(
-                    children: [
-                      CommunityHotBoard(cardKey: _hotKey),
-                      CommunityFreeBoard(cardKey: _freeKey),
-                      CompanionBoardCard(cardKey: _companionKey),
-                    ],
-                  ),
-                ),
+              padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottomLarge),
+              child: Column(
+                children: [
+                  CommunityHotBoard(cardKey: _hotKey),
+                  CommunityFreeBoard(cardKey: _freeKey),
+                  CompanionBoardCard(cardKey: _companionKey),
+                ],
               ),
             ),
           ),

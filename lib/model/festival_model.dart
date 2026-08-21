@@ -2,20 +2,6 @@ import 'package:feple/common/util/festival_date_utils.dart';
 
 import 'localized_text.dart';
 
-class TicketLink {
-  final String? label;
-  final String url;
-
-  TicketLink({this.label, required this.url});
-
-  factory TicketLink.fromJson(Map<String, dynamic> json) {
-    return TicketLink(
-      label: json['label'] as String?,
-      url: json['url'] as String,
-    );
-  }
-}
-
 class FestivalModel {
   final int id;
   final String title;
@@ -30,7 +16,6 @@ class FestivalModel {
   final List<String> genres;
   final String? ageRestriction;
   final int attendingCount;
-  final List<TicketLink> ticketLinks;
 
   FestivalModel({
     required this.id,
@@ -46,7 +31,6 @@ class FestivalModel {
     this.genres = const [],
     this.ageRestriction,
     this.attendingCount = 0,
-    this.ticketLinks = const [],
   });
 
   String displayTitle(bool isEnglish) => pickLocalized(isEnglish, title, titleEn);
@@ -69,9 +53,6 @@ class FestivalModel {
         'genres': genres,
         'ageRestriction': ageRestriction,
         'attendingCount': attendingCount,
-        'ticketLinks': ticketLinks
-            .map((link) => {'label': link.label, 'url': link.url})
-            .toList(),
       };
 
   factory FestivalModel.fromJson(Map<String, dynamic> json) {
@@ -89,10 +70,6 @@ class FestivalModel {
       genres: (json['genres'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
       ageRestriction: json['ageRestriction'] as String?,
       attendingCount: (json['attendingCount'] as num?)?.toInt() ?? 0,
-      ticketLinks: (json['ticketLinks'] as List<dynamic>?)
-              ?.map((e) => TicketLink.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
     );
   }
 }

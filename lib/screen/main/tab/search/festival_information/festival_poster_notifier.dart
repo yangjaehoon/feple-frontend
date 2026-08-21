@@ -6,7 +6,9 @@ import 'package:feple/common/data/preference/item/preference_item.dart';
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/model/poster_cert_state.dart';
 import 'package:feple/model/certification_model.dart';
+import 'package:feple/model/ticket_link.dart';
 import 'package:feple/service/certification_service.dart';
+import 'package:feple/service/festival_detail_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -15,6 +17,7 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
   final int festivalId;
   final CertificationService certService;
   final FestivalInteractionService festivalService;
+  final FestivalDetailService detailService;
 
   bool liked = false;
   bool attending = false;
@@ -32,6 +35,7 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
   int? certId;
   int? myRating;
   String? myReview;
+  List<TicketLink> ticketLinks = const [];
 
   final void Function(String key)? onError;
 
@@ -69,6 +73,7 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
     required this.festivalId,
     required this.certService,
     required this.festivalService,
+    required this.detailService,
     this.attendingCount = 0,
     this.onError,
   });
@@ -81,6 +86,7 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
       loadDescState(),
       loadMyCertificationStatus(),
       loadRatingInfo(),
+      loadTicketLinks(),
     ]);
   }
 
@@ -151,6 +157,20 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
     } finally {
       ratingLoaded = true;
       safeNotify();
+    }
+  }
+
+  // 목록/검색 등 미리보기용 화면에서 넘어온 FestivalModel에는 예매 링크가 실려
+  // 있지 않으므로, 진입 경로와 무관하게 항상 이 notifier에서 직접 조회한다.
+  // 없어도 티켓 버튼만 안 보일 뿐 나머지 정보는 정상 표시되므로 실패해도
+  // hasInitError(재시도 안내)는 띄우지 않는다.
+  Future<void> loadTicketLinks() async {
+    try {
+      ticketLinks = await detailService.fetchTicketLinks(festivalId);
+      safeNotify();
+      _pingActionButtons();
+    } catch (e) {
+      debugPrint('[FestivalPoster] 예매 링크 로드 실패: $e');
     }
   }
 

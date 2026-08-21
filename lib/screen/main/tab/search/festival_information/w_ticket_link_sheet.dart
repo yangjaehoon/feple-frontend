@@ -3,7 +3,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../../../model/festival_model.dart';
+import '../../../../../model/ticket_link.dart';
 
 class TicketLinkSheet extends StatelessWidget {
   final List<TicketLink> links;

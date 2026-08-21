@@ -11,6 +11,7 @@ import 'package:feple/common/util/widget_image_capturer.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
+import 'package:feple/service/festival_detail_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +49,7 @@ class FestivalPosterState extends State<FestivalPoster> {
       festivalId: widget.poster.id,
       certService: sl<CertificationService>(),
       festivalService: sl<FestivalInteractionService>(),
+      detailService: sl<FestivalDetailService>(),
       attendingCount: widget.poster.attendingCount,
       onError: (key) {
         if (mounted) context.showErrorSnackbar(key.tr());
@@ -163,7 +165,7 @@ class FestivalPosterState extends State<FestivalPoster> {
     showAppBottomSheet(
       context,
       isScrollControlled: false,
-      builder: (_) => TicketLinkSheet(links: widget.poster.ticketLinks),
+      builder: (_) => TicketLinkSheet(links: _notifier.ticketLinks),
     ).whenComplete(() {
       if (mounted) _isSheetOpen = false;
     });
@@ -594,7 +596,7 @@ class FestivalPosterState extends State<FestivalPoster> {
   }
 
   Widget _buildActionButtons(AbstractThemeColors colors) {
-    final hasTicketLinks = widget.poster.ticketLinks.isNotEmpty;
+    final hasTicketLinks = _notifier.ticketLinks.isNotEmpty;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [

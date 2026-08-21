@@ -1,8 +1,10 @@
 import 'package:feple/common/data/preference/app_preferences.dart';
 import 'package:feple/model/my_certification_status.dart';
 import 'package:feple/model/certification_model.dart';
+import 'package:feple/model/ticket_link.dart';
 import 'package:feple/screen/main/tab/search/festival_information/festival_poster_notifier.dart';
 import 'package:feple/service/certification_service.dart';
+import 'package:feple/service/festival_detail_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -10,12 +12,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class MockCertificationService extends Mock implements CertificationService {}
 class MockFestivalInteractionService extends Mock implements FestivalInteractionService {}
+class MockFestivalDetailService extends Mock implements FestivalDetailService {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late MockCertificationService mockCertService;
   late MockFestivalInteractionService mockFestivalInteractionService;
+  late MockFestivalDetailService mockDetailService;
 
   setUpAll(() async {
     SharedPreferences.setMockInitialValues({});
@@ -25,12 +29,14 @@ void main() {
   setUp(() {
     mockCertService = MockCertificationService();
     mockFestivalInteractionService = MockFestivalInteractionService();
+    mockDetailService = MockFestivalDetailService();
   });
 
   FestivalPosterNotifier make(int festivalId) => FestivalPosterNotifier(
         festivalId: festivalId,
         certService: mockCertService,
         festivalService: mockFestivalInteractionService,
+        detailService: mockDetailService,
       );
 
   group('loadMyCertificationStatus', () {
@@ -140,6 +146,30 @@ void main() {
       await expectLater(notifier.loadLikeState(), completes);
 
       expect(notifier.liked, false);
+    });
+  });
+
+  group('loadTicketLinks', () {
+    test('서비스가 링크 목록을 반환하면 ticketLinks에 반영', () async {
+      when(() => mockDetailService.fetchTicketLinks(5)).thenAnswer((_) async => [
+            TicketLink(label: '인터파크', url: 'https://tickets.interpark.com/example'),
+          ]);
+
+      final notifier = make(5);
+      await notifier.loadTicketLinks();
+
+      expect(notifier.ticketLinks, hasLength(1));
+      expect(notifier.ticketLinks.first.label, '인터파크');
+    });
+
+    test('서비스 예외 시 크래시 없이 빈 목록 유지 (hasInitError 미설정)', () async {
+      when(() => mockDetailService.fetchTicketLinks(5)).thenThrow(Exception('err'));
+
+      final notifier = make(5);
+      await expectLater(notifier.loadTicketLinks(), completes);
+
+      expect(notifier.ticketLinks, isEmpty);
+      expect(notifier.hasInitError, false);
     });
   });
 

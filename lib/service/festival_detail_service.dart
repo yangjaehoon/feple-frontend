@@ -1,6 +1,7 @@
 import 'package:feple/model/booth_model.dart';
 import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/model/festival_setlist_entry.dart';
+import 'package:feple/model/ticket_link.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/model/weather_model.dart';
 import 'package:feple/network/dio_client.dart';
@@ -68,6 +69,17 @@ class FestivalDetailService
         save: (items) => _cache.saveSetlist(festivalId, items),
         load: () => _cache.loadSetlist(festivalId),
       );
+
+  // 관리자가 등록/삭제하는 데이터라 리스트/검색 등 미리보기용 festival 응답에는
+  // 포함돼 있지 않음 — 상세 화면 진입 경로와 무관하게 항상 최신 값을 보이도록
+  // 별도 엔드포인트로 조회한다(예매 링크가 있을 때만 티켓 버튼을 노출하는 데 사용).
+  Future<List<TicketLink>> fetchTicketLinks(int festivalId) async {
+    final response =
+        await DioClient.dio.get('/festivals/$festivalId/ticket-links');
+    return (response.data as List)
+        .map((e) => TicketLink.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
 
   Future<void> submitSetlistRequest({
     required int festivalId,

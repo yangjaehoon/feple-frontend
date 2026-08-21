@@ -8,12 +8,14 @@ import 'package:feple/model/certification_model.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/festival_rating_summary.dart';
 import 'package:feple/model/my_certification_status.dart';
+import 'package:feple/model/ticket_link.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_certification_bottom_sheet.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_poster.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_reviews_sheet.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_ticket_link_sheet.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_weather_bottom_sheet.dart';
 import 'package:feple/service/certification_service.dart';
+import 'package:feple/service/festival_detail_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,6 +25,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class MockCertificationService extends Mock implements CertificationService {}
 class MockFestivalInteractionService extends Mock implements FestivalInteractionService {}
+class MockFestivalDetailService extends Mock implements FestivalDetailService {}
 
 // 날씨 시트가 sl<FestivalDetailService>() 없이 "너무 이른 조회" 분기를 타도록
 // 항상 현재 시각 기준으로 충분히 먼 미래 날짜를 기본값으로 쓴다 — 고정 날짜는
@@ -43,7 +46,6 @@ FestivalModel _poster({
   int attendingCount = 0,
   String? startDate,
   String? endDate,
-  List<TicketLink> ticketLinks = const [],
 }) {
   return FestivalModel(
     id: id,
@@ -56,13 +58,13 @@ FestivalModel _poster({
     genres: genres,
     ageRestriction: ageRestriction,
     attendingCount: attendingCount,
-    ticketLinks: ticketLinks,
   );
 }
 
 void main() {
   late MockCertificationService mockCertService;
   late MockFestivalInteractionService mockFestivalService;
+  late MockFestivalDetailService mockDetailService;
   final calendarCalls = <MethodCall>[];
 
   setUpAll(() async {
@@ -73,6 +75,7 @@ void main() {
   setUp(() {
     mockCertService = MockCertificationService();
     mockFestivalService = MockFestivalInteractionService();
+    mockDetailService = MockFestivalDetailService();
     if (sl.isRegistered<CertificationService>()) {
       sl.unregister<CertificationService>();
     }
@@ -81,6 +84,10 @@ void main() {
       sl.unregister<FestivalInteractionService>();
     }
     sl.registerSingleton<FestivalInteractionService>(mockFestivalService);
+    if (sl.isRegistered<FestivalDetailService>()) {
+      sl.unregister<FestivalDetailService>();
+    }
+    sl.registerSingleton<FestivalDetailService>(mockDetailService);
 
     when(() => mockFestivalService.isLiked(any())).thenAnswer((_) async => false);
     when(() => mockFestivalService.isAttending(any())).thenAnswer((_) async => false);
@@ -89,6 +96,7 @@ void main() {
     when(() => mockCertService.getFestivalRating(any())).thenAnswer(
       (_) async => const FestivalRatingSummary(averageRating: 0, ratingCount: 0),
     );
+    when(() => mockDetailService.fetchTicketLinks(any())).thenAnswer((_) async => []);
 
     calendarCalls.clear();
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -107,6 +115,9 @@ void main() {
     }
     if (sl.isRegistered<FestivalInteractionService>()) {
       sl.unregister<FestivalInteractionService>();
+    }
+    if (sl.isRegistered<FestivalDetailService>()) {
+      sl.unregister<FestivalDetailService>();
     }
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(const MethodChannel('add_2_calendar'), null);
@@ -357,15 +368,11 @@ void main() {
     });
 
     testWidgets('예매 링크가 있으면 티켓 버튼을 탭했을 때 링크 목록 시트가 열린다', (tester) async {
-      await pump(
-        tester,
-        poster: _poster(
-          id: 1,
-          ticketLinks: [
+      when(() => mockDetailService.fetchTicketLinks(1)).thenAnswer((_) async => [
             TicketLink(label: '인터파크', url: 'https://tickets.interpark.com/example'),
-          ],
-        ),
-      );
+          ]);
+
+      await pump(tester, poster: _poster(id: 1));
 
       expect(find.text('action_ticket'.tr()), findsOneWidget);
 

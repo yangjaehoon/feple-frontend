@@ -7,6 +7,9 @@ class AppDimens {
   // ── AppBar ──
   static const double appBarHeight = 64.0; // M3 Top App Bar 공식 높이
 
+  // ── Cupertino picker (iOS 전용 모달 시트) ──
+  static const double cupertinoPickerHeight = 260.0;
+
   // ── Scroll padding (Stack 레이아웃에서 앱바/탭바 가림 방지) ──
   static const double scrollPaddingBottom = 80.0;
   static const double scrollPaddingBottomLarge = 120.0;

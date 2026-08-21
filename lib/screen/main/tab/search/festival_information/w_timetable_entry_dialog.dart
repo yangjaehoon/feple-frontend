@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/timetable_colors.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
@@ -5,6 +7,7 @@ import 'package:feple/common/dart/extension/time_of_day_extension.dart';
 import 'package:feple/model/my_timetable_entry.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// [TimetableEntryDialog]가 반환하는 결과 — 저장(entry 포함) 또는 삭제.
@@ -76,14 +79,52 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
     if (picked != null && mounted) setState(() => _end = picked);
   }
 
-  Future<TimeOfDay?> _showTimePicker(TimeOfDay initial) => showTimePicker(
-    context: context,
-    initialTime: initial,
-    builder: (ctx, child) => MediaQuery(
-      data: MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: true),
-      child: child!,
-    ),
-  );
+  Future<TimeOfDay?> _showTimePicker(TimeOfDay initial) {
+    if (Platform.isIOS) return _showCupertinoTimePicker(initial);
+    return showTimePicker(
+      context: context,
+      initialTime: initial,
+      builder: (ctx, child) => MediaQuery(
+        data: MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: true),
+        child: child!,
+      ),
+    );
+  }
+
+  Future<TimeOfDay?> _showCupertinoTimePicker(TimeOfDay initial) {
+    var selected = initial;
+    final now = DateTime.now();
+    return showCupertinoModalPopup<TimeOfDay>(
+      context: context,
+      builder: (ctx) => Container(
+        height: AppDimens.cupertinoPickerHeight,
+        color: CupertinoColors.systemBackground.resolveFrom(ctx),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                CupertinoButton(
+                  onPressed: () => Navigator.pop(ctx, selected),
+                  child: Text('done'.tr()),
+                ),
+              ],
+            ),
+            Expanded(
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.time,
+                use24hFormat: true,
+                initialDateTime:
+                    DateTime(now.year, now.month, now.day, initial.hour, initial.minute),
+                onDateTimeChanged: (dt) =>
+                    selected = TimeOfDay(hour: dt.hour, minute: dt.minute),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   int _toMins(TimeOfDay t) => t.hour * 60 + t.minute;
 
@@ -184,7 +225,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
     final valid =
         _labelCtrl.text.trim().isNotEmpty && _toMins(_end) > _toMins(_start);
 
-    return AlertDialog(
+    return AlertDialog.adaptive(
       backgroundColor: colors.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDimens.cardRadius),

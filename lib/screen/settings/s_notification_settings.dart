@@ -134,7 +134,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     return SettingsItem(
       icon: icon,
       label: label,
-      trailing: Switch(
+      trailing: Switch.adaptive(
         value: value,
         onChanged: _saving ? null : onChanged,
         activeThumbColor: colors.activate,

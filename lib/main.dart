@@ -108,7 +108,7 @@ class _MyAppState extends State<MyApp> {
         await showDialog<void>(
           context: ctx,
           barrierDismissible: false,
-          builder: (dialogCtx) => AlertDialog(
+          builder: (dialogCtx) => AlertDialog.adaptive(
             title: Text('account_banned_title'.tr()),
             content: Text('account_banned_message'.tr()),
             actions: [

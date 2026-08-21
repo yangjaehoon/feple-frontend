@@ -196,7 +196,7 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
       SettingsItem(
         icon: isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
         label: 'dark_mode'.tr(),
-        trailing: Switch(
+        trailing: Switch.adaptive(
           value: isDark,
           onChanged: (_) => ThemeUtil.toggleTheme(context),
           activeThumbColor: colors.activate,
@@ -206,7 +206,7 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
       SettingsItem(
         icon: Icons.schedule_rounded,
         label: 'timetable_current_time_line'.tr(),
-        trailing: Switch(
+        trailing: Switch.adaptive(
           value: _showCurrentTimeLine,
           onChanged: _toggleShowCurrentTimeLine,
           activeThumbColor: colors.activate,

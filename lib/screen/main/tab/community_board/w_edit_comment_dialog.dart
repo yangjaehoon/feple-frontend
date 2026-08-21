@@ -39,7 +39,7 @@ class _EditCommentDialogState extends State<EditCommentDialog> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    return AlertDialog(
+    return AlertDialog.adaptive(
       backgroundColor: colors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(AppDimens.shapeDialog)),

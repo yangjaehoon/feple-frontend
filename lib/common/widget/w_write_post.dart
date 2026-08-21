@@ -335,7 +335,7 @@ class _WritePostState extends State<WritePost> {
           behavior: HitTestBehavior.opaque,
           child: Row(
             children: [
-              Switch(
+              Switch.adaptive(
                 value: _anonymous,
                 onChanged: (v) => setState(() => _anonymous = v),
                 activeThumbColor: colors.activate,

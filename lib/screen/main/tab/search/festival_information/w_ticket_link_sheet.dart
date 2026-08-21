@@ -85,7 +85,7 @@ class TicketLinkSheet extends StatelessWidget {
   Widget _buildVendorIcon(AbstractThemeColors colors, TicketLink link) {
     final logoAsset = link.vendorLogoAsset;
     if (logoAsset == null) {
-      return Icon(Icons.confirmation_number_outlined, color: colors.activate, size: AppDimens.iconSizeLg);
+      return _buildFallbackIcon(colors);
     }
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
@@ -94,7 +94,16 @@ class TicketLinkSheet extends StatelessWidget {
         width: 28,
         height: 28,
         fit: BoxFit.cover,
+        // 원본이 표시 크기(28)보다 훨씬 큰 에셋도 있어 필요 이상 해상도로
+        // 디코딩되지 않게 캡 — 3배 밀도 화면 기준.
+        cacheWidth: 84,
+        cacheHeight: 84,
+        errorBuilder: (_, _, _) => _buildFallbackIcon(colors),
       ),
     );
+  }
+
+  Widget _buildFallbackIcon(AbstractThemeColors colors) {
+    return Icon(Icons.confirmation_number_outlined, color: colors.activate, size: AppDimens.iconSizeLg);
   }
 }

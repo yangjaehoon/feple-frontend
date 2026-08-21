@@ -305,13 +305,32 @@ class FestivalPosterState extends State<FestivalPoster> {
   Widget _buildRatingBadge() {
     if (!_notifier.ratingLoaded) return const SizedBox.shrink();
     if (_notifier.ratingLoadFailed) return const SizedBox.shrink();
-    if (_notifier.ratingCount == 0) {
-      return Semantics(
-        button: true,
-        label: 'reviews_no_reviews'.tr(),
-        child: GestureDetector(
-          onTap: _showReviews,
-          child: Row(
+
+    final hasRating = _notifier.ratingCount > 0;
+    final label = hasRating
+        ? 'rating_average_label'.tr(
+            args: [
+              _notifier.averageRating.toStringAsFixed(1),
+              _notifier.ratingCount.toString(),
+            ],
+          )
+        : 'reviews_no_reviews'.tr();
+    final content = hasRating
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              StarRatingRow(rating: _notifier.averageRating, size: 18),
+              const SizedBox(width: 4),
+              Text(
+                '(${_notifier.ratingCount})',
+                style: TextStyle(
+                  fontSize: AppDimens.fontSizeXxs,
+                  color: Colors.white.withValues(alpha: 0.65),
+                ),
+              ),
+            ],
+          )
+        : Row(
             mainAxisSize: MainAxisSize.min,
             children: List.generate(
               5,
@@ -321,33 +340,18 @@ class FestivalPosterState extends State<FestivalPoster> {
                 size: 18,
               ),
             ),
-          ),
-        ),
-      );
-    }
+          );
+
     return Semantics(
       button: true,
-      label: 'rating_average_label'.tr(
-        args: [
-          _notifier.averageRating.toStringAsFixed(1),
-          _notifier.ratingCount.toString(),
-        ],
-      ),
+      label: label,
       child: GestureDetector(
         onTap: _showReviews,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            StarRatingRow(rating: _notifier.averageRating, size: 18),
-            const SizedBox(width: 4),
-            Text(
-              '(${_notifier.ratingCount})',
-              style: TextStyle(
-                fontSize: AppDimens.fontSizeXxs,
-                color: Colors.white.withValues(alpha: 0.65),
-              ),
-            ),
-          ],
+        // 별 아이콘/텍스트만큼만 히트 영역이 생기면 최소 터치 타겟보다 작아져
+        // 탭하기 어려우므로 세로로 최소 44dp를 확보한다.
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: AppDimens.minTouchTarget),
+          child: Align(alignment: Alignment.centerLeft, child: content),
         ),
       ),
     );

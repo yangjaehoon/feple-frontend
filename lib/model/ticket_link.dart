@@ -16,7 +16,11 @@ enum TicketVendor {
     final host = Uri.tryParse(url)?.host.toLowerCase();
     if (host == null || host.isEmpty) return null;
     for (final vendor in TicketVendor.values) {
-      if (vendor.domains.any((domain) => host.contains(domain))) return vendor;
+      // host.contains(domain)는 'yes24.com.evil.net' 같은 호스트도 매칭시킬 수
+      // 있으므로, 정확히 그 도메인이거나 그 서브도메인일 때만 매칭한다.
+      if (vendor.domains.any((domain) => host == domain || host.endsWith('.$domain'))) {
+        return vendor;
+      }
     }
     return null;
   }

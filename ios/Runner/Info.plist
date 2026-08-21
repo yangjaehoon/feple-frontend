@@ -37,8 +37,6 @@
 		<string>주변 페스티벌 정보를 제공하기 위해 위치 접근 권한이 필요합니다.</string>
 		<key>NSCalendarsUsageDescription</key>
 		<string>페스티벌 일정을 기기 캘린더에 저장하기 위해 캘린더 접근 권한이 필요합니다.</string>
-		<key>NSContactsUsageDescription</key>
-		<string>캘린더에 일정을 추가할 때 위치 입력 화면에서 필요할 수 있습니다.</string>
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>CFBundleDisplayName</key>

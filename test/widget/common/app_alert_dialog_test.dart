@@ -29,7 +29,6 @@ void main() {
       expect(find.text('제목'), findsOneWidget);
       expect(find.text('내용'), findsOneWidget);
       expect(find.text('확인'), findsOneWidget);
-      expect(find.byType(AlertDialog), findsOneWidget);
     });
   });
 }

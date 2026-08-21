@@ -51,6 +51,7 @@ class AppDimens {
   // ── Icon ──
   static const double iconSizeSm = 14.0;
   static const double iconSizeMd = 16.0;
+  static const double iconSizeLg = 20.0;
 
   // ── Font ──
   static const double fontSizeHero = 30.0;     // 아티스트 이름 등 히어로 텍스트

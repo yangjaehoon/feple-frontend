@@ -15,12 +15,11 @@ class CalendarHelper {
   }) async {
     final start = startDate != null ? DateTime.tryParse(startDate) : null;
     if (start == null) {
-      context.showErrorSnackbar('add_to_calendar_no_date'.tr());
+      if (context.mounted) context.showErrorSnackbar('add_to_calendar_no_date'.tr());
       return;
     }
-    final end = endDate != null
-        ? (DateTime.tryParse(endDate) ?? start).add(const Duration(days: 1))
-        : start.add(const Duration(days: 1));
+    final parsedEnd = endDate != null ? DateTime.tryParse(endDate) : null;
+    final end = (parsedEnd ?? start).add(const Duration(days: 1));
 
     await Add2Calendar.addEvent2Cal(
       Event(

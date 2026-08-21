@@ -51,9 +51,12 @@ class ArtistScheduleState extends State<ArtistSchedule>
             title: 'artist_schedule_title'.tr(args: [widget.artistName]),
             headerColor: colors.activate,
             onTap: _openScheduleList,
+            // event_note_rounded로 event_available_rounded(캘린더에 실제 추가하는
+            // 아이콘, w_schedule_list_tile.dart)와 구분 — 이 버튼은 추가가 아니라
+            // 전체 일정 화면으로 이동만 하므로 같은 아이콘을 쓰면 오해를 유발한다.
             trailing: IconButton(
-              icon: const Icon(Icons.event_available_rounded),
-              iconSize: 20,
+              icon: const Icon(Icons.event_note_rounded),
+              iconSize: AppDimens.iconSizeLg,
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
               color: colors.activate,

@@ -161,7 +161,7 @@ void main() {
       await pump(tester);
       await tester.pump();
 
-      await tester.tap(find.byIcon(Icons.event_available_rounded));
+      await tester.tap(find.byIcon(Icons.event_note_rounded));
       await tester.pumpAndSettle();
 
       expect(find.byType(ArtistScheduleListScreen), findsOneWidget);

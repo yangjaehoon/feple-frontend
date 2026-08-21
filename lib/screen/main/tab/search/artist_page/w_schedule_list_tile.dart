@@ -81,7 +81,7 @@ class _ScheduleListTileState extends State<ScheduleListTile>
       message: 'add_to_calendar'.tr(),
       child: IconButton(
         icon: const Icon(Icons.event_available_rounded),
-        iconSize: 18,
+        iconSize: AppDimens.iconSizeLg,
         padding: EdgeInsets.zero,
         constraints: const BoxConstraints(),
         color: _c(colors.activate),

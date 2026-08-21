@@ -286,8 +286,7 @@ class FestivalPosterState extends State<FestivalPoster> {
 
   Widget _buildInfoRow(AbstractThemeColors colors) {
     // 2:3 비율(120x180 기준) 유지하며 화면 너비에 비례 — SingleChildScrollView
-    // 안이라 오버플로우 위험 없이 캡 없는 ResponsiveSize 사용 가능. build당 한 번만
-    // 계산해 아래 두 곳(썸네일/평점 배지)에 그대로 전달한다.
+    // 안이라 오버플로우 위험 없이 캡 없는 ResponsiveSize 사용 가능.
     final posterWidth = ResponsiveSize(context).w(120);
     final posterHeight = posterWidth * 1.5;
     return Padding(
@@ -295,17 +294,7 @@ class FestivalPosterState extends State<FestivalPoster> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildPosterThumbnail(colors, posterWidth, posterHeight),
-              const SizedBox(height: 8),
-              ListenableBuilder(
-                listenable: _notifier,
-                builder: (_, _) => _buildRatingBadge(posterWidth),
-              ),
-            ],
-          ),
+          _buildPosterThumbnail(colors, posterWidth, posterHeight),
           const SizedBox(width: 16),
           Expanded(child: _buildInfoColumn(colors)),
         ],
@@ -313,7 +302,7 @@ class FestivalPosterState extends State<FestivalPoster> {
     );
   }
 
-  Widget _buildRatingBadge(double posterWidth) {
+  Widget _buildRatingBadge() {
     if (!_notifier.ratingLoaded) return const SizedBox.shrink();
     if (_notifier.ratingLoadFailed) return const SizedBox.shrink();
     if (_notifier.ratingCount == 0) {
@@ -322,17 +311,14 @@ class FestivalPosterState extends State<FestivalPoster> {
         label: 'reviews_no_reviews'.tr(),
         child: GestureDetector(
           onTap: _showReviews,
-          child: SizedBox(
-            width: posterWidth,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                5,
-                (_) => const Icon(
-                  Icons.star_outline_rounded,
-                  color: Colors.white60,
-                  size: 20,
-                ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: List.generate(
+              5,
+              (_) => const Icon(
+                Icons.star_outline_rounded,
+                color: Colors.white60,
+                size: 18,
               ),
             ),
           ),
@@ -349,22 +335,19 @@ class FestivalPosterState extends State<FestivalPoster> {
       ),
       child: GestureDetector(
         onTap: _showReviews,
-        child: SizedBox(
-          width: posterWidth,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              StarRatingRow(rating: _notifier.averageRating, size: 18),
-              const SizedBox(width: 4),
-              Text(
-                '(${_notifier.ratingCount})',
-                style: TextStyle(
-                  fontSize: AppDimens.fontSizeXxs,
-                  color: Colors.white.withValues(alpha: 0.65),
-                ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            StarRatingRow(rating: _notifier.averageRating, size: 18),
+            const SizedBox(width: 4),
+            Text(
+              '(${_notifier.ratingCount})',
+              style: TextStyle(
+                fontSize: AppDimens.fontSizeXxs,
+                color: Colors.white.withValues(alpha: 0.65),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -481,7 +464,8 @@ class FestivalPosterState extends State<FestivalPoster> {
 
   // attending row를 attendingChanges로 개별 구독 — 참석 토글이 다른 정보까지
   // 리빌드시키지 않게 함. 초기화 에러는 여러 로더가 공통으로 건드리므로 전체
-  // notifier 구독 유지(자주 발생하지 않고 위젯도 가벼움).
+  // notifier 구독 유지(자주 발생하지 않고 위젯도 가벼움). 평점 배지는 원래
+  // 포스터 썸네일 아래(왼쪽 칸)에 있었는데, 참석예정 바로 아래로 옮겨왔다.
   Widget _buildInfoColumnBottom(AbstractThemeColors colors) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -499,6 +483,11 @@ class FestivalPosterState extends State<FestivalPoster> {
                   child: _buildInitErrorRow(),
                 )
               : const SizedBox.shrink(),
+        ),
+        const SizedBox(height: 6),
+        ListenableBuilder(
+          listenable: _notifier,
+          builder: (_, _) => _buildRatingBadge(),
         ),
       ],
     );

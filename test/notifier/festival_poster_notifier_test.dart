@@ -7,7 +7,6 @@ import 'package:feple/screen/main/tab/search/festival_information/festival_poste
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
-import 'package:feple/service/festival_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,7 +14,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class MockCertificationService extends Mock implements CertificationService {}
 class MockFestivalInteractionService extends Mock implements FestivalInteractionService {}
 class MockFestivalDetailService extends Mock implements FestivalDetailService {}
-class MockFestivalService extends Mock implements FestivalService {}
 
 FestivalModel _testPoster(int id, {String title = '펜타포트'}) => FestivalModel(
       id: id,
@@ -33,7 +31,6 @@ void main() {
   late MockCertificationService mockCertService;
   late MockFestivalInteractionService mockFestivalInteractionService;
   late MockFestivalDetailService mockDetailService;
-  late MockFestivalService mockFestivalDataService;
 
   setUpAll(() async {
     SharedPreferences.setMockInitialValues({});
@@ -44,7 +41,6 @@ void main() {
     mockCertService = MockCertificationService();
     mockFestivalInteractionService = MockFestivalInteractionService();
     mockDetailService = MockFestivalDetailService();
-    mockFestivalDataService = MockFestivalService();
   });
 
   FestivalPosterNotifier make(int festivalId, {FestivalModel? poster}) => FestivalPosterNotifier(
@@ -52,7 +48,6 @@ void main() {
         certService: mockCertService,
         festivalService: mockFestivalInteractionService,
         detailService: mockDetailService,
-        festivalDataService: mockFestivalDataService,
       );
 
   group('loadMyCertificationStatus', () {
@@ -165,26 +160,15 @@ void main() {
     });
   });
 
-  group('refreshPoster', () {
-    test('상세 API가 최신 정보를 반환하면 poster를 통째로 교체', () async {
-      when(() => mockFestivalDataService.fetchById(5))
-          .thenAnswer((_) async => _testPoster(5, title: '펜타포트 2026 최신판'));
-
+  group('updatePoster', () {
+    test('poster를 통째로 교체하고 attendingCount는 재동기화하지 않는다', () {
       final notifier = make(5, poster: _testPoster(5, title: '캐시된 옛날 제목'));
-      await notifier.refreshPoster();
+      notifier.attendingCount = 3; // 낙관적 토글로 이미 바뀐 상태를 흉내
+
+      notifier.updatePoster(_testPoster(5, title: '펜타포트 2026 최신판'));
 
       expect(notifier.poster.title, '펜타포트 2026 최신판');
-    });
-
-    test('서비스 예외 시 호출부가 넘겨준 poster를 그대로 유지 (hasInitError 미설정)', () async {
-      when(() => mockFestivalDataService.fetchById(5)).thenThrow(Exception('err'));
-      final seedPoster = _testPoster(5, title: '목록에서 넘어온 제목');
-
-      final notifier = make(5, poster: seedPoster);
-      await expectLater(notifier.refreshPoster(), completes);
-
-      expect(notifier.poster.title, '목록에서 넘어온 제목');
-      expect(notifier.hasInitError, false);
+      expect(notifier.attendingCount, 3);
     });
   });
 

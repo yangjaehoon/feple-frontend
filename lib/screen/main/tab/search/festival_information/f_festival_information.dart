@@ -35,10 +35,11 @@ class _FestivalInformationFragmentState
   final _mapKey = GlobalKey<FestivalBoothMapState>();
 
   // 홈/목록/검색 등에서 넘어온 widget.poster는 미리보기·캐시 데이터라
-  // startDate/endDate/latitude/longitude 등이 오래됐을 수 있다 — 아티스트/게시판
-  // 섹션과 달리 타임테이블·부스맵은 이 값을 생성 시점에만 쓰므로, 최초 페인트는
-  // widget.poster로 즉시 보여주고 곧바로 상세 재조회 결과로 갈아끼운다.
-  // (FestivalPoster 자신은 별도로 자체 재조회하므로 여기서 건드리지 않는다.)
+  // startDate/endDate/latitude/longitude 등이 오래됐을 수 있다 — 최초 페인트는
+  // widget.poster로 즉시 보여주고 곧바로 상세 재조회 결과로 갈아끼워 모든 하위
+  // 섹션(FestivalPoster 포함)에 전달한다. 재조회는 여기 한 곳에서만 한다 —
+  // FestivalPoster가 스스로 또 재조회하면 같은 API를 화면 진입마다 두 번
+  // 호출하게 된다.
   late FestivalModel _poster;
 
   @override
@@ -98,7 +99,7 @@ class _FestivalInformationFragmentState
           children: [
             FestivalPoster(
               key: _posterKey,
-              poster: widget.poster,
+              poster: _poster,
               heroTag: widget.heroTag,
             ),
             const SizedBox(height: 16),

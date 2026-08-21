@@ -17,7 +17,6 @@ import 'package:feple/screen/main/tab/search/festival_information/w_weather_bott
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
-import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,7 +26,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class MockCertificationService extends Mock implements CertificationService {}
 class MockFestivalInteractionService extends Mock implements FestivalInteractionService {}
 class MockFestivalDetailService extends Mock implements FestivalDetailService {}
-class MockFestivalService extends Mock implements FestivalService {}
 
 // 날씨 시트가 sl<FestivalDetailService>() 없이 "너무 이른 조회" 분기를 타도록
 // 항상 현재 시각 기준으로 충분히 먼 미래 날짜를 기본값으로 쓴다 — 고정 날짜는
@@ -67,7 +65,6 @@ void main() {
   late MockCertificationService mockCertService;
   late MockFestivalInteractionService mockFestivalService;
   late MockFestivalDetailService mockDetailService;
-  late MockFestivalService mockFestivalDataService;
   final calendarCalls = <MethodCall>[];
 
   setUpAll(() async {
@@ -79,7 +76,6 @@ void main() {
     mockCertService = MockCertificationService();
     mockFestivalService = MockFestivalInteractionService();
     mockDetailService = MockFestivalDetailService();
-    mockFestivalDataService = MockFestivalService();
     if (sl.isRegistered<CertificationService>()) {
       sl.unregister<CertificationService>();
     }
@@ -92,10 +88,6 @@ void main() {
       sl.unregister<FestivalDetailService>();
     }
     sl.registerSingleton<FestivalDetailService>(mockDetailService);
-    if (sl.isRegistered<FestivalService>()) {
-      sl.unregister<FestivalService>();
-    }
-    sl.registerSingleton<FestivalService>(mockFestivalDataService);
 
     when(() => mockFestivalService.isLiked(any())).thenAnswer((_) async => false);
     when(() => mockFestivalService.isAttending(any())).thenAnswer((_) async => false);
@@ -127,24 +119,11 @@ void main() {
     if (sl.isRegistered<FestivalDetailService>()) {
       sl.unregister<FestivalDetailService>();
     }
-    if (sl.isRegistered<FestivalService>()) {
-      sl.unregister<FestivalService>();
-    }
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(const MethodChannel('add_2_calendar'), null);
   });
 
-  // freshPoster: 상세 재조회(fetchById)가 반환할 값 — 지정하지 않으면 poster를
-  // 그대로 되돌려줘(echo) 재조회 전후로 화면 내용이 달라지지 않게 한다.
-  // "최신 정보로 갱신되는가" 자체를 검증하는 테스트만 다른 값을 넘기면 된다.
-  Future<void> pump(
-    WidgetTester tester, {
-    required FestivalModel poster,
-    FestivalModel? freshPoster,
-  }) async {
-    when(() => mockFestivalDataService.fetchById(poster.id))
-        .thenAnswer((_) async => freshPoster ?? poster);
-
+  Future<void> pump(WidgetTester tester, {required FestivalModel poster}) async {
     SharedPreferences.setMockInitialValues({});
     await EasyLocalization.ensureInitialized();
     tester.view.physicalSize = const Size(1080, 2400);
@@ -381,24 +360,17 @@ void main() {
     });
   });
 
-  group('FestivalPoster 최신 정보 재조회', () {
-    // 홈/목록/검색 등에서 넘어온 FestivalModel은 미리보기·캐시 데이터라 오래됐을
-    // 수 있다 — 상세 화면은 항상 GET /festivals/{id}로 다시 조회해 최신 값으로
-    // 덮어써야 한다(이 검증이 빠져 있어서 예매 링크 버튼이 한동안 전혀 안 뜨는
-    // 사고가 있었다).
-    testWidgets('목록에서 넘어온 오래된 제목이어도 상세 재조회 후 최신 제목으로 갱신된다', (tester) async {
-      await pump(
-        tester,
-        poster: _poster(id: 1, title: '캐시된 옛날 제목'),
-        freshPoster: _poster(id: 1, title: '최신 제목'),
-      );
+  group('FestivalPoster 최신 정보 반영', () {
+    // FestivalPoster는 스스로 재조회하지 않는다 — FestivalInformationFragment가
+    // 상세 재조회 결과를 poster 프로퍼티로 다시 넘겨주면(같은 GlobalKey라
+    // didUpdateWidget이 호출됨) 그걸 받아 화면을 갱신해야 한다. 위젯이
+    // 스스로 fetchById를 또 호출하면 화면 진입마다 상세 API가 두 번
+    // 불리는 회귀이므로, 이 테스트는 그 재조회 없이도 프로퍼티 변경만으로
+    // 갱신되는지를 검증한다.
+    testWidgets('poster 프로퍼티가 바뀌면 최신 제목으로 다시 그려진다', (tester) async {
+      await pump(tester, poster: _poster(id: 1, title: '캐시된 옛날 제목'));
 
-      expect(find.text('최신 제목'), findsOneWidget);
-      expect(find.text('캐시된 옛날 제목'), findsNothing);
-    });
-
-    testWidgets('상세 재조회에 실패하면 처음 넘겨받은 정보를 그대로 보여준다', (tester) async {
-      when(() => mockFestivalDataService.fetchById(1)).thenThrow(Exception('네트워크 오류'));
+      expect(find.text('캐시된 옛날 제목'), findsOneWidget);
 
       await tester.pumpWidget(
         EasyLocalization(
@@ -413,7 +385,7 @@ void main() {
             child: MaterialApp(
               home: Scaffold(
                 body: SingleChildScrollView(
-                  child: FestivalPoster(poster: _poster(id: 1, title: '넘겨받은 제목')),
+                  child: FestivalPoster(poster: _poster(id: 1, title: '최신 제목')),
                 ),
               ),
             ),
@@ -421,10 +393,9 @@ void main() {
         ),
       );
       await tester.pump();
-      await tester.pump();
 
-      expect(find.text('넘겨받은 제목'), findsOneWidget);
-      expect(find.text('retry'.tr()), findsNothing); // 비필수 갱신 실패로 재시도 안내를 띄우지 않음
+      expect(find.text('최신 제목'), findsOneWidget);
+      expect(find.text('캐시된 옛날 제목'), findsNothing);
     });
   });
 
@@ -484,8 +455,6 @@ void main() {
         callCount++;
         return false;
       });
-      when(() => mockFestivalDataService.fetchById(1))
-          .thenAnswer((_) async => _poster(id: 1));
 
       final key = GlobalKey<FestivalPosterState>();
       SharedPreferences.setMockInitialValues({});

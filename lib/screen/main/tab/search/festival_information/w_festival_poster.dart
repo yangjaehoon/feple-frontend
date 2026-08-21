@@ -13,7 +13,6 @@ import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
-import 'package:feple/service/festival_service.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -51,12 +50,22 @@ class FestivalPosterState extends State<FestivalPoster> {
       certService: sl<CertificationService>(),
       festivalService: sl<FestivalInteractionService>(),
       detailService: sl<FestivalDetailService>(),
-      festivalDataService: sl<FestivalService>(),
       onError: (key) {
         if (mounted) context.showErrorSnackbar(key.tr());
       },
     );
     _notifier.init();
+  }
+
+  // FestivalInformationFragment가 상세 재조회 후 새 FestivalModel로 다시
+  // 그려주면 그 결과를 반영한다 — FestivalPoster 자신은 재조회하지 않는다
+  // (같은 festivalId를 화면 진입마다 두 번 조회하지 않기 위함).
+  @override
+  void didUpdateWidget(FestivalPoster oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.poster != widget.poster) {
+      _notifier.updatePoster(widget.poster);
+    }
   }
 
   @override

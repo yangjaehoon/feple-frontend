@@ -179,12 +179,13 @@ void main() {
 
   group('FestivalInformationFragment 상세 재조회', () {
     // 홈/목록/검색에서 넘어온 poster는 캐시·미리보기 데이터라 startDate/endDate가
-    // 오래됐을 수 있다 — 상세 재조회 결과가 실제로 하위 섹션(타임테이블/부스맵)
-    // 위젯의 프로퍼티까지 흘러 들어가는지 검증한다.
-    testWidgets('상세 재조회 결과의 최신 날짜/좌표가 타임테이블·부스맵에 전달된다', (tester) async {
+    // 오래됐을 수 있다 — 상세 재조회 결과가 실제로 하위 섹션(타임테이블/부스맵/
+    // 포스터) 위젯의 프로퍼티까지 흘러 들어가는지, 그리고 GET /festivals/{id}가
+    // 딱 한 번만 호출되는지(FestivalPoster가 예전처럼 또 재조회하면 회귀) 검증한다.
+    testWidgets('상세 재조회 결과의 최신 정보가 포스터·타임테이블·부스맵에 전달되고, 조회는 한 번만 일어난다', (tester) async {
       when(() => mockFestivalDataService.fetchById(1)).thenAnswer((_) async => FestivalModel(
             id: 1,
-            title: '펜타포트',
+            title: '최신 제목',
             description: '',
             location: '인천 송도달빛축제공원',
             startDate: '2026-09-10',
@@ -197,6 +198,9 @@ void main() {
       await pump(tester);
       await tester.pump();
 
+      final poster = tester.widget<FestivalPoster>(find.byType(FestivalPoster));
+      expect(poster.poster.title, '최신 제목');
+
       final timetable = tester.widget<FestivalTimetable>(find.byType(FestivalTimetable));
       expect(timetable.startDate, '2026-09-10');
       expect(timetable.endDate, '2026-09-12');
@@ -204,6 +208,8 @@ void main() {
       final boothMap = tester.widget<FestivalBoothMap>(find.byType(FestivalBoothMap));
       expect(boothMap.festivalLat, 35.1);
       expect(boothMap.festivalLng, 129.0);
+
+      verify(() => mockFestivalDataService.fetchById(1)).called(1);
     });
   });
 
@@ -219,6 +225,9 @@ void main() {
       verify(() => mockDetailService.fetchTimetable(1)).called(2);
       verify(() => mockDetailService.fetchBooths(1)).called(2);
       verify(() => mockDetailService.fetchSetlist(1)).called(2);
+      // 초기 진입 1회 + pull-to-refresh 1회 = 총 2회 — FestivalPoster가 별도로
+      // 또 재조회하면 이 값이 늘어나므로 중복 호출 회귀를 잡아낸다.
+      verify(() => mockFestivalDataService.fetchById(1)).called(2);
     });
   });
 }

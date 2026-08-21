@@ -28,7 +28,13 @@
 		<array>
 			<string>kakaokompassauth</string>
 			<string>kakaolink</string>
+			<!-- 카카오맵 앱 설치 여부 확인용 (w_festival_poster.dart의 _openKakaoMap) -->
+			<string>kakaomap</string>
 		</array>
+		<!-- 표준 HTTPS/TLS 외 별도 암호화를 사용하지 않음 — App Store Connect 업로드마다
+		     뜨는 수출 규정 준수 질문을 건너뛴다 -->
+		<key>ITSAppUsesNonExemptEncryption</key>
+		<false/>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>게시글 및 아티스트 사진 업로드를 위해 사진 라이브러리 접근 권한이 필요합니다.</string>
 		<key>NSCameraUsageDescription</key>

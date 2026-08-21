@@ -172,6 +172,45 @@ void main() {
     });
   });
 
+  group('FestivalBoothMap 위치 갱신', () {
+    // GoogleMap의 initialCameraPosition은 최초 생성 시에만 반영되므로,
+    // festivalLat/Lng가 뒤늦게 바뀌었을 때 didUpdateWidget이 예외 없이
+    // 처리되는지 확인한다(실제 카메라 이동은 네이티브 플랫폼 뷰 동작이라
+    // 위젯 테스트에서 직접 검증하기 어렵다).
+    testWidgets('festivalLat/Lng가 바뀌어도 예외 없이 갱신된다', (tester) async {
+      when(() => mockService.fetchBooths(1)).thenAnswer((_) async => []);
+
+      await pump(tester);
+      await tester.pump();
+      await tester.pump();
+
+      await tester.pumpWidget(
+        EasyLocalization(
+          supportedLocales: const [Locale('ko'), Locale('en')],
+          startLocale: const Locale('ko'),
+          fallbackLocale: const Locale('ko'),
+          path: 'assets/translations',
+          useOnlyLangCode: true,
+          child: CustomThemeHolder(
+            theme: CustomTheme.light,
+            changeTheme: (_) {},
+            child: MaterialApp(
+              home: Scaffold(
+                body: SingleChildScrollView(
+                  child: FestivalBoothMap(festivalId: 1, festivalLat: 35.1, festivalLng: 129.0),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(tester.takeException(), isNull);
+      expect(find.byType(GoogleMap), findsOneWidget);
+    });
+  });
+
   group('FestivalBoothMap 새로고침', () {
     testWidgets('refresh() 호출 시 다시 불러온다', (tester) async {
       var callCount = 0;

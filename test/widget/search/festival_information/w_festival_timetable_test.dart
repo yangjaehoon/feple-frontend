@@ -190,6 +190,57 @@ void main() {
     });
   });
 
+  group('FestivalTimetable 날짜 범위 갱신', () {
+    // FestivalInformationFragment가 상세 재조회 후 최신 startDate/endDate를
+    // 다시 넘겨줄 때, 이 위젯이 실제로 새 날짜 탭을 그리는지 검증한다 —
+    // entries 재조회 없이 TimetableNotifier.updateDateRange만으로 반영돼야 함.
+    testWidgets('startDate/endDate가 바뀌면 날짜 탭이 새 범위로 다시 그려진다', (tester) async {
+      when(() => mockDetailService.fetchTimetable(1)).thenAnswer((_) async => []);
+
+      await pump(tester);
+      await tester.pump();
+
+      expect(find.text(_day1), findsOneWidget);
+
+      final newDay1 = DateTime.now().add(const Duration(days: 60)).toYMD;
+      final newDay2 = DateTime.now().add(const Duration(days: 61)).toYMD;
+      final userProvider = MockUserProvider();
+      when(() => userProvider.currentUserId).thenReturn(1);
+
+      await tester.pumpWidget(
+        EasyLocalization(
+          supportedLocales: const [Locale('ko'), Locale('en')],
+          startLocale: const Locale('ko'),
+          fallbackLocale: const Locale('ko'),
+          path: 'assets/translations',
+          useOnlyLangCode: true,
+          child: CustomThemeHolder(
+            theme: CustomTheme.light,
+            changeTheme: (_) {},
+            child: ChangeNotifierProvider<UserProvider>.value(
+              value: userProvider,
+              child: MaterialApp(
+                home: Scaffold(
+                  body: FestivalTimetable(
+                    festivalId: 1,
+                    startDate: newDay1,
+                    endDate: newDay2,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text(newDay1), findsOneWidget);
+      expect(find.text(_day1), findsNothing);
+      // 날짜 범위만 바뀐 것이므로 entries는 다시 조회하지 않는다
+      verify(() => mockDetailService.fetchTimetable(1)).called(1);
+    });
+  });
+
   group('FestivalTimetable 새로고침', () {
     testWidgets('refresh() 호출 시 다시 불러온다', (tester) async {
       var callCount = 0;

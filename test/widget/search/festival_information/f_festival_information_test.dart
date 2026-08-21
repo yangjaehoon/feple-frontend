@@ -107,6 +107,7 @@ void main() {
     when(() => mockDetailService.fetchTimetable(any())).thenAnswer((_) async => []);
     when(() => mockDetailService.fetchBooths(any())).thenAnswer((_) async => []);
     when(() => mockDetailService.fetchSetlist(any())).thenAnswer((_) async => []);
+    when(() => mockDetailService.fetchTicketLinks(any())).thenAnswer((_) async => []);
     when(() => mockFestivalDataService.fetchById(any())).thenAnswer((_) async => _poster());
     when(() => mockPostService.fetchFestivalPopularPosts(any())).thenAnswer((_) async => []);
     when(() => mockNotificationCountable.getUnreadCount()).thenAnswer((_) async => 0);
@@ -173,6 +174,36 @@ void main() {
       expect(find.byType(FestivalBoothMap), findsOneWidget);
       expect(find.byType(FestivalSetlist), findsOneWidget);
       expect(find.text('펜타포트'), findsOneWidget);
+    });
+  });
+
+  group('FestivalInformationFragment 상세 재조회', () {
+    // 홈/목록/검색에서 넘어온 poster는 캐시·미리보기 데이터라 startDate/endDate가
+    // 오래됐을 수 있다 — 상세 재조회 결과가 실제로 하위 섹션(타임테이블/부스맵)
+    // 위젯의 프로퍼티까지 흘러 들어가는지 검증한다.
+    testWidgets('상세 재조회 결과의 최신 날짜/좌표가 타임테이블·부스맵에 전달된다', (tester) async {
+      when(() => mockFestivalDataService.fetchById(1)).thenAnswer((_) async => FestivalModel(
+            id: 1,
+            title: '펜타포트',
+            description: '',
+            location: '인천 송도달빛축제공원',
+            startDate: '2026-09-10',
+            endDate: '2026-09-12',
+            posterUrl: '',
+            latitude: 35.1,
+            longitude: 129.0,
+          ));
+
+      await pump(tester);
+      await tester.pump();
+
+      final timetable = tester.widget<FestivalTimetable>(find.byType(FestivalTimetable));
+      expect(timetable.startDate, '2026-09-10');
+      expect(timetable.endDate, '2026-09-12');
+
+      final boothMap = tester.widget<FestivalBoothMap>(find.byType(FestivalBoothMap));
+      expect(boothMap.festivalLat, 35.1);
+      expect(boothMap.festivalLng, 129.0);
     });
   });
 

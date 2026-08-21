@@ -60,6 +60,14 @@ class FestivalTimetableState extends State<FestivalTimetable>
     _notifier.fetch();
   }
 
+  @override
+  void didUpdateWidget(FestivalTimetable oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.startDate != widget.startDate || oldWidget.endDate != widget.endDate) {
+      _notifier.updateDateRange(widget.startDate, widget.endDate);
+    }
+  }
+
   void _syncVerticalScroll() {
     if (_isVerticalScrollLocked) return;
     _isVerticalScrollLocked = true;

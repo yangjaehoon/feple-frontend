@@ -46,6 +46,23 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
     _getUserLocation();
   }
 
+  // GoogleMap의 initialCameraPosition은 지도가 최초 생성될 때만 반영되고 이후
+  // widget 프로퍼티가 바뀌어도 자동으로 다시 이동하지 않는다 — festivalLat/Lng가
+  // 뒤늦게(상위 화면의 상세 재조회로) 갱신되면 카메라를 직접 옮겨줘야 한다.
+  @override
+  void didUpdateWidget(FestivalBoothMap oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final latChanged = oldWidget.festivalLat != widget.festivalLat;
+    final lngChanged = oldWidget.festivalLng != widget.festivalLng;
+    if ((latChanged || lngChanged) &&
+        widget.festivalLat != null &&
+        widget.festivalLng != null) {
+      _mapController?.animateCamera(
+        CameraUpdate.newLatLng(LatLng(widget.festivalLat!, widget.festivalLng!)),
+      );
+    }
+  }
+
   Future<void> _fetchBooths() async {
     if (mounted) setState(() { _isLoading = true; _hasError = false; });
     try {

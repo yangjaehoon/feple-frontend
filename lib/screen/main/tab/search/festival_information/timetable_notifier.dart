@@ -129,4 +129,19 @@ class TimetableNotifier extends SafeChangeNotifier {
     safeNotify();
     await fetch();
   }
+
+  // FestivalTimetable의 startDate/endDate가 뒤늦게(상위 화면의 상세 재조회로)
+  // 갱신되면 날짜 탭도 다시 계산해야 한다 — entries 자체는 festivalId만으로
+  // 조회되므로 재조회는 불필요, 날짜 목록만 다시 만든다.
+  void updateDateRange(String startDate, String endDate) {
+    final previousSelected = selectedDate;
+    dates = [];
+    error = null;
+    _buildDates(startDate, endDate);
+    if (previousSelected != null && dates.contains(previousSelected)) {
+      selectedDate = previousSelected;
+    }
+    _cachedRange = null;
+    safeNotify();
+  }
 }

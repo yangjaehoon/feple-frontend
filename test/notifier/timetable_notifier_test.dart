@@ -170,6 +170,45 @@ void main() {
     });
   });
 
+  group('updateDateRange', () {
+    test('새 범위로 날짜 목록을 다시 만든다', () {
+      final notifier = make(startDate: '2025-08-01', endDate: '2025-08-01');
+      expect(notifier.dates, ['2025-08-01']);
+
+      notifier.updateDateRange('2025-09-10', '2025-09-12');
+
+      expect(notifier.dates, ['2025-09-10', '2025-09-11', '2025-09-12']);
+    });
+
+    test('기존 선택 날짜가 새 범위에도 있으면 유지', () {
+      final notifier = make(startDate: '2025-08-01', endDate: '2025-08-03');
+      notifier.selectDate('2025-08-02');
+
+      notifier.updateDateRange('2025-08-01', '2025-08-05');
+
+      expect(notifier.selectedDate, '2025-08-02');
+    });
+
+    test('기존 선택 날짜가 새 범위에 없으면 새 범위의 기본값으로 대체', () {
+      final notifier = make(startDate: '2025-08-01', endDate: '2025-08-03');
+      notifier.selectDate('2025-08-03');
+
+      notifier.updateDateRange('2025-09-10', '2025-09-12');
+
+      expect(notifier.selectedDate, '2025-09-10');
+    });
+
+    test('이전 날짜 파싱 실패로 남아있던 error를 새 범위 성공 시 정리', () {
+      final notifier = make(startDate: 'not-a-date', endDate: '2025-08-03');
+      expect(notifier.error, isNotNull);
+
+      notifier.updateDateRange('2025-09-10', '2025-09-12');
+
+      expect(notifier.error, isNull);
+      expect(notifier.dates, ['2025-09-10', '2025-09-11', '2025-09-12']);
+    });
+  });
+
   group('retry', () {
     test('error 초기화 후 재요청, 성공 시 정상 상태 복구', () async {
       when(() => mockDetailService.fetchTimetable(1))

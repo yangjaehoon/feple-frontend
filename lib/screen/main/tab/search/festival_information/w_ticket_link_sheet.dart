@@ -58,7 +58,7 @@ class TicketLinkSheet extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: Row(
             children: [
-              Icon(Icons.confirmation_number_outlined, color: colors.activate, size: AppDimens.iconSizeLg),
+              _buildVendorIcon(colors, link),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -76,6 +76,24 @@ class TicketLinkSheet extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  // 인터파크(NOL)/예스24/멜론티켓/티켓링크처럼 URL 도메인으로 식별되는 예매처는
+  // 브랜드 로고를, 그 외에는 일반 티켓 아이콘을 보여준다.
+  Widget _buildVendorIcon(AbstractThemeColors colors, TicketLink link) {
+    final logoAsset = link.vendorLogoAsset;
+    if (logoAsset == null) {
+      return Icon(Icons.confirmation_number_outlined, color: colors.activate, size: AppDimens.iconSizeLg);
+    }
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+      child: Image.asset(
+        logoAsset,
+        width: 28,
+        height: 28,
+        fit: BoxFit.cover,
       ),
     );
   }

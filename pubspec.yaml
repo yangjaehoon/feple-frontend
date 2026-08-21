@@ -140,6 +140,7 @@ flutter:
     - assets/image/flag/
     - assets/image/splash/
     - assets/image/login/
+    - assets/image/ticket_vendors/
     - assets/translations/
 
   # An image asset can refer to one or more resolution-specific "variants", see

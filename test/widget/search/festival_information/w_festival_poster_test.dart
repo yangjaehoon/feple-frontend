@@ -11,6 +11,7 @@ import 'package:feple/model/my_certification_status.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_certification_bottom_sheet.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_poster.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_reviews_sheet.dart';
+import 'package:feple/screen/main/tab/search/festival_information/w_ticket_link_sheet.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_weather_bottom_sheet.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
@@ -42,6 +43,7 @@ FestivalModel _poster({
   int attendingCount = 0,
   String? startDate,
   String? endDate,
+  List<TicketLink> ticketLinks = const [],
 }) {
   return FestivalModel(
     id: id,
@@ -54,6 +56,7 @@ FestivalModel _poster({
     genres: genres,
     ageRestriction: ageRestriction,
     attendingCount: attendingCount,
+    ticketLinks: ticketLinks,
   );
 }
 
@@ -343,6 +346,35 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.byType(WeatherBottomSheet), findsOneWidget);
+    });
+  });
+
+  group('FestivalPoster 티켓 예매 링크', () {
+    testWidgets('예매 링크가 없으면 티켓 버튼을 보여주지 않는다', (tester) async {
+      await pump(tester, poster: _poster(id: 1));
+
+      expect(find.text('action_ticket'.tr()), findsNothing);
+    });
+
+    testWidgets('예매 링크가 있으면 티켓 버튼을 탭했을 때 링크 목록 시트가 열린다', (tester) async {
+      await pump(
+        tester,
+        poster: _poster(
+          id: 1,
+          ticketLinks: [
+            TicketLink(label: '인터파크', url: 'https://tickets.interpark.com/example'),
+          ],
+        ),
+      );
+
+      expect(find.text('action_ticket'.tr()), findsOneWidget);
+
+      await tester.tap(find.text('action_ticket'.tr()));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.byType(TicketLinkSheet), findsOneWidget);
+      expect(find.text('인터파크'), findsOneWidget);
     });
   });
 

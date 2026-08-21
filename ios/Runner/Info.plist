@@ -24,6 +24,14 @@
 		<string>680735056504-j01e6ljl3e7mpsbgoubeb2pfbvv5n3r6.apps.googleusercontent.com</string>
 		<key>GMSApiKey</key>
 		<string>$(GOOGLE_MAPS_API_KEY)</string>
+		<!-- 백엔드가 아직 TLS 없이 순수 HTTP(IP 직접 접속)로 서비스돼 ATS 기본 정책이면
+		     모든 API 호출이 iOS에서 차단됨. Android의 usesCleartextTraffic="true"와 동일한
+		     예외 — 백엔드에 도메인+TLS 인증서가 생기면 제거할 것 -->
+		<key>NSAppTransportSecurity</key>
+		<dict>
+			<key>NSAllowsArbitraryLoads</key>
+			<true/>
+		</dict>
 		<key>LSApplicationQueriesSchemes</key>
 		<array>
 			<string>kakaokompassauth</string>

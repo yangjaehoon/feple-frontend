@@ -1,5 +1,6 @@
-# firebase_core 4.x requires iOS 13.0+
-platform :ios, '13.0'
+# google_maps_flutter_ios는 14.0+, firebase-ios-sdk(auth/core/crashlytics/messaging/performance)는
+# 15.0+를 요구 — 둘 중 더 높은 쪽에 맞춤
+platform :ios, '15.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'

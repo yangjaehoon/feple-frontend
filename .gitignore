@@ -79,7 +79,7 @@ ios/Icon?
 ios/**/Pods/
 ios/**/.symlinks/
 ios/profile
-ios/xcuserdata
+ios/**/xcuserdata/
 ios/**/.generated/
 ios/Flutter/App.framework
 ios/Flutter/Flutter.framework

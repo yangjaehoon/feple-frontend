@@ -47,7 +47,11 @@
 		<string>게시글 및 아티스트 사진 업로드를 위해 사진 라이브러리 접근 권한이 필요합니다.</string>
 		<key>NSCameraUsageDescription</key>
 		<string>프로필 사진 촬영을 위해 카메라 접근 권한이 필요합니다.</string>
-<key>NSLocationWhenInUseUsageDescription</key>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>주변 페스티벌 정보를 제공하기 위해 위치 접근 권한이 필요합니다.</string>
+		<!-- 앱은 "항상 허용" 위치를 요청하지 않지만, geolocator 플러그인 바이너리가
+		     always-authorization API를 참조해 Apple 심사에서 이 키를 요구함(ITMS-90683) -->
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 		<string>주변 페스티벌 정보를 제공하기 위해 위치 접근 권한이 필요합니다.</string>
 		<key>NSCalendarsUsageDescription</key>
 		<string>페스티벌 일정을 기기 캘린더에 저장하기 위해 캘린더 접근 권한이 필요합니다.</string>

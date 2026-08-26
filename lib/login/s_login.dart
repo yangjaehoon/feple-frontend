@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/email_validator.dart';
 import 'package:feple/common/util/responsive_size.dart';
@@ -257,8 +259,12 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
       children: [
         _buildKakaoIconButton(),
         const SizedBox(width: 20),
-        _buildAppleIconButton(),
-        const SizedBox(width: 20),
+        // 안드로이드는 네이티브 Apple 로그인 API가 없어 별도의 웹 인증 설정
+        // (Services ID, 리다이렉트용 도메인)이 갖춰지기 전까지 버튼을 숨긴다.
+        if (Platform.isIOS) ...[
+          _buildAppleIconButton(),
+          const SizedBox(width: 20),
+        ],
         _buildGoogleIconButton(),
       ],
     );

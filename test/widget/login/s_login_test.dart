@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/login/s_forgot_password.dart';
@@ -21,7 +23,11 @@ void main() {
       expect(find.byType(AppTextField), findsNWidgets(2));
       expect(find.text('login'.tr()), findsOneWidget);
       expect(find.bySemanticsLabel('kakao_login_btn'.tr()), findsOneWidget);
-      expect(find.bySemanticsLabel('apple_login_btn'.tr()), findsOneWidget);
+      // Apple 로그인 버튼은 iOS에서만 노출 (Android는 별도 웹 인증 설정 전까지 숨김)
+      expect(
+        find.bySemanticsLabel('apple_login_btn'.tr()),
+        Platform.isIOS ? findsOneWidget : findsNothing,
+      );
       expect(find.bySemanticsLabel('google_login_btn'.tr()), findsOneWidget);
       expect(find.text('signup'.tr()), findsOneWidget);
       expect(find.text('forgot_password'.tr()), findsOneWidget);

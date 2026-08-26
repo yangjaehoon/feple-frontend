@@ -61,6 +61,7 @@ dependencies:
   #data
   collection: ^1.18.0
   shared_preferences: ^2.5.3
+  crypto: ^3.0.7
 
   #ui - resource
   easy_localization: ^3.0.1

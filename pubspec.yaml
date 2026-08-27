@@ -86,9 +86,6 @@ dependencies:
   package_info_plus: ^10.2.0
   in_app_review: ^2.0.9
 
-dependency_overrides:
-  geolocator_android: ^5.0.2
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

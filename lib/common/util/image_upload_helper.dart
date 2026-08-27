@@ -9,6 +9,15 @@ abstract final class ImageUploadHelper {
   static const String _contentType = 'image/jpeg';
   static const String _ext = 'jpg';
 
+  /// 원본 이미지 바이트를 JPEG로 압축한다. presign/S3 흐름뿐 아니라 백엔드
+  /// 멀티파트 업로드(프로필 사진 등)에서도 재사용해 "원본 12MP 그대로 전송"을 막는다.
+  static Future<Uint8List> compressToJpeg(Uint8List imageData) =>
+      FlutterImageCompress.compressWithList(
+        imageData,
+        quality: _compressQuality,
+        format: CompressFormat.jpeg,
+      );
+
   /// 이미지를 압축 → presigned URL 요청 → S3 업로드 순서로 처리.
   /// [presignEndpoint] 서버의 presign 발급 엔드포인트.
   /// 반환값으로 objectKey 등 이후 서버 등록에 필요한 [PresignResult]를 제공.
@@ -22,11 +31,7 @@ abstract final class ImageUploadHelper {
     // 호출부의 `e is DioException` 판별(networkAwareErrorKey/isDioConflict)이
     // 깨지므로, 이미 시작된 두 Future를 순서대로 await하는 방식으로 병렬성은
     // 유지하되 원본 예외 타입은 그대로 전파되게 함
-    final compressFuture = FlutterImageCompress.compressWithList(
-      imageData,
-      quality: _compressQuality,
-      format: CompressFormat.jpeg,
-    );
+    final compressFuture = compressToJpeg(imageData);
     final presignFuture = DioClient.dio.post(
       presignEndpoint,
       data: {'contentType': _contentType, 'extension': _ext},

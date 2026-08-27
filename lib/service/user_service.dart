@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
+import 'package:feple/common/util/image_upload_helper.dart';
 import 'package:feple/common/util/response_parsing.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:feple/model/festival_model.dart';
@@ -41,8 +42,17 @@ class UserService {
   }
 
   Future<void> updateProfileImage(int userId, XFile image) async {
+    // 원본(최대 12MP)을 그대로 멀티파트로 올리면 현장 저신호에서 자주 실패 →
+    // JPEG로 압축 후 전송 (다른 이미지 업로드 흐름과 동일한 압축 사용)
+    final compressed = await ImageUploadHelper.compressToJpeg(
+      await image.readAsBytes(),
+    );
     final formData = FormData.fromMap({
-      'file': await MultipartFile.fromFile(image.path, filename: image.name),
+      'file': MultipartFile.fromBytes(
+        compressed,
+        filename: 'profile.jpg',
+        contentType: DioMediaType('image', 'jpeg'),
+      ),
     });
     await DioClient.dio.post('/users/$userId/profile-image', data: formData);
   }

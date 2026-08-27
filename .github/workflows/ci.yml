@@ -47,4 +47,10 @@ jobs:
 
       - run: flutter pub get
 
-      - run: flutter test --no-pub
+      - run: flutter test --no-pub --coverage
+
+      - name: Verify coverage threshold
+        uses: VeryGoodOpenSource/very_good_coverage@v3
+        with:
+          path: coverage/lcov.info
+          min_coverage: 83

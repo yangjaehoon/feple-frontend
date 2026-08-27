@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:feple/common/data/preference/prefs.dart';
 import 'package:feple/model/withdrawal_reason.dart';
 import 'package:feple/service/auth_service.dart';
 import 'package:feple/service/fcm_service.dart';
@@ -18,13 +17,31 @@ class UserProvider with ChangeNotifier {
   int? get currentUserId => _user?.id;
   String? get currentProfileImageUrl => _user?.profileImageUrl;
 
+  late final Future<void> _initialLoad;
+
   UserProvider(this._userService) {
-    _loadFromSecureStorage();
+    _initialLoad = _loadFromSecureStorage();
+  }
+
+  /// 생성자의 캐시 로드 완료를 기다리는 훅 — 자동 로그인(네트워크) 경로가
+  /// 캐시 로드보다 먼저 시작해 결과를 덮어쓰는 경합을 없애기 위해 사용.
+  Future<void> get ready => _initialLoad;
+
+  /// user 설정 + 리스너 통지 + 오프라인 캐시(userJson) 갱신을 한 곳에서 처리.
+  /// fetchUser/fetchUserFromToken/setUser가 모두 이 경로를 쓰도록 해
+  /// "네트워크로 갱신했는데 오프라인 캐시는 옛날 정보" 상태를 방지한다.
+  Future<void> _applyUser(AppUser me) async {
+    _user = me;
+    notifyListeners();
+    try {
+      await TokenStore.saveUserJson(jsonEncode(me.toJson()));
+    } catch (e) {
+      debugPrint('[UserProvider] 유저 캐시 저장 실패: $e');
+    }
   }
 
   Future<void> fetchUser(int userId) async {
-    _user = await _userService.fetchUser(userId);
-    notifyListeners();
+    await _applyUser(await _userService.fetchUser(userId));
   }
 
   Future<void> _loadFromSecureStorage() async {
@@ -56,6 +73,9 @@ class UserProvider with ChangeNotifier {
         await TokenStore.deleteUserJson();
         return;
       }
+      // 네트워크 자동 로그인이 먼저 끝나 최신 user를 넣었으면 캐시본으로
+      // 덮어쓰지 않는다
+      if (_user != null) return;
       _user = cached;
       notifyListeners();
     } catch (e) {
@@ -91,8 +111,9 @@ class UserProvider with ChangeNotifier {
       await Future.wait([
         _runCleanupStep('토큰 삭제', TokenStore.clear),
         _runCleanupStep('유저 캐시 삭제', TokenStore.deleteUserJson),
-        _runCleanupStep('onboarding 초기화', () => Prefs.onboardingCompleted.set(false)),
       ]);
+      // onboarding 완료 플래그는 유저 단위(onboardingCompleted_{id})라
+      // 로그아웃 시 리셋하지 않는다 — 재로그인 시 온보딩 반복 방지
       _user = null;
       notifyListeners();
     } finally {
@@ -115,16 +136,11 @@ class UserProvider with ChangeNotifier {
     await logout();
   }
 
-  Future<void> setUser(AppUser me) async {
-    _user = me;
-    notifyListeners();
-    await TokenStore.saveUserJson(jsonEncode(me.toJson()));
-  }
+  Future<void> setUser(AppUser me) => _applyUser(me);
 
   Future<void> fetchUserFromToken(String token) async {
     try {
-      _user = await _userService.fetchUserFromToken(token);
-      notifyListeners();
+      await _applyUser(await _userService.fetchUserFromToken(token));
     } on DioException catch (e) {
       final status = e.response?.statusCode;
       if (status == 401 || status == 403 || status == 404) {

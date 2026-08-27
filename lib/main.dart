@@ -152,6 +152,9 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _doAutoLogin(UserProvider userProvider) async {
     try {
+      // 생성자의 캐시 로드가 먼저 끝나도록 기다린 뒤 네트워크로 갱신 —
+      // 두 경로가 _user를 번갈아 쓰며 화면이 깜빡이는 경합 제거
+      await userProvider.ready;
       final token = await TokenStore.readAccessToken();
       if (token != null) {
         await userProvider.fetchUserFromToken(token);
@@ -201,10 +204,14 @@ class _MyAppState extends State<MyApp> {
             builder: clampTextScaleBuilder,
             home: Consumer<UserProvider>(
               builder: (context, userProvider, _) {
-                if (userProvider.user == null) {
+                final user = userProvider.user;
+                if (user == null) {
                   return const LoginScreen();
-                } else if (!Prefs.onboardingCompleted.get()) {
-                  return OnboardingScreen(onComplete: _onOnboardingComplete);
+                } else if (!Prefs.onboardingCompletedFor(user.id).get()) {
+                  return OnboardingScreen(
+                    userId: user.id,
+                    onComplete: _onOnboardingComplete,
+                  );
                 } else {
                   return const App();
                 }

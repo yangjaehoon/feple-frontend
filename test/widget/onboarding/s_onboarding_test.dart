@@ -60,7 +60,7 @@ Future<void> _pump(WidgetTester tester, {VoidCallback? onComplete}) async {
       child: CustomThemeHolder(
         theme: CustomTheme.light,
         changeTheme: (_) {},
-        child: MaterialApp(home: OnboardingScreen(onComplete: onComplete ?? () {})),
+        child: MaterialApp(home: OnboardingScreen(userId: 1, onComplete: onComplete ?? () {})),
       ),
     ),
   );
@@ -81,7 +81,7 @@ void main() {
   late MockFestivalInteractionService mockFestivalInteractionService;
 
   setUp(() {
-    Prefs.onboardingCompleted.set(false);
+    Prefs.onboardingCompletedFor(1).set(false);
     mockArtistService = MockArtistService();
     mockFollowService = MockArtistFollowService();
     mockFestivalService = MockFestivalService();
@@ -180,7 +180,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(completed, true);
-      expect(Prefs.onboardingCompleted.get(), true);
+      expect(Prefs.onboardingCompletedFor(1).get(), true);
     });
   });
 
@@ -233,14 +233,14 @@ void main() {
       // 아티스트 선택만으로는 끝나지 않고 페스티벌 선택 페이지가 이어서 나온다.
       expect(find.text('onboarding_festival_pick_title'.tr()), findsOneWidget);
       expect(completed, false);
-      expect(Prefs.onboardingCompleted.get(), false);
+      expect(Prefs.onboardingCompletedFor(1).get(), false);
 
       await tester.tap(find.text('onboarding_pick_skip'.tr()));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
 
       expect(completed, true);
-      expect(Prefs.onboardingCompleted.get(), true);
+      expect(Prefs.onboardingCompletedFor(1).get(), true);
     });
 
     testWidgets('follow 실패 시 에러 스낵바를 보여주고 완료되지 않는다', (tester) async {
@@ -292,7 +292,7 @@ void main() {
 
       expect(find.text('onboarding_festival_pick_title'.tr()), findsNothing);
       expect(completed, true);
-      expect(Prefs.onboardingCompleted.get(), true);
+      expect(Prefs.onboardingCompletedFor(1).get(), true);
     });
 
     testWidgets('다가오는 페스티벌이 3개 이상이면 페스티벌 선택 화면이 보인다', (tester) async {
@@ -366,7 +366,7 @@ void main() {
 
       verify(() => mockFestivalInteractionService.toggleLike(9)).called(1);
       expect(completed, true);
-      expect(Prefs.onboardingCompleted.get(), true);
+      expect(Prefs.onboardingCompletedFor(1).get(), true);
     });
 
     testWidgets('페스티벌을 선택하지 않고 건너뛰면 관심 등록 없이 완료된다', (tester) async {

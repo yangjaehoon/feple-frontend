@@ -17,7 +17,14 @@ const _minUpcomingFestivalsForPick = 3;
 class OnboardingScreen extends StatefulWidget {
   final VoidCallback onComplete;
 
-  const OnboardingScreen({super.key, required this.onComplete});
+  /// 온보딩 완료 플래그를 저장할 유저 ID (유저 단위 저장).
+  final int userId;
+
+  const OnboardingScreen({
+    super.key,
+    required this.onComplete,
+    required this.userId,
+  });
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -78,7 +85,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Future<void> _finish() async {
-    await Prefs.onboardingCompleted.set(true);
+    await Prefs.onboardingCompletedFor(widget.userId).set(true);
     widget.onComplete();
   }
 

@@ -99,12 +99,15 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
   }
 
   Future<void> _resetOnboarding() async {
-    await Prefs.onboardingCompleted.set(false);
+    final userId = context.read<UserProvider>().currentUserId;
+    if (userId == null) return;
+    await Prefs.onboardingCompletedFor(userId).set(false);
     if (!mounted) return;
     final rootNav = Navigator.of(context, rootNavigator: true);
     unawaited(rootNav.push(
       SlideRoute(
         builder: (_) => OnboardingScreen(
+          userId: userId,
           onComplete: () => rootNav.popUntil((route) => route.isFirst),
         ),
       ),

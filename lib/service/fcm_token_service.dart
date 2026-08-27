@@ -9,14 +9,18 @@ import 'package:flutter/foundation.dart';
 class FcmTokenService {
   final FirebaseMessaging _messaging;
 
+  // APNs/FCM 토큰 조회는 네트워크·플랫폼 상태에 따라 오래 걸릴 수 있어 상한을 둔다
+  // (unregister와 동일). 없으면 로그인 직후 토큰 등록이 무기한 매달릴 수 있음.
+  static const _tokenTimeout = Duration(seconds: 5);
+
   FcmTokenService(this._messaging);
 
   Future<void> register({String language = 'ko'}) async {
     try {
       if (Platform.isIOS) {
-        await _messaging.getAPNSToken();
+        await _messaging.getAPNSToken().timeout(_tokenTimeout);
       }
-      final token = await _messaging.getToken();
+      final token = await _messaging.getToken().timeout(_tokenTimeout);
       if (token != null) await sendToServer(token, language: language);
     } catch (e, st) {
       _reportFailure('토큰 등록', e, st);
@@ -40,7 +44,7 @@ class FcmTokenService {
     try {
       final jwt = await TokenStore.readAccessToken();
       if (jwt == null || jwt.isEmpty) return;
-      final token = await _messaging.getToken().timeout(const Duration(seconds: 5));
+      final token = await _messaging.getToken().timeout(_tokenTimeout);
       if (token == null) return;
       await DioClient.dio.delete('/users/device-token', data: {'token': token});
       debugPrint('[FCM] 토큰 서버 삭제 완료');

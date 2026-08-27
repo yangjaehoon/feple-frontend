@@ -7,6 +7,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../model/user_model.dart' as app;
 import 'auth_token_exchanger.dart';
+import 'firebase_id_token.dart';
 
 const _nonceCharset =
     '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
@@ -45,7 +46,7 @@ class AppleLoginProvider {
 
     final userCredential =
         await FirebaseAuth.instance.signInWithCredential(oauthCredential);
-    final idToken = await userCredential.user!.getIdToken();
+    final idToken = await requireFirebaseIdToken(userCredential.user);
 
     // Apple은 최초 로그인 시에만 이름을 제공, 반환 사용자는 null
     final givenName = appleCredential.givenName;
@@ -55,7 +56,7 @@ class AppleLoginProvider {
         .join(' ');
 
     return _tokenExchanger.exchangeFirebaseToken(
-      idToken!,
+      idToken,
       nickname: fullName.isNotEmpty ? fullName : null,
     );
   }

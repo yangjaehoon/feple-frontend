@@ -3,6 +3,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../model/user_model.dart' as app;
 import 'auth_token_exchanger.dart';
+import 'firebase_id_token.dart';
 
 /// Google Sign-In → Firebase credential 교환 흐름.
 class GoogleLoginProvider {
@@ -40,10 +41,10 @@ class GoogleLoginProvider {
 
     final credential = GoogleAuthProvider.credential(idToken: idToken);
     final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-    final firebaseIdToken = await userCredential.user!.getIdToken();
+    final firebaseIdToken = await requireFirebaseIdToken(userCredential.user);
 
     return _tokenExchanger.exchangeFirebaseToken(
-      firebaseIdToken!,
+      firebaseIdToken,
       nickname: account.displayName,
     );
   }

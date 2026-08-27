@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../auth/token_store.dart';
+import '../../common/exception/auth_exchange_exception.dart';
 import '../../model/user_model.dart' as app;
 import '../../network/dio_client.dart';
 
@@ -36,21 +36,27 @@ class AuthTokenExchanger {
     try {
       final response = await request();
       final data = response.data;
-      if (data is! Map<String, dynamic>) throw Exception('auth_err_auth_failed'.tr());
+      if (data is! Map<String, dynamic>) {
+        throw AuthExchangeException('$providerLabel: response is not a JSON object');
+      }
       await _saveTokens(data);
       return _parseUser(data);
+    } on AuthExchangeException {
+      rethrow;
     } on DioException catch (e) {
       debugPrint('[Auth] $providerLabel 서버 교환 실패: [${e.type.name}] ${e.response?.statusCode}');
       final respBody = e.response?.data;
       if (respBody is Map<String, dynamic>) {
         debugPrint('[Auth] $providerLabel 서버 메시지: ${respBody['message']}');
       }
-      throw Exception('auth_err_auth_failed'.tr());
+      throw AuthExchangeException(
+        '$providerLabel: server exchange failed (${e.response?.statusCode ?? e.type.name})',
+      );
     } catch (e) {
       // 응답 파싱 단계(_saveTokens/_parseUser)의 예상치 못한 필드 누락·타입 불일치도
       // DioException과 동일하게 공통 예외로 통일 — raw exception이 그대로 새어나가지 않도록
       debugPrint('[Auth] $providerLabel 응답 처리 실패: $e');
-      throw Exception('auth_err_auth_failed'.tr());
+      throw AuthExchangeException('$providerLabel: response processing failed');
     }
   }
 
@@ -70,7 +76,9 @@ class AuthTokenExchanger {
 
   app.AppUser _parseUser(Map<String, dynamic> json) {
     final userJson = json['user'];
-    if (userJson is! Map<String, dynamic>) throw Exception('auth_err_auth_failed'.tr());
+    if (userJson is! Map<String, dynamic>) {
+      throw AuthExchangeException('response has no user object');
+    }
     return app.AppUser.fromJson(userJson);
   }
 }

@@ -99,6 +99,13 @@ class FcmService {
   Future<void> stop() async {
     await Future.wait([
       _tokenService.unregister(),
+      _cancelSubscriptions(),
+    ]);
+  }
+
+  /// 현재 걸린 FCM 스트림 구독 3종을 모두 해제하고 참조를 비운다.
+  Future<void> _cancelSubscriptions() async {
+    await Future.wait([
       if (_messageSubscription != null) _messageSubscription!.cancel(),
       if (_tokenSubscription != null) _tokenSubscription!.cancel(),
       if (_openedAppSubscription != null) _openedAppSubscription!.cancel(),
@@ -111,11 +118,7 @@ class FcmService {
   Future<void> _setup() async {
     await _notifHandler.initialize();
 
-    await Future.wait([
-      if (_messageSubscription != null) _messageSubscription!.cancel(),
-      if (_tokenSubscription != null) _tokenSubscription!.cancel(),
-      if (_openedAppSubscription != null) _openedAppSubscription!.cancel(),
-    ]);
+    await _cancelSubscriptions();
 
     _messageSubscription = FirebaseMessaging.onMessage.listen(_notifHandler.handleForeground);
 

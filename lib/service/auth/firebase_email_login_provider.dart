@@ -1,9 +1,11 @@
+import 'package:feple/common/exception/auth_exchange_exception.dart';
 import 'package:feple/common/exception/email_not_verified_exception.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../model/user_model.dart' as app;
 import 'auth_token_exchanger.dart';
+import 'firebase_id_token.dart';
 
 /// Firebase 이메일/비밀번호 인증 관련 로그인·회원가입·인증메일 흐름.
 class FirebaseEmailLoginProvider {
@@ -14,7 +16,10 @@ class FirebaseEmailLoginProvider {
   Future<app.AppUser> login(String email, String password) async {
     final credential = await FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password);
-    final user = credential.user!;
+    final user = credential.user;
+    if (user == null) {
+      throw AuthExchangeException('email sign-in returned no user');
+    }
 
     // 이메일 인증 확인 — signOut 없이 세션 유지, VerifyEmailPage에서 처리
     if (!user.emailVerified) {
@@ -24,15 +29,18 @@ class FirebaseEmailLoginProvider {
 
     // force: true — 이메일 인증 후 세션이 재사용될 때 캐시된 토큰의
     // email_verified 클레임이 false일 수 있으므로 항상 최신 토큰 요청
-    final idToken = await user.getIdToken(true);
-    return _tokenExchanger.exchangeFirebaseToken(idToken!);
+    final idToken = await requireFirebaseIdToken(user, forceRefresh: true);
+    return _tokenExchanger.exchangeFirebaseToken(idToken);
   }
 
   Future<void> register(String email, String password, String nickname) async {
     final credential = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
 
-    final firebaseUser = credential.user!;
+    final firebaseUser = credential.user;
+    if (firebaseUser == null) {
+      throw AuthExchangeException('createUser returned no user');
+    }
     try {
       // 닉네임을 Firebase displayName에 저장 (이메일 인증 후 첫 로그인 시 백엔드에서 사용)
       await firebaseUser.updateDisplayName(nickname);
@@ -71,8 +79,8 @@ class FirebaseEmailLoginProvider {
     final refreshed = FirebaseAuth.instance.currentUser;
     if (refreshed?.emailVerified != true) return null;
     // force: true로 최신 email_verified 클레임이 담긴 토큰 요청
-    final idToken = await refreshed!.getIdToken(true);
-    return _tokenExchanger.exchangeFirebaseToken(idToken!);
+    final idToken = await requireFirebaseIdToken(refreshed, forceRefresh: true);
+    return _tokenExchanger.exchangeFirebaseToken(idToken);
   }
 
   Future<void> sendPasswordReset(String email) async {

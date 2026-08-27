@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart' show CancelToken;
 import 'package:feple/common/util/forced_refresh.dart';
+import 'package:feple/common/util/request_scope.dart';
 import 'package:flutter/widgets.dart';
 
 /// [late Future<D> 필드 + initState 조회 + refresh()] 반복 패턴을 캡슐화.
@@ -8,25 +10,36 @@ import 'package:flutter/widgets.dart';
 /// ("setState() callback argument returned a Future")를 유발할 수 있다.
 /// GlobalKey로 부모가 refresh()를 호출해 완료 시점을 기다리는 화면들이 있어
 /// (Future.wait로 여러 섹션을 묶어 새로고침) 예외를 내부에서 흡수한다.
+///
+/// 조회는 화면 생명주기에 묶인 [CancelToken] 스코프에서 실행되어, 위젯이
+/// dispose되면 진행 중인 HTTP 요청이 취소된다.
 mixin FutureRefreshable<D, T extends StatefulWidget> on State<T> {
   late Future<D> future;
+  final CancelToken _cancelToken = CancelToken();
 
   Future<D> fetchData();
 
   @override
   void initState() {
     super.initState();
-    future = fetchData();
+    future = withCancelScope(_cancelToken, fetchData);
   }
 
   Future<void> refresh() async {
     // 사용자가 명시적으로 새로고침한 것이므로 SWR 캐시를 건너뛰고 실제 요청
-    final next = withForcedRefresh(fetchData);
+    final next =
+        withCancelScope(_cancelToken, () => withForcedRefresh(fetchData));
     setState(() {
       future = next;
     });
     try {
       await next;
     } catch (_) {}
+  }
+
+  @override
+  void dispose() {
+    if (!_cancelToken.isCancelled) _cancelToken.cancel('widget disposed');
+    super.dispose();
   }
 }

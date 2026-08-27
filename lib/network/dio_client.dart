@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import '../auth/token_store.dart';
 import '../common/util/forced_refresh.dart';
+import '../common/util/request_scope.dart';
 import '../common/util/response_parsing.dart';
 import '../config.dart' as app_config;
 import 'api_cache_store.dart';
@@ -136,6 +137,10 @@ class _AuthAndSwrInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     await _attachJwtIfAbsent(options);
+
+    // 화면 dispose 시 취소되도록 Zone에 연결된 CancelToken을 부착
+    // (호출부가 명시적으로 넘긴 cancelToken이 있으면 그대로 존중)
+    options.cancelToken ??= ambientCancelToken;
 
     // SWR: GET 요청에 메모리 캐시가 있으면 즉시 반환 + 백그라운드 갱신
     // 첫 방문(캐시 없음)이나 오프라인 fallback은 _ResponseCacheInterceptor가 처리

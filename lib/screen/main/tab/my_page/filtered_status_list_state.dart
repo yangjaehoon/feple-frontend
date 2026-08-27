@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart' show CancelToken;
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
+import 'package:feple/common/util/request_scope.dart';
 import 'package:flutter/material.dart';
 
 /// 상태 필터가 있는 "내 활동" 목록 화면(인증 내역, 신청곡 내역 등)에서 반복되던
@@ -15,8 +17,16 @@ mixin FilteredStatusListState<T, S, W extends StatefulWidget> on State<W> {
   Object? loadError;
   S? filter; // null = 전체
 
+  final CancelToken _cancelToken = CancelToken();
+
   List<T> get filteredItems =>
       filter == null ? items : items.where((i) => statusOf(i) == filter).toList();
+
+  @override
+  void dispose() {
+    if (!_cancelToken.isCancelled) _cancelToken.cancel('widget disposed');
+    super.dispose();
+  }
 
   Future<void> loadItems() async {
     setState(() {
@@ -24,7 +34,7 @@ mixin FilteredStatusListState<T, S, W extends StatefulWidget> on State<W> {
       hasLoadError = false;
     });
     try {
-      final list = await fetchItems();
+      final list = await withCancelScope(_cancelToken, fetchItems);
       if (mounted) {
         setState(() {
           items = list;
@@ -46,7 +56,7 @@ mixin FilteredStatusListState<T, S, W extends StatefulWidget> on State<W> {
   // 유지하되(크래시 방지), 실패 사실은 알려야 한다
   Future<void> refreshItems() async {
     try {
-      final list = await fetchItems();
+      final list = await withCancelScope(_cancelToken, fetchItems);
       if (mounted) {
         setState(() {
           items = list;

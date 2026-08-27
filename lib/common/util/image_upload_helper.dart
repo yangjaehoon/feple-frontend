@@ -17,18 +17,22 @@ abstract final class ImageUploadHelper {
     required Uint8List imageData,
   }) async {
     // 압축과 presign 요청은 서로 무관 — presign 요청 바디가 고정된
-    // contentType/extension만 담아 압축 결과를 필요로 하지 않으므로 병렬 실행
-    final (compressed, presignResponse) = await (
-      FlutterImageCompress.compressWithList(
-        imageData,
-        quality: _compressQuality,
-        format: CompressFormat.jpeg,
-      ),
-      DioClient.dio.post(
-        presignEndpoint,
-        data: {'contentType': _contentType, 'extension': _ext},
-      ),
-    ).wait;
+    // contentType/extension만 담아 압축 결과를 필요로 하지 않으므로 병렬 실행.
+    // record `.wait`는 실패 시 원본 예외를 ParallelWaitError로 감싸버려서
+    // 호출부의 `e is DioException` 판별(networkAwareErrorKey/isDioConflict)이
+    // 깨지므로, 이미 시작된 두 Future를 순서대로 await하는 방식으로 병렬성은
+    // 유지하되 원본 예외 타입은 그대로 전파되게 함
+    final compressFuture = FlutterImageCompress.compressWithList(
+      imageData,
+      quality: _compressQuality,
+      format: CompressFormat.jpeg,
+    );
+    final presignFuture = DioClient.dio.post(
+      presignEndpoint,
+      data: {'contentType': _contentType, 'extension': _ext},
+    );
+    final compressed = await compressFuture;
+    final presignResponse = await presignFuture;
     final presign = PresignResult.fromJson(presignResponse.data);
 
     final putResponse = await http.put(

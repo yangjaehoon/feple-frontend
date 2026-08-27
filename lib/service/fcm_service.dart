@@ -94,13 +94,15 @@ class FcmService {
 
   String _currentLanguage() => currentLanguage.locale.languageCode;
 
-  // 로그아웃 시 호출 — 서버에서 토큰 삭제 후 구독 해제
+  // 로그아웃 시 호출 — 서버 토큰 삭제와 구독 해제는 서로 무관해 병렬 실행
   // JWT가 아직 유효한 시점에 호출해야 함 (TokenStore.clear() 전)
   Future<void> stop() async {
-    await _tokenService.unregister();
-    await _messageSubscription?.cancel();
-    await _tokenSubscription?.cancel();
-    await _openedAppSubscription?.cancel();
+    await Future.wait([
+      _tokenService.unregister(),
+      if (_messageSubscription != null) _messageSubscription!.cancel(),
+      if (_tokenSubscription != null) _tokenSubscription!.cancel(),
+      if (_openedAppSubscription != null) _openedAppSubscription!.cancel(),
+    ]);
     _messageSubscription = null;
     _tokenSubscription = null;
     _openedAppSubscription = null;
@@ -109,9 +111,11 @@ class FcmService {
   Future<void> _setup() async {
     await _notifHandler.initialize();
 
-    await _messageSubscription?.cancel();
-    await _tokenSubscription?.cancel();
-    await _openedAppSubscription?.cancel();
+    await Future.wait([
+      if (_messageSubscription != null) _messageSubscription!.cancel(),
+      if (_tokenSubscription != null) _tokenSubscription!.cancel(),
+      if (_openedAppSubscription != null) _openedAppSubscription!.cancel(),
+    ]);
 
     _messageSubscription = FirebaseMessaging.onMessage.listen(_notifHandler.handleForeground);
 

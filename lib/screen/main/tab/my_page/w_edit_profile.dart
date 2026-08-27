@@ -126,18 +126,14 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
       final userService = sl<UserService>();
 
       final pickedImage = _pickedImage;
-      if (pickedImage != null) {
-        await userService.updateProfileImage(user.id, pickedImage);
-      }
-
-      if (newNickname != user.nickname) {
-        await userService.updateNickname(user.id, newNickname);
-      }
-
       final newBio = _bioController.text.trim();
-      if (newBio != (user.bio ?? '')) {
-        await userService.updateBio(user.id, newBio);
-      }
+      // 세 항목은 서로 무관한 별도 엔드포인트라 병렬 실행 — 순차 실행 시
+      // 지연이 합산되어 사진+닉네임+소개를 함께 바꾸면 저장이 불필요하게 느려짐
+      await Future.wait([
+        if (pickedImage != null) userService.updateProfileImage(user.id, pickedImage),
+        if (newNickname != user.nickname) userService.updateNickname(user.id, newNickname),
+        if (newBio != (user.bio ?? '')) userService.updateBio(user.id, newBio),
+      ]);
 
       await userProvider.fetchUser(user.id);
 

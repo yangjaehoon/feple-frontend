@@ -454,35 +454,32 @@ class _NotificationScreenState extends State<NotificationScreen> {
             screenWidth: screenWidth,
           ),
         );
-        final isDismissible = item.type?.isDismissible ?? true;
         // Dismissible은 child(카드)를 클리핑 없이 translate만 하므로, 카드
         // 자체의 둥근 모서리가 드래그 중간 지점에서 깎아낸 작은 틈이 생김.
         // Dismissible의 background는 실제로 드러난 영역에만 클립되어 그 틈을
         // 못 채우므로, 항상 전체를 채우는 빨간 레이어를 카드 뒤에 별도로 깔아
         // 그 틈에서도 화면 배경이 아닌 삭제 색상이 보이게 함
-        final rounded = isDismissible
-            ? Stack(
-                children: [
-                  Positioned.fill(child: Container(color: colors.error)),
-                  Dismissible(
-                    key: ValueKey(item.id),
-                    direction: DismissDirection.endToStart,
-                    onDismissed: (_) => _dismissWithUndo(item),
-                    background: Container(
-                      alignment: Alignment.centerRight,
-                      padding: const EdgeInsets.only(right: 20),
-                      color: colors.error,
-                      child: const Icon(
-                        Icons.delete_rounded,
-                        color: Colors.white,
-                        size: 22,
-                      ),
-                    ),
-                    child: card,
-                  ),
-                ],
-              )
-            : card;
+        final rounded = Stack(
+          children: [
+            Positioned.fill(child: Container(color: colors.error)),
+            Dismissible(
+              key: ValueKey(item.id),
+              direction: DismissDirection.endToStart,
+              onDismissed: (_) => _dismissWithUndo(item),
+              background: Container(
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.only(right: 20),
+                color: colors.error,
+                child: const Icon(
+                  Icons.delete_rounded,
+                  color: Colors.white,
+                  size: 22,
+                ),
+              ),
+              child: card,
+            ),
+          ],
+        );
 
         return Padding(
           padding: const EdgeInsets.only(bottom: 8),

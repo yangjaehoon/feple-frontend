@@ -348,13 +348,6 @@ void main() {
     });
   });
 
-  group('NotificationType.isDismissible', () {
-    test('adminBroadcast는 false, 그 외 타입은 true', () {
-      expect(NotificationType.adminBroadcast.isDismissible, isFalse);
-      expect(NotificationType.newComment.isDismissible, isTrue);
-    });
-  });
-
   group('전체 삭제 (removeAllLocally/undoDeleteAll/confirmDeleteAll)', () {
     setUp(() async {
       when(() => mockService.fetchPage(0, filter: any(named: 'filter')))

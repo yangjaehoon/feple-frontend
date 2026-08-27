@@ -71,10 +71,14 @@ class AuthService {
 
   // ── 로그아웃: Firebase + Kakao 세션 정리 (두 제공자를 함께 정리해야 해서 파사드에 남김) ──
 
+  // 세 signOut 호출은 서로 무관한 별도 제공자라 병렬 실행 — 순차 실행 시
+  // 지연이 합산되어 로그아웃이 불필요하게 느려짐
   Future<void> signOut() async {
-    await runIgnoringErrors('[Auth] Firebase signOut 실패', FirebaseAuth.instance.signOut);
-    // Kakao/Google 세션이 없는 경우(다른 방식으로 로그인)도 여기서 함께 무시됨
-    await runIgnoringErrors('[Auth] Kakao logout 실패', UserApi.instance.logout);
-    await runIgnoringErrors('[Auth] Google signOut 실패', GoogleSignIn.instance.signOut);
+    await Future.wait([
+      runIgnoringErrors('[Auth] Firebase signOut 실패', FirebaseAuth.instance.signOut),
+      // Kakao/Google 세션이 없는 경우(다른 방식으로 로그인)도 여기서 함께 무시됨
+      runIgnoringErrors('[Auth] Kakao logout 실패', UserApi.instance.logout),
+      runIgnoringErrors('[Auth] Google signOut 실패', GoogleSignIn.instance.signOut),
+    ]);
   }
 }

@@ -74,21 +74,25 @@ class UserProvider with ChangeNotifier {
     try {
       // 각 정리 단계가 실패해도 나머지 단계는 계속 진행 — 하나라도 예외가
       // 전파되면 _user가 초기화되지 않아 로그아웃이 로컬 화면에 반영되지 않음
-      // 서버 리프레시 토큰 취소 — TokenStore.clear() 전에 호출해야 토큰을 읽을 수 있음
-      await _runCleanupStep('리프레시 토큰 취소', () async {
-        final refreshToken = await TokenStore.readRefreshToken();
-        if (refreshToken != null) {
-          await AuthService.instance.revokeRefreshToken(refreshToken);
-        }
-      });
-      await _runCleanupStep('FCM 정리', () => FcmService.instance.stop());
-      await _runCleanupStep('signOut', () => AuthService.instance.signOut());
-      await _runCleanupStep('토큰 삭제', TokenStore.clear);
-      await _runCleanupStep('유저 캐시 삭제', TokenStore.deleteUserJson);
-      await _runCleanupStep(
-        'onboarding 초기화',
-        () => Prefs.onboardingCompleted.set(false),
-      );
+      // 리프레시 토큰 취소/FCM 정리/signOut은 서로 의존관계 없는 네트워크 호출이라
+      // 병렬로 실행 — 순차 실행 시 지연이 합산되어 로그아웃 버튼을 눌러도
+      // 수 초간 반응 없는 것처럼 느껴짐. 단, 토큰 삭제는 리프레시 토큰 취소가
+      // TokenStore를 읽어야 하므로 그 이후에 실행해야 함
+      await Future.wait([
+        _runCleanupStep('리프레시 토큰 취소', () async {
+          final refreshToken = await TokenStore.readRefreshToken();
+          if (refreshToken != null) {
+            await AuthService.instance.revokeRefreshToken(refreshToken);
+          }
+        }),
+        _runCleanupStep('FCM 정리', () => FcmService.instance.stop()),
+        _runCleanupStep('signOut', () => AuthService.instance.signOut()),
+      ]);
+      await Future.wait([
+        _runCleanupStep('토큰 삭제', TokenStore.clear),
+        _runCleanupStep('유저 캐시 삭제', TokenStore.deleteUserJson),
+        _runCleanupStep('onboarding 초기화', () => Prefs.onboardingCompleted.set(false)),
+      ]);
       _user = null;
       notifyListeners();
     } finally {

@@ -207,7 +207,7 @@ class _MyAppState extends State<MyApp> {
                 final user = userProvider.user;
                 if (user == null) {
                   return const LoginScreen();
-                } else if (!Prefs.onboardingCompletedFor(user.id).get()) {
+                } else if (!Prefs.isOnboardingCompleted(user.id)) {
                   return OnboardingScreen(
                     userId: user.id,
                     onComplete: _onOnboardingComplete,

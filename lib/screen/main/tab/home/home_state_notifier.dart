@@ -223,8 +223,13 @@ class HomeStateNotifier extends SafeChangeNotifier {
       reorderById(items, order, getId);
 
   Future<List<int>> _loadOrder(String key) async {
+    // 저장값이 손상됐을 수 있으므로 파싱 불가 항목은 조용히 스킵 —
+    // int.parse는 던져서 loadData 전체(네트워크 로드 포함)를 실패시킴
     final saved = PreferenceItem<List<String>>(key, const []).get();
-    return saved.map(int.parse).toList();
+    return saved
+        .map(int.tryParse)
+        .whereType<int>()
+        .toList();
   }
 
   Future<List<FollowedArtist>> _fetchArtists(int userId) =>

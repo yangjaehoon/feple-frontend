@@ -44,8 +44,10 @@ class DioClient {
   /// 다음 로그인 시도(예: 자동 로그인 직후 사용자가 바로 재로그인)와 경쟁하지 않음
   static Future<void> Function()? onSessionExpired;
 
-  /// 계정 정지(403 banned) 시 호출 → 안내 다이얼로그 표시 후 로그아웃
-  static void Function()? onUserBanned;
+  /// 계정 정지(403 banned) 시 호출 → 안내 다이얼로그 표시 후 로그아웃.
+  /// [onSessionExpired]와 마찬가지로 비동기 정리(다이얼로그 + 로그아웃)를
+  /// 포함하므로 완료를 기다릴 수 있도록 Future 반환 타입으로 통일.
+  static Future<void> Function()? onUserBanned;
 
   /// 인터셉터 없이 토큰 갱신/재시도에만 사용하는 내부 Dio
   static final Dio _plainDio = Dio(BaseOptions(
@@ -153,7 +155,7 @@ class _AuthAndSwrInterceptor extends Interceptor {
     if (error.response?.statusCode == 403) {
       final data = error.response?.data;
       if (data is Map && data['error'] == 'banned') {
-        DioClient.onUserBanned?.call();
+        await DioClient.onUserBanned?.call();
       }
       return handler.next(error);
     }

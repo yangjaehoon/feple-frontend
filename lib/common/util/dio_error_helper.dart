@@ -6,11 +6,15 @@ bool isDioConflict(Object e) {
 }
 
 /// 네트워크 연결 자체가 안 되는 경우 (오프라인, 타임아웃 등).
-/// 서버 응답 오류(4xx/5xx)는 포함하지 않음.
+/// 서버 응답 오류(4xx/5xx)는 포함하지 않음 — 응답이 있으면(`response != null`)
+/// 서버에 도달한 것이므로 오프라인으로 보지 않는다 (`unknown` 타입에 응답 파싱
+/// 실패가 섞여 들어오는 경우를 배제).
 bool isOffline(Object e) =>
     e is DioException &&
+    e.response == null &&
     (e.type == DioExceptionType.connectionError ||
         e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.sendTimeout ||
         e.type == DioExceptionType.receiveTimeout ||
         e.type == DioExceptionType.unknown);
 

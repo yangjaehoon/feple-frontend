@@ -1,6 +1,8 @@
 import 'dart:developer';
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart' show kDebugMode;
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:feple/common/common.dart';
@@ -51,6 +53,10 @@ void main() async {
     ),
   ]);
 
+  // 디버그 빌드의 크래시/에러는 Crashlytics로 보내지 않음 — 개발 중 발생하는
+  // 예외가 운영 대시보드를 오염시키는 것을 방지
+  await FirebaseCrashlytics.instance
+      .setCrashlyticsCollectionEnabled(!kDebugMode);
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
   PlatformDispatcher.instance.onError = (error, stack) {
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);

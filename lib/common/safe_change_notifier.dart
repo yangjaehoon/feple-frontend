@@ -29,7 +29,11 @@ abstract class SafeChangeNotifier extends ChangeNotifier {
     try {
       await action();
       onSuccess?.call(newValue);
-    } catch (_) {
+    } catch (e) {
+      // 낙관적 토글은 CQS상 예외를 던지지 않고 이전 값으로 복원한다.
+      // 다만 네트워크 오류뿐 아니라 action 내부의 프로그래밍 오류도 여기서
+      // 삼켜지므로 디버그 로그는 남긴다.
+      debugPrint('[optimisticToggle] 실패, 이전 값으로 복원: $e');
       apply(current);
       safeNotify();
       onError?.call();

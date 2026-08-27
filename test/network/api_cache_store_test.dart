@@ -190,26 +190,31 @@ void main() {
       expect(ApiCacheStore.getSync('http://api/artists/5/songs'), isNotNull); // 유지
     });
 
-    test('게시글 스크랩 → scraped, scrapped 캐시 삭제', () async {
+    test('게시글 스크랩 → scraped, scrapped, 상세 캐시 삭제', () async {
       await ApiCacheStore.put('http://api/posts/3/scraped', false);
       await ApiCacheStore.put('http://api/posts/my/scrapped', []);
-      await ApiCacheStore.put('http://api/posts/3', {'title': '글'}); // 무관
+      // 상세 응답의 scrapCount도 바뀌므로 함께 무효화되어야 함
+      await ApiCacheStore.put('http://api/posts/3', {'title': '글'});
+      await ApiCacheStore.put('http://api/festivals/1', {'title': '페스'}); // 무관
 
       await ApiCacheStore.invalidateFor('http://api/posts/3/scrap');
 
       expect(ApiCacheStore.getSync('http://api/posts/3/scraped'), isNull);
       expect(ApiCacheStore.getSync('http://api/posts/my/scrapped'), isNull);
-      expect(ApiCacheStore.getSync('http://api/posts/3'), isNotNull); // 유지
+      expect(ApiCacheStore.getSync('http://api/posts/3'), isNull);
+      expect(ApiCacheStore.getSync('http://api/festivals/1'), isNotNull); // 유지
     });
 
-    test('게시글 좋아요 → liked, liked-posts 캐시 삭제', () async {
+    test('게시글 좋아요 → liked, liked-posts, 상세 캐시 삭제', () async {
       await ApiCacheStore.put('http://api/posts/3/liked', false);
       await ApiCacheStore.put('http://api/users/1/liked-posts', []);
+      await ApiCacheStore.put('http://api/posts/3', {'title': '글'});
 
       await ApiCacheStore.invalidateFor('http://api/posts/3/like');
 
       expect(ApiCacheStore.getSync('http://api/posts/3/liked'), isNull);
       expect(ApiCacheStore.getSync('http://api/users/1/liked-posts'), isNull);
+      expect(ApiCacheStore.getSync('http://api/posts/3'), isNull);
     });
 
     test('게시글 삭제/수정 → posts 패턴 캐시 삭제', () async {
@@ -319,6 +324,28 @@ void main() {
       ApiCacheStore.clearForTesting();
       await ApiCacheStore.init();
       expect(await ApiCacheStore.get(url), isNull);
+    });
+  });
+
+  // ───────────────────────────────────────────────────
+  // D. path 기준 매칭 — 쿼리스트링 오매치 방지
+  // ───────────────────────────────────────────────────
+  group('D. path 기준 매칭', () {
+    test('쿼리스트링에 /search가 들어가도 TTL은 path(/festivals) 기준', () async {
+      // path가 /festivals라 기본 TTL 7일 적용. 쿼리의 /search(10분)로
+      // 오매치되면 1시간 지난 데이터가 만료로 판정되어 버린다.
+      await _putWithAge('http://api/festivals?tag=/search', ['data'], 60 * 60 * 1000);
+      expect(
+        ApiCacheStore.getSync('http://api/festivals?tag=/search'),
+        isNotNull,
+      );
+    });
+
+    test('무효화도 path 기준 — 쿼리의 /posts는 무시', () async {
+      await ApiCacheStore.put('http://api/posts/free', [1]);
+      // path가 /festivals/1/like 이므로 posts 캐시는 건드리지 않음
+      await ApiCacheStore.invalidateFor('http://api/festivals/1/like?ref=/posts');
+      expect(ApiCacheStore.getSync('http://api/posts/free'), isNotNull);
     });
   });
 }

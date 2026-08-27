@@ -37,8 +37,8 @@ class MainScreenState extends State<MainScreen>
     TabItem.festivalList,
     TabItem.favorite,
   ];
-  final List<GlobalKey<NavigatorState>> navigatorKeys =
-      List.generate(5, (_) => GlobalKey<NavigatorState>());
+  late final List<GlobalKey<NavigatorState>> navigatorKeys =
+      List.generate(tabs.length, (_) => GlobalKey<NavigatorState>());
   late final List<_NavBarObserver> _tabObservers;
 
   final _showBottomNav = ValueNotifier<bool>(true);

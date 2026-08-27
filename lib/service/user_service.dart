@@ -1,7 +1,6 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
+import 'package:feple/common/util/response_parsing.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/followed_artist.dart';
@@ -13,9 +12,7 @@ import 'package:feple/network/dio_client.dart';
 class UserService {
   Future<AppUser> fetchUser(int userId) async {
     final response = await DioClient.dio.get('/users/$userId');
-    final raw = response.data is String ? jsonDecode(response.data) : response.data;
-    if (raw is! Map<String, dynamic>) throw FormatException('Unexpected user response type: ${raw.runtimeType}');
-    return AppUser.fromJson(raw);
+    return AppUser.fromJson(extractJsonMap(response.data));
   }
 
   Future<AppUser> fetchUserFromToken(String token) async {
@@ -23,7 +20,7 @@ class UserService {
       '/users/me',
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
-    return AppUser.fromJson(response.data);
+    return AppUser.fromJson(extractJsonMap(response.data));
   }
 
   Future<void> deleteUser(int userId, WithdrawalReason reason, {String? detail}) async {

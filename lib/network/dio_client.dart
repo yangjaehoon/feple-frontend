@@ -2,13 +2,17 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import '../auth/token_store.dart';
 import '../common/util/forced_refresh.dart';
+import '../common/util/response_parsing.dart';
 import '../config.dart' as app_config;
 import 'api_cache_store.dart';
 import 'performance_interceptor.dart';
 
 extension ResponseListExt on Response {
+  /// 순수 배열/Spring Page(`content`) 어느 쪽이든 안전하게 모델 리스트로 변환.
   List<T> toModelList<T>(T Function(Map<String, dynamic>) fromJson) =>
-      (data as List).map((e) => fromJson(e as Map<String, dynamic>)).toList();
+      extractJsonList(data)
+          .map((e) => fromJson(e as Map<String, dynamic>))
+          .toList();
 }
 
 bool _isNetworkError(DioException e) {
@@ -210,7 +214,13 @@ class _AuthAndSwrInterceptor extends Interceptor {
     final opts = error.requestOptions;
     opts.headers['Authorization'] = 'Bearer $newToken';
     try {
-      handler.resolve(await DioClient._plainDio.fetch(opts));
+      final response = await DioClient._plainDio.fetch(opts);
+      // _plainDio는 인터셉터가 없어 _ResponseCacheInterceptor를 안 타므로
+      // 재시도로 받은 GET 응답이 캐시에 남지 않는다 → 여기서 직접 기록
+      if (opts.method == 'GET' && response.statusCode == 200) {
+        await ApiCacheStore.put(opts.uri.toString(), response.data);
+      }
+      handler.resolve(response);
     } on DioException catch (retryErr) {
       handler.next(retryErr);
     }

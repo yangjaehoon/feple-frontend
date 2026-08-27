@@ -16,16 +16,19 @@ abstract final class ImageUploadHelper {
     required String presignEndpoint,
     required Uint8List imageData,
   }) async {
-    final compressed = await FlutterImageCompress.compressWithList(
-      imageData,
-      quality: _compressQuality,
-      format: CompressFormat.jpeg,
-    );
-
-    final presignResponse = await DioClient.dio.post(
-      presignEndpoint,
-      data: {'contentType': _contentType, 'extension': _ext},
-    );
+    // 압축과 presign 요청은 서로 무관 — presign 요청 바디가 고정된
+    // contentType/extension만 담아 압축 결과를 필요로 하지 않으므로 병렬 실행
+    final (compressed, presignResponse) = await (
+      FlutterImageCompress.compressWithList(
+        imageData,
+        quality: _compressQuality,
+        format: CompressFormat.jpeg,
+      ),
+      DioClient.dio.post(
+        presignEndpoint,
+        data: {'contentType': _contentType, 'extension': _ext},
+      ),
+    ).wait;
     final presign = PresignResult.fromJson(presignResponse.data);
 
     final putResponse = await http.put(

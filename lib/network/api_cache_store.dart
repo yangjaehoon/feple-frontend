@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -76,7 +77,10 @@ class ApiCacheStore {
   /// main()에서 AppPreferences.init() 직후 호출.
   static Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
-    await _pruneAndCapPersisted();
+    // 만료분 정리·상한 초과분 제거는 순수 하우스키핑 — getSync/get이 조회
+    // 시점마다 만료를 다시 검사하므로 콜드스타트를 막을 이유가 없다.
+    // 캐시가 커진 기기(업데이트 직후)에서 이 루프가 시작을 지연시키지 않도록 백그라운드로.
+    unawaited(_pruneAndCapPersisted());
   }
 
   /// 테스트 전용 — 메모리 캐시와 _prefs 초기화

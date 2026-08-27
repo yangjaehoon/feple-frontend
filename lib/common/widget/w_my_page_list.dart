@@ -6,6 +6,7 @@ import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/util/forced_refresh.dart';
 
 /// 내 게시글·스크랩처럼 '제목 + 서브텍스트 + trailing 숫자' 형태 목록의 기본 스켈레톤.
 Widget postListSkeleton(AbstractThemeColors colors) {
@@ -134,7 +135,7 @@ class _MyPageListState<T> extends State<MyPageList<T>> {
           Expanded(
             child: RefreshIndicator(
               color: colors.activate,
-              onRefresh: _refresh,
+              onRefresh: () => withForcedRefresh(_refresh),
               child: _isLoading
                   ? widget.skeletonBuilder(colors)
                   : _hasError

@@ -29,6 +29,7 @@ import 'w_edit_comment_dialog.dart';
 import 'w_like_comment_row.dart';
 import 'w_post_content_section.dart';
 import 'w_post_header_section.dart';
+import 'package:feple/common/util/forced_refresh.dart';
 
 class PostDetailCard extends StatefulWidget {
   final String boardName;
@@ -331,7 +332,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
   Widget _buildScrollContent(AbstractThemeColors colors, int? userId) {
     return RefreshIndicator(
       color: colors.activate,
-      onRefresh: _notifier.refresh,
+      onRefresh: () => withForcedRefresh(_notifier.refresh),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(16.0),

@@ -11,6 +11,7 @@ import 'package:feple/model/notice_model.dart';
 import 'package:feple/screen/notice/s_notice_detail.dart';
 import 'package:feple/service/notice_service.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/util/forced_refresh.dart';
 
 class NoticeListScreen extends StatefulWidget {
   const NoticeListScreen({super.key});
@@ -132,7 +133,7 @@ class _NoticeListScreenState extends State<NoticeListScreen> {
     }
     return RefreshIndicator(
       color: colors.activate,
-      onRefresh: _load,
+      onRefresh: () => withForcedRefresh(_load),
       child: ListView.separated(
         controller: _scrollController,
         physics: const AlwaysScrollableScrollPhysics(),

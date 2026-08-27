@@ -12,6 +12,7 @@ import 'package:feple/model/blocked_user_model.dart';
 import 'package:feple/service/block_service.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/common/util/responsive_size.dart';
+import 'package:feple/common/util/forced_refresh.dart';
 
 class BlockedUsersScreen extends StatefulWidget {
   const BlockedUsersScreen({super.key});
@@ -83,7 +84,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
     }
     return RefreshIndicator(
       color: colors.activate,
-      onRefresh: _load,
+      onRefresh: () => withForcedRefresh(_load),
       child: ListView.separated(
         itemCount: _list!.length,
         separatorBuilder: (_, _) => Divider(height: 1, color: colors.listDivider),

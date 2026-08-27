@@ -16,6 +16,7 @@ import 'package:feple/service/song_request_service.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:feple/common/util/forced_refresh.dart';
 
 class SongRequestListScreen extends StatefulWidget {
   const SongRequestListScreen({super.key});
@@ -101,7 +102,7 @@ class _SongRequestListScreenState extends State<SongRequestListScreen>
   Widget _buildBody(AbstractThemeColors colors) {
     final displayed = filteredItems;
     return RefreshIndicator(
-      onRefresh: refreshItems,
+      onRefresh: () => withForcedRefresh(refreshItems),
       color: colors.activate,
       child: isLoadingItems
           ? _buildSkeleton(colors)

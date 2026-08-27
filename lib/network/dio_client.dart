@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
 import '../auth/token_store.dart';
+import '../common/util/forced_refresh.dart';
 import '../config.dart' as app_config;
 import 'api_cache_store.dart';
 import 'performance_interceptor.dart';
@@ -134,7 +135,10 @@ class _AuthAndSwrInterceptor extends Interceptor {
 
     // SWR: GET 요청에 메모리 캐시가 있으면 즉시 반환 + 백그라운드 갱신
     // 첫 방문(캐시 없음)이나 오프라인 fallback은 _ResponseCacheInterceptor가 처리
-    if (options.method == 'GET') {
+    // 단, 사용자가 명시적으로 최신화를 요청한 흐름(withForcedRefresh)이나
+    // per-request로 refresh 플래그를 준 경우엔 캐시를 건너뛰고 실제 네트워크로 나감
+    final forced = isForcedRefreshZone || options.extra['refresh'] == true;
+    if (options.method == 'GET' && !forced) {
       final cached = ApiCacheStore.getSync(options.uri.toString());
       if (cached != null) {
         unawaited(DioClient._bgRefresh(options));

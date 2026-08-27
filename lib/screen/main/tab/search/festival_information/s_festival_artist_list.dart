@@ -12,6 +12,7 @@ import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/screen/main/tab/search/festival_information/festival_artists_notifier.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/util/forced_refresh.dart';
 
 class FestivalArtistListScreen extends StatelessWidget {
   final FestivalArtistsNotifier notifier;
@@ -52,13 +53,13 @@ class FestivalArtistListScreen extends StatelessWidget {
     if (notifier.artists.isEmpty) {
       return RefreshIndicator(
         color: colors.activate,
-        onRefresh: notifier.refresh,
+        onRefresh: () => withForcedRefresh(notifier.refresh),
         child: _buildEmptyList(colors),
       );
     }
     return RefreshIndicator(
       color: colors.activate,
-      onRefresh: notifier.refresh,
+      onRefresh: () => withForcedRefresh(notifier.refresh),
       child: _buildContent(colors),
     );
   }

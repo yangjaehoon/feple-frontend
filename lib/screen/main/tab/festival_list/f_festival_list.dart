@@ -14,6 +14,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../app.dart';
 import '../../../../provider/festival_preview_provider.dart';
+import 'package:feple/common/util/forced_refresh.dart';
 
 class FestivalListFragment extends StatefulWidget {
   const FestivalListFragment({super.key});
@@ -139,8 +140,8 @@ class _FestivalListFragmentState extends State<FestivalListFragment> {
     Set<String> selectedRegions,
     Set<String> selectedAgeRestrictions,
   ) {
-    Future<void> onRefresh() =>
-        context.read<FestivalPreviewProvider>().refresh(force: true);
+    Future<void> onRefresh() => withForcedRefresh(
+        () => context.read<FestivalPreviewProvider>().refresh(force: true));
 
     final scrollView = CustomScrollView(
       controller: _scrollController,

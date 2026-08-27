@@ -4,6 +4,7 @@ import 'package:feple/screen/main/tab/search/artist_page/image_collection/w_imag
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/screen/main/tab/search/artist_page/image_collection/w_image_collection.dart';
+import 'package:feple/common/util/forced_refresh.dart';
 
 class ImageCollectionScreen extends StatefulWidget {
   const ImageCollectionScreen({
@@ -32,8 +33,8 @@ class _ImageCollectionScreenState extends State<ImageCollectionScreen> {
       appBar: SecondaryAppBar(title: 'photo_collection_title'.tr()),
       body: RefreshIndicator(
         color: colors.activate,
-        onRefresh: () =>
-            _imgCollectionKey.currentState?.refresh() ?? Future.value(),
+        onRefresh: () => withForcedRefresh(
+            () => _imgCollectionKey.currentState?.refresh() ?? Future.value()),
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [

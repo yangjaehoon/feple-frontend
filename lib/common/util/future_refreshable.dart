@@ -1,3 +1,4 @@
+import 'package:feple/common/util/forced_refresh.dart';
 import 'package:flutter/widgets.dart';
 
 /// [late Future<D> 필드 + initState 조회 + refresh()] 반복 패턴을 캡슐화.
@@ -19,7 +20,8 @@ mixin FutureRefreshable<D, T extends StatefulWidget> on State<T> {
   }
 
   Future<void> refresh() async {
-    final next = fetchData();
+    // 사용자가 명시적으로 새로고침한 것이므로 SWR 캐시를 건너뛰고 실제 요청
+    final next = withForcedRefresh(fetchData);
     setState(() {
       future = next;
     });

@@ -13,6 +13,7 @@ import 'package:feple/screen/main/tab/search/festival_information/w_festival_set
 import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/util/forced_refresh.dart';
 
 class FestivalInformationFragment extends StatefulWidget {
   const FestivalInformationFragment({super.key, required this.poster, this.heroTag});
@@ -91,7 +92,7 @@ class _FestivalInformationFragmentState
   Widget _buildScrollBody(AbstractThemeColors colors) {
     return RefreshIndicator(
       color: colors.activate,
-      onRefresh: _onRefresh,
+      onRefresh: () => withForcedRefresh(_onRefresh),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),

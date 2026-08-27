@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:feple/common/util/forced_refresh.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -22,20 +23,24 @@ class AdaptiveRefreshView extends StatelessWidget {
     this.indicatorColor,
   });
 
+  // 당겨서 새로고침은 사용자가 명시적으로 최신화를 요청한 것이므로
+  // SWR 캐시를 건너뛰고 실제 네트워크 요청을 강제한다.
+  Future<void> _onRefresh() => withForcedRefresh(onRefresh);
+
   @override
   Widget build(BuildContext context) {
     if (Platform.isIOS) {
       return CustomScrollView(
         controller: controller,
         slivers: [
-          CupertinoSliverRefreshControl(onRefresh: onRefresh),
+          CupertinoSliverRefreshControl(onRefresh: _onRefresh),
           SliverPadding(padding: padding, sliver: SliverToBoxAdapter(child: child)),
         ],
       );
     }
     return RefreshIndicator(
       color: indicatorColor,
-      onRefresh: onRefresh,
+      onRefresh: _onRefresh,
       child: SingleChildScrollView(
         controller: controller,
         physics: const AlwaysScrollableScrollPhysics(),

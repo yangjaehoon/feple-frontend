@@ -26,6 +26,7 @@ import 'package:feple/service/post_service.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/common/util/responsive_size.dart';
+import 'package:feple/common/util/forced_refresh.dart';
 
 // 섹션 헤더 또는 알림 카드를 구분하는 sealed class
 sealed class _ListItem {}
@@ -241,7 +242,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
               builder: (context, _) => RefreshIndicator(
                 onRefresh: () async {
                   try {
-                    await _notifier.refresh(force: true);
+                    await withForcedRefresh(() => _notifier.refresh(force: true));
                   } catch (_) {
                     if (context.mounted) {
                       context.showErrorSnackbar('refresh_failed'.tr());

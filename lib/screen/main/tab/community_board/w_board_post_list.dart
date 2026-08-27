@@ -17,6 +17,7 @@ import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
 import 'package:feple/screen/main/tab/my_page/s_other_user_profile.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/util/forced_refresh.dart';
 
 class BoardPostList extends StatefulWidget {
   final String boardName;
@@ -87,7 +88,7 @@ class _BoardPostListState extends State<BoardPostList>
         Expanded(
           child: RefreshIndicator(
             color: colors.activate,
-            onRefresh: _controller.refresh,
+            onRefresh: () => withForcedRefresh(_controller.refresh),
             child: _buildContent(colors),
           ),
         ),

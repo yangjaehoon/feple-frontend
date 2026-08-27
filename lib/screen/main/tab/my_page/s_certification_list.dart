@@ -25,6 +25,7 @@ import 'filtered_status_list_state.dart';
 import 'w_rating_sheet.dart';
 import 'w_status_badge.dart';
 import 'w_submit_certification_sheet.dart';
+import 'package:feple/common/util/forced_refresh.dart';
 
 class CertificationListScreen extends StatefulWidget {
   const CertificationListScreen({super.key});
@@ -133,7 +134,7 @@ class _CertificationListScreenState extends State<CertificationListScreen>
   Widget _buildBody(AbstractThemeColors colors) {
     final displayed = filteredItems;
     return RefreshIndicator(
-      onRefresh: refreshItems,
+      onRefresh: () => withForcedRefresh(refreshItems),
       color: colors.activate,
       child: isLoadingItems
           ? _buildSkeleton(colors)

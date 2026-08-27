@@ -27,6 +27,7 @@ import 'package:feple/model/post_model.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../provider/user_provider.dart';
+import 'package:feple/common/util/forced_refresh.dart';
 
 class CommunityPost extends StatefulWidget {
   final String boardName;
@@ -436,7 +437,7 @@ class _CommunityPostState extends State<CommunityPost>
           Expanded(
             child: RefreshIndicator(
               color: colors.activate,
-              onRefresh: _controller.refresh,
+              onRefresh: () => withForcedRefresh(_controller.refresh),
               child: _controller.isLoading
                   ? _buildSkeletonList()
                   : _buildList(colors),

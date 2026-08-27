@@ -15,6 +15,7 @@ import 'package:feple/screen/main/tab/my_page/s_write_festival_diary.dart';
 import 'package:feple/service/festival_diary_service.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/common/util/responsive_size.dart';
+import 'package:feple/common/util/forced_refresh.dart';
 
 class FestivalDiaryListScreen extends StatefulWidget {
   const FestivalDiaryListScreen({super.key});
@@ -118,7 +119,7 @@ class _FestivalDiaryListScreenState extends State<FestivalDiaryListScreen> {
 
   Widget _buildBody(AbstractThemeColors colors) {
     return RefreshIndicator(
-      onRefresh: _load,
+      onRefresh: () => withForcedRefresh(_load),
       color: colors.activate,
       child: _isLoading
           ? _buildSkeleton(colors)

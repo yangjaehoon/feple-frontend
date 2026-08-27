@@ -35,6 +35,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../provider/user_provider.dart';
+import 'package:feple/common/util/forced_refresh.dart';
 
 class OtherUserProfileScreen extends StatefulWidget {
   final int userId;
@@ -136,7 +137,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
           Expanded(
             child: RefreshIndicator(
               color: colors.activate,
-              onRefresh: _load,
+              onRefresh: () => withForcedRefresh(_load),
               child: _hasError ? _buildError() : _buildBody(colors),
             ),
           ),

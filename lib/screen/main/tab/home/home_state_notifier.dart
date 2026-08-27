@@ -1,6 +1,7 @@
 import 'package:feple/common/data/preference/item/preference_item.dart';
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/common/stale_tracker.dart';
+import 'package:feple/common/util/forced_refresh.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/favorite_board.dart';
 import 'package:feple/model/followed_artist.dart';
@@ -118,10 +119,11 @@ class HomeStateNotifier extends SafeChangeNotifier {
   }
 
   /// [force] true면 항상 재요청. false면 5분 이내 로드된 데이터가 있으면 skip.
+  /// force 새로고침은 Dio SWR 캐시도 건너뛴다 (당겨서 새로고침 = 실제 네트워크).
   Future<void> refresh({bool force = false}) async {
     if (!force && !_staleness.isStale && artists != null) return;
     hasError = false;
-    await loadData();
+    await (force ? withForcedRefresh(loadData) : loadData());
   }
 
   Future<void> refreshFestivals() async {
@@ -163,7 +165,7 @@ class HomeStateNotifier extends SafeChangeNotifier {
     boards = null;
     hasError = false;
     safeNotify();
-    await loadData();
+    await withForcedRefresh(loadData);
   }
 
   Future<void> saveArtistOrder(List<int> order) async {

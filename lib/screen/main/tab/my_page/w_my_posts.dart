@@ -13,6 +13,7 @@ import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_stat_row.dart';
 import 'package:feple/service/user_activity_service.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/util/forced_refresh.dart';
 
 class MyPostsView extends StatefulWidget {
   final int userId;
@@ -70,7 +71,7 @@ class _MyPostsViewState extends State<MyPostsView> {
           Expanded(
             child: RefreshIndicator(
               color: colors.activate,
-              onRefresh: _controller.refresh,
+              onRefresh: () => withForcedRefresh(_controller.refresh),
               child: _buildContent(colors),
             ),
           ),

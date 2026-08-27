@@ -13,6 +13,7 @@ import 'package:feple/screen/main/tab/search/artist_page/w_artist_songs.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_main_image_swiper.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_related_artists.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/util/forced_refresh.dart';
 
 class ArtistScreen extends StatefulWidget {
   const ArtistScreen({
@@ -147,7 +148,7 @@ class _ArtistScreenState extends State<ArtistScreen> {
               top: false,
               child: RefreshIndicator(
                 color: colors.activate,
-                onRefresh: _onRefresh,
+                onRefresh: () => withForcedRefresh(_onRefresh),
                 child: _buildScrollBody(displayName),
               ),
             ),

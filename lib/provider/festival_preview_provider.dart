@@ -58,6 +58,9 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
   // 필터 변경으로 무효화된 요청의 응답이 늦게 도착해 최신 결과를 덮어쓰지 않도록 가드.
   // (mock 기반 단위 테스트처럼 취소를 존중하지 않는 fetch 경로에서도 동작)
   int _generation = 0;
+  // 현재 진행 중인 fetchNext의 세대. 이전 세대 요청이 아직 unwind 중이어도
+  // 새 세대 요청이 곧바로 시작될 수 있게 한다 (예전엔 _isLoading을 강제 리셋했음).
+  int? _activeFetchGeneration;
 
   // 필터 변경 시 진행 중이던 실제 네트워크 요청을 중단해 낭비를 없앤다.
   // (_generation은 결과를 "무시"만 할 뿐, 요청 자체는 계속 나가고 있었음)
@@ -100,7 +103,8 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
   // 필터 변경 확정 후: 즉시 목록 비우고 재요청
   void _clearAndFetch() {
     // 이전 세대(진행 중이던 요청)를 무효화 — 그 응답이 나중에 와도 결과를 반영하지 않고,
-    // 실제 네트워크 요청도 CancelToken으로 중단한다.
+    // 실제 네트워크 요청도 CancelToken으로 중단한다. 새 fetchNext는 세대가 달라
+    // 진입 가드를 통과하므로 busy 플래그를 건드릴 필요가 없다.
     _generation++;
     _fetchToken.cancel();
     _fetchToken = CancelToken();
@@ -109,9 +113,6 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
     _page = 0;
     _hasMore = true;
     _error = null;
-    // 진행 중이던 요청의 busy 플래그를 리셋해 새 요청이 가드에 막히지 않게 함
-    _isLoading = false;
-    _isLoadingMore = false;
     safeNotify();
     fetchNext();
   }
@@ -128,11 +129,14 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
   }
 
   Future<void> fetchNext() async {
-    if (_isLoading || _isLoadingMore) return;
+    // 현재 세대의 요청이 이미 진행 중이면 스킵. 세대가 바뀐(_clearAndFetch) 경우엔
+    // 이전 요청이 곧 취소로 끝나므로 새 요청을 진행한다.
+    if (_activeFetchGeneration == _generation) return;
     if (!_hasMore) return;
 
     final wasFirstPage = _page == 0;
     final myGeneration = _generation;
+    _activeFetchGeneration = myGeneration;
     final token = _fetchToken;
 
     // 아이템이 없을 때만 전체 로딩 스피너 표시 (items가 있으면 기존 데이터 유지)
@@ -181,7 +185,10 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
         _refreshError = fetchFailureText(e);
       }
     } finally {
-      if (myGeneration == _generation) {
+      // 이 fetch가 여전히 최신 세대라면 로딩 상태를 정리한다. 세대가 바뀌었다면
+      // 이미 새 fetchNext가 진행 중이므로 그쪽이 소유한다.
+      if (_activeFetchGeneration == myGeneration) {
+        _activeFetchGeneration = null;
         _isLoading = false;
         _isLoadingMore = false;
         safeNotify();

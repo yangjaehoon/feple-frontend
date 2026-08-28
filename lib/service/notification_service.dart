@@ -31,7 +31,11 @@ class NotificationService implements NotificationCountable, NotificationFeedable
   @override
   Future<int> getUnreadCount() async {
     final response = await DioClient.dio.get('/notifications/unread-count');
-    return (extractJsonMap(response.data)['count'] as num?)?.toInt() ?? 0;
+    // 서버가 {"count": N} 또는 순수 숫자 어느 쪽을 주든, 예상 밖 형태면 0.
+    final data = response.data;
+    if (data is num) return data.toInt();
+    if (data is Map) return (data['count'] as num?)?.toInt() ?? 0;
+    return 0;
   }
 
   @override

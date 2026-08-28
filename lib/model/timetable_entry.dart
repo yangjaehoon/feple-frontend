@@ -1,3 +1,4 @@
+import 'json_reader.dart';
 import 'localized_text.dart';
 
 class TimetableRange {
@@ -120,22 +121,16 @@ class TimetableEntry {
       };
 
   factory TimetableEntry.fromJson(Map<String, dynamic> j) => TimetableEntry(
-        id: (j['id'] as num?)?.toInt() ?? 0,
-        stageName: j['stageName'] as String? ?? '',
-        stageOrder: (j['stageOrder'] as num?)?.toInt() ?? 999,
-        artistName: j['artistName'] as String? ?? '',
-        artistNameEn: j['artistNameEn'] as String? ?? '',
-        festivalDate: j['festivalDate'] as String? ?? '',
+        id: j.integer('id'),
+        stageName: j.str('stageName'),
+        stageOrder: j.integer('stageOrder', 999),
+        artistName: j.str('artistName'),
+        artistNameEn: j.str('artistNameEn'),
+        festivalDate: j.str('festivalDate'),
         startTime: _toHHmm(j['startTime']),
         endTime: _toHHmm(j['endTime']),
-        memberArtistNames: (j['memberArtistNames'] as List<dynamic>?)
-                ?.map((e) => e as String)
-                .toList() ??
-            const [],
-        memberArtistNameEnList: (j['memberArtistNameEnList'] as List<dynamic>?)
-                ?.map((e) => e as String)
-                .toList() ??
-            const [],
+        memberArtistNames: j.stringList('memberArtistNames'),
+        memberArtistNameEnList: j.stringList('memberArtistNameEnList'),
       );
 
   bool get isOps => stageName == _opsStage;

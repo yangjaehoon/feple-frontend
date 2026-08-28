@@ -1,4 +1,5 @@
 import 'date_format.dart';
+import 'json_reader.dart';
 import 'localized_text.dart';
 
 enum EventType {
@@ -56,19 +57,17 @@ class ArtistScheduleModel {
 
   factory ArtistScheduleModel.fromJson(Map<String, dynamic> json) {
     return ArtistScheduleModel(
-      festivalId: (json['festivalId'] as num).toInt(),
-      title: json['title'] as String,
-      description: json['description'] as String?,
-      location: json['location'] as String?,
-      startDate: json['startDate'] as String?,
-      endDate: json['endDate'] as String?,
-      posterUrl: json['posterUrl'] as String?,
-      eventType: EventType.fromString(json['eventType'] as String?) ??
+      festivalId: json.integer('festivalId'),
+      title: json.str('title'),
+      description: json.strOrNull('description'),
+      location: json.strOrNull('location'),
+      startDate: json.strOrNull('startDate'),
+      endDate: json.strOrNull('endDate'),
+      posterUrl: json.strOrNull('posterUrl'),
+      eventType: EventType.fromString(json.strOrNull('eventType')) ??
           EventType.festival,
-      coArtists: (json['coArtists'] as List<dynamic>?)
-              ?.map((e) => CoArtistInfo.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
+      coArtists:
+          json.objectList('coArtists').map(CoArtistInfo.fromJson).toList(),
     );
   }
 }
@@ -96,10 +95,10 @@ class CoArtistInfo {
 
   factory CoArtistInfo.fromJson(Map<String, dynamic> json) {
     return CoArtistInfo(
-      artistId: (json['artistId'] as num).toInt(),
-      artistName: json['artistName'] as String,
-      artistNameEn: json['artistNameEn'] as String? ?? '',
-      profileImageUrl: json['profileImageUrl'] as String?,
+      artistId: json.integer('artistId'),
+      artistName: json.str('artistName'),
+      artistNameEn: json.str('artistNameEn'),
+      profileImageUrl: json.strOrNull('profileImageUrl'),
     );
   }
 }

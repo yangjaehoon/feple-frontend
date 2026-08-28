@@ -1,4 +1,5 @@
 import 'genre_parser.dart';
+import 'json_reader.dart';
 import 'localized_text.dart';
 
 class FollowedArtist {
@@ -29,12 +30,12 @@ class FollowedArtist {
 
   factory FollowedArtist.fromJson(Map<String, dynamic> json) {
     return FollowedArtist(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      nameEn: (json['nameEn'] as String?) ?? '',
-      profileImageUrl: json['profileImageUrl'] as String?,
-      genre: json['genre'] as String?,
-      followerCount: (json['followerCount'] as num?)?.toInt() ?? 0,
+      id: json.integer('id'),
+      name: json.str('name'),
+      nameEn: json.str('nameEn'),
+      profileImageUrl: json.strOrNull('profileImageUrl'),
+      genre: json.strOrNull('genre'),
+      followerCount: json.integer('followerCount'),
     );
   }
 

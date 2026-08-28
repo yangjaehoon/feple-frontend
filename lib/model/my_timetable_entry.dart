@@ -1,3 +1,4 @@
+import 'json_reader.dart';
 import 'timetable_entry.dart' show formatTimeRange;
 
 class MyTimetableEntry {
@@ -45,11 +46,11 @@ class MyTimetableEntry {
       };
 
   factory MyTimetableEntry.fromJson(Map<String, dynamic> j) => MyTimetableEntry(
-        id: j['id'] as String,
-        stageName: j['stageName'] as String,
-        label: j['label'] as String,
-        startTime: j['startTime'] as String,
-        endTime: j['endTime'] as String,
-        colorValue: j['color'] as int,
+        id: j.str('id'),
+        stageName: j.str('stageName'),
+        label: j.str('label'),
+        startTime: j.str('startTime'),
+        endTime: j.str('endTime'),
+        colorValue: j.integer('color'),
       );
 }

@@ -1,3 +1,5 @@
+import 'json_reader.dart';
+
 class FollowStatus {
   final bool followed;
   final int followerCount;
@@ -6,8 +8,8 @@ class FollowStatus {
 
   factory FollowStatus.fromJson(Map<String, dynamic> json) {
     return FollowStatus(
-      followed: json['followed'] == true,
-      followerCount: (json['followerCount'] as num?)?.toInt() ?? 0,
+      followed: json.boolean('followed'),
+      followerCount: json.integer('followerCount'),
     );
   }
 }

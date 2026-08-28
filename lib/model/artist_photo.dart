@@ -1,4 +1,5 @@
 import 'date_format.dart';
+import 'json_reader.dart';
 
 class ArtistPhoto {
   final int photoId;
@@ -55,16 +56,16 @@ class ArtistPhoto {
 
   factory ArtistPhoto.fromJson(Map<String, dynamic> json) {
     return ArtistPhoto(
-      photoId: (json['photoId'] as num).toInt(),
-      url: json['url'] as String,
-      uploaderUserId: (json['uploaderUserId'] as num?)?.toInt(),
-      uploaderNickname: json['uploaderNickname'] as String? ?? '',
-      createdAt: parseServerDateTime(json['createdAt'] as String?),
-      title: json['title'] as String? ?? '',
-      description: json['description'] as String? ?? '',
-      likeCount: (json['likeCount'] as num?)?.toInt() ?? 0,
-      isLiked: json['isLiked'] as bool? ?? false,
-      isAnonymous: json['isAnonymous'] as bool? ?? false,
+      photoId: json.integer('photoId'),
+      url: json.str('url'),
+      uploaderUserId: json.intOrNull('uploaderUserId'),
+      uploaderNickname: json.str('uploaderNickname'),
+      createdAt: parseServerDateTime(json.strOrNull('createdAt')),
+      title: json.str('title'),
+      description: json.str('description'),
+      likeCount: json.integer('likeCount'),
+      isLiked: json.boolean('isLiked'),
+      isAnonymous: json.boolean('isAnonymous'),
     );
   }
 }

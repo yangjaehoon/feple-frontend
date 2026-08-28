@@ -582,13 +582,6 @@ class _ReviewCardState extends State<_ReviewCard> {
   @override
   Widget build(BuildContext context) {
     final colors = widget.colors;
-    final review = widget.review;
-    final initial = review.nickname.isNotEmpty
-        ? review.nickname[0].toUpperCase()
-        : '?';
-    final hasReviewText =
-        review.userReview != null && review.userReview!.isNotEmpty;
-
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
       child: Column(
@@ -597,66 +590,9 @@ class _ReviewCardState extends State<_ReviewCard> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CircleAvatar(
-                radius: ResponsiveSize(context).w(19),
-                backgroundColor: colors.surface,
-                child: Text(
-                  initial,
-                  style: TextStyle(
-                    fontSize: AppDimens.fontSizeMd,
-                    fontWeight: FontWeight.w700,
-                    color: colors.activate,
-                  ),
-                ),
-              ),
+              _buildAvatar(colors),
               const SizedBox(width: AppDimens.space10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            review.nickname,
-                            style: TextStyle(
-                              fontSize: AppDimens.fontSizeSm,
-                              fontWeight: FontWeight.w600,
-                              color: colors.textTitle,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        if (review.ratedAt != null) ...[
-                          const SizedBox(width: AppDimens.space8),
-                          Text(
-                            review.ratedAt!,
-                            style: TextStyle(
-                              fontSize: AppDimens.fontSizeXxs,
-                              color: colors.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    const SizedBox(height: 3),
-                    StarRatingRow(rating: review.rating.toDouble(), size: 13),
-                    if (hasReviewText) ...[
-                      const SizedBox(height: AppDimens.space6),
-                      ExpandableText(
-                        text: review.userReview!,
-                        style: TextStyle(
-                          fontSize: AppDimens.fontSizeMd,
-                          color: colors.textTitle,
-                          height: 1.5,
-                        ),
-                        maxLines: 4,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
+              Expanded(child: _buildReviewContent(colors)),
             ],
           ),
           const SizedBox(height: AppDimens.space8),
@@ -665,6 +601,74 @@ class _ReviewCardState extends State<_ReviewCard> {
           Divider(color: colors.divider, height: 1),
         ],
       ),
+    );
+  }
+
+  Widget _buildAvatar(AbstractThemeColors colors) {
+    final nickname = widget.review.nickname;
+    final initial = nickname.isNotEmpty ? nickname[0].toUpperCase() : '?';
+    return CircleAvatar(
+      radius: ResponsiveSize(context).w(19),
+      backgroundColor: colors.surface,
+      child: Text(
+        initial,
+        style: TextStyle(
+          fontSize: AppDimens.fontSizeMd,
+          fontWeight: FontWeight.w700,
+          color: colors.activate,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReviewContent(AbstractThemeColors colors) {
+    final review = widget.review;
+    final hasReviewText =
+        review.userReview != null && review.userReview!.isNotEmpty;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                review.nickname,
+                style: TextStyle(
+                  fontSize: AppDimens.fontSizeSm,
+                  fontWeight: FontWeight.w600,
+                  color: colors.textTitle,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (review.ratedAt != null) ...[
+              const SizedBox(width: AppDimens.space8),
+              Text(
+                review.ratedAt!,
+                style: TextStyle(
+                  fontSize: AppDimens.fontSizeXxs,
+                  color: colors.textSecondary,
+                ),
+              ),
+            ],
+          ],
+        ),
+        const SizedBox(height: 3),
+        StarRatingRow(rating: review.rating.toDouble(), size: 13),
+        if (hasReviewText) ...[
+          const SizedBox(height: AppDimens.space6),
+          ExpandableText(
+            text: review.userReview!,
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeMd,
+              color: colors.textTitle,
+              height: 1.5,
+            ),
+            maxLines: 4,
+          ),
+        ],
+      ],
     );
   }
 

@@ -1,6 +1,8 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get_it/get_it.dart';
 
+import 'common/util/sharer.dart';
+
 import 'service/artist_follow_service.dart';
 import 'service/artist_photo_manageable.dart';
 import 'service/artist_photo_readable.dart';
@@ -41,6 +43,7 @@ import 'service/user_service.dart';
 final sl = GetIt.instance;
 
 void setupDependencies() {
+  sl.registerLazySingleton<Sharer>(() => const SystemSharer());
   sl.registerLazySingleton<AuthService>(() => AuthService.instance);
   sl.registerLazySingleton<FcmNavigationHandler>(() => FcmNavigationHandler());
   sl.registerLazySingleton<FcmTokenService>(() => FcmTokenService(FirebaseMessaging.instance));

@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:feple/common/util/sharer.dart';
 import 'package:feple/common/util/widget_image_capturer.dart';
+import 'package:feple/injection.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -20,7 +22,6 @@ Future<bool> shareContent(
   String? precacheImageUrl,
   String captureFileName = 'feple_share.png',
   String logTag = 'Share',
-  @visibleForTesting Future<void> Function(ShareParams params)? shareOverride,
 }) async {
   List<XFile>? files;
   if (cardToCapture != null &&
@@ -38,8 +39,7 @@ Future<bool> shareContent(
     }
   }
   try {
-    final share = shareOverride ?? (p) => SharePlus.instance.share(p);
-    await share(ShareParams(text: text, files: files));
+    await sl<Sharer>().share(ShareParams(text: text, files: files));
     return true;
   } catch (e) {
     debugPrint('[$logTag] share error: $e');

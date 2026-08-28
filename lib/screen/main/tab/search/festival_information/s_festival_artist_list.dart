@@ -14,10 +14,40 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/common/util/forced_refresh.dart';
 
-class FestivalArtistListScreen extends StatelessWidget {
+class FestivalArtistListScreen extends StatefulWidget {
   final FestivalArtistsNotifier notifier;
 
   const FestivalArtistListScreen({super.key, required this.notifier});
+
+  @override
+  State<FestivalArtistListScreen> createState() =>
+      _FestivalArtistListScreenState();
+}
+
+class _FestivalArtistListScreenState extends State<FestivalArtistListScreen> {
+  FestivalArtistsNotifier get notifier => widget.notifier;
+
+  @override
+  void initState() {
+    super.initState();
+    notifier.addListener(_onNotifierChange);
+  }
+
+  @override
+  void dispose() {
+    notifier.removeListener(_onNotifierChange);
+    super.dispose();
+  }
+
+  // 새로고침 실패 알림 — 예전엔 build 중에 refreshError를 읽고 clearRefreshError()로
+  // notifier를 변경하던 것을 리스너 콜백으로 옮겼다.
+  void _onNotifierChange() {
+    if (!mounted) return;
+    final err = notifier.refreshError;
+    if (err == null) return;
+    notifier.clearRefreshError();
+    context.showErrorSnackbar(err);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,13 +69,6 @@ class FestivalArtistListScreen extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context, AbstractThemeColors colors) {
-    final refreshError = notifier.refreshError;
-    if (refreshError != null) {
-      notifier.clearRefreshError();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (context.mounted) context.showErrorSnackbar(refreshError);
-      });
-    }
     if (notifier.isLoading) return _buildSkeleton();
     if (notifier.hasError) {
       return ErrorState.network(notifier.error!, onRetry: notifier.retry);

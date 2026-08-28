@@ -33,8 +33,15 @@ class _FestivalListFragmentState extends State<FestivalListFragment> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     // dispose()에서 context.read()로 다시 조회하면, 트리 해체(예: 로그아웃) 중
-    // 이미 deactivate된 ancestor를 조회하려다 예외가 발생할 수 있어 미리 저장해둠
-    _festivalPreviewProvider = context.read<FestivalPreviewProvider>();
+    // 이미 deactivate된 ancestor를 조회하려다 예외가 발생할 수 있어 미리 저장해둠.
+    // 리스너 등록도 여기서 — initState에선 아직 이 값이 없어 post-frame으로
+    // 미뤘었지만, provider 인스턴스가 바뀔 때 재구독하는 게 더 정확하다.
+    final provider = context.read<FestivalPreviewProvider>();
+    if (!identical(provider, _festivalPreviewProvider)) {
+      _festivalPreviewProvider?.removeListener(_onProviderChange);
+      _festivalPreviewProvider = provider;
+      _festivalPreviewProvider!.addListener(_onProviderChange);
+    }
   }
 
   @override
@@ -42,9 +49,6 @@ class _FestivalListFragmentState extends State<FestivalListFragment> {
     super.initState();
     _scrollController.addListener(_onScroll);
     App.resumeEvent.addListener(_onAppResumed);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _festivalPreviewProvider?.addListener(_onProviderChange);
-    });
   }
 
   void _onProviderChange() {

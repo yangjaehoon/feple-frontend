@@ -93,12 +93,12 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final userProvider = Provider.of<UserProvider>(context, listen: false);
-      DioClient.onSessionExpired = () => userProvider.logout();
-      DioClient.onUserBanned = () => _showBanDialog(userProvider);
-      _tryAutoLogin(userProvider);
-    });
+    // Provider.of(listen: false)는 initState에서 안전 — post-frame으로 미루면
+    // 첫 프레임 동안 401/ban 응답에 핸들러가 안 붙어 있는 창이 생긴다.
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    DioClient.onSessionExpired = () => userProvider.logout();
+    DioClient.onUserBanned = () => _showBanDialog(userProvider);
+    unawaited(_tryAutoLogin(userProvider));
   }
 
   Future<void> _showBanDialog(UserProvider userProvider) async {

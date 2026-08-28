@@ -175,34 +175,50 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
       context: context,
       backgroundColor: colors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
       ),
       builder: (ctx) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ListTile(
-              leading: Icon(Icons.flag_outlined, color: colors.textTitle),
+            _buildMenuTile(
+              ctx,
+              icon: Icon(Icons.flag_outlined, color: colors.textTitle),
               title: Text('report_user'.tr()),
-              onTap: () {
-                Navigator.pop(ctx);
-                _showReportSheet();
-              },
+              onSelected: _showReportSheet,
             ),
-            ListTile(
-              leading: Icon(Icons.block_rounded, color: colors.error),
+            _buildMenuTile(
+              ctx,
+              icon: Icon(Icons.block_rounded, color: colors.error),
               title: Text(
                 'block'.tr(),
-                style: TextStyle(color: colors.error, fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  color: colors.error,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-              onTap: () {
-                Navigator.pop(ctx);
-                _toggleBlock();
-              },
+              onSelected: _toggleBlock,
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildMenuTile(
+    BuildContext sheetContext, {
+    required Icon icon,
+    required Text title,
+    required VoidCallback onSelected,
+  }) {
+    return ListTile(
+      leading: icon,
+      title: title,
+      onTap: () {
+        Navigator.pop(sheetContext);
+        onSelected();
+      },
     );
   }
 

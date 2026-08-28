@@ -1,4 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/store_links.dart';
+import 'package:feple/common/util/widget_image_capturer.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/model/artist_model.dart';
 import 'package:share_plus/share_plus.dart';
@@ -8,6 +11,7 @@ import 'package:feple/model/followed_artist.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_preview_section.dart';
 import 'package:feple/screen/main/tab/search/artist_page/artist_follow_notifier.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_board.dart';
+import 'package:feple/screen/main/tab/search/artist_page/w_artist_share_card.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_schedule.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_songs.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_main_image_swiper.dart';
@@ -77,6 +81,7 @@ class ArtistScreen extends StatefulWidget {
 
 class _ArtistScreenState extends State<ArtistScreen> {
   late final ArtistFollowNotifier _followNotifier;
+  bool _isSharing = false;
   final _swiperKey = GlobalKey<MainImageSwiperState>();
   final _scheduleKey = GlobalKey<ArtistScheduleState>();
   final _boardKey = GlobalKey<BoardPreviewSectionState>();
@@ -98,14 +103,42 @@ class _ArtistScreenState extends State<ArtistScreen> {
     super.dispose();
   }
 
+  // 아티스트 이름 + 프로필 이미지를 합성한 카드와 앱 링크를 함께 공유한다.
+  // 프로필 이미지가 없거나 카드 생성이 실패하면 텍스트만으로 공유된다.
   Future<void> _shareArtist(String displayName) async {
+    if (_isSharing) return;
+    setState(() => _isSharing = true);
+    final text = '${'artist_share_text'.tr(args: [displayName])}\n$kAppDownloadUrl';
+    final imageUrl = widget.profileImageUrl;
+    List<XFile>? files;
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      try {
+        await precacheImage(CachedNetworkImageProvider(imageUrl), context);
+        if (!mounted) return;
+        final bytes = await captureWidgetAsPng(
+          context,
+          ArtistShareCard(
+            artistName: displayName,
+            imageUrl: imageUrl,
+            followerCount: _followNotifier.followCount,
+          ),
+        );
+        if (bytes != null) {
+          files = [
+            XFile.fromData(bytes, name: 'feple_artist.png', mimeType: 'image/png'),
+          ];
+        }
+      } catch (e) {
+        debugPrint('[ArtistScreen] card capture failed: $e');
+      }
+    }
     try {
-      await SharePlus.instance.share(
-        ShareParams(text: 'artist_share_text'.tr(args: [displayName])),
-      );
+      await SharePlus.instance.share(ShareParams(text: text, files: files));
     } catch (e) {
       debugPrint('[ArtistScreen] share error: $e');
       if (mounted) context.showErrorSnackbar('share_failed'.tr());
+    } finally {
+      if (mounted) setState(() => _isSharing = false);
     }
   }
 
@@ -138,8 +171,17 @@ class _ArtistScreenState extends State<ArtistScreen> {
             actions: [
               IconButton(
                 tooltip: 'action_share'.tr(),
-                icon: Icon(Icons.share_rounded, color: colors.appBarIconColor),
-                onPressed: () => _shareArtist(displayName),
+                icon: _isSharing
+                    ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: colors.appBarIconColor,
+                        ),
+                      )
+                    : Icon(Icons.share_rounded, color: colors.appBarIconColor),
+                onPressed: _isSharing ? null : () => _shareArtist(displayName),
               ),
             ],
           ),

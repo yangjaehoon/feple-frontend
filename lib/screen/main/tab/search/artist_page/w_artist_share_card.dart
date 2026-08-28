@@ -1,19 +1,25 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:feple/common/widget/w_day_badge.dart';
-import 'package:feple/common/widget/w_share_card.dart';
-import 'package:feple/model/festival_model.dart';
-import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_share_card.dart';
+import 'package:flutter/material.dart';
 
-/// 공유용으로 캡처되는 고정 크기 카드 — 앱 테마와 무관하게 항상 같은 모습으로 그려진다.
-class FestivalShareCard extends StatelessWidget {
+/// 아티스트 공유용으로 캡처되는 고정 크기 카드 — 앱 테마와 무관하게 항상 같은 모습.
+/// 배경에 프로필 이미지가 필요하므로 imageUrl 이 있을 때만 생성한다.
+class ArtistShareCard extends StatelessWidget {
   static const double width = 360;
   static const double height = 540;
 
-  final FestivalModel poster;
-  final bool isEnglish;
+  final String artistName;
+  final String imageUrl;
+  final int followerCount;
 
-  const FestivalShareCard({super.key, required this.poster, required this.isEnglish});
+  const ArtistShareCard({
+    super.key,
+    required this.artistName,
+    required this.imageUrl,
+    this.followerCount = 0,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +29,7 @@ class FestivalShareCard extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          Image(image: CachedNetworkImageProvider(poster.posterUrl), fit: BoxFit.cover),
+          Image(image: CachedNetworkImageProvider(imageUrl), fit: BoxFit.cover),
           DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -34,8 +40,6 @@ class FestivalShareCard extends StatelessWidget {
               ),
             ),
           ),
-          if (!poster.isEnded && poster.dDaysUntil != null)
-            Positioned(top: 16, left: 16, child: DayBadge(dDays: poster.dDaysUntil!)),
           const Positioned(top: 16, right: 16, child: FepleBrandBadge()),
           Positioned(
             left: 20,
@@ -46,7 +50,7 @@ class FestivalShareCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  poster.displayTitle(isEnglish),
+                  artistName,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -56,15 +60,13 @@ class FestivalShareCard extends StatelessWidget {
                     height: 1.25,
                   ),
                 ),
-                const SizedBox(height: AppDimens.space10),
-                ShareCardInfoRow(
-                  icon: Icons.calendar_today_rounded,
-                  text: poster.endDate.isNotEmpty
-                      ? '${poster.startDate} ~ ${poster.endDate}'
-                      : poster.startDate,
-                ),
-                const SizedBox(height: AppDimens.space4),
-                ShareCardInfoRow(icon: Icons.location_on_rounded, text: poster.location),
+                if (followerCount > 0) ...[
+                  const SizedBox(height: AppDimens.space10),
+                  ShareCardInfoRow(
+                    icon: Icons.people_alt_rounded,
+                    text: 'follower_count'.tr(args: ['$followerCount']),
+                  ),
+                ],
               ],
             ),
           ),

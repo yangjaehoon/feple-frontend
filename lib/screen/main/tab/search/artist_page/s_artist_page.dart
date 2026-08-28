@@ -5,8 +5,8 @@ import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/model/artist_model.dart';
 import 'package:feple/model/artist_schedule_model.dart';
 import 'package:feple/model/festival_artist_item.dart';
+import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/model/followed_artist.dart';
-import 'package:feple/screen/main/tab/community_board/w_board_preview_section.dart';
 import 'package:feple/screen/main/tab/search/artist_page/artist_follow_notifier.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_board.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_share_card.dart';
@@ -80,11 +80,7 @@ class ArtistScreen extends StatefulWidget {
 class _ArtistScreenState extends State<ArtistScreen> {
   late final ArtistFollowNotifier _followNotifier;
   bool _isSharing = false;
-  final _swiperKey = GlobalKey<MainImageSwiperState>();
-  final _scheduleKey = GlobalKey<ArtistScheduleState>();
-  final _boardKey = GlobalKey<BoardPreviewSectionState>();
-  final _songsKey = GlobalKey<ArtistSongsState>();
-  final _relatedKey = GlobalKey<RelatedArtistsState>();
+  final _refresh = RefreshCoordinator();
 
   @override
   void initState() {
@@ -130,15 +126,10 @@ class _ArtistScreenState extends State<ArtistScreen> {
   }
 
   Future<void> _onRefresh() async {
-    // 각 섹션의 refresh()가 실제로 끝날 때까지 기다려야 당겨서 새로고침
-    // 스피너가 화면 갱신 완료와 맞물려 사라짐 (예전엔 팔로우 상태만 기다려서
-    // 다른 섹션이 아직 로딩 중인데도 스피너가 먼저 사라졌음)
+    // 모든 섹션 + 팔로우 상태가 실제로 끝날 때까지 기다려야 당겨서 새로고침
+    // 스피너가 화면 갱신 완료와 맞물려 사라진다.
     await Future.wait([
-      _swiperKey.currentState?.refresh() ?? Future.value(),
-      _scheduleKey.currentState?.refresh() ?? Future.value(),
-      _boardKey.currentState?.refresh() ?? Future.value(),
-      _songsKey.currentState?.refresh() ?? Future.value(),
-      _relatedKey.currentState?.refresh() ?? Future.value(),
+      _refresh.refreshAll(),
       _followNotifier.init(),
     ]);
   }
@@ -190,35 +181,33 @@ class _ArtistScreenState extends State<ArtistScreen> {
   Widget _buildScrollBody(String displayName) {
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
-      child: Column(
-        children: [
-          MainImageSwiper(
-            key: _swiperKey,
-            artistName: displayName,
-            artistId: widget.artistId,
-            followNotifier: _followNotifier,
-            profileImageUrl: (widget.profileImageUrl?.isNotEmpty ?? false) ? widget.profileImageUrl : null,
-          ),
-          ArtistSchedule(
-            key: _scheduleKey,
-            artistId: widget.artistId,
-            artistName: displayName,
-          ),
-          ArtistBoard(
-            boardKey: _boardKey,
-            artistId: widget.artistId,
-            artistName: displayName,
-          ),
-          ArtistSongs(
-            key: _songsKey,
-            artistId: widget.artistId,
-            artistName: displayName,
-          ),
-          RelatedArtists(
-            key: _relatedKey,
-            artistId: widget.artistId,
-          ),
-        ],
+      child: RefreshScope(
+        coordinator: _refresh,
+        child: Column(
+          children: [
+            MainImageSwiper(
+              artistName: displayName,
+              artistId: widget.artistId,
+              followNotifier: _followNotifier,
+              profileImageUrl: (widget.profileImageUrl?.isNotEmpty ?? false) ? widget.profileImageUrl : null,
+            ),
+            ArtistSchedule(
+              artistId: widget.artistId,
+              artistName: displayName,
+            ),
+            ArtistBoard(
+              artistId: widget.artistId,
+              artistName: displayName,
+            ),
+            ArtistSongs(
+              artistId: widget.artistId,
+              artistName: displayName,
+            ),
+            RelatedArtists(
+              artistId: widget.artistId,
+            ),
+          ],
+        ),
       ),
     );
   }

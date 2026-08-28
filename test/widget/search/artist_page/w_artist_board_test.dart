@@ -93,8 +93,6 @@ void main() {
         callCount++;
         return [];
       });
-      final key = GlobalKey<BoardPreviewSectionState>();
-
       await tester.pumpWidget(
         EasyLocalization(
           supportedLocales: const [Locale('ko'), Locale('en')],
@@ -107,7 +105,7 @@ void main() {
             changeTheme: (_) {},
             child: MaterialApp(
               home: Scaffold(
-                body: ArtistBoard(artistId: 1, artistName: '아티스트', boardKey: key),
+                body: ArtistBoard(artistId: 1, artistName: '아티스트'),
               ),
             ),
           ),
@@ -116,7 +114,9 @@ void main() {
       await tester.pump();
       expect(callCount, 1);
 
-      await key.currentState!.refresh();
+      await tester
+          .state<BoardPreviewSectionState>(find.byType(BoardPreviewSection))
+          .refreshSection();
       await tester.pump();
 
       expect(callCount, 2);

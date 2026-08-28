@@ -105,8 +105,6 @@ void main() {
         callCount++;
         return [];
       });
-      final key = GlobalKey<BoardPreviewSectionState>();
-
       await tester.pumpWidget(
         EasyLocalization(
           supportedLocales: const [Locale('ko'), Locale('en')],
@@ -122,7 +120,6 @@ void main() {
                 body: FestivalBoard(
                   festivalId: 1,
                   festivalName: '펜타포트',
-                  boardKey: key,
                 ),
               ),
             ),
@@ -132,7 +129,9 @@ void main() {
       await tester.pump();
       expect(callCount, 1);
 
-      await key.currentState!.refresh();
+      await tester
+          .state<BoardPreviewSectionState>(find.byType(BoardPreviewSection))
+          .refreshSection();
       await tester.pump();
 
       expect(callCount, 2);

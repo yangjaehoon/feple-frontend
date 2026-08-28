@@ -12,6 +12,7 @@ import 'package:feple/model/song_model.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_setlist_artist_avatar.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/future_refreshable.dart';
+import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/screen/main/tab/search/festival_information/s_festival_setlist_fullscreen.dart';
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:flutter/material.dart';
@@ -27,10 +28,15 @@ class FestivalSetlist extends StatefulWidget {
 }
 
 class FestivalSetlistState extends State<FestivalSetlist>
-    with FutureRefreshable<List<FestivalSetlistEntry>, FestivalSetlist> {
+    with
+        FutureRefreshable<List<FestivalSetlistEntry>, FestivalSetlist>,
+        RefreshableSection<FestivalSetlist> {
   @override
   Future<List<FestivalSetlistEntry>> fetchData() =>
       sl<FestivalDetailService>().fetchSetlist(widget.festivalId);
+
+  @override
+  Future<void> refreshSection() => refresh();
 
   Future<void> _openFullPage() async {
     await Navigator.push<void>(

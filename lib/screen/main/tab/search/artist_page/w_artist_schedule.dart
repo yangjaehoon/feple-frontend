@@ -13,6 +13,7 @@ import 'package:feple/screen/main/tab/search/artist_page/w_schedule_list_tile.da
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/common/util/navigation_guard.dart';
+import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:flutter/material.dart';
 
 class ArtistSchedule extends StatefulWidget {
@@ -32,12 +33,16 @@ class ArtistSchedule extends StatefulWidget {
 class ArtistScheduleState extends State<ArtistSchedule>
     with
         NavigationGuard,
-        FutureRefreshable<List<ArtistScheduleModel>, ArtistSchedule> {
+        FutureRefreshable<List<ArtistScheduleModel>, ArtistSchedule>,
+        RefreshableSection<ArtistSchedule> {
   final _scheduleService = sl<ArtistScheduleService>();
 
   @override
   Future<List<ArtistScheduleModel>> fetchData() =>
       _scheduleService.fetchSchedule(widget.artistId);
+
+  @override
+  Future<void> refreshSection() => refresh();
 
   @override
   Widget build(BuildContext context) {

@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/common/util/navigation_guard.dart';
+import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/widget/w_async_content_builder.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
@@ -29,7 +30,10 @@ class ArtistSongs extends StatefulWidget {
 }
 
 class ArtistSongsState extends State<ArtistSongs>
-    with NavigationGuard, FutureRefreshable<List<SongModel>, ArtistSongs> {
+    with
+        NavigationGuard,
+        FutureRefreshable<List<SongModel>, ArtistSongs>,
+        RefreshableSection<ArtistSongs> {
   final _songService = sl<SongService>();
 
   // 전체 목록 화면 진입 시 동일 API를 다시 호출하지 않도록 최근 로드 결과를 보관해 넘겨준다.
@@ -38,6 +42,9 @@ class ArtistSongsState extends State<ArtistSongs>
   @override
   Future<List<SongModel>> fetchData() =>
       _songService.fetchSongs(widget.artistId);
+
+  @override
+  Future<void> refreshSection() => refresh();
 
   @override
   Widget build(BuildContext context) {

@@ -7,20 +7,17 @@ import 'package:flutter/material.dart';
 class FestivalBoard extends StatelessWidget {
   final int festivalId;
   final String festivalName;
-  final GlobalKey<BoardPreviewSectionState>? boardKey;
 
   const FestivalBoard({
     super.key,
     required this.festivalId,
     required this.festivalName,
-    this.boardKey,
   });
 
   @override
   Widget build(BuildContext context) {
     final postService = sl<PostService>();
     return BoardPreviewSection(
-      key: boardKey,
       name: festivalName,
       headerIcon: Icons.local_fire_department_rounded,
       fetchPosts: () => postService.fetchFestivalPopularPosts(festivalId),

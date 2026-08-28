@@ -16,6 +16,7 @@ import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
+import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:feple/common/util/bounded_responsive_size.dart';
@@ -29,7 +30,8 @@ class FestivalArtists extends StatefulWidget {
   State<FestivalArtists> createState() => FestivalArtistsState();
 }
 
-class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
+class FestivalArtistsState extends State<FestivalArtists>
+    with NavigationGuard, RefreshableSection<FestivalArtists> {
   late final FestivalArtistsNotifier _notifier;
 
   @override
@@ -54,6 +56,9 @@ class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
   // notifier.refresh()는 fetch()와 달리 실패해도 이미 보이는 목록을 지우지 않고
   // 스낵바로만 알린다 — 페스티벌 상세 화면의 전체 pull-to-refresh가 이 경로를 탄다.
   Future<void> refresh() => _notifier.refresh();
+
+  @override
+  Future<void> refreshSection() => refresh();
 
   @override
   Widget build(BuildContext context) {

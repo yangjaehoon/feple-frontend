@@ -13,6 +13,7 @@ import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
+import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -37,7 +38,8 @@ class FestivalPoster extends StatefulWidget {
   State<FestivalPoster> createState() => FestivalPosterState();
 }
 
-class FestivalPosterState extends State<FestivalPoster> {
+class FestivalPosterState extends State<FestivalPoster>
+    with RefreshableSection<FestivalPoster> {
   late final FestivalPosterNotifier _notifier;
   bool _isSheetOpen = false;
   bool _isSharing = false;
@@ -75,6 +77,9 @@ class FestivalPosterState extends State<FestivalPoster> {
   }
 
   Future<void> refresh() => _notifier.init();
+
+  @override
+  Future<void> refreshSection() => refresh();
 
   Future<void> _openKakaoMap() => openKakaoMap(
     context,

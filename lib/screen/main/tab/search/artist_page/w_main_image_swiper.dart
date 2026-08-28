@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/common/util/responsive_size.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -27,7 +28,11 @@ class MainImageSwiper extends StatefulWidget {
   State<MainImageSwiper> createState() => MainImageSwiperState();
 }
 
-class MainImageSwiperState extends State<MainImageSwiper> {
+class MainImageSwiperState extends State<MainImageSwiper>
+    with RefreshableSection<MainImageSwiper> {
+  @override
+  Future<void> refreshSection() => refresh();
+
   // 화면 폭에 비례하는 크기(기준 390px) — 다른 화면 카드들과 동일한 관례.
   double get _swiperHeight => ResponsiveSize(context).w(350);
   double get _pageViewHeight => ResponsiveSize(context).w(250);

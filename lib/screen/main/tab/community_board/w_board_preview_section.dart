@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/common/util/navigation_guard.dart';
+import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_preview_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
@@ -34,9 +35,15 @@ class BoardPreviewSection extends StatefulWidget {
 }
 
 class BoardPreviewSectionState extends State<BoardPreviewSection>
-    with FutureRefreshable<List<Post>, BoardPreviewSection>, NavigationGuard {
+    with
+        FutureRefreshable<List<Post>, BoardPreviewSection>,
+        NavigationGuard,
+        RefreshableSection<BoardPreviewSection> {
   @override
   Future<List<Post>> fetchData() => widget.fetchPosts();
+
+  @override
+  Future<void> refreshSection() => refresh();
 
   @override
   Widget build(BuildContext context) {

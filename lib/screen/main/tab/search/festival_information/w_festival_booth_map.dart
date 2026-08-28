@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/permission_rationale.dart';
+import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -31,8 +32,13 @@ class FestivalBoothMap extends StatefulWidget {
   State<FestivalBoothMap> createState() => FestivalBoothMapState();
 }
 
-class FestivalBoothMapState extends State<FestivalBoothMap> {
+class FestivalBoothMapState extends State<FestivalBoothMap>
+    with RefreshableSection<FestivalBoothMap> {
   Future<void> refresh() => _fetchBooths();
+
+  @override
+  Future<void> refreshSection() => refresh();
+
   List<BoothModel> _booths = [];
   bool _isLoading = true;
   bool _hasError = false;

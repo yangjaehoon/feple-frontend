@@ -3,6 +3,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/future_refreshable.dart';
+import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_model.dart';
@@ -21,12 +22,17 @@ class RelatedArtists extends StatefulWidget {
 }
 
 class RelatedArtistsState extends State<RelatedArtists>
-    with FutureRefreshable<List<Artist>, RelatedArtists> {
+    with
+        FutureRefreshable<List<Artist>, RelatedArtists>,
+        RefreshableSection<RelatedArtists> {
   final _artistService = sl<ArtistService>();
 
   @override
   Future<List<Artist>> fetchData() =>
       _artistService.fetchRelatedArtists(widget.artistId);
+
+  @override
+  Future<void> refreshSection() => refresh();
 
   @override
   Widget build(BuildContext context) {

@@ -1,9 +1,9 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/common/widget/w_offline_banner.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/festival_model.dart';
-import 'package:feple/screen/main/tab/community_board/w_board_preview_section.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_poster.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_timetable.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_artists.dart';
@@ -28,12 +28,7 @@ class FestivalInformationFragment extends StatefulWidget {
 
 class _FestivalInformationFragmentState
     extends State<FestivalInformationFragment> {
-  final _posterKey = GlobalKey<FestivalPosterState>();
-  final _artistsKey = GlobalKey<FestivalArtistsState>();
-  final _boardKey = GlobalKey<BoardPreviewSectionState>();
-  final _timetableKey = GlobalKey<FestivalTimetableState>();
-  final _setlistKey = GlobalKey<FestivalSetlistState>();
-  final _mapKey = GlobalKey<FestivalBoothMapState>();
+  final _refresh = RefreshCoordinator();
 
   // 홈/목록/검색 등에서 넘어온 widget.poster는 미리보기·캐시 데이터라
   // startDate/endDate/latitude/longitude 등이 오래됐을 수 있다 — 최초 페인트는
@@ -60,16 +55,11 @@ class _FestivalInformationFragmentState
   }
 
   Future<void> _onRefresh() async {
-    // 각 섹션의 refresh()가 실제로 끝날 때까지 기다려야 당겨서 새로고침 스피너가
-    // 화면 갱신 완료와 맞물려 사라짐 (artist_page의 동일 패턴 참고)
+    // 포스터 재조회 + 모든 섹션이 실제로 끝날 때까지 기다려야 당겨서 새로고침
+    // 스피너가 화면 갱신 완료와 맞물려 사라진다.
     await Future.wait([
       _refreshPoster(),
-      _posterKey.currentState?.refresh() ?? Future.value(),
-      _artistsKey.currentState?.refresh() ?? Future.value(),
-      _boardKey.currentState?.refresh() ?? Future.value(),
-      _timetableKey.currentState?.refresh() ?? Future.value(),
-      _setlistKey.currentState?.refresh() ?? Future.value(),
-      _mapKey.currentState?.refresh() ?? Future.value(),
+      _refresh.refreshAll(),
     ]);
   }
 
@@ -96,40 +86,37 @@ class _FestivalInformationFragmentState
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
-        child: Column(
-          children: [
-            FestivalPoster(
-              key: _posterKey,
-              poster: _poster,
-              heroTag: widget.heroTag,
-            ),
-            const SizedBox(height: AppDimens.space16),
-            FestivalArtists(
-              key: _artistsKey,
-              festivalId: _poster.id,
-            ),
-            FestivalBoard(
-              boardKey: _boardKey,
-              festivalId: _poster.id,
-              festivalName: _poster.displayTitle(context.isEnglish),
-            ),
-            FestivalTimetable(
-              key: _timetableKey,
-              festivalId: _poster.id,
-              startDate: _poster.startDate,
-              endDate: _poster.endDate,
-            ),
-            FestivalBoothMap(
-              key: _mapKey,
-              festivalId: _poster.id,
-              festivalLat: _poster.latitude,
-              festivalLng: _poster.longitude,
-            ),
-            FestivalSetlist(
-              key: _setlistKey,
-              festivalId: _poster.id,
-            ),
-          ],
+        child: RefreshScope(
+          coordinator: _refresh,
+          child: Column(
+            children: [
+              FestivalPoster(
+                poster: _poster,
+                heroTag: widget.heroTag,
+              ),
+              const SizedBox(height: AppDimens.space16),
+              FestivalArtists(
+                festivalId: _poster.id,
+              ),
+              FestivalBoard(
+                festivalId: _poster.id,
+                festivalName: _poster.displayTitle(context.isEnglish),
+              ),
+              FestivalTimetable(
+                festivalId: _poster.id,
+                startDate: _poster.startDate,
+                endDate: _poster.endDate,
+              ),
+              FestivalBoothMap(
+                festivalId: _poster.id,
+                festivalLat: _poster.latitude,
+                festivalLng: _poster.longitude,
+              ),
+              FestivalSetlist(
+                festivalId: _poster.id,
+              ),
+            ],
+          ),
         ),
       ),
     );

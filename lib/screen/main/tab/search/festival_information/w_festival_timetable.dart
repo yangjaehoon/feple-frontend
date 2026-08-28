@@ -6,6 +6,7 @@ import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
+import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/festival_information/s_timetable_fullscreen.dart';
@@ -34,7 +35,7 @@ class FestivalTimetable extends StatefulWidget {
 }
 
 class FestivalTimetableState extends State<FestivalTimetable>
-    with NavigationGuard {
+    with NavigationGuard, RefreshableSection<FestivalTimetable> {
   final _vContent = ScrollController();
   final _vTime = ScrollController();
   final _hContent = ScrollController();
@@ -95,6 +96,9 @@ class FestivalTimetableState extends State<FestivalTimetable>
   }
 
   Future<void> refresh() => _notifier.fetch();
+
+  @override
+  Future<void> refreshSection() => refresh();
 
   @override
   Widget build(BuildContext context) {

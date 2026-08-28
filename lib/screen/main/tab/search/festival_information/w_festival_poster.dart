@@ -3,10 +3,10 @@ import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_star_rating_row.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/util/calendar_helper.dart';
+import 'package:feple/common/util/kakao_map_launcher.dart';
 import 'package:feple/common/util/widget_image_capturer.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/injection.dart';
@@ -76,33 +76,12 @@ class FestivalPosterState extends State<FestivalPoster> {
 
   Future<void> refresh() => _notifier.init();
 
-  Future<void> _openKakaoMap() async {
-    final lat = _notifier.poster.latitude;
-    final lng = _notifier.poster.longitude;
-    final name = Uri.encodeComponent(_notifier.poster.location);
-    try {
-      var launched = false;
-      if (lat != null && lng != null) {
-        final appUri = Uri.parse('kakaomap://look?p=$lat,$lng');
-        final webUri = Uri.parse(
-          'https://map.kakao.com/link/map/$name,$lat,$lng',
-        );
-        if (await canLaunchUrl(appUri)) {
-          launched = await launchUrl(appUri);
-        }
-        if (!launched) {
-          launched = await launchUrl(webUri, mode: LaunchMode.externalApplication);
-        }
-      } else {
-        final webUri = Uri.parse('https://map.kakao.com/link/search/$name');
-        launched = await launchUrl(webUri, mode: LaunchMode.externalApplication);
-      }
-      if (!launched && mounted) context.showErrorSnackbar('map_open_failed'.tr());
-    } catch (e) {
-      debugPrint('map launch error: $e');
-      if (mounted) context.showErrorSnackbar('map_open_failed'.tr());
-    }
-  }
+  Future<void> _openKakaoMap() => openKakaoMap(
+    context,
+    latitude: _notifier.poster.latitude,
+    longitude: _notifier.poster.longitude,
+    locationName: _notifier.poster.location,
+  );
 
   Future<void> _addToCalendar() => CalendarHelper.addToDeviceCalendar(
     context,
@@ -153,33 +132,27 @@ class FestivalPosterState extends State<FestivalPoster> {
     }
   }
 
-  void _showWeather() {
+  /// 한 번에 하나의 시트만 열리도록 가드하고, 닫히면 가드를 푼다.
+  void _openSheet(Widget child) {
     if (_isSheetOpen) return;
     _isSheetOpen = true;
     showAppBottomSheet(
       context,
       isScrollControlled: false,
-      builder: (_) => WeatherBottomSheet(
-        festivalId: _notifier.festivalId,
-        startDate: _notifier.poster.startDate,
-        endDate: _notifier.poster.endDate,
-      ),
+      builder: (_) => child,
     ).whenComplete(() {
       if (mounted) _isSheetOpen = false;
     });
   }
 
-  void _showTicketLinks() {
-    if (_isSheetOpen) return;
-    _isSheetOpen = true;
-    showAppBottomSheet(
-      context,
-      isScrollControlled: false,
-      builder: (_) => TicketLinkSheet(links: _notifier.ticketLinks),
-    ).whenComplete(() {
-      if (mounted) _isSheetOpen = false;
-    });
-  }
+  void _showWeather() => _openSheet(WeatherBottomSheet(
+        festivalId: _notifier.festivalId,
+        startDate: _notifier.poster.startDate,
+        endDate: _notifier.poster.endDate,
+      ));
+
+  void _showTicketLinks() =>
+      _openSheet(TicketLinkSheet(links: _notifier.ticketLinks));
 
   VoidCallback? _certButtonTap() => switch (_notifier.certState) {
     PosterCertState.certified => () => context.showInfoSnackbar(

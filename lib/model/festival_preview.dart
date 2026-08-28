@@ -1,6 +1,7 @@
 import 'package:feple/common/util/festival_date_utils.dart';
 import 'artist_schedule_model.dart';
 import 'festival_model.dart';
+import 'json_reader.dart';
 import 'localized_text.dart';
 
 class FestivalPreview {
@@ -88,20 +89,20 @@ class FestivalPreview {
 
   factory FestivalPreview.fromJson(Map<String, dynamic> json) {
     return FestivalPreview(
-      id: (json['id'] as num).toInt(),
-      title: json['title'] as String? ?? '',
-      titleEn: json['titleEn'] as String? ?? '',
-      description: json['description'] as String? ?? '',
-      location: json['location'] as String? ?? '',
-      posterUrl: json['posterUrl'] as String? ?? '',
-      startDate: json['startDate'] as String? ?? '',
-      endDate: json['endDate'] as String?,
-      genres: (json['genres'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
-      region: json['region'] as String?,
-      ageRestriction: json['ageRestriction'] as String?,
-      latitude: (json['latitude'] as num?)?.toDouble(),
-      longitude: (json['longitude'] as num?)?.toDouble(),
-      attendingCount: (json['attendingCount'] as num?)?.toInt() ?? 0,
+      id: json.integer('id'),
+      title: json.str('title'),
+      titleEn: json.str('titleEn'),
+      description: json.str('description'),
+      location: json.str('location'),
+      posterUrl: json.str('posterUrl'),
+      startDate: json.str('startDate'),
+      endDate: json.strOrNull('endDate'),
+      genres: json.stringList('genres'),
+      region: json.strOrNull('region'),
+      ageRestriction: json.strOrNull('ageRestriction'),
+      latitude: json.dblOrNull('latitude'),
+      longitude: json.dblOrNull('longitude'),
+      attendingCount: json.integer('attendingCount'),
     );
   }
 }

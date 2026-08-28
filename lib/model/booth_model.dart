@@ -1,3 +1,5 @@
+import 'json_reader.dart';
+
 /// 부스 모델
 class BoothModel {
   final int id;
@@ -32,13 +34,13 @@ class BoothModel {
       };
 
   factory BoothModel.fromJson(Map<String, dynamic> j) => BoothModel(
-        id: (j['id'] as num).toInt(),
-        name: j['name'] as String,
-        boothType: j['boothType'] as String,
-        boothTypeName: j['boothTypeName'] as String,
-        latitude: (j['latitude'] as num).toDouble(),
-        longitude: (j['longitude'] as num).toDouble(),
-        description: j['description'] as String?,
-        imageUrl: j['imageUrl'] as String?,
+        id: j.integer('id'),
+        name: j.str('name'),
+        boothType: j.str('boothType'),
+        boothTypeName: j.str('boothTypeName'),
+        latitude: j.dbl('latitude'),
+        longitude: j.dbl('longitude'),
+        description: j.strOrNull('description'),
+        imageUrl: j.strOrNull('imageUrl'),
       );
 }

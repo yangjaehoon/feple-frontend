@@ -1,3 +1,5 @@
+import 'json_reader.dart';
+
 // 자주 쓰이는 예매처는 URL 도메인으로 식별해 브랜드 로고를 보여준다 —
 // 인터파크 티켓은 2026년 NOL 티켓으로 브랜드명이 바뀌었지만 도메인은
 // interpark.com 계열 그대로라 로고만 NOL로 매칭한다.
@@ -36,8 +38,8 @@ class TicketLink {
 
   factory TicketLink.fromJson(Map<String, dynamic> json) {
     return TicketLink(
-      label: json['label'] as String?,
-      url: json['url'] as String,
+      label: json.strOrNull('label'),
+      url: json.str('url'),
     );
   }
 }

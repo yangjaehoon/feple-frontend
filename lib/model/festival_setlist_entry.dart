@@ -1,5 +1,6 @@
 import 'package:feple/model/song_model.dart';
 
+import 'json_reader.dart';
 import 'localized_text.dart';
 
 class FestivalSetlistEntry {
@@ -32,14 +33,12 @@ class FestivalSetlistEntry {
 
   factory FestivalSetlistEntry.fromJson(Map<String, dynamic> json) {
     return FestivalSetlistEntry(
-      artistFestivalId: (json['artistFestivalId'] as num).toInt(),
-      artistId: (json['artistId'] as num).toInt(),
-      artistName: json['artistName'] as String,
-      artistNameEn: json['artistNameEn'] as String? ?? '',
-      profileImageUrl: json['profileImageUrl'] as String?,
-      songs: ((json['songs'] as List?) ?? [])
-          .map((e) => SongModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      artistFestivalId: json.integer('artistFestivalId'),
+      artistId: json.integer('artistId'),
+      artistName: json.str('artistName'),
+      artistNameEn: json.str('artistNameEn'),
+      profileImageUrl: json.strOrNull('profileImageUrl'),
+      songs: json.objectList('songs').map(SongModel.fromJson).toList(),
     );
   }
 }

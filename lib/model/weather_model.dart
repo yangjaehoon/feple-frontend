@@ -1,3 +1,5 @@
+import 'json_reader.dart';
+
 enum SkyCode {
   sunny('SUNNY'),
   cloudy('CLOUDY'),
@@ -53,12 +55,12 @@ class WeatherModel {
 
   factory WeatherModel.fromJson(Map<String, dynamic> json) {
     return WeatherModel(
-      fcstDate: json['fcstDate'] as String? ?? '',
-      minTemp: (json['minTemp'] as num?)?.toDouble() ?? 0,
-      maxTemp: (json['maxTemp'] as num?)?.toDouble() ?? 0,
-      rainProb: (json['rainProb'] as num?)?.toInt() ?? 0,
-      skyCode: SkyCode.fromValue(json['skyCode'] as String?) ?? SkyCode.sunny,
-      ptyCode: PtyCode.fromValue(json['ptyCode'] as String?) ?? PtyCode.none,
+      fcstDate: json.str('fcstDate'),
+      minTemp: json.dbl('minTemp'),
+      maxTemp: json.dbl('maxTemp'),
+      rainProb: json.integer('rainProb'),
+      skyCode: SkyCode.fromValue(json.strOrNull('skyCode')) ?? SkyCode.sunny,
+      ptyCode: PtyCode.fromValue(json.strOrNull('ptyCode')) ?? PtyCode.none,
     );
   }
 

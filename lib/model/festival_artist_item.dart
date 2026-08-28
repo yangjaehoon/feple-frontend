@@ -1,3 +1,4 @@
+import 'json_reader.dart';
 import 'localized_text.dart';
 
 /// 페스티벌 참여 아티스트 모델
@@ -31,15 +32,12 @@ class FestivalArtistItem {
 
   factory FestivalArtistItem.fromJson(Map<String, dynamic> json) {
     return FestivalArtistItem(
-      artistId: (json['artistId'] as num).toInt(),
-      artistName: json['artistName'] as String,
-      artistNameEn: json['artistNameEn'] as String? ?? '',
-      profileImageUrl: json['profileImageUrl'] as String?,
-      stageName: json['stageName'] as String?,
-      performanceDates: (json['performanceDates'] as List<dynamic>?)
-              ?.map((e) => e as String)
-              .toList() ??
-          const [],
+      artistId: json.integer('artistId'),
+      artistName: json.str('artistName'),
+      artistNameEn: json.str('artistNameEn'),
+      profileImageUrl: json.strOrNull('profileImageUrl'),
+      stageName: json.strOrNull('stageName'),
+      performanceDates: json.stringList('performanceDates'),
     );
   }
 }

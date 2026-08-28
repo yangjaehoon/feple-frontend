@@ -47,7 +47,7 @@ class ReorderListTile extends StatelessWidget {
               index: index,
               child: Icon(Icons.drag_handle_rounded, color: colors.textSecondary, size: 22),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppDimens.space12),
             AppNetworkImage(
               imageUrl: imageUrl,
               width: thumbnailSize,
@@ -108,7 +108,7 @@ class _ReorderSheetState extends State<ReorderSheet> {
             style: TextStyle(fontSize: AppDimens.fontSizeXxl, fontWeight: FontWeight.w800, color: colors.textTitle),
           ),
           if (widget.subtitle != null) ...[
-            const SizedBox(height: 4),
+            const SizedBox(height: AppDimens.space4),
             Text(widget.subtitle!, style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary)),
           ],
         ],

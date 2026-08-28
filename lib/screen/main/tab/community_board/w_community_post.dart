@@ -161,12 +161,12 @@ class _CommunityPostState extends State<CommunityPost>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
                   SkeletonBox(height: 15),
-                  SizedBox(height: 6),
+                  SizedBox(height: AppDimens.space6),
                   SkeletonBox(width: 100, height: 11),
                 ],
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: AppDimens.space16),
             const SkeletonBox(width: 60, height: 13),
           ],
         ),
@@ -224,7 +224,7 @@ class _CommunityPostState extends State<CommunityPost>
               size: 48,
               color: colors.textSecondary.withValues(alpha: 0.3),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppDimens.space12),
             Text(
               'be_first_to_discuss'.tr(args: [widget.boardName]),
               style: TextStyle(
@@ -309,7 +309,7 @@ class _CommunityPostState extends State<CommunityPost>
             elevation: 6,
             child: const Icon(Icons.arrow_upward_rounded, size: 20),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppDimens.space8),
         ],
         if (_showWriteButton)
           WritePostFab(
@@ -407,7 +407,7 @@ class _CommunityPostState extends State<CommunityPost>
               _controller.load();
             },
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppDimens.space8),
           SelectableChip(
             label: 'sort_popular'.tr(),
             selected: _sort == _sortPopular,

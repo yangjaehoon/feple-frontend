@@ -153,9 +153,9 @@ class _FestivalListSkeleton extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const [
                       SkeletonBox(height: 16),
-                      SizedBox(height: 10),
+                      SizedBox(height: AppDimens.space10),
                       SkeletonBox(width: 120, height: 12),
-                      SizedBox(height: 8),
+                      SizedBox(height: AppDimens.space8),
                       SkeletonBox(width: 90, height: 12),
                     ],
                   ),

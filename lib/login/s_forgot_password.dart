@@ -127,7 +127,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               letterSpacing: -0.5,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppDimens.space8),
           Text(
             'reset_password_subtitle'.tr(),
             style: TextStyle(
@@ -138,7 +138,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: AppDimens.space40),
           AppTextField(
             controller: _emailController,
             hintText: 'registered_email'.tr(),
@@ -167,7 +167,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     color: colors.error,
                     size: 14,
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: AppDimens.space4),
                   Expanded(
                     child: Text(
                       _errorMessage!,
@@ -181,7 +181,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 ],
               ),
             ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppDimens.space24),
           LoadingButton(
             label: 'send'.tr(),
             onPressed: _isSending ? null : _onSend,
@@ -209,7 +209,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppDimens.space12),
         Text(
           'password_reset_sent_desc'.tr(args: [_emailController.text.trim()]),
           style: TextStyle(

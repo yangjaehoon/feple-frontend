@@ -79,7 +79,7 @@ class _FestivalDiaryListScreenState extends State<FestivalDiaryListScreen> {
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       itemCount: 3,
-      separatorBuilder: (_, _) => const SizedBox(height: 10),
+      separatorBuilder: (_, _) => const SizedBox(height: AppDimens.space10),
       itemBuilder: (_, _) => Container(
         height: size,
         decoration: BoxDecoration(
@@ -105,7 +105,7 @@ class _FestivalDiaryListScreenState extends State<FestivalDiaryListScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: const [
                     SkeletonBox(height: 15),
-                    SizedBox(height: 8),
+                    SizedBox(height: AppDimens.space8),
                     SkeletonBox(height: 11),
                   ],
                 ),
@@ -137,7 +137,7 @@ class _FestivalDiaryListScreenState extends State<FestivalDiaryListScreen> {
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                       itemCount: _diaries.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 10),
+                      separatorBuilder: (_, _) => const SizedBox(height: AppDimens.space10),
                       itemBuilder: (context, index) {
                         final diary = _diaries[index];
                         return AnimatedListItem(
@@ -240,14 +240,14 @@ class _DiaryCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: AppDimens.space4),
                     Text(
                       diary.content,
                       style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: AppDimens.space6),
                     Row(
                       children: [
                         Icon(
@@ -255,13 +255,13 @@ class _DiaryCard extends StatelessWidget {
                           size: 12,
                           color: colors.textSecondary,
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: AppDimens.space4),
                         Text(
                           (diary.isPublic ? 'diary_visibility_public' : 'diary_visibility_private').tr(),
                           style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
                         ),
                         if (diary.formattedDate != null) ...[
-                          const SizedBox(width: 8),
+                          const SizedBox(width: AppDimens.space8),
                           Text(
                             diary.formattedDate!,
                             style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),

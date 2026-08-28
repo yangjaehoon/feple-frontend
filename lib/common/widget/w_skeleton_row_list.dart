@@ -31,7 +31,7 @@ class SkeletonRowList extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   leading,
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppDimens.space12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

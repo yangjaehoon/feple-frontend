@@ -167,7 +167,7 @@ class _CommentTile extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: AppDimens.space10),
           Expanded(child: _buildBody(colors)),
           _buildMenu(context, colors),
         ],
@@ -206,7 +206,7 @@ class _CommentTile extends StatelessWidget {
               ),
             ),
             if (comment.isEdited) ...[
-              const SizedBox(width: 4),
+              const SizedBox(width: AppDimens.space4),
               Text(
                 'edited'.tr(),
                 style: TextStyle(
@@ -222,7 +222,7 @@ class _CommentTile extends StatelessWidget {
           text: comment.content,
           style: TextStyle(color: colors.textTitle),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: AppDimens.space4),
         _buildActions(colors),
       ],
     );
@@ -238,7 +238,7 @@ class _CommentTile extends StatelessWidget {
           onToggle: onToggleLike,
         ),
         if (!isReply && onReply != null) ...[
-          const SizedBox(width: 4),
+          const SizedBox(width: AppDimens.space4),
           Semantics(
             button: true,
             label: 'reply_comment'.tr(),

@@ -528,7 +528,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       itemCount: 5,
-      separatorBuilder: (_, _) => const SizedBox(height: 8),
+      separatorBuilder: (_, _) => const SizedBox(height: AppDimens.space8),
       itemBuilder: (_, _) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
@@ -544,15 +544,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
               height: avatarSize,
               borderRadius: BorderRadius.all(Radius.circular(avatarSize / 2)),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppDimens.space12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
                   SkeletonBox(height: 14),
-                  SizedBox(height: 6),
+                  SizedBox(height: AppDimens.space6),
                   SkeletonBox(width: 200, height: 12),
-                  SizedBox(height: 4),
+                  SizedBox(height: AppDimens.space4),
                   SkeletonBox(width: 80, height: 10),
                 ],
               ),

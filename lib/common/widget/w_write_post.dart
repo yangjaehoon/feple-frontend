@@ -320,7 +320,7 @@ class _WritePostState extends State<WritePost> {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: tiles.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 12),
+        separatorBuilder: (_, _) => const SizedBox(width: AppDimens.space12),
         itemBuilder: (_, i) => tiles[i],
       ),
     );
@@ -329,7 +329,7 @@ class _WritePostState extends State<WritePost> {
   Widget _buildAnonymousToggle(AbstractThemeColors colors) {
     return Column(
       children: [
-        const SizedBox(height: 4),
+        const SizedBox(height: AppDimens.space4),
         GestureDetector(
           onTap: () => setState(() => _anonymous = !_anonymous),
           behavior: HitTestBehavior.opaque,
@@ -341,7 +341,7 @@ class _WritePostState extends State<WritePost> {
                 activeThumbColor: colors.activate,
                 activeTrackColor: colors.activate.withValues(alpha: 0.5),
               ),
-              const SizedBox(width: 6),
+              const SizedBox(width: AppDimens.space6),
               Text(
                 'post_anonymous'.tr(),
                 style: TextStyle(
@@ -377,7 +377,7 @@ class _WritePostState extends State<WritePost> {
             validator: (v) =>
                 (v == null || v.trim().isEmpty) ? 'enter_title'.tr() : null,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppDimens.space12),
           TextFormField(
             controller: _contentController,
             maxLines: null,
@@ -394,7 +394,7 @@ class _WritePostState extends State<WritePost> {
             validator: (v) =>
                 (v == null || v.trim().isEmpty) ? 'enter_content'.tr() : null,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppDimens.space12),
           _buildImagePicker(colors),
           if (widget.showAnonymous) _buildAnonymousToggle(colors),
         ],

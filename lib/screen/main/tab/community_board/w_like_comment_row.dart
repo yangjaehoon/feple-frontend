@@ -41,7 +41,7 @@ class LikeCommentRow extends StatelessWidget {
           child: Row(
             children: [
               Icon(icon, color: iconColor),
-              const SizedBox(width: 4),
+              const SizedBox(width: AppDimens.space4),
               Text(
                 count.toDisplayCount(lang),
                 style: TextStyle(fontSize: AppDimens.fontSizeXl, color: colors.textTitle, fontWeight: FontWeight.w600),
@@ -67,7 +67,7 @@ class LikeCommentRow extends StatelessWidget {
           count: interaction.likeCount,
           onTap: onLikeTap,
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: AppDimens.space16),
         _buildStatButton(
           colors, lang,
           label: 'scrap'.tr(),
@@ -76,9 +76,9 @@ class LikeCommentRow extends StatelessWidget {
           count: interaction.scrapCount,
           onTap: onScrapTap,
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: AppDimens.space16),
         Icon(Icons.comment_rounded, color: colors.textSecondary),
-        const SizedBox(width: 4),
+        const SizedBox(width: AppDimens.space4),
         Text(
           interaction.commentCount.toDisplayCount(lang),
           style: TextStyle(fontSize: AppDimens.fontSizeXl, color: colors.textTitle, fontWeight: FontWeight.w600),

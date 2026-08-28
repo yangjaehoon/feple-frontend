@@ -71,7 +71,7 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
         mainAxisSize: MainAxisSize.min,
         children: [
           const BottomSheetHandle(),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppDimens.space20),
           Text(
             'weather_title'.tr(),
             style: TextStyle(
@@ -80,7 +80,7 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
               color: colors.text,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppDimens.space20),
           if (_tooEarly)
             const _TooEarlyMessage()
           else
@@ -123,7 +123,7 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
     return Column(
       children: [
         Text(data.conditionIcon, style: const TextStyle(fontSize: 64)),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppDimens.space8),
         Text(
           data.conditionKey.tr(),
           style: TextStyle(
@@ -132,7 +132,7 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
             color: colors.text,
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppDimens.space16),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -141,7 +141,7 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
               label: 'weather_temp_range'.tr(args: [minT, maxT]),
               color: AppColors.notificationReminder,
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppDimens.space12),
             _InfoChip(
               icon: Icons.water_drop_rounded,
               label: 'weather_rain_prob'.tr(args: ['${data.rainProb}']),
@@ -149,7 +149,7 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppDimens.space8),
       ],
     );
   }
@@ -169,13 +169,13 @@ class _WeatherSkeleton extends StatelessWidget {
             height: 64,
             borderRadius: BorderRadius.all(Radius.circular(32)),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppDimens.space8),
           SkeletonBox(
             width: 100,
             height: AppDimens.fontSizeXxl,
             borderRadius: BorderRadius.circular(AppDimens.radiusXs),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppDimens.space16),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -184,7 +184,7 @@ class _WeatherSkeleton extends StatelessWidget {
                 height: 34,
                 borderRadius: BorderRadius.circular(AppDimens.cardRadius),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppDimens.space12),
               SkeletonBox(
                 width: 110,
                 height: 34,
@@ -192,7 +192,7 @@ class _WeatherSkeleton extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppDimens.space8),
         ],
       ),
     );
@@ -214,7 +214,7 @@ class _TooEarlyMessage extends StatelessWidget {
             size: 48,
             color: colors.textSecondary,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppDimens.space16),
           Text(
             'weather_too_early'.tr(),
             textAlign: TextAlign.center,
@@ -225,7 +225,7 @@ class _TooEarlyMessage extends StatelessWidget {
               height: 1.6,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppDimens.space8),
           Text(
             'weather_too_early_hint'.tr(),
             textAlign: TextAlign.center,
@@ -251,7 +251,7 @@ class _NoDataMessage extends StatelessWidget {
       child: Column(
         children: [
           Icon(Icons.cloud_off_outlined, size: 48, color: colors.textSecondary),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppDimens.space12),
           Text(
             'weather_no_data'.tr(),
             style: TextStyle(
@@ -290,7 +290,7 @@ class _InfoChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 16, color: color),
-          const SizedBox(width: 6),
+          const SizedBox(width: AppDimens.space6),
           Text(
             label,
             style: TextStyle(

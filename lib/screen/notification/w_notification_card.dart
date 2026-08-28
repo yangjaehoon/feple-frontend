@@ -44,7 +44,7 @@ class NotificationCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildIconBadge(colors),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppDimens.space12),
             Expanded(child: _buildTextContent(context, colors)),
             if (isLoading)
               Padding(
@@ -168,7 +168,7 @@ class NotificationCard extends StatelessWidget {
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: AppDimens.space4),
         Text(
           item.relativeTimeLabel,
           style: TextStyle(

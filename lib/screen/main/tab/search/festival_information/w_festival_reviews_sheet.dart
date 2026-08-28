@@ -188,7 +188,7 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
               color: colors.textTitle,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppDimens.space12),
           Divider(color: colors.divider, height: 1),
         ],
       ),
@@ -284,7 +284,7 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
   Widget _buildPendingCta(AbstractThemeColors colors) => Row(
     children: [
       Icon(Icons.hourglass_top_rounded, color: colors.textSecondary, size: 16),
-      const SizedBox(width: 8),
+      const SizedBox(width: AppDimens.space8),
       Expanded(
         child: Text(
           'reviews_cert_pending'.tr(),
@@ -304,7 +304,7 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
         color: colors.certRingColor,
         size: 16,
       ),
-      const SizedBox(width: 8),
+      const SizedBox(width: AppDimens.space8),
       Expanded(
         child: Text(
           'reviews_cert_prompt'.tr(),
@@ -314,7 +314,7 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
           ),
         ),
       ),
-      const SizedBox(width: 8),
+      const SizedBox(width: AppDimens.space8),
       TextButton(
         onPressed: _openCertSheet,
         style: TextButton.styleFrom(
@@ -346,7 +346,7 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
         color: colors.certRingColor,
         size: 16,
       ),
-      const SizedBox(width: 8),
+      const SizedBox(width: AppDimens.space8),
       Text(
         'reviews_my_rating'.tr(),
         style: TextStyle(
@@ -356,7 +356,7 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
         ),
       ),
       if (_myRating != null) ...[
-        const SizedBox(width: 8),
+        const SizedBox(width: AppDimens.space8),
         Row(
           mainAxisSize: MainAxisSize.min,
           children: List.generate(
@@ -408,9 +408,9 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
                   height: 1.0,
                 ),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: AppDimens.space6),
               StarRatingRow(rating: _averageRating, size: 16),
-              const SizedBox(height: 6),
+              const SizedBox(height: AppDimens.space6),
               Text(
                 'reviews_count'.tr(args: ['$_ratingCount']),
                 style: TextStyle(
@@ -448,7 +448,7 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
                   color: colors.textSecondary,
                 ),
               ),
-              const SizedBox(width: 6),
+              const SizedBox(width: AppDimens.space6),
               Expanded(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(AppDimens.barRadius),
@@ -462,7 +462,7 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
                   ),
                 ),
               ),
-              const SizedBox(width: 6),
+              const SizedBox(width: AppDimens.space6),
               SizedBox(
                 width: 22,
                 child: Text(
@@ -501,7 +501,7 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppDimens.space20),
           Text(
             'reviews_no_reviews'.tr(),
             style: TextStyle(
@@ -510,7 +510,7 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
               color: colors.textTitle,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppDimens.space10),
           Text(
             'reviews_empty_hint'.tr(),
             style: TextStyle(
@@ -609,7 +609,7 @@ class _ReviewCardState extends State<_ReviewCard> {
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: AppDimens.space10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -629,7 +629,7 @@ class _ReviewCardState extends State<_ReviewCard> {
                           ),
                         ),
                         if (review.ratedAt != null) ...[
-                          const SizedBox(width: 8),
+                          const SizedBox(width: AppDimens.space8),
                           Text(
                             review.ratedAt!,
                             style: TextStyle(
@@ -643,7 +643,7 @@ class _ReviewCardState extends State<_ReviewCard> {
                     const SizedBox(height: 3),
                     StarRatingRow(rating: review.rating.toDouble(), size: 13),
                     if (hasReviewText) ...[
-                      const SizedBox(height: 6),
+                      const SizedBox(height: AppDimens.space6),
                       ExpandableText(
                         text: review.userReview!,
                         style: TextStyle(
@@ -659,9 +659,9 @@ class _ReviewCardState extends State<_ReviewCard> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppDimens.space8),
           _buildLikeButton(colors),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppDimens.space10),
           Divider(color: colors.divider, height: 1),
         ],
       ),
@@ -686,7 +686,7 @@ class _ReviewCardState extends State<_ReviewCard> {
                   color: _likedByMe ? colors.activate : colors.textSecondary,
                 ),
                 if (_likeCount > 0) ...[
-                  const SizedBox(width: 4),
+                  const SizedBox(width: AppDimens.space4),
                   Text(
                     '$_likeCount',
                     style: TextStyle(

@@ -65,18 +65,18 @@ class _SongRequestListScreenState extends State<SongRequestListScreen>
               height: 20,
               borderRadius: BorderRadius.all(Radius.circular(4)),
             ),
-            SizedBox(width: 12),
+            SizedBox(width: AppDimens.space12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SkeletonBox(height: 14),
-                  SizedBox(height: 6),
+                  SizedBox(height: AppDimens.space6),
                   SkeletonBox(width: 80, height: 11),
                 ],
               ),
             ),
-            SizedBox(width: 8),
+            SizedBox(width: AppDimens.space8),
             SkeletonBox(
               width: 50,
               height: 22,
@@ -169,9 +169,9 @@ class SongRequestItem extends StatelessWidget {
       child: Row(
         children: [
           Icon(Icons.music_note_rounded, size: 20, color: colors.activate),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppDimens.space12),
           Expanded(child: _buildInfoColumn(context.isEnglish, colors)),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppDimens.space8),
           _buildStatusBadge(statusColor, statusLabel),
         ],
       ),

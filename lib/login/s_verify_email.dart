@@ -204,7 +204,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                 const IconCircle(icon: Icons.mark_email_unread_rounded),
                 const SizedBox(height: 28),
                 _buildTextSection(colors),
-                const SizedBox(height: 40),
+                const SizedBox(height: AppDimens.space40),
                 if (_errorMessage != null) _buildError(colors),
                 LoadingButton(
                   label: 'verify_email_done_btn'.tr(),
@@ -212,7 +212,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                   isLoading: _isVerifying,
                   backgroundColor: colors.activate,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppDimens.space12),
                 _buildResendButton(colors),
                 const SizedBox(height: 28),
                 if (widget.deleteOnCancel) _buildChangeEmailRow(colors),
@@ -238,9 +238,9 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
           ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppDimens.space12),
         _buildEmailHighlighted(colors),
-        const SizedBox(height: 6),
+        const SizedBox(height: AppDimens.space6),
         Text(
           'verify_email_instruction'.tr(),
           style: TextStyle(

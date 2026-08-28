@@ -242,7 +242,7 @@ class _PageContent extends StatelessWidget {
               height: 1.3,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppDimens.space16),
           Text(
             page.subtitleKey.tr(),
             textAlign: TextAlign.center,

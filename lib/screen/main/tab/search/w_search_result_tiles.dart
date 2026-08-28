@@ -169,7 +169,7 @@ class SearchPostTile extends StatelessWidget {
             Icon(Icons.favorite_border_rounded, size: 12, color: colors.textSecondary),
             const SizedBox(width: 2),
             Text('${data.likeCount}', style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary)),
-            const SizedBox(width: 6),
+            const SizedBox(width: AppDimens.space6),
             Icon(Icons.comment_rounded, size: 12, color: colors.textSecondary),
             const SizedBox(width: 2),
             Text('${data.commentCount}', style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary)),

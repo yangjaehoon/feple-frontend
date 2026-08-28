@@ -108,9 +108,9 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
               height: avatarSize,
               borderRadius: BorderRadius.all(Radius.circular(avatarSize / 2)),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: AppDimens.space16),
             const Expanded(child: SkeletonBox(width: 120, height: 15)),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppDimens.space12),
             const SkeletonBox(
               width: 72,
               height: 36,

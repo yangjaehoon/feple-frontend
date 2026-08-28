@@ -44,7 +44,7 @@ class FestivalActionButton extends StatelessWidget {
                 : Icon(icon, color: color ?? Colors.white, size: 20),
           ),
           if (label != null) ...[
-            const SizedBox(height: 4),
+            const SizedBox(height: AppDimens.space4),
             FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(

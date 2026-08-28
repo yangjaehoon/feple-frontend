@@ -304,7 +304,7 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
                   height: 10,
                   borderRadius: BorderRadius.circular(AppDimens.radiusXs),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppDimens.space8),
                 SkeletonBox(
                   width: 60,
                   height: 10,
@@ -312,19 +312,19 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppDimens.space8),
             SkeletonBox(
               width: double.infinity,
               height: 14,
               borderRadius: BorderRadius.circular(AppDimens.radiusXs),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppDimens.space6),
             SkeletonBox(
               width: 200,
               height: 12,
               borderRadius: BorderRadius.circular(AppDimens.radiusXs),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppDimens.space8),
             Row(
               children: [
                 SkeletonBox(
@@ -332,7 +332,7 @@ class _FestivalBoardTabContentState extends State<_FestivalBoardTabContent>
                   height: 10,
                   borderRadius: BorderRadius.circular(AppDimens.radiusXs),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppDimens.space12),
                 SkeletonBox(
                   width: 36,
                   height: 10,

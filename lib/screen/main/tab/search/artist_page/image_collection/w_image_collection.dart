@@ -262,7 +262,7 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
                 color: photo.isLiked ? colors.likeActiveColor : Colors.white,
                 size: 18,
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: AppDimens.space4),
               Text(
                 '${photo.likeCount}',
                 style: const TextStyle(
@@ -339,7 +339,7 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
                 colors,
               ),
             if (photo.isAnonymous && photo.description.isNotEmpty)
-              const SizedBox(width: 6),
+              const SizedBox(width: AppDimens.space6),
             if (photo.description.isNotEmpty)
               Flexible(child: _buildDescriptionBadge(photo, colors)),
           ],

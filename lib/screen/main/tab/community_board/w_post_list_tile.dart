@@ -60,14 +60,14 @@ class PostListTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildTitle(colors),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppDimens.space4),
           Text(
             post.content,
             style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppDimens.space6),
           Row(
             children: [
               Expanded(
@@ -157,10 +157,10 @@ class PostListTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildAvatar(context),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppDimens.space12),
             _buildTextColumn(colors),
             if (post.imageUrls.isNotEmpty) ...[
-              const SizedBox(width: 12),
+              const SizedBox(width: AppDimens.space12),
               _buildThumbnail(context),
             ],
           ],

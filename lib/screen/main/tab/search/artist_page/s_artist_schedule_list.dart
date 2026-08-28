@@ -151,7 +151,7 @@ class _ArtistScheduleListScreenState extends State<ArtistScheduleListScreen>
               letterSpacing: 0.5,
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppDimens.space8),
           Expanded(child: Divider(thickness: 1, color: colors.listDivider)),
         ],
       ),

@@ -32,11 +32,11 @@ class DraggableSheetScaffold extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(height: 12),
+            const SizedBox(height: AppDimens.space12),
             const BottomSheetHandle(),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppDimens.space16),
             header,
-            const SizedBox(height: 8),
+            const SizedBox(height: AppDimens.space8),
             Divider(color: colors.listDivider, height: 1),
             list,
             Divider(color: colors.listDivider, height: 1),

@@ -61,7 +61,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
       child: Row(
         children: [
           Icon(Icons.reply_rounded, size: 14, color: colors.activate),
-          const SizedBox(width: 4),
+          const SizedBox(width: AppDimens.space4),
           Expanded(
             child: Text(
               '${widget.replyToNickname} ${'reply_to'.tr()}',
@@ -108,7 +108,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
               visualDensity: VisualDensity.compact,
               activeColor: colors.activate,
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: AppDimens.space6),
             Text(
               'post_anonymous'.tr(),
               style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
@@ -148,7 +148,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
               maxLines: null,
             ),
           ),
-          const SizedBox(width: 4),
+          const SizedBox(width: AppDimens.space4),
           SizedBox(
             width: 48,
             height: 48,
@@ -172,7 +172,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
                     icon: Icon(Icons.send_rounded, color: colors.activate),
                   ),
           ),
-          const SizedBox(width: 4),
+          const SizedBox(width: AppDimens.space4),
         ],
       ),
     );

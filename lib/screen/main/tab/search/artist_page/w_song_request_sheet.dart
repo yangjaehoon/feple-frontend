@@ -142,11 +142,11 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 12),
+              const SizedBox(height: AppDimens.space12),
               const BottomSheetHandle(),
               ..._buildHeader(colors),
               ..._buildFormFields(),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppDimens.space20),
               _buildSubmitButton(colors),
             ],
           ),
@@ -207,7 +207,7 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
         errorText: _titleError,
       ),
     ),
-    const SizedBox(height: 12),
+    const SizedBox(height: AppDimens.space12),
     Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: AppTextField(

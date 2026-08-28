@@ -105,7 +105,7 @@ class FestivalDiaryWidgetState extends State<FestivalDiaryWidget> {
           mainAxisSize: MainAxisSize.min,
           children: [
             SkeletonBox(width: size, height: size, borderRadius: const BorderRadius.all(Radius.circular(16))),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppDimens.space6),
             const SkeletonBox(width: 72, height: 11),
           ],
         ),
@@ -119,7 +119,7 @@ class FestivalDiaryWidgetState extends State<FestivalDiaryWidget> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.menu_book_outlined, size: 32, color: colors.activate.withValues(alpha: 0.5)),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppDimens.space8),
           Text(
             'diary_no_history'.tr(),
             style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w600, color: colors.textTitle),
@@ -130,7 +130,7 @@ class FestivalDiaryWidgetState extends State<FestivalDiaryWidget> {
             style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary, height: 1.4),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppDimens.space10),
           FilledButton.icon(
             onPressed: _openList,
             icon: const Icon(Icons.add_rounded, size: 14),
@@ -179,7 +179,7 @@ class FestivalDiaryWidgetState extends State<FestivalDiaryWidget> {
                       ),
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: AppDimens.space4),
             SizedBox(
               width: MediaQuery.sizeOf(context).width * 0.272,
               child: Row(

@@ -266,7 +266,7 @@ class _FestivalListSwiperWidgetState extends State<FestivalListSwiperWidget>
             size: 40,
             color: colors.textSecondary.withValues(alpha: 0.3),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppDimens.space10),
           Text(
             'no_upcoming_festivals'.tr(),
             style: TextStyle(

@@ -63,7 +63,7 @@ class FestivalSetlistState extends State<FestivalSetlist>
             size: AppDimens.iconSizeMd,
             color: colors.activate,
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppDimens.space8),
           Text(
             'setlist_card_title'.tr(),
             style: TextStyle(
@@ -179,13 +179,13 @@ class FestivalSetlistState extends State<FestivalSetlist>
                 height: avatarSize,
                 borderRadius: BorderRadius.all(Radius.circular(avatarSize / 2)),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppDimens.space12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SkeletonBox(height: 13, width: 100),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: AppDimens.space6),
                     SkeletonBox(height: 11, width: double.infinity),
                   ],
                 ),
@@ -219,7 +219,7 @@ class _ArtistCompactRow extends StatelessWidget {
                 profileImageUrl: entry.profileImageUrl,
                 size: screenWidth * (36 / 390),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppDimens.space12),
               Expanded(
                 child: _buildTextColumn(topSong, context.isEnglish, colors, screenWidth),
               ),

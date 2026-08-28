@@ -109,7 +109,7 @@ class _FestivalSetlistFullscreenScreenState
       builder: (_, entries) => ListView.separated(
         padding: const EdgeInsets.symmetric(vertical: 12),
         itemCount: entries.length,
-        separatorBuilder: (_, _) => const SizedBox(height: 8),
+        separatorBuilder: (_, _) => const SizedBox(height: AppDimens.space8),
         itemBuilder: (_, i) => AnimatedListItem(
           index: i,
           child: _ArtistFullTile(
@@ -136,7 +136,7 @@ class _FestivalSetlistFullscreenScreenState
     return ListView.separated(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       itemCount: 4,
-      separatorBuilder: (_, _) => const SizedBox(height: 8),
+      separatorBuilder: (_, _) => const SizedBox(height: AppDimens.space8),
       itemBuilder: (_, _) => Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -150,7 +150,7 @@ class _FestivalSetlistFullscreenScreenState
               height: avatarSize,
               borderRadius: BorderRadius.all(Radius.circular(avatarSize / 2)),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppDimens.space12),
             const Expanded(child: SkeletonBox(height: 14)),
           ],
         ),
@@ -223,7 +223,7 @@ class _ArtistFullTile extends StatelessWidget {
                       profileImageUrl: entry.profileImageUrl,
                       size: screenWidth * (40 / 390),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: AppDimens.space12),
                     Expanded(child: _buildArtistInfo(isEnglish, colors)),
                     AnimatedRotation(
                       turns: isExpanded ? 0.5 : 0,
@@ -327,7 +327,7 @@ class _ArtistFullTile extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: AppDimens.space10),
             if (song.thumbnailUrl != null)
               ClipRRect(
                 borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
@@ -345,7 +345,7 @@ class _ArtistFullTile extends StatelessWidget {
               )
             else
               _thumbPlaceholder(colors, thumbSize),
-            const SizedBox(width: 10),
+            const SizedBox(width: AppDimens.space10),
             Expanded(
               child: Text(
                 song.title,
@@ -358,7 +358,7 @@ class _ArtistFullTile extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: AppDimens.space6),
             Icon(
               Icons.open_in_new_rounded,
               size: 13,
@@ -447,7 +447,7 @@ class _SetlistRequestSheetState extends State<SetlistRequestSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 12),
+          const SizedBox(height: AppDimens.space12),
           const BottomSheetHandle(),
           _buildHeader(colors),
           SingleChildScrollView(
@@ -478,7 +478,7 @@ class _SetlistRequestSheetState extends State<SetlistRequestSheet> {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: AppDimens.space6),
           Text(
             'setlist_request'.tr(),
             style: TextStyle(
@@ -545,7 +545,7 @@ class _SetlistRequestSheetState extends State<SetlistRequestSheet> {
                 child: Text('cancel'.tr()),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppDimens.space12),
             Expanded(
               child: LoadingButton(
                 label: 'setlist_request_submit'.tr(),

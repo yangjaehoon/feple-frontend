@@ -125,7 +125,7 @@ class _FestivalPickScreenState extends State<FestivalPickScreen>
         children: [
           if (widget.progressDotIndex != null) ...[
             buildOnboardingProgressDots(colors, activeIndex: widget.progressDotIndex!),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppDimens.space24),
           ],
           Text(
             'onboarding_festival_pick_title'.tr(),
@@ -136,7 +136,7 @@ class _FestivalPickScreenState extends State<FestivalPickScreen>
               height: 1.3,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppDimens.space8),
           Text(
             'onboarding_festival_pick_subtitle'.tr(),
             style: TextStyle(
@@ -145,7 +145,7 @@ class _FestivalPickScreenState extends State<FestivalPickScreen>
               height: 1.5,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppDimens.space20),
         ],
       ),
     );
@@ -216,7 +216,7 @@ class _FestivalPickScreenState extends State<FestivalPickScreen>
               borderRadius: BorderRadius.all(Radius.circular(12)),
             ),
           ),
-          SizedBox(height: 8),
+          SizedBox(height: AppDimens.space8),
           SkeletonBox(width: 56, height: 13),
         ],
       ),
@@ -251,7 +251,7 @@ class _FestivalPickScreenState extends State<FestivalPickScreen>
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppDimens.space12),
           ],
           LoadingButton(
             label: count == 0
@@ -348,7 +348,7 @@ class _FestivalSelectCard extends StatelessWidget {
       child: Column(
         children: [
           _buildPoster(context, colors),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppDimens.space6),
           Text(
             festival.displayTitle(context.isEnglish),
             style: TextStyle(

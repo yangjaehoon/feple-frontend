@@ -42,7 +42,7 @@ class PasswordChecklist extends StatelessWidget {
                   size: 16,
                   color: ok ? colors.activate : colors.textSecondary.withValues(alpha: 0.5),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppDimens.space8),
                 Text(
                   rule.label.tr(),
                   style: TextStyle(

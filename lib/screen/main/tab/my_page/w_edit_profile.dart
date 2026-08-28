@@ -195,9 +195,9 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                   _buildProfileImage(colors, profileImageUrl),
                   const SizedBox(height: 36),
                   _buildNicknameSection(colors, userId),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppDimens.space24),
                   _buildBioSection(colors),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: AppDimens.space40),
                   LoadingButton(
                     label: 'save'.tr(),
                     onPressed: _save,
@@ -226,7 +226,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
             ],
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppDimens.space8),
         Text('change_photo'.tr(), style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary)),
       ],
     );
@@ -270,7 +270,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
           'nickname'.tr(),
           style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w700, color: colors.textSecondary),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppDimens.space8),
         if (_isNicknameLocked) ...[
           _buildLockedNicknameDisplay(colors),
         ] else ...[
@@ -279,11 +279,11 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
             excludeUserId: userId,
             initialValue: _originalNickname,
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppDimens.space6),
           Row(
             children: [
               Icon(Icons.info_outline_rounded, size: 14, color: colors.textSecondary),
-              const SizedBox(width: 4),
+              const SizedBox(width: AppDimens.space4),
               Expanded(
                 child: Text(
                   'nickname_cooldown_info'.tr(),
@@ -315,11 +315,11 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
             ),
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: AppDimens.space6),
         Row(
           children: [
             Icon(Icons.info_outline_rounded, size: 14, color: colors.textSecondary),
-            const SizedBox(width: 4),
+            const SizedBox(width: AppDimens.space4),
             Text(
               'nickname_next_change'.tr(args: [_nicknameDaysRemaining.toString()]),
               style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
@@ -338,7 +338,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
           'bio'.tr(),
           style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w700, color: colors.textSecondary),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppDimens.space8),
         TextField(
           controller: _bioController,
           maxLength: 150,

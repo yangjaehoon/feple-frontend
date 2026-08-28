@@ -157,7 +157,7 @@ class MySongRequestsViewState extends State<MySongRequestsView> {
                         color: colors.textSecondary,
                       ),
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: AppDimens.space4),
                     Text(
                       'see_all'.tr(),
                       style: TextStyle(
@@ -197,18 +197,18 @@ class MySongRequestsViewState extends State<MySongRequestsView> {
                   height: 20,
                   borderRadius: BorderRadius.all(Radius.circular(4)),
                 ),
-                SizedBox(width: 12),
+                SizedBox(width: AppDimens.space12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SkeletonBox(height: 14),
-                      SizedBox(height: 4),
+                      SizedBox(height: AppDimens.space4),
                       SkeletonBox(width: 80, height: 11),
                     ],
                   ),
                 ),
-                SizedBox(width: 8),
+                SizedBox(width: AppDimens.space8),
                 SkeletonBox(
                   width: 50,
                   height: 20,

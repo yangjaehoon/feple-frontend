@@ -93,12 +93,12 @@ class _ArtistFollowHeaderState extends State<ArtistFollowHeader>
           isLoading: widget.followNotifier.isLoading,
           colors: colors,
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: AppDimens.space12),
         ScaleTransition(
           scale: _heartController,
           child: Icon(Icons.favorite_rounded, color: colors.likeActiveColor, size: 18),
         ),
-        const SizedBox(width: 4),
+        const SizedBox(width: AppDimens.space4),
         AnimatedSwitcher(
           duration: AppDimens.animNormal,
           transitionBuilder: (child, animation) => SlideTransition(
@@ -153,7 +153,7 @@ class _ArtistFollowHeaderState extends State<ArtistFollowHeader>
             mainAxisSize: MainAxisSize.min,
             children: [
               _buildNameRow(),
-              const SizedBox(height: 10),
+              const SizedBox(height: AppDimens.space10),
               _buildInteractionRow(colors, lang),
             ],
           ),
@@ -210,7 +210,7 @@ class _ArtistFollowHeaderState extends State<ArtistFollowHeader>
                 color: Colors.white.withValues(alpha: alpha),
                 size: 16,
               ),
-        const SizedBox(width: 6),
+        const SizedBox(width: AppDimens.space6),
         Visibility(
           visible: !isLoading,
           maintainSize: true,

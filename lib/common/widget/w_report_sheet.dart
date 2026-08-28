@@ -121,7 +121,7 @@ class _ReportSheetContentState extends State<_ReportSheetContent> {
             child: Text('report_cancel'.tr()),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: AppDimens.space12),
         Expanded(
           child: LoadingButton(
             label: 'report_submit'.tr(),
@@ -167,9 +167,9 @@ class _ReportSheetContentState extends State<_ReportSheetContent> {
                 color: colors.textTitle,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppDimens.space12),
             _buildReasonList(colors),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppDimens.space8),
             Semantics(
               label: 'report_detail_hint'.tr(),
               child: TextField(
@@ -187,7 +187,7 @@ class _ReportSheetContentState extends State<_ReportSheetContent> {
                 maxLines: 2,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppDimens.space16),
             _buildActions(colors),
           ],
         ),

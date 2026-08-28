@@ -34,14 +34,14 @@ class ListRowSkeleton extends StatelessWidget {
                   height: leadingSize,
                   borderRadius: const BorderRadius.all(Radius.circular(AppDimens.radiusSmall)),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppDimens.space12),
               ],
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SkeletonBox(height: 14),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppDimens.space8),
                     SkeletonBox(width: 120, height: 12, borderRadius: const BorderRadius.all(Radius.circular(4))),
                   ],
                 ),

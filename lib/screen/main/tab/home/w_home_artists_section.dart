@@ -94,7 +94,7 @@ class HomeArtistsSection extends StatelessWidget {
                 height: avatarSize,
                 borderRadius: BorderRadius.all(Radius.circular(avatarSize / 2)),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: AppDimens.space6),
               const SkeletonBox(width: 56, height: 12),
             ],
           ),
@@ -147,7 +147,7 @@ class _ShowMoreItem extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppDimens.space6),
             SizedBox(
               width: labelWidth,
               child: Text(
@@ -233,7 +233,7 @@ class _ArtistItem extends StatelessWidget {
         child: Column(
           children: [
             _buildAvatar(colors, screenWidth),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppDimens.space6),
             SizedBox(
               width: screenWidth * (64 / 390),
               child: Text(

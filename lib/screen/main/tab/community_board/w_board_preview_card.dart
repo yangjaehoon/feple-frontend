@@ -98,7 +98,7 @@ class BoardPreviewCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(width: 12),
+                  SizedBox(width: AppDimens.space12),
                   SkeletonBox(width: 40, height: 13),
                 ],
               ),
@@ -120,7 +120,7 @@ class BoardPreviewCard extends StatelessWidget {
             Icon(Icons.chat_bubble_outline_rounded,
                 size: 32,
                 color: colors.textSecondary.withValues(alpha: 0.3)),
-            const SizedBox(height: 10),
+            const SizedBox(height: AppDimens.space10),
             Text(
               emptyHint ?? 'no_posts_yet'.tr(),
               style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),

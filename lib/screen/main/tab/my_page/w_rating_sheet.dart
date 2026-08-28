@@ -170,14 +170,14 @@ class _RatingSheetState extends State<RatingSheet> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const BottomSheetHandle(),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppDimens.space12),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildHeader(colors),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppDimens.space4),
                   Text(
                     widget.festivalTitle,
                     style: TextStyle(
@@ -187,18 +187,18 @@ class _RatingSheetState extends State<RatingSheet> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppDimens.space20),
                   _buildStarRow(),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppDimens.space20),
                   _buildReviewField(colors),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppDimens.space12),
                   LoadingButton(
                     label: 'done'.tr(),
                     onPressed: _selectedRating > 0 ? _submit : null,
                     isLoading: false,
                     backgroundColor: colors.activate,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppDimens.space16),
                 ],
               ),
             ),

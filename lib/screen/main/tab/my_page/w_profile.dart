@@ -71,18 +71,18 @@ class ProfileWidgetState extends State<ProfileWidget> {
       child: Column(
         children: [
           _buildProfileImage(user, colors),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppDimens.space16),
           Row(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Flexible(child: _buildNicknameText(user, colors)),
-              const SizedBox(width: 6),
+              const SizedBox(width: AppDimens.space6),
               _buildLevelBadge(user, colors),
             ],
           ),
           if (user.bio != null && user.bio!.isNotEmpty) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: AppDimens.space8),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
@@ -98,7 +98,7 @@ class ProfileWidgetState extends State<ProfileWidget> {
               ),
             ),
           ],
-          const SizedBox(height: 16),
+          const SizedBox(height: AppDimens.space16),
           _buildActionButton(
             context,
             colors,
@@ -128,13 +128,13 @@ class ProfileWidgetState extends State<ProfileWidget> {
             height: avatarSize,
             borderRadius: BorderRadius.circular(avatarSize / 2),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppDimens.space16),
           SkeletonBox(
             width: 120,
             height: AppDimens.fontSizeDisplay + 4,
             borderRadius: BorderRadius.circular(AppDimens.radiusXs),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppDimens.space16),
           SkeletonBox(
             width: 110,
             height: 38,
@@ -209,7 +209,7 @@ class ProfileWidgetState extends State<ProfileWidget> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(icon, size: 16, color: Theme.of(context).colorScheme.onPrimary),
-                const SizedBox(width: 6),
+                const SizedBox(width: AppDimens.space6),
                 Text(
                   label,
                   style: TextStyle(

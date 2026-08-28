@@ -109,7 +109,7 @@ class _UserDiaryFeedSheetState extends State<UserDiaryFeedSheet> {
             'user_diary_feed_title'.tr(args: [widget.nickname]),
             style: TextStyle(fontSize: AppDimens.fontSizeXxl, fontWeight: FontWeight.w800, color: colors.textTitle),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppDimens.space12),
           Divider(color: colors.divider, height: 1),
         ],
       ),
@@ -192,19 +192,19 @@ class _DiaryFeedCard extends StatelessWidget {
                 ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppDimens.space8),
           Text(
             diary.content,
             style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textTitle, height: 1.4),
           ),
           if (diary.photoUrls.isNotEmpty) ...[
-            const SizedBox(height: 10),
+            const SizedBox(height: AppDimens.space10),
             SizedBox(
               height: photoSize,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: diary.photoUrls.length,
-                separatorBuilder: (_, _) => const SizedBox(width: 8),
+                separatorBuilder: (_, _) => const SizedBox(width: AppDimens.space8),
                 itemBuilder: (_, i) => ClipRRect(
                   borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
                   child: AppNetworkImage(

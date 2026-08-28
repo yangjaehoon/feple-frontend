@@ -139,7 +139,7 @@ class _LoadingButtonState extends State<LoadingButton>
       children: [
         if (widget.icon != null) ...[
           Icon(widget.icon, size: 18),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppDimens.space8),
         ],
         Flexible(
           child: Text(

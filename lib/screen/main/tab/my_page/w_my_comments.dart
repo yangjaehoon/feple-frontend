@@ -23,13 +23,13 @@ class MyCommentsView extends StatelessWidget {
             height: 36,
             borderRadius: BorderRadius.all(Radius.circular(18)),
           ),
-          SizedBox(width: 12),
+          SizedBox(width: AppDimens.space12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SkeletonBox(height: 14),
-                SizedBox(height: 6),
+                SizedBox(height: AppDimens.space6),
                 SkeletonBox(width: 120, height: 11),
               ],
             ),

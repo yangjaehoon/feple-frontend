@@ -104,11 +104,11 @@ class FestivalPreviewCard extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppDimens.space6),
           Row(
             children: [
               Icon(Icons.location_on_rounded, color: colors.activate, size: 14),
-              const SizedBox(width: 4),
+              const SizedBox(width: AppDimens.space4),
               Expanded(
                 child: Text(
                   festival.location,
@@ -123,11 +123,11 @@ class FestivalPreviewCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppDimens.space4),
           Row(
             children: [
               Icon(Icons.calendar_today_rounded, color: colors.activate, size: 14),
-              const SizedBox(width: 4),
+              const SizedBox(width: AppDimens.space4),
               Text(
                 festival.startDate,
                 style: TextStyle(
@@ -139,7 +139,7 @@ class FestivalPreviewCard extends StatelessWidget {
             ],
           ),
           if (genreLabels.isNotEmpty || festival.attendingCount > 0) ...[
-            const SizedBox(height: 6),
+            const SizedBox(height: AppDimens.space6),
             _buildTagsRow(colors, genreLabels),
           ],
         ],
@@ -165,9 +165,9 @@ class FestivalPreviewCard extends StatelessWidget {
       children: [
         if (genreLabels.isNotEmpty) Expanded(child: _buildGenreTags(colors, genreLabels)),
         if (festival.attendingCount > 0) ...[
-          const SizedBox(width: 8),
+          const SizedBox(width: AppDimens.space8),
           Icon(Icons.people_outline_rounded, color: colors.activate, size: 14),
-          const SizedBox(width: 4),
+          const SizedBox(width: AppDimens.space4),
           Text(
             'attending_count_short'.tr(args: ['${festival.attendingCount}']),
             style: TextStyle(

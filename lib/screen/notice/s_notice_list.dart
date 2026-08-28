@@ -165,7 +165,7 @@ class _NoticeListScreenState extends State<NoticeListScreen> {
               message: 'notice_pinned'.tr(),
               child: Icon(Icons.push_pin_rounded, size: 14, color: colors.activate),
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: AppDimens.space6),
           ],
           Expanded(
             child: Text(
@@ -205,7 +205,7 @@ class _NoticeListScreenState extends State<NoticeListScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
             SkeletonBox(width: 200, height: 15),
-            SizedBox(height: 8),
+            SizedBox(height: AppDimens.space8),
             SkeletonBox(width: 80, height: 11),
           ],
         ),

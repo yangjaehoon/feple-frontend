@@ -131,7 +131,7 @@ class FestivalTimetableState extends State<FestivalTimetable>
       child: Row(
         children: [
           Icon(Icons.schedule_rounded, size: 15, color: colors.activate),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppDimens.space8),
           Text(
             'timetable'.tr(),
             style: TextStyle(

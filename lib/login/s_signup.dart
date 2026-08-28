@@ -233,9 +233,9 @@ class _SignupScreenState extends State<SignupScreen> {
                           backgroundColor: themeColors.activate,
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: AppDimens.space24),
                       _buildLoginLink(themeColors),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: AppDimens.space32),
                       const SupportLinkRow(),
                     ],
                   ),
@@ -252,7 +252,7 @@ class _SignupScreenState extends State<SignupScreen> {
     return Column(
       children: [
         const IconCircle(icon: Icons.person_add_rounded, sizeAt390: 80),
-        const SizedBox(height: 24),
+        const SizedBox(height: AppDimens.space24),
         Text(
           'signup'.tr(),
           style: TextStyle(
@@ -262,7 +262,7 @@ class _SignupScreenState extends State<SignupScreen> {
             letterSpacing: -0.5,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppDimens.space8),
         Text(
           'signup_subtitle'.tr(),
           style: TextStyle(
@@ -323,7 +323,7 @@ class _SignupScreenState extends State<SignupScreen> {
           },
         ),
         if (_password.isNotEmpty) ...[
-          const SizedBox(height: 10),
+          const SizedBox(height: AppDimens.space10),
           PasswordChecklist(password: _password),
         ],
       ],

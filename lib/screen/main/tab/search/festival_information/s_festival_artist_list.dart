@@ -178,7 +178,7 @@ class FestivalArtistListScreen extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 8),
+          SizedBox(height: AppDimens.space8),
           SkeletonBox(width: 60, height: 13),
         ],
       ),

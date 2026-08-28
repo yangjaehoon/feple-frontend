@@ -2,6 +2,7 @@ import 'package:feple/common/util/bounded_responsive_size.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_skeleton_row_list.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 
 /// ScheduleListTile 모양을 흉내낸 스켈레톤 — 프리뷰 카드와 전체 목록 화면에서 공용으로 사용.
 /// 스크롤 없는 Column 기반 목록(SkeletonRowList)이라 boundedResponsiveSize로 태블릿급
@@ -23,9 +24,9 @@ class ScheduleListSkeleton extends StatelessWidget {
       ),
       lines: const [
         SkeletonBox(height: 14),
-        SizedBox(height: 6),
+        SizedBox(height: AppDimens.space6),
         SkeletonBox(width: 100, height: 11),
-        SizedBox(height: 4),
+        SizedBox(height: AppDimens.space4),
         SkeletonBox(width: 130, height: 11),
       ],
     );

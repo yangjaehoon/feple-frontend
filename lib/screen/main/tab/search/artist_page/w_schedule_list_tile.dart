@@ -64,10 +64,10 @@ class _ScheduleListTileState extends State<ScheduleListTile>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildPoster(context, colors),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppDimens.space12),
             Expanded(child: _buildContent(context, colors)),
             if (widget.showCalendarAction) ...[
-              const SizedBox(width: 4),
+              const SizedBox(width: AppDimens.space4),
               _buildCalendarButton(context, colors),
             ],
           ],
@@ -177,7 +177,7 @@ class _ScheduleListTileState extends State<ScheduleListTile>
           ),
         ],
         if (item.startDate != null) ...[
-          const SizedBox(height: 4),
+          const SizedBox(height: AppDimens.space4),
           Row(
             children: [
               Icon(
@@ -185,7 +185,7 @@ class _ScheduleListTileState extends State<ScheduleListTile>
                 size: 11,
                 color: _c(colors.textSecondary),
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: AppDimens.space4),
               Text(
                 item.dateRange,
                 style: TextStyle(
@@ -197,7 +197,7 @@ class _ScheduleListTileState extends State<ScheduleListTile>
           ),
         ],
         if (item.coArtists.isNotEmpty) ...[
-          const SizedBox(height: 6),
+          const SizedBox(height: AppDimens.space6),
           _buildCoArtists(context, colors),
         ],
       ],

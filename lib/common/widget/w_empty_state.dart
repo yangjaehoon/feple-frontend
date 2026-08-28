@@ -42,7 +42,7 @@ class EmptyState extends StatelessWidget {
                 color: colors.activate.withValues(alpha: 0.45),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppDimens.space16),
             Text(
               title,
               style: TextStyle(
@@ -53,7 +53,7 @@ class EmptyState extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             if (subtitle != null) ...[
-              const SizedBox(height: 6),
+              const SizedBox(height: AppDimens.space6),
               Text(
                 subtitle!,
                 style: TextStyle(
@@ -65,7 +65,7 @@ class EmptyState extends StatelessWidget {
               ),
             ],
             if (action != null) ...[
-              const SizedBox(height: 20),
+              const SizedBox(height: AppDimens.space20),
               action!,
             ],
           ],

@@ -77,7 +77,7 @@ class RelatedArtistsState extends State<RelatedArtists>
       child: Row(
         children: [
           Icon(Icons.people_rounded, color: colors.activate, size: 22),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppDimens.space8),
           Text(
             'related_artists'.tr(),
             style: TextStyle(
@@ -107,7 +107,7 @@ class RelatedArtistsState extends State<RelatedArtists>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _buildAvatar(context, artist, colors),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppDimens.space6),
             Text(
               artist.displayName(context.isEnglish),
               style: TextStyle(

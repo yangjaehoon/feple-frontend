@@ -144,11 +144,11 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 12),
+            const SizedBox(height: AppDimens.space12),
             const BottomSheetHandle(),
             _buildSheetHeader(colors),
             _buildFestivalSelector(colors),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppDimens.space16),
             _buildSubmitButton(colors),
           ],
         ),
@@ -204,7 +204,7 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
         child: Row(
           children: [
             Icon(Icons.error_outline, color: colors.error, size: 18),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppDimens.space8),
             Expanded(
               child: Text(
                 networkAwareErrorKey(
@@ -337,7 +337,7 @@ class _FestivalSearchSheetState extends State<_FestivalSearchSheet> {
           clipBehavior: Clip.antiAlias,
           child: Column(
             children: [
-              const SizedBox(height: 12),
+              const SizedBox(height: AppDimens.space12),
               const BottomSheetHandle(),
               _buildSearchField(colors),
               Expanded(child: _buildFestivalList(ctx, scrollCtrl)),

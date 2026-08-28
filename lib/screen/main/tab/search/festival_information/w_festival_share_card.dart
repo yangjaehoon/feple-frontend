@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/widget/w_day_badge.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 
 /// 공유용으로 캡처되는 고정 크기 카드 — 앱 테마와 무관하게 항상 같은 모습으로 그려진다.
 class FestivalShareCard extends StatelessWidget {
@@ -54,12 +55,12 @@ class FestivalShareCard extends StatelessWidget {
                     height: 1.25,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: AppDimens.space10),
                 _buildInfoRow(
                   Icons.calendar_today_rounded,
                   poster.endDate.isNotEmpty ? '${poster.startDate} ~ ${poster.endDate}' : poster.startDate,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppDimens.space4),
                 _buildInfoRow(Icons.location_on_rounded, poster.location),
               ],
             ),
@@ -83,7 +84,7 @@ class FestivalShareCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
             child: Image.asset('assets/image/feple_logo.png', width: 16, height: 16, fit: BoxFit.cover),
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: AppDimens.space6),
           const Text(
             'Feple',
             style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700),
@@ -97,7 +98,7 @@ class FestivalShareCard extends StatelessWidget {
     return Row(
       children: [
         Icon(icon, size: 14, color: Colors.white70),
-        const SizedBox(width: 6),
+        const SizedBox(width: AppDimens.space6),
         Expanded(
           child: Text(
             text,

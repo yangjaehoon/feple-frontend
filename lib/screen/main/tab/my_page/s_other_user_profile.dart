@@ -229,11 +229,11 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
       child: Column(
         children: [
           _buildProfileHeader(colors),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppDimens.space8),
           _buildPostsCard(colors),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppDimens.space8),
           _buildDiaryCard(colors),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppDimens.space16),
           _buildCertificationSection(colors),
         ],
       ),
@@ -251,7 +251,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
       child: Column(
         children: [
           _buildProfileImage(imageUrl, nickname, colors),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppDimens.space16),
           _user == null
               ? SkeletonBox(width: 120, height: AppDimens.fontSizeDisplay + 4,
                   borderRadius: BorderRadius.circular(AppDimens.radiusXs))
@@ -272,12 +272,12 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: AppDimens.space6),
                     LevelBadge(authorLevel: level, fontSize: 22),
                   ],
                 ),
           if (bio != null && bio.isNotEmpty) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: AppDimens.space8),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
@@ -353,7 +353,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
           child: Row(
             children: [
               Icon(Icons.article_rounded, color: colors.activate, size: 22),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppDimens.space12),
               Text(
                 'posts'.tr(),
                 style: TextStyle(
@@ -374,7 +374,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
                         color: colors.textTitle,
                       ),
                     ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppDimens.space8),
               Icon(Icons.chevron_right_rounded, color: colors.textSecondary, size: 20),
             ],
           ),
@@ -408,7 +408,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
           child: Row(
             children: [
               Icon(Icons.menu_book_outlined, color: colors.activate, size: 22),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppDimens.space12),
               Text(
                 'festival_diary'.tr(),
                 style: TextStyle(
@@ -435,7 +435,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
           child: Row(
             children: [
               Icon(Icons.verified_rounded, color: colors.activate, size: 18),
-              const SizedBox(width: 6),
+              const SizedBox(width: AppDimens.space6),
               Text(
                 'certification_badge'.tr(),
                 style: TextStyle(
@@ -445,7 +445,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
                 ),
               ),
               if (_certifications != null) ...[
-                const SizedBox(width: 6),
+                const SizedBox(width: AppDimens.space6),
                 Text(
                   '${_certifications!.length}',
                   style: TextStyle(
@@ -458,7 +458,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppDimens.space12),
         SizedBox(
           height: MediaQuery.sizeOf(context).width * 0.385, // 150/390
           child: _certifications == null
@@ -482,7 +482,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
           mainAxisSize: MainAxisSize.min,
           children: const [
             SkeletonBox(width: 98, height: 98, borderRadius: BorderRadius.all(Radius.circular(49))),
-            SizedBox(height: 6),
+            SizedBox(height: AppDimens.space6),
             SkeletonBox(width: 72, height: 11),
           ],
         ),
@@ -496,7 +496,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.workspace_premium_outlined, size: 32, color: colors.activate.withValues(alpha: 0.4)),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppDimens.space8),
           Text(
             'no_certification'.tr(),
             style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
@@ -547,7 +547,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
               ringColor: ringColor,
               overlay: isLoading ? const TapLoadingIndicator() : null,
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppDimens.space6),
             SizedBox(
               width: MediaQuery.sizeOf(context).width * 0.272, // 106/390
               child: Text(

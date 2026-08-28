@@ -168,7 +168,7 @@ class _LikedFestivalsScreenState extends State<LikedFestivalsScreen>
             colors: colors,
             onTap: () => setState(() => _showEnded = false),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppDimens.space8),
           _TabButton(
             label: 'tab_ended_festivals'.tr(),
             selected: _showEnded,

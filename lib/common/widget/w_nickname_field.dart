@@ -160,7 +160,7 @@ class NicknameFieldState extends State<NicknameField> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(child: _buildTextField(colors)),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppDimens.space8),
             IntrinsicWidth(child: _buildCheckButton(colors)),
           ],
         ),

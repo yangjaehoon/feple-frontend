@@ -73,11 +73,11 @@ class _PermissionSheet extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(height: 12),
+              const SizedBox(height: AppDimens.space12),
               const BottomSheetHandle(),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppDimens.space32),
               IconCircle(icon: config.icon, sizeAt390: 76),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppDimens.space20),
               Text(
                 config.titleKey.tr(),
                 style: TextStyle(
@@ -87,7 +87,7 @@ class _PermissionSheet extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: AppDimens.space10),
               Text(
                 config.descKey.tr(),
                 style: TextStyle(
@@ -97,13 +97,13 @@ class _PermissionSheet extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppDimens.space32),
               LoadingButton(
                 label: config.allowKey.tr(),
                 onPressed: () => Navigator.of(context).pop(true),
                 backgroundColor: colors.activate,
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppDimens.space4),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
                 style: TextButton.styleFrom(

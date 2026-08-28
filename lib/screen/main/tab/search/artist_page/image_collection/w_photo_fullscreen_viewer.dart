@@ -164,9 +164,9 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: AppDimens.space6),
               _buildUploaderRow(photo),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppDimens.space12),
               _buildLikeRow(photo),
             ],
           ),
@@ -179,13 +179,13 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
     return Row(
       children: [
         const Icon(Icons.person_rounded, size: 13, color: Colors.white70),
-        const SizedBox(width: 4),
+        const SizedBox(width: AppDimens.space4),
         Text(
           photo.uploaderNickname,
           style: const TextStyle(color: Colors.white70, fontSize: AppDimens.fontSizeXs),
         ),
         if (photo.description.isNotEmpty) ...[
-          const SizedBox(width: 10),
+          const SizedBox(width: AppDimens.space10),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
@@ -216,7 +216,7 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
               color: photo.isLiked ? AppColors.hotPink : Colors.white70,
               size: 22,
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: AppDimens.space6),
             Text(
               '${photo.likeCount}',
               style: const TextStyle(color: Colors.white70, fontSize: AppDimens.fontSizeMd, fontWeight: FontWeight.w600),

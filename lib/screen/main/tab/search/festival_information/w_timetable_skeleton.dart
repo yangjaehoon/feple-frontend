@@ -1,5 +1,6 @@
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 
 class TimetableSkeleton extends StatelessWidget {
   const TimetableSkeleton({super.key});
@@ -58,7 +59,7 @@ class TimetableSkeleton extends StatelessWidget {
           child: Row(
             children: [
               const SkeletonBox(width: 40, height: 12),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppDimens.space8),
               ...List.generate(3, (col) => Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 3),

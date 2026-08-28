@@ -81,7 +81,7 @@ class _WithdrawalReasonSheetContentState extends State<_WithdrawalReasonSheetCon
             child: Text('cancel'.tr()),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: AppDimens.space12),
         Expanded(
           child: LoadingButton(
             label: 'withdrawal_reason_continue'.tr(),
@@ -123,9 +123,9 @@ class _WithdrawalReasonSheetContentState extends State<_WithdrawalReasonSheetCon
                 color: colors.textTitle,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppDimens.space12),
             _buildReasonList(colors),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppDimens.space8),
             Semantics(
               label: 'withdrawal_reason_detail_hint'.tr(),
               child: TextField(
@@ -140,7 +140,7 @@ class _WithdrawalReasonSheetContentState extends State<_WithdrawalReasonSheetCon
                 maxLines: 2,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppDimens.space16),
             _buildActions(colors),
           ],
         ),

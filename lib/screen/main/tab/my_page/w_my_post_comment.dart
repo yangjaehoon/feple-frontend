@@ -73,7 +73,7 @@ class MyPostCommentViewState extends State<MyPostCommentView>
               onTap: () => _navigate(const CertificationListScreen()),
             ),
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: AppDimens.space6),
           Expanded(
             child: _buildStatCard(
               context,
@@ -84,7 +84,7 @@ class MyPostCommentViewState extends State<MyPostCommentView>
               onTap: () => _navigate(MyPostsView(userId: widget.userId)),
             ),
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: AppDimens.space6),
           Expanded(
             child: _buildStatCard(
               context,
@@ -95,7 +95,7 @@ class MyPostCommentViewState extends State<MyPostCommentView>
               onTap: () => _navigate(MyCommentsView(userId: widget.userId)),
             ),
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: AppDimens.space6),
           Expanded(
             child: _buildStatCard(
               context,
@@ -106,7 +106,7 @@ class MyPostCommentViewState extends State<MyPostCommentView>
               onTap: () => _navigate(const MyScrapsView()),
             ),
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: AppDimens.space6),
           Expanded(
             child: _buildStatCard(
               context,
@@ -133,28 +133,28 @@ class MyPostCommentViewState extends State<MyPostCommentView>
               borderRadius: BorderRadius.all(Radius.circular(16)),
             ),
           ),
-          SizedBox(width: 6),
+          SizedBox(width: AppDimens.space6),
           Expanded(
             child: SkeletonBox(
               height: 90,
               borderRadius: BorderRadius.all(Radius.circular(16)),
             ),
           ),
-          SizedBox(width: 6),
+          SizedBox(width: AppDimens.space6),
           Expanded(
             child: SkeletonBox(
               height: 90,
               borderRadius: BorderRadius.all(Radius.circular(16)),
             ),
           ),
-          SizedBox(width: 6),
+          SizedBox(width: AppDimens.space6),
           Expanded(
             child: SkeletonBox(
               height: 90,
               borderRadius: BorderRadius.all(Radius.circular(16)),
             ),
           ),
-          SizedBox(width: 6),
+          SizedBox(width: AppDimens.space6),
           Expanded(
             child: SkeletonBox(
               height: 90,
@@ -189,7 +189,7 @@ class MyPostCommentViewState extends State<MyPostCommentView>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, color: color, size: 24),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppDimens.space6),
             Text(
               label,
               textAlign: TextAlign.center,

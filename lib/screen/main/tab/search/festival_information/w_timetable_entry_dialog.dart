@@ -155,9 +155,9 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildLabelField(colors),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppDimens.space16),
           _buildStageDropdown(colors),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppDimens.space16),
           _buildTimeRow(colors),
           if (_labelCtrl.text.trim().isNotEmpty &&
               _toMins(_end) <= _toMins(_start))
@@ -171,7 +171,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
                 ),
               ),
             ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppDimens.space16),
           _buildColorPicker(colors),
         ],
       ),
@@ -264,7 +264,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _Label('timetable_stage'.tr()),
-        const SizedBox(height: 6),
+        const SizedBox(height: AppDimens.space6),
         DropdownMenu<String>(
           initialSelection: _stage,
           expandedInsets: EdgeInsets.zero,
@@ -348,7 +348,7 @@ class _TimetableEntryDialogState extends State<TimetableEntryDialog> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _Label('timetable_color'.tr()),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppDimens.space8),
         Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -428,7 +428,7 @@ class _TimeBtn extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _Label(label),
-        const SizedBox(height: 4),
+        const SizedBox(height: AppDimens.space4),
         GestureDetector(
           onTap: onTap,
           child: Container(

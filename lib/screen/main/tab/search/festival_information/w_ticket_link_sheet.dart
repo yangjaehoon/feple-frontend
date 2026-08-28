@@ -32,7 +32,7 @@ class TicketLinkSheet extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Center(child: BottomSheetHandle()),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppDimens.space20),
           Text(
             'ticket_links_title'.tr(),
             style: TextStyle(
@@ -41,7 +41,7 @@ class TicketLinkSheet extends StatelessWidget {
               color: colors.text,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppDimens.space12),
           ...links.map((link) => _buildLinkTile(context, colors, link)),
         ],
       ),
@@ -59,7 +59,7 @@ class TicketLinkSheet extends StatelessWidget {
           child: Row(
             children: [
               _buildVendorIcon(colors, link),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppDimens.space12),
               Expanded(
                 child: Text(
                   (link.label?.isNotEmpty ?? false) ? link.label! : link.url,

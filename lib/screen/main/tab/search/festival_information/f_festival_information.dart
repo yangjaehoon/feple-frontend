@@ -103,7 +103,7 @@ class _FestivalInformationFragmentState
               poster: _poster,
               heroTag: widget.heroTag,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppDimens.space16),
             FestivalArtists(
               key: _artistsKey,
               festivalId: _poster.id,

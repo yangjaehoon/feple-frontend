@@ -102,7 +102,7 @@ class _ArtistPickScreenState extends State<ArtistPickScreen>
         children: [
           if (widget.progressDotIndex != null) ...[
             buildOnboardingProgressDots(colors, activeIndex: widget.progressDotIndex!),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppDimens.space24),
           ],
           Text(
             'onboarding_pick_title'.tr(),
@@ -113,7 +113,7 @@ class _ArtistPickScreenState extends State<ArtistPickScreen>
               height: 1.3,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppDimens.space8),
           Text(
             'onboarding_pick_subtitle'.tr(),
             style: TextStyle(
@@ -122,7 +122,7 @@ class _ArtistPickScreenState extends State<ArtistPickScreen>
               height: 1.5,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppDimens.space20),
         ],
       ),
     );
@@ -229,7 +229,7 @@ class _ArtistPickScreenState extends State<ArtistPickScreen>
               borderRadius: BorderRadius.all(Radius.circular(12)),
             ),
           ),
-          SizedBox(height: 8),
+          SizedBox(height: AppDimens.space8),
           SkeletonBox(width: 56, height: 13),
         ],
       ),
@@ -264,7 +264,7 @@ class _ArtistPickScreenState extends State<ArtistPickScreen>
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppDimens.space12),
           ],
           LoadingButton(
             label: count == 0
@@ -361,7 +361,7 @@ class _ArtistSelectCard extends StatelessWidget {
       child: Column(
         children: [
           _buildCardImage(context, colors),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppDimens.space6),
           Text(
             artist.name,
             style: TextStyle(

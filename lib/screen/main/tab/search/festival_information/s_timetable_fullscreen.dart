@@ -182,7 +182,7 @@ class _TimetableFullscreenScreenState extends State<TimetableFullscreenScreen> {
       return Row(
         children: [
           Icon(Icons.schedule_rounded, size: 15, color: colors.activate),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppDimens.space8),
           Text(
             'timetable'.tr(),
             style: TextStyle(
@@ -252,7 +252,7 @@ class _TimetableFullscreenScreenState extends State<TimetableFullscreenScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.touch_app_rounded, size: 12, color: colors.textSecondary),
-          const SizedBox(width: 4),
+          const SizedBox(width: AppDimens.space4),
           Text(
             'timetable_hint'.tr(),
             style: TextStyle(fontSize: AppDimens.fontSizeTiny, color: colors.textSecondary),

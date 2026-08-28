@@ -96,7 +96,7 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Center(child: BottomSheetHandle()),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppDimens.space12),
           Text(
             'photo_edit_title'.tr(),
             style: TextStyle(
@@ -105,11 +105,11 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
               color: colors.textTitle,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppDimens.space16),
           _buildTitleField(colors),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppDimens.space12),
           _buildFestivalDropdown(),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppDimens.space16),
           _buildSaveButton(colors),
         ],
         ),

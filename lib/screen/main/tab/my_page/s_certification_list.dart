@@ -61,7 +61,7 @@ class _CertificationListScreenState extends State<CertificationListScreen>
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       itemCount: 3,
-      separatorBuilder: (_, _) => const SizedBox(height: 10),
+      separatorBuilder: (_, _) => const SizedBox(height: AppDimens.space10),
       itemBuilder: (_, _) => Container(
         decoration: BoxDecoration(
           color: colors.surface,
@@ -94,13 +94,13 @@ class _CertificationListScreenState extends State<CertificationListScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: const [
                     SkeletonBox(height: 15),
-                    SizedBox(height: 8),
+                    SizedBox(height: AppDimens.space8),
                     SkeletonBox(
                       width: 80,
                       height: 22,
                       borderRadius: BorderRadius.all(Radius.circular(20)),
                     ),
-                    SizedBox(height: 6),
+                    SizedBox(height: AppDimens.space6),
                     SkeletonBox(width: 60, height: 11),
                   ],
                 ),
@@ -152,7 +152,7 @@ class _CertificationListScreenState extends State<CertificationListScreen>
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
               itemCount: displayed.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 10),
+              separatorBuilder: (_, _) => const SizedBox(height: AppDimens.space10),
               itemBuilder: (context, index) {
                 final cert = displayed[index];
                 return AnimatedListItem(
@@ -374,7 +374,7 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppDimens.space6),
             _buildStatusBadge(statusColor, statusLabel),
             _buildMeta(
               isPending,
@@ -384,7 +384,7 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
               colors,
             ),
             if (isApproved) ...[
-              const SizedBox(height: 6),
+              const SizedBox(height: AppDimens.space6),
               _buildRatingSection(colors),
             ],
           ],
@@ -422,7 +422,7 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
                 ),
               ),
               if (_review != null && _review!.isNotEmpty) ...[
-                const SizedBox(width: 6),
+                const SizedBox(width: AppDimens.space6),
                 Flexible(
                   child: Text(
                     _review!,
@@ -446,7 +446,7 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.star_outline_rounded, size: 14, color: colors.activate),
-          const SizedBox(width: 4),
+          const SizedBox(width: AppDimens.space4),
           Text(
             'rating_submit'.tr(),
             style: TextStyle(
@@ -474,7 +474,7 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
             !isApproved &&
             rejectionMessage != null &&
             rejectionMessage.isNotEmpty) ...[
-          const SizedBox(height: 4),
+          const SizedBox(height: AppDimens.space4),
           Text(
             'cert_rejection_reason'.tr(args: [rejectionMessage]),
             style: TextStyle(
@@ -486,7 +486,7 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
           ),
         ],
         if (createdAt != null) ...[
-          const SizedBox(height: 4),
+          const SizedBox(height: AppDimens.space4),
           Text(
             createdAt,
             style: TextStyle(

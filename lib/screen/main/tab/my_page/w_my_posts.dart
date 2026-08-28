@@ -95,13 +95,13 @@ class _MyPostsViewState extends State<MyPostsView> {
               height: 14,
               borderRadius: BorderRadius.circular(AppDimens.radiusXs),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppDimens.space8),
             SkeletonBox(
               width: 160,
               height: 12,
               borderRadius: BorderRadius.circular(AppDimens.radiusXs),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppDimens.space8),
             Row(
               children: [
                 SkeletonBox(
@@ -109,7 +109,7 @@ class _MyPostsViewState extends State<MyPostsView> {
                   height: 10,
                   borderRadius: BorderRadius.circular(AppDimens.radiusXs),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppDimens.space12),
                 SkeletonBox(
                   width: 40,
                   height: 10,

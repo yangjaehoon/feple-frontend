@@ -59,7 +59,7 @@ class ArtistCard extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppDimens.space8),
         Text(
           name,
           style: TextStyle(

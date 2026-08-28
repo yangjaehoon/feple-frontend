@@ -66,10 +66,10 @@ class ErrorState extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     _buildIconBadge(context, colors),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AppDimens.space16),
                     _buildMessage(colors),
                     if (onRetry != null) ...[
-                      const SizedBox(height: 20),
+                      const SizedBox(height: AppDimens.space20),
                       _buildRetryButton(context, colors),
                     ],
                   ],

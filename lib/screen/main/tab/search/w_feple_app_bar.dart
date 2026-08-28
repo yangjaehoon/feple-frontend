@@ -70,7 +70,7 @@ class _FepleAppBarState extends State<FepleAppBar> with NavigationGuard {
         onPressed: () => Navigator.of(context).pop(),
       );
     }
-    return const SizedBox(width: 16);
+    return const SizedBox(width: AppDimens.space16);
   }
 
   Widget _buildTitleLogo(BuildContext context, TextStyle? titleStyle) {

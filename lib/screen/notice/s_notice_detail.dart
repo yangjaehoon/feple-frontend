@@ -32,15 +32,15 @@ class NoticeDetailScreen extends StatelessWidget {
                     ),
                   ),
                   if (notice.formattedDate != null) ...[
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppDimens.space8),
                     Text(
                       notice.formattedDate!,
                       style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
                     ),
                   ],
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppDimens.space20),
                   Divider(height: 1, color: colors.listDivider),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppDimens.space20),
                   Text(
                     notice.content,
                     style: TextStyle(

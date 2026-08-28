@@ -23,7 +23,7 @@ class FavoriteBoardsSectionSkeleton extends StatelessWidget {
                 height: 20,
                 borderRadius: BorderRadius.circular(AppDimens.barRadius),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppDimens.space8),
               const SkeletonBox(width: 130, height: 18),
             ],
           ),

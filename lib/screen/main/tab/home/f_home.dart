@@ -178,12 +178,12 @@ class _HomeFragmentState extends State<HomeFragment> {
           listenable: _notifier.artistsChanges,
           builder: (context, _) => _buildArtistsSection(context),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppDimens.space8),
         ListenableBuilder(
           listenable: _notifier.festivalsChanges,
           builder: (context, _) => _buildFestivalsSection(context),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppDimens.space8),
         ListenableBuilder(
           listenable: Listenable.merge([
             _notifier.artistsChanges,

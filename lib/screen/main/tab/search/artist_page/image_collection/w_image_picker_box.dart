@@ -91,7 +91,7 @@ class ImagePickerBox extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(Icons.add_photo_alternate_rounded, color: colors.activate, size: 40),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppDimens.space8),
         Text(
           label ?? 'photo_add'.tr(),
           style: TextStyle(

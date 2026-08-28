@@ -223,7 +223,7 @@ class FestivalPosterState extends State<FestivalPoster> {
                           children: _buildDescriptionSection(colors),
                         ),
                       ),
-                    if (!hasDescription) const SizedBox(height: 8),
+                    if (!hasDescription) const SizedBox(height: AppDimens.space8),
                   ],
                 ),
               ),
@@ -268,7 +268,7 @@ class FestivalPosterState extends State<FestivalPoster> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildPosterThumbnail(colors, posterWidth, posterHeight),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppDimens.space16),
           Expanded(child: _buildInfoColumn(colors)),
         ],
       ),
@@ -293,7 +293,7 @@ class FestivalPosterState extends State<FestivalPoster> {
             mainAxisSize: MainAxisSize.min,
             children: [
               StarRatingRow(rating: _notifier.averageRating, size: 18),
-              const SizedBox(width: 4),
+              const SizedBox(width: AppDimens.space4),
               Text(
                 '(${_notifier.ratingCount})',
                 style: TextStyle(
@@ -389,7 +389,7 @@ class FestivalPosterState extends State<FestivalPoster> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 4),
+        const SizedBox(height: AppDimens.space4),
         Text(
           _notifier.poster.displayTitle(context.isEnglish),
           softWrap: true,
@@ -399,9 +399,9 @@ class FestivalPosterState extends State<FestivalPoster> {
             color: Colors.white,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppDimens.space8),
         _buildTagRow(),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppDimens.space8),
         _buildPosterInfoRow(
           icon: Icons.calendar_today_rounded,
           color: colors.accentColor,
@@ -415,7 +415,7 @@ class FestivalPosterState extends State<FestivalPoster> {
             ),
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: AppDimens.space6),
         GestureDetector(
           onTap: _openKakaoMap,
           child: _buildPosterInfoRow(
@@ -433,7 +433,7 @@ class FestivalPosterState extends State<FestivalPoster> {
             ),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppDimens.space8),
         _buildInfoColumnBottom(colors),
       ],
     );
@@ -461,7 +461,7 @@ class FestivalPosterState extends State<FestivalPoster> {
                 )
               : const SizedBox.shrink(),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: AppDimens.space6),
         ListenableBuilder(
           listenable: _notifier,
           builder: (_, _) => _buildRatingBadge(),
@@ -478,7 +478,7 @@ class FestivalPosterState extends State<FestivalPoster> {
     return Row(
       children: [
         Icon(icon, color: color, size: 15),
-        const SizedBox(width: 6),
+        const SizedBox(width: AppDimens.space6),
         Expanded(child: child),
       ],
     );
@@ -565,7 +565,7 @@ class FestivalPosterState extends State<FestivalPoster> {
             size: 13,
             color: Colors.white54,
           ),
-          const SizedBox(width: 4),
+          const SizedBox(width: AppDimens.space4),
           Text(
             'retry'.tr(),
             style: const TextStyle(
@@ -657,7 +657,7 @@ class FestivalPosterState extends State<FestivalPoster> {
               color: Colors.white.withValues(alpha: 0.7),
               size: 16,
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: AppDimens.space6),
             Text(
               'festival_info'.tr(),
               style: TextStyle(
@@ -690,7 +690,7 @@ class FestivalPosterState extends State<FestivalPoster> {
           ),
         ),
       ),
-      secondChild: const SizedBox(height: 10),
+      secondChild: const SizedBox(height: AppDimens.space10),
       crossFadeState: _notifier.descExpanded
           ? CrossFadeState.showFirst
           : CrossFadeState.showSecond,

@@ -31,7 +31,7 @@ class HomeSectionHeader extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppDimens.barRadius),
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppDimens.space8),
           Expanded(
             child: Text(
               title,
@@ -53,7 +53,7 @@ class HomeSectionHeader extends StatelessWidget {
           ] else if (trailing != null) ...[
             const Spacer(),
             trailing!,
-            const SizedBox(width: 12),
+            const SizedBox(width: AppDimens.space12),
           ],
         ],
       ),

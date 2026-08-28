@@ -84,9 +84,9 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildHeader(colors),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppDimens.space24),
           _buildPhotoArea(colors),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppDimens.space20),
           LoadingButton(
             label: 'cert_submit'.tr(),
             onPressed: _imageBytes == null ? null : _submit,
@@ -104,18 +104,18 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const BottomSheetHandle(),
-        const SizedBox(height: 20),
+        const SizedBox(height: AppDimens.space20),
         Row(
           children: [
             Icon(Icons.verified_rounded, color: colors.activate, size: 22),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppDimens.space8),
             Text(
               'cert_title'.tr(),
               style: TextStyle(fontSize: AppDimens.fontSizeXxl, fontWeight: FontWeight.w800, color: colors.textTitle),
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppDimens.space8),
         Text(
           'cert_description'.tr(args: [widget.festivalName]),
           style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textSecondary, height: 1.5),
@@ -175,7 +175,7 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
                 children: [
                   Icon(Icons.add_photo_alternate_outlined,
                       size: 36, color: colors.textSecondary.withValues(alpha: 0.5)),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppDimens.space8),
                   Text(
                     'cert_photo_hint'.tr(),
                     style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),

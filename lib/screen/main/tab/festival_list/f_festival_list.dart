@@ -249,7 +249,7 @@ class _FilterPanel extends StatelessWidget {
         child: Row(
           children: [
             Icon(Icons.tune_rounded, size: 18, color: colors.activate),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppDimens.space8),
             Text(
               'btn_filter'.tr(),
               style: TextStyle(
@@ -259,7 +259,7 @@ class _FilterPanel extends StatelessWidget {
               ),
             ),
             if (_activeFilterCount > 0) ...[
-              const SizedBox(width: 6),
+              const SizedBox(width: AppDimens.space6),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                 decoration: BoxDecoration(
@@ -282,7 +282,7 @@ class _FilterPanel extends StatelessWidget {
                   style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
                 ),
               ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppDimens.space8),
             Icon(
               expanded
                   ? Icons.keyboard_arrow_up_rounded
@@ -308,14 +308,14 @@ class _FilterPanel extends StatelessWidget {
             selected: selectedGenres,
             onToggle: p.toggleGenre,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppDimens.space12),
           _FilterSection(
             label: 'filter_region'.tr(),
             items: kRegionOptions,
             selected: selectedRegions,
             onToggle: p.toggleRegion,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppDimens.space12),
           _FilterSection(
             label: 'filter_age_restriction'.tr(),
             items: kAgeRestrictionOptions,
@@ -351,7 +351,7 @@ class _FilterSection extends StatelessWidget {
           label,
           style: TextStyle(fontSize: AppDimens.fontSizeXs, fontWeight: FontWeight.w700, color: colors.textSecondary),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppDimens.space8),
         _buildChips(context, colors),
       ],
     );

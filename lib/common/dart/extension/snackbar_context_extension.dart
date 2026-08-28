@@ -76,7 +76,7 @@ void _show(
       child: Row(
         children: [
           Icon(icon, color: Colors.white, size: 20),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppDimens.space12),
           Expanded(
             child: Text(
               message,
@@ -88,7 +88,7 @@ void _show(
               ),
             ),
           ),
-          if (extraButton != null) ...[const SizedBox(width: 8), extraButton],
+          if (extraButton != null) ...[const SizedBox(width: AppDimens.space8), extraButton],
         ],
       ),
     ),

@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 
 /// 게시글 목록 타일 trailing용 읽기 전용 통계 행.
 ///
@@ -40,19 +41,19 @@ class PostStatRow extends StatelessWidget {
       children: [
         Icon(Icons.favorite_border_rounded,
             color: colors.likeActiveColor, size: _heartSize),
-        const SizedBox(width: 4),
+        const SizedBox(width: AppDimens.space4),
         Text(likeCount.toDisplayCount(lang), style: textStyle),
         if (scrapCount != null) ...[
           SizedBox(width: _spacing),
           Icon(Icons.star_border_rounded,
               color: colors.accentColor, size: _starSize),
-          const SizedBox(width: 4),
+          const SizedBox(width: AppDimens.space4),
           Text(scrapCount!.toDisplayCount(lang), style: textStyle),
         ],
         SizedBox(width: _spacing),
         Icon(Icons.chat_bubble_outline_rounded,
             color: colors.textSecondary, size: _commentSize),
-        const SizedBox(width: 4),
+        const SizedBox(width: AppDimens.space4),
         Text(commentCount.toDisplayCount(lang), style: textStyle),
       ],
     );

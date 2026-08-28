@@ -303,13 +303,13 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
         child: Row(
           children: [
             const SkeletonBox(width: 40, height: 40, borderRadius: BorderRadius.all(Radius.circular(20))),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppDimens.space12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
                   SkeletonBox(height: 14, width: 160),
-                  SizedBox(height: 6),
+                  SizedBox(height: AppDimens.space6),
                   SkeletonBox(height: 12, width: 100),
                 ],
               ),
@@ -630,11 +630,11 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
                   borderRadius: BorderRadius.circular(AppDimens.barRadius),
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppDimens.space8),
               Text(title,
                   style: TextStyle(
                       fontSize: AppDimens.fontSizeLg, fontWeight: FontWeight.w800, color: colors.textTitle)),
-              const SizedBox(width: 6),
+              const SizedBox(width: AppDimens.space6),
               Text('($count)', style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary)),
             ],
           ),

@@ -23,7 +23,7 @@ class BoardCardHeader extends StatelessWidget {
     return Row(
       children: [
         Icon(icon, color: headerColor, size: 22),
-        const SizedBox(width: 8),
+        const SizedBox(width: AppDimens.space8),
         Flexible(
           child: Text(
             title,
@@ -81,7 +81,7 @@ class BoardCardHeader extends StatelessWidget {
                   children: [
                     if (trailing != null) ...[
                       trailing!,
-                      const SizedBox(width: 4),
+                      const SizedBox(width: AppDimens.space4),
                     ],
                     _buildMore(colors),
                   ],

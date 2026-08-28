@@ -118,9 +118,9 @@ class FestivalCertificationWidgetState extends State<FestivalCertificationWidget
               height: ringSize,
               borderRadius: BorderRadius.circular(ringSize / 2),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppDimens.space6),
             const SkeletonBox(width: 72, height: 11),
-            const SizedBox(height: 4),
+            const SizedBox(height: AppDimens.space4),
             const SkeletonBox(width: 48, height: 10, borderRadius: BorderRadius.all(Radius.circular(20))),
           ],
         ),
@@ -139,7 +139,7 @@ class FestivalCertificationWidgetState extends State<FestivalCertificationWidget
             size: 32,
             color: colors.activate.withValues(alpha: 0.5),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppDimens.space8),
           Text(
             'cert_no_history'.tr(),
             style: TextStyle(
@@ -158,7 +158,7 @@ class FestivalCertificationWidgetState extends State<FestivalCertificationWidget
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppDimens.space10),
           FilledButton.icon(
             onPressed: _openDetail,
             icon: const Icon(Icons.add_rounded, size: 14),
@@ -209,7 +209,7 @@ class FestivalCertificationWidgetState extends State<FestivalCertificationWidget
               ringColor: ringColor,
               ringAlpha: isApproved ? 0.6 : 0.3,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: AppDimens.space4),
             SizedBox(
               width: MediaQuery.sizeOf(context).width * 0.272, // 106/390
               child: Text(

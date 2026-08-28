@@ -248,7 +248,7 @@ class _WriteFestivalDiaryScreenState extends State<WriteFestivalDiaryScreen> {
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemCount: widget.existing!.photoUrls.length,
-          separatorBuilder: (_, _) => const SizedBox(width: 12),
+          separatorBuilder: (_, _) => const SizedBox(width: AppDimens.space12),
           itemBuilder: (_, i) => _buildImageThumbnail(
             colors,
             size: size,
@@ -272,7 +272,7 @@ class _WriteFestivalDiaryScreenState extends State<WriteFestivalDiaryScreen> {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: tiles.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 12),
+        separatorBuilder: (_, _) => const SizedBox(width: AppDimens.space12),
         itemBuilder: (_, i) => tiles[i],
       ),
     );
@@ -336,7 +336,7 @@ class _WriteFestivalDiaryScreenState extends State<WriteFestivalDiaryScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildFestivalSelector(colors),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: AppDimens.space12),
                         TextField(
                           controller: _contentController,
                           maxLines: null,
@@ -351,7 +351,7 @@ class _WriteFestivalDiaryScreenState extends State<WriteFestivalDiaryScreen> {
                             focusedBorder: appInputBorder(colors.activate, width: 2),
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: AppDimens.space8),
                         _buildImagePicker(colors),
                         _buildVisibilityToggle(colors),
                       ],
@@ -424,7 +424,7 @@ class _DiaryFestivalSearchSheetState extends State<_DiaryFestivalSearchSheet> {
           clipBehavior: Clip.antiAlias,
           child: Column(
             children: [
-              const SizedBox(height: 12),
+              const SizedBox(height: AppDimens.space12),
               const BottomSheetHandle(),
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),

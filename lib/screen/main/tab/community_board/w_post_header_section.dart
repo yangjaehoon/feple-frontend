@@ -91,7 +91,7 @@ class PostHeaderSection extends StatelessWidget {
           ),
         ),
         if (isEdited) ...[
-          const SizedBox(width: 4),
+          const SizedBox(width: AppDimens.space4),
           Text(
             'edited'.tr(),
             style: TextStyle(
@@ -118,11 +118,11 @@ class PostHeaderSection extends StatelessWidget {
             color: colors.textTitle,
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppDimens.space12),
         Row(
           children: [
             _buildAvatar(context),
-            const SizedBox(width: 10),
+            const SizedBox(width: AppDimens.space10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

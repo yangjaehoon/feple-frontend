@@ -80,9 +80,9 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
                         children: [
                           _buildHeader(themeColors),
                           _buildForm(themeColors),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: AppDimens.space12),
                           _buildForgotPassword(themeColors),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: AppDimens.space20),
                           IgnorePointer(
                             ignoring: _isAnyLoading,
                             child: Opacity(
@@ -95,13 +95,13 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: AppDimens.space20),
                           _buildOrDivider(themeColors),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: AppDimens.space20),
                           _buildSocialLoginRow(),
                           const SizedBox(height: 28),
                           _buildSignupRow(context, themeColors),
-                          const SizedBox(height: 32),
+                          const SizedBox(height: AppDimens.space32),
                           const SupportLinkRow(),
                         ],
                       ),
@@ -139,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
             letterSpacing: -0.5,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppDimens.space8),
         Text(
           'login_subtitle'.tr(),
           style: TextStyle(
@@ -148,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
             fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 40),
+        const SizedBox(height: AppDimens.space40),
       ],
     );
   }
@@ -193,7 +193,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
               children: [
                 Icon(Icons.error_outline_rounded,
                     color: themeColors.error, size: 14),
-                const SizedBox(width: 4),
+                const SizedBox(width: AppDimens.space4),
                 Expanded(
                   child: Text(
                     _authError!,
@@ -258,12 +258,12 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _buildKakaoIconButton(),
-        const SizedBox(width: 20),
+        const SizedBox(width: AppDimens.space20),
         // 안드로이드는 네이티브 Apple 로그인 API가 없어 별도의 웹 인증 설정
         // (Services ID, 리다이렉트용 도메인)이 갖춰지기 전까지 버튼을 숨긴다.
         if (Platform.isIOS) ...[
           _buildAppleIconButton(),
-          const SizedBox(width: 20),
+          const SizedBox(width: AppDimens.space20),
         ],
         _buildGoogleIconButton(),
       ],

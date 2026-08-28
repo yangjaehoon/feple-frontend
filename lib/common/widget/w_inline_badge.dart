@@ -1,5 +1,6 @@
 import 'package:feple/common/widget/role_badge_style.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/constant/app_dimensions.dart';
 
 /// 닉네임 옆에 인라인으로 표시하는 역할 배지 아이콘.
 ///
@@ -24,7 +25,7 @@ class InlineBadge extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const SizedBox(width: 4),
+        const SizedBox(width: AppDimens.space4),
         Tooltip(message: style.tooltip, child: Icon(style.icon, size: size, color: style.color)),
       ],
     );

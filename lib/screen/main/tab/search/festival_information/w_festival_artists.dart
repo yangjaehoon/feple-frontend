@@ -136,7 +136,7 @@ class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: visible.length + (hasMore ? 1 : 0),
-        separatorBuilder: (_, _) => const SizedBox(width: 16),
+        separatorBuilder: (_, _) => const SizedBox(width: AppDimens.space16),
         itemBuilder: (context, index) {
           if (hasMore && index == visible.length) {
             return _buildMoreItem(colors);
@@ -178,7 +178,7 @@ class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
                 color: colors.textSecondary,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppDimens.space6),
             Text(
               'see_more'.tr(),
               style: TextStyle(
@@ -220,7 +220,7 @@ class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
               imageUrl: artist.profileImageUrl,
               isFollowed: isFollowed,
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppDimens.space6),
             Text(
               artist.displayName(context.isEnglish),
               style: TextStyle(
@@ -247,7 +247,7 @@ class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
         scrollDirection: Axis.horizontal,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: 4,
-        separatorBuilder: (_, _) => const SizedBox(width: 16),
+        separatorBuilder: (_, _) => const SizedBox(width: AppDimens.space16),
         itemBuilder: (_, _) => SizedBox(
           width: boundedResponsiveSize(context, 64),
           child: Column(
@@ -258,7 +258,7 @@ class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
                 height: avatarSize,
                 borderRadius: BorderRadius.all(Radius.circular(avatarSize / 2)),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: AppDimens.space6),
               const SkeletonBox(width: 40, height: 10),
             ],
           ),

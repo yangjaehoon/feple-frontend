@@ -45,7 +45,7 @@ class _PostContentSectionState extends State<PostContentSection> {
           ),
         ),
         if (widget.imageUrls.isNotEmpty) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: AppDimens.space12),
           _buildImages(colors, screenWidth),
         ],
       ],

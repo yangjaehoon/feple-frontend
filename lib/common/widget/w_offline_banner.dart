@@ -81,7 +81,7 @@ class _OfflineBannerState extends State<OfflineBanner>
                 children: [
                   const Icon(Icons.wifi_off_rounded,
                       color: Colors.white70, size: 16),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppDimens.space8),
                   Flexible(
                     child: Text(
                       'offline_banner'.tr(),

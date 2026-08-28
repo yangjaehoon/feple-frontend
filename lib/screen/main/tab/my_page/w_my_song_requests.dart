@@ -9,6 +9,7 @@ import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
 import 'package:feple/screen/main/tab/my_page/s_song_request_list.dart';
 import 'package:feple/service/song_request_service.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +23,8 @@ class MySongRequestsView extends StatefulWidget {
   State<MySongRequestsView> createState() => MySongRequestsViewState();
 }
 
-class MySongRequestsViewState extends State<MySongRequestsView> {
+class MySongRequestsViewState extends State<MySongRequestsView>
+    with RefreshableSection<MySongRequestsView> {
   final _service = sl<SongRequestService>();
   List<SongRequestModel>? _requests;
   bool _isLoading = true;
@@ -30,7 +32,8 @@ class MySongRequestsViewState extends State<MySongRequestsView> {
   Object? _error;
   int? _userId;
 
-  void refresh() => _load();
+  @override
+  Future<void> refreshSection() => _load();
 
   @override
   void didChangeDependencies() {

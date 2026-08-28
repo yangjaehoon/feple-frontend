@@ -14,6 +14,7 @@ import 'package:feple/screen/main/tab/my_page/w_my_scraps.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/common/util/navigation_guard.dart';
+import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
@@ -26,10 +27,16 @@ class MyPostCommentView extends StatefulWidget {
 }
 
 class MyPostCommentViewState extends State<MyPostCommentView>
-    with NavigationGuard, FutureRefreshable<UserStats, MyPostCommentView> {
+    with
+        NavigationGuard,
+        FutureRefreshable<UserStats, MyPostCommentView>,
+        RefreshableSection<MyPostCommentView> {
   @override
   Future<UserStats> fetchData() =>
       sl<UserActivityService>().fetchStats(widget.userId);
+
+  @override
+  Future<void> refreshSection() => refresh();
 
   Future<void> _navigate(Widget screen) => guardedNavigate(
     () => Navigator.push(context, SlideRoute(builder: (_) => screen)),

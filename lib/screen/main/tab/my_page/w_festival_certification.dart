@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
@@ -21,7 +22,8 @@ class FestivalCertificationWidget extends StatefulWidget {
   State<FestivalCertificationWidget> createState() => FestivalCertificationWidgetState();
 }
 
-class FestivalCertificationWidgetState extends State<FestivalCertificationWidget> {
+class FestivalCertificationWidgetState extends State<FestivalCertificationWidget>
+    with RefreshableSection<FestivalCertificationWidget> {
   final _certService = sl<CertificationService>();
   List<CertificationModel>? _certifications;
   bool _isLoading = true;
@@ -33,7 +35,8 @@ class FestivalCertificationWidgetState extends State<FestivalCertificationWidget
     _load();
   }
 
-  void refresh() => _load();
+  @override
+  Future<void> refreshSection() => _load();
 
   Future<void> _load() async {
     setState(() { _isLoading = true; _hasError = false; });

@@ -191,7 +191,7 @@ void main() {
       expect(find.text('기존 유저'), findsOneWidget);
 
       final state = tester.state<ProfileWidgetState>(find.byType(ProfileWidget));
-      state.refresh();
+      unawaited(state.refreshSection());
       await tester.pump();
 
       expect(find.text('기존 유저'), findsOneWidget); // 화면은 유지

@@ -11,6 +11,7 @@ import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
 import 'package:feple/screen/main/tab/my_page/s_festival_diary_list.dart';
 import 'package:feple/service/festival_diary_service.dart';
 import 'package:flutter/material.dart';
+import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/common/util/responsive_size.dart';
 
 class FestivalDiaryWidget extends StatefulWidget {
@@ -20,7 +21,8 @@ class FestivalDiaryWidget extends StatefulWidget {
   State<FestivalDiaryWidget> createState() => FestivalDiaryWidgetState();
 }
 
-class FestivalDiaryWidgetState extends State<FestivalDiaryWidget> {
+class FestivalDiaryWidgetState extends State<FestivalDiaryWidget>
+    with RefreshableSection<FestivalDiaryWidget> {
   final _diaryService = sl<FestivalDiaryService>();
   List<FestivalDiaryModel>? _diaries;
   bool _isLoading = true;
@@ -32,7 +34,8 @@ class FestivalDiaryWidgetState extends State<FestivalDiaryWidget> {
     _load();
   }
 
-  void refresh() => _load();
+  @override
+  Future<void> refreshSection() => _load();
 
   Future<void> _load() async {
     setState(() { _isLoading = true; _hasError = false; });

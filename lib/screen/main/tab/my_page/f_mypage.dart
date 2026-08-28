@@ -3,6 +3,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
+import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/common/widget/w_adaptive_refresh_view.dart';
 import 'package:feple/screen/main/tab/my_page/w_festival_certification.dart';
 import 'package:feple/screen/main/tab/my_page/w_festival_diary.dart';
@@ -23,11 +24,7 @@ class MyPageFragment extends StatefulWidget {
 }
 
 class _MyPageFragmentState extends State<MyPageFragment> with NavigationGuard {
-  final _profileKey = GlobalKey<ProfileWidgetState>();
-  final _statsKey = GlobalKey<MyPostCommentViewState>();
-  final _certKey = GlobalKey<FestivalCertificationWidgetState>();
-  final _diaryKey = GlobalKey<FestivalDiaryWidgetState>();
-  final _songsKey = GlobalKey<MySongRequestsViewState>();
+  final _refresh = RefreshCoordinator();
 
   @override
   void initState() {
@@ -43,13 +40,7 @@ class _MyPageFragmentState extends State<MyPageFragment> with NavigationGuard {
 
   void _onAppResumed() => unawaited(_onRefresh());
 
-  Future<void> _onRefresh() async {
-    _profileKey.currentState?.refresh();
-    unawaited(_statsKey.currentState?.refresh());
-    _certKey.currentState?.refresh();
-    _diaryKey.currentState?.refresh();
-    _songsKey.currentState?.refresh();
-  }
+  Future<void> _onRefresh() => _refresh.refreshAll();
 
   @override
   Widget build(BuildContext context) {
@@ -74,14 +65,17 @@ class _MyPageFragmentState extends State<MyPageFragment> with NavigationGuard {
                 indicatorColor: colors.activate,
                 onRefresh: _onRefresh,
                 padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
-                child: Column(
-                  children: [
-                    ProfileWidget(key: _profileKey, userId: userId),
-                    MyPostCommentView(key: _statsKey, userId: userId),
-                    FestivalCertificationWidget(key: _certKey),
-                    FestivalDiaryWidget(key: _diaryKey),
-                    MySongRequestsView(key: _songsKey),
-                  ],
+                child: RefreshScope(
+                  coordinator: _refresh,
+                  child: Column(
+                    children: [
+                      ProfileWidget(userId: userId),
+                      MyPostCommentView(userId: userId),
+                      const FestivalCertificationWidget(),
+                      const FestivalDiaryWidget(),
+                      const MySongRequestsView(),
+                    ],
+                  ),
                 ),
               ),
             ),

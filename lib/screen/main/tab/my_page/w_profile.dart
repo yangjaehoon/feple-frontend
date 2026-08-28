@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_level_badge.dart';
@@ -22,7 +23,8 @@ class ProfileWidget extends StatefulWidget {
   State<ProfileWidget> createState() => ProfileWidgetState();
 }
 
-class ProfileWidgetState extends State<ProfileWidget> {
+class ProfileWidgetState extends State<ProfileWidget>
+    with RefreshableSection<ProfileWidget> {
   bool _fetched = false;
   bool _hasError = false;
 
@@ -35,7 +37,8 @@ class ProfileWidgetState extends State<ProfileWidget> {
     }
   }
 
-  void refresh() => _fetchUser();
+  @override
+  Future<void> refreshSection() => _fetchUser();
 
   Future<void> _fetchUser() async {
     final hadCachedUser = context.read<UserProvider>().user != null;

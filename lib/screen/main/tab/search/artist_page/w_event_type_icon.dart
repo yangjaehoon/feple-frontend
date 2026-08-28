@@ -1,4 +1,5 @@
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/screen/main/tab/search/artist_page/event_type_style.dart';
 import 'package:flutter/material.dart';
 
@@ -8,10 +9,10 @@ class EventTypeIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.sizeOf(context).width;
+    final rs = ResponsiveSize(context);
     return Container(
-      width: screenWidth * (42 / 390),
-      height: screenWidth * (60 / 390),
+      width: rs.w(42),
+      height: rs.w(60),
       decoration: BoxDecoration(
         color: config.color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),

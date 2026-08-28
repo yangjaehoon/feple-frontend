@@ -61,15 +61,15 @@ class SearchFestivalTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final screenWidth = MediaQuery.sizeOf(context).width;
+    final rs = ResponsiveSize(context);
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       leading: ClipRRect(
         borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
         child: SizedBox(
-          width: screenWidth * (44 / 390),
-          height: screenWidth * (66 / 390),
+          width: rs.w(44),
+          height: rs.w(66),
           child: data.posterUrl.isNotEmpty
               ? CachedNetworkImage(
                   imageUrl: data.posterUrl,

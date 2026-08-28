@@ -178,7 +178,6 @@ class _ArtistFullTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     final isEnglish = context.isEnglish;
-    final screenWidth = MediaQuery.sizeOf(context).width;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
@@ -188,17 +187,21 @@ class _ArtistFullTile extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _buildHeaderRow(isEnglish, colors, screenWidth),
+          _buildHeaderRow(context, isEnglish, colors),
           if (isExpanded) ...[
             Divider(height: 1, color: colors.listDivider),
-            _buildSongList(colors, screenWidth),
+            _buildSongList(context, colors),
           ],
         ],
       ),
     );
   }
 
-  Widget _buildHeaderRow(bool isEnglish, AbstractThemeColors colors, double screenWidth) {
+  Widget _buildHeaderRow(
+    BuildContext context,
+    bool isEnglish,
+    AbstractThemeColors colors,
+  ) {
     return Row(
       children: [
         Expanded(
@@ -221,7 +224,7 @@ class _ArtistFullTile extends StatelessWidget {
                   children: [
                     SetlistArtistAvatar(
                       profileImageUrl: entry.profileImageUrl,
-                      size: screenWidth * (40 / 390),
+                      size: ResponsiveSize(context).w(40),
                     ),
                     const SizedBox(width: AppDimens.space12),
                     Expanded(child: _buildArtistInfo(isEnglish, colors)),
@@ -285,7 +288,7 @@ class _ArtistFullTile extends StatelessWidget {
     );
   }
 
-  Widget _buildSongList(AbstractThemeColors colors, double screenWidth) {
+  Widget _buildSongList(BuildContext context, AbstractThemeColors colors) {
     if (entry.songs.isEmpty) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
@@ -302,13 +305,18 @@ class _ArtistFullTile extends StatelessWidget {
       children: entry.songs
           .asMap()
           .entries
-          .map((e) => _buildSongRow(e.value, e.key, colors, screenWidth))
+          .map((e) => _buildSongRow(context, e.value, e.key, colors))
           .toList(),
     );
   }
 
-  Widget _buildSongRow(SongModel song, int index, AbstractThemeColors colors, double screenWidth) {
-    final thumbSize = screenWidth * (38 / 390);
+  Widget _buildSongRow(
+    BuildContext context,
+    SongModel song,
+    int index,
+    AbstractThemeColors colors,
+  ) {
+    final thumbSize = ResponsiveSize(context).w(38);
     return InkWell(
       onTap: () => onSongTap(song.youtubeUrl),
       child: Padding(

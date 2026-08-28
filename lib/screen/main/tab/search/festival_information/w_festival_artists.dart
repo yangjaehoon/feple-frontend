@@ -130,7 +130,7 @@ class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
     }
     final hasMore = displayed.length > _maxVisible;
     final visible = hasMore ? displayed.sublist(0, _maxVisible) : displayed;
-    final rowHeight = MediaQuery.sizeOf(context).width * 0.205; // 80/390
+    final rowHeight = boundedResponsiveSize(context, 80);
     return SizedBox(
       height: rowHeight,
       child: ListView.separated(
@@ -239,10 +239,9 @@ class FestivalArtistsState extends State<FestivalArtists> with NavigationGuard {
   }
 
   Widget _buildSkeletonRow() {
-    final screenWidth = MediaQuery.sizeOf(context).width;
     final avatarSize = boundedResponsiveSize(context, 56);
     return SizedBox(
-      height: screenWidth * 0.205, // 80/390
+      height: boundedResponsiveSize(context, 80),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const NeverScrollableScrollPhysics(),

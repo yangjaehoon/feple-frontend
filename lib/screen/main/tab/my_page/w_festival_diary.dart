@@ -82,7 +82,7 @@ class FestivalDiaryWidgetState extends State<FestivalDiaryWidget> {
           ErrorState(message: 'load_error'.tr(), onRetry: _load)
         else
           SizedBox(
-            height: MediaQuery.sizeOf(context).width * 0.385,
+            height: ResponsiveSize(context).w(150),
             child: _isLoading
                 ? _buildSkeletonList()
                 : _diaries == null || _diaries!.isEmpty
@@ -181,7 +181,7 @@ class FestivalDiaryWidgetState extends State<FestivalDiaryWidget> {
             ),
             const SizedBox(height: AppDimens.space4),
             SizedBox(
-              width: MediaQuery.sizeOf(context).width * 0.272,
+              width: ResponsiveSize(context).w(106),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [

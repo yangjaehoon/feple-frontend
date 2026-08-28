@@ -236,7 +236,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
   }
 
   Widget _buildAvatarRing(String? profileImageUrl, AbstractThemeColors colors) {
-    final avatarSize = MediaQuery.sizeOf(context).width * 0.282; // 110/390
+    final avatarSize = ResponsiveSize(context).w(110);
     return ProfileAvatarRing(
       size: avatarSize,
       child: CircleAvatar(

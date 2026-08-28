@@ -19,8 +19,8 @@ class ResponsiveSize {
   final double screenHeight;
 
   ResponsiveSize(BuildContext context)
-      : screenWidth = MediaQuery.of(context).size.width,
-        screenHeight = MediaQuery.of(context).size.height;
+      : screenWidth = MediaQuery.sizeOf(context).width,
+        screenHeight = MediaQuery.sizeOf(context).height;
 
   /// 너비 기반 비율 (패딩, 마진, 아이콘 크기 등)
   double w(double value) => value * screenWidth / _designWidth;

@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_level_badge.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -118,7 +119,7 @@ class ProfileWidgetState extends State<ProfileWidget> {
   }
 
   Widget _buildSkeleton() {
-    final avatarSize = MediaQuery.sizeOf(context).width * 0.282; // 110/390
+    final avatarSize = ResponsiveSize(context).w(110);
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
       child: Column(
@@ -146,7 +147,7 @@ class ProfileWidgetState extends State<ProfileWidget> {
   }
 
   Widget _buildProfileImage(AppUser user, AbstractThemeColors colors) {
-    final avatarSize = MediaQuery.sizeOf(context).width * 0.282; // 110/390
+    final avatarSize = ResponsiveSize(context).w(110);
     return ProfileAvatarRing(
       size: avatarSize,
       child: CircleAvatar(

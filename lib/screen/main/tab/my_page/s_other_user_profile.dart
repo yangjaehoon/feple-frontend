@@ -31,6 +31,7 @@ import 'package:feple/service/report_service.dart';
 import 'package:feple/service/user_activity_service.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:feple/common/util/block_action_helper.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -318,7 +319,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
     final validImageUrl = (imageUrl != null && imageUrl.isNotEmpty && !imageUrl.contains('feple_logo'))
         ? imageUrl
         : null;
-    final avatarSize = MediaQuery.sizeOf(context).width * 0.282; // 110/390
+    final avatarSize = ResponsiveSize(context).w(110);
     return ProfileAvatarRing(
       size: avatarSize,
       child: validImageUrl != null
@@ -476,7 +477,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
         ),
         const SizedBox(height: AppDimens.space12),
         SizedBox(
-          height: MediaQuery.sizeOf(context).width * 0.385, // 150/390
+          height: ResponsiveSize(context).w(150),
           child: _certifications == null
               ? _buildCertSkeleton()
               : _certifications!.isEmpty
@@ -565,7 +566,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
             ),
             const SizedBox(height: AppDimens.space6),
             SizedBox(
-              width: MediaQuery.sizeOf(context).width * 0.272, // 106/390
+              width: ResponsiveSize(context).w(106),
               child: Text(
                 cert.displayFestivalTitle(isEnglish),
                 style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: colors.textTitle),

@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -52,9 +53,9 @@ class HomeArtistsSection extends StatelessWidget {
     final preview = artists!.take(maxPreview).toList();
     final remaining = artists!.length - maxPreview;
     final showMoreItem = remaining > 0 && onShowMore != null;
-    // 기준 390px: 아티스트 섹션 높이 124(0.318) — avatar 74 + 2줄 이름 26 + 간격 24.
+    // 기준 390px: 아티스트 섹션 높이 124 — avatar 74 + 2줄 이름 26 + 간격 24.
     // 영문 아티스트명(예: "ASH ISLAND")이 한 줄엔 안 들어가 2줄까지 허용.
-    final listHeight = MediaQuery.sizeOf(context).width * 0.318;
+    final listHeight = ResponsiveSize(context).w(124);
     return SizedBox(
       height: listHeight,
       child: ListView.builder(
@@ -76,9 +77,9 @@ class HomeArtistsSection extends StatelessWidget {
   }
 
   Widget _buildSkeleton(BuildContext context) {
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final listHeight = screenWidth * 0.318;
-    final avatarSize = screenWidth * (74 / 390);
+    final rs = ResponsiveSize(context);
+    final listHeight = rs.w(124);
+    final avatarSize = rs.w(74);
     return SizedBox(
       height: listHeight,
       child: ListView.builder(
@@ -113,9 +114,9 @@ class _ShowMoreItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final avatarSize = screenWidth * (74 / 390);
-    final labelWidth = screenWidth * (64 / 390);
+    final rs = ResponsiveSize(context);
+    final avatarSize = rs.w(74);
+    final labelWidth = rs.w(64);
     return TapScale(
       onTap: onTap,
       child: Padding(
@@ -177,7 +178,7 @@ class _ArtistItem extends StatelessWidget {
   String _displayName(BuildContext context) =>
       artist.displayName(context.isEnglish);
 
-  Widget _buildAvatar(AbstractThemeColors colors, double screenWidth) {
+  Widget _buildAvatar(BuildContext context, AbstractThemeColors colors) {
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
@@ -198,7 +199,7 @@ class _ArtistItem extends StatelessWidget {
           color: colors.surface,
         ),
         child: CircleAvatar(
-          radius: screenWidth * (32 / 390),
+          radius: ResponsiveSize(context).w(32),
           backgroundColor: colors.backgroundMain,
           backgroundImage:
               (artist.profileImageUrl != null &&
@@ -225,17 +226,16 @@ class _ArtistItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final screenWidth = MediaQuery.sizeOf(context).width;
     return TapScale(
       onTap: () => onTap(artist),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Column(
           children: [
-            _buildAvatar(colors, screenWidth),
+            _buildAvatar(context, colors),
             const SizedBox(height: AppDimens.space6),
             SizedBox(
-              width: screenWidth * (64 / 390),
+              width: ResponsiveSize(context).w(64),
               child: Text(
                 _displayName(context),
                 style: TextStyle(

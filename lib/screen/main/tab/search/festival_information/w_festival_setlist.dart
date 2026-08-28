@@ -207,7 +207,6 @@ class _ArtistCompactRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final screenWidth = MediaQuery.sizeOf(context).width;
     final topSong = entry.songs.isNotEmpty ? entry.songs.first : null;
     return Column(
       children: [
@@ -217,11 +216,12 @@ class _ArtistCompactRow extends StatelessWidget {
             children: [
               SetlistArtistAvatar(
                 profileImageUrl: entry.profileImageUrl,
-                size: screenWidth * (36 / 390),
+                size: ResponsiveSize(context).w(36),
               ),
               const SizedBox(width: AppDimens.space12),
               Expanded(
-                child: _buildTextColumn(topSong, context.isEnglish, colors, screenWidth),
+                child:
+                    _buildTextColumn(topSong, context.isEnglish, colors, context),
               ),
             ],
           ),
@@ -242,7 +242,7 @@ class _ArtistCompactRow extends StatelessWidget {
     SongModel? topSong,
     bool isEnglish,
     AbstractThemeColors colors,
-    double screenWidth,
+    BuildContext context,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -259,7 +259,7 @@ class _ArtistCompactRow extends StatelessWidget {
         ),
         const SizedBox(height: 3),
         if (topSong != null)
-          _buildTopSongRow(topSong, colors, screenWidth)
+          _buildTopSongRow(topSong, colors, context)
         else
           Text(
             'no_setlist'.tr(),
@@ -272,8 +272,12 @@ class _ArtistCompactRow extends StatelessWidget {
     );
   }
 
-  Widget _buildTopSongRow(SongModel topSong, AbstractThemeColors colors, double screenWidth) {
-    final thumbSize = screenWidth * (20 / 390);
+  Widget _buildTopSongRow(
+    SongModel topSong,
+    AbstractThemeColors colors,
+    BuildContext context,
+  ) {
+    final thumbSize = ResponsiveSize(context).w(20);
     return Row(
       children: [
         if (topSong.thumbnailUrl != null)

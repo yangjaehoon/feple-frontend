@@ -19,9 +19,8 @@ class ArtistCircleImage extends StatelessWidget {
     final colors = context.appColors;
     // w_festival_artists.dart의 가로 스크롤 행에서 쓰이므로 boundedResponsiveSize로
     // 태블릿급 너비에서 항목이 과도하게 넓어지는 걸 막는다(위젯 테스트로 재현·확인).
-    final screenWidth = boundedWidthBasis(context);
-    if (!isFollowed) return _buildPlainImage(colors, screenWidth);
-    return _buildFollowedImage(colors, screenWidth);
+    if (!isFollowed) return _buildPlainImage(context, colors);
+    return _buildFollowedImage(context, colors);
   }
 
   Widget _buildAvatarContent(AbstractThemeColors colors, double size) {
@@ -49,8 +48,8 @@ class ArtistCircleImage extends StatelessWidget {
     return fallback(colors);
   }
 
-  Widget _buildPlainImage(AbstractThemeColors colors, double screenWidth) {
-    final size = screenWidth * (56 / 390);
+  Widget _buildPlainImage(BuildContext context, AbstractThemeColors colors) {
+    final size = boundedResponsiveSize(context, 56);
     return Container(
       width: size,
       height: size,
@@ -69,8 +68,8 @@ class ArtistCircleImage extends StatelessWidget {
     );
   }
 
-  Widget _buildFollowedImage(AbstractThemeColors colors, double screenWidth) {
-    final size = screenWidth * (56 / 390);
+  Widget _buildFollowedImage(BuildContext context, AbstractThemeColors colors) {
+    final size = boundedResponsiveSize(context, 56);
     return Container(
       width: size,
       height: size,
@@ -89,7 +88,9 @@ class ArtistCircleImage extends StatelessWidget {
           color: colors.backgroundMain,
         ),
         padding: const EdgeInsets.all(1.5),
-        child: ClipOval(child: _buildAvatarContent(colors, screenWidth * (48 / 390))),
+        child: ClipOval(
+          child: _buildAvatarContent(colors, boundedResponsiveSize(context, 48)),
+        ),
       ),
     );
   }

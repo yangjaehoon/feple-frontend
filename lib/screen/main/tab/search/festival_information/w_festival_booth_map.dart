@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/permission_rationale.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
@@ -209,7 +210,7 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
     }
     if (_hasError) {
       return SizedBox(
-        height: MediaQuery.sizeOf(context).width * 0.513, // 200/390
+        height: ResponsiveSize(context).w(200),
         child: ErrorState(message: 'load_error'.tr(), onRetry: _fetchBooths),
       );
     }
@@ -229,7 +230,7 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
   }
 
   Widget _buildSkeleton() {
-    final skeletonHeight = MediaQuery.sizeOf(context).width * 0.769; // 300/390
+    final skeletonHeight = ResponsiveSize(context).w(300);
     return SizedBox(
       height: skeletonHeight,
       child: Stack(
@@ -254,7 +255,7 @@ class FestivalBoothMapState extends State<FestivalBoothMap> {
 
   Widget _buildMap() {
     return SizedBox(
-      height: MediaQuery.sizeOf(context).width * 0.872, // 340/390
+      height: ResponsiveSize(context).w(340),
       child: GoogleMap(
         initialCameraPosition: CameraPosition(
           target: _initialPosition,

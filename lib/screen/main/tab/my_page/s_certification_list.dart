@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/util/navigate_after_fetch.dart';
 import 'package:feple/common/util/navigation_guard.dart';
@@ -77,8 +78,8 @@ class _CertificationListScreenState extends State<CertificationListScreen>
         child: Row(
           children: [
             SkeletonBox(
-              width: MediaQuery.sizeOf(context).width * 0.231, // 90/390
-              height: MediaQuery.sizeOf(context).width * 0.231,
+              width: ResponsiveSize(context).w(90),
+              height: ResponsiveSize(context).w(90),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(16),
                 bottomLeft: Radius.circular(16),
@@ -313,7 +314,7 @@ class _CertCardState extends State<_CertCard> with NavigationGuard {
   }
 
   Widget _buildPosterImage(String? posterUrl, AbstractThemeColors colors) {
-    final posterWidth = MediaQuery.sizeOf(context).width * 0.231; // 90/390
+    final posterWidth = ResponsiveSize(context).w(90);
     return GestureDetector(
       onTap: _isLoadingFestival ? null : _navigateToFestival,
       child: ClipRRect(

@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/data/preference/prefs.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
@@ -259,7 +260,7 @@ class _PageContent extends StatelessWidget {
   }
 
   Widget _buildIllustration(BuildContext context) {
-    final outerSize = MediaQuery.sizeOf(context).width * 0.564; // 220/390
+    final outerSize = ResponsiveSize(context).w(220);
     return SizedBox(
       width: outerSize,
       height: outerSize,

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:flutter/material.dart';
 
 /// 인증 카드 그리드(내 프로필/다른 유저 프로필/축제 인증 목록)에서 반복되던
@@ -41,7 +42,7 @@ class CertificationRing extends StatelessWidget {
         padding: const EdgeInsets.all(2),
         decoration: BoxDecoration(shape: BoxShape.circle, color: colors.surface),
         child: CircleAvatar(
-          radius: MediaQuery.sizeOf(context).width * 0.113, // 44/390
+          radius: ResponsiveSize(context).w(44),
           backgroundColor: ringColor.withValues(alpha: 0.15),
           backgroundImage: imageUrl != null
               ? CachedNetworkImageProvider(imageUrl!, maxWidth: 132)

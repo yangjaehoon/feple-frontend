@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
@@ -85,7 +86,7 @@ class FestivalCertificationWidgetState extends State<FestivalCertificationWidget
           ErrorState(message: 'load_error'.tr(), onRetry: _load)
         else
           SizedBox(
-            height: MediaQuery.sizeOf(context).width * 0.385, // 150/390
+            height: ResponsiveSize(context).w(150),
             child: _isLoading
                 ? _buildSkeletonList()
                 : _certifications == null || _certifications!.isEmpty
@@ -99,7 +100,7 @@ class FestivalCertificationWidgetState extends State<FestivalCertificationWidget
   // CertificationRing 실제 렌더 크기(반지름 44/390 + 안쪽 padding 2*2 + 바깥
   // padding 3*2)와 일치시켜 로딩→콘텐츠 전환 시 크기가 튀지 않게 한다.
   double _certRingSize(BuildContext context) =>
-      MediaQuery.sizeOf(context).width * 0.226 + 10;
+      ResponsiveSize(context).w(88) + 10; // 반지름 44/390 * 2 + padding(2*2 + 3*2)
 
   Widget _buildSkeletonList() {
     return ListView.builder(
@@ -211,7 +212,7 @@ class FestivalCertificationWidgetState extends State<FestivalCertificationWidget
             ),
             const SizedBox(height: AppDimens.space4),
             SizedBox(
-              width: MediaQuery.sizeOf(context).width * 0.272, // 106/390
+              width: ResponsiveSize(context).w(106),
               child: Text(
                 cert.displayFestivalTitle(isEnglish),
                 style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: colors.textTitle),

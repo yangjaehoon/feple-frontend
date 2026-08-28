@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/certification_submit_helper.dart';
+import 'package:feple/common/util/debouncer.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
@@ -288,7 +289,7 @@ class _FestivalSearchSheet extends StatefulWidget {
 class _FestivalSearchSheetState extends State<_FestivalSearchSheet> {
   late List<FestivalModel> _filtered;
   final _searchCtrl = TextEditingController();
-  Timer? _debounce;
+  final _debounce = Debouncer(AppDimens.debounceLocalFilter);
 
   @override
   void initState() {
@@ -298,14 +299,13 @@ class _FestivalSearchSheetState extends State<_FestivalSearchSheet> {
 
   @override
   void dispose() {
-    _debounce?.cancel();
+    _debounce.dispose();
     _searchCtrl.dispose();
     super.dispose();
   }
 
   void _onSearch(String query) {
-    _debounce?.cancel();
-    _debounce = Timer(AppDimens.animXFast, () {
+    _debounce.run(() {
       if (mounted) {
         setState(() {
           _filtered = widget.festivals

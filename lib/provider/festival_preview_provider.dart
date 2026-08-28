@@ -1,7 +1,7 @@
-import 'dart:async';
-
+import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/common/stale_tracker.dart';
+import 'package:feple/common/util/debouncer.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
@@ -50,9 +50,8 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
 
   final _staleness = StaleTracker(const Duration(minutes: 5));
 
-  // 연속 필터 변경 시 마지막 변경 후 400ms 뒤에만 API 호출
-  Timer? _filterDebounce;
-  static const _filterDebounceDelay = Duration(milliseconds: 400);
+  // 연속 필터 변경 시 마지막 변경 후 debounceFilter(400ms) 뒤에만 API 호출
+  final _filterDebounce = Debouncer(AppDimens.debounceFilter);
 
   // 필터 변경으로 무효화된 요청의 응답이 늦게 도착해 최신 결과를 덮어쓰지 않도록 가드
   int _generation = 0;
@@ -87,8 +86,7 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
   }
 
   void _scheduleFetch() {
-    _filterDebounce?.cancel();
-    _filterDebounce = Timer(_filterDebounceDelay, _clearAndFetch);
+    _filterDebounce.run(_clearAndFetch);
     safeNotify(); // 칩 상태 즉시 반영
   }
 
@@ -177,7 +175,7 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
 
   @override
   void dispose() {
-    _filterDebounce?.cancel();
+    _filterDebounce.dispose();
     super.dispose();
   }
 }

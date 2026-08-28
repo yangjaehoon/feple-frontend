@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/debouncer.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/util/text_highlight.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
@@ -40,7 +41,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
   final _recentSearchStore = RecentSearchStore();
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
-  Timer? _debounce;
+  final _debounce = Debouncer(AppDimens.debounceSearch);
   late final TabController _tabController;
 
   bool _isLoading = false;
@@ -94,15 +95,12 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     // setState 대신 필드만 갱신 — _controller 자체가 이미 Listenable이라 build()의
     // AnimatedBuilder가 이 변경을 감지해서 본문만 다시 그림 (검색바는 그대로 유지)
     _searched = false;
-    _debounce?.cancel();
     if (_controller.text.trim().isEmpty) {
+      _debounce.cancel();
       _suggestionsNotifier.value = [];
       return;
     }
-    _debounce = Timer(
-      AppDimens.animNormal,
-      () => _fetchSuggestions(_controller.text.trim()),
-    );
+    _debounce.run(() => _fetchSuggestions(_controller.text.trim()));
   }
 
   Future<void> _fetchSuggestions(String keyword) async {
@@ -120,7 +118,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
   Future<void> _search(String keyword) async {
     if (keyword.trim().isEmpty) return;
     final requestId = ++_searchRequestId;
-    _debounce?.cancel();
+    _debounce.cancel();
     _focusNode.unfocus();
     _suggestionsNotifier.value = [];
     setState(() {
@@ -162,7 +160,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     // 직전 text/selection 변경으로 예약된 자동완성 재조회를 취소 — 그대로 두면
     // 상세 화면으로 이동한 뒤 백그라운드에서 실행되어, 돌아왔을 때 방금 선택한
     // 항목의 자동완성 목록이 엉뚱하게 다시 떠 있게 됨
-    _debounce?.cancel();
+    _debounce.cancel();
     await guardedNavigate(() async {
       _focusNode.unfocus();
       setState(() => _navigatingSuggestionId = suggestion.id);
@@ -192,7 +190,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
 
   @override
   void dispose() {
-    _debounce?.cancel();
+    _debounce.dispose();
     _tabController.dispose();
     _controller.removeListener(_onTextChanged);
     _controller.dispose();

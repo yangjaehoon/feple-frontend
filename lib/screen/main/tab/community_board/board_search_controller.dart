@@ -1,7 +1,6 @@
-import 'dart:async';
-
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/safe_change_notifier.dart';
+import 'package:feple/common/util/debouncer.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:flutter/foundation.dart';
@@ -16,7 +15,7 @@ class BoardSearchController extends SafeChangeNotifier {
 
   bool _isSearching = false;
   List<Post>? _results;
-  Timer? _debounce;
+  final _debounce = Debouncer(AppDimens.debounceSearch);
   // 응답이 늦게 도착했을 때 이미 지나간 키워드로 최신 결과를 덮어쓰지 않도록 가드
   // (submit이 디바운스를 우회해 즉시 호출되면서 이전 요청과 겹칠 수 있음)
   int _requestId = 0;
@@ -28,12 +27,11 @@ class BoardSearchController extends SafeChangeNotifier {
   bool get isActive => _results != null;
 
   void schedule(String keyword) {
-    _debounce?.cancel();
-    _debounce = Timer(AppDimens.animNormal, () => search(keyword));
+    _debounce.run(() => search(keyword));
   }
 
   Future<void> search(String keyword) async {
-    _debounce?.cancel();
+    _debounce.cancel();
     final requestId = ++_requestId;
     if (keyword.trim().isEmpty) {
       _results = null;
@@ -57,7 +55,7 @@ class BoardSearchController extends SafeChangeNotifier {
   }
 
   void clear() {
-    _debounce?.cancel();
+    _debounce.cancel();
     _results = null;
     _isSearching = false;
     safeNotify();
@@ -65,7 +63,7 @@ class BoardSearchController extends SafeChangeNotifier {
 
   @override
   void dispose() {
-    _debounce?.cancel();
+    _debounce.dispose();
     super.dispose();
   }
 }

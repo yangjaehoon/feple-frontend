@@ -86,4 +86,12 @@ class AppDimens {
   static const Duration animSnackbar = Duration(milliseconds: 2800);
   static const Duration animSlideIn = Duration(milliseconds: 280);
   static const Duration animSlideOut = Duration(milliseconds: 240);
+
+  // ── Debounce (입력 → 호출 지연; 애니메이션 상수를 재사용하지 말 것) ──
+  /// 검색어 입력 → 서버 요청/제안 조회 디바운스.
+  static const Duration debounceSearch = Duration(milliseconds: 300);
+  /// 이미 로드된 목록을 메모리에서 필터링할 때(네트워크 없음) 쓰는 짧은 디바운스.
+  static const Duration debounceLocalFilter = Duration(milliseconds: 150);
+  /// 필터 칩 연타 → 목록 재조회 디바운스 (탭 간격이 넓어 여유를 둠).
+  static const Duration debounceFilter = Duration(milliseconds: 400);
 }

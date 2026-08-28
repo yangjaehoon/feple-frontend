@@ -1,8 +1,10 @@
+import 'package:dio/dio.dart' show CancelToken;
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/common/stale_tracker.dart';
 import 'package:feple/common/util/debouncer.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
+import 'package:feple/common/util/request_scope.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
 
@@ -53,8 +55,13 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
   // 연속 필터 변경 시 마지막 변경 후 debounceFilter(400ms) 뒤에만 API 호출
   final _filterDebounce = Debouncer(AppDimens.debounceFilter);
 
-  // 필터 변경으로 무효화된 요청의 응답이 늦게 도착해 최신 결과를 덮어쓰지 않도록 가드
+  // 필터 변경으로 무효화된 요청의 응답이 늦게 도착해 최신 결과를 덮어쓰지 않도록 가드.
+  // (mock 기반 단위 테스트처럼 취소를 존중하지 않는 fetch 경로에서도 동작)
   int _generation = 0;
+
+  // 필터 변경 시 진행 중이던 실제 네트워크 요청을 중단해 낭비를 없앤다.
+  // (_generation은 결과를 "무시"만 할 뿐, 요청 자체는 계속 나가고 있었음)
+  CancelToken _fetchToken = CancelToken();
 
   void _toggleInSet(
     Set<String> current,
@@ -92,8 +99,11 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
 
   // 필터 변경 확정 후: 즉시 목록 비우고 재요청
   void _clearAndFetch() {
-    // 이전 세대(진행 중이던 요청)를 무효화 — 그 응답이 나중에 와도 결과를 반영하지 않음
+    // 이전 세대(진행 중이던 요청)를 무효화 — 그 응답이 나중에 와도 결과를 반영하지 않고,
+    // 실제 네트워크 요청도 CancelToken으로 중단한다.
     _generation++;
+    _fetchToken.cancel();
+    _fetchToken = CancelToken();
     _items.clear();
     _cachedItems = const [];
     _page = 0;
@@ -123,6 +133,7 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
 
     final wasFirstPage = _page == 0;
     final myGeneration = _generation;
+    final token = _fetchToken;
 
     // 아이템이 없을 때만 전체 로딩 스피너 표시 (items가 있으면 기존 데이터 유지)
     if (wasFirstPage) {
@@ -134,13 +145,16 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
     safeNotify();
 
     try {
-      final result = await _service.fetchPreviews(
-        page: _page,
-        size: _size,
-        includeEnded: true,
-        genres: _selectedGenres.toList(),
-        regions: _selectedRegions.toList(),
-        ageRestrictions: _selectedAgeRestrictions.toList(),
+      final result = await withCancelScope(
+        token,
+        () => _service.fetchPreviews(
+          page: _page,
+          size: _size,
+          includeEnded: true,
+          genres: _selectedGenres.toList(),
+          regions: _selectedRegions.toList(),
+          ageRestrictions: _selectedAgeRestrictions.toList(),
+        ),
       );
       // 응답 도착 전 필터가 바뀌어 이 요청이 무효화됐으면 결과를 버림
       if (myGeneration != _generation) return;
@@ -154,6 +168,8 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
       _page += 1;
       if (wasFirstPage) _staleness.markLoaded();
     } catch (e) {
+      // 필터 변경으로 취소된 요청 — 새 요청이 이미 진행 중이므로 조용히 무시
+      if (isRequestCancelled(e)) return;
       if (myGeneration != _generation) return;
       debugPrint('festival preview error: $e');
       if (_items.isEmpty) {
@@ -176,6 +192,7 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
   @override
   void dispose() {
     _filterDebounce.dispose();
+    _fetchToken.cancel();
     super.dispose();
   }
 }

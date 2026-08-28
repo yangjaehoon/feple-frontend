@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart' show CancelToken;
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/debouncer.dart';
 import 'package:feple/common/util/navigation_guard.dart';
+import 'package:feple/common/util/request_scope.dart';
 import 'package:feple/common/util/text_highlight.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
@@ -48,8 +50,12 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
   bool _searched = false;
   bool _hasError = false;
   // 응답이 늦게 도착했을 때 이미 지나간 키워드로 최신 결과를 덮어쓰지 않도록 가드
+  // (mock 기반 위젯 테스트처럼 취소를 존중하지 않는 경로에서도 동작)
   int _suggestionsRequestId = 0;
   int _searchRequestId = 0;
+  // 새 요청이 이전 요청을 대체할 때 진행 중이던 실제 네트워크 요청을 중단한다.
+  CancelToken _suggestToken = CancelToken();
+  CancelToken _searchToken = CancelToken();
 
   List<Artist> _artists = [];
   List<FestivalPreview> _festivals = [];
@@ -97,6 +103,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     _searched = false;
     if (_controller.text.trim().isEmpty) {
       _debounce.cancel();
+      _suggestToken.cancel();
       _suggestionsNotifier.value = [];
       return;
     }
@@ -105,12 +112,19 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
 
   Future<void> _fetchSuggestions(String keyword) async {
     final requestId = ++_suggestionsRequestId;
+    _suggestToken.cancel();
+    _suggestToken = CancelToken();
+    final token = _suggestToken;
     try {
-      final results = await _searchService.suggestions(keyword);
+      final results = await withCancelScope(
+        token,
+        () => _searchService.suggestions(keyword),
+      );
       if (mounted && requestId == _suggestionsRequestId) {
         _suggestionsNotifier.value = results;
       }
     } catch (e) {
+      if (isRequestCancelled(e)) return;
       debugPrint('[Search] 자동완성 로드 실패: $e');
     }
   }
@@ -119,6 +133,10 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     if (keyword.trim().isEmpty) return;
     final requestId = ++_searchRequestId;
     _debounce.cancel();
+    _suggestToken.cancel(); // 진행 중이던 자동완성 요청 중단
+    _searchToken.cancel();
+    _searchToken = CancelToken();
+    final token = _searchToken;
     _focusNode.unfocus();
     _suggestionsNotifier.value = [];
     setState(() {
@@ -128,7 +146,8 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     });
     await _addRecentSearch(keyword.trim());
     try {
-      final result = await _searchService.search(keyword);
+      final result =
+          await withCancelScope(token, () => _searchService.search(keyword));
       if (mounted && requestId == _searchRequestId) {
         _tabController.animateTo(0);
         setState(() {
@@ -139,6 +158,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
         });
       }
     } catch (e) {
+      if (isRequestCancelled(e)) return;
       debugPrint('[Search] 검색 실패: $e');
       if (mounted && requestId == _searchRequestId) {
         setState(() { _isLoading = false; _hasError = true; });
@@ -161,6 +181,7 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     // 상세 화면으로 이동한 뒤 백그라운드에서 실행되어, 돌아왔을 때 방금 선택한
     // 항목의 자동완성 목록이 엉뚱하게 다시 떠 있게 됨
     _debounce.cancel();
+    _suggestToken.cancel();
     await guardedNavigate(() async {
       _focusNode.unfocus();
       setState(() => _navigatingSuggestionId = suggestion.id);
@@ -191,6 +212,8 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
   @override
   void dispose() {
     _debounce.dispose();
+    _suggestToken.cancel();
+    _searchToken.cancel();
     _tabController.dispose();
     _controller.removeListener(_onTextChanged);
     _controller.dispose();

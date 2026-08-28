@@ -18,3 +18,8 @@ CancelToken? get ambientCancelToken {
   final token = Zone.current[_cancelTokenZoneKey];
   return token is CancelToken ? token : null;
 }
+
+/// [withCancelScope]의 토큰 취소로 인해 발생한 에러인지. 최신요청 가드가
+/// 취소된 요청의 에러를 사용자 에러로 오인해 표시하지 않도록 걸러낼 때 쓴다.
+bool isRequestCancelled(Object error) =>
+    error is DioException && CancelToken.isCancel(error);

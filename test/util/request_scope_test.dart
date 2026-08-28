@@ -26,4 +26,23 @@ void main() {
 
     expect(identical(await withCancelScope(token, deep), token), true);
   });
+
+  group('isRequestCancelled', () {
+    test('type이 cancel인 DioException이면 true', () {
+      final err = DioException(
+        requestOptions: RequestOptions(path: '/x'),
+        type: DioExceptionType.cancel,
+      );
+      expect(isRequestCancelled(err), isTrue);
+    });
+
+    test('일반 네트워크 에러나 다른 예외면 false', () {
+      final netErr = DioException(
+        requestOptions: RequestOptions(path: '/x'),
+        type: DioExceptionType.connectionError,
+      );
+      expect(isRequestCancelled(netErr), isFalse);
+      expect(isRequestCancelled(Exception('boom')), isFalse);
+    });
+  });
 }

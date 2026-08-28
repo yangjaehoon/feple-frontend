@@ -3,6 +3,7 @@ import 'dart:async' show unawaited;
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/model/festival_preview_page.dart';
+import 'package:feple/common/util/response_parsing.dart';
 import 'package:feple/model/spring_page.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/service/cache_fallback_fetcher.dart';
@@ -40,9 +41,9 @@ class FestivalService {
     final items = await fetchWithCacheFallback<FestivalPreview>(
       request: () => DioClient.dio.get('/festivals/page', queryParameters: params),
       parse: (data) {
-        final map = data as Map<String, dynamic>;
+        final map = data is Map<String, dynamic> ? data : const <String, dynamic>{};
         hasMore = springPageHasMore(map['page'] as Map<String, dynamic>?);
-        return (map['content'] as List)
+        return extractJsonList(data)
             .map((e) => FestivalPreview.fromJson(e as Map<String, dynamic>))
             .toList();
       },
@@ -57,7 +58,7 @@ class FestivalService {
 
   Future<FestivalModel> fetchById(int festivalId) async {
     final response = await DioClient.dio.get('/festivals/$festivalId');
-    return FestivalModel.fromJson(response.data as Map<String, dynamic>);
+    return FestivalModel.fromJson(extractJsonMap(response.data));
   }
 
   Future<List<FestivalModel>> fetchAll() async {

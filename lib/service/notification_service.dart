@@ -1,3 +1,4 @@
+import 'package:feple/common/util/response_parsing.dart';
 import 'package:feple/model/notification_model.dart';
 import 'package:feple/model/notification_page.dart';
 import 'package:feple/model/spring_page.dart';
@@ -17,8 +18,10 @@ class NotificationService implements NotificationCountable, NotificationFeedable
     if (group != null) params['typeGroup'] = group;
 
     final response = await DioClient.dio.get('/notifications', queryParameters: params);
-    final data = response.data as Map<String, dynamic>;
-    final items = (data['content'] as List)
+    final data = response.data is Map<String, dynamic>
+        ? response.data as Map<String, dynamic>
+        : const <String, dynamic>{};
+    final items = extractJsonList(response.data)
         .map((e) => NotificationModel.fromJson(e as Map<String, dynamic>))
         .toList();
     final hasMore = springPageHasMore(data['page'] as Map<String, dynamic>?);
@@ -28,7 +31,7 @@ class NotificationService implements NotificationCountable, NotificationFeedable
   @override
   Future<int> getUnreadCount() async {
     final response = await DioClient.dio.get('/notifications/unread-count');
-    return (response.data['count'] as num?)?.toInt() ?? 0;
+    return (extractJsonMap(response.data)['count'] as num?)?.toInt() ?? 0;
   }
 
   @override

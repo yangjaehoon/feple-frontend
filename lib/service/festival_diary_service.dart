@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:feple/common/util/image_upload_helper.dart';
 import 'package:feple/model/festival_diary_model.dart';
 import 'package:feple/model/festival_diary_page.dart';
+import 'package:feple/common/util/response_parsing.dart';
 import 'package:feple/network/dio_client.dart';
 
 class FestivalDiaryService {
@@ -43,7 +44,7 @@ class FestivalDiaryService {
   /// 일기 상세 조회
   Future<FestivalDiaryModel> getDiary(int diaryId) async {
     final response = await DioClient.dio.get('/diaries/$diaryId');
-    return FestivalDiaryModel.fromJson(response.data as Map<String, dynamic>);
+    return FestivalDiaryModel.fromJson(extractJsonMap(response.data));
   }
 
   /// 일기 내용/공개범위 수정
@@ -63,6 +64,6 @@ class FestivalDiaryService {
       '/diaries/user/$userId/public',
       queryParameters: {'page': page},
     );
-    return FestivalDiaryPage.fromJson(response.data as Map<String, dynamic>);
+    return FestivalDiaryPage.fromJson(extractJsonMap(response.data));
   }
 }

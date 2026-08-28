@@ -4,6 +4,7 @@ import 'package:feple/model/my_certification_status.dart';
 import 'package:feple/model/certification_model.dart';
 import 'package:feple/model/festival_rating_summary.dart';
 import 'package:feple/model/festival_review_page.dart';
+import 'package:feple/common/util/response_parsing.dart';
 import 'package:feple/network/dio_client.dart';
 
 class CertificationService {
@@ -43,7 +44,7 @@ class CertificationService {
       '/certifications/cert-state',
       queryParameters: {'festivalId': festivalId},
     );
-    return MyCertificationStatus.fromJson(response.data as Map<String, dynamic>);
+    return MyCertificationStatus.fromJson(extractJsonMap(response.data));
   }
 
   /// 인증된 페스티벌에 별점 및 한줄 후기 제출
@@ -60,7 +61,7 @@ class CertificationService {
       '/certifications/festival/$festivalId/reviews',
       queryParameters: {'page': page},
     );
-    return FestivalReviewPage.fromJson(response.data as Map<String, dynamic>);
+    return FestivalReviewPage.fromJson(extractJsonMap(response.data));
   }
 
   /// 리뷰 추천 토글 (command only — CQS. 호출자에서 낙관적 업데이트 사용)
@@ -70,6 +71,6 @@ class CertificationService {
   /// 페스티벌의 평균 별점 및 평가 수 조회
   Future<FestivalRatingSummary> getFestivalRating(int festivalId) async {
     final response = await DioClient.dio.get('/certifications/festival/$festivalId/rating');
-    return FestivalRatingSummary.fromJson(response.data as Map<String, dynamic>);
+    return FestivalRatingSummary.fromJson(extractJsonMap(response.data));
   }
 }

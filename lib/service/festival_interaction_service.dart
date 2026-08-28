@@ -1,3 +1,4 @@
+import 'package:feple/common/util/response_parsing.dart';
 import 'package:feple/network/dio_client.dart';
 
 class FestivalInteractionService {
@@ -15,6 +16,6 @@ class FestivalInteractionService {
 
   Future<bool> _fetchBool(String endpoint) async {
     final response = await DioClient.dio.get(endpoint);
-    return response.data as bool;
+    return parseBoolBody(response.data);
   }
 }

@@ -2,6 +2,7 @@ import 'package:feple/common/constant/board_types.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/model/post_draft.dart';
 import 'package:feple/model/post_model.dart';
+import 'package:feple/common/util/response_parsing.dart';
 import 'package:feple/network/dio_client.dart';
 
 export 'package:feple/model/post_draft.dart';
@@ -53,22 +54,23 @@ class PostService {
   /// 게시글 단건 조회
   Future<Post> fetchPost(int postId) async {
     final response = await DioClient.dio.get('/posts/$postId');
-    return Post.fromJson(response.data as Map<String, dynamic>);
+    return Post.fromJson(extractJsonMap(response.data));
   }
 
   /// 게시글 좋아요·스크랩 수 조회 (query only)
   Future<({int likeCount, int scrapCount})> fetchCounts(int postId) async {
     final response = await DioClient.dio.get('/posts/$postId');
+    final data = extractJsonMap(response.data);
     return (
-      likeCount: (response.data['likeCount'] as num?)?.toInt() ?? 0,
-      scrapCount: (response.data['scrapCount'] as num?)?.toInt() ?? 0,
+      likeCount: (data['likeCount'] as num?)?.toInt() ?? 0,
+      scrapCount: (data['scrapCount'] as num?)?.toInt() ?? 0,
     );
   }
 
   /// 내가 이 게시글을 좋아요 했는지 조회 (query only)
   Future<bool> isLiked(int postId) async {
     final response = await DioClient.dio.get('/posts/$postId/liked');
-    return response.data as bool;
+    return parseBoolBody(response.data);
   }
 
   /// 좋아요 토글 (command only — CQS)
@@ -143,7 +145,7 @@ class PostService {
       'size': size,
       'sort': ?sort,
     });
-    return PostCursorPage.fromJson(response.data as Map<String, dynamic>);
+    return PostCursorPage.fromJson(extractJsonMap(response.data));
   }
 
   /// 게시판 내 키워드 검색

@@ -1,5 +1,6 @@
 import 'package:feple/model/notice_model.dart';
 import 'package:feple/model/notice_page.dart';
+import 'package:feple/common/util/response_parsing.dart';
 import 'package:feple/network/dio_client.dart';
 
 class NoticeService {
@@ -9,12 +10,12 @@ class NoticeService {
       '/notices',
       queryParameters: {'page': page},
     );
-    return NoticePage.fromJson(response.data as Map<String, dynamic>);
+    return NoticePage.fromJson(extractJsonMap(response.data));
   }
 
   /// 공지사항 상세 조회
   Future<NoticeModel> getNotice(int id) async {
     final response = await DioClient.dio.get('/notices/$id');
-    return NoticeModel.fromJson(response.data as Map<String, dynamic>);
+    return NoticeModel.fromJson(extractJsonMap(response.data));
   }
 }

@@ -1,4 +1,5 @@
 import 'package:feple/model/post_model.dart';
+import 'package:feple/common/util/response_parsing.dart';
 import 'package:feple/network/dio_client.dart';
 
 class ScrapService {
@@ -9,7 +10,7 @@ class ScrapService {
   /// 특정 게시글 스크랩 여부 조회
   Future<bool> isScraped(int postId) async {
     final response = await DioClient.dio.get('/posts/$postId/scraped');
-    return response.data as bool;
+    return parseBoolBody(response.data);
   }
 
   /// 내 스크랩 목록 조회

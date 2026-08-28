@@ -26,6 +26,21 @@ Map<String, dynamic> extractJsonMap(dynamic data) {
   return decoded;
 }
 
+/// 불리언 응답 바디를 정규화한다. `true`/`false`, `"true"`/`"false"` 문자열,
+/// `{"value": true}` / `{"liked": true}` / `{"scrapped": true}` 래핑, `null`(→false),
+/// `204 No Content`(data == null → false) 를 모두 처리한다.
+/// (예전엔 `response.data as bool` 하드 캐스트라 위 경우들에서 즉시 크래시)
+bool parseBoolBody(dynamic data) {
+  final decoded = data is String ? _tryDecode(data) : data;
+  if (decoded is bool) return decoded;
+  if (decoded is String) return decoded.toLowerCase() == 'true';
+  if (decoded is Map) {
+    final inner = decoded['value'] ?? decoded['liked'] ?? decoded['scrapped'];
+    if (inner is bool) return inner;
+  }
+  return false;
+}
+
 dynamic _tryDecode(String s) {
   try {
     return jsonDecode(s);

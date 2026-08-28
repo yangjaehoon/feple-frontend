@@ -4,6 +4,7 @@ import 'package:feple/model/festival_setlist_entry.dart';
 import 'package:feple/model/ticket_link.dart';
 import 'package:feple/model/timetable_entry.dart';
 import 'package:feple/model/weather_model.dart';
+import 'package:feple/common/util/response_parsing.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/service/cache_fallback_fetcher.dart';
 import 'package:feple/service/festival_artists_fetcher.dart';
@@ -20,7 +21,7 @@ class FestivalDetailService
   Future<List<FestivalArtistItem>> fetchFestivalArtists(int festivalId) =>
       fetchWithCacheFallback(
         request: () => DioClient.dio.get('/festivals/$festivalId/artists'),
-        parse: (data) => (data as List)
+        parse: (data) => extractJsonList(data)
             .map((e) => FestivalArtistItem.fromJson(e as Map<String, dynamic>))
             .toList(),
         save: (items) => _cache.saveArtists(festivalId, items),
@@ -57,13 +58,13 @@ class FestivalDetailService
     final response =
         await DioClient.dio.get('/festivals/$festivalId/weather');
     if (response.statusCode == 204 || response.data == null) return null;
-    return WeatherModel.fromJson(response.data as Map<String, dynamic>);
+    return WeatherModel.fromJson(extractJsonMap(response.data));
   }
 
   Future<List<FestivalSetlistEntry>> fetchSetlist(int festivalId) =>
       fetchWithCacheFallback(
         request: () => DioClient.dio.get('/festivals/$festivalId/setlist'),
-        parse: (data) => (data as List)
+        parse: (data) => extractJsonList(data)
             .map((e) => FestivalSetlistEntry.fromJson(e as Map<String, dynamic>))
             .toList(),
         save: (items) => _cache.saveSetlist(festivalId, items),
@@ -76,7 +77,7 @@ class FestivalDetailService
   Future<List<TicketLink>> fetchTicketLinks(int festivalId) async {
     final response =
         await DioClient.dio.get('/festivals/$festivalId/ticket-links');
-    return (response.data as List)
+    return extractJsonList(response.data)
         .map((e) => TicketLink.fromJson(e as Map<String, dynamic>))
         .toList();
   }

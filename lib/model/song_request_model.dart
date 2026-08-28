@@ -39,7 +39,7 @@ class SongRequestModel {
       id: (json['id'] as num).toInt(),
       songTitle: json['songTitle'] as String,
       youtubeUrl: json['youtubeUrl'] as String?,
-      status: _parseStatus(json['status'] as String),
+      status: _parseStatus(json['status'] as String?),
       createdAt: json['createdAt'] as String?,
       artistId: json['artistId'] as int?,
       artistName: json['artistName'] as String?,
@@ -47,9 +47,11 @@ class SongRequestModel {
     );
   }
 
-  static SongRequestStatus _parseStatus(String raw) => switch (raw) {
+  // 알 수 없는/누락된 값은 pending으로 폴백 (가장 보수적인 상태).
+  static SongRequestStatus _parseStatus(String? raw) => switch (raw) {
+    'PENDING' => SongRequestStatus.pending,
     'APPROVED' => SongRequestStatus.approved,
     'REJECTED' => SongRequestStatus.rejected,
-    _          => SongRequestStatus.pending,
+    _ => SongRequestStatus.pending,
   };
 }

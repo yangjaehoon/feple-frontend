@@ -6,10 +6,13 @@ enum SkyCode {
   const SkyCode(this.value);
   final String value;
 
-  static SkyCode fromValue(String? value) => SkyCode.values.firstWhere(
-        (s) => s.value == value,
-        orElse: () => SkyCode.sunny,
-      );
+  /// 매칭되는 값이 없으면 null. 호출부가 폴백을 정한다.
+  static SkyCode? fromValue(String? value) {
+    for (final code in SkyCode.values) {
+      if (code.value == value) return code;
+    }
+    return null;
+  }
 }
 
 enum PtyCode {
@@ -22,10 +25,13 @@ enum PtyCode {
   const PtyCode(this.value);
   final String value;
 
-  static PtyCode fromValue(String? value) => PtyCode.values.firstWhere(
-        (s) => s.value == value,
-        orElse: () => PtyCode.none,
-      );
+  /// 매칭되는 값이 없으면 null. 호출부가 폴백을 정한다.
+  static PtyCode? fromValue(String? value) {
+    for (final code in PtyCode.values) {
+      if (code.value == value) return code;
+    }
+    return null;
+  }
 }
 
 class WeatherModel {
@@ -51,8 +57,8 @@ class WeatherModel {
       minTemp: (json['minTemp'] as num?)?.toDouble() ?? 0,
       maxTemp: (json['maxTemp'] as num?)?.toDouble() ?? 0,
       rainProb: (json['rainProb'] as num?)?.toInt() ?? 0,
-      skyCode: SkyCode.fromValue(json['skyCode'] as String?),
-      ptyCode: PtyCode.fromValue(json['ptyCode'] as String?),
+      skyCode: SkyCode.fromValue(json['skyCode'] as String?) ?? SkyCode.sunny,
+      ptyCode: PtyCode.fromValue(json['ptyCode'] as String?) ?? PtyCode.none,
     );
   }
 

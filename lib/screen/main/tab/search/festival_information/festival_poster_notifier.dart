@@ -134,12 +134,12 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
   // defaultValue는 descExpanded의 초기값(true)과 동일 — 저장된 값이 없으면
   // 필드를 건드리지 않는 것과 같은 결과가 되도록 맞춤
   Future<void> loadDescState() async {
-    descExpanded = PreferenceItem<bool>(_descPrefKey, true).get();
+    descExpanded = BoolPreferenceItem(_descPrefKey, true).get();
     safeNotify();
   }
 
   Future<void> saveDescState(bool expanded) async {
-    await PreferenceItem<bool>(_descPrefKey, true).set(expanded);
+    await BoolPreferenceItem(_descPrefKey, true).set(expanded);
   }
 
   Future<void> loadMyCertificationStatus() async {

@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/model/artist_model.dart';
-import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
@@ -97,21 +96,7 @@ class SearchFestivalTile extends StatelessWidget {
       onTap: () {
         if (ModalRoute.of(context)?.isCurrent != true) return;
         Navigator.push(context, SlideRoute(
-          builder: (_) => FestivalInformationFragment(
-            poster: FestivalModel(
-              id: data.id,
-              title: data.title,
-              description: data.description,
-              location: data.location,
-              startDate: data.startDate,
-              endDate: data.endDate ?? '',
-              posterUrl: data.posterUrl,
-              latitude: data.latitude,
-              longitude: data.longitude,
-              genres: data.genres,
-              ageRestriction: data.ageRestriction,
-            ),
-          ),
+          builder: (_) => FestivalInformationFragment(poster: data.toModel()),
         ));
       },
     );

@@ -16,7 +16,7 @@ class MyCertificationStatus {
     final state = json['certState'] as String?;
     if (state == null || state == 'NONE') return MyCertificationStatus.none;
     return MyCertificationStatus(
-      status: CertStatus.fromValue(state),
+      status: CertStatus.fromValue(state) ?? CertStatus.pending,
       certId: (json['certId'] as num?)?.toInt(),
       myRating: (json['myRating'] as num?)?.toInt(),
       myReview: json['myReview'] as String?,

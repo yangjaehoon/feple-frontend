@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import '../auth/token_store.dart';
 import '../common/util/forced_refresh.dart';
 import '../common/util/request_scope.dart';
@@ -23,6 +24,31 @@ bool _isNetworkError(DioException e) {
           e.type == DioExceptionType.sendTimeout ||
           e.type == DioExceptionType.receiveTimeout ||
           e.type == DioExceptionType.unknown);
+}
+
+/// refresh 요청 실패가 "일시적"인지(타임아웃·연결오류·서버 5xx) 판단한다.
+/// 일시적 실패는 refresh 토큰이 여전히 유효할 수 있으므로 세션을 유지한다.
+bool _isTransientRefreshFailure(DioException e) {
+  if (_isNetworkError(e)) return true;
+  final status = e.response?.statusCode;
+  return status != null && status >= 500;
+}
+
+enum _RefreshResultKind { refreshed, transientFailure, sessionExpired }
+
+/// 401 → 토큰 갱신 시도의 결과. 대기 중이던 다른 401 요청들에도 이 값이 전달된다.
+class _RefreshResult {
+  const _RefreshResult.refreshed(this.token)
+      : kind = _RefreshResultKind.refreshed;
+  const _RefreshResult.transientFailure()
+      : kind = _RefreshResultKind.transientFailure,
+        token = null;
+  const _RefreshResult.sessionExpired()
+      : kind = _RefreshResultKind.sessionExpired,
+        token = null;
+
+  final _RefreshResultKind kind;
+  final String? token;
 }
 
 const _defaultConnectTimeout = Duration(seconds: 10);
@@ -64,7 +90,36 @@ class DioClient {
 
   // refresh 중복 호출 방지: 진행 중인 refresh가 있으면 완료될 때까지 대기
   static bool _isRefreshing = false;
-  static final List<Completer<String?>> _refreshWaiters = [];
+  static final List<Completer<_RefreshResult>> _refreshWaiters = [];
+
+  // 리프레시 토큰까지 무효일 때의 세션 정리(토큰 삭제 + 로그인 화면 이동)를
+  // 동시 다발 401에 대해 한 번만 수행하기 위한 in-flight 가드.
+  // 이후 토큰 갱신이 다시 성공하면 null로 되돌려, 재로그인 후의 세션 만료도
+  // 정상 처리되게 한다.
+  static Future<void>? _sessionExpiryInFlight;
+
+  @visibleForTesting
+  static void resetForTesting({String? plainDioBaseUrl}) {
+    _isRefreshing = false;
+    _refreshWaiters.clear();
+    _sessionExpiryInFlight = null;
+    if (plainDioBaseUrl != null) {
+      _plainDio.options.baseUrl = plainDioBaseUrl;
+    }
+  }
+
+  /// 리프레시 토큰까지 만료됐을 때의 정리. [_sessionExpiryInFlight]로 감싸
+  /// 동시 요청들이 이 정리를 중복 실행하지 않도록 한다.
+  static Future<void> _handleSessionExpiry() async {
+    try {
+      await TokenStore.clear();
+      await onSessionExpired?.call();
+    } catch (e) {
+      // 정리 실패 시 다음 401에서 재시도할 수 있도록 가드를 해제한다.
+      _sessionExpiryInFlight = null;
+      debugPrint('[DioClient] session expiry cleanup failed: $e');
+    }
+  }
 
   static Future<String?> _refreshAccessToken() async {
     final refreshToken = await TokenStore.readRefreshToken();
@@ -180,37 +235,67 @@ class _AuthAndSwrInterceptor extends Interceptor {
       return handler.next(error);
     }
 
-    // refresh 진행 중이면 완료될 때까지 대기
+    // 이미 세션 만료 정리가 진행/완료된 상태면 재시도 없이 원래 에러를 전파
+    if (DioClient._sessionExpiryInFlight != null) {
+      return handler.next(error);
+    }
+
+    // refresh 진행 중이면 완료될 때까지 대기 후 같은 결과를 공유
     if (DioClient._isRefreshing) {
-      final completer = Completer<String?>();
+      final completer = Completer<_RefreshResult>();
       DioClient._refreshWaiters.add(completer);
-      final newToken = await completer.future;
-      if (newToken == null) return handler.next(error);
-      await _retryWithToken(error, handler, newToken);
+      await _applyRefreshResult(error, handler, await completer.future);
       return;
     }
 
     DioClient._isRefreshing = true;
-    String? newToken;
+    var result = const _RefreshResult.transientFailure();
     try {
-      newToken = await DioClient._refreshAccessToken();
+      final token = await DioClient._refreshAccessToken();
+      result = token == null
+          ? const _RefreshResult.sessionExpired()
+          : _RefreshResult.refreshed(token);
+    } on DioException catch (e) {
+      // 타임아웃·연결오류·5xx는 세션 유지, 그 외(401/400 등)는 만료로 간주
+      result = _isTransientRefreshFailure(e)
+          ? const _RefreshResult.transientFailure()
+          : const _RefreshResult.sessionExpired();
     } catch (_) {
-      // refresh 엔드포인트 오류 — newToken remains null
+      // accessToken 누락 등 예상 못 한 응답 형태 — 만료로 간주
+      result = const _RefreshResult.sessionExpired();
     } finally {
       DioClient._isRefreshing = false;
-      for (final c in DioClient._refreshWaiters) {
-        c.complete(newToken);
-      }
+      final waiters = List<Completer<_RefreshResult>>.of(
+        DioClient._refreshWaiters,
+      );
       DioClient._refreshWaiters.clear();
+      for (final c in waiters) {
+        c.complete(result);
+      }
     }
 
-    // refresh 토큰 없음(null 반환) 또는 refresh 실패(예외) — 두 경우 모두 정리
-    if (newToken == null) {
-      await TokenStore.clear();
-      await DioClient.onSessionExpired?.call();
-      return handler.next(error);
+    await _applyRefreshResult(error, handler, result);
+  }
+
+  /// 토큰 갱신 결과에 따라 재시도 / 세션 유지 / 세션 만료 정리를 수행한다.
+  Future<void> _applyRefreshResult(
+    DioException error,
+    ErrorInterceptorHandler handler,
+    _RefreshResult result,
+  ) async {
+    switch (result.kind) {
+      case _RefreshResultKind.refreshed:
+        DioClient._sessionExpiryInFlight = null;
+        await _retryWithToken(error, handler, result.token!);
+      case _RefreshResultKind.transientFailure:
+        // 리프레시 토큰은 여전히 유효할 수 있음 — 세션을 유지하고 원래 401을
+        // 전파해 호출부/다음 요청이 재시도하도록 둔다.
+        handler.next(error);
+      case _RefreshResultKind.sessionExpired:
+        await (DioClient._sessionExpiryInFlight ??=
+            DioClient._handleSessionExpiry());
+        handler.next(error);
     }
-    await _retryWithToken(error, handler, newToken);
   }
 
   /// 새 액세스 토큰으로 헤더를 갱신해 원래 요청을 재시도한다.

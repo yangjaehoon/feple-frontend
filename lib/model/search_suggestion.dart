@@ -4,8 +4,12 @@ enum SearchType {
   artist,
   festival;
 
-  static SearchType fromValue(String? value) =>
-      value == 'artist' ? SearchType.artist : SearchType.festival;
+  /// 알 수 없는 값이면 null. 호출부가 폴백을 정한다.
+  static SearchType? fromValue(String? value) => switch (value) {
+        'artist' => SearchType.artist,
+        'festival' => SearchType.festival,
+        _ => null,
+      };
 }
 
 class SearchSuggestion {
@@ -19,7 +23,7 @@ class SearchSuggestion {
 
   factory SearchSuggestion.fromJson(Map<String, dynamic> json) => SearchSuggestion(
         json['label'] as String? ?? '',
-        SearchType.fromValue(json['type'] as String?),
+        SearchType.fromValue(json['type'] as String?) ?? SearchType.festival,
         id: (json['id'] as num?)?.toInt(),
         labelEn: json['labelEn'] as String? ?? '',
         imageUrl: json['imageUrl'] as String?,

@@ -1,3 +1,5 @@
+import 'date_format.dart';
+
 class CommentDetail {
   // 작성 직후 서버 응답의 createdAt/updatedAt 미세한 시간차로 "수정됨"이
   // 잘못 표시되지 않도록 하는 임계값
@@ -43,8 +45,8 @@ class CommentDetail {
       nickname: json['nickname'] as String? ?? 'User',
       profileImageUrl: json['profileImageUrl'] as String?,
       content: json['content'] as String,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt'] as String) : null,
+      createdAt: parseServerDateTime(json['createdAt'] as String?),
+      updatedAt: DateTime.tryParse(json['updatedAt'] as String? ?? ''),
       certified: json['certified'] as bool? ?? false,
       userRole: json['userRole'] as String?,
       parentId: json['parentId'] != null ? (json['parentId'] as num).toInt() : null,

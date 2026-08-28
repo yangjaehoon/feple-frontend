@@ -9,10 +9,13 @@ enum CertStatus {
   const CertStatus(this.value);
   final String value;
 
-  static CertStatus fromValue(String? value) => CertStatus.values.firstWhere(
-        (s) => s.value == value,
-        orElse: () => CertStatus.pending,
-      );
+  /// 매칭되는 값이 없으면(미지의/오타 서버 값, null) null. 호출부가 폴백을 정한다.
+  static CertStatus? fromValue(String? value) {
+    for (final status in CertStatus.values) {
+      if (status.value == value) return status;
+    }
+    return null;
+  }
 }
 
 class CertificationModel {
@@ -44,7 +47,8 @@ class CertificationModel {
       CertificationModel(
         id: (json['id'] as num?)?.toInt() ?? 0,
         festivalId: (json['festivalId'] as num?)?.toInt() ?? 0,
-        status: CertStatus.fromValue(json['status'] as String?),
+        status: CertStatus.fromValue(json['status'] as String?) ??
+            CertStatus.pending,
         festivalTitle: json['festivalTitle'] as String? ?? '',
         festivalTitleEn: json['festivalTitleEn'] as String? ?? '',
         posterUrl: json['festivalPosterUrl'] as String? ?? json['photoUrl'] as String?,

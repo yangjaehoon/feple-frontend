@@ -1,5 +1,4 @@
 import 'package:feple/common/data/preference/app_preferences.dart';
-import 'package:feple/common/data/preference/item/nullable_preference_item.dart';
 import 'package:feple/common/data/preference/item/preference_item.dart';
 import 'package:feple/common/theme/custom_theme.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -7,13 +6,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   setUpAll(() async {
-    SharedPreferences.setMockInitialValues({});
+    // _prefs는 late final이라 init은 프로세스당 1회만 가능 — stale 값도 여기서 심는다.
+    SharedPreferences.setMockInitialValues({
+      '${AppPreferences.prefix}staleTheme': 'renamedValue',
+    });
     await AppPreferences.init();
   });
 
-  group('AppPreferences int/String/double/bool/List<String>', () {
+  group('타입별 PreferenceItem', () {
     test('int 값을 저장하고 읽는다', () async {
-      final item = PreferenceItem<int>('testInt', 0);
+      final item = IntPreferenceItem('testInt', 0);
 
       await item.set(42);
 
@@ -21,23 +23,15 @@ void main() {
     });
 
     test('String 값을 저장하고 읽는다', () async {
-      final item = PreferenceItem<String>('testString', '');
+      final item = StringPreferenceItem('testString', '');
 
       await item.set('hello');
 
       expect(item.get(), 'hello');
     });
 
-    test('double 값을 저장하고 읽는다', () async {
-      final item = PreferenceItem<double>('testDouble', 0.0);
-
-      await item.set(3.14);
-
-      expect(item.get(), 3.14);
-    });
-
     test('bool 값을 저장하고 읽는다', () async {
-      final item = PreferenceItem<bool>('testBool', false);
+      final item = BoolPreferenceItem('testBool', false);
 
       await item.set(true);
 
@@ -45,7 +39,7 @@ void main() {
     });
 
     test('List<String> 값을 저장하고 읽는다', () async {
-      final item = PreferenceItem<List<String>>('testList', const []);
+      final item = StringListPreferenceItem('testList', const []);
 
       await item.set(['a', 'b']);
 
@@ -53,41 +47,41 @@ void main() {
     });
 
     test('값이 없으면 기본값을 반환한다', () {
-      final item = PreferenceItem<int>('neverSet', 99);
+      final item = IntPreferenceItem('neverSet', 99);
 
       expect(item.get(), 99);
     });
   });
 
-  group('AppPreferences DateTime', () {
-    test('DateTime 값을 ISO 문자열로 저장하고 파싱해서 읽는다', () async {
-      final item = PreferenceItem<DateTime>('testDate', DateTime(2000));
-      final date = DateTime(2026, 1, 5, 10, 30);
-
-      await item.set(date);
-
-      expect(item.get(), date);
-    });
-  });
-
-  group('AppPreferences Enum', () {
+  group('NullableEnumPreferenceItem', () {
     test('enum 값을 name으로 저장하고 읽는다', () async {
-      final item = PreferenceItem<CustomTheme>('testTheme', CustomTheme.light);
+      final item =
+          NullableEnumPreferenceItem<CustomTheme>('testTheme', CustomTheme.values);
 
       await item.set(CustomTheme.dark);
 
       expect(item.get(), CustomTheme.dark);
     });
-  });
 
-  group('NullablePreferenceItem', () {
-    test('null로 설정하면 값이 제거되고 기본값을 반환한다', () async {
-      final item = NullablePreferenceItem<CustomTheme>('testNullableTheme');
+    test('null로 설정하면 값이 제거되고 기본값(null)을 반환한다', () async {
+      final item = NullableEnumPreferenceItem<CustomTheme>(
+        'testNullableTheme',
+        CustomTheme.values,
+      );
 
       await item.set(CustomTheme.dark);
       expect(item.get(), CustomTheme.dark);
 
       await item.set(null);
+      expect(item.get(), isNull);
+    });
+
+    test('저장된 문자열이 어떤 enum 상수와도 맞지 않으면 null로 폴백한다', () {
+      final item = NullableEnumPreferenceItem<CustomTheme>(
+        'staleTheme',
+        CustomTheme.values,
+      );
+
       expect(item.get(), isNull);
     });
   });

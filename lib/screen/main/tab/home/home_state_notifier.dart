@@ -181,7 +181,7 @@ class HomeStateNotifier extends SafeChangeNotifier {
   Future<void> _persistOrder(String key, List<int> order, VoidCallback notify) async {
     notify();
     try {
-      await PreferenceItem<List<String>>(
+      await StringListPreferenceItem(
         key,
         const [],
       ).set(order.map((e) => e.toString()).toList());
@@ -227,7 +227,7 @@ class HomeStateNotifier extends SafeChangeNotifier {
   Future<List<int>> _loadOrder(String key) async {
     // 저장값이 손상됐을 수 있으므로 파싱 불가 항목은 조용히 스킵 —
     // int.parse는 던져서 loadData 전체(네트워크 로드 포함)를 실패시킴
-    final saved = PreferenceItem<List<String>>(key, const []).get();
+    final saved = StringListPreferenceItem(key, const []).get();
     return saved
         .map(int.tryParse)
         .whereType<int>()

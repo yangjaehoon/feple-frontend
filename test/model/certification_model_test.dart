@@ -15,12 +15,22 @@ void main() {
       expect(CertStatus.fromValue('REJECTED'), CertStatus.rejected);
     });
 
-    test('알 수 없는 값 → CertStatus.pending 폴백', () {
-      expect(CertStatus.fromValue('UNKNOWN'), CertStatus.pending);
+    test('알 수 없는 값 → null (호출부가 폴백)', () {
+      expect(CertStatus.fromValue('UNKNOWN'), isNull);
     });
 
-    test('null → CertStatus.pending 폴백', () {
-      expect(CertStatus.fromValue(null), CertStatus.pending);
+    test('null → null', () {
+      expect(CertStatus.fromValue(null), isNull);
+    });
+
+    test('CertificationModel.fromJson은 알 수 없는 status를 pending으로 폴백', () {
+      final model = CertificationModel.fromJson({
+        'festivalId': 1,
+        'status': 'UNKNOWN',
+        'festivalTitle': '페스티벌',
+      });
+
+      expect(model.status, CertStatus.pending);
     });
   });
 

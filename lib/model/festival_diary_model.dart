@@ -8,10 +8,13 @@ enum DiaryVisibility {
   const DiaryVisibility(this.value);
   final String value;
 
-  static DiaryVisibility fromValue(String? value) => DiaryVisibility.values.firstWhere(
-        (v) => v.value == value,
-        orElse: () => DiaryVisibility.private_,
-      );
+  /// 매칭되는 값이 없으면 null. 호출부가 폴백을 정한다.
+  static DiaryVisibility? fromValue(String? value) {
+    for (final visibility in DiaryVisibility.values) {
+      if (visibility.value == value) return visibility;
+    }
+    return null;
+  }
 }
 
 class FestivalDiaryModel {
@@ -46,7 +49,8 @@ class FestivalDiaryModel {
         festivalTitle: json['festivalTitle'] as String? ?? '',
         festivalTitleEn: json['festivalTitleEn'] as String? ?? '',
         content: json['content'] as String? ?? '',
-        visibility: DiaryVisibility.fromValue(json['visibility'] as String?),
+        visibility: DiaryVisibility.fromValue(json['visibility'] as String?) ??
+            DiaryVisibility.private_,
         photoUrls: (json['photoUrls'] as List?)?.map((e) => e as String).toList() ?? const [],
         createdAt: json['createdAt'] as String?,
         isOwner: json['isOwner'] as bool? ?? true,

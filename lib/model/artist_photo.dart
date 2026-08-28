@@ -1,3 +1,5 @@
+import 'date_format.dart';
+
 class ArtistPhoto {
   final int photoId;
   final String url;
@@ -57,7 +59,7 @@ class ArtistPhoto {
       url: json['url'] as String,
       uploaderUserId: (json['uploaderUserId'] as num?)?.toInt(),
       uploaderNickname: json['uploaderNickname'] as String? ?? '',
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      createdAt: parseServerDateTime(json['createdAt'] as String?),
       title: json['title'] as String? ?? '',
       description: json['description'] as String? ?? '',
       likeCount: (json['likeCount'] as num?)?.toInt() ?? 0,

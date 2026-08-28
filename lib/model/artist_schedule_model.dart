@@ -6,17 +6,13 @@ enum EventType {
   fanMeeting,
   tvShow;
 
-  static EventType fromString(String? value) {
-    switch (value) {
-      case 'FAN_MEETING':
-        return EventType.fanMeeting;
-      case 'TV_SHOW':
-        return EventType.tvShow;
-      case 'FESTIVAL':
-      default:
-        return EventType.festival;
-    }
-  }
+  /// 알 수 없는 값이면 null. 호출부가 폴백을 정한다.
+  static EventType? fromString(String? value) => switch (value) {
+        'FESTIVAL' => EventType.festival,
+        'FAN_MEETING' => EventType.fanMeeting,
+        'TV_SHOW' => EventType.tvShow,
+        _ => null,
+      };
 }
 
 class ArtistScheduleModel {
@@ -67,7 +63,8 @@ class ArtistScheduleModel {
       startDate: json['startDate'] as String?,
       endDate: json['endDate'] as String?,
       posterUrl: json['posterUrl'] as String?,
-      eventType: EventType.fromString(json['eventType'] as String?),
+      eventType: EventType.fromString(json['eventType'] as String?) ??
+          EventType.festival,
       coArtists: (json['coArtists'] as List<dynamic>?)
               ?.map((e) => CoArtistInfo.fromJson(e as Map<String, dynamic>))
               .toList() ??

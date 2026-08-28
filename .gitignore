@@ -124,3 +124,6 @@ libisar.so
 .claude/
 
 assets/secrets.json
+
+# FVM Version Cache
+.fvm/

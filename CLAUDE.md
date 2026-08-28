@@ -6,12 +6,17 @@
 - **인증**: Firebase Auth, 카카오 SDK
 - **지도**: Google Maps
 
+### Flutter 버전
+`.fvmrc`로 **3.44.6에 고정** (CI의 `flutter-version`과 일치). 로컬은 FVM 사용:
+`brew install fvm` 후 아래 명령을 `fvm flutter ...`로 실행. (전역 flutter가
+3.44.6이면 그냥 `flutter`도 무방)
+
 ### 자주 쓰는 명령어
 ```bash
-flutter pub get
-flutter analyze --no-pub       # 에러 확인 (--no-pub로 pub get 생략, 반복 실행 시 더 빠름)
-flutter run
-flutter build appbundle --release  # Play Store 제출용 AAB 빌드
+fvm flutter pub get
+fvm flutter analyze --no-pub   # 에러 확인 (--no-pub로 pub get 생략, 반복 실행 시 더 빠름)
+fvm flutter run
+fvm flutter build appbundle --release  # Play Store 제출용 AAB 빌드
 ```
 
 ### 주요 패턴

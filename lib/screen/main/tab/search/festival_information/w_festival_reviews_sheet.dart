@@ -218,7 +218,8 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
     return NotificationListener<ScrollNotification>(
       onNotification: (n) {
         if (n is ScrollEndNotification &&
-            n.metrics.pixels >= n.metrics.maxScrollExtent - 200) {
+            n.metrics.pixels >=
+                n.metrics.maxScrollExtent - AppDimens.loadMoreTriggerDistance) {
           _load(_page + 1);
         }
         return false;

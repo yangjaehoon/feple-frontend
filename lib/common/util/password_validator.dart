@@ -6,16 +6,16 @@ class PasswordValidator {
   static const int minLength = 8;
   // 과도하게 긴 입력으로 인한 해싱 지연/DoS 방지용 상한 — 백엔드 처리 한도와 맞출 것
   static const int maxLength = 4096;
-  static const String regexUpper = r'[A-Z]';
-  static const String regexLower = r'[a-z]';
-  static const String regexDigit = r'[0-9]';
-  static const String regexSpecial = r'[!@#$%^&*(),.?":{}|<>]';
+  static final RegExp _upper = RegExp(r'[A-Z]');
+  static final RegExp _lower = RegExp(r'[a-z]');
+  static final RegExp _digit = RegExp(r'[0-9]');
+  static final RegExp _special = RegExp(r'[!@#$%^&*(),.?":{}|<>]');
 
   static bool hasMinLength(String pw) => pw.length >= minLength;
-  static bool hasUppercase(String pw) => RegExp(regexUpper).hasMatch(pw);
-  static bool hasLowercase(String pw) => RegExp(regexLower).hasMatch(pw);
-  static bool hasDigit(String pw) => RegExp(regexDigit).hasMatch(pw);
-  static bool hasSpecial(String pw) => RegExp(regexSpecial).hasMatch(pw);
+  static bool hasUppercase(String pw) => _upper.hasMatch(pw);
+  static bool hasLowercase(String pw) => _lower.hasMatch(pw);
+  static bool hasDigit(String pw) => _digit.hasMatch(pw);
+  static bool hasSpecial(String pw) => _special.hasMatch(pw);
 
   static String? validate(String password) {
     final missing = <String>[];

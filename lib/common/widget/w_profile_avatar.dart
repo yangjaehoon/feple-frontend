@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_assets.dart';
 import 'package:feple/common/widget/role_badge_style.dart';
 import 'package:flutter/material.dart';
 
@@ -22,17 +23,14 @@ class ProfileAvatar extends StatelessWidget {
     this.anonymous = false,
   });
 
-  bool get _hasCustomImage {
-    final url = imageUrl;
-    return url != null && !url.contains('feple_logo');
-  }
+  bool get _hasCustomImage => isCustomAvatarUrl(imageUrl);
 
   Widget _buildAvatar(BuildContext context, AbstractThemeColors colors) {
     if (anonymous) {
       return CircleAvatar(
         radius: radius,
         backgroundColor: colors.listDivider,
-        backgroundImage: const AssetImage('assets/image/feple_logo.png'),
+        backgroundImage: const AssetImage(AppAssets.defaultAvatar),
       );
     }
     if (_hasCustomImage) {
@@ -49,7 +47,7 @@ class ProfileAvatar extends StatelessWidget {
     return CircleAvatar(
       radius: radius,
       backgroundColor: colors.backgroundMain,
-      backgroundImage: const AssetImage('assets/image/feple_logo.png'),
+      backgroundImage: const AssetImage(AppAssets.defaultAvatar),
     );
   }
 

@@ -7,18 +7,14 @@ class PasswordChecklist extends StatelessWidget {
   final String password;
   const PasswordChecklist({super.key, required this.password});
 
-  static const _rules = [
-    (label: 'pw_rule_min', regex: null, minLen: PasswordValidator.minLength),
-    (label: 'pw_rule_upper', regex: PasswordValidator.regexUpper, minLen: 0),
-    (label: 'pw_rule_lower', regex: PasswordValidator.regexLower, minLen: 0),
-    (label: 'pw_rule_digit', regex: PasswordValidator.regexDigit, minLen: 0),
-    (label: 'pw_rule_special', regex: PasswordValidator.regexSpecial, minLen: 0),
+  // 규칙 정의는 PasswordValidator가 소유하고, 여기서는 그 판정 함수만 참조한다.
+  static const _rules = <({String label, bool Function(String) satisfied})>[
+    (label: 'pw_rule_min', satisfied: PasswordValidator.hasMinLength),
+    (label: 'pw_rule_upper', satisfied: PasswordValidator.hasUppercase),
+    (label: 'pw_rule_lower', satisfied: PasswordValidator.hasLowercase),
+    (label: 'pw_rule_digit', satisfied: PasswordValidator.hasDigit),
+    (label: 'pw_rule_special', satisfied: PasswordValidator.hasSpecial),
   ];
-
-  bool _check(({String label, String? regex, int minLen}) rule) {
-    if (rule.minLen > 0) return password.length >= rule.minLen;
-    return RegExp(rule.regex!).hasMatch(password);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +28,7 @@ class PasswordChecklist extends StatelessWidget {
       ),
       child: Column(
         children: _rules.map((rule) {
-          final ok = _check(rule);
+          final ok = rule.satisfied(password);
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 3),
             child: Row(

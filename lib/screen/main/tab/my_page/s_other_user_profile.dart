@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_assets.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
@@ -316,9 +317,7 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
   }
 
   Widget _buildProfileImage(String? imageUrl, String nickname, AbstractThemeColors colors) {
-    final validImageUrl = (imageUrl != null && imageUrl.isNotEmpty && !imageUrl.contains('feple_logo'))
-        ? imageUrl
-        : null;
+    final validImageUrl = isCustomAvatarUrl(imageUrl) ? imageUrl : null;
     final avatarSize = ResponsiveSize(context).w(110);
     return ProfileAvatarRing(
       size: avatarSize,

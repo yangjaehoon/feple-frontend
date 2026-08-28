@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_assets.dart';
 import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_error_state.dart';
@@ -159,7 +160,7 @@ class ProfileWidgetState extends State<ProfileWidget>
                 user.profileImageUrl!.isNotEmpty)
             ? CachedNetworkImageProvider(user.profileImageUrl!,
                 maxWidth: 144) as ImageProvider
-            : const AssetImage('assets/image/feple_logo.png'),
+            : const AssetImage(AppAssets.defaultAvatar),
         backgroundColor: colors.backgroundMain,
       ),
     );

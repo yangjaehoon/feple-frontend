@@ -28,7 +28,9 @@ class _ExpandableTextState extends State<ExpandableText> {
       maxLines: widget.maxLines,
       textDirection: Directionality.of(context),
     )..layout(maxWidth: maxWidth);
-    return painter.didExceedMaxLines;
+    final exceeded = painter.didExceedMaxLines;
+    painter.dispose(); // 네이티브 리소스 — build마다 생성되므로 즉시 해제
+    return exceeded;
   }
 
   @override

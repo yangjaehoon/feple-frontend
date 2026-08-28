@@ -128,7 +128,9 @@ class _UserDiaryFeedSheetState extends State<UserDiaryFeedSheet> {
     final itemCount = _diaries.length + (_isLoadingMore ? 1 : 0);
     return NotificationListener<ScrollNotification>(
       onNotification: (n) {
-        if (n is ScrollEndNotification && n.metrics.pixels >= n.metrics.maxScrollExtent - 200) {
+        if (n is ScrollEndNotification &&
+            n.metrics.pixels >=
+                n.metrics.maxScrollExtent - AppDimens.loadMoreTriggerDistance) {
           _load(_page + 1);
         }
         return false;

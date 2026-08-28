@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/constant/app_assets.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/exception/banned_word_exception.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
@@ -246,7 +247,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
             ? FileImage(File(_pickedImage!.path)) as ImageProvider
             : (profileImageUrl != null && profileImageUrl.isNotEmpty)
                 ? CachedNetworkImageProvider(profileImageUrl, maxWidth: 144) as ImageProvider
-                : const AssetImage('assets/image/feple_logo.png'),
+                : const AssetImage(AppAssets.defaultAvatar),
       ),
     );
   }

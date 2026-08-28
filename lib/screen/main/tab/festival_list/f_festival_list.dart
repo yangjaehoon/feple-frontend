@@ -12,7 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../app.dart';
+import 'package:feple/common/app_events.dart';
 import '../../../../provider/festival_preview_provider.dart';
 import 'package:feple/common/util/forced_refresh.dart';
 
@@ -48,7 +48,7 @@ class _FestivalListFragmentState extends State<FestivalListFragment> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    App.resumeEvent.addListener(_onAppResumed);
+    AppEvents.appResumed.addListener(_onAppResumed);
   }
 
   void _onProviderChange() {
@@ -63,7 +63,7 @@ class _FestivalListFragmentState extends State<FestivalListFragment> {
   @override
   void dispose() {
     _festivalPreviewProvider?.removeListener(_onProviderChange);
-    App.resumeEvent.removeListener(_onAppResumed);
+    AppEvents.appResumed.removeListener(_onAppResumed);
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();

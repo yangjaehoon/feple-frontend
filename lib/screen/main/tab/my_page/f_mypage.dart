@@ -1,4 +1,4 @@
-import 'package:feple/app.dart';
+import 'package:feple/common/app_events.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
@@ -29,12 +29,12 @@ class _MyPageFragmentState extends State<MyPageFragment> with NavigationGuard {
   @override
   void initState() {
     super.initState();
-    App.resumeEvent.addListener(_onAppResumed);
+    AppEvents.appResumed.addListener(_onAppResumed);
   }
 
   @override
   void dispose() {
-    App.resumeEvent.removeListener(_onAppResumed);
+    AppEvents.appResumed.removeListener(_onAppResumed);
     super.dispose();
   }
 

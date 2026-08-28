@@ -19,7 +19,6 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../app.dart';
 import '../../../../common/app_events.dart';
 import '../../../../provider/user_provider.dart';
 
@@ -40,7 +39,7 @@ class _HomeFragmentState extends State<HomeFragment> {
     super.initState();
     AppEvents.festivalLikeChanged.addListener(_onFestivalLikeChanged);
     AppEvents.artistFollowChanged.addListener(_onArtistFollowChanged);
-    App.resumeEvent.addListener(_onAppResumed);
+    AppEvents.appResumed.addListener(_onAppResumed);
     _scrollController.addListener(_onScroll);
   }
 
@@ -63,7 +62,7 @@ class _HomeFragmentState extends State<HomeFragment> {
   void dispose() {
     AppEvents.festivalLikeChanged.removeListener(_onFestivalLikeChanged);
     AppEvents.artistFollowChanged.removeListener(_onArtistFollowChanged);
-    App.resumeEvent.removeListener(_onAppResumed);
+    AppEvents.appResumed.removeListener(_onAppResumed);
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _notifier.dispose();

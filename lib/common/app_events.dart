@@ -15,4 +15,7 @@ class AppEvents {
   /// 게시글 작성/수정/삭제 시 신호.
   /// postId == null → 전체 갱신, postId != null → 특정 게시글 변경
   static final postChanged = ValueNotifier<PostChangedEvent?>(null);
+
+  /// 앱이 포그라운드로 복귀할 때마다 값 증가 — 구독 측에서 refresh 트리거용.
+  static final appResumed = ValueNotifier<int>(0);
 }

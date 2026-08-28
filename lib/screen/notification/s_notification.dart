@@ -1,4 +1,4 @@
-import 'package:feple/app.dart';
+import 'package:feple/common/app_events.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_selectable_chip.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -53,14 +53,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
     super.initState();
     _notifier = NotificationNotifier();
     _scrollController.addListener(_onScroll);
-    App.resumeEvent.addListener(_onAppResumed);
+    AppEvents.appResumed.addListener(_onAppResumed);
     _notifier.addListener(_onNotifierChanged);
     _notifier.load();
   }
 
   @override
   void dispose() {
-    App.resumeEvent.removeListener(_onAppResumed);
+    AppEvents.appResumed.removeListener(_onAppResumed);
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _notifier.removeListener(_onNotifierChanged);

@@ -36,6 +36,7 @@ CommentDetail _comment({
     likeCount: likeCount,
     liked: liked,
     anonymous: anonymous,
+    edited: edited,
   );
 }
 

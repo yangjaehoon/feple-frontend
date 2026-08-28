@@ -46,6 +46,22 @@ void main() {
       expect(comment.liked, true);
     });
 
+    test('edited 플래그로 isEdited가 결정된다 (시간차 추정 아님)', () {
+      CommentDetail parse(bool edited) => CommentDetail.fromJson({
+            'id': 1,
+            'postId': 1,
+            'userId': 1,
+            'nickname': 'u',
+            'content': 'c',
+            'createdAt': '2025-01-01T00:00:00',
+            'updatedAt': '2025-06-01T00:00:00', // createdAt과 큰 시간차
+            'edited': edited,
+          });
+
+      expect(parse(false).isEdited, false); // updatedAt이 멀어도 edited=false면 false
+      expect(parse(true).isEdited, true);
+    });
+
     test('nickname null이면 기본값 "User"', () {
       final json = {
         'id': 1,

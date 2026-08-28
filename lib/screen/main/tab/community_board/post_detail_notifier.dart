@@ -218,7 +218,14 @@ class PostDetailNotifier extends SafeChangeNotifier {
       return;
     }
     final originalComment = comments[index];
-    _replaceCommentAt(index, originalComment.copyWith(content: newContent, updatedAt: DateTime.now()));
+    _replaceCommentAt(
+      index,
+      originalComment.copyWith(
+        content: newContent,
+        updatedAt: DateTime.now(),
+        edited: true,
+      ),
+    );
     commentsVersion.value++;
     safeNotify();
     try {

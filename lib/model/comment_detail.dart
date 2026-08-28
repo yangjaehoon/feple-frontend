@@ -2,10 +2,6 @@ import 'date_format.dart';
 import 'json_reader.dart';
 
 class CommentDetail {
-  // 작성 직후 서버 응답의 createdAt/updatedAt 미세한 시간차로 "수정됨"이
-  // 잘못 표시되지 않도록 하는 임계값
-  static const _editThreshold = Duration(seconds: 10);
-
   final int id;
   final int postId;
   final int userId;
@@ -20,6 +16,7 @@ class CommentDetail {
   final int likeCount;
   final bool liked;
   final bool anonymous;
+  final bool edited;
 
   const CommentDetail({
     required this.id,
@@ -36,6 +33,7 @@ class CommentDetail {
     required this.likeCount,
     required this.liked,
     this.anonymous = false,
+    this.edited = false,
   });
 
   factory CommentDetail.fromJson(Map<String, dynamic> json) {
@@ -54,10 +52,18 @@ class CommentDetail {
       likeCount: json.integer('likeCount'),
       liked: json.boolean('liked'),
       anonymous: json.boolean('anonymous'),
+      edited: json.boolean('edited'),
     );
   }
 
-  CommentDetail copyWith({bool? liked, int? likeCount, String? content, DateTime? updatedAt}) => CommentDetail(
+  CommentDetail copyWith({
+    bool? liked,
+    int? likeCount,
+    String? content,
+    DateTime? updatedAt,
+    bool? edited,
+  }) =>
+      CommentDetail(
         id: id,
         postId: postId,
         userId: userId,
@@ -72,12 +78,10 @@ class CommentDetail {
         likeCount: likeCount ?? this.likeCount,
         liked: liked ?? this.liked,
         anonymous: anonymous,
+        edited: edited ?? this.edited,
       );
 
-  bool get isEdited {
-    if (updatedAt == null) return false;
-    return updatedAt!.difference(createdAt) > _editThreshold;
-  }
+  bool get isEdited => edited;
 
   bool get isReply => parentId != null;
 }

@@ -12,17 +12,11 @@ import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/navigate_after_fetch.dart';
 import 'package:feple/common/util/popup_menu_item_builder.dart';
 import 'package:feple/model/notification_model.dart';
+import 'package:feple/screen/notification/notification_destination.dart';
 import 'package:feple/screen/notification/notification_time_style.dart';
-import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
-import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
-import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/screen/notification/notification_notifier.dart';
 import 'package:feple/screen/notification/w_notification_card.dart';
 import 'package:feple/screen/settings/s_notification_settings.dart';
-import 'package:feple/injection.dart';
-import 'package:feple/service/artist_service.dart';
-import 'package:feple/service/festival_service.dart';
-import 'package:feple/service/post_service.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/common/util/responsive_size.dart';
@@ -49,9 +43,6 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-  final _artistService = sl<ArtistService>();
-  final _festivalService = sl<FestivalService>();
-  final _postService = sl<PostService>();
   final _scrollController = ScrollController();
   late final NotificationNotifier _notifier;
   int? _navigatingId;
@@ -100,44 +91,20 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Future<void> _onTap(NotificationModel item) async {
     if (_navigatingId != null) return;
     await _notifier.markRead(item);
-    if (item.type == null || item.referenceId == null) return;
-    if (item.type!.hasFestivalNavigation) {
-      await _navigateToFestival(item);
-    } else if (item.type!.isCommentType) {
-      await _navigateToPost(item);
-    } else if (item.type!.isArtistNavigationType) {
-      await _navigateToArtist(item);
-    }
+    if (!mounted) return;
+    await navigateAfterFetch<Widget?>(
+      context,
+      fetch: () =>
+          resolveNotificationDestination(item.type, item.referenceId),
+      builder: (screen) => screen!, // null이면 navigateAfterFetch가 진입 전 반환
+      setLoading: (v) => _setNavigatingId(v, item.id),
+      errorTag: 'Notification',
+    );
   }
 
   void _setNavigatingId(bool loading, int id) {
     if (mounted) setState(() => _navigatingId = loading ? id : null);
   }
-
-  Future<void> _navigateToArtist(NotificationModel item) => navigateAfterFetch(
-    context,
-    fetch: () => _artistService.fetchArtistById(item.referenceId!),
-    builder: (artist) => ArtistScreen.fromArtist(artist),
-    setLoading: (v) => _setNavigatingId(v, item.id),
-    errorTag: 'Notification/아티스트',
-  );
-
-  Future<void> _navigateToPost(NotificationModel item) => navigateAfterFetch(
-    context,
-    fetch: () => _postService.fetchPost(item.referenceId!),
-    builder: (post) =>
-        PostDetailCard.fromPost(boardName: post.boardDisplayName, post: post),
-    setLoading: (v) => _setNavigatingId(v, item.id),
-    errorTag: 'Notification/게시글',
-  );
-
-  Future<void> _navigateToFestival(NotificationModel item) => navigateAfterFetch(
-    context,
-    fetch: () => _festivalService.fetchById(item.referenceId!),
-    builder: (festival) => FestivalInformationFragment(poster: festival),
-    setLoading: (v) => _setNavigatingId(v, item.id),
-    errorTag: 'Notification/페스티벌',
-  );
 
   Future<void> _onDeleteAll() async {
     final confirmed = await showConfirmDialog(

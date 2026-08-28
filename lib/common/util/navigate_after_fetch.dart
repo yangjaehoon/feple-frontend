@@ -18,7 +18,8 @@ Future<void> navigateAfterFetch<T>(
   setLoading(true);
   try {
     final data = await fetch();
-    if (!context.mounted) return;
+    // fetch가 null을 주면(예: 이동 대상 없는 알림 타입) 조용히 아무것도 안 함
+    if (!context.mounted || data == null) return;
     final push = Navigator.push(
       context,
       SlideRoute(builder: (_) => builder(data)),

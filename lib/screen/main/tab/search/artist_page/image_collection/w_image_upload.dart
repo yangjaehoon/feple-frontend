@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
+import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/model/photo_destination.dart';
 import 'package:feple/model/photo_upload_draft.dart';
@@ -126,11 +127,13 @@ class _ImageUploadState extends State<ImageUpload> {
       onPopInvokedWithResult: (didPop, _) => _onPopInvoked(didPop),
       child: Scaffold(
         backgroundColor: colors.backgroundMain,
-        body: Column(
-          children: [
-            _buildCustomAppBar(colors),
-            _buildScrollContent(colors),
-          ],
+        body: KeyboardDismiss(
+          child: Column(
+            children: [
+              _buildCustomAppBar(colors),
+              _buildScrollContent(colors),
+            ],
+          ),
         ),
       ),
     );

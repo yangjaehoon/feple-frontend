@@ -7,6 +7,7 @@ import 'package:feple/common/util/text_highlight.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_loading_indicator.dart';
 import 'package:feple/injection.dart';
@@ -207,18 +208,20 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     final colors = context.appColors;
     return Scaffold(
       backgroundColor: colors.backgroundMain,
-      body: Column(
-        children: [
-          _buildSearchBar(colors),
-          Expanded(
-            // 키 입력마다 검색바(TextField)까지 통째로 리빌드되지 않도록, 본문만
-            // _controller/_suggestionsNotifier 변경에 반응해서 다시 그림
-            child: AnimatedBuilder(
-              animation: Listenable.merge([_controller, _suggestionsNotifier]),
-              builder: (context, _) => _buildContent(colors),
+      body: KeyboardDismiss(
+        child: Column(
+          children: [
+            _buildSearchBar(colors),
+            Expanded(
+              // 키 입력마다 검색바(TextField)까지 통째로 리빌드되지 않도록, 본문만
+              // _controller/_suggestionsNotifier 변경에 반응해서 다시 그림
+              child: AnimatedBuilder(
+                animation: Listenable.merge([_controller, _suggestionsNotifier]),
+                builder: (context, _) => _buildContent(colors),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

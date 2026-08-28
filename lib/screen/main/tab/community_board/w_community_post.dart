@@ -13,6 +13,7 @@ import 'package:feple/common/util/post_cursor_controller_listener.dart';
 import 'package:feple/common/util/write_post_submit_handler.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/widget/w_list_row_skeleton.dart';
 import 'package:feple/common/widget/w_refreshable_center.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -429,21 +430,23 @@ class _CommunityPostState extends State<CommunityPost>
       backgroundColor: colors.backgroundMain,
       floatingActionButton: _buildFab(colors),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: Column(
-        children: [
-          SecondaryAppBar(title: widget.boardName),
-          _buildSearchBar(colors),
-          if (_isPaginated) _buildSortChips(),
-          Expanded(
-            child: RefreshIndicator(
-              color: colors.activate,
-              onRefresh: () => withForcedRefresh(_controller.refresh),
-              child: _controller.isLoading
-                  ? _buildSkeletonList()
-                  : _buildList(colors),
+      body: KeyboardDismiss(
+        child: Column(
+          children: [
+            SecondaryAppBar(title: widget.boardName),
+            _buildSearchBar(colors),
+            if (_isPaginated) _buildSortChips(),
+            Expanded(
+              child: RefreshIndicator(
+                color: colors.activate,
+                onRefresh: () => withForcedRefresh(_controller.refresh),
+                child: _controller.isLoading
+                    ? _buildSkeletonList()
+                    : _buildList(colors),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

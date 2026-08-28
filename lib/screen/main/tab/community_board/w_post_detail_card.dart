@@ -7,6 +7,7 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/block_action_helper.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/popup_menu_item_builder.dart';
+import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/widget/w_page_indicator_pill.dart';
 import 'package:feple/common/widget/w_write_post.dart';
 import 'package:feple/model/post_model.dart';
@@ -493,32 +494,34 @@ class _PostDetailCardState extends State<PostDetailCard> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       bottomNavigationBar: _buildBottomBar(userId),
-      body: Column(
-        children: [
-          SecondaryAppBar(
-            title: widget.boardName,
-            actions: [
-              PopupMenuButton<String>(
-                icon: const Icon(Icons.more_vert),
-                onSelected: _onMenuSelected,
-                itemBuilder: (_) => _buildMenuItems(isOwn, colors),
-                color: colors.surface,
-                shadowColor: colors.cardShadow.withValues(alpha: 0.18),
-                elevation: 3,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppDimens.shapeDialog),
+      body: KeyboardDismiss(
+        child: Column(
+          children: [
+            SecondaryAppBar(
+              title: widget.boardName,
+              actions: [
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_vert),
+                  onSelected: _onMenuSelected,
+                  itemBuilder: (_) => _buildMenuItems(isOwn, colors),
+                  color: colors.surface,
+                  shadowColor: colors.cardShadow.withValues(alpha: 0.18),
+                  elevation: 3,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppDimens.shapeDialog),
+                  ),
+                  position: PopupMenuPosition.under,
                 ),
-                position: PopupMenuPosition.under,
-              ),
-            ],
-          ),
-          Expanded(
-            child: Container(
-              color: colors.backgroundMain,
-              child: _buildScrollContent(colors, userId),
+              ],
             ),
-          ),
-        ],
+            Expanded(
+              child: Container(
+                color: colors.backgroundMain,
+                child: _buildScrollContent(colors, userId),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

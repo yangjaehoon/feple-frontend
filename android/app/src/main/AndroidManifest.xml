@@ -3,7 +3,10 @@
     package="com.dobino.feple">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!-- image_picker는 Android 13+에서 Photo Picker를 쓰므로 저장소 권한 불필요.
+         이전 버전 호환을 위해서만 유지하고 API 32 이하로 스코프한다. -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />

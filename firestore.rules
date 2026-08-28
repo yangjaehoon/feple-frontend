@@ -1,9 +1,12 @@
 rules_version = '2';
 
+// FEPLE 앱/백엔드는 Cloud Firestore를 사용하지 않는다 (데이터는 EC2 MySQL).
+// 이전 기본값(allow read, write: if request.auth != null)은 로그인한 아무
+// Firebase 유저나 전 문서를 읽고 쓸 수 있어 전면 차단한다.
 service cloud.firestore {
   match /databases/{database}/documents {
     match /{document=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if false;
     }
   }
 }

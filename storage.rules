@@ -1,12 +1,12 @@
 rules_version = '2';
 
-// Craft rules based on data in your Firestore database
-// allow write: if firestore.get(
-//    /databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin;
+// FEPLE 앱/백엔드는 Firebase Storage를 사용하지 않는다 (파일은 S3).
+// 이전 기본값(allow read, write: if true)은 인증 없이 전세계 읽기/쓰기라
+// 남용·과금 위험이 있어 전면 차단한다. Storage를 도입하면 경로별 규칙 추가.
 service firebase.storage {
   match /b/{bucket}/o {
     match /{allPaths=**} {
-      allow read, write: if true;
+      allow read, write: if false;
     }
   }
 }

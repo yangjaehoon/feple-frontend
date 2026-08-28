@@ -80,11 +80,15 @@ class FestivalShareCard extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: Image.asset('assets/image/feple_logo.png', width: 16, height: 16, fit: BoxFit.cover),
+          // 흰색 핀 로고(투명 배경) — 어두운 배지 위에서 선명하게 보인다.
+          Image.asset(
+            'assets/image/feple_clear_960.png',
+            width: 20,
+            height: 20,
+            fit: BoxFit.contain,
+            cacheWidth: 60,
           ),
-          const SizedBox(width: AppDimens.space6),
+          const SizedBox(width: AppDimens.space4),
           const Text(
             'Feple',
             style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700),

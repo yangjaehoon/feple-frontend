@@ -417,82 +417,93 @@ class _NotificationScreenState extends State<NotificationScreen> {
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       itemCount: sectioned.length + (_notifier.isLoadingMore ? 1 : 0),
       itemBuilder: (_, index) {
-        if (index == sectioned.length) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: Center(
-              child: CircularProgressIndicator(color: colors.activate),
-            ),
-          );
-        }
+        if (index == sectioned.length) return _buildLoadMoreFooter(colors);
 
         final listItem = sectioned[index];
-
         if (listItem is _SectionHeader) {
-          return Padding(
-            padding: const EdgeInsets.only(top: 16, bottom: 8),
-            child: Text(
-              listItem.label,
-              style: TextStyle(
-                fontSize: AppDimens.fontSizeSm,
-                fontWeight: FontWeight.w700,
-                color: colors.textSecondary,
-              ),
-            ),
-          );
+          return _buildSectionHeaderTile(listItem.label, colors);
         }
 
         final item = (listItem as _NotificationItem).model;
-        // 알림 인덱스 계산 (헤더 제외)
+        // 애니메이션용 알림 인덱스 (헤더 제외)
         final notifIndex =
             sectioned.take(index + 1).whereType<_NotificationItem>().length - 1;
-
-        final card = TapScale(
-          child: NotificationCard(
-            item: item,
-            isLoading: _navigatingId == item.id,
-            onTap: () => _onTap(item),
-            screenWidth: screenWidth,
-          ),
-        );
-        // Dismissible은 child(카드)를 클리핑 없이 translate만 하므로, 카드
-        // 자체의 둥근 모서리가 드래그 중간 지점에서 깎아낸 작은 틈이 생김.
-        // Dismissible의 background는 실제로 드러난 영역에만 클립되어 그 틈을
-        // 못 채우므로, 항상 전체를 채우는 빨간 레이어를 카드 뒤에 별도로 깔아
-        // 그 틈에서도 화면 배경이 아닌 삭제 색상이 보이게 함
-        final rounded = Stack(
-          children: [
-            Positioned.fill(child: Container(color: colors.error)),
-            Dismissible(
-              key: ValueKey(item.id),
-              direction: DismissDirection.endToStart,
-              onDismissed: (_) => _dismissWithUndo(item),
-              background: Container(
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.only(right: 20),
-                color: colors.error,
-                child: const Icon(
-                  Icons.delete_rounded,
-                  color: Colors.white,
-                  size: 22,
-                ),
-              ),
-              child: card,
-            ),
-          ],
-        );
-
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: AnimatedListItem(
-            index: notifIndex,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-              child: rounded,
-            ),
-          ),
-        );
+        return _buildNotificationTile(item, notifIndex, screenWidth, colors);
       },
+    );
+  }
+
+  Widget _buildLoadMoreFooter(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Center(child: CircularProgressIndicator(color: colors.activate)),
+    );
+  }
+
+  Widget _buildSectionHeaderTile(String label, AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16, bottom: 8),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: AppDimens.fontSizeSm,
+          fontWeight: FontWeight.w700,
+          color: colors.textSecondary,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotificationTile(
+    NotificationModel item,
+    int notifIndex,
+    double screenWidth,
+    AbstractThemeColors colors,
+  ) {
+    final card = TapScale(
+      child: NotificationCard(
+        item: item,
+        isLoading: _navigatingId == item.id,
+        onTap: () => _onTap(item),
+        screenWidth: screenWidth,
+      ),
+    );
+    // Dismissible은 child(카드)를 클리핑 없이 translate만 하므로, 카드
+    // 자체의 둥근 모서리가 드래그 중간 지점에서 깎아낸 작은 틈이 생김.
+    // Dismissible의 background는 실제로 드러난 영역에만 클립되어 그 틈을
+    // 못 채우므로, 항상 전체를 채우는 빨간 레이어를 카드 뒤에 별도로 깔아
+    // 그 틈에서도 화면 배경이 아닌 삭제 색상이 보이게 함
+    final rounded = Stack(
+      children: [
+        Positioned.fill(child: Container(color: colors.error)),
+        Dismissible(
+          key: ValueKey(item.id),
+          direction: DismissDirection.endToStart,
+          onDismissed: (_) => _dismissWithUndo(item),
+          background: Container(
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.only(right: 20),
+            color: colors.error,
+            child: const Icon(
+              Icons.delete_rounded,
+              color: Colors.white,
+              size: 22,
+            ),
+          ),
+          child: card,
+        ),
+      ],
+    );
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: AnimatedListItem(
+        index: notifIndex,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
+          child: rounded,
+        ),
+      ),
     );
   }
 

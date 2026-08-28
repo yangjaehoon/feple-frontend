@@ -1,4 +1,5 @@
 import 'date_format.dart';
+import 'json_reader.dart';
 import 'localized_text.dart';
 
 enum DiaryVisibility {
@@ -44,17 +45,17 @@ class FestivalDiaryModel {
 
   factory FestivalDiaryModel.fromJson(Map<String, dynamic> json) =>
       FestivalDiaryModel(
-        id: (json['id'] as num?)?.toInt() ?? 0,
-        festivalId: (json['festivalId'] as num?)?.toInt() ?? 0,
-        festivalTitle: json['festivalTitle'] as String? ?? '',
-        festivalTitleEn: json['festivalTitleEn'] as String? ?? '',
-        content: json['content'] as String? ?? '',
-        visibility: DiaryVisibility.fromValue(json['visibility'] as String?) ??
+        id: json.integer('id'),
+        festivalId: json.integer('festivalId'),
+        festivalTitle: json.str('festivalTitle'),
+        festivalTitleEn: json.str('festivalTitleEn'),
+        content: json.str('content'),
+        visibility: DiaryVisibility.fromValue(json.strOrNull('visibility')) ??
             DiaryVisibility.private_,
-        photoUrls: (json['photoUrls'] as List?)?.map((e) => e as String).toList() ?? const [],
-        createdAt: json['createdAt'] as String?,
-        isOwner: json['isOwner'] as bool? ?? true,
-        authorNickname: json['authorNickname'] as String?,
+        photoUrls: json.stringList('photoUrls'),
+        createdAt: json.strOrNull('createdAt'),
+        isOwner: json.boolean('isOwner', true),
+        authorNickname: json.strOrNull('authorNickname'),
       );
 
   bool get isPublic => visibility == DiaryVisibility.public_;

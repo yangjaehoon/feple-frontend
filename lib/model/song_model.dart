@@ -1,3 +1,5 @@
+import 'json_reader.dart';
+
 class SongModel {
   final int id;
   final String title;
@@ -25,14 +27,15 @@ class SongModel {
       };
 
   factory SongModel.fromJson(Map<String, dynamic> json) {
-    final videoId = json['youtubeVideoId'] as String? ?? '';
+    final videoId = json.str('youtubeVideoId');
+    final url = json.str('youtubeUrl');
     return SongModel(
-      id: (json['id'] as num).toInt(),
-      title: json['title'] as String? ?? '',
+      id: json.integer('id'),
+      title: json.str('title'),
       youtubeVideoId: videoId,
-      thumbnailUrl: json['thumbnailUrl'] as String?,
-      youtubeUrl: json['youtubeUrl'] as String? ?? _urlFromVideoId(videoId),
-      festivalCount: (json['festivalCount'] as num?)?.toInt() ?? 0,
+      thumbnailUrl: json.strOrNull('thumbnailUrl'),
+      youtubeUrl: url.isNotEmpty ? url : _urlFromVideoId(videoId),
+      festivalCount: json.integer('festivalCount'),
     );
   }
 

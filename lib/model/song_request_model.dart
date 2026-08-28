@@ -1,4 +1,5 @@
 import 'date_format.dart';
+import 'json_reader.dart';
 
 enum SongRequestStatus { pending, approved, rejected }
 
@@ -36,14 +37,14 @@ class SongRequestModel {
 
   factory SongRequestModel.fromJson(Map<String, dynamic> json) {
     return SongRequestModel(
-      id: (json['id'] as num).toInt(),
-      songTitle: json['songTitle'] as String,
-      youtubeUrl: json['youtubeUrl'] as String?,
-      status: _parseStatus(json['status'] as String?),
-      createdAt: json['createdAt'] as String?,
-      artistId: json['artistId'] as int?,
-      artistName: json['artistName'] as String?,
-      artistNameEn: json['artistNameEn'] as String? ?? '',
+      id: json.integer('id'),
+      songTitle: json.str('songTitle'),
+      youtubeUrl: json.strOrNull('youtubeUrl'),
+      status: _parseStatus(json.strOrNull('status')),
+      createdAt: json.strOrNull('createdAt'),
+      artistId: json.intOrNull('artistId'),
+      artistName: json.strOrNull('artistName'),
+      artistNameEn: json.str('artistNameEn'),
     );
   }
 

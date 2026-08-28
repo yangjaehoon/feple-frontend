@@ -1,3 +1,5 @@
+import 'json_reader.dart';
+
 class FestivalReview {
   final int reviewId;
   final String nickname;
@@ -18,12 +20,12 @@ class FestivalReview {
   });
 
   factory FestivalReview.fromJson(Map<String, dynamic> json) => FestivalReview(
-        reviewId: (json['reviewId'] as num).toInt(),
-        nickname: json['nickname'] as String,
-        rating: (json['rating'] as num).toInt(),
-        userReview: json['userReview'] as String?,
-        ratedAt: json['ratedAt'] as String?,
-        likeCount: (json['likeCount'] as num?)?.toInt() ?? 0,
-        likedByMe: (json['likedByMe'] as bool?) ?? false,
+        reviewId: json.integer('reviewId'),
+        nickname: json.str('nickname'),
+        rating: json.integer('rating'),
+        userReview: json.strOrNull('userReview'),
+        ratedAt: json.strOrNull('ratedAt'),
+        likeCount: json.integer('likeCount'),
+        likedByMe: json.boolean('likedByMe'),
       );
 }

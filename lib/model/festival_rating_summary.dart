@@ -1,3 +1,5 @@
+import 'json_reader.dart';
+
 /// 페스티벌 평균 별점 및 평가 수
 class FestivalRatingSummary {
   final double averageRating;
@@ -7,7 +9,7 @@ class FestivalRatingSummary {
 
   factory FestivalRatingSummary.fromJson(Map<String, dynamic> json) =>
       FestivalRatingSummary(
-        averageRating: (json['averageRating'] as num?)?.toDouble() ?? 0.0,
-        ratingCount: (json['ratingCount'] as num?)?.toInt() ?? 0,
+        averageRating: json.dbl('averageRating'),
+        ratingCount: json.integer('ratingCount'),
       );
 }

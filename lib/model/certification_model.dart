@@ -1,4 +1,5 @@
 import 'date_format.dart';
+import 'json_reader.dart';
 import 'localized_text.dart';
 
 enum CertStatus {
@@ -45,17 +46,17 @@ class CertificationModel {
 
   factory CertificationModel.fromJson(Map<String, dynamic> json) =>
       CertificationModel(
-        id: (json['id'] as num?)?.toInt() ?? 0,
-        festivalId: (json['festivalId'] as num?)?.toInt() ?? 0,
-        status: CertStatus.fromValue(json['status'] as String?) ??
+        id: json.integer('id'),
+        festivalId: json.integer('festivalId'),
+        status: CertStatus.fromValue(json.strOrNull('status')) ??
             CertStatus.pending,
-        festivalTitle: json['festivalTitle'] as String? ?? '',
-        festivalTitleEn: json['festivalTitleEn'] as String? ?? '',
-        posterUrl: json['festivalPosterUrl'] as String? ?? json['photoUrl'] as String?,
-        rejectionMessage: json['rejectionMessage'] as String?,
-        createdAt: json['createdAt'] as String?,
-        myRating: (json['rating'] as num?)?.toInt(),
-        myReview: json['userReview'] as String?,
+        festivalTitle: json.str('festivalTitle'),
+        festivalTitleEn: json.str('festivalTitleEn'),
+        posterUrl: json.strOrNull('festivalPosterUrl') ?? json.strOrNull('photoUrl'),
+        rejectionMessage: json.strOrNull('rejectionMessage'),
+        createdAt: json.strOrNull('createdAt'),
+        myRating: json.intOrNull('rating'),
+        myReview: json.strOrNull('userReview'),
       );
 
   String displayFestivalTitle(bool isEnglish) =>

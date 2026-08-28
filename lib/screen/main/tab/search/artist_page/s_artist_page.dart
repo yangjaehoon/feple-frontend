@@ -1,10 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/store_links.dart';
-import 'package:feple/common/util/widget_image_capturer.dart';
+import 'package:feple/common/util/share_helper.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/model/artist_model.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:feple/model/artist_schedule_model.dart';
 import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/model/followed_artist.dart';
@@ -104,39 +102,28 @@ class _ArtistScreenState extends State<ArtistScreen> {
   }
 
   // 아티스트 이름 + 프로필 이미지를 합성한 카드와 앱 링크를 함께 공유한다.
-  // 프로필 이미지가 없거나 카드 생성이 실패하면 텍스트만으로 공유된다.
+  // 프로필 이미지가 없거나 카드 생성이 실패하면 텍스트+링크만으로 공유된다.
   Future<void> _shareArtist(String displayName) async {
     if (_isSharing) return;
     setState(() => _isSharing = true);
     final text = '${'artist_share_text'.tr(args: [displayName])}\n$kAppDownloadUrl';
     final imageUrl = widget.profileImageUrl;
-    List<XFile>? files;
-    if (imageUrl != null && imageUrl.isNotEmpty) {
-      try {
-        await precacheImage(CachedNetworkImageProvider(imageUrl), context);
-        if (!mounted) return;
-        final bytes = await captureWidgetAsPng(
-          context,
-          ArtistShareCard(
-            artistName: displayName,
-            imageUrl: imageUrl,
-            followerCount: _followNotifier.followCount,
-          ),
-        );
-        if (bytes != null) {
-          files = [
-            XFile.fromData(bytes, name: 'feple_artist.png', mimeType: 'image/png'),
-          ];
-        }
-      } catch (e) {
-        debugPrint('[ArtistScreen] card capture failed: $e');
-      }
-    }
     try {
-      await SharePlus.instance.share(ShareParams(text: text, files: files));
-    } catch (e) {
-      debugPrint('[ArtistScreen] share error: $e');
-      if (mounted) context.showErrorSnackbar('share_failed'.tr());
+      final ok = await shareContent(
+        context,
+        text: text,
+        cardToCapture: (imageUrl != null && imageUrl.isNotEmpty)
+            ? ArtistShareCard(
+                artistName: displayName,
+                imageUrl: imageUrl,
+                followerCount: _followNotifier.followCount,
+              )
+            : null,
+        precacheImageUrl: imageUrl,
+        captureFileName: 'feple_artist.png',
+        logTag: 'ArtistScreen',
+      );
+      if (!ok && mounted) context.showErrorSnackbar('share_failed'.tr());
     } finally {
       if (mounted) setState(() => _isSharing = false);
     }

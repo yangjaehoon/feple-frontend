@@ -2,12 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_star_rating_row.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/util/calendar_helper.dart';
 import 'package:feple/common/util/kakao_map_launcher.dart';
-import 'package:feple/common/util/widget_image_capturer.dart';
+import 'package:feple/common/util/share_helper.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/constant/store_links.dart';
 import 'package:feple/injection.dart';
@@ -98,8 +97,8 @@ class FestivalPosterState extends State<FestivalPoster> {
     fn();
   }
 
-  // 포스터 이미지+정보를 합성한 카드 이미지를 만들어 텍스트와 함께 공유한다.
-  // 카드 생성이 실패해도(네트워크 오류 등) 예전처럼 텍스트만으로는 공유되게 한다.
+  // 포스터 이미지+정보를 합성한 카드 이미지와 앱 링크를 텍스트와 함께 공유한다.
+  // 카드 생성이 실패해도(네트워크 오류 등) 텍스트+링크만으로는 공유되게 한다.
   Future<void> _shareFestival() async {
     if (_isSharing) return;
     setState(() => _isSharing = true);
@@ -108,27 +107,15 @@ class FestivalPosterState extends State<FestivalPoster> {
         '${_notifier.poster.displayTitle(isEnglish)}\n${_notifier.poster.location}\n${_notifier.poster.startDate}'
         '\n\n${'share_festival_cta'.tr()}\n$kAppDownloadUrl';
     try {
-      await precacheImage(CachedNetworkImageProvider(_notifier.poster.posterUrl), context);
-      if (!mounted) return;
-      final bytes = await captureWidgetAsPng(
+      final ok = await shareContent(
         context,
-        FestivalShareCard(poster: _notifier.poster, isEnglish: isEnglish),
-      );
-      await SharePlus.instance.share(ShareParams(
         text: text,
-        files: bytes != null
-            ? [XFile.fromData(bytes, name: 'feple_festival.png', mimeType: 'image/png')]
-            : null,
-      ));
-    } catch (e) {
-      debugPrint('[FestivalPoster] share error: $e');
-      if (!mounted) return;
-      try {
-        await SharePlus.instance.share(ShareParams(text: text));
-      } catch (e2) {
-        debugPrint('[FestivalPoster] fallback share error: $e2');
-        if (mounted) context.showErrorSnackbar('share_failed'.tr());
-      }
+        cardToCapture: FestivalShareCard(poster: _notifier.poster, isEnglish: isEnglish),
+        precacheImageUrl: _notifier.poster.posterUrl,
+        captureFileName: 'feple_festival.png',
+        logTag: 'FestivalPoster',
+      );
+      if (!ok && mounted) context.showErrorSnackbar('share_failed'.tr());
     } finally {
       if (mounted) setState(() => _isSharing = false);
     }

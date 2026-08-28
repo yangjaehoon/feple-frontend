@@ -122,17 +122,27 @@ class _LoadingButtonState extends State<LoadingButton>
         child: Icon(Icons.check_rounded, color: fgColor, size: 26),
       );
     }
-    if (widget.isLoading) {
-      return SizedBox(
-        width: 22,
-        height: 22,
-        child: CircularProgressIndicator(
-          strokeWidth: 2.5,
-          color: fgColor,
+    // 로딩 중에도 라벨을 투명하게 유지해 버튼 너비를 그대로 보존한다 — 스피너만
+    // 그리면 라벨보다 좁아져, IntrinsicWidth로 크기가 정해지는 부모(닉네임
+    // 중복확인 버튼 등)에서 옆 위젯이 순간적으로 늘어났다 줄어드는 깜빡임 발생.
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Opacity(
+          opacity: widget.isLoading ? 0 : 1,
+          child: widget.child ?? _buildLabel(),
         ),
-      );
-    }
-    if (widget.child != null) return widget.child!;
+        if (widget.isLoading)
+          SizedBox(
+            width: 22,
+            height: 22,
+            child: CircularProgressIndicator(strokeWidth: 2.5, color: fgColor),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildLabel() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,

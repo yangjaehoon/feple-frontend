@@ -16,14 +16,18 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 
-    testWidgets('isLoading=true면 스피너가 보이고 label은 숨겨진다', (tester) async {
+    testWidgets('isLoading=true면 스피너가 보이고 label은 투명하게 숨겨진다', (tester) async {
       await pumpCommonWidget(
         tester,
         LoadingButton(label: '확인', onPressed: () {}, isLoading: true),
       );
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      expect(find.text('확인'), findsNothing);
+      // 버튼 너비를 유지하기 위해 label은 트리에서 제거하지 않고
+      // opacity 0으로만 감춘다 (w_loading_button.dart._buildChild 참고)
+      expect(find.text('확인'), findsOneWidget);
+      final opacity = tester.widget<Opacity>(find.byType(Opacity));
+      expect(opacity.opacity, 0);
     });
 
     testWidgets('isSuccess=true면 체크 아이콘이 보인다', (tester) async {

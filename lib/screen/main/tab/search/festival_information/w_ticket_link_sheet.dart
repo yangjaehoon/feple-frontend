@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/url_validator.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,8 +12,16 @@ class TicketLinkSheet extends StatelessWidget {
   const TicketLinkSheet({super.key, required this.links});
 
   Future<void> _open(BuildContext context, String url) async {
-    final launched = await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-    if (!launched && context.mounted) context.showErrorSnackbar('link_open_failed'.tr());
+    // 서버가 준 티켓 벤더 URL — 실행 직전 http(s) 스킴 재검증 (임의 스킴 차단)
+    if (!isSafeExternalUrl(url)) {
+      if (context.mounted) context.showErrorSnackbar('link_open_failed'.tr());
+      return;
+    }
+    final launched =
+        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    if (!launched && context.mounted) {
+      context.showErrorSnackbar('link_open_failed'.tr());
+    }
   }
 
   @override

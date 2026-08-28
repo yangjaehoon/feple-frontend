@@ -5,6 +5,7 @@ import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/navigation_guard.dart';
+import 'package:feple/common/util/url_validator.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_settings_item.dart';
 import 'package:feple/provider/user_provider.dart';
@@ -115,6 +116,7 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
   }
 
   Future<void> _openExternalLink(String url) async {
+    if (!isSafeExternalUrl(url)) return;
     try {
       final launched = await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
       if (!launched && mounted) context.showErrorSnackbar('link_open_failed'.tr());

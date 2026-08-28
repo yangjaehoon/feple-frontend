@@ -6,6 +6,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/exception/banned_word_exception.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
+import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_nickname_field.dart';
@@ -181,7 +182,8 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
       onPopInvokedWithResult: (didPop, _) => _onPopInvoked(didPop),
       child: Scaffold(
         backgroundColor: colors.backgroundMain,
-        body: Column(
+        body: KeyboardDismiss(
+        child: Column(
         children: [
           SecondaryAppBar(
             title: 'edit_profile'.tr(),
@@ -209,6 +211,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
             ),
           ),
         ],
+      ),
       ),
       ),
     );

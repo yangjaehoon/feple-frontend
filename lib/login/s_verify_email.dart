@@ -29,10 +29,16 @@ class VerifyEmailScreen extends StatefulWidget {
 
 class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   static const _resendCooldownSecs = 60;
-  static const _pollIntervalSecs = 3;
+  // 인증 완료 폴링 간격(초) — 점점 늘려 마지막은 30초. 상한 이후로는 마지막 값 유지.
+  static const _pollBackoffSecs = [3, 5, 8, 12, 20, 30];
+  // 이 시간이 지나면 폴링을 멈춘다 — 사용자는 하단 "인증 완료 확인" 버튼으로 확인.
+  static const _maxPollDuration = Duration(minutes: 5);
 
   Timer? _resendTimer;
   Timer? _pollTimer;
+  int _pollAttempt = 0;
+  DateTime? _pollStartedAt;
+  bool _completed = false;
   int _cooldown = 0;
   bool _isVerifying = false;
   bool _isCanceling = false;
@@ -75,9 +81,21 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   }
 
   void _startPolling() {
+    _pollAttempt = 0;
+    _pollStartedAt = DateTime.now();
+    _scheduleNextPoll();
+  }
+
+  void _scheduleNextPoll() {
     _pollTimer?.cancel();
-    _pollTimer = Timer.periodic(const Duration(seconds: _pollIntervalSecs), (_) async {
+    if (!mounted || _completed) return;
+    if (DateTime.now().difference(_pollStartedAt!) >= _maxPollDuration) return;
+    final secs = _pollBackoffSecs[
+        _pollAttempt.clamp(0, _pollBackoffSecs.length - 1)];
+    _pollTimer = Timer(Duration(seconds: secs), () async {
+      _pollAttempt++;
       await _tryComplete(silent: true);
+      if (mounted) _scheduleNextPoll();
     });
   }
 
@@ -92,6 +110,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
         if (!silent) setState(() => _errorMessage = 'verify_email_not_yet'.tr());
         return;
       }
+      _completed = true;
       _pollTimer?.cancel();
       await _navigateToApp(user);
     } catch (e) {

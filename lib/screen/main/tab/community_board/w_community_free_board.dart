@@ -4,14 +4,11 @@ import 'package:feple/screen/main/tab/community_board/w_community_board_card.dar
 import 'package:flutter/material.dart';
 
 class CommunityFreeBoard extends StatelessWidget {
-  final GlobalKey<CommunityBoardCardState>? cardKey;
-
-  const CommunityFreeBoard({super.key, this.cardKey});
+  const CommunityFreeBoard({super.key});
 
   @override
   Widget build(BuildContext context) {
     return CommunityBoardCard(
-      key: cardKey,
       title: 'free_board'.tr(),
       icon: Icons.edit_note_rounded,
       headerColorFn: (colors) => colors.freeBoardHeader,

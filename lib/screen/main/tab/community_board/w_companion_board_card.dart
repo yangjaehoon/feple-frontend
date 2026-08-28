@@ -4,14 +4,11 @@ import 'package:feple/screen/main/tab/community_board/w_community_board_card.dar
 import 'package:flutter/material.dart';
 
 class CompanionBoardCard extends StatelessWidget {
-  final GlobalKey<CommunityBoardCardState>? cardKey;
-
-  const CompanionBoardCard({super.key, this.cardKey});
+  const CompanionBoardCard({super.key});
 
   @override
   Widget build(BuildContext context) {
     return CommunityBoardCard(
-      key: cardKey,
       title: 'companion_board'.tr(),
       icon: Icons.people_rounded,
       headerColorFn: (colors) => colors.getUserBoardHeader,

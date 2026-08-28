@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:feple/model/artist_photo.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/popup_menu_item_builder.dart';
+import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
 import 'artist_photo_notifier.dart';
@@ -32,7 +33,8 @@ class ImageCollectionWidget extends StatefulWidget {
   State<ImageCollectionWidget> createState() => ImageCollectionWidgetState();
 }
 
-class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
+class ImageCollectionWidgetState extends State<ImageCollectionWidget>
+    with RefreshableSection<ImageCollectionWidget> {
   late final ArtistPhotoNotifier _notifier;
   final _reportService = sl<ReportService>();
   bool _isSheetOpen = false;
@@ -61,6 +63,9 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget> {
   }
 
   Future<void> refresh() => _notifier.loadPhotos();
+
+  @override
+  Future<void> refreshSection() => refresh();
 
   Future<void> _confirmAndDelete(int photoId) async {
     final confirmed = await showConfirmDialog(

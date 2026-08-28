@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/future_refreshable.dart';
+import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_write_post.dart';
 import 'package:feple/model/post_model.dart';
@@ -43,7 +44,10 @@ class CommunityBoardCard extends StatefulWidget {
 }
 
 class CommunityBoardCardState extends State<CommunityBoardCard>
-    with FutureRefreshable<List<Post>, CommunityBoardCard>, NavigationGuard {
+    with
+        FutureRefreshable<List<Post>, CommunityBoardCard>,
+        NavigationGuard,
+        RefreshableSection<CommunityBoardCard> {
   final PostService _postService = sl<PostService>();
 
   @override
@@ -53,6 +57,9 @@ class CommunityBoardCardState extends State<CommunityBoardCard>
   }
 
   void _onPostChangedEvent() => refresh();
+
+  @override
+  Future<void> refreshSection() => refresh();
 
   @override
   Future<List<Post>> fetchData() =>

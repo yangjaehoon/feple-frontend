@@ -9,6 +9,7 @@ import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/common/util/navigation_guard.dart';
+import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/artist_genre_style.dart';
 import 'package:feple/screen/main/tab/search/w_artist_card.dart';
@@ -30,7 +31,9 @@ class ArtistDiscoverySection extends StatefulWidget {
 }
 
 class ArtistDiscoverySectionState extends State<ArtistDiscoverySection>
-    with FutureRefreshable<List<Artist>, ArtistDiscoverySection> {
+    with
+        FutureRefreshable<List<Artist>, ArtistDiscoverySection>,
+        RefreshableSection<ArtistDiscoverySection> {
   final _artistService = sl<ArtistService>();
   final _followService = sl<ArtistFollowService>();
 
@@ -54,10 +57,12 @@ class ArtistDiscoverySectionState extends State<ArtistDiscoverySection>
 
   void _onArtistFollowChanged() => _loadFollowedIds();
 
-  // 부모(SearchFragment)가 GlobalKey로 refresh()를 호출해 완료 시점을 기다리므로
   // 목록/팔로우 상태를 함께 새로고침하고 끝날 때까지 기다린다.
   @override
   Future<void> refresh() => Future.wait([super.refresh(), _loadFollowedIds()]);
+
+  @override
+  Future<void> refreshSection() => refresh();
 
   Future<void> _loadFollowedIds() async {
     if (!mounted) return;

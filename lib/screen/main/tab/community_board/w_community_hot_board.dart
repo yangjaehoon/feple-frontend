@@ -4,14 +4,11 @@ import 'package:feple/screen/main/tab/community_board/w_community_board_card.dar
 import 'package:flutter/material.dart';
 
 class CommunityHotBoard extends StatelessWidget {
-  final GlobalKey<CommunityBoardCardState>? cardKey;
-
-  const CommunityHotBoard({super.key, this.cardKey});
+  const CommunityHotBoard({super.key});
 
   @override
   Widget build(BuildContext context) {
     return CommunityBoardCard(
-      key: cardKey,
       title: 'hot_board'.tr(),
       icon: Icons.local_fire_department_rounded,
       headerColorFn: (colors) => colors.hotBoardHeader,

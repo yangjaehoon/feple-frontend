@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/common/widget/w_adaptive_refresh_view.dart';
 import 'package:feple/provider/festival_preview_provider.dart';
 import 'package:feple/screen/main/tab/search/w_artist_discovery.dart';
@@ -16,7 +17,7 @@ class SearchFragment extends StatefulWidget {
 }
 
 class _SearchFragmentState extends State<SearchFragment> {
-  final _artistDiscoveryKey = GlobalKey<ArtistDiscoverySectionState>();
+  final _refresh = RefreshCoordinator();
   FestivalPreviewProvider? _festivalPreviewProvider;
 
   @override
@@ -53,7 +54,7 @@ class _SearchFragmentState extends State<SearchFragment> {
   Future<void> _onRefresh() async {
     await Future.wait([
       context.read<FestivalPreviewProvider>().refresh(force: true),
-      _artistDiscoveryKey.currentState?.refresh() ?? Future.value(),
+      _refresh.refreshAll(),
     ]);
   }
 
@@ -71,11 +72,14 @@ class _SearchFragmentState extends State<SearchFragment> {
               onRefresh: _onRefresh,
               indicatorColor: colors.activate,
               padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
-              child: Column(
-                children: [
-                  const FestivalListSwiperWidget(),
-                  ArtistDiscoverySection(key: _artistDiscoveryKey),
-                ],
+              child: RefreshScope(
+                coordinator: _refresh,
+                child: const Column(
+                  children: [
+                    FestivalListSwiperWidget(),
+                    ArtistDiscoverySection(),
+                  ],
+                ),
               ),
             ),
           ),

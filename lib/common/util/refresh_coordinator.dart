@@ -15,8 +15,17 @@ class RefreshCoordinator {
   void unregister(RefreshableSection section) => _sections.remove(section);
 
   /// 등록된 모든 섹션을 새로고침하고 전부 끝날 때까지 기다린다.
-  Future<void> refreshAll() =>
-      Future.wait(_sections.map((section) => section.refreshSection()));
+  /// 한 섹션의 실패가 다른 섹션 새로고침이나 RefreshIndicator(onRefresh 예외 시
+  /// 크래시)를 막지 않도록 섹션별로 격리한다 — 에러 표시는 각 섹션이 담당한다.
+  Future<void> refreshAll() => Future.wait(
+        _sections.map((section) async {
+          try {
+            await section.refreshSection();
+          } catch (_) {
+            // 섹션이 자체 에러 상태로 처리한다.
+          }
+        }),
+      );
 }
 
 /// [RefreshCoordinator]를 하위 트리에 전달하는 InheritedWidget.

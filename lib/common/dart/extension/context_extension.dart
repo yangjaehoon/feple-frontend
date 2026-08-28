@@ -7,8 +7,6 @@ import '../../common.dart';
 extension ContextExtension on BuildContext {
   AbstractThemeColors get appColors => CustomThemeHolder.of(this).appColors;
 
-  AbsThemeShadows get appShadows => CustomThemeHolder.of(this).appShadows;
-
   CustomTheme get themeType => CustomThemeHolder.of(this).theme;
 
   Function(CustomTheme) get changeTheme => CustomThemeHolder.of(this).changeTheme;

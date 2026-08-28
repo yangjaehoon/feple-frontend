@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/app_alert_dialog.dart';
 import 'package:feple/common/widget/w_text_scale_clamp.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/provider/user_provider.dart';
@@ -110,9 +111,10 @@ class _MyAppState extends State<MyApp> {
         await showDialog<void>(
           context: ctx,
           barrierDismissible: false,
-          builder: (dialogCtx) => AlertDialog.adaptive(
-            title: Text('account_banned_title'.tr()),
-            content: Text('account_banned_message'.tr()),
+          builder: (dialogCtx) => buildAppAlertDialog(
+            dialogCtx,
+            title: 'account_banned_title'.tr(),
+            content: 'account_banned_message'.tr(),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(dialogCtx).pop(),

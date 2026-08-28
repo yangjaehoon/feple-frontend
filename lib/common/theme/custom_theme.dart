@@ -2,25 +2,16 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/theme/color/dark_app_colors.dart';
 import 'package:feple/common/theme/color/light_app_colors.dart';
-import 'package:feple/common/theme/shadows/dark_app_shadows.dart';
-import 'package:feple/common/theme/shadows/light_app_shadows.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 
 enum CustomTheme {
-  dark(
-    DarkAppColors(),
-    DarkAppShadows(),
-  ),
-  light(
-    LightAppColors(),
-    LightAppShadows(),
-  );
+  dark(DarkAppColors()),
+  light(LightAppColors());
 
-  const CustomTheme(this.appColors, this.appShadows);
+  const CustomTheme(this.appColors);
 
   final AbstractThemeColors appColors;
-  final AbsThemeShadows appShadows;
 
   ThemeData get themeData {
     switch (this) {

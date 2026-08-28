@@ -3,13 +3,12 @@ import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/model/post_draft.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/common/util/response_parsing.dart';
+import 'package:feple/common/constant/api_constants.dart';
 import 'package:feple/network/dio_client.dart';
 
 export 'package:feple/model/post_draft.dart';
 
 class PostService {
-  static const _defaultPageSize = 20;
-
   static const _endpoints = {
     BoardTypes.hot: '/posts/popular',
     BoardTypes.free: '/posts/free',
@@ -40,7 +39,7 @@ class PostService {
   static const postImagePresignEndpoint = '/posts/image-upload-url';
 
   /// 게시글 커서 페이지 조회 (free/mate 전용)
-  Future<PostCursorPage> fetchPostsPage(String boardType, {int? cursor, int size = _defaultPageSize, String sort = 'latest'}) =>
+  Future<PostCursorPage> fetchPostsPage(String boardType, {int? cursor, int size = ApiConstants.defaultPageSize, String sort = 'latest'}) =>
       _fetchCursorPage(_endpointFor(boardType), cursor: cursor, size: size, sort: sort);
 
   Future<void> _createPost(String endpoint, PostDraft draft) =>
@@ -82,7 +81,7 @@ class PostService {
       _createPost(_endpointFor(boardType), draft);
 
   /// 아티스트 게시판 페이지 조회
-  Future<PostCursorPage> fetchArtistPostsPage(int artistId, {int? cursor, int size = _defaultPageSize}) =>
+  Future<PostCursorPage> fetchArtistPostsPage(int artistId, {int? cursor, int size = ApiConstants.defaultPageSize}) =>
       _fetchCursorPage('/posts/artist/$artistId', cursor: cursor, size: size);
 
   /// 아티스트 게시판 목록 조회
@@ -94,7 +93,7 @@ class PostService {
       _createPost('/posts/artist/$artistId', draft);
 
   /// 페스티벌 게시판 페이지 조회
-  Future<PostCursorPage> fetchFestivalPostsPage(int festivalId, {int? cursor, int size = _defaultPageSize}) =>
+  Future<PostCursorPage> fetchFestivalPostsPage(int festivalId, {int? cursor, int size = ApiConstants.defaultPageSize}) =>
       _fetchCursorPage('/posts/festival/$festivalId', cursor: cursor, size: size);
 
   /// 페스티벌 게시판 글 작성
@@ -106,7 +105,7 @@ class PostService {
       _fetchPostList('/posts/festival/$festivalId/popular');
 
   /// 동행구하기 게시판 페이지 조회
-  Future<PostCursorPage> fetchFestivalCompanionPostsPage(int festivalId, {int? cursor, int size = _defaultPageSize}) =>
+  Future<PostCursorPage> fetchFestivalCompanionPostsPage(int festivalId, {int? cursor, int size = ApiConstants.defaultPageSize}) =>
       _fetchCursorPage('/posts/festival/$festivalId/companion', cursor: cursor, size: size);
 
   /// 동행구하기 게시판 글 작성
@@ -114,7 +113,7 @@ class PostService {
       _createPost('/posts/festival/$festivalId/companion', draft);
 
   /// 티켓양도 게시판 페이지 조회
-  Future<PostCursorPage> fetchFestivalTicketPostsPage(int festivalId, {int? cursor, int size = _defaultPageSize}) =>
+  Future<PostCursorPage> fetchFestivalTicketPostsPage(int festivalId, {int? cursor, int size = ApiConstants.defaultPageSize}) =>
       _fetchCursorPage('/posts/festival/$festivalId/ticket', cursor: cursor, size: size);
 
   /// 티켓양도 게시판 글 작성
@@ -139,7 +138,7 @@ class PostService {
   Future<void> incrementPostView(int postId) =>
       DioClient.dio.post('/posts/$postId/view');
 
-  Future<PostCursorPage> _fetchCursorPage(String endpoint, {int? cursor, int size = _defaultPageSize, String? sort}) async {
+  Future<PostCursorPage> _fetchCursorPage(String endpoint, {int? cursor, int size = ApiConstants.defaultPageSize, String? sort}) async {
     final response = await DioClient.dio.get(endpoint, queryParameters: {
       'cursor': ?cursor,
       'size': size,

@@ -2,6 +2,7 @@ import 'package:feple/common/util/response_parsing.dart';
 import 'package:feple/model/notification_model.dart';
 import 'package:feple/model/notification_page.dart';
 import 'package:feple/model/spring_page.dart';
+import 'package:feple/common/constant/api_constants.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/service/notification_countable.dart';
 import 'package:feple/service/notification_feedable.dart';
@@ -9,11 +10,9 @@ import 'package:feple/service/notification_feedable.dart';
 export 'package:feple/model/notification_page.dart';
 
 class NotificationService implements NotificationCountable, NotificationFeedable {
-  static const int _pageSize = 20;
-
   @override
   Future<NotificationPage> fetchPage(int page, {NotificationFilter filter = NotificationFilter.all}) async {
-    final params = <String, dynamic>{'page': page, 'size': _pageSize};
+    final params = <String, dynamic>{'page': page, 'size': ApiConstants.defaultPageSize};
     final group = filter.typeGroup;
     if (group != null) params['typeGroup'] = group;
 

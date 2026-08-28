@@ -29,14 +29,8 @@ class MainScreenState extends State<MainScreen>
     with SingleTickerProviderStateMixin {
   TabItem _currentTab = TabItem.home;
   final Set<int> _visitedTabs = {};
-  // TabItem enum 선언 순서와 반드시 일치시킬 것 (하단 탭 바 표시 순서)
-  final tabs = [
-    TabItem.search,
-    TabItem.communityBoard,
-    TabItem.home,
-    TabItem.festivalList,
-    TabItem.favorite,
-  ];
+  // 하단 탭 바 표시 순서 = TabItem 선언 순서
+  final tabs = TabItem.values;
   late final List<GlobalKey<NavigatorState>> navigatorKeys =
       List.generate(tabs.length, (_) => GlobalKey<NavigatorState>());
   late final List<_NavBarObserver> _tabObservers;

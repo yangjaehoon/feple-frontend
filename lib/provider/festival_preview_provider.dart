@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart' show CancelToken;
+import 'package:feple/common/constant/api_constants.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/common/stale_tracker.dart';
@@ -46,7 +47,7 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
 
   void clearRefreshError() => _refreshError = null;
   int _page = 0;
-  final int _size = 20;
+  static const _size = ApiConstants.defaultPageSize;
   bool _hasMore = true;
   bool get hasMore => _hasMore;
 

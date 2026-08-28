@@ -19,6 +19,7 @@ import 'package:feple/common/data/preference/prefs.dart';
 import 'package:feple/screen/onboarding/s_onboarding.dart';
 import 'package:flutter/foundation.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/constant/store_links.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/festival_cache_service.dart';
@@ -255,13 +256,13 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
       SettingsItem(
         icon: Icons.headset_mic_rounded,
         label: 'customer_service'.tr(),
-        onTap: () => _openExternalLink('https://open.kakao.com/o/guLhbJki'),
+        onTap: () => _openExternalLink(kCustomerServiceUrl),
       ),
       const SettingsItemDivider(),
       SettingsItem(
         icon: Icons.privacy_tip_rounded,
         label: 'privacy_policy'.tr(),
-        onTap: () => _openExternalLink('https://yangjae.notion.site/feple-privacy?source=copy_link'),
+        onTap: () => _openExternalLink(kPrivacyPolicyUrl),
       ),
       const SettingsItemDivider(),
       SettingsItem(

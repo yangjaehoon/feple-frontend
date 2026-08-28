@@ -1,12 +1,11 @@
 import 'package:feple/model/my_comment_model.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/model/user_stats_model.dart';
+import 'package:feple/common/constant/api_constants.dart';
 import 'package:feple/network/dio_client.dart';
 
 class UserActivityService {
-  static const _defaultPageSize = 20;
-
-  Future<PostCursorPage> fetchPostsPage(int userId, {int? cursor, int size = _defaultPageSize}) async {
+  Future<PostCursorPage> fetchPostsPage(int userId, {int? cursor, int size = ApiConstants.defaultPageSize}) async {
     final response = await DioClient.dio.get('/users/$userId/posts', queryParameters: {
       'cursor': ?cursor,
       'size': size,

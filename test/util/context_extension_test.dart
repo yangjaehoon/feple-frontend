@@ -44,12 +44,6 @@ void main() {
       expect(context.appColors, isNotNull);
     });
 
-    testWidgets('appShadows는 현재 테마의 그림자를 반환한다', (tester) async {
-      final context = await pump(tester, theme: CustomTheme.light);
-
-      expect(context.appShadows, isNotNull);
-    });
-
     testWidgets('themeType은 현재 CustomTheme을 반환한다', (tester) async {
       final context = await pump(tester, theme: CustomTheme.dark);
 

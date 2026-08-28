@@ -32,11 +32,7 @@ void main() async {
   final bindings = WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   setupDependencies();
-
-  // 기본 ImageCache: 1000개 / 100MB — 고해상도 포스터가 많은 페스티벌 앱 특성상
-  // 이미지 수 제한을 줄이고 바이트 예산을 명시해 OOM 위험 감소
-  PaintingBinding.instance.imageCache.maximumSize = 150;
-  PaintingBinding.instance.imageCache.maximumSizeBytes = 60 * 1024 * 1024; // 60MB
+  _configureImageCache();
   FlutterNativeSplash.preserve(widgetsBinding: bindings);
 
   // 서로 의존관계 없는 초기화라 병렬로 실행 — 콜드스타트 시간을 합이 아닌
@@ -225,6 +221,16 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
+}
+
+/// 기본 ImageCache는 1000개 / 100MB — 고해상도 포스터가 많은 페스티벌 앱
+/// 특성상 이미지 수 제한을 줄이고 바이트 예산을 명시해 OOM 위험을 낮춘다.
+void _configureImageCache() {
+  const maxImages = 150;
+  const maxBytes = 60 * 1024 * 1024; // 60MB
+  PaintingBinding.instance.imageCache
+    ..maximumSize = maxImages
+    ..maximumSizeBytes = maxBytes;
 }
 
 // 스플래시 중 홈 데이터를 FestivalCacheService에 저장

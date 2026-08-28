@@ -64,7 +64,7 @@ mixin FilteredStatusListState<T, S, W extends StatefulWidget> on State<W> {
         });
       }
     } catch (e) {
-      if (mounted) context.showErrorSnackbar(networkAwareErrorKey(e, 'err_fetch_data').tr());
+      if (mounted) context.showErrorSnackbar(fetchFailureText(e));
     }
   }
 }

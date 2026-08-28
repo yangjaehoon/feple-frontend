@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
@@ -82,7 +81,7 @@ class PostCursorController extends SafeChangeNotifier {
       // 기존 목록은 유지하되(크래시 방지), 실패 사실은 알려야 한다 — 조용히 삼키면
       // 새로고침이 실제로 실패했는데도 사용자는 성공한 줄 알게 됨
       if (!silent) {
-        _refreshError = networkAwareErrorKey(e, 'err_fetch_data').tr();
+        _refreshError = fetchFailureText(e);
         safeNotify();
       }
     }
@@ -105,7 +104,7 @@ class PostCursorController extends SafeChangeNotifier {
       if (_loadId != myId) return;
       _isLoadingMore = false;
       // 조용히 삼키면 "더 보기"가 실패했는데도 사용자는 그냥 목록이 끝난 줄 알게 됨
-      _refreshError = networkAwareErrorKey(e, 'err_fetch_data').tr();
+      _refreshError = fetchFailureText(e);
       safeNotify();
     }
   }

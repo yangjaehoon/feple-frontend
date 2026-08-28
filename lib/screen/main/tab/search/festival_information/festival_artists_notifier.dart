@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/app_events.dart';
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
@@ -106,7 +105,7 @@ class FestivalArtistsNotifier extends SafeChangeNotifier {
       safeNotify();
     } catch (e) {
       debugPrint('festival artists refresh error: $e');
-      refreshError = networkAwareErrorKey(e, 'err_fetch_data').tr();
+      refreshError = fetchFailureText(e);
       safeNotify();
     }
   }

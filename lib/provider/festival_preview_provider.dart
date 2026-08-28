@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/common/stale_tracker.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
@@ -165,7 +164,7 @@ class FestivalPreviewProvider extends SafeChangeNotifier {
         // 기존 데이터 유지, 새로고침/더 불러오기 실패 알림 (snackbar용 일회성 플래그)
         // — wasFirstPage 여부와 무관하게 항상 알려야 "더 불러오기"만 조용히
         // 실패하는 비대칭을 피할 수 있음
-        _refreshError = networkAwareErrorKey(e, 'err_fetch_data').tr();
+        _refreshError = fetchFailureText(e);
       }
     } finally {
       if (myGeneration == _generation) {

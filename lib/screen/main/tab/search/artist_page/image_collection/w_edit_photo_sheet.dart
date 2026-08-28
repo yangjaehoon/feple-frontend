@@ -75,7 +75,7 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
       // 실패인지 원래 목록이 없는지 사용자가 구분할 수 있도록 알린다
       if (mounted) {
         setState(() => _loadingFestivals = false);
-        context.showErrorSnackbar(networkAwareErrorKey(e, 'err_fetch_data').tr());
+        context.showErrorSnackbar(fetchFailureText(e));
       }
     }
   }

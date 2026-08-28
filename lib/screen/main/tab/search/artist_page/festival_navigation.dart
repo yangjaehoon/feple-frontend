@@ -29,7 +29,7 @@ Future<void> navigateToFestivalById(
   } catch (e) {
     debugPrint('festival fetch error: $e');
     if (context.mounted) {
-      context.showErrorSnackbar(networkAwareErrorKey(e, 'err_fetch_data').tr());
+      context.showErrorSnackbar(fetchFailureText(e));
     }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/exception/banned_word_exception.dart';
 
 bool isDioConflict(Object e) {
@@ -58,3 +59,8 @@ String networkAwareErrorKey(Object e, String operationErrorKey) {
   }
   return operationErrorKey;
 }
+
+/// 조회(읽기) 실패 시 스낵바·에러 위젯에 표시할 지역화 문자열.
+/// 오프라인/타임아웃이면 '연결 오류', 그 외(서버 오류 등)면 '데이터를 불러오지 못함'.
+String fetchFailureText(Object e) =>
+    networkAwareErrorKey(e, 'err_fetch_data').tr();

@@ -57,7 +57,7 @@ class _WeatherBottomSheetState extends State<WeatherBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final bottomInset = MediaQuery.of(context).padding.bottom;
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
 
     return Container(
       decoration: BoxDecoration(

@@ -107,8 +107,8 @@ class _WithdrawalReasonSheetContentState extends State<_WithdrawalReasonSheetCon
           left: 20,
           right: 20,
           top: 20,
-          bottom: MediaQuery.of(context).viewInsets.bottom +
-              MediaQuery.of(context).viewPadding.bottom +
+          bottom: MediaQuery.viewInsetsOf(context).bottom +
+              MediaQuery.viewPaddingOf(context).bottom +
               20,
         ),
         child: Column(

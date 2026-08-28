@@ -27,7 +27,7 @@ class TicketLinkSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final bottomInset = MediaQuery.of(context).padding.bottom;
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
     return Container(
       decoration: BoxDecoration(
         color: colors.backgroundMain,

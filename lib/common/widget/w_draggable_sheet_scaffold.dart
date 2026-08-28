@@ -21,7 +21,7 @@ class DraggableSheetScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final maxHeight = MediaQuery.of(context).size.height * 0.75;
+    final maxHeight = MediaQuery.sizeOf(context).height * 0.75;
 
     return Material(
       color: colors.surface,
@@ -41,7 +41,7 @@ class DraggableSheetScaffold extends StatelessWidget {
             list,
             Divider(color: colors.listDivider, height: 1),
             Padding(
-              padding: EdgeInsets.fromLTRB(20, 12, 20, 12 + MediaQuery.of(context).padding.bottom),
+              padding: EdgeInsets.fromLTRB(20, 12, 20, 12 + MediaQuery.paddingOf(context).bottom),
               child: LoadingButton(
                 label: 'confirm'.tr(),
                 isLoading: false,

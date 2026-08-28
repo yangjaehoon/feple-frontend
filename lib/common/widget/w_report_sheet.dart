@@ -151,8 +151,8 @@ class _ReportSheetContentState extends State<_ReportSheetContent> {
           right: 20,
           top: 20,
           bottom:
-              MediaQuery.of(context).viewInsets.bottom +
-              MediaQuery.of(context).viewPadding.bottom +
+              MediaQuery.viewInsetsOf(context).bottom +
+              MediaQuery.viewPaddingOf(context).bottom +
               20,
         ),
         child: Column(

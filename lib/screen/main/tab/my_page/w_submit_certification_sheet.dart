@@ -136,9 +136,9 @@ class _SubmitCertificationSheetState extends State<SubmitCertificationSheet> {
       child: Padding(
         padding: EdgeInsets.only(
           bottom:
-              MediaQuery.of(context).viewInsets.bottom +
+              MediaQuery.viewInsetsOf(context).bottom +
               kBottomNavigationBarHeight +
-              MediaQuery.of(context).padding.bottom +
+              MediaQuery.paddingOf(context).bottom +
               24,
         ),
         child: Column(

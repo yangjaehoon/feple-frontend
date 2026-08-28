@@ -163,8 +163,8 @@ class _RatingSheetState extends State<RatingSheet> {
         ),
         padding: EdgeInsets.only(
           bottom:
-              MediaQuery.of(context).viewInsets.bottom +
-              MediaQuery.of(context).padding.bottom,
+              MediaQuery.viewInsetsOf(context).bottom +
+              MediaQuery.paddingOf(context).bottom,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

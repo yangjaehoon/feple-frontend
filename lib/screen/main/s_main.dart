@@ -124,7 +124,7 @@ class MainScreenState extends State<MainScreen>
     return ValueListenableBuilder<bool>(
       valueListenable: _showBottomNav,
       builder: (context, show, child) {
-        final bottomPadding = show ? 0.0 : MediaQuery.of(context).padding.bottom;
+        final bottomPadding = show ? 0.0 : MediaQuery.paddingOf(context).bottom;
         return AnimatedContainer(
           duration: AppDimens.animFast,
           curve: Curves.easeInOut,

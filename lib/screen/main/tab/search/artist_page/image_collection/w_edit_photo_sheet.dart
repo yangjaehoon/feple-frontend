@@ -90,7 +90,7 @@ class _EditPhotoSheetState extends State<EditPhotoSheet> {
       ),
       child: Padding(
         padding: EdgeInsets.fromLTRB(
-            20, 12, 20, 20 + MediaQuery.of(context).viewInsets.bottom),
+            20, 12, 20, 20 + MediaQuery.viewInsetsOf(context).bottom),
         child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,

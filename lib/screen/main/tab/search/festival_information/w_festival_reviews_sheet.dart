@@ -227,7 +227,7 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
       child: ListView.builder(
         controller: scrollController,
         padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).padding.bottom + 24,
+          bottom: MediaQuery.paddingOf(context).bottom + 24,
         ),
         itemCount: headerCount + reviewCount,
         itemBuilder: (context, index) {

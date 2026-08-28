@@ -137,7 +137,7 @@ class _UserDiaryFeedSheetState extends State<UserDiaryFeedSheet> {
       },
       child: ListView.builder(
         controller: scrollController,
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 24),
+        padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom + 24),
         itemCount: itemCount,
         itemBuilder: (context, index) {
           if (index < _diaries.length) {

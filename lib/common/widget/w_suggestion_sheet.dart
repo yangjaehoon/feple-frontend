@@ -77,7 +77,7 @@ class _SuggestionSheetState extends State<SuggestionSheet> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: Container(
         decoration: BoxDecoration(
           color: colors.backgroundMain,
@@ -85,7 +85,7 @@ class _SuggestionSheetState extends State<SuggestionSheet> {
         ),
         padding: EdgeInsets.only(
           bottom: kBottomNavigationBarHeight +
-              MediaQuery.of(context).padding.bottom +
+              MediaQuery.paddingOf(context).bottom +
               24,
         ),
         child: Column(

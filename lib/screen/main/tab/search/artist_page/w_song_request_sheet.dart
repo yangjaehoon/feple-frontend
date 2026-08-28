@@ -123,7 +123,7 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
       },
       child: Padding(
         padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
+          bottom: MediaQuery.viewInsetsOf(context).bottom,
         ),
         child: Container(
           decoration: BoxDecoration(
@@ -135,7 +135,7 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
           padding: EdgeInsets.only(
             bottom:
                 kBottomNavigationBarHeight +
-                MediaQuery.of(context).padding.bottom +
+                MediaQuery.paddingOf(context).bottom +
                 24,
           ),
           child: Column(

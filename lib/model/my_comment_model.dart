@@ -1,3 +1,5 @@
+import 'json_reader.dart';
+
 class MyComment {
   final int commentId;
   final String content;
@@ -20,13 +22,13 @@ class MyComment {
   });
 
   factory MyComment.fromJson(Map<String, dynamic> json) => MyComment(
-        commentId: (json['commentId'] as num).toInt(),
-        content: json['content'] as String,
-        postId: (json['postId'] as num).toInt(),
-        postTitle: json['postTitle'] as String,
-        postContent: json['postContent'] as String,
-        postNickname: json['postNickname'] as String,
-        postLikeCount: (json['postLikeCount'] as num).toInt(),
-        boardDisplayName: json['boardDisplayName'] as String,
+        commentId: json.integer('commentId'),
+        content: json.str('content'),
+        postId: json.integer('postId'),
+        postTitle: json.str('postTitle'),
+        postContent: json.str('postContent'),
+        postNickname: json.str('postNickname'),
+        postLikeCount: json.integer('postLikeCount'),
+        boardDisplayName: json.str('boardDisplayName'),
       );
 }

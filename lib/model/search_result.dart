@@ -2,6 +2,8 @@ import 'package:feple/model/artist_model.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/model/post_model.dart';
 
+import 'json_reader.dart';
+
 class SearchResult {
   final List<Artist> artists;
   final List<FestivalPreview> festivals;
@@ -14,14 +16,9 @@ class SearchResult {
   });
 
   factory SearchResult.fromJson(Map<String, dynamic> json) => SearchResult(
-        artists: _parseList(json['artists'], Artist.fromJson),
-        festivals: _parseList(json['festivals'], FestivalPreview.fromJson),
-        posts: _parseList(json['posts'], Post.fromJson),
+        artists: json.objectList('artists').map(Artist.fromJson).toList(),
+        festivals:
+            json.objectList('festivals').map(FestivalPreview.fromJson).toList(),
+        posts: json.objectList('posts').map(Post.fromJson).toList(),
       );
-
-  static List<T> _parseList<T>(
-    dynamic raw,
-    T Function(Map<String, dynamic>) fromJson,
-  ) =>
-      ((raw as List?) ?? []).map((e) => fromJson(e as Map<String, dynamic>)).toList();
 }

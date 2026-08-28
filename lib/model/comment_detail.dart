@@ -1,4 +1,5 @@
 import 'date_format.dart';
+import 'json_reader.dart';
 
 class CommentDetail {
   // 작성 직후 서버 응답의 createdAt/updatedAt 미세한 시간차로 "수정됨"이
@@ -39,20 +40,20 @@ class CommentDetail {
 
   factory CommentDetail.fromJson(Map<String, dynamic> json) {
     return CommentDetail(
-      id: (json['id'] as num).toInt(),
-      postId: (json['postId'] as num).toInt(),
-      userId: (json['userId'] as num).toInt(),
-      nickname: json['nickname'] as String? ?? 'User',
-      profileImageUrl: json['profileImageUrl'] as String?,
-      content: json['content'] as String,
-      createdAt: parseServerDateTime(json['createdAt'] as String?),
-      updatedAt: DateTime.tryParse(json['updatedAt'] as String? ?? ''),
-      certified: json['certified'] as bool? ?? false,
-      userRole: json['userRole'] as String?,
-      parentId: json['parentId'] != null ? (json['parentId'] as num).toInt() : null,
-      likeCount: (json['likeCount'] as num?)?.toInt() ?? 0,
-      liked: json['liked'] as bool? ?? false,
-      anonymous: json['anonymous'] as bool? ?? false,
+      id: json.integer('id'),
+      postId: json.integer('postId'),
+      userId: json.integer('userId'),
+      nickname: json.str('nickname', 'User'),
+      profileImageUrl: json.strOrNull('profileImageUrl'),
+      content: json.str('content'),
+      createdAt: parseServerDateTime(json.strOrNull('createdAt')),
+      updatedAt: json.dateTimeOrNull('updatedAt'),
+      certified: json.boolean('certified'),
+      userRole: json.strOrNull('userRole'),
+      parentId: json.intOrNull('parentId'),
+      likeCount: json.integer('likeCount'),
+      liked: json.boolean('liked'),
+      anonymous: json.boolean('anonymous'),
     );
   }
 

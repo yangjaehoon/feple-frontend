@@ -1,3 +1,4 @@
+import 'json_reader.dart';
 import 'localized_text.dart';
 
 enum SearchType {
@@ -22,11 +23,11 @@ class SearchSuggestion {
   const SearchSuggestion(this.label, this.type, {this.id, this.labelEn = '', this.imageUrl});
 
   factory SearchSuggestion.fromJson(Map<String, dynamic> json) => SearchSuggestion(
-        json['label'] as String? ?? '',
-        SearchType.fromValue(json['type'] as String?) ?? SearchType.festival,
-        id: (json['id'] as num?)?.toInt(),
-        labelEn: json['labelEn'] as String? ?? '',
-        imageUrl: json['imageUrl'] as String?,
+        json.str('label'),
+        SearchType.fromValue(json.strOrNull('type')) ?? SearchType.festival,
+        id: json.intOrNull('id'),
+        labelEn: json.str('labelEn'),
+        imageUrl: json.strOrNull('imageUrl'),
       );
 
   String displayLabel(bool isEnglish) => pickLocalized(isEnglish, label, labelEn);

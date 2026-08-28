@@ -1,3 +1,5 @@
+import 'json_reader.dart';
+
 class Post {
   final int id;
   final String title;
@@ -46,28 +48,26 @@ class Post {
   // JSON에서 객체로 변환
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
-      id: (json['id'] as num).toInt(),
-      title: json['title'] as String,
-      content: json['content'] as String,
-      boardType: json['boardType'] as String?,
-      likeCount: (json['likeCount'] as num).toInt(),
-      scrapCount: (json['scrapCount'] as num?)?.toInt() ?? 0,
-      commentCount: (json['commentCount'] as num?)?.toInt() ?? 0,
-      nickname: json['nickname'] as String,
-      profileImageUrl: json['profileImageUrl'] as String?,
-      imageUrls: ((json['imageUrls'] as List<dynamic>?) ?? [])
-          .map((e) => e as String)
-          .toList(),
-      artistId: (json['artistId'] as num?)?.toInt(),
-      boardDisplayName: json['boardDisplayName'] as String? ?? '',
-      certified: json['certified'] as bool? ?? false,
-      userRole: json['userRole'] as String?,
-      anonymous: json['anonymous'] as bool? ?? false,
-      createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt'] as String) : null,
-      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt'] as String) : null,
-      userId: (json['userId'] as num?)?.toInt(),
-      viewCount: (json['viewCount'] as num?)?.toInt() ?? 0,
-      authorLevel: json['authorLevel'] as String?,
+      id: json.integer('id'),
+      title: json.str('title'),
+      content: json.str('content'),
+      boardType: json.strOrNull('boardType'),
+      likeCount: json.integer('likeCount'),
+      scrapCount: json.integer('scrapCount'),
+      commentCount: json.integer('commentCount'),
+      nickname: json.str('nickname'),
+      profileImageUrl: json.strOrNull('profileImageUrl'),
+      imageUrls: json.stringList('imageUrls'),
+      artistId: json.intOrNull('artistId'),
+      boardDisplayName: json.str('boardDisplayName'),
+      certified: json.boolean('certified'),
+      userRole: json.strOrNull('userRole'),
+      anonymous: json.boolean('anonymous'),
+      createdAt: json.dateTimeOrNull('createdAt'),
+      updatedAt: json.dateTimeOrNull('updatedAt'),
+      userId: json.intOrNull('userId'),
+      viewCount: json.integer('viewCount'),
+      authorLevel: json.strOrNull('authorLevel'),
     );
   }
 }
@@ -80,8 +80,8 @@ class PostCursorPage {
   const PostCursorPage({required this.content, this.nextCursor, required this.hasNext});
 
   factory PostCursorPage.fromJson(Map<String, dynamic> json) => PostCursorPage(
-        content: ((json['content'] as List<dynamic>?) ?? []).map((e) => Post.fromJson(e as Map<String, dynamic>)).toList(),
-        nextCursor: (json['nextCursor'] as num?)?.toInt(),
-        hasNext: json['hasNext'] as bool,
+        content: json.objectList('content').map(Post.fromJson).toList(),
+        nextCursor: json.intOrNull('nextCursor'),
+        hasNext: json.boolean('hasNext'),
       );
 }

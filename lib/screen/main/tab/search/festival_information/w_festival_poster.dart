@@ -692,11 +692,14 @@ class FestivalPosterState extends State<FestivalPoster> {
           ),
         ),
       ),
-      secondChild: const SizedBox(height: AppDimens.space10),
+      // 너비를 full-width로 고정해 접힐 때 높이만 애니메이션되게 한다.
+      // (너비가 0으로 줄면 Text가 한 글자씩 세로로 리플로우됨)
+      secondChild: const SizedBox(width: double.infinity, height: AppDimens.space10),
       crossFadeState: _notifier.descExpanded
           ? CrossFadeState.showFirst
           : CrossFadeState.showSecond,
       duration: AppDimens.animFast,
+      alignment: Alignment.topLeft,
     ),
   ];
 }

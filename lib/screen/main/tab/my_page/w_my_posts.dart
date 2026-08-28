@@ -9,6 +9,7 @@ import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_refreshable_center.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_stat_row.dart';
 import 'package:feple/service/user_activity_service.dart';
@@ -146,55 +147,66 @@ class _MyPostsViewState extends State<MyPostsView> {
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
       itemCount: posts.length + (_controller.isLoadingMore ? 1 : 0),
-      itemBuilder: (context, index) {
-        if (index == posts.length) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: Center(child: CircularProgressIndicator.adaptive()),
-          );
-        }
-        final post = posts[index];
-        return AnimatedListItem(
-          index: index,
-          child: ListTile(
-            onTap: () async {
-              await Navigator.of(context, rootNavigator: true).push(
-                SlideRoute(
-                  builder: (_) => PostDetailCard.fromPost(
-                    boardName: post.boardDisplayName,
-                    post: post,
-                  ),
-                ),
-              );
-              if (mounted) unawaited(_controller.refresh());
-            },
-            title: Text(
-              post.title,
-              style: TextStyle(
-                color: colors.textTitle,
-                fontWeight: FontWeight.w600,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            subtitle: Text(
-              post.boardDisplayName,
-              style: TextStyle(
-                color: colors.textSecondary,
-                fontSize: AppDimens.fontSizeXs,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            trailing: PostStatRow(
-              likeCount: post.likeCount,
-              commentCount: post.commentCount,
-            ),
-          ),
-        );
-      },
+      itemBuilder: (context, index) => index == posts.length
+          ? _buildLoadMoreFooter()
+          : _buildPostTile(context, posts[index], index, colors),
       separatorBuilder: (_, _) =>
           Divider(thickness: 1, color: colors.listDivider),
     );
+  }
+
+  Widget _buildLoadMoreFooter() {
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 16),
+      child: Center(child: CircularProgressIndicator.adaptive()),
+    );
+  }
+
+  Widget _buildPostTile(
+    BuildContext context,
+    Post post,
+    int index,
+    AbstractThemeColors colors,
+  ) {
+    return AnimatedListItem(
+      index: index,
+      child: ListTile(
+        onTap: () => _openPost(context, post),
+        title: Text(
+          post.title,
+          style: TextStyle(
+            color: colors.textTitle,
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Text(
+          post.boardDisplayName,
+          style: TextStyle(
+            color: colors.textSecondary,
+            fontSize: AppDimens.fontSizeXs,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: PostStatRow(
+          likeCount: post.likeCount,
+          commentCount: post.commentCount,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openPost(BuildContext context, Post post) async {
+    await Navigator.of(context, rootNavigator: true).push(
+      SlideRoute(
+        builder: (_) => PostDetailCard.fromPost(
+          boardName: post.boardDisplayName,
+          post: post,
+        ),
+      ),
+    );
+    if (mounted) unawaited(_controller.refresh());
   }
 }

@@ -270,31 +270,10 @@ class _CommentTile extends StatelessWidget {
 
   Widget _buildMenu(BuildContext context, AbstractThemeColors colors) {
     if (isOwn) {
-      return PopupMenuButton<String>(
-        icon: Icon(Icons.more_vert, size: 16, color: colors.textSecondary),
-        color: colors.surface,
-        elevation: 3,
-        shadowColor: colors.cardShadow.withValues(alpha: 0.18),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(AppDimens.shapeDialog),
-          ),
-        ),
-        position: PopupMenuPosition.under,
-        onSelected: (value) async {
-          if (value == 'edit') {
-            onEdit?.call();
-          } else if (value == 'delete') {
-            final confirmed = await showConfirmDialog(
-              context,
-              title: 'delete_comment'.tr(),
-              content: 'delete_comment_confirm'.tr(),
-              confirmLabel: 'delete_comment'.tr(),
-            );
-            if (confirmed) onDelete?.call();
-          }
-        },
-        itemBuilder: (_) => [
+      return _menuButton(
+        colors: colors,
+        onSelected: (value) => _onOwnMenuSelected(context, value),
+        items: [
           buildPopupMenuItem(
             value: 'edit',
             icon: Icons.edit_outlined,
@@ -315,21 +294,12 @@ class _CommentTile extends StatelessWidget {
       );
     }
     if (onReport != null) {
-      return PopupMenuButton<String>(
-        icon: Icon(Icons.more_vert, size: 16, color: colors.textSecondary),
-        color: colors.surface,
-        elevation: 3,
-        shadowColor: colors.cardShadow.withValues(alpha: 0.18),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(AppDimens.shapeDialog),
-          ),
-        ),
-        position: PopupMenuPosition.under,
+      return _menuButton(
+        colors: colors,
         onSelected: (value) {
           if (value == 'report') onReport!();
         },
-        itemBuilder: (_) => [
+        items: [
           buildPopupMenuItem(
             value: 'report',
             icon: Icons.flag_outlined,
@@ -342,6 +312,39 @@ class _CommentTile extends StatelessWidget {
       );
     }
     return const SizedBox.shrink();
+  }
+
+  Widget _menuButton({
+    required AbstractThemeColors colors,
+    required void Function(String) onSelected,
+    required List<PopupMenuEntry<String>> items,
+  }) {
+    return PopupMenuButton<String>(
+      icon: Icon(Icons.more_vert, size: 16, color: colors.textSecondary),
+      color: colors.surface,
+      elevation: 3,
+      shadowColor: colors.cardShadow.withValues(alpha: 0.18),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(AppDimens.shapeDialog)),
+      ),
+      position: PopupMenuPosition.under,
+      onSelected: onSelected,
+      itemBuilder: (_) => items,
+    );
+  }
+
+  Future<void> _onOwnMenuSelected(BuildContext context, String value) async {
+    if (value == 'edit') {
+      onEdit?.call();
+    } else if (value == 'delete') {
+      final confirmed = await showConfirmDialog(
+        context,
+        title: 'delete_comment'.tr(),
+        content: 'delete_comment_confirm'.tr(),
+        confirmLabel: 'delete_comment'.tr(),
+      );
+      if (confirmed) onDelete?.call();
+    }
   }
 }
 

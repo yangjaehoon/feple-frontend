@@ -118,75 +118,86 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         children: [
           const IconCircle(icon: Icons.lock_reset_rounded),
           const SizedBox(height: 28),
-          Text(
-            'reset_password'.tr(),
-            style: TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.w800,
-              color: colors.textTitle,
-              letterSpacing: -0.5,
-            ),
-          ),
-          const SizedBox(height: AppDimens.space8),
-          Text(
-            'reset_password_subtitle'.tr(),
-            style: TextStyle(
-              fontSize: AppDimens.fontSizeMd,
-              color: colors.textSecondary,
-              fontWeight: FontWeight.w500,
-              height: 1.5,
-            ),
-            textAlign: TextAlign.center,
-          ),
+          _buildHeader(colors),
           const SizedBox(height: AppDimens.space40),
-          AppTextField(
-            controller: _emailController,
-            hintText: 'registered_email'.tr(),
-            icon: Icons.mail_outline_rounded,
-            keyboardType: TextInputType.emailAddress,
-            autofillHints: const [AutofillHints.email],
-            textInputAction: TextInputAction.done,
-            onSubmitted: (_) => _onSend(),
-            errorText: _emailError,
-            onChanged: (_) {
-              if (_emailError != null || _errorMessage != null) {
-                setState(() {
-                  _emailError = null;
-                  _errorMessage = null;
-                });
-              }
-            },
-          ),
-          if (_errorMessage != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 8, left: 4),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline_rounded,
-                    color: colors.error,
-                    size: 14,
-                  ),
-                  const SizedBox(width: AppDimens.space4),
-                  Expanded(
-                    child: Text(
-                      _errorMessage!,
-                      style: TextStyle(
-                        fontSize: AppDimens.fontSizeXs,
-                        color: colors.error,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          _buildEmailField(),
+          if (_errorMessage != null) _buildServerError(colors),
           const SizedBox(height: AppDimens.space24),
           LoadingButton(
             label: 'send'.tr(),
             onPressed: _isSending ? null : _onSend,
             isLoading: _isSending,
             backgroundColor: colors.activate,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(AbstractThemeColors colors) {
+    return Column(
+      children: [
+        Text(
+          'reset_password'.tr(),
+          style: TextStyle(
+            fontSize: 26,
+            fontWeight: FontWeight.w800,
+            color: colors.textTitle,
+            letterSpacing: -0.5,
+          ),
+        ),
+        const SizedBox(height: AppDimens.space8),
+        Text(
+          'reset_password_subtitle'.tr(),
+          style: TextStyle(
+            fontSize: AppDimens.fontSizeMd,
+            color: colors.textSecondary,
+            fontWeight: FontWeight.w500,
+            height: 1.5,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEmailField() {
+    return AppTextField(
+      controller: _emailController,
+      hintText: 'registered_email'.tr(),
+      icon: Icons.mail_outline_rounded,
+      keyboardType: TextInputType.emailAddress,
+      autofillHints: const [AutofillHints.email],
+      textInputAction: TextInputAction.done,
+      onSubmitted: (_) => _onSend(),
+      errorText: _emailError,
+      onChanged: (_) {
+        if (_emailError != null || _errorMessage != null) {
+          setState(() {
+            _emailError = null;
+            _errorMessage = null;
+          });
+        }
+      },
+    );
+  }
+
+  Widget _buildServerError(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8, left: 4),
+      child: Row(
+        children: [
+          Icon(Icons.error_outline_rounded, color: colors.error, size: 14),
+          const SizedBox(width: AppDimens.space4),
+          Expanded(
+            child: Text(
+              _errorMessage!,
+              style: TextStyle(
+                fontSize: AppDimens.fontSizeXs,
+                color: colors.error,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
         ],
       ),

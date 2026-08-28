@@ -187,7 +187,6 @@ class _DiaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final thumbnailSize = ResponsiveSize(context).w(96);
     return Container(
       decoration: BoxDecoration(
         color: colors.surface,
@@ -200,82 +199,110 @@ class _DiaryCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
-              child: SizedBox(
-                width: thumbnailSize,
-                height: thumbnailSize,
-                child: diary.photoUrls.isNotEmpty
-                    ? AppNetworkImage(
-                        imageUrl: diary.photoUrls.first,
-                        width: thumbnailSize,
-                        height: thumbnailSize,
-                      )
-                    : Container(
-                        color: colors.activate.withValues(alpha: 0.1),
-                        child: Icon(Icons.menu_book_outlined, color: colors.activate.withValues(alpha: 0.4), size: 28),
-                      ),
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            diary.displayFestivalTitle(context.isEnglish),
-                            style: TextStyle(fontSize: AppDimens.fontSizeMd, fontWeight: FontWeight.w700, color: colors.textTitle),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        InkWell(
-                          onTap: onDelete,
-                          child: Icon(Icons.delete_outline_rounded, size: 18, color: colors.textSecondary),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppDimens.space4),
-                    Text(
-                      diary.content,
-                      style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: AppDimens.space6),
-                    Row(
-                      children: [
-                        Icon(
-                          diary.isPublic ? Icons.public_rounded : Icons.lock_outline_rounded,
-                          size: 12,
-                          color: colors.textSecondary,
-                        ),
-                        const SizedBox(width: AppDimens.space4),
-                        Text(
-                          (diary.isPublic ? 'diary_visibility_public' : 'diary_visibility_private').tr(),
-                          style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
-                        ),
-                        if (diary.formattedDate != null) ...[
-                          const SizedBox(width: AppDimens.space8),
-                          Text(
-                            diary.formattedDate!,
-                            style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            _buildThumbnail(context, colors),
+            Expanded(child: _buildDetails(context, colors)),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildThumbnail(BuildContext context, AbstractThemeColors colors) {
+    final size = ResponsiveSize(context).w(96);
+    return ClipRRect(
+      borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
+      child: SizedBox(
+        width: size,
+        height: size,
+        child: diary.photoUrls.isNotEmpty
+            ? AppNetworkImage(
+                imageUrl: diary.photoUrls.first,
+                width: size,
+                height: size,
+              )
+            : Container(
+                color: colors.activate.withValues(alpha: 0.1),
+                child: Icon(
+                  Icons.menu_book_outlined,
+                  color: colors.activate.withValues(alpha: 0.4),
+                  size: 28,
+                ),
+              ),
+      ),
+    );
+  }
+
+  Widget _buildDetails(BuildContext context, AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  diary.displayFestivalTitle(context.isEnglish),
+                  style: TextStyle(
+                    fontSize: AppDimens.fontSizeMd,
+                    fontWeight: FontWeight.w700,
+                    color: colors.textTitle,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              InkWell(
+                onTap: onDelete,
+                child: Icon(
+                  Icons.delete_outline_rounded,
+                  size: 18,
+                  color: colors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppDimens.space4),
+          Text(
+            diary.content,
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeXs,
+              color: colors.textSecondary,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: AppDimens.space6),
+          _buildMetaRow(colors),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMetaRow(AbstractThemeColors colors) {
+    final metaStyle = TextStyle(
+      fontSize: AppDimens.fontSizeXxs,
+      color: colors.textSecondary,
+    );
+    return Row(
+      children: [
+        Icon(
+          diary.isPublic ? Icons.public_rounded : Icons.lock_outline_rounded,
+          size: 12,
+          color: colors.textSecondary,
+        ),
+        const SizedBox(width: AppDimens.space4),
+        Text(
+          (diary.isPublic ? 'diary_visibility_public' : 'diary_visibility_private')
+              .tr(),
+          style: metaStyle,
+        ),
+        if (diary.formattedDate != null) ...[
+          const SizedBox(width: AppDimens.space8),
+          Text(diary.formattedDate!, style: metaStyle),
+        ],
+      ],
     );
   }
 }

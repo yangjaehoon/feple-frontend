@@ -184,20 +184,7 @@ class _SignupScreenState extends State<SignupScreen> {
       },
       child: Scaffold(
         backgroundColor: themeColors.backgroundMain,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          leading: IconButton(
-            tooltip: 'back'.tr(),
-            icon: Icon(
-              Icons.arrow_back_ios_rounded,
-              color: themeColors.textTitle,
-              size: 20,
-            ),
-            onPressed: _confirmExit,
-          ),
-        ),
+        appBar: _buildAppBar(themeColors),
         body: KeyboardDismiss(
           child: SafeArea(
             child: Center(
@@ -210,29 +197,8 @@ class _SignupScreenState extends State<SignupScreen> {
                       _buildHeader(themeColors),
                       _buildForm(themeColors),
                       const SizedBox(height: 28),
-                      if (_generalError != null)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: Text(
-                            _generalError!,
-                            style: TextStyle(
-                              fontSize: AppDimens.fontSizeSm,
-                              color: themeColors.error,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      AnimatedOpacity(
-                        opacity: _isFormComplete ? 1.0 : 0.5,
-                        duration: AppDimens.animNormal,
-                        child: LoadingButton(
-                          label: 'register'.tr(),
-                          onPressed: _register,
-                          isLoading: _isLoading,
-                          backgroundColor: themeColors.activate,
-                        ),
-                      ),
+                      if (_generalError != null) _buildGeneralError(themeColors),
+                      _buildSubmitButton(themeColors),
                       const SizedBox(height: AppDimens.space24),
                       _buildLoginLink(themeColors),
                       const SizedBox(height: AppDimens.space32),
@@ -244,6 +210,51 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar(AbstractThemeColors colors) {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      leading: IconButton(
+        tooltip: 'back'.tr(),
+        icon: Icon(
+          Icons.arrow_back_ios_rounded,
+          color: colors.textTitle,
+          size: 20,
+        ),
+        onPressed: _confirmExit,
+      ),
+    );
+  }
+
+  Widget _buildGeneralError(AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Text(
+        _generalError!,
+        style: TextStyle(
+          fontSize: AppDimens.fontSizeSm,
+          color: colors.error,
+          fontWeight: FontWeight.w500,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  Widget _buildSubmitButton(AbstractThemeColors colors) {
+    return AnimatedOpacity(
+      opacity: _isFormComplete ? 1.0 : 0.5,
+      duration: AppDimens.animNormal,
+      child: LoadingButton(
+        label: 'register'.tr(),
+        onPressed: _register,
+        isLoading: _isLoading,
+        backgroundColor: colors.activate,
       ),
     );
   }

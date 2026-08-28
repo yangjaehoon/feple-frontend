@@ -347,5 +347,17 @@ void main() {
       await ApiCacheStore.invalidateFor('http://api/festivals/1/like?ref=/posts');
       expect(ApiCacheStore.getSync('http://api/posts/free'), isNotNull);
     });
+
+    test('상세 무효화는 세그먼트 경계 기준 — /posts/3이 /posts/30을 건드리지 않음', () async {
+      await ApiCacheStore.put('http://api/posts/3', {'likeCount': 1});
+      await ApiCacheStore.put('http://api/posts/30', {'likeCount': 9});
+      await ApiCacheStore.put('http://api/posts/3/liked', true);
+
+      await ApiCacheStore.invalidateFor('http://api/posts/3/like');
+
+      expect(ApiCacheStore.getSync('http://api/posts/3'), isNull);
+      expect(ApiCacheStore.getSync('http://api/posts/3/liked'), isNull);
+      expect(ApiCacheStore.getSync('http://api/posts/30'), isNotNull); // 유지
+    });
   });
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:feple/common/data/preference/prefs.dart';
 import 'package:feple/model/withdrawal_reason.dart';
 import 'package:feple/service/auth_service.dart';
 import 'package:feple/service/fcm_service.dart';
@@ -38,6 +39,9 @@ class UserProvider with ChangeNotifier {
     } catch (e) {
       debugPrint('[UserProvider] 유저 캐시 저장 실패: $e');
     }
+    // 로그인 성립 시점에 레거시 전역 온보딩 플래그를 유저 단위로 1회 이관
+    // (자체 가드로 이미 이관됐으면 즉시 반환)
+    await Prefs.migrateLegacyOnboarding(me.id);
   }
 
   Future<void> fetchUser(int userId) async {

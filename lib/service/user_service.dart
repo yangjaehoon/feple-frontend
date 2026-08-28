@@ -43,10 +43,8 @@ class UserService {
 
   Future<void> updateProfileImage(int userId, XFile image) async {
     // 원본(최대 12MP)을 그대로 멀티파트로 올리면 현장 저신호에서 자주 실패 →
-    // JPEG로 압축 후 전송 (다른 이미지 업로드 흐름과 동일한 압축 사용)
-    final compressed = await ImageUploadHelper.compressToJpeg(
-      await image.readAsBytes(),
-    );
+    // JPEG로 압축 후 전송. 경로 기반 압축이라 원본을 힙에 통째로 올리지 않음
+    final compressed = await ImageUploadHelper.compressFileToJpeg(image.path);
     final formData = FormData.fromMap({
       'file': MultipartFile.fromBytes(
         compressed,

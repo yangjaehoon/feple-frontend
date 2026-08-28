@@ -5,9 +5,11 @@ import 'package:feple/auth/token_store.dart';
 import 'package:feple/model/user_model.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/service/user_service.dart';
+import 'package:feple/common/data/preference/app_preferences.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MockUserService extends Mock implements UserService {}
 
@@ -56,7 +58,12 @@ Future<void> _pump() => Future.delayed(Duration.zero);
 void main() {
   late MockUserService mockService;
 
-  setUpAll(() => TestWidgetsFlutterBinding.ensureInitialized());
+  setUpAll(() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    // _applyUser가 Prefs.migrateLegacyOnboarding을 호출하므로 prefs 초기화 필요
+    SharedPreferences.setMockInitialValues({});
+    await AppPreferences.init();
+  });
 
   setUp(() {
     mockService = MockUserService();

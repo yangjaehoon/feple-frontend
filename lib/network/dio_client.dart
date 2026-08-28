@@ -138,9 +138,12 @@ class _AuthAndSwrInterceptor extends Interceptor {
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     await _attachJwtIfAbsent(options);
 
-    // 화면 dispose 시 취소되도록 Zone에 연결된 CancelToken을 부착
-    // (호출부가 명시적으로 넘긴 cancelToken이 있으면 그대로 존중)
-    options.cancelToken ??= ambientCancelToken;
+    // 화면 dispose 시 취소되도록 Zone에 연결된 CancelToken을 부착.
+    // 조회(GET)에만 적용한다 — mutation이 스코프 안에서 화면 이탈로 취소되면
+    // 서버 상태가 불완전하게 남을 수 있음. (명시적으로 넘긴 cancelToken은 존중)
+    if (options.method == 'GET') {
+      options.cancelToken ??= ambientCancelToken;
+    }
 
     // SWR: GET 요청에 메모리 캐시가 있으면 즉시 반환 + 백그라운드 갱신
     // 첫 방문(캐시 없음)이나 오프라인 fallback은 _ResponseCacheInterceptor가 처리

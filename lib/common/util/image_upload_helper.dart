@@ -9,14 +9,28 @@ abstract final class ImageUploadHelper {
   static const String _contentType = 'image/jpeg';
   static const String _ext = 'jpg';
 
-  /// 원본 이미지 바이트를 JPEG로 압축한다. presign/S3 흐름뿐 아니라 백엔드
-  /// 멀티파트 업로드(프로필 사진 등)에서도 재사용해 "원본 12MP 그대로 전송"을 막는다.
+  /// 원본 이미지 바이트를 JPEG로 압축한다 (presign/S3 흐름 — 이미 메모리에
+  /// 바이트가 있는 image_picker 결과용).
   static Future<Uint8List> compressToJpeg(Uint8List imageData) =>
       FlutterImageCompress.compressWithList(
         imageData,
         quality: _compressQuality,
         format: CompressFormat.jpeg,
       );
+
+  /// 파일 경로를 직접 받아 JPEG로 압축한다. `readAsBytes()`로 원본(최대 12MP,
+  /// 디코드 시 수십 MB)을 Dart 힙에 통째로 올리지 않아 저사양 기기 메모리에 유리.
+  static Future<Uint8List> compressFileToJpeg(String path) async {
+    final out = await FlutterImageCompress.compressWithFile(
+      path,
+      quality: _compressQuality,
+      format: CompressFormat.jpeg,
+    );
+    if (out == null) {
+      throw Exception('image compression failed for $path');
+    }
+    return out;
+  }
 
   /// 이미지를 압축 → presigned URL 요청 → S3 업로드 순서로 처리.
   /// [presignEndpoint] 서버의 presign 발급 엔드포인트.

@@ -142,18 +142,30 @@ class ApiCacheStore {
   static Future<void> invalidateFor(String requestUrl) async {
     final patterns = _invalidationPatterns(requestUrl);
     for (final p in patterns) {
-      _mem.removeWhere((url, _) => url.contains(p));
+      _mem.removeWhere((url, _) => _urlMatchesPattern(url, p));
       try {
         final prefs = _prefs ?? await SharedPreferences.getInstance();
         final keys = prefs
             .getKeys()
-            .where((k) => k.startsWith(_prefix) && k.contains(p))
+            .where((k) => k.startsWith(_prefix) && _urlMatchesPattern(k, p))
             .toList();
         for (final k in keys) {
           await prefs.remove(k);
         }
       } catch (_) {}
     }
+  }
+
+  /// 무효화 패턴이 URL의 세그먼트 경계에서 매칭되는지 검사한다.
+  /// `/posts/3`은 `/posts/3`·`/posts/3/liked`·`/posts/3?x`에는 매치되지만
+  /// `/posts/30`에는 매치되지 않도록 — 단순 contains의 인접 숫자 오매치를 막는다.
+  static bool _urlMatchesPattern(String url, String pattern) {
+    final idx = url.indexOf(pattern);
+    if (idx < 0) return false;
+    final end = idx + pattern.length;
+    if (end == url.length) return true;
+    final next = url[end];
+    return next == '/' || next == '?' || next == '&' || next == '#';
   }
 
   // 뮤테이션 URL(path) → 무효화할 캐시 URL 패턴 테이블 — 위에서부터 첫 매치 우선.

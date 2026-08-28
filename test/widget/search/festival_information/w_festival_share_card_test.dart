@@ -63,9 +63,9 @@ void main() {
     expect(find.byType(DayBadge), findsNothing);
   });
 
-  testWidgets('Feple 브랜드 배지를 보여준다', (tester) async {
+  testWidgets('FEPLE 브랜드 배지를 보여준다', (tester) async {
     await pumpCommonWidget(tester, FestivalShareCard(poster: _poster(), isEnglish: false));
 
-    expect(find.text('Feple'), findsOneWidget);
+    expect(find.text('FEPLE'), findsOneWidget);
   });
 }

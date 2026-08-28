@@ -1,15 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/common/widget/w_share_card.dart';
+import 'package:feple/common/dart/extension/num_extension.dart';
+import 'package:feple/common/widget/w_share_card_parts.dart';
 import 'package:flutter/material.dart';
 
 /// 아티스트 공유용으로 캡처되는 고정 크기 카드 — 앱 테마와 무관하게 항상 같은 모습.
 /// 배경에 프로필 이미지가 필요하므로 imageUrl 이 있을 때만 생성한다.
 class ArtistShareCard extends StatelessWidget {
-  static const double width = 360;
-  static const double height = 540;
-
   final String artistName;
   final String imageUrl;
   final int followerCount;
@@ -24,8 +22,8 @@ class ArtistShareCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: width,
-      height: height,
+      width: shareCardWidth,
+      height: shareCardHeight,
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -64,7 +62,9 @@ class ArtistShareCard extends StatelessWidget {
                   const SizedBox(height: AppDimens.space10),
                   ShareCardInfoRow(
                     icon: Icons.people_alt_rounded,
-                    text: 'follower_count'.tr(args: ['$followerCount']),
+                    text: 'follower_count'.tr(
+                      args: [followerCount.toDisplayCount(context.locale.languageCode)],
+                    ),
                   ),
                 ],
               ],

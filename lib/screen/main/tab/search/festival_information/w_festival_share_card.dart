@@ -1,15 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/widget/w_day_badge.dart';
-import 'package:feple/common/widget/w_share_card.dart';
+import 'package:feple/common/widget/w_share_card_parts.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 
 /// 공유용으로 캡처되는 고정 크기 카드 — 앱 테마와 무관하게 항상 같은 모습으로 그려진다.
 class FestivalShareCard extends StatelessWidget {
-  static const double width = 360;
-  static const double height = 540;
-
   final FestivalModel poster;
   final bool isEnglish;
 
@@ -18,8 +15,8 @@ class FestivalShareCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: width,
-      height: height,
+      width: shareCardWidth,
+      height: shareCardHeight,
       child: Stack(
         fit: StackFit.expand,
         children: [

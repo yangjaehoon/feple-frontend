@@ -1,8 +1,12 @@
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
-/// 공유 카드(페스티벌/아티스트) 우상단에 올라가는 Feple 브랜드 배지.
-/// 어두운 반투명 pill 위에 흰색 핀 로고 + 'Feple' 텍스트.
+/// 공유 카드(페스티벌/아티스트)의 캡처 고정 크기 — 두 카드가 동일하게 사용한다.
+const double shareCardWidth = 360;
+const double shareCardHeight = 540;
+
+/// 공유 카드 우상단에 올라가는 FEPLE 브랜드 배지.
+/// 어두운 반투명 pill 위에 흰색 핀 로고 + 'FEPLE' 텍스트.
 class FepleBrandBadge extends StatelessWidget {
   const FepleBrandBadge({super.key});
 
@@ -27,7 +31,7 @@ class FepleBrandBadge extends StatelessWidget {
           ),
           const SizedBox(width: AppDimens.space4),
           const Text(
-            'Feple',
+            'FEPLE',
             style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700),
           ),
         ],

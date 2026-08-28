@@ -371,6 +371,7 @@
   "max_images_exceeded": "사진은 최대 {}장까지 첨부할 수 있어요.",
   "map_open_failed": "지도를 열 수 없습니다.",
   "share_failed": "공유에 실패했습니다.",
+  "share_festival_cta": "FEPLE 앱에서 더 많은 페스티벌 정보를 확인하세요",
   "photo_upload_title": "사진 올리기",
   "artist_photo_add_label": "아티스트 사진 추가",
   "photo_artwork_label": "작품명",

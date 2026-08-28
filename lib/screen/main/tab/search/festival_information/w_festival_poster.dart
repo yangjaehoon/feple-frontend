@@ -9,6 +9,7 @@ import 'package:feple/common/util/calendar_helper.dart';
 import 'package:feple/common/util/kakao_map_launcher.dart';
 import 'package:feple/common/util/widget_image_capturer.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/constant/store_links.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_detail_service.dart';
@@ -104,7 +105,8 @@ class FestivalPosterState extends State<FestivalPoster> {
     setState(() => _isSharing = true);
     final isEnglish = context.isEnglish;
     final text =
-        '${_notifier.poster.displayTitle(isEnglish)}\n${_notifier.poster.location}\n${_notifier.poster.startDate}';
+        '${_notifier.poster.displayTitle(isEnglish)}\n${_notifier.poster.location}\n${_notifier.poster.startDate}'
+        '\n\n${'share_festival_cta'.tr()}\n$kAppDownloadUrl';
     try {
       await precacheImage(CachedNetworkImageProvider(_notifier.poster.posterUrl), context);
       if (!mounted) return;

@@ -1,3 +1,5 @@
+import 'json_reader.dart';
+
 class PresignResult {
   final String uploadUrl;
   final String objectKey;
@@ -6,8 +8,8 @@ class PresignResult {
 
   factory PresignResult.fromJson(Map<String, dynamic> json) {
     return PresignResult(
-      uploadUrl: json['uploadUrl'] as String,
-      objectKey: json['objectKey'] as String,
+      uploadUrl: json.str('uploadUrl'),
+      objectKey: json.str('objectKey'),
     );
   }
 }

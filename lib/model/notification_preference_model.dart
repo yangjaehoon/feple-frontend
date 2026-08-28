@@ -1,3 +1,5 @@
+import 'json_reader.dart';
+
 class NotificationPreferenceModel {
   final bool certEnabled;
   final bool commentEnabled;
@@ -15,11 +17,11 @@ class NotificationPreferenceModel {
 
   factory NotificationPreferenceModel.fromJson(Map<String, dynamic> json) {
     return NotificationPreferenceModel(
-      certEnabled: json['certEnabled'] as bool? ?? true,
-      commentEnabled: json['commentEnabled'] as bool? ?? true,
-      festivalEnabled: json['festivalEnabled'] as bool? ?? true,
-      songRequestEnabled: json['songRequestEnabled'] as bool? ?? true,
-      quietHoursEnabled: json['quietHoursEnabled'] as bool? ?? false,
+      certEnabled: json.boolean('certEnabled', true),
+      commentEnabled: json.boolean('commentEnabled', true),
+      festivalEnabled: json.boolean('festivalEnabled', true),
+      songRequestEnabled: json.boolean('songRequestEnabled', true),
+      quietHoursEnabled: json.boolean('quietHoursEnabled'),
     );
   }
 

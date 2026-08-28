@@ -1,5 +1,6 @@
 import 'package:feple/model/notification_type.dart';
 
+import 'json_reader.dart';
 import 'localized_text.dart';
 
 class NotificationModel {
@@ -29,18 +30,16 @@ class NotificationModel {
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
     return NotificationModel(
-      id: (json['id'] as num).toInt(),
-      type: NotificationType.fromValue(json['type'] as String?),
-      title: json['title'] as String? ?? '',
-      body: json['body'] as String? ?? '',
-      titleEn: json['titleEn'] as String? ?? '',
-      bodyEn: json['bodyEn'] as String? ?? '',
-      referenceId: json['referenceId'] != null
-          ? (json['referenceId'] as num).toInt()
-          : null,
-      read: json['read'] as bool? ?? false,
-      createdAt: json['createdAt'] as String?,
-      imageUrl: json['imageUrl'] as String?,
+      id: json.integer('id'),
+      type: NotificationType.fromValue(json.strOrNull('type')),
+      title: json.str('title'),
+      body: json.str('body'),
+      titleEn: json.str('titleEn'),
+      bodyEn: json.str('bodyEn'),
+      referenceId: json.intOrNull('referenceId'),
+      read: json.boolean('read'),
+      createdAt: json.strOrNull('createdAt'),
+      imageUrl: json.strOrNull('imageUrl'),
     );
   }
 

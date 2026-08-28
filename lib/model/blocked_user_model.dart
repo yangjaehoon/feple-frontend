@@ -1,3 +1,5 @@
+import 'json_reader.dart';
+
 class BlockedUserModel {
   final int userId;
   final String nickname;
@@ -11,9 +13,9 @@ class BlockedUserModel {
 
   factory BlockedUserModel.fromJson(Map<String, dynamic> json) {
     return BlockedUserModel(
-      userId: json['userId'] as int,
-      nickname: json['nickname'] as String,
-      profileImageUrl: json['profileImageUrl'] as String?,
+      userId: json.integer('userId'),
+      nickname: json.str('nickname'),
+      profileImageUrl: json.strOrNull('profileImageUrl'),
     );
   }
 }

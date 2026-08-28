@@ -1,3 +1,5 @@
+import 'json_reader.dart';
+
 class NicknameCheckResult {
   static const int minLength = 2;
   static const int maxLength = 8;
@@ -12,8 +14,8 @@ class NicknameCheckResult {
 
   factory NicknameCheckResult.fromJson(Map<String, dynamic> json) {
     return NicknameCheckResult(
-      available: json['available'] as bool,
-      code: json['code'] as String? ?? 'INVALID',
+      available: json.boolean('available'),
+      code: json.str('code', 'INVALID'),
     );
   }
 }

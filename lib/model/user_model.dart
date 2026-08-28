@@ -1,3 +1,5 @@
+import 'json_reader.dart';
+
 class AppUser {
   final int id;
   final String nickname;
@@ -17,14 +19,12 @@ class AppUser {
 
   factory AppUser.fromJson(Map<String, dynamic> json) {
     return AppUser(
-      id: (json['id'] as num).toInt(),
-      nickname: json['nickname'] as String?,
-      profileImageUrl: json['profileImageUrl'] as String?,
-      bio: json['bio'] as String?,
-      level: json['level'] is String ? json['level'] as String : null,
-      nicknameChangedAt: json['nicknameChangedAt'] is String
-          ? DateTime.tryParse(json['nicknameChangedAt'] as String)
-          : null,
+      id: json.integer('id'),
+      nickname: json.strOrNull('nickname'),
+      profileImageUrl: json.strOrNull('profileImageUrl'),
+      bio: json.strOrNull('bio'),
+      level: json.strOrNull('level'),
+      nicknameChangedAt: json.dateTimeOrNull('nicknameChangedAt'),
     );
   }
 

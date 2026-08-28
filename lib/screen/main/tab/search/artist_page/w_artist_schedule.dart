@@ -55,6 +55,7 @@ class ArtistScheduleState extends State<ArtistSchedule>
             // 아이콘, w_schedule_list_tile.dart)와 구분 — 이 버튼은 추가가 아니라
             // 전체 일정 화면으로 이동만 하므로 같은 아이콘을 쓰면 오해를 유발한다.
             trailing: IconButton(
+              tooltip: 'view_all'.tr(),
               icon: const Icon(Icons.event_note_rounded),
               iconSize: AppDimens.iconSizeLg,
               padding: EdgeInsets.zero,

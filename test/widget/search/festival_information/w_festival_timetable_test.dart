@@ -241,6 +241,90 @@ void main() {
     });
   });
 
+  group('FestivalTimetable 연동 스크롤', () {
+    // linked_scroll_controller로 얼어붙은 헤더(가로)·시간축(세로)을 본문에
+    // 묶었으므로, 본문을 드래그하면 두 축이 각각 같은 양만큼 따라 움직여야 한다.
+    testWidgets('본문을 드래그하면 헤더와 시간축이 같은 양만큼 함께 움직인다', (tester) async {
+      // 스테이지 5개 + 12~22시 범위 → 그리드가 가로/세로 모두 뷰포트보다 커서
+      // 양방향 스크롤이 활성화되도록 좁은 뷰포트로 띄운다.
+      tester.view.physicalSize = const Size(400, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final entries = [
+        for (var i = 0; i < 5; i++)
+          _entry(
+            id: i + 1,
+            stageName: 'Stage${i + 1}',
+            stageOrder: i + 1,
+            artistName: 'Perf${i + 1}',
+            startTime: '12:00',
+            endTime: '13:00',
+          ),
+        _entry(
+          id: 99,
+          stageName: 'Stage1',
+          stageOrder: 1,
+          artistName: 'LatePerf',
+          startTime: '21:00',
+          endTime: '22:00',
+        ),
+      ];
+      when(() => mockDetailService.fetchTimetable(1))
+          .thenAnswer((_) async => entries);
+
+      await EasyLocalization.ensureInitialized();
+      SharedPreferences.setMockInitialValues({});
+      final userProvider = MockUserProvider();
+      when(() => userProvider.currentUserId).thenReturn(1);
+
+      await tester.pumpWidget(
+        EasyLocalization(
+          supportedLocales: const [Locale('ko'), Locale('en')],
+          startLocale: const Locale('ko'),
+          fallbackLocale: const Locale('ko'),
+          path: 'assets/translations',
+          useOnlyLangCode: true,
+          child: CustomThemeHolder(
+            theme: CustomTheme.light,
+            changeTheme: (_) {},
+            child: ChangeNotifierProvider<UserProvider>.value(
+              value: userProvider,
+              child: MaterialApp(
+                home: Scaffold(
+                  body: FestivalTimetable(
+                    festivalId: 1,
+                    startDate: _day1,
+                    endDate: _day2,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.byType(TimetableGrid), findsOneWidget);
+
+      // 가로 연동: 본문을 왼쪽으로 드래그 → 헤더 셀도 같은 dx만큼 이동
+      final headerBefore = tester.getTopLeft(find.text('Stage1')).dx;
+      await tester.drag(find.text('Perf3'), const Offset(-120, 0));
+      await tester.pumpAndSettle();
+      final headerAfter = tester.getTopLeft(find.text('Stage1')).dx;
+      expect(headerAfter, lessThan(headerBefore - 50));
+
+      // 세로 연동: 본문을 위로 드래그 → 시간축 라벨도 같은 dy만큼 이동
+      final timeBefore = tester.getTopLeft(find.text('12:00')).dy;
+      await tester.drag(find.text('Perf3'), const Offset(0, -100));
+      await tester.pumpAndSettle();
+      final timeAfter = tester.getTopLeft(find.text('12:00')).dy;
+      expect(timeAfter, lessThan(timeBefore - 40));
+    });
+  });
+
   group('FestivalTimetable 새로고침', () {
     testWidgets('refresh() 호출 시 다시 불러온다', (tester) async {
       var callCount = 0;

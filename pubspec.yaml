@@ -72,6 +72,7 @@ dependencies:
   flutter_svg: ^2.0.17
   cached_network_image: ^3.4.1
   card_swiper: ^3.0.1
+  linked_scroll_controller: ^0.2.0
 
   #map
   geolocator: ^14.0.3

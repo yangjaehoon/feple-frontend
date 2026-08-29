@@ -16,6 +16,7 @@ import 'package:feple/screen/main/tab/search/festival_information/w_timetable_sk
 import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:flutter/material.dart';
+import 'package:linked_scroll_controller/linked_scroll_controller.dart';
 import 'package:provider/provider.dart';
 
 class FestivalTimetable extends StatefulWidget {
@@ -36,19 +37,24 @@ class FestivalTimetable extends StatefulWidget {
 
 class FestivalTimetableState extends State<FestivalTimetable>
     with NavigationGuard, RefreshableSection<FestivalTimetable> {
-  final _vContent = ScrollController();
-  final _vTime = ScrollController();
-  final _hContent = ScrollController();
-  final _hHeader = ScrollController();
-  bool _isVerticalScrollLocked = false, _isHorizontalScrollLocked = false;
+  // 얼어붙은 헤더(가로)·시간축(세로)을 본문 스크롤에 묶는다. jumpTo 미러링을
+  // 수동으로 하던 것을 LinkedScrollControllerGroup에 위임 — 락 플래그 불필요.
+  final _hGroup = LinkedScrollControllerGroup();
+  final _vGroup = LinkedScrollControllerGroup();
+  late final ScrollController _hHeader;
+  late final ScrollController _hContent;
+  late final ScrollController _vTime;
+  late final ScrollController _vContent;
 
   late final TimetableNotifier _notifier;
 
   @override
   void initState() {
     super.initState();
-    _vContent.addListener(_syncVerticalScroll);
-    _hContent.addListener(_syncHorizontalScroll);
+    _hHeader = _hGroup.addAndGet();
+    _hContent = _hGroup.addAndGet();
+    _vTime = _vGroup.addAndGet();
+    _vContent = _vGroup.addAndGet();
     final userId = context.read<UserProvider>().currentUserId;
     _notifier = TimetableNotifier(
       festivalId: widget.festivalId,
@@ -69,28 +75,12 @@ class FestivalTimetableState extends State<FestivalTimetable>
     }
   }
 
-  void _syncVerticalScroll() {
-    if (_isVerticalScrollLocked) return;
-    _isVerticalScrollLocked = true;
-    if (_vTime.hasClients) _vTime.jumpTo(_vContent.offset);
-    _isVerticalScrollLocked = false;
-  }
-
-  void _syncHorizontalScroll() {
-    if (_isHorizontalScrollLocked) return;
-    _isHorizontalScrollLocked = true;
-    if (_hHeader.hasClients) _hHeader.jumpTo(_hContent.offset);
-    _isHorizontalScrollLocked = false;
-  }
-
   @override
   void dispose() {
-    _vContent.removeListener(_syncVerticalScroll);
-    _hContent.removeListener(_syncHorizontalScroll);
-    _vContent.dispose();
-    _vTime.dispose();
-    _hContent.dispose();
     _hHeader.dispose();
+    _hContent.dispose();
+    _vTime.dispose();
+    _vContent.dispose();
     _notifier.dispose();
     super.dispose();
   }

@@ -9,6 +9,7 @@ import 'package:feple/injection.dart';
 import 'package:feple/model/festival_diary_model.dart';
 import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
 import 'package:feple/screen/main/tab/my_page/s_festival_diary_list.dart';
+import 'package:feple/screen/main/tab/my_page/w_section_see_all_button.dart';
 import 'package:feple/service/festival_diary_service.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/common/util/refresh_coordinator.dart';
@@ -62,24 +63,7 @@ class FestivalDiaryWidgetState extends State<FestivalDiaryWidget>
       children: [
         HomeSectionHeader(
           title: 'festival_diary'.tr(),
-          trailing: TextButton(
-            onPressed: _isLoading ? null : _openList,
-            style: TextButton.styleFrom(
-              minimumSize: Size.zero,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              tapTargetSize: MaterialTapTargetSize.padded,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'see_all'.tr(),
-                  style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w600, color: colors.activate),
-                ),
-                Icon(Icons.chevron_right_rounded, size: 18, color: colors.activate),
-              ],
-            ),
-          ),
+          trailing: SectionSeeAllButton(onTap: _isLoading ? null : _openList),
         ),
         if (_hasError)
           ErrorState(message: 'load_error'.tr(), onRetry: _load)

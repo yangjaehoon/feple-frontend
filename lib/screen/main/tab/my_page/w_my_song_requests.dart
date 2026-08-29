@@ -7,6 +7,7 @@ import 'package:feple/model/song_request_model.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
 import 'package:feple/screen/main/tab/my_page/s_song_request_list.dart';
+import 'package:feple/screen/main/tab/my_page/w_section_see_all_button.dart';
 import 'package:feple/service/song_request_service.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/refresh_coordinator.dart';
@@ -87,31 +88,8 @@ class MySongRequestsViewState extends State<MySongRequestsView>
       children: [
         HomeSectionHeader(
           title: 'song_request_history'.tr(),
-          trailing: TextButton(
-            onPressed: _isLoading ? null : _openFullList,
-            style: TextButton.styleFrom(
-              minimumSize: Size.zero,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              tapTargetSize: MaterialTapTargetSize.padded,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'see_all'.tr(),
-                  style: TextStyle(
-                    fontSize: AppDimens.fontSizeSm,
-                    fontWeight: FontWeight.w600,
-                    color: colors.activate,
-                  ),
-                ),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  size: 18,
-                  color: colors.activate,
-                ),
-              ],
-            ),
+          trailing: SectionSeeAllButton(
+            onTap: _isLoading ? null : _openFullList,
           ),
         ),
         _buildContent(colors),

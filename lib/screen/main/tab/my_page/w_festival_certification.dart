@@ -4,6 +4,7 @@ import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
+import 'package:feple/screen/main/tab/my_page/w_section_see_all_button.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/model/certification_model.dart';
 import 'package:feple/screen/main/tab/my_page/cert_status_style.dart';
@@ -66,23 +67,8 @@ class FestivalCertificationWidgetState extends State<FestivalCertificationWidget
       children: [
         HomeSectionHeader(
           title: 'festival_certification'.tr(),
-          trailing: TextButton(
-            onPressed: _isLoading ? null : _openDetail,
-            style: TextButton.styleFrom(
-              minimumSize: Size.zero,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              tapTargetSize: MaterialTapTargetSize.padded,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'see_all'.tr(),
-                  style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w600, color: colors.activate),
-                ),
-                Icon(Icons.chevron_right_rounded, size: 18, color: colors.activate),
-              ],
-            ),
+          trailing: SectionSeeAllButton(
+            onTap: _isLoading ? null : _openDetail,
           ),
         ),
         if (_hasError)

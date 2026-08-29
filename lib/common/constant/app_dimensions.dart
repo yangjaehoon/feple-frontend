@@ -7,6 +7,17 @@ class AppDimens {
   // ── AppBar ──
   static const double appBarHeight = 64.0; // M3 Top App Bar 공식 높이
 
+  // ── Bottom navigation bar ──
+  /// 하단 탭바 콘텐츠(아이콘+라벨) 높이.
+  /// iOS 네이티브 UITabBar(49) 기준에 M3 라벨 여유를 더한 값.
+  static const double bottomNavContentHeight = 54.0;
+  /// 하단 탭바가 흡수하는 시스템 하단 inset의 하한/상한.
+  /// 시스템 값을 그대로 통과시키지 않고 이 범위로 clamp — iOS 홈 인디케이터
+  /// 영역(34)을 전부 비워두면 흰 카드 스타일상 여백이 과해 보이고,
+  /// 0으로 두면 라벨이 홈 인디케이터에 붙는다.
+  static const double bottomNavMinInset = 8.0;
+  static const double bottomNavMaxInset = 20.0;
+
   // ── Cupertino picker (iOS 전용 모달 시트) ──
   static const double cupertinoPickerHeight = 260.0;
 

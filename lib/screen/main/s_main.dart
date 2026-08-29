@@ -179,8 +179,13 @@ class MainScreenState extends State<MainScreen>
 
   Widget _buildBottomNavigationBar(BuildContext context) {
     final colors = context.appColors;
+    final systemBottomInset = MediaQuery.paddingOf(context).bottom;
+    final double bottomInset = systemBottomInset
+        .clamp(AppDimens.bottomNavMinInset, AppDimens.bottomNavMaxInset)
+        .toDouble();
     return Container(
       decoration: BoxDecoration(
+        color: colors.bottomNavBg,
         boxShadow: [
           BoxShadow(
             color: colors.bottomNavShadow.withValues(alpha: 0.05),
@@ -190,14 +195,23 @@ class MainScreenState extends State<MainScreen>
           ),
         ],
       ),
-      child: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: _handleOnTapNavigationBarItem,
-        destinations: navigationDestinations(),
-        backgroundColor: colors.bottomNavBg,
-        elevation: 0,
-        height: 64,
-        animationDuration: AppDimens.animQuick,
+      // NavigationBar 내부 SafeArea가 시스템 하단 inset(iOS 홈 인디케이터 등)을
+      // 그대로 더하는 것을 막고, clamp한 값만 하단 패딩으로 적용한다.
+      child: MediaQuery.removePadding(
+        context: context,
+        removeBottom: true,
+        child: Padding(
+          padding: EdgeInsets.only(bottom: bottomInset),
+          child: NavigationBar(
+            selectedIndex: _currentIndex,
+            onDestinationSelected: _handleOnTapNavigationBarItem,
+            destinations: navigationDestinations(),
+            backgroundColor: colors.bottomNavBg,
+            elevation: 0,
+            height: AppDimens.bottomNavContentHeight,
+            animationDuration: AppDimens.animQuick,
+          ),
+        ),
       ),
     );
   }

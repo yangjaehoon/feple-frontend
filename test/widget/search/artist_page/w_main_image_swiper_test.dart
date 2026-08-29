@@ -1,3 +1,4 @@
+import 'package:card_swiper/card_swiper.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
@@ -90,9 +91,9 @@ void main() {
       ),
     );
     await tester.pump();
-    // Timer.periodic(3초)로 자동 스크롤을 시작하므로, 테스트 종료 전 반드시
-    // 위젯을 언마운트해 dispose()가 타이머를 취소하게 한다 — 그렇지 않으면
-    // "A Timer is still pending" 실패로 테스트가 깨진다.
+    // Swiper(autoplay)가 내부에서 자동재생 타이머를 돌리므로, 테스트 종료 전
+    // 반드시 위젯을 언마운트해 dispose()가 타이머를 취소하게 한다 — 그렇지
+    // 않으면 "A Timer is still pending" 실패로 테스트가 깨진다.
     addTearDown(() async {
       await tester.pumpWidget(const SizedBox());
     });
@@ -106,7 +107,7 @@ void main() {
       await pump(tester);
       await tester.pump();
 
-      expect(find.byType(PageView), findsOneWidget);
+      expect(find.byType(Swiper), findsOneWidget);
       expect(find.text('아티스트'), findsOneWidget);
     });
 
@@ -116,7 +117,7 @@ void main() {
       await pump(tester);
       await tester.pump();
 
-      expect(find.byType(PageView), findsNothing);
+      expect(find.byType(Swiper), findsNothing);
       expect(find.text('아티스트'), findsOneWidget);
     });
 
@@ -127,7 +128,7 @@ void main() {
       await pump(tester);
       await tester.pump();
 
-      expect(find.byType(PageView), findsNothing);
+      expect(find.byType(Swiper), findsNothing);
       expect(find.text('아티스트'), findsOneWidget);
     });
   });

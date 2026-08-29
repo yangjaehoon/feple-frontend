@@ -127,21 +127,27 @@ class FestivalCacheService {
       'previews');
 
   // ── home screen data (좋아요 페스티벌 + 팔로우 아티스트) ──────────
+  // save/load/clearHome이 반드시 같은 키를 보도록 키 문자열은 이 빌더에만 둔다.
+
+  String _homeFestivalsDataKey(int userId) => '${_p}_home_festivals_$userId';
+  String _homeFestivalsTimeKey(int userId) => '${_p}_home_time_$userId';
+  String _homeArtistsDataKey(int userId) => '${_p}_home_artists_$userId';
+  String _homeArtistsTimeKey(int userId) => '${_p}_home_artists_time_$userId';
 
   Future<void> saveHomeFestivals(int userId, List<FestivalModel> items) =>
-      _saveList('${_p}_home_festivals_$userId', '${_p}_home_time_$userId',
+      _saveList(_homeFestivalsDataKey(userId), _homeFestivalsTimeKey(userId),
           items, (e) => e.toJson());
 
   Future<List<FestivalModel>?> loadHomeFestivals(int userId) => _loadList(
-      '${_p}_home_festivals_$userId', '${_p}_home_time_$userId',
+      _homeFestivalsDataKey(userId), _homeFestivalsTimeKey(userId),
       FestivalModel.fromJson, 'home festivals');
 
   Future<void> saveHomeArtists(int userId, List<FollowedArtist> items) =>
-      _saveList('${_p}_home_artists_$userId',
-          '${_p}_home_artists_time_$userId', items, (e) => e.toJson());
+      _saveList(_homeArtistsDataKey(userId), _homeArtistsTimeKey(userId),
+          items, (e) => e.toJson());
 
   Future<List<FollowedArtist>?> loadHomeArtists(int userId) => _loadList(
-      '${_p}_home_artists_$userId', '${_p}_home_artists_time_$userId',
+      _homeArtistsDataKey(userId), _homeArtistsTimeKey(userId),
       FollowedArtist.fromJson, 'home artists');
 
   // ── clear ───────────────────────────────────────────────────────
@@ -152,10 +158,10 @@ class FestivalCacheService {
   Future<void> clearHome(int userId) async {
     final sp = await _sp;
     await Future.wait([
-      sp.remove('${_p}_home_festivals_$userId'),
-      sp.remove('${_p}_home_time_$userId'),
-      sp.remove('${_p}_home_artists_$userId'),
-      sp.remove('${_p}_home_artists_time_$userId'),
+      sp.remove(_homeFestivalsDataKey(userId)),
+      sp.remove(_homeFestivalsTimeKey(userId)),
+      sp.remove(_homeArtistsDataKey(userId)),
+      sp.remove(_homeArtistsTimeKey(userId)),
     ]);
   }
 

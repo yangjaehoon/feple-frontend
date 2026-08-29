@@ -228,6 +228,18 @@ void main() {
       expect(await cache.loadHomeArtists(1), isNull);
       expect(await cache.loadHomeFestivals(2), isNotNull);
       expect(await cache.loadPreviewList(), isNotNull);
+
+      // data 키뿐 아니라 timestamp 키까지 남김없이 지워졌는지 (키 드리프트 방지)
+      final sp = await SharedPreferences.getInstance();
+      expect(
+        sp.getKeys().where((k) => k.startsWith('fc_home_') && k.endsWith('_1')),
+        isEmpty,
+      );
+      // 유저 2의 홈 키는 그대로
+      expect(
+        sp.getKeys().where((k) => k.startsWith('fc_home_') && k.endsWith('_2')),
+        isNotEmpty,
+      );
     });
   });
 }

@@ -150,6 +150,26 @@ void main() {
       expect(notifier.festivals?.first.title, '캐시축제');
       expect(notifier.hasError, false);
     });
+
+    test('플래그 on + 네트워크 실패면 낡은 스냅샷을 숨긴 채 hasError=true로 재시도를 유도한다', () async {
+      await Prefs.pendingHomeForceRefreshFor(1).set(true);
+      // 스냅샷은 있지만(온보딩 이전 빈/낡은 상태) 선렌더하지 않아야 한다
+      when(() => mockCacheService.loadHomeFestivals(1))
+          .thenAnswer((_) async => [_festival(title: '낡은축제')]);
+      when(() => mockCacheService.loadHomeArtists(1))
+          .thenAnswer((_) async => [_artist(name: '낡은아티스트')]);
+      when(() => mockUserService.fetchFollowingArtists(1))
+          .thenThrow(Exception('오프라인'));
+      when(() => mockUserService.fetchLikedFestivals(1))
+          .thenThrow(Exception('오프라인'));
+
+      await notifier.init(1);
+
+      expect(notifier.hasError, true);
+      expect(notifier.error, isNotNull);
+      expect(notifier.festivals, isNull);
+      expect(notifier.artists, isNull);
+    });
   });
 
   group('HomeStateNotifier.retry', () {

@@ -20,7 +20,12 @@ class Prefs {
   /// 건너뛰고 강제 새로고침하도록 하는 1회용 플래그 (유저 단위).
   /// 온보딩 중에는 홈이 아직 없어 좋아요 이벤트를 못 듣고, 스플래시가
   /// 저장해 둔 낡은 스냅샷을 홈이 먼저 렌더하는 문제를 막는다.
-  /// [HomeStateNotifier.init]이 소비(읽고 즉시 해제)한다.
+  ///
+  /// 생명주기: [HomeStateNotifier.init]이 읽는 즉시 false로 되돌려 소비한다.
+  /// 홈이 한 번도 안 뜬 채 로그아웃하면 키가 true로 남지만, 재로그인 시 첫
+  /// 홈 로드에서 소비되므로 자기수렴한다(불필요한 강제 새로고침 1회뿐).
+  /// [onboardingCompletedFor]와 마찬가지로 유저 단위라 로그아웃 시 리셋하지
+  /// 않는다 — 같은 기기의 다른 계정에 영향 없음.
   static PreferenceItem<bool> pendingHomeForceRefreshFor(int userId) =>
       BoolPreferenceItem('pendingHomeForceRefresh_$userId', false);
 

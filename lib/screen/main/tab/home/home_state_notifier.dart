@@ -64,16 +64,29 @@ class HomeStateNotifier extends SafeChangeNotifier {
     if (force) {
       try {
         await forceFlag.set(false);
-      } catch (_) {}
+      } catch (e) {
+        // 해제 실패 시 다음 실행에서 한 번 더 강제 새로고침될 뿐 — 무해
+        debugPrint('[Home] 강제 새로고침 플래그 해제 실패: $e');
+      }
     }
 
     safeNotify();
+    // 온보딩 직후엔 스냅샷 선렌더까지 건너뛴다 — 스플래시가 저장한 스냅샷이
+    // 좋아요/팔로우 이전 상태라 낡았음. (당겨서 새로고침(refresh)은 화면에 이미
+    // 유효한 데이터가 떠 있어 스냅샷을 유지해도 되므로 skipCachedRender를 안 준다.)
     await (force
-        ? withForcedRefresh(() => loadData(skipCache: true))
+        ? loadData(skipCachedRender: true, forceNetwork: true)
         : loadData());
   }
 
-  Future<void> loadData({bool skipCache = false}) async {
+  /// [skipCachedRender] true면 스냅샷 선렌더(_showFromCacheIfAvailable)를 건너뛰고
+  /// 네트워크 결과를 기다린다. [forceNetwork] true면 유저 데이터 fetch만 SWR
+  /// 메모리 캐시를 건너뛰고 실제 네트워크로 나간다 — 프리패치·스냅샷 저장 등
+  /// 부수 호출까지 강제되지 않도록 강제 스코프를 fetch 구간으로만 한정한다.
+  Future<void> loadData({
+    bool skipCachedRender = false,
+    bool forceNetwork = false,
+  }) async {
     final id = userId;
     if (id == null) return;
 
@@ -87,17 +100,17 @@ class HomeStateNotifier extends SafeChangeNotifier {
     festivalOrder = festivalOrd;
 
     // 1단계: 캐시가 있으면 즉시 표시 (스플래시 프리패치 활용).
-    // skipCache면 낡은 스냅샷을 건너뛰고 곧바로 네트워크 결과를 기다린다.
-    if (!skipCache) {
+    if (!skipCachedRender) {
       await _showFromCacheIfAvailable(id);
     }
 
     // 2단계: 네트워크에서 최신 데이터 갱신
     try {
-      final (fetchedArtists, fetchedFestivals) = await (
-        _fetchArtists(id),
-        _fetchFestivals(id),
-      ).wait;
+      Future<(List<FollowedArtist>, List<FestivalModel>)> fetchUserData() =>
+          (_fetchArtists(id), _fetchFestivals(id)).wait;
+      final (fetchedArtists, fetchedFestivals) = await (forceNetwork
+          ? withForcedRefresh(fetchUserData)
+          : fetchUserData());
       // 비동기 완료 시점에 userId가 바뀌었으면 다른 init() 호출 중 — 결과 버림
       if (userId != id) return;
       artists = fetchedArtists;
@@ -138,10 +151,11 @@ class HomeStateNotifier extends SafeChangeNotifier {
 
   /// [force] true면 항상 재요청. false면 5분 이내 로드된 데이터가 있으면 skip.
   /// force 새로고침은 Dio SWR 캐시도 건너뛴다 (당겨서 새로고침 = 실제 네트워크).
+  /// 스냅샷 선렌더는 유지 — 화면에 이미 유효한 데이터가 떠 있는 상태라 낡지 않음.
   Future<void> refresh({bool force = false}) async {
     if (!force && !_staleness.isStale && artists != null) return;
     hasError = false;
-    await (force ? withForcedRefresh(loadData) : loadData());
+    await loadData(forceNetwork: force);
   }
 
   Future<void> refreshFestivals() async {
@@ -183,7 +197,7 @@ class HomeStateNotifier extends SafeChangeNotifier {
     boards = null;
     hasError = false;
     safeNotify();
-    await withForcedRefresh(loadData);
+    await loadData(forceNetwork: true);
   }
 
   Future<void> saveArtistOrder(List<int> order) async {

@@ -83,9 +83,9 @@ void main() {
   late MockFestivalInteractionService mockFestivalInteractionService;
   late MockFestivalCacheService mockFestivalCacheService;
 
-  setUp(() {
-    Prefs.onboardingCompletedFor(1).set(false);
-    Prefs.pendingHomeForceRefreshFor(1).set(false);
+  setUp(() async {
+    await Prefs.onboardingCompletedFor(1).set(false);
+    await Prefs.pendingHomeForceRefreshFor(1).set(false);
     mockArtistService = MockArtistService();
     mockFollowService = MockArtistFollowService();
     mockFestivalService = MockFestivalService();

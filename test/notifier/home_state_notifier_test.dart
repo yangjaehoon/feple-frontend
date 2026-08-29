@@ -1,4 +1,5 @@
 import 'package:feple/common/data/preference/app_preferences.dart';
+import 'package:feple/common/data/preference/prefs.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/festival_model.dart';
 import 'package:feple/model/followed_artist.dart';
@@ -110,6 +111,44 @@ void main() {
 
       expect(notifier.hasError, false);
       expect(notifier.artists?.first.name, '캐시아티스트');
+    });
+  });
+
+  group('HomeStateNotifier.init 강제 새로고침 플래그', () {
+    test('pendingHomeForceRefresh가 켜져 있으면 캐시를 건너뛰고 네트워크 결과를 쓰며 플래그를 해제한다', () async {
+      await Prefs.pendingHomeForceRefreshFor(1).set(true);
+      when(() => mockCacheService.loadHomeFestivals(1))
+          .thenAnswer((_) async => [_festival(title: '캐시축제')]);
+      when(() => mockCacheService.loadHomeArtists(1))
+          .thenAnswer((_) async => [_artist(name: '캐시아티스트')]);
+      when(() => mockUserService.fetchFollowingArtists(1))
+          .thenAnswer((_) async => [_artist(name: '네트워크아티스트')]);
+      when(() => mockUserService.fetchLikedFestivals(1))
+          .thenAnswer((_) async => [_festival(title: '네트워크축제')]);
+
+      await notifier.init(1);
+
+      verifyNever(() => mockCacheService.loadHomeFestivals(1));
+      expect(notifier.festivals?.first.title, '네트워크축제');
+      expect(Prefs.pendingHomeForceRefreshFor(1).get(), false);
+    });
+
+    test('플래그가 꺼져 있으면 캐시를 우선 렌더한다 (기존 동작)', () async {
+      await Prefs.pendingHomeForceRefreshFor(1).set(false);
+      when(() => mockCacheService.loadHomeFestivals(1))
+          .thenAnswer((_) async => [_festival(title: '캐시축제')]);
+      when(() => mockCacheService.loadHomeArtists(1))
+          .thenAnswer((_) async => [_artist(name: '캐시아티스트')]);
+      when(() => mockUserService.fetchFollowingArtists(1))
+          .thenThrow(Exception('오프라인'));
+      when(() => mockUserService.fetchLikedFestivals(1))
+          .thenThrow(Exception('오프라인'));
+
+      await notifier.init(1);
+
+      verify(() => mockCacheService.loadHomeFestivals(1)).called(1);
+      expect(notifier.festivals?.first.title, '캐시축제');
+      expect(notifier.hasError, false);
     });
   });
 

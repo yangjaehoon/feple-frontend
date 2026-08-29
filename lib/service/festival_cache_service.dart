@@ -146,6 +146,19 @@ class FestivalCacheService {
 
   // ── clear ───────────────────────────────────────────────────────
 
+  /// 홈 화면 스냅샷(좋아요 페스티벌 + 팔로우 아티스트)만 제거한다.
+  /// 온보딩에서 좋아요/팔로우를 마친 직후처럼, 스플래시 프리패치가 저장해 둔
+  /// 낡은 스냅샷을 홈이 먼저 렌더하면 안 되는 시점에 호출한다.
+  Future<void> clearHome(int userId) async {
+    final sp = await _sp;
+    await Future.wait([
+      sp.remove('${_p}_home_festivals_$userId'),
+      sp.remove('${_p}_home_time_$userId'),
+      sp.remove('${_p}_home_artists_$userId'),
+      sp.remove('${_p}_home_artists_time_$userId'),
+    ]);
+  }
+
   Future<void> clearAll() async {
     final sp = await _sp;
     final keys = sp.getKeys().where((k) => k.startsWith('${_p}_')).toList();

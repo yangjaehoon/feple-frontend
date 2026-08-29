@@ -215,5 +215,19 @@ void main() {
       expect(await cache.loadArtists(2), isNull);
       expect(await cache.loadPreviewList(), isNull);
     });
+
+    test('clearHome은 해당 유저의 홈 스냅샷만 제거하고 다른 캐시는 남긴다', () async {
+      await cache.saveHomeFestivals(1, [_festival(1)]);
+      await cache.saveHomeArtists(1, [_followedArtist()]);
+      await cache.saveHomeFestivals(2, [_festival(2)]);
+      await cache.savePreviewList([_preview(1)]);
+
+      await cache.clearHome(1);
+
+      expect(await cache.loadHomeFestivals(1), isNull);
+      expect(await cache.loadHomeArtists(1), isNull);
+      expect(await cache.loadHomeFestivals(2), isNotNull);
+      expect(await cache.loadPreviewList(), isNotNull);
+    });
   });
 }

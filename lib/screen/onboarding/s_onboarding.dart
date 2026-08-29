@@ -8,6 +8,7 @@ import 'package:feple/model/festival_preview.dart';
 import 'package:feple/screen/onboarding/s_artist_pick.dart';
 import 'package:feple/screen/onboarding/s_festival_pick.dart';
 import 'package:feple/screen/onboarding/w_onboarding_progress_dots.dart';
+import 'package:feple/service/festival_cache_service.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
 
@@ -86,6 +87,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Future<void> _finish() async {
+    // 온보딩에서 좋아요/팔로우한 내용이 홈 첫 진입에 바로 반영되도록:
+    // 스플래시가 저장해 둔 낡은 홈 스냅샷을 지우고(캐시 우선 렌더가 빈 목록을
+    // 먼저 보여주는 것 방지), 다음 홈 로드를 강제 새로고침으로 표시한다.
+    // 온보딩 중에는 홈이 없어 like/follow 이벤트를 못 듣기 때문.
+    try {
+      await sl<FestivalCacheService>().clearHome(widget.userId);
+      await Prefs.pendingHomeForceRefreshFor(widget.userId).set(true);
+    } catch (e) {
+      debugPrint('[Onboarding] home cache reset failed: $e');
+    }
     await Prefs.onboardingCompletedFor(widget.userId).set(true);
     widget.onComplete();
   }

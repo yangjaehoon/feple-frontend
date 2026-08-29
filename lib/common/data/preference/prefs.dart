@@ -16,6 +16,14 @@ class Prefs {
   static final _legacyOnboardingCompleted =
       BoolPreferenceItem('onboardingCompleted', false);
 
+  /// 온보딩에서 좋아요/팔로우를 마친 뒤, 다음 홈 진입이 캐시 우선 렌더를
+  /// 건너뛰고 강제 새로고침하도록 하는 1회용 플래그 (유저 단위).
+  /// 온보딩 중에는 홈이 아직 없어 좋아요 이벤트를 못 듣고, 스플래시가
+  /// 저장해 둔 낡은 스냅샷을 홈이 먼저 렌더하는 문제를 막는다.
+  /// [HomeStateNotifier.init]이 소비(읽고 즉시 해제)한다.
+  static PreferenceItem<bool> pendingHomeForceRefreshFor(int userId) =>
+      BoolPreferenceItem('pendingHomeForceRefresh_$userId', false);
+
   static final postCreatedCount = IntPreferenceItem('postCreatedCount', 0);
   static final artistFollowedCount = IntPreferenceItem('artistFollowedCount', 0);
   static final reviewRequested = BoolPreferenceItem('reviewRequested', false);

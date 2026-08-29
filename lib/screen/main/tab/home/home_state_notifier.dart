@@ -1,4 +1,5 @@
 import 'package:feple/common/data/preference/item/preference_item.dart';
+import 'package:feple/common/data/preference/prefs.dart';
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/common/stale_tracker.dart';
 import 'package:feple/common/util/forced_refresh.dart';
@@ -54,11 +55,25 @@ class HomeStateNotifier extends SafeChangeNotifier {
     festivals = null;
     boards = null;
     hasError = false;
+
+    // 온보딩 직후처럼 캐시 우선 렌더를 건너뛰고 강제로 최신을 받아야 하는
+    // 1회용 신호 — 읽는 즉시 해제한다. (온보딩 중에는 홈이 없어 좋아요/팔로우
+    // 이벤트를 못 듣고, 스플래시가 저장한 낡은 스냅샷을 먼저 렌더하게 됨)
+    final forceFlag = Prefs.pendingHomeForceRefreshFor(newUserId);
+    final force = forceFlag.get();
+    if (force) {
+      try {
+        await forceFlag.set(false);
+      } catch (_) {}
+    }
+
     safeNotify();
-    await loadData();
+    await (force
+        ? withForcedRefresh(() => loadData(skipCache: true))
+        : loadData());
   }
 
-  Future<void> loadData() async {
+  Future<void> loadData({bool skipCache = false}) async {
     final id = userId;
     if (id == null) return;
 
@@ -71,8 +86,11 @@ class HomeStateNotifier extends SafeChangeNotifier {
     artistOrder = artistOrd;
     festivalOrder = festivalOrd;
 
-    // 1단계: 캐시가 있으면 즉시 표시 (스플래시 프리패치 활용)
-    await _showFromCacheIfAvailable(id);
+    // 1단계: 캐시가 있으면 즉시 표시 (스플래시 프리패치 활용).
+    // skipCache면 낡은 스냅샷을 건너뛰고 곧바로 네트워크 결과를 기다린다.
+    if (!skipCache) {
+      await _showFromCacheIfAvailable(id);
+    }
 
     // 2단계: 네트워크에서 최신 데이터 갱신
     try {

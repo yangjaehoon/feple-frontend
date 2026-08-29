@@ -12,6 +12,7 @@ import 'package:feple/model/festival_preview_page.dart';
 import 'package:feple/screen/onboarding/s_onboarding.dart';
 import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/artist_service.dart';
+import 'package:feple/service/festival_cache_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ class MockArtistService extends Mock implements ArtistService {}
 class MockArtistFollowService extends Mock implements ArtistFollowService {}
 class MockFestivalService extends Mock implements FestivalService {}
 class MockFestivalInteractionService extends Mock implements FestivalInteractionService {}
+class MockFestivalCacheService extends Mock implements FestivalCacheService {}
 
 Artist _artist({int id = 1, String name = '아티스트', String genre = 'KPOP'}) =>
     Artist(
@@ -79,13 +81,17 @@ void main() {
   late MockArtistFollowService mockFollowService;
   late MockFestivalService mockFestivalService;
   late MockFestivalInteractionService mockFestivalInteractionService;
+  late MockFestivalCacheService mockFestivalCacheService;
 
   setUp(() {
     Prefs.onboardingCompletedFor(1).set(false);
+    Prefs.pendingHomeForceRefreshFor(1).set(false);
     mockArtistService = MockArtistService();
     mockFollowService = MockArtistFollowService();
     mockFestivalService = MockFestivalService();
     mockFestivalInteractionService = MockFestivalInteractionService();
+    mockFestivalCacheService = MockFestivalCacheService();
+    when(() => mockFestivalCacheService.clearHome(any())).thenAnswer((_) async {});
     if (sl.isRegistered<ArtistService>()) sl.unregister<ArtistService>();
     sl.registerSingleton<ArtistService>(mockArtistService);
     if (sl.isRegistered<ArtistFollowService>()) sl.unregister<ArtistFollowService>();
@@ -94,6 +100,8 @@ void main() {
     sl.registerSingleton<FestivalService>(mockFestivalService);
     if (sl.isRegistered<FestivalInteractionService>()) sl.unregister<FestivalInteractionService>();
     sl.registerSingleton<FestivalInteractionService>(mockFestivalInteractionService);
+    if (sl.isRegistered<FestivalCacheService>()) sl.unregister<FestivalCacheService>();
+    sl.registerSingleton<FestivalCacheService>(mockFestivalCacheService);
   });
 
   tearDown(() {
@@ -101,6 +109,7 @@ void main() {
     if (sl.isRegistered<ArtistFollowService>()) sl.unregister<ArtistFollowService>();
     if (sl.isRegistered<FestivalService>()) sl.unregister<FestivalService>();
     if (sl.isRegistered<FestivalInteractionService>()) sl.unregister<FestivalInteractionService>();
+    if (sl.isRegistered<FestivalCacheService>()) sl.unregister<FestivalCacheService>();
   });
 
   // 정보 페이지 3개를 지나 아티스트 선택 페이지로 진입한다.
@@ -367,6 +376,10 @@ void main() {
       verify(() => mockFestivalInteractionService.toggleLike(9)).called(1);
       expect(completed, true);
       expect(Prefs.onboardingCompletedFor(1).get(), true);
+      // 온보딩에서 좋아요한 내용이 홈 첫 진입에 반영되도록 낡은 홈 스냅샷을
+      // 지우고 다음 홈 로드를 강제 새로고침으로 표시한다.
+      verify(() => mockFestivalCacheService.clearHome(1)).called(1);
+      expect(Prefs.pendingHomeForceRefreshFor(1).get(), true);
     });
 
     testWidgets('페스티벌을 선택하지 않고 건너뛰면 관심 등록 없이 완료된다', (tester) async {

@@ -34,5 +34,34 @@ void main() {
 
       expect(find.byType(SkeletonBox), findsNWidgets(3));
     });
+
+    testWidgets('showStatRow이면 행마다 stat 박스 2개가 추가된다', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: ListRowSkeleton(
+              itemCount: 1,
+              showLeading: false,
+              showStatRow: true,
+            ),
+          ),
+        ),
+      );
+
+      // 텍스트 2개 + stat 2개 = 4개
+      expect(find.byType(SkeletonBox), findsNWidgets(4));
+    });
+
+    testWidgets('divided이면 항목 사이에 Divider가 있다', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: ListRowSkeleton(itemCount: 3, divided: true),
+          ),
+        ),
+      );
+
+      expect(find.byType(Divider), findsNWidgets(2)); // 3항목 사이 2개
+    });
   });
 }

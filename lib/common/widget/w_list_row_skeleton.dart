@@ -12,14 +12,26 @@ class ListRowSkeleton extends StatelessWidget {
   final int itemCount;
   final bool showLeading;
 
-  const ListRowSkeleton({super.key, this.itemCount = 3, this.showLeading = true});
+  /// 제목·부제 아래에 좋아요/댓글 수 자리(작은 박스 2개) 줄을 추가한다.
+  /// (게시글 목록 스켈레톤에서 사용)
+  final bool showStatRow;
+
+  /// 항목 사이에 Divider를 넣는다.
+  final bool divided;
+
+  const ListRowSkeleton({
+    super.key,
+    this.itemCount = 3,
+    this.showLeading = true,
+    this.showStatRow = false,
+    this.divided = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final leadingSize = boundedResponsiveSize(context, 52);
-    return Column(
-      children: List.generate(itemCount, (index) {
-        return Padding(
+
+    Widget item(int index) => Padding(
           padding: EdgeInsets.only(
             left: AppDimens.paddingHorizontal,
             right: AppDimens.paddingHorizontal,
@@ -32,7 +44,8 @@ class ListRowSkeleton extends StatelessWidget {
                 SkeletonBox(
                   width: leadingSize,
                   height: leadingSize,
-                  borderRadius: const BorderRadius.all(Radius.circular(AppDimens.radiusSmall)),
+                  borderRadius: const BorderRadius.all(
+                      Radius.circular(AppDimens.radiusSmall)),
                 ),
                 const SizedBox(width: AppDimens.space12),
               ],
@@ -42,14 +55,35 @@ class ListRowSkeleton extends StatelessWidget {
                   children: [
                     const SkeletonBox(height: 14),
                     const SizedBox(height: AppDimens.space8),
-                    SkeletonBox(width: 120, height: 12, borderRadius: const BorderRadius.all(Radius.circular(4))),
+                    const SkeletonBox(
+                        width: 120,
+                        height: 12,
+                        borderRadius: BorderRadius.all(Radius.circular(4))),
+                    if (showStatRow) ...[
+                      const SizedBox(height: AppDimens.space8),
+                      const Row(
+                        children: [
+                          SkeletonBox(width: 40, height: 10),
+                          SizedBox(width: AppDimens.space12),
+                          SkeletonBox(width: 40, height: 10),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),
             ],
           ),
         );
-      }),
-    );
+
+    if (divided) {
+      return ListView.separated(
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: itemCount,
+        separatorBuilder: (_, _) => const Divider(height: 1),
+        itemBuilder: (_, index) => item(index),
+      );
+    }
+    return Column(children: List.generate(itemCount, item));
   }
 }

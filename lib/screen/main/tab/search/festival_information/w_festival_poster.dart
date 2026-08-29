@@ -672,27 +672,30 @@ class FestivalPosterState extends State<FestivalPoster>
         ),
       ),
     ),
-    AnimatedCrossFade(
-      firstChild: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 4, 20, 14),
-        child: Text(
-          _notifier.poster.description,
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeMd,
-            height: 1.6,
-            color: Colors.white.withValues(alpha: 0.85),
+    // 접기 애니메이션: Text는 항상 full-width로 레이아웃되고(리플로우 없음),
+    // ClipRect + AnimatedAlign(heightFactor)가 높이만 1→0으로 줄여 위로 밀어 올린다.
+    // (예전엔 AnimatedCrossFade의 secondChild 너비를 full-width로 맞춰 회피했는데,
+    //  두 child가 같은 너비를 보고해야만 동작하는 취약한 방식이었다.)
+    ClipRect(
+      child: AnimatedAlign(
+        alignment: Alignment.topLeft,
+        heightFactor: _notifier.descExpanded ? 1.0 : 0.0,
+        duration: AppDimens.animFast,
+        curve: Curves.easeInOut,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 4),
+          child: Text(
+            _notifier.poster.description,
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeMd,
+              height: 1.6,
+              color: Colors.white.withValues(alpha: 0.85),
+            ),
           ),
         ),
       ),
-      // 너비를 full-width로 고정해 접힐 때 높이만 애니메이션되게 한다.
-      // (너비가 0으로 줄면 Text가 한 글자씩 세로로 리플로우됨)
-      secondChild: const SizedBox(width: double.infinity, height: AppDimens.space10),
-      crossFadeState: _notifier.descExpanded
-          ? CrossFadeState.showFirst
-          : CrossFadeState.showSecond,
-      duration: AppDimens.animFast,
-      alignment: Alignment.topLeft,
     ),
+    const SizedBox(height: AppDimens.space10),
   ];
 }
 

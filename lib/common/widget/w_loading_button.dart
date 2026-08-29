@@ -78,30 +78,36 @@ class _LoadingButtonState extends State<LoadingButton>
     // 색이 동일해 탭이 씹히는 것처럼 보임 (isLoading과 동일한 dimming 재사용)
     final isDisabled = !widget.isLoading && !widget.isSuccess && widget.onPressed == null;
 
+    final targetColor = widget.isSuccess
+        ? successColor
+        : (widget.isLoading || isDisabled ? bg.withValues(alpha: 0.6) : bg);
+
     return SizedBox(
       width: double.infinity,
       height: widget.height,
-      child: AnimatedContainer(
+      // 색은 FilledButton의 실제 배경으로 넣고 TweenAnimationBuilder가 값만
+      // 보간한다. (예전엔 투명 버튼을 AnimatedContainer로 감싸 색을 대신
+      // 칠했는데, borderRadius를 두 곳에서 맞춰야 했고 disabled dimming도 직접
+      // 재구현해야 했다.)
+      child: TweenAnimationBuilder<Color?>(
+        tween: ColorTween(end: targetColor),
         duration: AppDimens.animFast,
-        decoration: BoxDecoration(
-          color: widget.isSuccess
-              ? successColor
-              : (widget.isLoading || isDisabled ? bg.withValues(alpha: 0.6) : bg),
-          borderRadius: BorderRadius.circular(widget.borderRadius),
-        ),
-        child: FilledButton(
+        builder: (context, color, child) => FilledButton(
           onPressed: _resolvedOnPressed,
           style: FilledButton.styleFrom(
-            backgroundColor: Colors.transparent,
-            disabledBackgroundColor: Colors.transparent,
+            backgroundColor: color ?? targetColor,
+            disabledBackgroundColor: color ?? targetColor,
             shadowColor: Colors.transparent,
             foregroundColor: fg,
+            // 색 보간은 위 Tween이 전담 — 버튼 내부 암시적 애니메이션과 중첩 방지
+            animationDuration: Duration.zero,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(widget.borderRadius),
             ),
           ),
-          child: _buildChild(fg),
+          child: child,
         ),
+        child: _buildChild(fg),
       ),
     );
   }

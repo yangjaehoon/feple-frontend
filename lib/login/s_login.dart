@@ -63,6 +63,9 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
   @override
   Widget build(BuildContext context) {
     final themeColors = context.appColors;
+    // 세로 간격은 화면 높이에 비례해 스케일한다(기준 iPhone 14, 844pt).
+    // 작은 폰은 촘촘히, 큰 폰은 넉넉히 — 고정값으로 한 기기에만 맞추지 않도록.
+    final rs = ResponsiveSize(context);
     return Scaffold(
       backgroundColor: themeColors.backgroundMain,
       body: KeyboardDismiss(
@@ -76,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     return SingleChildScrollView(
-                      padding: const EdgeInsets.fromLTRB(28, 8, 28, 8),
+                      padding: EdgeInsets.fromLTRB(28, rs.h(10), 28, rs.h(8)),
                       child: ConstrainedBox(
                         constraints: BoxConstraints(minHeight: constraints.maxHeight),
                         child: IntrinsicHeight(
@@ -84,11 +87,11 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                _buildHeader(themeColors),
-                                _buildForm(themeColors),
-                                const SizedBox(height: AppDimens.space8),
+                                _buildHeader(themeColors, rs),
+                                _buildForm(themeColors, rs),
+                                SizedBox(height: rs.h(10)),
                                 _buildForgotPassword(themeColors),
-                                const SizedBox(height: AppDimens.space12),
+                                SizedBox(height: rs.h(14)),
                                 IgnorePointer(
                                   ignoring: _isAnyLoading,
                                   child: Opacity(
@@ -101,11 +104,11 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
                                     ),
                                   ),
                                 ),
-                                const SizedBox(height: AppDimens.space12),
+                                SizedBox(height: rs.h(14)),
                                 _buildOrDivider(themeColors),
-                                const SizedBox(height: AppDimens.space12),
+                                SizedBox(height: rs.h(14)),
                                 _buildSocialLoginRow(),
-                                const SizedBox(height: AppDimens.space12),
+                                SizedBox(height: rs.h(14)),
                                 _buildSignupRow(context, themeColors),
                               ],
                             ),
@@ -127,8 +130,8 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     );
   }
 
-  Widget _buildHeader(AbstractThemeColors themeColors) {
-    final logoSize = ResponsiveSize(context).w(88);
+  Widget _buildHeader(AbstractThemeColors themeColors, ResponsiveSize rs) {
+    final logoSize = rs.w(92);
     return Column(
       children: [
         ClipRRect(
@@ -140,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
             fit: BoxFit.contain,
           ),
         ),
-        const SizedBox(height: AppDimens.space16),
+        SizedBox(height: rs.h(18)),
         Text(
           'welcome'.tr(),
           style: TextStyle(
@@ -150,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
             letterSpacing: -0.5,
           ),
         ),
-        const SizedBox(height: AppDimens.space6),
+        SizedBox(height: rs.h(6)),
         Text(
           'login_subtitle'.tr(),
           style: TextStyle(
@@ -159,12 +162,12 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
             fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: AppDimens.space16),
+        SizedBox(height: rs.h(22)),
       ],
     );
   }
 
-  Widget _buildForm(AbstractThemeColors themeColors) {
+  Widget _buildForm(AbstractThemeColors themeColors, ResponsiveSize rs) {
     return Column(
       children: [
         AppTextField(
@@ -180,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
           },
           onSubmitted: (_) => FocusScope.of(context).nextFocus(),
         ),
-        const SizedBox(height: 14),
+        SizedBox(height: rs.h(14)),
         AppTextField(
           controller: passwordController,
           hintText: 'password'.tr(),

@@ -129,23 +129,31 @@ class _CommentInputBarState extends State<CommentInputBar> {
       child: Row(
         children: [
           Expanded(
-            child: TextField(
-              controller: widget.controller,
-              maxLength: 300,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: widget.replyToNickname != null
-                    ? 'enter_reply'.tr()
-                    : 'enter_comment'.tr(),
-                hintStyle: TextStyle(color: colors.textSecondary),
-                filled: true,
-                fillColor: Colors.transparent,
-                counterStyle: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXxs),
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            // 바깥 Container가 테두리를 그리므로, 전역 inputDecorationTheme의
+            // OutlineInputBorder가 겹쳐 이중 박스로 보이지 않도록 이 subtree에서만
+            // 입력 데코레이션 테마를 해제한다 (border: InputBorder.none만으로는
+            // 테마의 enabledBorder/focusedBorder가 남아 안 먹힌다).
+            child: Theme(
+              data: Theme.of(context)
+                  .copyWith(inputDecorationTheme: const InputDecorationTheme()),
+              child: TextField(
+                controller: widget.controller,
+                maxLength: 300,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: widget.replyToNickname != null
+                      ? 'enter_reply'.tr()
+                      : 'enter_comment'.tr(),
+                  hintStyle: TextStyle(color: colors.textSecondary),
+                  filled: false,
+                  counterStyle: TextStyle(
+                      color: colors.textSecondary, fontSize: AppDimens.fontSizeXxs),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                ),
+                style: TextStyle(color: colors.textTitle),
+                maxLines: null,
               ),
-              style: TextStyle(color: colors.textTitle),
-              maxLines: null,
             ),
           ),
           const SizedBox(width: AppDimens.space4),

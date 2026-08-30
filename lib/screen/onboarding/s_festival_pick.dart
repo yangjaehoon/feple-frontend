@@ -264,7 +264,7 @@ class _FestivalPickScreenState extends State<FestivalPickScreen>
                 borderRadius: BorderRadius.circular(AppDimens.cardRadius),
               ),
               child: Text(
-                'onboarding_pick_selected'.tr(args: ['$count']),
+                'onboarding_festival_pick_selected'.tr(args: ['$count']),
                 style: TextStyle(
                   fontSize: AppDimens.fontSizeSm,
                   fontWeight: FontWeight.w600,

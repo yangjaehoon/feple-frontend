@@ -355,7 +355,7 @@ void main() {
       await tester.pump();
 
       expect(find.text('onboarding_start'.tr()), findsOneWidget);
-      expect(find.text('onboarding_pick_selected'.tr(args: ['1'])), findsOneWidget);
+      expect(find.text('onboarding_festival_pick_selected'.tr(args: ['1'])), findsOneWidget);
     });
 
     testWidgets('선택한 페스티벌을 관심 등록하고 완료 콜백을 호출한다', (tester) async {
@@ -442,7 +442,7 @@ void main() {
       verify(() => mockFestivalInteractionService.toggleLike(1)).called(1);
       verify(() => mockFestivalInteractionService.toggleLike(2)).called(1);
       // 성공했던 1번(펜타포트)은 선택 목록에서 빠지고, 실패했던 2번(워터밤)만 남는다.
-      expect(find.text('onboarding_pick_selected'.tr(args: ['1'])), findsOneWidget);
+      expect(find.text('onboarding_festival_pick_selected'.tr(args: ['1'])), findsOneWidget);
 
       // 에러 스낵바가 화면 하단에 남아있으면 같은 자리의 재시도 버튼 탭을 가로채므로
       // 즉시 제거한다. 카드 포스터가 빈 URL이라 placeholder shimmer가 끝나지 않아
@@ -499,7 +499,7 @@ void main() {
       expect(find.text('onboarding_festival_like_failed'.tr()), findsOneWidget);
       expect(completed, false);
       // 성공한 2,3만 빠지고 실패한 1 + 미시도 4가 남는다
-      expect(find.text('onboarding_pick_selected'.tr(args: ['2'])), findsOneWidget);
+      expect(find.text('onboarding_festival_pick_selected'.tr(args: ['2'])), findsOneWidget);
     });
   });
 }

@@ -632,6 +632,7 @@
   "onboarding_festival_pick_title": "Pick Upcoming\nFestivals Too",
   "onboarding_festival_pick_subtitle": "Get the festivals you like\nfeatured right on your home screen",
   "onboarding_festival_pick_load_failed": "Failed to load festivals",
+  "onboarding_festival_pick_selected": "{} selected",
   "onboarding_festival_like_failed": "Failed to like the festival. Please try again",
   "onboarding_replay": "Replay Onboarding",
   "perm_notif_title": "Stay in the loop",

@@ -288,11 +288,16 @@ void main() {
   });
 
   group('hourInFestivalDay', () {
-    test('심야(0~5시)는 +24, 6시 이상은 그대로', () {
-      expect(hourInFestivalDay(0), 24);
-      expect(hourInFestivalDay(5), 29);
-      expect(hourInFestivalDay(6), 6);
-      expect(hourInFestivalDay(23), 23);
+    test('startHour가 낮/저녁이면 심야(0~5시)는 +24, 6시 이상은 그대로', () {
+      expect(hourInFestivalDay(0, 18), 24);
+      expect(hourInFestivalDay(5, 18), 29);
+      expect(hourInFestivalDay(6, 18), 6);
+      expect(hourInFestivalDay(23, 18), 23);
+    });
+
+    test('startHour 자체가 심야면(밤샘 페스티벌) 롤오버하지 않는다', () {
+      expect(hourInFestivalDay(3, 2), 3);
+      expect(hourInFestivalDay(1, 1), 1);
     });
   });
 

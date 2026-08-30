@@ -48,9 +48,11 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
 
   Color _stageColor(String stage) => timetableStageColor(stage, _stages);
 
+  // "페스티벌 하루" 기준 분(0시가 아니라 startHour 이후로 이어짐) — 자정 넘김
+  // 항목이 겹침 판정에서 어긋나지 않도록 _toY와 같은 환산을 쓴다.
   int _minutesOf(String time) {
     final t = parseHHmm(time);
-    return t.hour * 60 + t.minute;
+    return hourInFestivalDay(t.hour, _startHour) * 60 + t.minute;
   }
 
   // 오늘 날짜 탭이 선택돼 있고 현재 시각이 그리드 범위 안에 있을 때만
@@ -60,7 +62,11 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
   double? _currentTimeTop(double pxPerMin) {
     if (!Prefs.showCurrentTimeLine.get()) return null;
     if (widget.selectedDate != DateTime.now().toYMD) return null;
-    final nowMinutes = TimeOfDay.now().hour * 60 + TimeOfDay.now().minute;
+    final now = TimeOfDay.now();
+    // 자정을 넘겨 진행되는 페스티벌에서 00:00 이후에도 "지금" 라인이 이어지도록
+    // 현재 시각도 페스티벌 하루 기준으로 환산한다.
+    final nowMinutes =
+        hourInFestivalDay(now.hour, _startHour) * 60 + now.minute;
     final startMinutes = _startHour * 60;
     final endMinutes = _endHour * 60;
     if (nowMinutes < startMinutes || nowMinutes > endMinutes) return null;
@@ -88,7 +94,9 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
     final totalMins = (_endHour - _startHour) * 60;
     final rawMins = ((pos.dy - _topPad) / pxPerMin).round();
     final clampedMins = rawMins.clamp(0, totalMins);
-    final hour = _startHour + (clampedMins ~/ 60);
+    // 자정 넘김 그리드에선 startHour + offset이 24를 넘을 수 있으므로 24로 나눔
+    // (예: startHour 18 + 9h = 27시 → 03:00).
+    final hour = (_startHour + (clampedMins ~/ 60)) % 24;
     // 그리드 눈금이 10분 단위로 그려지므로 탭 위치도 10분 단위로 스냅 —
     // 눈금 간격을 바꾸면 이 값도 함께 바꿀 것
     final minute = (clampedMins % 60 ~/ 10) * 10;

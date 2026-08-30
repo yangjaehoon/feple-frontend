@@ -166,6 +166,29 @@ void main() {
       expect(tappedTime, isNotNull);
     });
 
+    testWidgets('자정 넘김 그리드를 탭해도 24시 미만의 유효한 시각을 넘긴다', (tester) async {
+      String? tappedTime;
+      // startHour 23 + 중앙 탭(약 +4h) = 27시 → % 24 = 03:00 이어야 한다
+      final range = TimetableRange(
+        filtered: const [],
+        stages: const ['StageA'],
+        startHour: 23,
+        endHour: 31,
+      );
+
+      await pump(tester, range: range, onTapGrid: (_, time) => tappedTime = time);
+
+      await tester.tap(find.descendant(
+        of: find.byType(TimetableFullscreenGrid),
+        matching: find.byType(GestureDetector),
+      ));
+      await tester.pump();
+
+      expect(tappedTime, isNotNull);
+      final hour = int.parse(tappedTime!.split(':')[0]);
+      expect(hour, inInclusiveRange(0, 23));
+    });
+
     testWidgets('내 일정 카드를 탭하면 onTapMyTimetableEntry가 호출된다', (tester) async {
       MyTimetableEntry? tapped;
       final range = TimetableRange(

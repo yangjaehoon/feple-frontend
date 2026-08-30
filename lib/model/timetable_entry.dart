@@ -31,16 +31,21 @@ String formatTimeRange(String startTime, String endTime) => '$startTime – $end
 /// 시각(startHour) 계산에서 제외하고 좌표 환산 시 +24시간으로 다룬다.
 const int timetableNightRolloverHour = 6;
 
-/// [hour]를 "페스티벌 하루" 기준 시각으로 환산 — 심야(0~5시)는 +24.
-int hourInFestivalDay(int hour) =>
-    hour < timetableNightRolloverHour ? hour + 24 : hour;
+/// [hour]를 "페스티벌 하루" 기준 시각으로 환산.
+/// startHour가 낮/저녁(>= 롤오버)이면 심야(0~5시) 시작은 자정을 넘긴 다음날로
+/// 보고 +24. startHour 자체가 심야면(밤샘 페스티벌) 롤오버하지 않는다.
+int hourInFestivalDay(int hour, int startHour) =>
+    (startHour >= timetableNightRolloverHour && hour < timetableNightRolloverHour)
+        ? hour + 24
+        : hour;
 
 /// 'HH:mm' 시각을 그리드 시작 시각(startHour) 기준 Y좌표(px)로 환산.
 /// 심야 항목은 다음날로 밀어 그리드 하단에, startHour보다 이른 낮 항목
 /// (예: 저녁 공연 페스티벌의 "게이트 오픈")은 상단(0)에 고정한다.
 double timetableMinutesToY(String time, int startHour, double pxPerMin) {
   final t = parseHHmm(time);
-  final minutes = (hourInFestivalDay(t.hour) - startHour) * 60 + t.minute;
+  final minutes =
+      (hourInFestivalDay(t.hour, startHour) - startHour) * 60 + t.minute;
   return (minutes < 0 ? 0 : minutes) * pxPerMin;
 }
 
@@ -92,8 +97,9 @@ TimetableRange computeTimetableRange(List<TimetableEntry> entries, String? date)
   int endHour = startHour + 1;
   for (final e in filtered) {
     final start = parseHHmm(e.startTime);
-    final endMinutes =
-        hourInFestivalDay(start.hour) * 60 + start.minute + e.durationMinutes;
+    final endMinutes = hourInFestivalDay(start.hour, startHour) * 60 +
+        start.minute +
+        e.durationMinutes;
     final candidateEnd = (endMinutes / 60).ceil();
     if (candidateEnd > endHour) endHour = candidateEnd;
   }

@@ -67,49 +67,60 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
       backgroundColor: themeColors.backgroundMain,
       body: KeyboardDismiss(
         child: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(28, 24, 28, 24),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: IntrinsicHeight(
-                    child: AutofillGroup(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _buildHeader(themeColors),
-                          _buildForm(themeColors),
-                          const SizedBox(height: AppDimens.space12),
-                          _buildForgotPassword(themeColors),
-                          const SizedBox(height: AppDimens.space20),
-                          IgnorePointer(
-                            ignoring: _isAnyLoading,
-                            child: Opacity(
-                              opacity: (_isKakaoLoading || _isAppleLoading) ? 0.5 : 1.0,
-                              child: LoadingButton(
-                                label: 'login'.tr(),
-                                onPressed: _loginWithEmail,
-                                isLoading: _isEmailLoading,
-                                backgroundColor: themeColors.activate,
-                              ),
+          // 문의 링크는 스크롤 영역 밖 하단에 고정 — 인증 흐름이 아닌 보조
+          // 링크이고, 고정하면 작은 화면에서도 항상 보이며 위쪽 콘텐츠가
+          // 한 화면에 들어갈 여유가 늘어난다.
+          child: Column(
+            children: [
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(28, 8, 28, 8),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                        child: IntrinsicHeight(
+                          child: AutofillGroup(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _buildHeader(themeColors),
+                                _buildForm(themeColors),
+                                const SizedBox(height: AppDimens.space8),
+                                _buildForgotPassword(themeColors),
+                                const SizedBox(height: AppDimens.space12),
+                                IgnorePointer(
+                                  ignoring: _isAnyLoading,
+                                  child: Opacity(
+                                    opacity: (_isKakaoLoading || _isAppleLoading) ? 0.5 : 1.0,
+                                    child: LoadingButton(
+                                      label: 'login'.tr(),
+                                      onPressed: _loginWithEmail,
+                                      isLoading: _isEmailLoading,
+                                      backgroundColor: themeColors.activate,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: AppDimens.space12),
+                                _buildOrDivider(themeColors),
+                                const SizedBox(height: AppDimens.space12),
+                                _buildSocialLoginRow(),
+                                const SizedBox(height: AppDimens.space12),
+                                _buildSignupRow(context, themeColors),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: AppDimens.space20),
-                          _buildOrDivider(themeColors),
-                          const SizedBox(height: AppDimens.space20),
-                          _buildSocialLoginRow(),
-                          const SizedBox(height: 28),
-                          _buildSignupRow(context, themeColors),
-                          const SizedBox(height: AppDimens.space32),
-                          const SupportLinkRow(),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
-              );
-            },
+              ),
+              const Padding(
+                padding: EdgeInsets.fromLTRB(28, 2, 28, 4),
+                child: SupportLinkRow(),
+              ),
+            ],
           ),
         ),
       ),
@@ -117,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
   }
 
   Widget _buildHeader(AbstractThemeColors themeColors) {
-    final logoSize = ResponsiveSize(context).w(120);
+    final logoSize = ResponsiveSize(context).w(88);
     return Column(
       children: [
         ClipRRect(
@@ -129,26 +140,26 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
             fit: BoxFit.contain,
           ),
         ),
-        const SizedBox(height: 28),
+        const SizedBox(height: AppDimens.space16),
         Text(
           'welcome'.tr(),
           style: TextStyle(
-            fontSize: 28,
+            fontSize: 24,
             fontWeight: FontWeight.w800,
             color: themeColors.textTitle,
             letterSpacing: -0.5,
           ),
         ),
-        const SizedBox(height: AppDimens.space8),
+        const SizedBox(height: AppDimens.space6),
         Text(
           'login_subtitle'.tr(),
           style: TextStyle(
-            fontSize: AppDimens.fontSizeLg,
+            fontSize: AppDimens.fontSizeMd,
             color: themeColors.textSecondary,
             fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: AppDimens.space40),
+        const SizedBox(height: AppDimens.space16),
       ],
     );
   }
@@ -491,7 +502,7 @@ class _SocialIconButton extends StatelessWidget {
   final VoidCallback onPressed;
   final Widget child;
 
-  static const _size = 56.0;
+  static const _size = 50.0;
 
   @override
   Widget build(BuildContext context) {

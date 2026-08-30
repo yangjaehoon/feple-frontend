@@ -106,9 +106,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           child: Center(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: 28, vertical: rs.h(8)),
-              child: _sent
-                  ? _buildSentState(colors, rs)
-                  : _buildInputState(colors, rs),
+              child: _sent ? _buildSentState(colors) : _buildInputState(colors),
             ),
           ),
         ),
@@ -116,14 +114,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 
-  Widget _buildInputState(AbstractThemeColors colors, ResponsiveSize rs) {
+  Widget _buildInputState(AbstractThemeColors colors) {
+    final rs = ResponsiveSize(context);
     return AutofillGroup(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const IconCircle(icon: Icons.lock_reset_rounded),
           SizedBox(height: rs.h(20)),
-          _buildHeader(colors, rs),
+          _buildHeader(colors),
           SizedBox(height: rs.h(28)),
           _buildEmailField(),
           if (_errorMessage != null) _buildServerError(colors),
@@ -139,13 +138,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 
-  Widget _buildHeader(AbstractThemeColors colors, ResponsiveSize rs) {
+  Widget _buildHeader(AbstractThemeColors colors) {
+    final rs = ResponsiveSize(context);
     return Column(
       children: [
         Text(
           'reset_password'.tr(),
           style: TextStyle(
-            fontSize: 24,
+            fontSize: AppDimens.fontSizeDisplay,
             fontWeight: FontWeight.w800,
             color: colors.textTitle,
             letterSpacing: -0.5,
@@ -209,7 +209,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 
-  Widget _buildSentState(AbstractThemeColors colors, ResponsiveSize rs) {
+  Widget _buildSentState(AbstractThemeColors colors) {
+    final rs = ResponsiveSize(context);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -218,7 +219,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         Text(
           'password_reset_sent_title'.tr(),
           style: TextStyle(
-            fontSize: 24,
+            fontSize: AppDimens.fontSizeDisplay,
             fontWeight: FontWeight.w800,
             color: colors.textTitle,
             letterSpacing: -0.5,

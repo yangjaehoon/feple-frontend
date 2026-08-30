@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
+import 'package:feple/common/widget/w_support_link_row.dart';
 import 'package:feple/login/s_forgot_password.dart';
 import 'package:feple/login/s_login.dart';
 import 'package:feple/login/s_signup.dart';
@@ -124,6 +125,34 @@ void main() {
       await tester.pump(const Duration(milliseconds: 50));
 
       expect(find.text('login_failed'.tr()), findsOneWidget);
+    });
+  });
+
+  // 반응형 여백 작업 회귀 방지: 문의 링크(SupportLinkRow)가 스크롤 영역 "밖"에
+  // 고정돼 있어야 작은 화면에서도 안 밀려난다. 스크롤 여부(픽셀 fit)는 테스트
+  // 자산에 번역이 안 실려(미번역 키가 실측보다 길다) 신뢰할 수 없어, 실기기
+  // 3종(SE/15/Pro Max) 스크린샷으로 대신 확인했다.
+  group('반응형 레이아웃 구조', () {
+    void expectFooterPinnedOutsideScroll(WidgetTester tester) {
+      expect(find.byType(SupportLinkRow), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(SingleChildScrollView),
+          matching: find.byType(SupportLinkRow),
+        ),
+        findsNothing,
+        reason: '문의 링크가 스크롤 영역 안에 있으면 작은 화면에서 화면 밖으로 밀려난다',
+      );
+    }
+
+    testWidgets('LoginScreen: 문의 링크가 스크롤 밖에 고정', (tester) async {
+      await pumpLoginScreen(tester, const LoginScreen());
+      expectFooterPinnedOutsideScroll(tester);
+    });
+
+    testWidgets('SignupScreen: 문의 링크가 스크롤 밖에 고정', (tester) async {
+      await pumpLoginScreen(tester, const SignupScreen());
+      expectFooterPinnedOutsideScroll(tester);
     });
   });
 }

@@ -181,6 +181,7 @@ class _SignupScreenState extends State<SignupScreen> {
     // 세로 간격은 화면 높이에 비례해 스케일한다(기준 iPhone 14, 844pt) —
     // 고정값으로 한 기기에만 맞추지 않도록.
     final rs = ResponsiveSize(context);
+    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
@@ -191,44 +192,37 @@ class _SignupScreenState extends State<SignupScreen> {
         appBar: _buildAppBar(themeColors),
         body: KeyboardDismiss(
           child: SafeArea(
-            // 문의 링크는 스크롤 영역 밖 하단에 고정 — 인증 흐름이 아닌 보조
-            // 링크라 작은 화면에서도 항상 보이게 두고 위쪽 콘텐츠 여유를 확보.
             child: Column(
               children: [
+                // Center가 세로 중앙 배치, 넘치면 SingleChildScrollView가 스크롤.
+                // 문의 링크는 인증 흐름이 아닌 보조 링크라 아래에 별도로 두고
+                // 입력 중(키보드)엔 숨겨 공간을 비운다.
                 Expanded(
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      return SingleChildScrollView(
-                        padding: EdgeInsets.fromLTRB(28, rs.h(8), 28, rs.h(8)),
-                        child: ConstrainedBox(
-                          constraints:
-                              BoxConstraints(minHeight: constraints.maxHeight),
-                          child: IntrinsicHeight(
-                            child: AutofillGroup(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  _buildHeader(themeColors, rs),
-                                  _buildForm(themeColors, rs),
-                                  SizedBox(height: rs.h(24)),
-                                  if (_generalError != null)
-                                    _buildGeneralError(themeColors),
-                                  _buildSubmitButton(themeColors),
-                                  SizedBox(height: rs.h(20)),
-                                  _buildLoginLink(themeColors),
-                                ],
-                              ),
-                            ),
-                          ),
+                  child: Center(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.fromLTRB(28, rs.h(8), 28, rs.h(8)),
+                      child: AutofillGroup(
+                        child: Column(
+                          children: [
+                            _buildHeader(themeColors),
+                            _buildForm(themeColors),
+                            SizedBox(height: rs.h(24)),
+                            if (_generalError != null)
+                              _buildGeneralError(themeColors),
+                            _buildSubmitButton(themeColors),
+                            SizedBox(height: rs.h(20)),
+                            _buildLoginLink(themeColors),
+                          ],
                         ),
-                      );
-                    },
+                      ),
+                    ),
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(28, 2, 28, 4),
-                  child: SupportLinkRow(),
-                ),
+                if (!keyboardOpen)
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(28, 2, 28, 4),
+                    child: SupportLinkRow(),
+                  ),
               ],
             ),
           ),
@@ -282,7 +276,8 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  Widget _buildHeader(AbstractThemeColors themeColors, ResponsiveSize rs) {
+  Widget _buildHeader(AbstractThemeColors themeColors) {
+    final rs = ResponsiveSize(context);
     return Column(
       children: [
         const IconCircle(icon: Icons.person_add_rounded, sizeAt390: 76),
@@ -290,7 +285,7 @@ class _SignupScreenState extends State<SignupScreen> {
         Text(
           'signup'.tr(),
           style: TextStyle(
-            fontSize: 24,
+            fontSize: AppDimens.fontSizeDisplay,
             fontWeight: FontWeight.w800,
             color: themeColors.textTitle,
             letterSpacing: -0.5,
@@ -310,7 +305,8 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  Widget _buildForm(AbstractThemeColors themeColors, ResponsiveSize rs) {
+  Widget _buildForm(AbstractThemeColors themeColors) {
+    final rs = ResponsiveSize(context);
     return Column(
       children: [
         AppTextField(

@@ -66,63 +66,57 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     // 세로 간격은 화면 높이에 비례해 스케일한다(기준 iPhone 14, 844pt).
     // 작은 폰은 촘촘히, 큰 폰은 넉넉히 — 고정값으로 한 기기에만 맞추지 않도록.
     final rs = ResponsiveSize(context);
+    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
     return Scaffold(
       backgroundColor: themeColors.backgroundMain,
       body: KeyboardDismiss(
         child: SafeArea(
-          // 문의 링크는 스크롤 영역 밖 하단에 고정 — 인증 흐름이 아닌 보조
-          // 링크이고, 고정하면 작은 화면에서도 항상 보이며 위쪽 콘텐츠가
-          // 한 화면에 들어갈 여유가 늘어난다.
           child: Column(
             children: [
+              // Center가 콘텐츠를 세로 중앙에 두고, 넘치면 SingleChildScrollView가
+              // 스크롤한다. 문의 링크는 아래에 별도로 두어 항상 보이게 한다
+              // (인증 흐름이 아닌 보조 링크). 입력 중(키보드)엔 숨겨 공간을 비운다.
               Expanded(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return SingleChildScrollView(
-                      padding: EdgeInsets.fromLTRB(28, rs.h(10), 28, rs.h(8)),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                        child: IntrinsicHeight(
-                          child: AutofillGroup(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                _buildHeader(themeColors, rs),
-                                _buildForm(themeColors, rs),
-                                SizedBox(height: rs.h(10)),
-                                _buildForgotPassword(themeColors),
-                                SizedBox(height: rs.h(14)),
-                                IgnorePointer(
-                                  ignoring: _isAnyLoading,
-                                  child: Opacity(
-                                    opacity: (_isKakaoLoading || _isAppleLoading) ? 0.5 : 1.0,
-                                    child: LoadingButton(
-                                      label: 'login'.tr(),
-                                      onPressed: _loginWithEmail,
-                                      isLoading: _isEmailLoading,
-                                      backgroundColor: themeColors.activate,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: rs.h(14)),
-                                _buildOrDivider(themeColors),
-                                SizedBox(height: rs.h(14)),
-                                _buildSocialLoginRow(),
-                                SizedBox(height: rs.h(14)),
-                                _buildSignupRow(context, themeColors),
-                              ],
+                child: Center(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.fromLTRB(28, rs.h(10), 28, rs.h(8)),
+                    child: AutofillGroup(
+                      child: Column(
+                        children: [
+                          _buildHeader(themeColors),
+                          _buildForm(themeColors),
+                          SizedBox(height: rs.h(10)),
+                          _buildForgotPassword(themeColors),
+                          SizedBox(height: rs.h(14)),
+                          IgnorePointer(
+                            ignoring: _isAnyLoading,
+                            child: Opacity(
+                              opacity: (_isKakaoLoading || _isAppleLoading) ? 0.5 : 1.0,
+                              child: LoadingButton(
+                                label: 'login'.tr(),
+                                onPressed: _loginWithEmail,
+                                isLoading: _isEmailLoading,
+                                backgroundColor: themeColors.activate,
+                              ),
                             ),
                           ),
-                        ),
+                          SizedBox(height: rs.h(14)),
+                          _buildOrDivider(themeColors),
+                          SizedBox(height: rs.h(14)),
+                          _buildSocialLoginRow(),
+                          SizedBox(height: rs.h(14)),
+                          _buildSignupRow(context, themeColors),
+                        ],
                       ),
-                    );
-                  },
+                    ),
+                  ),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.fromLTRB(28, 2, 28, 4),
-                child: SupportLinkRow(),
-              ),
+              if (!keyboardOpen)
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(28, 2, 28, 4),
+                  child: SupportLinkRow(),
+                ),
             ],
           ),
         ),
@@ -130,7 +124,8 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     );
   }
 
-  Widget _buildHeader(AbstractThemeColors themeColors, ResponsiveSize rs) {
+  Widget _buildHeader(AbstractThemeColors themeColors) {
+    final rs = ResponsiveSize(context);
     final logoSize = rs.w(92);
     return Column(
       children: [
@@ -147,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
         Text(
           'welcome'.tr(),
           style: TextStyle(
-            fontSize: 24,
+            fontSize: AppDimens.fontSizeDisplay,
             fontWeight: FontWeight.w800,
             color: themeColors.textTitle,
             letterSpacing: -0.5,
@@ -167,7 +162,8 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     );
   }
 
-  Widget _buildForm(AbstractThemeColors themeColors, ResponsiveSize rs) {
+  Widget _buildForm(AbstractThemeColors themeColors) {
+    final rs = ResponsiveSize(context);
     return Column(
       children: [
         AppTextField(

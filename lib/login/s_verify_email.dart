@@ -226,7 +226,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
               children: [
                 const IconCircle(icon: Icons.mark_email_unread_rounded),
                 SizedBox(height: rs.h(20)),
-                _buildTextSection(colors, rs),
+                _buildTextSection(colors),
                 SizedBox(height: rs.h(28)),
                 if (_errorMessage != null) _buildError(colors),
                 LoadingButton(
@@ -248,13 +248,14 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     );
   }
 
-  Widget _buildTextSection(AbstractThemeColors colors, ResponsiveSize rs) {
+  Widget _buildTextSection(AbstractThemeColors colors) {
+    final rs = ResponsiveSize(context);
     return Column(
       children: [
         Text(
           'verify_email_title'.tr(),
           style: TextStyle(
-            fontSize: 24,
+            fontSize: AppDimens.fontSizeDisplay,
             fontWeight: FontWeight.w800,
             color: colors.textTitle,
             letterSpacing: -0.5,

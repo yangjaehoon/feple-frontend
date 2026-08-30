@@ -172,7 +172,11 @@ void main() {
     test('startHour — 운영 항목(📢)은 기준에서 제외', () {
       final result = computeTimetableRange(
         [
-          _entry(id: 1, stageName: '📢', startTime: '10:00', endTime: '10:30'),
+          _entry(
+              id: 1,
+              stageName: TimetableEntry.opsStageName,
+              startTime: '10:00',
+              endTime: '10:30'),
           _entry(id: 2, startTime: '16:00', endTime: '17:00'),
         ],
         '2025-08-01',
@@ -184,13 +188,46 @@ void main() {
     test('startHour — 아티스트 공연 없이 운영 항목만 있으면 첫 운영 항목 시각 기준', () {
       final result = computeTimetableRange(
         [
-          _entry(id: 1, stageName: '📢', startTime: '13:00', endTime: '13:30'),
-          _entry(id: 2, stageName: '📢', startTime: '10:00', endTime: '10:30'),
+          _entry(
+              id: 1,
+              stageName: TimetableEntry.opsStageName,
+              startTime: '13:00',
+              endTime: '13:30'),
+          _entry(
+              id: 2,
+              stageName: TimetableEntry.opsStageName,
+              startTime: '10:00',
+              endTime: '10:30'),
         ],
         '2025-08-01',
       );
 
       expect(result.startHour, 10);
+    });
+
+    test('startHour — 심야(0~5시) 아티스트 항목은 자정 넘김으로 보고 제외', () {
+      final result = computeTimetableRange(
+        [
+          _entry(id: 1, startTime: '00:30', endTime: '01:30'),
+          _entry(id: 2, startTime: '18:00', endTime: '19:00'),
+          _entry(id: 3, startTime: '20:00', endTime: '21:00'),
+        ],
+        '2025-08-01',
+      );
+
+      expect(result.startHour, 18);
+    });
+
+    test('startHour — 모든 항목이 심야면 그 최솟값을 사용', () {
+      final result = computeTimetableRange(
+        [
+          _entry(id: 1, startTime: '03:00', endTime: '04:00'),
+          _entry(id: 2, startTime: '02:00', endTime: '03:00'),
+        ],
+        '2025-08-01',
+      );
+
+      expect(result.startHour, 2);
     });
 
     test('endHour — 분=0이면 시 그대로', () {
@@ -232,6 +269,46 @@ void main() {
       );
 
       expect(result.endHour, 25);
+    });
+
+    test('endHour — 심야에 시작하는 항목도 다음날 시각으로 환산해 확장', () {
+      // startHour는 저녁(18)부터. 01:00~02:30 세트는 25:00~26:30으로 환산돼
+      // endHour가 27까지 확장돼야 카드가 안 잘린다.
+      final result = computeTimetableRange(
+        [
+          _entry(id: 1, startTime: '18:00', endTime: '19:00'),
+          _entry(id: 2, startTime: '01:00', endTime: '02:30'),
+        ],
+        '2025-08-01',
+      );
+
+      expect(result.startHour, 18);
+      expect(result.endHour, 27);
+    });
+  });
+
+  group('hourInFestivalDay', () {
+    test('심야(0~5시)는 +24, 6시 이상은 그대로', () {
+      expect(hourInFestivalDay(0), 24);
+      expect(hourInFestivalDay(5), 29);
+      expect(hourInFestivalDay(6), 6);
+      expect(hourInFestivalDay(23), 23);
+    });
+  });
+
+  group('timetableMinutesToY', () {
+    test('일반 항목은 startHour 기준 오프셋', () {
+      expect(timetableMinutesToY('14:30', 12, 1.0), (14 - 12) * 60 + 30);
+    });
+
+    test('심야 항목은 다음날로 밀려 그리드 하단에 위치', () {
+      // 01:00 → 25:00, startHour 18 → (25-18)*60 = 420
+      expect(timetableMinutesToY('01:00', 18, 1.0), 420);
+    });
+
+    test('startHour보다 이른 낮 항목(게이트 오픈 등)은 상단(0)에 고정', () {
+      // 10:00, startHour 18 → 음수이므로 0으로 클램프
+      expect(timetableMinutesToY('10:00', 18, 2.0), 0);
     });
   });
 }

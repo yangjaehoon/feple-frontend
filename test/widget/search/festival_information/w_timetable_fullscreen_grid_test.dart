@@ -97,7 +97,11 @@ void main() {
     testWidgets('운영 항목은 모든 스테이지 열에 표시된다', (tester) async {
       final range = TimetableRange(
         filtered: [
-          _entry(stageName: '📢', artistName: '점심시간', startTime: '12:00', endTime: '12:30'),
+          _entry(
+              stageName: TimetableEntry.opsStageName,
+              artistName: '점심시간',
+              startTime: '12:00',
+              endTime: '12:30'),
         ],
         stages: const ['StageA', 'StageB'],
         startHour: 12,

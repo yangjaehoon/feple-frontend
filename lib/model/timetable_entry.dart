@@ -26,10 +26,39 @@ String formatTimeRange(String startTime, String endTime) => '$startTime – $end
   );
 }
 
+/// 이 시각 미만(0~5시)에 시작하는 항목은 자정을 넘긴 "다음날 새벽"으로 본다.
+/// 페스티벌 세트는 사실상 이 시간대에 새로 시작하지 않으므로, 그리드 시작
+/// 시각(startHour) 계산에서 제외하고 좌표 환산 시 +24시간으로 다룬다.
+const int timetableNightRolloverHour = 6;
+
+/// [hour]를 "페스티벌 하루" 기준 시각으로 환산 — 심야(0~5시)는 +24.
+int hourInFestivalDay(int hour) =>
+    hour < timetableNightRolloverHour ? hour + 24 : hour;
+
 /// 'HH:mm' 시각을 그리드 시작 시각(startHour) 기준 Y좌표(px)로 환산.
+/// 심야 항목은 다음날로 밀어 그리드 하단에, startHour보다 이른 낮 항목
+/// (예: 저녁 공연 페스티벌의 "게이트 오픈")은 상단(0)에 고정한다.
 double timetableMinutesToY(String time, int startHour, double pxPerMin) {
   final t = parseHHmm(time);
-  return ((t.hour - startHour) * 60 + t.minute) * pxPerMin;
+  final minutes = (hourInFestivalDay(t.hour) - startHour) * 60 + t.minute;
+  return (minutes < 0 ? 0 : minutes) * pxPerMin;
+}
+
+/// [entries] 중 가장 이른 시작 시각(시). 낮/저녁 항목(>= 롤오버)이 하나라도
+/// 있으면 그중 최솟값을, 전부 심야면 그 최솟값을, 없으면 null.
+int? _earliestPlausibleStartHour(Iterable<TimetableEntry> entries) {
+  int? any;
+  int? daytime;
+  for (final e in entries) {
+    final hour = int.tryParse(e.startTime.split(':')[0]);
+    if (hour == null) continue;
+    if (any == null || hour < any) any = hour;
+    if (hour >= timetableNightRolloverHour &&
+        (daytime == null || hour < daytime)) {
+      daytime = hour;
+    }
+  }
+  return daytime ?? any;
 }
 
 TimetableRange computeTimetableRange(List<TimetableEntry> entries, String? date) {
@@ -47,30 +76,25 @@ TimetableRange computeTimetableRange(List<TimetableEntry> entries, String? date)
       .map((e) => e.key)
       .toList();
 
-  // 그리드는 첫 아티스트 공연 시각부터 시작한다. 아티스트 공연이 하나도 없으면
-  // 첫 운영 항목(📢, 게이트 오픈 등) 시각을, 그마저 없으면(빈 타임테이블)
-  // defaultStart(12시)를 쓴다.
-  int? firstArtistHour;
-  int? firstOpsHour;
-  for (final e in filtered) {
-    final hour = int.tryParse(e.startTime.split(':')[0]);
-    if (hour == null) continue;
-    if (e.isOps) {
-      if (firstOpsHour == null || hour < firstOpsHour) firstOpsHour = hour;
-    } else if (firstArtistHour == null || hour < firstArtistHour) {
-      firstArtistHour = hour;
-    }
-  }
-  final startHour = firstArtistHour ?? firstOpsHour ?? defaultStart;
+  // 그리드는 가장 이른 아티스트 공연 시각부터 시작한다. 아티스트 공연이 하나도
+  // 없으면 가장 이른 운영 항목(📢, 게이트 오픈 등) 시각을, 그마저 없으면
+  // (빈 타임테이블) defaultStart(12시)를 쓴다. 심야(0~5시) 항목은 자정을 넘긴
+  // 것으로 보고 startHour 계산에서 제외한다.
+  final startHour =
+      _earliestPlausibleStartHour(filtered.where((e) => !e.isOps)) ??
+          _earliestPlausibleStartHour(filtered.where((e) => e.isOps)) ??
+          defaultStart;
 
   // durationMinutes는 자정을 넘기는 공연도 감안해 실제 소요 시간을 계산하므로,
   // endTime을 그대로 파싱하는 대신 "시작 시각 + 소요 시간"으로 종료 시각을 구해야
-  // 자정 넘김 카드가 그리드 하단에서 잘리지 않는다.
+  // 자정 넘김 카드가 그리드 하단에서 잘리지 않는다. 심야 시작 항목은 +24시간으로
+  // 환산해 그리드가 다음날 시각까지 확장되게 한다.
   int endHour = startHour + 1;
   for (final e in filtered) {
     final start = parseHHmm(e.startTime);
-    final endMinutesFromMidnight = start.hour * 60 + start.minute + e.durationMinutes;
-    final candidateEnd = (endMinutesFromMidnight / 60).ceil();
+    final endMinutes =
+        hourInFestivalDay(start.hour) * 60 + start.minute + e.durationMinutes;
+    final candidateEnd = (endMinutes / 60).ceil();
     if (candidateEnd > endHour) endHour = candidateEnd;
   }
 
@@ -79,7 +103,8 @@ TimetableRange computeTimetableRange(List<TimetableEntry> entries, String? date)
 
 /// 타임테이블 항목 모델
 class TimetableEntry {
-  static const String _opsStage = '📢';
+  /// 운영 항목(공지·게이트 오픈 등)을 나타내는 stageName 마커.
+  static const String opsStageName = '📢';
 
   final int id;
   final String stageName;
@@ -143,7 +168,7 @@ class TimetableEntry {
         memberArtistNameEnList: j.stringList('memberArtistNameEnList'),
       );
 
-  bool get isOps => stageName == _opsStage;
+  bool get isOps => stageName == opsStageName;
 
   String get timeRange => formatTimeRange(startTime, endTime);
 

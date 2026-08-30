@@ -467,5 +467,39 @@ void main() {
       verify(() => mockFestivalInteractionService.toggleLike(2)).called(1);
       expect(completed, true);
     });
+
+    testWidgets('첫 묶음에서 실패하면 다음 묶음은 요청하지 않는다', (tester) async {
+      var completed = false;
+      when(() => mockFestivalInteractionService.toggleLike(1)).thenThrow(Exception('네트워크 오류'));
+      when(() => mockFestivalInteractionService.toggleLike(2)).thenAnswer((_) async {});
+      when(() => mockFestivalInteractionService.toggleLike(3)).thenAnswer((_) async {});
+      when(() => mockFestivalInteractionService.toggleLike(4)).thenAnswer((_) async {});
+      await _pump(tester, onComplete: () => completed = true);
+      await reachFestivalPick(tester, festivals: [
+        _festival(id: 1, title: 'A'),
+        _festival(id: 2, title: 'B'),
+        _festival(id: 3, title: 'C'),
+        _festival(id: 4, title: 'D'),
+      ]);
+
+      for (final title in ['A', 'B', 'C', 'D']) {
+        await tester.ensureVisible(find.text(title));
+        await tester.tap(find.text(title));
+        await tester.pump();
+      }
+      await tester.tap(find.text('onboarding_start'.tr()));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      // 첫 묶음(동시성 3 → id 1,2,3)만 시도되고, id 4는 다음 묶음이라 호출 안 됨
+      verify(() => mockFestivalInteractionService.toggleLike(1)).called(1);
+      verify(() => mockFestivalInteractionService.toggleLike(2)).called(1);
+      verify(() => mockFestivalInteractionService.toggleLike(3)).called(1);
+      verifyNever(() => mockFestivalInteractionService.toggleLike(4));
+      expect(find.text('onboarding_festival_like_failed'.tr()), findsOneWidget);
+      expect(completed, false);
+      // 성공한 2,3만 빠지고 실패한 1 + 미시도 4가 남는다
+      expect(find.text('onboarding_pick_selected'.tr(args: ['2'])), findsOneWidget);
+    });
   });
 }

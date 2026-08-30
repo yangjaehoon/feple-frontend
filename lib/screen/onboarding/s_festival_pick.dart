@@ -23,6 +23,13 @@ import 'package:flutter/material.dart';
 // 제한되는 데이터라 이 상한을 넘길 가능성이 낮다는 전제.
 const upcomingFestivalsFetchSize = 100;
 
+// 제출 시 좋아요 요청 동시 실행 상한. 선택분을 전부 병렬로 쏘면 같은 유저의
+// 다중 festival_like INSERT가 서버에서 겹쳐 MySQL 갭 락 데드락이 나므로 소수로
+// 제한한다. 순수 순차보다 다수 선택 시 지연이 작고, 첫 실패 후엔 다음 묶음을
+// 시작하지 않아 서버 장애 시 대기 시간도 짧다. (백엔드도 갭 락 회피가 적용돼
+// 있어 3 동시는 안전하다.)
+const _festivalLikeConcurrency = 3;
+
 /// 페스티벌 좋아요 선택 화면 — 온보딩 흐름에서는 부모(OnboardingScreen)가
 /// 개수를 확인하려고 미리 받아온 목록을 [initialFestivals]로 그대로 넘겨받아
 /// 중복 조회 없이 표시하고(뒤이어 [progressDotIndex]로 5단계 중 자신의 위치를
@@ -73,18 +80,27 @@ class _FestivalPickScreenState extends State<FestivalPickScreen>
     // 실패한 항목만 남기고 성공한 항목은 선택 목록에서 제거해야 재시도 시
     // 이미 성공한 좋아요가 다시 눌려서 취소되는 걸 막을 수 있다.
     //
-    // 병렬(Future.wait)로 쏘면 같은 유저의 다중 좋아요 INSERT가 동시에 처리되며
-    // 서버에서 MySQL 갭 락 데드락이 난다 — 순차로 보낸다. (온보딩 단계라
-    // 몇 개를 순차 POST해도 체감 지연은 미미)
+    // _festivalLikeConcurrency개씩 묶어 보낸다: 전부 병렬이면 갭 락 데드락,
+    // 순수 순차면 다수 선택 시 느리다. 첫 실패가 나면 다음 묶음은 시작하지 않고
+    // (같은 서버/네트워크 상태면 나머지도 실패) 이미 성공한 항목만 남긴 채 종료 —
+    // 나머지는 재시도로 커버된다.
     final targets = _selectedIds.toList();
     Object? firstError;
-    for (final id in targets) {
-      try {
-        await sl<FestivalInteractionService>().toggleLike(id);
-        _selectedIds.remove(id);
-      } catch (e) {
-        firstError ??= e;
-        debugPrint('[FestivalPick] festival like failed ($id): $e');
+    for (var i = 0; i < targets.length && firstError == null; i += _festivalLikeConcurrency) {
+      if (!mounted) return;
+      final chunk = targets.skip(i).take(_festivalLikeConcurrency);
+      final settled = await Future.wait(chunk.map((id) async {
+        try {
+          await sl<FestivalInteractionService>().toggleLike(id);
+          return id; // 성공한 id
+        } catch (e) {
+          firstError ??= e;
+          debugPrint('[FestivalPick] festival like failed ($id): $e');
+          return null;
+        }
+      }));
+      for (final id in settled) {
+        if (id != null) _selectedIds.remove(id);
       }
     }
     if (firstError != null) {

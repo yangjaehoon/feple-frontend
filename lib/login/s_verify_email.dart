@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_icon_circle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/model/user_model.dart';
@@ -194,6 +195,9 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    // 세로 간격은 화면 높이에 비례(기준 iPhone 14, 844pt) — 고정값으로 한 기기에만
+    // 맞추지 않도록.
+    final rs = ResponsiveSize(context);
     return Scaffold(
       backgroundColor: colors.backgroundMain,
       appBar: AppBar(
@@ -216,14 +220,14 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+            padding: EdgeInsets.symmetric(horizontal: 28, vertical: rs.h(20)),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const IconCircle(icon: Icons.mark_email_unread_rounded),
-                const SizedBox(height: 28),
-                _buildTextSection(colors),
-                const SizedBox(height: AppDimens.space40),
+                SizedBox(height: rs.h(20)),
+                _buildTextSection(colors, rs),
+                SizedBox(height: rs.h(28)),
                 if (_errorMessage != null) _buildError(colors),
                 LoadingButton(
                   label: 'verify_email_done_btn'.tr(),
@@ -231,9 +235,9 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                   isLoading: _isVerifying,
                   backgroundColor: colors.activate,
                 ),
-                const SizedBox(height: AppDimens.space12),
+                SizedBox(height: rs.h(10)),
                 _buildResendButton(colors),
-                const SizedBox(height: 28),
+                SizedBox(height: rs.h(20)),
                 if (widget.deleteOnCancel) _buildChangeEmailRow(colors),
                 _buildCancelButton(colors),
               ],
@@ -244,22 +248,22 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     );
   }
 
-  Widget _buildTextSection(AbstractThemeColors colors) {
+  Widget _buildTextSection(AbstractThemeColors colors, ResponsiveSize rs) {
     return Column(
       children: [
         Text(
           'verify_email_title'.tr(),
           style: TextStyle(
-            fontSize: 26,
+            fontSize: 24,
             fontWeight: FontWeight.w800,
             color: colors.textTitle,
             letterSpacing: -0.5,
           ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: AppDimens.space12),
+        SizedBox(height: rs.h(10)),
         _buildEmailHighlighted(colors),
-        const SizedBox(height: AppDimens.space6),
+        SizedBox(height: rs.h(6)),
         Text(
           'verify_email_instruction'.tr(),
           style: TextStyle(

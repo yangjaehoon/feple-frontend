@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/email_validator.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/common/widget/w_icon_circle.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
@@ -82,6 +83,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    // 세로 간격은 화면 높이에 비례(기준 iPhone 14, 844pt).
+    final rs = ResponsiveSize(context);
     return Scaffold(
       backgroundColor: colors.backgroundMain,
       appBar: AppBar(
@@ -102,8 +105,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
-              child: _sent ? _buildSentState(colors) : _buildInputState(colors),
+              padding: EdgeInsets.symmetric(horizontal: 28, vertical: rs.h(8)),
+              child: _sent
+                  ? _buildSentState(colors, rs)
+                  : _buildInputState(colors, rs),
             ),
           ),
         ),
@@ -111,18 +116,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 
-  Widget _buildInputState(AbstractThemeColors colors) {
+  Widget _buildInputState(AbstractThemeColors colors, ResponsiveSize rs) {
     return AutofillGroup(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const IconCircle(icon: Icons.lock_reset_rounded),
-          const SizedBox(height: 28),
-          _buildHeader(colors),
-          const SizedBox(height: AppDimens.space40),
+          SizedBox(height: rs.h(20)),
+          _buildHeader(colors, rs),
+          SizedBox(height: rs.h(28)),
           _buildEmailField(),
           if (_errorMessage != null) _buildServerError(colors),
-          const SizedBox(height: AppDimens.space24),
+          SizedBox(height: rs.h(18)),
           LoadingButton(
             label: 'send'.tr(),
             onPressed: _isSending ? null : _onSend,
@@ -134,19 +139,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 
-  Widget _buildHeader(AbstractThemeColors colors) {
+  Widget _buildHeader(AbstractThemeColors colors, ResponsiveSize rs) {
     return Column(
       children: [
         Text(
           'reset_password'.tr(),
           style: TextStyle(
-            fontSize: 26,
+            fontSize: 24,
             fontWeight: FontWeight.w800,
             color: colors.textTitle,
             letterSpacing: -0.5,
           ),
         ),
-        const SizedBox(height: AppDimens.space8),
+        SizedBox(height: rs.h(6)),
         Text(
           'reset_password_subtitle'.tr(),
           style: TextStyle(
@@ -204,23 +209,23 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 
-  Widget _buildSentState(AbstractThemeColors colors) {
+  Widget _buildSentState(AbstractThemeColors colors, ResponsiveSize rs) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const IconCircle(icon: Icons.mark_email_read_rounded),
-        const SizedBox(height: 28),
+        SizedBox(height: rs.h(20)),
         Text(
           'password_reset_sent_title'.tr(),
           style: TextStyle(
-            fontSize: 26,
+            fontSize: 24,
             fontWeight: FontWeight.w800,
             color: colors.textTitle,
             letterSpacing: -0.5,
           ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: AppDimens.space12),
+        SizedBox(height: rs.h(10)),
         Text(
           'password_reset_sent_desc'.tr(args: [_emailController.text.trim()]),
           style: TextStyle(
@@ -231,7 +236,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 48),
+        SizedBox(height: rs.h(32)),
         LoadingButton(
           label: 'go_to_login'.tr(),
           onPressed: () => Navigator.pop(context),

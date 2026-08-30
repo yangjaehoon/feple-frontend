@@ -2,6 +2,7 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/email_validator.dart';
 import 'package:feple/common/util/password_validator.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -177,6 +178,9 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     final themeColors = context.appColors;
+    // 세로 간격은 화면 높이에 비례해 스케일한다(기준 iPhone 14, 844pt) —
+    // 고정값으로 한 기기에만 맞추지 않도록.
+    final rs = ResponsiveSize(context);
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
@@ -187,26 +191,45 @@ class _SignupScreenState extends State<SignupScreen> {
         appBar: _buildAppBar(themeColors),
         body: KeyboardDismiss(
           child: SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 28),
-                child: AutofillGroup(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _buildHeader(themeColors),
-                      _buildForm(themeColors),
-                      const SizedBox(height: 28),
-                      if (_generalError != null) _buildGeneralError(themeColors),
-                      _buildSubmitButton(themeColors),
-                      const SizedBox(height: AppDimens.space24),
-                      _buildLoginLink(themeColors),
-                      const SizedBox(height: AppDimens.space32),
-                      const SupportLinkRow(),
-                    ],
+            // 문의 링크는 스크롤 영역 밖 하단에 고정 — 인증 흐름이 아닌 보조
+            // 링크라 작은 화면에서도 항상 보이게 두고 위쪽 콘텐츠 여유를 확보.
+            child: Column(
+              children: [
+                Expanded(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return SingleChildScrollView(
+                        padding: EdgeInsets.fromLTRB(28, rs.h(8), 28, rs.h(8)),
+                        child: ConstrainedBox(
+                          constraints:
+                              BoxConstraints(minHeight: constraints.maxHeight),
+                          child: IntrinsicHeight(
+                            child: AutofillGroup(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _buildHeader(themeColors, rs),
+                                  _buildForm(themeColors, rs),
+                                  SizedBox(height: rs.h(24)),
+                                  if (_generalError != null)
+                                    _buildGeneralError(themeColors),
+                                  _buildSubmitButton(themeColors),
+                                  SizedBox(height: rs.h(20)),
+                                  _buildLoginLink(themeColors),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
-              ),
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(28, 2, 28, 4),
+                  child: SupportLinkRow(),
+                ),
+              ],
             ),
           ),
         ),
@@ -259,21 +282,21 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  Widget _buildHeader(AbstractThemeColors themeColors) {
+  Widget _buildHeader(AbstractThemeColors themeColors, ResponsiveSize rs) {
     return Column(
       children: [
-        const IconCircle(icon: Icons.person_add_rounded, sizeAt390: 80),
-        const SizedBox(height: AppDimens.space24),
+        const IconCircle(icon: Icons.person_add_rounded, sizeAt390: 76),
+        SizedBox(height: rs.h(20)),
         Text(
           'signup'.tr(),
           style: TextStyle(
-            fontSize: 26,
+            fontSize: 24,
             fontWeight: FontWeight.w800,
             color: themeColors.textTitle,
             letterSpacing: -0.5,
           ),
         ),
-        const SizedBox(height: AppDimens.space8),
+        SizedBox(height: rs.h(6)),
         Text(
           'signup_subtitle'.tr(),
           style: TextStyle(
@@ -282,12 +305,12 @@ class _SignupScreenState extends State<SignupScreen> {
             fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 36),
+        SizedBox(height: rs.h(26)),
       ],
     );
   }
 
-  Widget _buildForm(AbstractThemeColors themeColors) {
+  Widget _buildForm(AbstractThemeColors themeColors, ResponsiveSize rs) {
     return Column(
       children: [
         AppTextField(
@@ -306,14 +329,14 @@ class _SignupScreenState extends State<SignupScreen> {
           },
           onSubmitted: (_) => FocusScope.of(context).nextFocus(),
         ),
-        const SizedBox(height: 14),
+        SizedBox(height: rs.h(14)),
         NicknameField(
           key: _nicknameKey,
           onStateChanged: (available) {
             setState(() => _nicknameAvailable = available == true);
           },
         ),
-        const SizedBox(height: 14),
+        SizedBox(height: rs.h(14)),
         AppTextField(
           controller: passwordController,
           hintText: 'password'.tr(),
@@ -334,7 +357,7 @@ class _SignupScreenState extends State<SignupScreen> {
           },
         ),
         if (_password.isNotEmpty) ...[
-          const SizedBox(height: AppDimens.space10),
+          SizedBox(height: rs.h(10)),
           PasswordChecklist(password: _password),
         ],
       ],

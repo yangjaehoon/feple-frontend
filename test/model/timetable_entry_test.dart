@@ -230,6 +230,35 @@ void main() {
       expect(result.startHour, 2);
     });
 
+    test('startHour — 이른 항목이 다른 항목보다 12h 이상 이르지 않으면 자정 넘김이 아님', () {
+      // 05:00·07:00만 있는 새벽 페스티벌 — 05:00을 wrap으로 오인해 07:00을
+      // startHour로 잡으면 그리드가 23시간 높이가 된다.
+      final result = computeTimetableRange(
+        [
+          _entry(id: 1, startTime: '07:00', endTime: '08:00'),
+          _entry(id: 2, startTime: '05:00', endTime: '06:00'),
+        ],
+        '2025-08-01',
+      );
+
+      expect(result.startHour, 5);
+      expect(result.endHour, 8);
+    });
+
+    test('startHour/endHour — 밤샘 페스티벌(20:00 시작, 06:30 마무리)', () {
+      final result = computeTimetableRange(
+        [
+          _entry(id: 1, startTime: '20:00', endTime: '21:00'),
+          _entry(id: 2, startTime: '06:30', endTime: '07:30'), // 다음날 새벽
+        ],
+        '2025-08-01',
+      );
+
+      expect(result.startHour, 20);
+      // 06:30 → 30:30, +60분 → 31:30 → ceil 32
+      expect(result.endHour, 32);
+    });
+
     test('endHour — 분=0이면 시 그대로', () {
       final result = computeTimetableRange(
         [_entry(startTime: '15:00', endTime: '17:00')],
@@ -288,16 +317,19 @@ void main() {
   });
 
   group('hourInFestivalDay', () {
-    test('startHour가 낮/저녁이면 심야(0~5시)는 +24, 6시 이상은 그대로', () {
-      expect(hourInFestivalDay(0, 18), 24);
-      expect(hourInFestivalDay(5, 18), 29);
-      expect(hourInFestivalDay(6, 18), 6);
-      expect(hourInFestivalDay(23, 18), 23);
+    test('startHour보다 반나절(12h) 이상 이르면 +24, 그 안이면 그대로', () {
+      // startHour 18
+      expect(hourInFestivalDay(0, 18), 24); // 18h 이르다 → 자정 넘김
+      expect(hourInFestivalDay(5, 18), 29); // 13h 이르다 → 자정 넘김
+      expect(hourInFestivalDay(6, 18), 30); // 12h 이르다 → 자정 넘김(경계)
+      expect(hourInFestivalDay(10, 18), 10); // 8h 이르다 → 게이트 오픈 등, 그대로
+      expect(hourInFestivalDay(23, 18), 23); // 뒤에 있음 → 그대로
     });
 
-    test('startHour 자체가 심야면(밤샘 페스티벌) 롤오버하지 않는다', () {
+    test('startHour가 새벽이면(밤샘 페스티벌) 그 앞 몇 시간은 롤오버하지 않는다', () {
       expect(hourInFestivalDay(3, 2), 3);
       expect(hourInFestivalDay(1, 1), 1);
+      expect(hourInFestivalDay(0, 2), 0); // 2h 이르다 → 그대로
     });
   });
 

@@ -55,18 +55,23 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
     return hourInFestivalDay(t.hour, _startHour) * 60 + t.minute;
   }
 
-  // 오늘 날짜 탭이 선택돼 있고 현재 시각이 그리드 범위 안에 있을 때만
+  // 선택된 날짜 탭이 지금 진행 중이고 현재 시각이 그리드 범위 안에 있을 때만
   // "지금" 라인 위치를 계산 — 타이머로 갱신하지 않고 build 시점 값만 사용
   // (화면을 오래 띄워두고 지켜보는 사용성이 아니라서 dispose 관리 부담을
   // 늘리지 않는 쪽을 택함)
   double? _currentTimeTop(double pxPerMin) {
     if (!Prefs.showCurrentTimeLine.get()) return null;
-    if (widget.selectedDate != DateTime.now().toYMD) return null;
-    final now = TimeOfDay.now();
-    // 자정을 넘겨 진행되는 페스티벌에서 00:00 이후에도 "지금" 라인이 이어지도록
-    // 현재 시각도 페스티벌 하루 기준으로 환산한다.
-    final nowMinutes =
-        hourInFestivalDay(now.hour, _startHour) * 60 + now.minute;
+    final now = DateTime.now();
+    final nowHour = hourInFestivalDay(now.hour, _startHour);
+    // 오늘 날짜 탭이거나, (그리드가 자정을 넘겨 이어지고 지금이 그 새벽 시간대라)
+    // 어제 날짜 탭이 아직 진행 중인 경우.
+    final matchesToday = widget.selectedDate == now.toYMD;
+    final matchesYesterdayStillRunning = _endHour > 24 &&
+        nowHour >= 24 &&
+        widget.selectedDate ==
+            now.subtract(const Duration(days: 1)).toYMD;
+    if (!matchesToday && !matchesYesterdayStillRunning) return null;
+    final nowMinutes = nowHour * 60 + now.minute;
     final startMinutes = _startHour * 60;
     final endMinutes = _endHour * 60;
     if (nowMinutes < startMinutes || nowMinutes > endMinutes) return null;
@@ -76,12 +81,14 @@ class _TimetableFullscreenGridState extends State<TimetableFullscreenGrid> {
   // 내 일정 카드가 같은 스테이지·시간대의 공식 라인업 카드를 가리지 않도록,
   // 겹치는 경우에만 칸 오른쪽 절반으로 좁혀서 둘 다 보이게 함
   bool _overlapsOfficial(MyTimetableEntry entry) {
+    // 종료 시각은 시작 + 소요 시간으로 구한다(자정 넘김 시 endTime을 그대로
+    // 환산하면 시작보다 작아져 구간이 뒤집히므로).
     final start = _minutesOf(entry.startTime);
-    final end = _minutesOf(entry.endTime);
+    final end = start + hhmmDurationMinutes(entry.startTime, entry.endTime);
     return _range.filtered.any((official) {
       if (!official.isOps && official.stageName != entry.stageName) return false;
       final officialStart = _minutesOf(official.startTime);
-      final officialEnd = _minutesOf(official.endTime);
+      final officialEnd = officialStart + official.durationMinutes;
       return start < officialEnd && officialStart < end;
     });
   }

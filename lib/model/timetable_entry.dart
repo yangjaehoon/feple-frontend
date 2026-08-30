@@ -26,21 +26,22 @@ String formatTimeRange(String startTime, String endTime) => '$startTime – $end
   );
 }
 
-/// 이 시각 미만(0~5시)에 시작하는 항목은 자정을 넘긴 "다음날 새벽"으로 본다.
-/// 페스티벌 세트는 사실상 이 시간대에 새로 시작하지 않으므로, 그리드 시작
-/// 시각(startHour) 계산에서 제외하고 좌표 환산 시 +24시간으로 다룬다.
-const int timetableNightRolloverHour = 6;
+/// 그리드 시작 시각(startHour)보다 이 시간(시) 이상 이른 항목은 자정을 넘긴
+/// "다음날"로 본다. 반나절(12h)을 임계로 삼아 — 게이트 오픈처럼 몇 시간만 이른
+/// 항목은 그대로 두고(상단 고정), 저녁 시작 페스티벌의 새벽 세트만 다음날로
+/// 밀어(그리드 하단) 처리한다. 절대 시각이 아닌 startHour 상대값이므로
+/// 밤샘 페스티벌(startHour 자체가 새벽)에서도 오작동하지 않는다.
+const int _festivalDayWrapGapHours = 12;
 
-/// [hour]를 "페스티벌 하루" 기준 시각으로 환산.
-/// startHour가 낮/저녁(>= 롤오버)이면 심야(0~5시) 시작은 자정을 넘긴 다음날로
-/// 보고 +24. startHour 자체가 심야면(밤샘 페스티벌) 롤오버하지 않는다.
+/// [hour]를 "페스티벌 하루" 기준 시각으로 환산 — startHour보다 반나절 이상
+/// 이르면 +24.
 int hourInFestivalDay(int hour, int startHour) =>
-    (startHour >= timetableNightRolloverHour && hour < timetableNightRolloverHour)
+    (hour < startHour && startHour - hour >= _festivalDayWrapGapHours)
         ? hour + 24
         : hour;
 
 /// 'HH:mm' 시각을 그리드 시작 시각(startHour) 기준 Y좌표(px)로 환산.
-/// 심야 항목은 다음날로 밀어 그리드 하단에, startHour보다 이른 낮 항목
+/// 자정 넘김 항목은 다음날로 밀어 그리드 하단에, startHour보다 조금 이른 항목
 /// (예: 저녁 공연 페스티벌의 "게이트 오픈")은 상단(0)에 고정한다.
 double timetableMinutesToY(String time, int startHour, double pxPerMin) {
   final t = parseHHmm(time);
@@ -49,21 +50,30 @@ double timetableMinutesToY(String time, int startHour, double pxPerMin) {
   return (minutes < 0 ? 0 : minutes) * pxPerMin;
 }
 
-/// [entries] 중 가장 이른 시작 시각(시). 낮/저녁 항목(>= 롤오버)이 하나라도
-/// 있으면 그중 최솟값을, 전부 심야면 그 최솟값을, 없으면 null.
-int? _earliestPlausibleStartHour(Iterable<TimetableEntry> entries) {
-  int? any;
-  int? daytime;
-  for (final e in entries) {
-    final hour = int.tryParse(e.startTime.split(':')[0]);
-    if (hour == null) continue;
-    if (any == null || hour < any) any = hour;
-    if (hour >= timetableNightRolloverHour &&
-        (daytime == null || hour < daytime)) {
-      daytime = hour;
-    }
-  }
-  return daytime ?? any;
+/// 'HH:mm' 구간의 소요 분. end <= start면 자정을 넘긴 것으로 보고 +24h.
+int hhmmDurationMinutes(String startTime, String endTime) {
+  final s = parseHHmm(startTime);
+  final e = parseHHmm(endTime);
+  final start = s.hour * 60 + s.minute;
+  final end = e.hour * 60 + e.minute;
+  return end >= start ? end - start : (end + 24 * 60) - start;
+}
+
+/// [entries] 중 "그날 프로그램이 시작되는" 시각(시).
+/// 어떤 항목이 다른 항목보다 반나절 이상 이르면(저녁 클러스터 + 새벽 세트처럼
+/// 시간이 크게 벌어지면) 그 이른 항목은 자정을 넘긴 것으로 보고 후보에서 뺀다.
+/// 그런 항목만 남으면(전부 새벽) 그중 최솟값을 쓴다. 항목이 없으면 null.
+int? _dayStartHour(Iterable<TimetableEntry> entries) {
+  final hours = <int>[
+    for (final e in entries)
+      if (int.tryParse(e.startTime.split(':')[0]) case final int h) h,
+  ];
+  if (hours.isEmpty) return null;
+  final candidates = hours
+      .where((h) => !hours.any((o) => o - h >= _festivalDayWrapGapHours))
+      .toList();
+  return (candidates.isEmpty ? hours : candidates)
+      .reduce((a, b) => a < b ? a : b);
 }
 
 TimetableRange computeTimetableRange(List<TimetableEntry> entries, String? date) {
@@ -83,12 +93,11 @@ TimetableRange computeTimetableRange(List<TimetableEntry> entries, String? date)
 
   // 그리드는 가장 이른 아티스트 공연 시각부터 시작한다. 아티스트 공연이 하나도
   // 없으면 가장 이른 운영 항목(📢, 게이트 오픈 등) 시각을, 그마저 없으면
-  // (빈 타임테이블) defaultStart(12시)를 쓴다. 심야(0~5시) 항목은 자정을 넘긴
-  // 것으로 보고 startHour 계산에서 제외한다.
-  final startHour =
-      _earliestPlausibleStartHour(filtered.where((e) => !e.isOps)) ??
-          _earliestPlausibleStartHour(filtered.where((e) => e.isOps)) ??
-          defaultStart;
+  // (빈 타임테이블) defaultStart(12시)를 쓴다. 자정을 넘긴 새벽 세트는
+  // startHour 계산에서 제외한다(_dayStartHour).
+  final startHour = _dayStartHour(filtered.where((e) => !e.isOps)) ??
+      _dayStartHour(filtered.where((e) => e.isOps)) ??
+      defaultStart;
 
   // durationMinutes는 자정을 넘기는 공연도 감안해 실제 소요 시간을 계산하므로,
   // endTime을 그대로 파싱하는 대신 "시작 시각 + 소요 시간"으로 종료 시각을 구해야
@@ -178,18 +187,8 @@ class TimetableEntry {
 
   String get timeRange => formatTimeRange(startTime, endTime);
 
-  int get durationMinutes {
-    try {
-      final startParts = startTime.split(':');
-      final endParts = endTime.split(':');
-      final start = int.parse(startParts[0]) * 60 + int.parse(startParts[1]);
-      final end = int.parse(endParts[0]) * 60 + int.parse(endParts[1]);
-      // 자정을 넘기는 공연(예: 23:30~00:30) 대응 — 종료가 시작보다 빠르면 다음날로 간주
-      return end >= start ? end - start : (end + 24 * 60) - start;
-    } catch (_) {
-      return 0;
-    }
-  }
+  // 자정을 넘기는 공연(예: 23:30~00:30)도 종료가 시작보다 빠르면 다음날로 간주.
+  int get durationMinutes => hhmmDurationMinutes(startTime, endTime);
 
   static String _toHHmm(dynamic val) {
     final s = val?.toString() ?? '';

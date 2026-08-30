@@ -47,17 +47,21 @@ TimetableRange computeTimetableRange(List<TimetableEntry> entries, String? date)
       .map((e) => e.key)
       .toList();
 
-  // 그리드는 첫 아티스트 공연 시각부터 시작한다. 운영 항목(📢, 게이트 오픈 등)은
-  // 기준에서 제외하며, 공연이 하나도 없으면 defaultStart(12시)로 폴백한다.
+  // 그리드는 첫 아티스트 공연 시각부터 시작한다. 아티스트 공연이 하나도 없으면
+  // 첫 운영 항목(📢, 게이트 오픈 등) 시각을, 그마저 없으면(빈 타임테이블)
+  // defaultStart(12시)를 쓴다.
   int? firstArtistHour;
+  int? firstOpsHour;
   for (final e in filtered) {
-    if (e.isOps) continue;
     final hour = int.tryParse(e.startTime.split(':')[0]);
-    if (hour != null && (firstArtistHour == null || hour < firstArtistHour)) {
+    if (hour == null) continue;
+    if (e.isOps) {
+      if (firstOpsHour == null || hour < firstOpsHour) firstOpsHour = hour;
+    } else if (firstArtistHour == null || hour < firstArtistHour) {
       firstArtistHour = hour;
     }
   }
-  final startHour = firstArtistHour ?? defaultStart;
+  final startHour = firstArtistHour ?? firstOpsHour ?? defaultStart;
 
   // durationMinutes는 자정을 넘기는 공연도 감안해 실제 소요 시간을 계산하므로,
   // endTime을 그대로 파싱하는 대신 "시작 시각 + 소요 시간"으로 종료 시각을 구해야

@@ -181,13 +181,16 @@ void main() {
       expect(result.startHour, 16);
     });
 
-    test('startHour — 아티스트 공연 없이 운영 항목만 있으면 12로 폴백', () {
+    test('startHour — 아티스트 공연 없이 운영 항목만 있으면 첫 운영 항목 시각 기준', () {
       final result = computeTimetableRange(
-        [_entry(stageName: '📢', startTime: '10:00', endTime: '10:30')],
+        [
+          _entry(id: 1, stageName: '📢', startTime: '13:00', endTime: '13:30'),
+          _entry(id: 2, stageName: '📢', startTime: '10:00', endTime: '10:30'),
+        ],
         '2025-08-01',
       );
 
-      expect(result.startHour, 12);
+      expect(result.startHour, 10);
     });
 
     test('endHour — 분=0이면 시 그대로', () {

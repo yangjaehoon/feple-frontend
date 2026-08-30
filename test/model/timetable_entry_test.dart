@@ -148,7 +148,7 @@ void main() {
       expect(result.stages, ['A', 'B', 'C']);
     });
 
-    test('startHour — 기본값(12)보다 이른 항목 있으면 갱신', () {
+    test('startHour — 첫 아티스트 공연 시각 기준 (12시 이전)', () {
       final result = computeTimetableRange(
         [_entry(startTime: '08:30', endTime: '10:00')],
         '2025-08-01',
@@ -157,9 +157,33 @@ void main() {
       expect(result.startHour, 8);
     });
 
-    test('startHour — 모든 항목이 12시 이후이면 12 유지', () {
+    test('startHour — 첫 아티스트 공연 시각 기준 (12시 이후여도 그 시각부터)', () {
       final result = computeTimetableRange(
-        [_entry(startTime: '14:00', endTime: '15:00')],
+        [
+          _entry(id: 1, startTime: '16:00', endTime: '17:00'),
+          _entry(id: 2, startTime: '14:00', endTime: '15:00'),
+        ],
+        '2025-08-01',
+      );
+
+      expect(result.startHour, 14);
+    });
+
+    test('startHour — 운영 항목(📢)은 기준에서 제외', () {
+      final result = computeTimetableRange(
+        [
+          _entry(id: 1, stageName: '📢', startTime: '10:00', endTime: '10:30'),
+          _entry(id: 2, startTime: '16:00', endTime: '17:00'),
+        ],
+        '2025-08-01',
+      );
+
+      expect(result.startHour, 16);
+    });
+
+    test('startHour — 아티스트 공연 없이 운영 항목만 있으면 12로 폴백', () {
+      final result = computeTimetableRange(
+        [_entry(stageName: '📢', startTime: '10:00', endTime: '10:30')],
         '2025-08-01',
       );
 

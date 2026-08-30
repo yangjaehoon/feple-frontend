@@ -72,24 +72,29 @@ class _FestivalPickScreenState extends State<FestivalPickScreen>
     // toggleLike는 호출할 때마다 좋아요 상태가 뒤집히는 순수 토글이라(멱등 아님),
     // 실패한 항목만 남기고 성공한 항목은 선택 목록에서 제거해야 재시도 시
     // 이미 성공한 좋아요가 다시 눌려서 취소되는 걸 막을 수 있다.
+    //
+    // 병렬(Future.wait)로 쏘면 같은 유저의 다중 좋아요 INSERT가 동시에 처리되며
+    // 서버에서 MySQL 갭 락 데드락이 난다 — 순차로 보낸다. (온보딩 단계라
+    // 몇 개를 순차 POST해도 체감 지연은 미미)
     final targets = _selectedIds.toList();
-    try {
-      await Future.wait(
-        targets.map((id) async {
-          await sl<FestivalInteractionService>().toggleLike(id);
-          _selectedIds.remove(id);
-        }),
-        eagerError: false,
-      );
-      if (targets.isNotEmpty) AppEvents.festivalLikeChanged.value++;
-    } catch (e) {
-      debugPrint('[FestivalPick] festival like failed: $e');
+    Object? firstError;
+    for (final id in targets) {
+      try {
+        await sl<FestivalInteractionService>().toggleLike(id);
+        _selectedIds.remove(id);
+      } catch (e) {
+        firstError ??= e;
+        debugPrint('[FestivalPick] festival like failed ($id): $e');
+      }
+    }
+    if (firstError != null) {
       if (mounted) {
         setState(() => _isSubmitting = false);
         context.showErrorSnackbar('onboarding_festival_like_failed'.tr());
       }
       return;
     }
+    if (targets.isNotEmpty) AppEvents.festivalLikeChanged.value++;
     if (!mounted) return;
     try {
       await widget.onComplete(targets.isNotEmpty);

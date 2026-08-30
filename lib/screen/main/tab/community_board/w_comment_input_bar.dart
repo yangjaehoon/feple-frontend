@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/widget/w_plain_input_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -129,13 +130,9 @@ class _CommentInputBarState extends State<CommentInputBar> {
       child: Row(
         children: [
           Expanded(
-            // 바깥 Container가 테두리를 그리므로, 전역 inputDecorationTheme의
-            // OutlineInputBorder가 겹쳐 이중 박스로 보이지 않도록 이 subtree에서만
-            // 입력 데코레이션 테마를 해제한다 (border: InputBorder.none만으로는
-            // 테마의 enabledBorder/focusedBorder가 남아 안 먹힌다).
-            child: Theme(
-              data: Theme.of(context)
-                  .copyWith(inputDecorationTheme: const InputDecorationTheme()),
+            // 바깥 Container가 테두리를 그리므로 TextField는 테두리 없이 둔다
+            // (PlainInputTheme 없이는 전역 테마 테두리가 남아 이중 박스가 된다).
+            child: PlainInputTheme(
               child: TextField(
                 controller: widget.controller,
                 maxLength: 300,

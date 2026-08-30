@@ -14,6 +14,7 @@ Future<void> _pump(
   String? errorText,
   String? replyToNickname,
   VoidCallback? onCancelReply,
+  ThemeData? appTheme,
 }) async {
   SharedPreferences.setMockInitialValues({});
   await EasyLocalization.ensureInitialized();
@@ -29,6 +30,7 @@ Future<void> _pump(
         theme: CustomTheme.light,
         changeTheme: (_) {},
         child: MaterialApp(
+          theme: appTheme,
           home: Scaffold(
             body: Align(
               alignment: Alignment.bottomCenter,
@@ -55,6 +57,25 @@ void main() {
       await _pump(tester, controller: TextEditingController(), onSubmit: (_) {});
 
       expect(find.text('enter_comment'.tr()), findsOneWidget);
+    });
+
+    testWidgets('실앱 테마에서 입력창 TextField에 OutlineInputBorder가 겹쳐 그려지지 않는다', (tester) async {
+      // 전역 inputDecorationTheme가 enabledBorder/focusedBorder를 OutlineInputBorder로
+      // 정의하므로, border: InputBorder.none만으로는 바깥 Container 테두리와 겹쳐
+      // 이중 박스가 된다. BorderlessInputTheme가 그걸 막는지 검증.
+      await _pump(
+        tester,
+        controller: TextEditingController(),
+        onSubmit: (_) {},
+        appTheme: CustomTheme.light.themeData,
+      );
+
+      final decoration =
+          tester.widget<InputDecorator>(find.byType(InputDecorator)).decoration;
+      expect(decoration.enabledBorder, isNot(isA<OutlineInputBorder>()));
+      expect(decoration.focusedBorder, isNot(isA<OutlineInputBorder>()));
+      final effective = decoration.enabledBorder ?? decoration.border;
+      expect(effective?.borderSide.style, BorderStyle.none);
     });
 
     testWidgets('답글 대상이 있으면 답글 배너와 힌트를 보여준다', (tester) async {

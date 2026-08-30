@@ -1,6 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/common/widget/w_plain_input_theme.dart';
+import 'package:feple/common/widget/w_borderless_input_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -131,8 +131,8 @@ class _CommentInputBarState extends State<CommentInputBar> {
         children: [
           Expanded(
             // 바깥 Container가 테두리를 그리므로 TextField는 테두리 없이 둔다
-            // (PlainInputTheme 없이는 전역 테마 테두리가 남아 이중 박스가 된다).
-            child: PlainInputTheme(
+            // (BorderlessInputTheme 없이는 전역 테마 테두리가 남아 이중 박스가 된다).
+            child: BorderlessInputTheme(
               child: TextField(
                 controller: widget.controller,
                 maxLength: 300,

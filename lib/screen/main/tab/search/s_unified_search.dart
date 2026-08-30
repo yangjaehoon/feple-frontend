@@ -11,7 +11,7 @@ import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
-import 'package:feple/common/widget/w_plain_input_theme.dart';
+import 'package:feple/common/widget/w_borderless_input_theme.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_tap_loading_indicator.dart';
 import 'package:feple/injection.dart';
@@ -262,9 +262,9 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
               onPressed: () => Navigator.pop(context),
             ),
             Expanded(
-              // 앱바 위 borderless 검색창 — PlainInputTheme 없이는 전역 테마의
+              // 앱바 위 borderless 검색창 — BorderlessInputTheme 없이는 전역 테마의
               // OutlineInputBorder가 파란 바탕 위에 옅은 테두리로 남는다.
-              child: PlainInputTheme(
+              child: BorderlessInputTheme(
                 child: TextField(
                   controller: _controller,
                   focusNode: _focusNode,

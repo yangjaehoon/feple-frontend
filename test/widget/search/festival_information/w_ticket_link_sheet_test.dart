@@ -63,6 +63,32 @@ void main() {
       expect(find.byType(Image), findsOneWidget);
       expect(find.byIcon(Icons.confirmation_number_outlined), findsOneWidget);
     });
+
+    testWidgets('로고 유무와 무관하게 아이콘 박스 크기와 텍스트 시작 위치가 같다', (tester) async {
+      await pump(tester, links: const [
+        TicketLink(label: '예스24', url: 'https://ticket.yes24.com/Perf/1'),
+        TicketLink(label: '기타', url: 'https://example.com/booking'),
+      ]);
+
+      // 로고 이미지가 담긴 박스와 폴백 아이콘이 담긴 박스가 동일 크기여야 한다
+      final logoBox = tester.getSize(
+        find.ancestor(of: find.byType(Image), matching: find.byType(SizedBox)).first,
+      );
+      final fallbackBox = tester.getSize(
+        find.ancestor(
+          of: find.byIcon(Icons.confirmation_number_outlined),
+          matching: find.byType(SizedBox),
+        ).first,
+      );
+      expect(logoBox, fallbackBox);
+      expect(logoBox, const Size(28, 28));
+
+      // 두 행의 라벨 텍스트가 같은 x에서 시작해야 세로로 정렬돼 보인다
+      expect(
+        tester.getTopLeft(find.text('예스24')).dx,
+        tester.getTopLeft(find.text('기타')).dx,
+      );
+    });
   });
 
   group('TicketLinkSheet 렌더링', () {

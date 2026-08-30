@@ -7,6 +7,11 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../../model/ticket_link.dart';
 
 class TicketLinkSheet extends StatelessWidget {
+  // 예매처 아이콘은 로고 유무와 무관하게 항상 같은 정사각 박스를 차지해야
+  // 각 행의 텍스트 시작 위치와 행 높이가 일정해진다(로고 없는 벤더에서 정렬 깨짐 방지).
+  static const double _vendorIconBox = 28;
+  static const double _fallbackIconSize = 24;
+
   final List<TicketLink> links;
 
   const TicketLinkSheet({super.key, required this.links});
@@ -66,6 +71,7 @@ class TicketLinkSheet extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _buildVendorIcon(colors, link),
               const SizedBox(width: AppDimens.space12),
@@ -90,29 +96,37 @@ class TicketLinkSheet extends StatelessWidget {
   }
 
   // 인터파크(NOL)/예스24/멜론티켓/티켓링크처럼 URL 도메인으로 식별되는 예매처는
-  // 브랜드 로고를, 그 외에는 일반 티켓 아이콘을 보여준다.
+  // 브랜드 로고를, 그 외에는 일반 티켓 아이콘을 보여준다. 어느 쪽이든 _vendorIconBox
+  // 정사각 안에 담아 행마다 텍스트 시작 위치·높이를 동일하게 유지한다.
   Widget _buildVendorIcon(AbstractThemeColors colors, TicketLink link) {
     final logoAsset = link.vendorLogoAsset;
-    if (logoAsset == null) {
-      return _buildFallbackIcon(colors);
-    }
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-      child: Image.asset(
-        logoAsset,
-        width: 28,
-        height: 28,
-        fit: BoxFit.cover,
-        // 원본이 표시 크기(28)보다 훨씬 큰 에셋도 있어 필요 이상 해상도로
-        // 디코딩되지 않게 캡 — 3배 밀도 화면 기준.
-        cacheWidth: 84,
-        cacheHeight: 84,
-        errorBuilder: (_, _, _) => _buildFallbackIcon(colors),
-      ),
+    return SizedBox(
+      width: _vendorIconBox,
+      height: _vendorIconBox,
+      child: logoAsset == null
+          ? _buildFallbackIcon(colors)
+          : ClipRRect(
+              borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+              child: Image.asset(
+                logoAsset,
+                fit: BoxFit.cover,
+                // 원본이 표시 크기보다 훨씬 큰 에셋도 있어 필요 이상 해상도로
+                // 디코딩되지 않게 캡 — 3배 밀도 화면 기준.
+                cacheWidth: 84,
+                cacheHeight: 84,
+                errorBuilder: (_, _, _) => _buildFallbackIcon(colors),
+              ),
+            ),
     );
   }
 
   Widget _buildFallbackIcon(AbstractThemeColors colors) {
-    return Icon(Icons.confirmation_number_outlined, color: colors.activate, size: AppDimens.iconSizeLg);
+    return Center(
+      child: Icon(
+        Icons.confirmation_number_outlined,
+        color: colors.activate,
+        size: _fallbackIconSize,
+      ),
+    );
   }
 }

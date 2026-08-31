@@ -11,6 +11,13 @@
 `brew install fvm` 후 아래 명령을 `fvm flutter ...`로 실행. (전역 flutter가
 3.44.6이면 그냥 `flutter`도 무방)
 
+### CI/CD
+GitHub Actions 워크플로:
+- `ci.yml` — push·PR → main 시 `flutter analyze` + `flutter test`(커버리지 하한선 포함) 게이트.
+- `claude-code-review.yml` — PR 생성·업데이트 시 Claude 자동 코드리뷰. 참고용이며 머지 게이트가
+  아니다. Dependabot PR은 시크릿 미접근으로 동작하지 않는다.
+- `claude.yml` — 이슈·PR에서 `@claude` 멘션 시 응답.
+
 ### 자주 쓰는 명령어
 ```bash
 fvm flutter pub get

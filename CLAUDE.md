@@ -18,6 +18,8 @@ GitHub Actions 워크플로:
   아니다. Dependabot PR은 시크릿 미접근으로 동작하지 않는다.
 - `claude.yml` — 이슈·PR에서 `@claude` 멘션 시 응답.
 
+`CLAUDE_CODE_OAUTH_TOKEN` 시크릿은 구독 계정에서 `claude setup-token`으로 발급한 토큰이어야 한다 — 비구독 계정 토큰이면 리뷰가 조용히 즉시 실패한다.
+
 ### 자주 쓰는 명령어
 ```bash
 fvm flutter pub get

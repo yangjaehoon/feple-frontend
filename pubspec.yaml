@@ -46,7 +46,7 @@ dependencies:
 
   #auth (로그인, 보안 저장소)
   firebase_auth: ^6.6.1
-  kakao_flutter_sdk_user: ^2.0.0
+  kakao_flutter_sdk_user: ^2.0.1
   sign_in_with_apple: ^8.2.0
   google_sign_in: ^7.2.0
   flutter_secure_storage: ^11.0.0

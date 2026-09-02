@@ -666,5 +666,16 @@
   "level_legend": "레전드",
   "add_to_calendar": "달력에 저장",
   "add_to_calendar_success": "달력 앱이 열렸습니다.",
-  "add_to_calendar_no_date": "날짜 정보가 없어 저장할 수 없습니다."
+  "add_to_calendar_no_date": "날짜 정보가 없어 저장할 수 없습니다.",
+  "age_gate_title": "생년월일을 입력해주세요",
+  "age_gate_subtitle": "관련 법령에 따라 만 14세 이상만\n커뮤니티 서비스를 이용할 수 있습니다.",
+  "age_gate_select_date": "생년월일 선택",
+  "age_gate_picker_help": "생년월일 선택",
+  "age_gate_submit": "확인",
+  "age_gate_confirm_title": "생년월일 확인",
+  "age_gate_confirm_content": "{}\n입력하신 생년월일이 맞나요? 확인 후에는 수정할 수 없습니다.",
+  "age_gate_confirm_ok": "확인",
+  "age_gate_error": "처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+  "age_gate_restricted_title": "이용할 수 없어요",
+  "age_gate_restricted_message": "만 14세 미만은 커뮤니티 서비스를\n이용할 수 없습니다."
 }

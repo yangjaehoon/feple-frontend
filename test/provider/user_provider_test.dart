@@ -284,6 +284,44 @@ void main() {
     });
   });
 
+  group('D-2. 나이 확인 플래그', () {
+    test('markAgeVerificationRequired: 플래그를 세우고 notifyListeners 호출', () async {
+      final provider = await make();
+      await provider.setUser(_user(id: 1));
+      var notified = false;
+      provider.addListener(() => notified = true);
+
+      provider.markAgeVerificationRequired();
+
+      expect(provider.user?.ageVerificationRequired, isTrue);
+      expect(notified, isTrue);
+    });
+
+    test('markAgeVerified: 플래그를 내리고 캐시 JSON도 갱신', () async {
+      final provider = await make();
+      await provider.setUser(_user(id: 1));
+      provider.markAgeVerificationRequired();
+
+      await provider.markAgeVerified();
+
+      expect(provider.user?.ageVerificationRequired, isFalse);
+      final saved =
+          jsonDecode(_storage[_kUserJson]!) as Map<String, dynamic>;
+      expect(saved['ageVerificationRequired'], false);
+    });
+
+    test('markAgeVerified: 확인 대상이 아니면 아무것도 하지 않는다', () async {
+      final provider = await make();
+      await provider.setUser(_user(id: 1)); // ageVerificationRequired == false
+      var notified = false;
+      provider.addListener(() => notified = true);
+
+      await provider.markAgeVerified();
+
+      expect(notified, isFalse);
+    });
+  });
+
   // ───────────────────────────────────────────────────
   // E. 게터
   // ───────────────────────────────────────────────────

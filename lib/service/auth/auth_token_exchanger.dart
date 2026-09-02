@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../auth/token_store.dart';
+import '../../common/exception/age_restricted_exception.dart';
 import '../../common/exception/auth_exchange_exception.dart';
 import '../../model/user_model.dart' as app;
 import '../../network/dio_client.dart';
@@ -57,6 +58,37 @@ class AuthTokenExchanger {
       // DioException과 동일하게 공통 예외로 통일 — raw exception이 그대로 새어나가지 않도록
       debugPrint('[Auth] $providerLabel 응답 처리 실패: $e');
       throw AuthExchangeException('$providerLabel: response processing failed');
+    }
+  }
+
+  /// 나이 확인 게이트 — 생년월일 제출. 만 14세 이상이면 정상 반환,
+  /// 미만이면 서버가 계정을 파기하고 [AgeRestrictedException]을 던진다.
+  /// JwtAuthenticationFilter가 `/auth/**`를 건너뛰므로 액세스 토큰을 헤더로 직접 넘긴다.
+  Future<void> submitBirthDate(DateTime birthDate) async {
+    final token = await TokenStore.readAccessToken();
+    if (token == null) {
+      throw AuthExchangeException('age-verification: no access token');
+    }
+    final iso = birthDate.toIso8601String().split('T').first; // yyyy-MM-dd
+    try {
+      await DioClient.dio.post(
+        '/auth/age-verification',
+        data: {'birthDate': iso},
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+    } on DioException catch (e) {
+      final data = e.response?.data;
+      if (e.response?.statusCode == 403 &&
+          data is Map &&
+          data['code'] == 'AGE_RESTRICTED') {
+        throw AgeRestrictedException();
+      }
+      debugPrint(
+        '[Auth] 나이 확인 실패: [${e.type.name}] ${e.response?.statusCode}',
+      );
+      throw AuthExchangeException(
+        'age-verification failed (${e.response?.statusCode ?? e.type.name})',
+      );
     }
   }
 

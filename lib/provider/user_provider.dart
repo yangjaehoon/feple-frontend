@@ -142,6 +142,30 @@ class UserProvider with ChangeNotifier {
 
   Future<void> setUser(AppUser me) => _applyUser(me);
 
+  /// 서버가 나이 확인 미완료(403 AGE_VERIFICATION_REQUIRED)를 응답했을 때 —
+  /// 현재 유저에 플래그를 세워 루트 라우팅이 나이 확인 화면을 띄우게 한다.
+  void markAgeVerificationRequired() {
+    final me = _user;
+    if (me != null && !me.ageVerificationRequired) {
+      _user = me.copyWith(ageVerificationRequired: true);
+      notifyListeners();
+    }
+  }
+
+  /// 나이 확인을 통과했을 때 — 서버 재조회가 실패해도 게이트를 벗어나도록
+  /// 플래그를 먼저 내린다. 캐시(userJson)에도 반영해 다음 콜드스타트에 되돌아가지 않게 한다.
+  Future<void> markAgeVerified() async {
+    final me = _user;
+    if (me == null || !me.ageVerificationRequired) return;
+    _user = me.copyWith(ageVerificationRequired: false);
+    notifyListeners();
+    try {
+      await TokenStore.saveUserJson(jsonEncode(_user!.toJson()));
+    } catch (e) {
+      debugPrint('[UserProvider] 유저 캐시 저장 실패: $e');
+    }
+  }
+
   Future<void> fetchUserFromToken(String token) async {
     try {
       await _applyUser(await _userService.fetchUserFromToken(token));

@@ -6,9 +6,11 @@ import 'package:feple/screen/main/tab/tab_item.dart';
 import 'package:feple/screen/main/tab/w_tab_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import '../../common/app_events.dart';
 import '../../model/post_changed_event.dart';
 import '../../common/common.dart';
+import '../../provider/user_provider.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -39,6 +41,15 @@ class MainScreenState extends State<MainScreen>
 
   int get _currentIndex => tabs.indexOf(_currentTab);
 
+  // 게스트에게 홈 탭은 로그인 유도 화면이라 로고 탭·뒤로가기 복귀 지점으로
+  // 부적절함 — 비계정 탭인 페스티벌 목록으로 대신 보낸다. 로그인 상태는 탭
+  // 전환 시점마다 새로 확인해, 게스트로 시작했다가 화면 안에서 로그인해도
+  // (RequireLoginGate 경유) 곧바로 홈으로 정확히 돌아간다.
+  TabItem get _landingTab =>
+      Provider.of<UserProvider>(context, listen: false).user == null
+          ? TabItem.festivalList
+          : TabItem.home;
+
   GlobalKey<NavigatorState> get _currentTabNavigationKey =>
       navigatorKeys[_currentIndex];
 
@@ -49,7 +60,10 @@ class MainScreenState extends State<MainScreen>
   @override
   void initState() {
     super.initState();
-    _visitedTabs.add(tabs.indexOf(TabItem.home));
+    // 게스트는 계정 기반 탭인 홈(팔로우 아티스트/좋아요 페스티벌)이 로그인 유도
+    // 화면으로 막혀 있으므로, 비계정 콘텐츠인 페스티벌 목록 탭으로 시작한다.
+    _currentTab = _landingTab;
+    _visitedTabs.add(_currentIndex);
     _tabObservers = List.generate(
       tabs.length,
       (_) => _NavBarObserver(() {
@@ -97,8 +111,8 @@ class MainScreenState extends State<MainScreen>
           final navigator = _currentTabNavigationKey.currentState;
           if (navigator != null && navigator.canPop()) {
             navigator.pop();
-          } else if (_currentTab != TabItem.home) {
-            _changeTab(tabs.indexOf(TabItem.home));
+          } else if (_currentTab != _landingTab) {
+            _changeTab(tabs.indexOf(_landingTab));
           } else {
             final confirmed = await showConfirmDialog(
               context,
@@ -221,7 +235,7 @@ class MainScreenState extends State<MainScreen>
   }
 
   void goHome() {
-    final homeIndex = tabs.indexOf(TabItem.home);
+    final homeIndex = tabs.indexOf(_landingTab);
     popAllHistory(navigatorKeys[homeIndex]);
     _changeTab(homeIndex);
   }

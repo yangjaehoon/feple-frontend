@@ -14,7 +14,6 @@ import 'package:feple/service/festival_cache_service.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:feple/login/s_login.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
 import 'app.dart';
@@ -204,7 +203,10 @@ class _MyAppState extends State<MyApp> {
               builder: (context, userProvider, _) {
                 final user = userProvider.user;
                 if (user == null) {
-                  return const LoginScreen();
+                  // 게스트 모드 — 페스티벌 목록·검색 등 비계정 기능은 로그인 없이
+                  // 바로 접근 가능해야 함 (Apple 가이드라인 5.1.1(v)). 계정 기반
+                  // 탭(홈·커뮤니티·마이페이지)은 RequireLoginGate가 개별적으로 막는다.
+                  return const App();
                 } else if (!Prefs.isOnboardingCompleted(user.id)) {
                   return OnboardingScreen(
                     userId: user.id,

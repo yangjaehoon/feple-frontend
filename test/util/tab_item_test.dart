@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:feple/common/widget/w_require_login_gate.dart';
 import 'package:feple/screen/main/tab/community_board/f_community_board.dart';
 import 'package:feple/screen/main/tab/festival_list/f_festival_list.dart';
 import 'package:feple/screen/main/tab/home/f_home.dart';
@@ -16,12 +17,28 @@ void main() {
   });
 
   group('TabItem.firstPage', () {
-    test('각 탭은 대응하는 화면 위젯을 갖는다', () {
+    test('비계정 탭(검색·페스티벌 목록)은 게스트도 바로 접근 가능해 로그인 게이트로 감싸지 않는다', () {
       expect(TabItem.search.firstPage, isA<SearchFragment>());
-      expect(TabItem.communityBoard.firstPage, isA<CommunityBoardFragment>());
-      expect(TabItem.home.firstPage, isA<HomeFragment>());
       expect(TabItem.festivalList.firstPage, isA<FestivalListFragment>());
-      expect(TabItem.favorite.firstPage, isA<MyPageFragment>());
+    });
+
+    test('계정 기반 탭(홈·커뮤니티·마이페이지)은 RequireLoginGate로 감싸 게스트를 막는다', () {
+      expect(TabItem.communityBoard.firstPage, isA<RequireLoginGate>());
+      expect(TabItem.home.firstPage, isA<RequireLoginGate>());
+      expect(TabItem.favorite.firstPage, isA<RequireLoginGate>());
+
+      expect(
+        (TabItem.communityBoard.firstPage as RequireLoginGate).child,
+        isA<CommunityBoardFragment>(),
+      );
+      expect(
+        (TabItem.home.firstPage as RequireLoginGate).child,
+        isA<HomeFragment>(),
+      );
+      expect(
+        (TabItem.favorite.firstPage as RequireLoginGate).child,
+        isA<MyPageFragment>(),
+      );
     });
   });
 

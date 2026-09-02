@@ -365,6 +365,13 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
   Future<void> _completeLogin(UserProvider userProvider, AppUser user) async {
     await userProvider.setUser(user);
     unawaited(FcmService.instance.initWithRationale());
+    // 게스트 둘러보기 중 RequireLoginGate가 이 화면을 push했다면, 로그인 완료 후
+    // 뒤에 있던 (이제 로그인된) 화면이 드러나도록 pop한다. main.dart의 root
+    // Consumer<UserProvider>가 이 화면을 home으로 직접 보여준 최초 진입
+    // 경로에서는 canPop이 false라 기존 동작에 영향 없음.
+    if (mounted && Navigator.canPop(context)) {
+      Navigator.pop(context);
+    }
   }
 
   Future<void> _handleLoginSuccess(AppUser user) async {

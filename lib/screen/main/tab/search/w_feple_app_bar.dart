@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/constant/store_links.dart';
 import 'package:feple/screen/main/s_main.dart';
 import 'package:feple/screen/notification/notification_count_notifier.dart';
 import 'package:feple/screen/notification/s_notification.dart';
@@ -8,6 +9,7 @@ import 'package:feple/injection.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FepleAppBar extends StatefulWidget {
   const FepleAppBar(this.appbarTitle, {super.key, this.showBackButton = false, this.extraTrailingActions = const []});
@@ -52,6 +54,7 @@ class _FepleAppBarState extends State<FepleAppBar> with NavigationGuard {
           _buildTitleLogo(context, titleStyle),
           const Spacer(),
           ...widget.extraTrailingActions,
+          _buildSupportButton(context),
           _buildSearchButton(context),
           ListenableBuilder(
             listenable: _countNotifier,
@@ -97,6 +100,23 @@ class _FepleAppBarState extends State<FepleAppBar> with NavigationGuard {
           ],
         ),
       ),
+    );
+  }
+
+  // 게스트도 로그인 없이 문의·신고 채널에 닿을 수 있어야 해서(Apple 가이드라인
+  // 1.2), 로그인 화면·마이페이지에만 있던 카카오톡 문의 링크를 게스트가 바로
+  // 보는 앱바에도 노출한다.
+  Future<void> _openSupport(BuildContext context) async {
+    final uri = Uri.parse(kCustomerServiceUrl);
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!launched && context.mounted) context.showErrorSnackbar('link_open_failed'.tr());
+  }
+
+  Widget _buildSupportButton(BuildContext context) {
+    return IconButton(
+      tooltip: 'customer_service'.tr(),
+      icon: Icon(Icons.headset_mic_rounded, color: context.appColors.appBarIconColor),
+      onPressed: () => _openSupport(context),
     );
   }
 

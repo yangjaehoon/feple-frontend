@@ -8,12 +8,28 @@ import 'package:feple/service/notification_countable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
 class MockNotificationCountable extends Mock implements NotificationCountable {}
 
+class FakeUrlLauncherPlatform extends Fake
+    with MockPlatformInterfaceMixin
+    implements UrlLauncherPlatform {
+  final List<String> launchedUrls = [];
+  bool returnSuccess = true;
+
+  @override
+  Future<bool> launchUrl(String url, LaunchOptions options) async {
+    launchedUrls.add(url);
+    return returnSuccess;
+  }
+}
+
 void main() {
   late MockNotificationCountable mockCountable;
+  late FakeUrlLauncherPlatform fakeLauncher;
 
   setUp(() {
     mockCountable = MockNotificationCountable();
@@ -25,6 +41,8 @@ void main() {
       sl.unregister<NotificationCountNotifier>();
     }
     sl.registerSingleton<NotificationCountNotifier>(NotificationCountNotifier());
+    fakeLauncher = FakeUrlLauncherPlatform();
+    UrlLauncherPlatform.instance = fakeLauncher;
   });
 
   tearDown(() {
@@ -70,13 +88,14 @@ void main() {
   }
 
   group('FepleAppBar 렌더링', () {
-    testWidgets('타이틀과 검색/알림 아이콘을 보여준다', (tester) async {
+    testWidgets('타이틀과 문의/검색/알림 아이콘을 보여준다', (tester) async {
       when(() => mockCountable.getUnreadCount()).thenAnswer((_) async => 0);
 
       await pump(tester);
       await tester.pump();
 
       expect(find.text('아티스트'), findsOneWidget);
+      expect(find.byIcon(Icons.headset_mic_rounded), findsOneWidget);
       expect(find.byIcon(Icons.search_rounded), findsOneWidget);
       expect(find.byIcon(Icons.notifications_rounded), findsOneWidget);
       expect(find.byIcon(Icons.arrow_back_ios_new_rounded), findsNothing);
@@ -127,6 +146,21 @@ void main() {
       await tester.pump();
 
       expect(find.text('99+'), findsOneWidget);
+    });
+  });
+
+  group('FepleAppBar 문의하기', () {
+    // 로그인 화면·마이페이지에 못 들어간 게스트도 이 아이콘으로 카카오톡
+    // 문의 채널에 닿을 수 있어야 한다 (Apple 가이드라인 1.2).
+    testWidgets('문의 아이콘을 탭하면 카카오톡 문의 링크를 연다', (tester) async {
+      when(() => mockCountable.getUnreadCount()).thenAnswer((_) async => 0);
+
+      await pump(tester);
+      await tester.pump();
+      await tester.tap(find.byIcon(Icons.headset_mic_rounded));
+      await tester.pump();
+
+      expect(fakeLauncher.launchedUrls, ['https://open.kakao.com/o/guLhbJki']);
     });
   });
 

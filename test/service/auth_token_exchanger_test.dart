@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:feple/common/exception/age_restricted_exception.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/service/auth/auth_token_exchanger.dart';
 import 'package:flutter/services.dart';
@@ -17,7 +18,8 @@ void main() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
       const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
-      (_) async => null,
+      // read는 액세스 토큰이 있는 것처럼 응답한다 — submitBirthDate가 토큰을 읽어 헤더에 싣는다.
+      (call) async => call.method == 'read' ? 'stored-access-token' : null,
     );
     HttpOverrides.global = null;
     SharedPreferences.setMockInitialValues({});
@@ -63,6 +65,39 @@ void main() {
 
       expect(user.id, 2);
       expect(user.nickname, 'tester2');
+    });
+  });
+
+  group('AuthTokenExchanger.submitBirthDate', () {
+    test('204면 정상 완료된다', () async {
+      server.enqueue(httpCode: 204);
+
+      await expectLater(
+        exchanger.submitBirthDate(DateTime(2000, 1, 1)),
+        completes,
+      );
+    });
+
+    test('403 AGE_RESTRICTED면 AgeRestrictedException을 던진다', () async {
+      server.enqueue(
+        httpCode: 403,
+        body: '{"code":"AGE_RESTRICTED","message":"restricted"}',
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      await expectLater(
+        exchanger.submitBirthDate(DateTime(2015, 1, 1)),
+        throwsA(isA<AgeRestrictedException>()),
+      );
+    });
+
+    test('그 외 오류는 AuthExchangeException(Exception)을 던진다', () async {
+      server.enqueue(httpCode: 500);
+
+      await expectLater(
+        exchanger.submitBirthDate(DateTime(2000, 1, 1)),
+        throwsA(isA<Exception>()),
+      );
     });
   });
 

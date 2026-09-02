@@ -666,5 +666,16 @@
   "level_legend": "Legend",
   "add_to_calendar": "Add to Calendar",
   "add_to_calendar_success": "Calendar app opened.",
-  "add_to_calendar_no_date": "Cannot save: no date information."
+  "add_to_calendar_no_date": "Cannot save: no date information.",
+  "age_gate_title": "Enter your date of birth",
+  "age_gate_subtitle": "Under applicable law, only users aged 14\nand over can use the community service.",
+  "age_gate_select_date": "Select date of birth",
+  "age_gate_picker_help": "Select date of birth",
+  "age_gate_submit": "Continue",
+  "age_gate_confirm_title": "Confirm date of birth",
+  "age_gate_confirm_content": "{}\nIs this your date of birth? It can't be changed after you confirm.",
+  "age_gate_confirm_ok": "Confirm",
+  "age_gate_error": "Something went wrong. Please try again in a moment.",
+  "age_gate_restricted_title": "Access unavailable",
+  "age_gate_restricted_message": "Users under 14 cannot use the\ncommunity service."
 }

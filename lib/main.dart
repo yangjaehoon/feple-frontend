@@ -26,6 +26,7 @@ import 'network/api_cache_store.dart';
 import 'network/dio_client.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'common/theme/custom_theme_scope.dart';
+import 'login/s_age_gate.dart';
 import 'screen/onboarding/s_onboarding.dart';
 
 void main() async {
@@ -98,7 +99,24 @@ class _MyAppState extends State<MyApp> {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     DioClient.onSessionExpired = () => userProvider.logout();
     DioClient.onUserBanned = () => _showBanDialog(userProvider);
+    DioClient.onAgeVerificationRequired = () async =>
+        userProvider.markAgeVerificationRequired();
     unawaited(_tryAutoLogin(userProvider));
+  }
+
+  Future<void> _onAgeVerified() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    // 먼저 플래그를 내려 게이트를 확실히 벗어난 뒤, 최신 프로필로 재동기화한다.
+    await userProvider.markAgeVerified();
+    final id = userProvider.currentUserId;
+    if (id != null) {
+      try {
+        await userProvider.fetchUser(id);
+      } catch (e) {
+        log('Age-verified user refetch failed: $e');
+      }
+    }
+    if (mounted) setState(() {});
   }
 
   Future<void> _showBanDialog(UserProvider userProvider) async {
@@ -207,6 +225,10 @@ class _MyAppState extends State<MyApp> {
                   // 바로 접근 가능해야 함 (Apple 가이드라인 5.1.1(v)). 계정 기반
                   // 탭(홈·커뮤니티·마이페이지)은 RequireLoginGate가 개별적으로 막는다.
                   return const App();
+                } else if (user.ageVerificationRequired) {
+                  // 만 14세 미만 커뮤니티 이용 차단 (App Store 심사 5.1.1) — 온보딩·홈
+                  // 진입 전에 생년월일을 1회 확인한다.
+                  return AgeGateScreen(onVerified: _onAgeVerified);
                 } else if (!Prefs.isOnboardingCompleted(user.id)) {
                   return OnboardingScreen(
                     userId: user.id,

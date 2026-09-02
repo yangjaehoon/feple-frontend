@@ -4,6 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
 export 'package:feple/common/exception/email_not_verified_exception.dart';
+export 'package:feple/common/exception/age_restricted_exception.dart';
 
 import '../model/user_model.dart' as app;
 import 'auth/apple_login_provider.dart';
@@ -45,6 +46,12 @@ class AuthService {
       _emailAuth.register(email, password, nickname);
 
   Future<void> resendVerificationEmail() => _emailAuth.resendVerificationEmail();
+
+  // ── 나이 확인 게이트 ──
+
+  /// 생년월일 제출. 만 14세 미만이면 [AgeRestrictedException]을 던진다.
+  Future<void> submitBirthDate(DateTime birthDate) =>
+      _tokenExchanger.submitBirthDate(birthDate);
 
   Future<void> cancelUnverifiedSignup() => _emailAuth.cancelUnverifiedSignup();
 

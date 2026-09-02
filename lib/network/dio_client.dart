@@ -81,6 +81,11 @@ class DioClient {
   /// 포함하므로 완료를 기다릴 수 있도록 Future 반환 타입으로 통일.
   static Future<void> Function()? onUserBanned;
 
+  /// 나이 확인 미완료(403 AGE_VERIFICATION_REQUIRED) 응답 시 호출 → 나이 확인 화면으로 유도.
+  /// 서버는 GET /users/me 외 인증 요청을 모두 이 코드로 막으므로, 갱신 흐름을 벗어난
+  /// 화면에서 커뮤니티 API를 호출한 경우에도 라우팅이 게이트로 돌아가게 한다.
+  static Future<void> Function()? onAgeVerificationRequired;
+
   /// 인터셉터 없이 토큰 갱신/재시도에만 사용하는 내부 Dio
   static final Dio _plainDio = Dio(BaseOptions(
     baseUrl: app_config.baseUrl,
@@ -227,6 +232,8 @@ class _AuthAndSwrInterceptor extends Interceptor {
       final data = error.response?.data;
       if (data is Map && data['error'] == 'banned') {
         await DioClient.onUserBanned?.call();
+      } else if (data is Map && data['code'] == 'AGE_VERIFICATION_REQUIRED') {
+        await DioClient.onAgeVerificationRequired?.call();
       }
       return handler.next(error);
     }

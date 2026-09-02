@@ -128,6 +128,7 @@
   "post_failed": "Failed to register post.",
   "post_banned_word": "Profanity, hate speech, and slander are not allowed.",
   "post_anonymous": "Post anonymously",
+  "anonymous_tag": "Anonymous",
   "delete_post": "Delete Post",
   "edit_post": "Edit Post",
   "delete_post_confirm": "Are you sure you want to delete this post?\nThis action cannot be undone.",

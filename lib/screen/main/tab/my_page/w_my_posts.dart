@@ -12,6 +12,7 @@ import 'package:feple/injection.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_stat_row.dart';
+import 'package:feple/screen/main/tab/my_page/w_status_badge.dart';
 import 'package:feple/service/user_activity_service.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/common/util/forced_refresh.dart';
@@ -143,14 +144,28 @@ class _MyPostsViewState extends State<MyPostsView> {
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
-        subtitle: Text(
-          post.boardDisplayName,
-          style: TextStyle(
-            color: colors.textSecondary,
-            fontSize: AppDimens.fontSizeXs,
-          ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+        subtitle: Row(
+          children: [
+            Flexible(
+              child: Text(
+                post.boardDisplayName,
+                style: TextStyle(
+                  color: colors.textSecondary,
+                  fontSize: AppDimens.fontSizeXs,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            // 익명 글은 타인 프로필에선 애초에 목록에 안 나오므로, 여기 보이면 본인 글이다.
+            if (post.anonymous) ...[
+              const SizedBox(width: AppDimens.space6),
+              StatusBadge(
+                color: colors.textSecondary,
+                label: 'anonymous_tag'.tr(),
+              ),
+            ],
+          ],
         ),
         trailing: PostStatRow(
           likeCount: post.likeCount,

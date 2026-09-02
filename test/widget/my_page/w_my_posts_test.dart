@@ -12,7 +12,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class MockUserActivityService extends Mock implements UserActivityService {}
 
-Post _post({int id = 1, String title = '글', String boardDisplayName = '자유 게시판'}) =>
+Post _post({
+  int id = 1,
+  String title = '글',
+  String boardDisplayName = '자유 게시판',
+  bool anonymous = false,
+}) =>
     Post(
       id: id,
       title: title,
@@ -21,6 +26,7 @@ Post _post({int id = 1, String title = '글', String boardDisplayName = '자유 
       commentCount: 3,
       nickname: '작성자',
       boardDisplayName: boardDisplayName,
+      anonymous: anonymous,
     );
 
 void main() {
@@ -78,6 +84,25 @@ void main() {
       expect(find.text('my_posts'.tr()), findsOneWidget);
       expect(find.text('내 글1'), findsOneWidget);
       expect(find.text('내 글2'), findsOneWidget);
+    });
+
+    testWidgets('익명 글에는 익명 태그, 일반 글에는 없다', (tester) async {
+      when(() => mockService.fetchPostsPage(
+            1,
+            cursor: any(named: 'cursor'),
+            size: any(named: 'size'),
+          )).thenAnswer((_) async => PostCursorPage(
+            content: [
+              _post(id: 1, title: '익명 글', anonymous: true),
+              _post(id: 2, title: '일반 글'),
+            ],
+            hasNext: false,
+          ));
+
+      await pump(tester);
+      await tester.pumpAndSettle();
+
+      expect(find.text('anonymous_tag'.tr()), findsOneWidget);
     });
 
     testWidgets('title을 지정하면 커스텀 제목을 보여준다', (tester) async {

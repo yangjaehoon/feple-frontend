@@ -18,17 +18,11 @@ class FepleAppBar extends StatefulWidget {
     this.appbarTitle, {
     super.key,
     this.showBackButton = false,
-    this.showSupport = false,
     this.extraTrailingActions = const [],
   });
 
   final String appbarTitle;
   final bool showBackButton;
-
-  /// 비로그인 게스트가 앱 안에서 문의·신고 채널(카카오톡)에 닿을 수 있도록(Apple
-  /// 가이드라인 1.2) 고객센터 아이콘을 노출할지. 게스트가 처음 보는 메인 탭
-  /// (검색·페스티벌 목록)에서만 true — 로그인하면 아이콘이 사라진다(설정에 문의 링크 있음).
-  final bool showSupport;
   final List<Widget> extraTrailingActions;
 
   @override
@@ -76,10 +70,12 @@ class _FepleAppBarState extends State<FepleAppBar> with NavigationGuard {
           _buildTitleLogo(context, titleStyle),
           const Spacer(),
           ...widget.extraTrailingActions,
-          _buildSupportButton(context),
           _buildSearchButton(context),
-          // 알림함은 계정 전용 — 게스트에게는 벨을 숨긴다.
-          if (!isGuest)
+          // 알림함은 계정 전용 — 로그인 유저는 알림 아이콘, 비로그인 게스트는
+          // 같은 자리에 고객센터(카카오톡 문의) 아이콘을 대신 보여준다.
+          if (isGuest)
+            _buildSupportButton(context)
+          else
             ListenableBuilder(
               listenable: _countNotifier,
               builder: (_, _) => _buildNotificationButton(colors),
@@ -133,14 +129,10 @@ class _FepleAppBarState extends State<FepleAppBar> with NavigationGuard {
     if (!launched && context.mounted) context.showErrorSnackbar('link_open_failed'.tr());
   }
 
-  // showSupport가 켜진 메인 탭에서, 비로그인 게스트에게만 노출한다.
-  // 로그인 유저는 설정 화면에 문의 링크가 있으므로 앱바에서는 숨겨 정리한다.
+  // 비로그인 게스트가 앱 안에서 문의·신고 채널(카카오톡)에 닿을 수 있도록
+  // (Apple 가이드라인 1.2) 알림 아이콘 자리에 대신 노출한다. 호출부(build)가
+  // 게스트일 때만 렌더링하므로 여기서 로그인 여부를 다시 확인하지 않는다.
   Widget _buildSupportButton(BuildContext context) {
-    if (!widget.showSupport) return const SizedBox.shrink();
-    // UserProvider가 없는 컨텍스트(일부 위젯 테스트)에서는 게스트로 보지 않는다(기존 동작).
-    final isGuest =
-        context.select<UserProvider?, bool>((p) => p != null && p.user == null);
-    if (!isGuest) return const SizedBox.shrink();
     return IconButton(
       tooltip: 'customer_service'.tr(),
       icon: Icon(Icons.headset_mic_rounded, color: context.appColors.appBarIconColor),

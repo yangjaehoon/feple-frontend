@@ -65,7 +65,6 @@ void main() {
   Future<void> pump(
     WidgetTester tester, {
     bool showBackButton = false,
-    bool showSupport = false,
     bool loggedIn = false,
     List<Widget> extraTrailingActions = const [],
   }) async {
@@ -92,7 +91,6 @@ void main() {
                 body: FepleAppBar(
                   '아티스트',
                   showBackButton: showBackButton,
-                  showSupport: showSupport,
                   extraTrailingActions: extraTrailingActions,
                 ),
               ),
@@ -105,7 +103,7 @@ void main() {
   }
 
   group('FepleAppBar 렌더링', () {
-    testWidgets('로그인 상태: 타이틀과 검색/알림 아이콘을 보여준다 (기본은 고객센터 아이콘 없음)', (tester) async {
+    testWidgets('로그인 상태: 검색 + 알림 아이콘을 보여주고 고객센터 아이콘은 없다', (tester) async {
       when(() => mockCountable.getUnreadCount()).thenAnswer((_) async => 0);
 
       await pump(tester, loggedIn: true);
@@ -118,12 +116,13 @@ void main() {
       expect(find.byIcon(Icons.arrow_back_ios_new_rounded), findsNothing);
     });
 
-    testWidgets('비로그인 게스트: 알림 벨을 숨기고 개수 조회도 하지 않는다', (tester) async {
+    testWidgets('비로그인 게스트: 알림 아이콘 자리에 고객센터 아이콘을 보여주고 개수 조회는 하지 않는다', (tester) async {
       await pump(tester);
       await tester.pump();
 
       expect(find.byIcon(Icons.search_rounded), findsOneWidget);
       expect(find.byIcon(Icons.notifications_rounded), findsNothing);
+      expect(find.byIcon(Icons.headset_mic_rounded), findsOneWidget);
       verifyNever(() => mockCountable.getUnreadCount());
     });
 
@@ -177,12 +176,10 @@ void main() {
 
   group('FepleAppBar 문의하기', () {
     // 로그인 화면·설정에 못 들어간 게스트도 이 아이콘으로 카카오톡 문의 채널에
-    // 닿을 수 있어야 한다 (Apple 가이드라인 1.2). showSupport 켜진 메인 탭 +
-    // 비로그인일 때만 노출한다.
-    testWidgets('showSupport + 비로그인이면 문의 아이콘을 보여주고 탭 시 카카오톡 링크를 연다', (tester) async {
-      when(() => mockCountable.getUnreadCount()).thenAnswer((_) async => 0);
-
-      await pump(tester, showSupport: true);
+    // 닿을 수 있어야 한다 (Apple 가이드라인 1.2). 비로그인이면 알림 아이콘 자리를
+    // 고객센터 아이콘이 대신한다.
+    testWidgets('비로그인이면 고객센터 아이콘을 보여주고 탭 시 카카오톡 링크를 연다', (tester) async {
+      await pump(tester);
       await tester.pump();
 
       expect(find.byIcon(Icons.headset_mic_rounded), findsOneWidget);
@@ -193,13 +190,14 @@ void main() {
       expect(fakeLauncher.launchedUrls, ['https://open.kakao.com/o/guLhbJki']);
     });
 
-    testWidgets('showSupport여도 로그인 상태면 문의 아이콘을 숨긴다', (tester) async {
+    testWidgets('로그인 상태면 고객센터 아이콘 대신 알림 아이콘을 보여준다', (tester) async {
       when(() => mockCountable.getUnreadCount()).thenAnswer((_) async => 0);
 
-      await pump(tester, showSupport: true, loggedIn: true);
+      await pump(tester, loggedIn: true);
       await tester.pump();
 
       expect(find.byIcon(Icons.headset_mic_rounded), findsNothing);
+      expect(find.byIcon(Icons.notifications_rounded), findsOneWidget);
     });
   });
 

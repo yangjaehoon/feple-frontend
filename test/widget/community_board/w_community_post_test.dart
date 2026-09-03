@@ -181,7 +181,7 @@ void main() {
       await tester.tap(find.byIcon(Icons.edit_rounded));
       await tester.pumpAndSettle();
 
-      expect(find.text('no_login_info'.tr()), findsOneWidget);
+      expect(find.text('login_required'.tr()), findsOneWidget);
     });
   });
 

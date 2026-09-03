@@ -8,6 +8,7 @@ import 'package:feple/common/widget/w_write_post.dart';
 import 'package:feple/common/constant/board_types.dart';
 import 'package:feple/common/app_events.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/login_gate.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/util/post_cursor_controller_listener.dart';
 import 'package:feple/common/util/write_post_submit_handler.dart';
@@ -25,9 +26,7 @@ import 'package:feple/screen/main/tab/my_page/s_other_user_profile.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/model/post_model.dart';
-import 'package:provider/provider.dart';
 
-import '../../../../provider/user_provider.dart';
 import 'package:feple/common/util/forced_refresh.dart';
 
 class CommunityPost extends StatefulWidget {
@@ -315,10 +314,7 @@ class _CommunityPostState extends State<CommunityPost>
         if (_showWriteButton)
           WritePostFab(
             onPressed: () async {
-              if (context.read<UserProvider>().currentUserId == null) {
-                context.showInfoSnackbar('no_login_info'.tr());
-                return;
-              }
+              if (!ensureLoggedIn(context)) return;
               await Navigator.push(
                 context,
                 SlideRoute(

@@ -125,7 +125,7 @@ void main() {
       await tester.tap(find.widgetWithText(LoadingButton, 'song_request_submit'.tr()));
       await tester.pump();
 
-      expect(find.text('no_login_info'.tr()), findsOneWidget);
+      expect(find.text('login_required'.tr()), findsOneWidget);
       verifyNever(() => mockService.submit(
             artistId: any(named: 'artistId'),
             songTitle: any(named: 'songTitle'),

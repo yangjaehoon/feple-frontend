@@ -1,11 +1,10 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/artist_page/artist_follow_notifier.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/login_gate.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../../../../common/app_events.dart';
 import 'image_collection/s_image_collection.dart';
 
@@ -47,11 +46,7 @@ class _ArtistFollowHeaderState extends State<ArtistFollowHeader>
   }
 
   Future<void> _toggleFollow() async {
-    final userId = context.read<UserProvider>().currentUserId;
-    if (userId == null) {
-      context.showInfoSnackbar('no_login_info'.tr());
-      return;
-    }
+    if (!ensureLoggedIn(context)) return;
     try {
       await widget.followNotifier.toggle();
       if (!mounted) return;

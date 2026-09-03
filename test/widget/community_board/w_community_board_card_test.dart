@@ -119,7 +119,7 @@ void main() {
       await tester.tap(find.text('write_post'.tr()));
       await tester.pump();
 
-      expect(find.text('no_login_info'.tr()), findsOneWidget);
+      expect(find.text('login_required'.tr()), findsOneWidget);
     });
 
     testWidgets('로그인한 상태로 글쓰기를 탭하면 글쓰기 화면으로 이동한다', (tester) async {

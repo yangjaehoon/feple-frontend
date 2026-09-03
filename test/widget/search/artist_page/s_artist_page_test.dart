@@ -243,7 +243,7 @@ void main() {
       await tester.tap(find.text('follow'.tr()));
       await tester.pump();
 
-      expect(find.text('no_login_info'.tr()), findsOneWidget);
+      expect(find.text('login_required'.tr()), findsOneWidget);
       verifyNever(() => mockFollowService.follow(any()));
     });
   });

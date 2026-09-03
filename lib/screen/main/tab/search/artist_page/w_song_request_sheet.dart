@@ -1,16 +1,15 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
+import 'package:feple/common/util/login_gate.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/util/url_validator.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/injection.dart';
-import 'package:feple/provider/user_provider.dart';
 import 'package:feple/service/song_request_service.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class SongRequestSheet extends StatefulWidget {
   final int artistId;
@@ -63,11 +62,7 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
 
   Future<void> _submit() async {
     if (_submitting) return;
-    final userId = context.read<UserProvider>().currentUserId;
-    if (userId == null) {
-      context.showInfoSnackbar('no_login_info'.tr());
-      return;
-    }
+    if (!ensureLoggedIn(context)) return;
     final title = _titleCtrl.text.trim();
     if (title.isEmpty) {
       setState(() => _titleError = 'song_request_title_required'.tr());

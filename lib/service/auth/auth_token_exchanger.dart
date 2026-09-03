@@ -50,6 +50,14 @@ class AuthTokenExchanger {
       if (respBody is Map<String, dynamic>) {
         debugPrint('[Auth] $providerLabel 서버 메시지: ${respBody['message']}');
       }
+      // 만 14세 미만으로 계정이 이미 파기된 사용자가 같은 계정으로 재로그인을
+      // 시도하는 경우 — submitBirthDate()와 동일하게 구체적인 예외로 변환해,
+      // 재로그인도 나이확인 최초 거부와 같은 안내 문구를 보여줄 수 있게 한다.
+      if (e.response?.statusCode == 403 &&
+          respBody is Map &&
+          respBody['code'] == 'AGE_RESTRICTED') {
+        throw AgeRestrictedException();
+      }
       throw AuthExchangeException(
         '$providerLabel: server exchange failed (${e.response?.statusCode ?? e.type.name})',
       );

@@ -410,6 +410,10 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
       } else {
         setState(() => _authError = msg);
       }
+    } on AgeRestrictedException {
+      // 만 14세 미만으로 계정이 이미 파기된 사용자의 재로그인 시도 — 최초
+      // 나이확인 거부와 동일한 안내 문구를 보여준다 (일반 로그인 실패와 구분).
+      if (mounted) setState(() => _authError = 'age_gate_restricted_message'.tr());
     } catch (e) {
       debugPrint('[Auth] 이메일 로그인 실패: $e');
       if (mounted) setState(() => _authError = 'login_failed'.tr());
@@ -447,6 +451,10 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     try {
       final user = await login();
       await _completeLogin(userProvider, user);
+    } on AgeRestrictedException {
+      // 만 14세 미만으로 계정이 이미 파기된 사용자의 재로그인 시도 — 최초
+      // 나이확인 거부와 동일한 안내 문구를 보여준다 (일반 로그인 실패와 구분).
+      if (mounted) setState(() => _authError = 'age_gate_restricted_message'.tr());
     } catch (e) {
       debugPrint('[Auth] $label 로그인 실패: $e');
       if (!isCanceled(e) && mounted) {

@@ -52,6 +52,19 @@ void main() {
         throwsA(isA<Exception>()),
       );
     });
+
+    test('403 AGE_RESTRICTED면 AgeRestrictedException을 던진다 (만 14세 미만 계정 재로그인)', () async {
+      server.enqueue(
+        httpCode: 403,
+        body: '{"code":"AGE_RESTRICTED","message":"restricted"}',
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      await expectLater(
+        exchanger.exchangeFirebaseToken('restricted-token'),
+        throwsA(isA<AgeRestrictedException>()),
+      );
+    });
   });
 
   group('AuthTokenExchanger.exchangeKakaoToken', () {

@@ -16,16 +16,19 @@ import 'package:feple/screen/main/tab/search/festival_information/w_ticket_link_
 import 'package:feple/screen/main/tab/search/festival_information/w_weather_bottom_sheet.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_detail_service.dart';
+import 'package:feple/provider/user_provider.dart';
 import 'package:feple/service/festival_interaction_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MockCertificationService extends Mock implements CertificationService {}
 class MockFestivalInteractionService extends Mock implements FestivalInteractionService {}
 class MockFestivalDetailService extends Mock implements FestivalDetailService {}
+class MockUserProvider extends Mock implements UserProvider {}
 
 // 날씨 시트가 sl<FestivalDetailService>() 없이 "너무 이른 조회" 분기를 타도록
 // 항상 현재 시각 기준으로 충분히 먼 미래 날짜를 기본값으로 쓴다 — 고정 날짜는
@@ -65,6 +68,7 @@ void main() {
   late MockCertificationService mockCertService;
   late MockFestivalInteractionService mockFestivalService;
   late MockFestivalDetailService mockDetailService;
+  late MockUserProvider mockUserProvider;
   final calendarCalls = <MethodCall>[];
 
   setUpAll(() async {
@@ -76,6 +80,8 @@ void main() {
     mockCertService = MockCertificationService();
     mockFestivalService = MockFestivalInteractionService();
     mockDetailService = MockFestivalDetailService();
+    mockUserProvider = MockUserProvider();
+    when(() => mockUserProvider.currentUserId).thenReturn(1);
     if (sl.isRegistered<CertificationService>()) {
       sl.unregister<CertificationService>();
     }
@@ -138,12 +144,15 @@ void main() {
         fallbackLocale: const Locale('ko'),
         path: 'assets/translations',
         useOnlyLangCode: true,
-        child: CustomThemeHolder(
-          theme: CustomTheme.light,
-          changeTheme: (_) {},
-          child: MaterialApp(
-            home: Scaffold(
-              body: SingleChildScrollView(child: FestivalPoster(poster: poster)),
+        child: ChangeNotifierProvider<UserProvider>.value(
+          value: mockUserProvider,
+          child: CustomThemeHolder(
+            theme: CustomTheme.light,
+            changeTheme: (_) {},
+            child: MaterialApp(
+              home: Scaffold(
+                body: SingleChildScrollView(child: FestivalPoster(poster: poster)),
+              ),
             ),
           ),
         ),
@@ -226,6 +235,19 @@ void main() {
 
       expect(find.byIcon(Icons.favorite_rounded), findsOneWidget);
     });
+
+    testWidgets('비로그인이면 좋아요 탭 시 로그인 안내를 띄우고 토글하지 않는다', (tester) async {
+      when(() => mockUserProvider.currentUserId).thenReturn(null);
+
+      await pump(tester, poster: _poster(id: 1));
+
+      await tester.tap(find.byIcon(Icons.favorite_border_rounded));
+      await tester.pump();
+
+      expect(find.text('login_required'.tr()), findsOneWidget);
+      expect(find.byIcon(Icons.favorite_rounded), findsNothing);
+      verifyNever(() => mockFestivalService.toggleLike(any()));
+    });
   });
 
   group('FestivalPoster 평점 뱃지', () {
@@ -275,6 +297,19 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.byType(CertificationBottomSheet), findsOneWidget);
+    });
+
+    testWidgets('비로그인이면 인증 탭 시 로그인 안내를 띄우고 시트를 열지 않는다', (tester) async {
+      when(() => mockUserProvider.currentUserId).thenReturn(null);
+
+      await pump(tester, poster: _poster(id: 1));
+
+      await tester.tap(find.text('action_cert'.tr()));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.text('login_required'.tr()), findsOneWidget);
+      expect(find.byType(CertificationBottomSheet), findsNothing);
     });
 
     testWidgets('승인된 인증이면 탭 시 이미 승인됐다는 안내를 보여준다', (tester) async {

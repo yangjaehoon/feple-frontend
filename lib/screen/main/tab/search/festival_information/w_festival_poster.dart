@@ -6,6 +6,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/util/calendar_helper.dart';
 import 'package:feple/common/util/kakao_map_launcher.dart';
+import 'package:feple/common/util/login_gate.dart';
 import 'package:feple/common/util/share_helper.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/constant/store_links.dart';
@@ -102,6 +103,12 @@ class FestivalPosterState extends State<FestivalPoster>
     fn();
   }
 
+  // 좋아요·참석 등 로그인이 필요한 토글 — 비로그인이면 로그인 안내 후 중단한다.
+  void _withLoginAndHaptic(VoidCallback fn) {
+    if (!ensureLoggedIn(context)) return;
+    _withHaptic(fn);
+  }
+
   // 포스터 이미지+정보를 합성한 카드 이미지와 앱 링크를 텍스트와 함께 공유한다.
   // 카드 생성이 실패해도(네트워크 오류 등) 텍스트+링크만으로는 공유되게 한다.
   Future<void> _shareFestival() async {
@@ -167,6 +174,7 @@ class FestivalPosterState extends State<FestivalPoster>
       _notifier.certState.bgColor(colors);
 
   Future<void> _submitCertification() async {
+    if (!ensureLoggedIn(context)) return;
     await showAppBottomSheet(
       context,
       builder: (ctx) => CertificationBottomSheet(
@@ -518,7 +526,7 @@ class FestivalPosterState extends State<FestivalPoster>
           ),
         ),
         GestureDetector(
-          onTap: () => _withHaptic(_notifier.toggleAttending),
+          onTap: () => _withLoginAndHaptic(_notifier.toggleAttending),
           child: AnimatedContainer(
             duration: AppDimens.animFast,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
@@ -581,7 +589,7 @@ class FestivalPosterState extends State<FestivalPoster>
       children: [
         Expanded(
           child: FestivalActionButton(
-            onTap: () => _withHaptic(_notifier.toggleLike),
+            onTap: () => _withLoginAndHaptic(_notifier.toggleLike),
             icon: _notifier.liked
                 ? Icons.favorite_rounded
                 : Icons.favorite_border_rounded,

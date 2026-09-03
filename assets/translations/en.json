@@ -124,6 +124,7 @@
   "enter_content": "Enter content",
   "enter_title_content": "Please enter both title and content.",
   "no_login_info": "No login information.",
+  "login_required": "Log in to use this feature.",
   "post_success": "Post registered successfully.",
   "post_failed": "Failed to register post.",
   "post_banned_word": "Profanity, hate speech, and slander are not allowed.",

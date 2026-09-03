@@ -5,7 +5,6 @@ import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_write_post.dart';
 import 'package:feple/model/post_model.dart';
-import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_preview_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_community_post.dart';
@@ -13,10 +12,10 @@ import 'package:feple/common/app_events.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/login_gate.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/util/write_post_submit_handler.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 /// 게시판 미리보기 카드 — 3개 게시판(인기/자유/동행)이 공유하는 공용 위젯
 class CommunityBoardCard extends StatefulWidget {
@@ -73,12 +72,7 @@ class CommunityBoardCardState extends State<CommunityBoardCard>
 
   Future<void> _handleWriteTap() async {
     if (!mounted) return;
-    final userProvider = context.read<UserProvider>();
-    final userId = userProvider.currentUserId;
-    if (userId == null) {
-      context.showInfoSnackbar('no_login_info'.tr());
-      return;
-    }
+    if (!ensureLoggedIn(context)) return;
     await Navigator.push(
       context,
       SlideRoute(

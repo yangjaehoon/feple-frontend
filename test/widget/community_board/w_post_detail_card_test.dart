@@ -278,7 +278,7 @@ void main() {
       await tester.tap(find.byIcon(Icons.send_rounded));
       await tester.pump();
 
-      expect(find.text('no_login_info'.tr()), findsOneWidget);
+      expect(find.text('login_required'.tr()), findsOneWidget);
     });
 
     testWidgets('로그인 상태로 댓글을 제출하면 submitComment가 호출된다', (tester) async {

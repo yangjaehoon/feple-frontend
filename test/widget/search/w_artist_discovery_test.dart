@@ -216,7 +216,7 @@ void main() {
       await tester.tap(find.text('artist_suggestion_banner'.tr()));
       await tester.pumpAndSettle();
 
-      expect(find.text('no_login_info'.tr()), findsOneWidget);
+      expect(find.text('login_required'.tr()), findsOneWidget);
     });
   });
 

@@ -6,6 +6,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/block_action_helper.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
+import 'package:feple/common/util/login_gate.dart';
 import 'package:feple/common/util/popup_menu_item_builder.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/widget/w_page_indicator_pill.dart';
@@ -388,8 +389,14 @@ class _PostDetailCardState extends State<PostDetailCard> {
               scraped: _notifier.scraped,
               scrapCount: _notifier.scrapCount,
             ),
-            onLikeTap: () => _notifier.toggleLike(userId),
-            onScrapTap: () => _notifier.toggleScrap(userId),
+            onLikeTap: () {
+              if (!ensureLoggedIn(context)) return;
+              _notifier.toggleLike(userId);
+            },
+            onScrapTap: () {
+              if (!ensureLoggedIn(context)) return;
+              _notifier.toggleScrap(userId);
+            },
           ),
           const SizedBox(height: AppDimens.space8),
           _buildViewCountRow(colors),
@@ -468,10 +475,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
         controller: _commentController,
         isSubmitting: state.isSubmitting,
         onSubmit: (anonymous) {
-          if (userId == null) {
-            context.showInfoSnackbar('no_login_info'.tr());
-            return;
-          }
+          if (!ensureLoggedIn(context)) return;
           _notifier.submitComment(
             _commentController.text.trim(),
             parentId: _replyToCommentId,

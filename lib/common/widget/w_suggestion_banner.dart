@@ -1,9 +1,8 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
-import 'package:feple/provider/user_provider.dart';
+import 'package:feple/common/util/login_gate.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 /// "새 항목 제안하기" 배너 — 아티스트/페스티벌 등 여러 탭에서 아이콘·문구·
 /// 열리는 바텀시트만 다르고 카드 모양/로그인 가드/시트 오픈 로직은 동일했던
@@ -26,11 +25,7 @@ class SuggestionBanner extends StatelessWidget {
 
   void _openSheet(BuildContext context) {
     if (ModalRoute.of(context)?.isCurrent != true) return;
-    final userId = context.read<UserProvider>().currentUserId;
-    if (userId == null) {
-      context.showInfoSnackbar('no_login_info'.tr());
-      return;
-    }
+    if (!ensureLoggedIn(context)) return;
     showAppBottomSheet(context, builder: sheetBuilder);
   }
 

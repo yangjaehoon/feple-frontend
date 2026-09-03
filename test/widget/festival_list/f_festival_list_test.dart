@@ -200,7 +200,7 @@ void main() {
       await tester.tap(find.text('festival_suggestion_banner'.tr()));
       await tester.pump();
 
-      expect(find.text('no_login_info'.tr()), findsOneWidget);
+      expect(find.text('login_required'.tr()), findsOneWidget);
     });
 
     testWidgets('로그인한 상태에서 탭하면 제안 바텀시트가 열린다', (tester) async {

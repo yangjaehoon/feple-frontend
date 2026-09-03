@@ -41,7 +41,11 @@ class _FepleAppBarState extends State<FepleAppBar> with NavigationGuard {
   @override
   void initState() {
     super.initState();
-    _countNotifier.load();
+    // 게스트(비로그인)에게 알림함은 계정 전용 기능이라 벨을 숨긴다(아래 build).
+    // 개수 조회(/notifications/unread-count)도 게스트에겐 401이므로 생략한다.
+    if (context.read<UserProvider>().user != null) {
+      _countNotifier.load();
+    }
   }
 
   Future<void> _openNotifications() async {
@@ -56,6 +60,7 @@ class _FepleAppBarState extends State<FepleAppBar> with NavigationGuard {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     final titleStyle = Theme.of(context).appBarTheme.titleTextStyle;
+    final isGuest = context.select<UserProvider, bool>((p) => p.user == null);
     return Container(
       width: double.infinity,
       height: AppDimens.appBarHeight,
@@ -69,10 +74,12 @@ class _FepleAppBarState extends State<FepleAppBar> with NavigationGuard {
           ...widget.extraTrailingActions,
           _buildSupportButton(context),
           _buildSearchButton(context),
-          ListenableBuilder(
-            listenable: _countNotifier,
-            builder: (_, _) => _buildNotificationButton(colors),
-          ),
+          // 알림함은 계정 전용 — 게스트에게는 벨을 숨긴다.
+          if (!isGuest)
+            ListenableBuilder(
+              listenable: _countNotifier,
+              builder: (_, _) => _buildNotificationButton(colors),
+            ),
         ],
       ),
     );

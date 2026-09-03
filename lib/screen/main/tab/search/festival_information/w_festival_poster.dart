@@ -16,8 +16,10 @@ import 'package:feple/service/festival_detail_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
 import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/common/util/responsive_size.dart';
+import 'package:feple/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import '../../../../../model/poster_cert_state.dart';
 import '../../../../../model/festival_model.dart';
 import 'festival_poster_notifier.dart';
@@ -53,6 +55,7 @@ class FestivalPosterState extends State<FestivalPoster>
       certService: sl<CertificationService>(),
       festivalService: sl<FestivalInteractionService>(),
       detailService: sl<FestivalDetailService>(),
+      isGuest: context.read<UserProvider>().currentUserId == null,
       onError: (key) {
         if (mounted) context.showErrorSnackbar(key.tr());
       },

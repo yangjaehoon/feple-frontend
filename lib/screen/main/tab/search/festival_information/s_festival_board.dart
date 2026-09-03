@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/post_cursor_controller.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/login_gate.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/util/post_cursor_controller_listener.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
@@ -11,15 +12,12 @@ import 'package:feple/common/widget/w_refreshable_center.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_write_post.dart';
 import 'package:feple/injection.dart';
-import 'package:feple/login/s_login.dart';
 import 'package:feple/model/post_model.dart';
-import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
 import 'package:feple/screen/main/tab/my_page/s_other_user_profile.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:feple/common/util/forced_refresh.dart';
 
 class FestivalBoardScreen extends StatefulWidget {
@@ -96,13 +94,9 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
   }
 
   Future<void> _openWrite(int index) async {
-    // 페스티벌 게시판은 게스트도 열람할 수 있으므로, 글쓰기는 로그인 화면으로 유도한다.
-    if (context.read<UserProvider>().currentUserId == null) {
-      await Navigator.of(context, rootNavigator: true).push(
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
-      return;
-    }
+    // 페스티벌 게시판은 게스트도 열람할 수 있으므로, 글쓰기는 로그인 안내
+    // (스낵바 + '로그인' 버튼)로 유도한다 — 앱 전역의 다른 계정 전용 액션과 동일.
+    if (!ensureLoggedIn(context)) return;
     final tab = _tabs[index];
     await Navigator.push(
       context,

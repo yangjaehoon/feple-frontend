@@ -135,6 +135,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
       postId: widget.id,
       initialLikeCount: widget.likeCount,
       initialViewCount: widget.viewCount,
+      isGuest: context.read<UserProvider>().currentUserId == null,
       onSuccess: (key) {
         _commentController.clear();
         _cancelReply();

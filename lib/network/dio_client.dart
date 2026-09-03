@@ -242,6 +242,19 @@ class _AuthAndSwrInterceptor extends Interceptor {
       return handler.next(error);
     }
 
+    // Authorization 헤더 없이 나간 요청의 401은 "이 엔드포인트는 인증이 필요"
+    // 라는 뜻일 뿐 세션 문제가 아니다. 저장된 리프레시 토큰도 없으면(= 비로그인
+    // 게스트/완전 로그아웃) 토큰 갱신·세션 만료 정리(onSessionExpired → 강제
+    // 로그아웃, API 캐시 삭제)를 태우지 않고 원래 401을 그대로 전파한다. 게스트
+    // 둘러보기 화면이 실수로 계정 전용 엔드포인트를 호출해도 캐시가 통째로
+    // 날아가지 않게 하는 방어선. (헤더는 없지만 리프레시 토큰은 있는 드문
+    // 경우엔 아래 정상 갱신 흐름으로 두어 세션 복구 기회를 남긴다.)
+    if (!error.requestOptions.headers.containsKey('Authorization')) {
+      final hasRefreshToken =
+          (await TokenStore.readRefreshToken())?.isNotEmpty ?? false;
+      if (!hasRefreshToken) return handler.next(error);
+    }
+
     // 이미 세션 만료 정리가 진행/완료된 상태면 재시도 없이 원래 에러를 전파
     if (DioClient._sessionExpiryInFlight != null) {
       return handler.next(error);

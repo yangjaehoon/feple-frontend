@@ -8,14 +8,27 @@ import 'package:feple/screen/main/tab/search/s_unified_search.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/navigation_guard.dart';
+import 'package:feple/provider/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class FepleAppBar extends StatefulWidget {
-  const FepleAppBar(this.appbarTitle, {super.key, this.showBackButton = false, this.extraTrailingActions = const []});
+  const FepleAppBar(
+    this.appbarTitle, {
+    super.key,
+    this.showBackButton = false,
+    this.showSupport = false,
+    this.extraTrailingActions = const [],
+  });
 
   final String appbarTitle;
   final bool showBackButton;
+
+  /// 비로그인 게스트가 앱 안에서 문의·신고 채널(카카오톡)에 닿을 수 있도록(Apple
+  /// 가이드라인 1.2) 고객센터 아이콘을 노출할지. 게스트가 처음 보는 메인 탭
+  /// (검색·페스티벌 목록)에서만 true — 로그인하면 아이콘이 사라진다(설정에 문의 링크 있음).
+  final bool showSupport;
   final List<Widget> extraTrailingActions;
 
   @override
@@ -103,16 +116,18 @@ class _FepleAppBarState extends State<FepleAppBar> with NavigationGuard {
     );
   }
 
-  // 게스트도 로그인 없이 문의·신고 채널에 닿을 수 있어야 해서(Apple 가이드라인
-  // 1.2), 로그인 화면·마이페이지에만 있던 카카오톡 문의 링크를 게스트가 바로
-  // 보는 앱바에도 노출한다.
   Future<void> _openSupport(BuildContext context) async {
     final uri = Uri.parse(kCustomerServiceUrl);
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!launched && context.mounted) context.showErrorSnackbar('link_open_failed'.tr());
   }
 
+  // showSupport가 켜진 메인 탭에서, 비로그인 게스트에게만 노출한다.
+  // 로그인 유저는 설정 화면에 문의 링크가 있으므로 앱바에서는 숨겨 정리한다.
   Widget _buildSupportButton(BuildContext context) {
+    if (!widget.showSupport) return const SizedBox.shrink();
+    final isGuest = context.select<UserProvider, bool>((p) => p.user == null);
+    if (!isGuest) return const SizedBox.shrink();
     return IconButton(
       tooltip: 'customer_service'.tr(),
       icon: Icon(Icons.headset_mic_rounded, color: context.appColors.appBarIconColor),

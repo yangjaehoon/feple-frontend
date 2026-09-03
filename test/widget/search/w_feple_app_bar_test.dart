@@ -2,6 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/model/user_model.dart';
+import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/w_feple_app_bar.dart';
 import 'package:feple/screen/notification/notification_count_notifier.dart';
 import 'package:feple/service/notification_countable.dart';
@@ -9,10 +11,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
 class MockNotificationCountable extends Mock implements NotificationCountable {}
+
+class MockUserProvider extends Mock implements UserProvider {}
 
 class FakeUrlLauncherPlatform extends Fake
     with MockPlatformInterfaceMixin
@@ -30,9 +35,12 @@ class FakeUrlLauncherPlatform extends Fake
 void main() {
   late MockNotificationCountable mockCountable;
   late FakeUrlLauncherPlatform fakeLauncher;
+  late MockUserProvider mockUserProvider;
 
   setUp(() {
     mockCountable = MockNotificationCountable();
+    mockUserProvider = MockUserProvider();
+    when(() => mockUserProvider.user).thenReturn(null);
     if (sl.isRegistered<NotificationCountable>()) {
       sl.unregister<NotificationCountable>();
     }
@@ -57,10 +65,15 @@ void main() {
   Future<void> pump(
     WidgetTester tester, {
     bool showBackButton = false,
+    bool showSupport = false,
+    bool loggedIn = false,
     List<Widget> extraTrailingActions = const [],
   }) async {
     SharedPreferences.setMockInitialValues({});
     await EasyLocalization.ensureInitialized();
+    when(() => mockUserProvider.user).thenReturn(
+      loggedIn ? AppUser(id: 1, nickname: '테스터') : null,
+    );
 
     await tester.pumpWidget(
       EasyLocalization(
@@ -69,15 +82,19 @@ void main() {
         fallbackLocale: const Locale('ko'),
         path: 'assets/translations',
         useOnlyLangCode: true,
-        child: CustomThemeHolder(
-          theme: CustomTheme.light,
-          changeTheme: (_) {},
-          child: MaterialApp(
-            home: Scaffold(
-              body: FepleAppBar(
-                '아티스트',
-                showBackButton: showBackButton,
-                extraTrailingActions: extraTrailingActions,
+        child: ChangeNotifierProvider<UserProvider>.value(
+          value: mockUserProvider,
+          child: CustomThemeHolder(
+            theme: CustomTheme.light,
+            changeTheme: (_) {},
+            child: MaterialApp(
+              home: Scaffold(
+                body: FepleAppBar(
+                  '아티스트',
+                  showBackButton: showBackButton,
+                  showSupport: showSupport,
+                  extraTrailingActions: extraTrailingActions,
+                ),
               ),
             ),
           ),
@@ -88,16 +105,16 @@ void main() {
   }
 
   group('FepleAppBar 렌더링', () {
-    testWidgets('타이틀과 문의/검색/알림 아이콘을 보여준다', (tester) async {
+    testWidgets('타이틀과 검색/알림 아이콘을 보여준다 (기본은 고객센터 아이콘 없음)', (tester) async {
       when(() => mockCountable.getUnreadCount()).thenAnswer((_) async => 0);
 
       await pump(tester);
       await tester.pump();
 
       expect(find.text('아티스트'), findsOneWidget);
-      expect(find.byIcon(Icons.headset_mic_rounded), findsOneWidget);
       expect(find.byIcon(Icons.search_rounded), findsOneWidget);
       expect(find.byIcon(Icons.notifications_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.headset_mic_rounded), findsNothing);
       expect(find.byIcon(Icons.arrow_back_ios_new_rounded), findsNothing);
     });
 
@@ -150,17 +167,30 @@ void main() {
   });
 
   group('FepleAppBar 문의하기', () {
-    // 로그인 화면·마이페이지에 못 들어간 게스트도 이 아이콘으로 카카오톡
-    // 문의 채널에 닿을 수 있어야 한다 (Apple 가이드라인 1.2).
-    testWidgets('문의 아이콘을 탭하면 카카오톡 문의 링크를 연다', (tester) async {
+    // 로그인 화면·설정에 못 들어간 게스트도 이 아이콘으로 카카오톡 문의 채널에
+    // 닿을 수 있어야 한다 (Apple 가이드라인 1.2). showSupport 켜진 메인 탭 +
+    // 비로그인일 때만 노출한다.
+    testWidgets('showSupport + 비로그인이면 문의 아이콘을 보여주고 탭 시 카카오톡 링크를 연다', (tester) async {
       when(() => mockCountable.getUnreadCount()).thenAnswer((_) async => 0);
 
-      await pump(tester);
+      await pump(tester, showSupport: true);
       await tester.pump();
+
+      expect(find.byIcon(Icons.headset_mic_rounded), findsOneWidget);
+
       await tester.tap(find.byIcon(Icons.headset_mic_rounded));
       await tester.pump();
 
       expect(fakeLauncher.launchedUrls, ['https://open.kakao.com/o/guLhbJki']);
+    });
+
+    testWidgets('showSupport여도 로그인 상태면 문의 아이콘을 숨긴다', (tester) async {
+      when(() => mockCountable.getUnreadCount()).thenAnswer((_) async => 0);
+
+      await pump(tester, showSupport: true, loggedIn: true);
+      await tester.pump();
+
+      expect(find.byIcon(Icons.headset_mic_rounded), findsNothing);
     });
   });
 

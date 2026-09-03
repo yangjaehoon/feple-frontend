@@ -70,7 +70,7 @@ dependencies:
 
   #ui - widget
   flutter_svg: ^2.0.17
-  cached_network_image: ^3.4.1
+  cached_network_image: ^4.0.0
   card_swiper: ^3.0.1
   linked_scroll_controller: ^0.2.0
 

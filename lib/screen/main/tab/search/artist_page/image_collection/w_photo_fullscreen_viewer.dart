@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collection/collection.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/login_gate.dart';
 import 'package:feple/model/artist_photo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -39,7 +40,10 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
 
   void _toggleUi() => setState(() => _uiVisible = !_uiVisible);
 
-  void _handleLike() => widget.notifier.toggleLike(widget.photoId);
+  void _handleLike() {
+    if (!ensureLoggedIn(context)) return;
+    widget.notifier.toggleLike(widget.photoId);
+  }
 
   void _handleDoubleTap(TapDownDetails details) {
     if (_transformController.value != Matrix4.identity()) {

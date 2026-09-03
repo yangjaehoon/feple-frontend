@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:feple/model/artist_photo.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
+import 'package:feple/common/util/login_gate.dart';
 import 'package:feple/common/util/popup_menu_item_builder.dart';
 import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
@@ -205,6 +206,11 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget>
     );
   }
 
+  void _likePhoto(int photoId) {
+    if (!ensureLoggedIn(context)) return;
+    _notifier.toggleLike(photoId);
+  }
+
   Widget _buildPhoto(
     ArtistPhoto photo,
     AbstractThemeColors colors,
@@ -212,7 +218,7 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget>
   ) {
     return GestureDetector(
       onTap: () => _openFullscreen(photo),
-      onDoubleTap: () => _notifier.toggleLike(photo.photoId),
+      onDoubleTap: () => _likePhoto(photo.photoId),
       child: ClipRRect(
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(16),
@@ -250,7 +256,7 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget>
       left: 6,
       bottom: 6,
       child: GestureDetector(
-        onTap: () => _notifier.toggleLike(photo.photoId),
+        onTap: () => _likePhoto(photo.photoId),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
           decoration: BoxDecoration(
@@ -402,6 +408,7 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget>
         } else if (value == 'delete') {
           _confirmAndDelete(photo.photoId);
         } else if (value == 'report') {
+          if (!ensureLoggedIn(context)) return;
           showReportSheet(
             context,
             titleKey: 'report_photo',

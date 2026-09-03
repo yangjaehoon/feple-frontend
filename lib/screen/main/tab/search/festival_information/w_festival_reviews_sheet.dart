@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
+import 'package:feple/common/util/login_gate.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_error_state.dart';
@@ -557,6 +558,7 @@ class _ReviewCardState extends State<_ReviewCard> {
 
   Future<void> _toggleLike() async {
     if (_isSubmitting) return;
+    if (!ensureLoggedIn(context)) return;
     unawaited(HapticFeedback.lightImpact());
     final wasLiked = _likedByMe;
     setState(() {

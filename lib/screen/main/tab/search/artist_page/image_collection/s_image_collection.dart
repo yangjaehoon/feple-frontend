@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/screen/main/tab/search/artist_page/image_collection/w_image_upload.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/login_gate.dart';
 import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/screen/main/tab/search/artist_page/image_collection/w_image_collection.dart';
@@ -59,6 +60,7 @@ class _ImageCollectionScreenState extends State<ImageCollectionScreen> {
       tooltip: 'photo_add'.tr(),
       backgroundColor: colors.activate,
       onPressed: () async {
+        if (!ensureLoggedIn(context)) return;
         final result = await Navigator.push(
           context,
           SlideRoute(

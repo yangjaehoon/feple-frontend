@@ -7,15 +7,19 @@ import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/model/festival_review.dart';
 import 'package:feple/model/festival_review_page.dart';
 import 'package:feple/model/poster_cert_state.dart';
+import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/festival_information/w_festival_reviews_sheet.dart';
 import 'package:feple/screen/main/tab/my_page/w_rating_sheet.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MockCertificationService extends Mock implements CertificationService {}
+
+class MockUserProvider extends Mock implements UserProvider {}
 
 /// 번역 키가 로드되지 않은 테스트 환경에서는 'reviews_edit_rating' 같은 원본
 /// 키 문자열이 그대로 렌더링되어 실제 번역 텍스트보다 훨씬 길어지고, 그 결과
@@ -65,9 +69,12 @@ FestivalReviewPage _page({
 
 void main() {
   late MockCertificationService mockService;
+  late MockUserProvider mockUserProvider;
 
   setUp(() {
     mockService = MockCertificationService();
+    mockUserProvider = MockUserProvider();
+    when(() => mockUserProvider.currentUserId).thenReturn(10);
   });
 
   Future<void> pump(
@@ -92,7 +99,9 @@ void main() {
         fallbackLocale: const Locale('ko'),
         path: 'assets/translations',
         useOnlyLangCode: true,
-        child: CustomThemeHolder(
+        child: ChangeNotifierProvider<UserProvider>.value(
+          value: mockUserProvider,
+          child: CustomThemeHolder(
           theme: CustomTheme.light,
           changeTheme: (_) {},
           child: MaterialApp(
@@ -117,6 +126,7 @@ void main() {
               ),
             ),
           ),
+        ),
         ),
       ),
     );

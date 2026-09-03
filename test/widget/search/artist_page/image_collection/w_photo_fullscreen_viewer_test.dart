@@ -3,15 +3,19 @@ import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_photo.dart';
+import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/artist_page/image_collection/artist_photo_notifier.dart';
 import 'package:feple/screen/main/tab/search/artist_page/image_collection/w_photo_fullscreen_viewer.dart';
 import 'package:feple/service/artist_photo_manageable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MockArtistPhotoManageable extends Mock implements ArtistPhotoManageable {}
+
+class MockUserProvider extends Mock implements UserProvider {}
 
 ArtistPhoto _photo({
   int id = 1,
@@ -37,9 +41,12 @@ ArtistPhoto _photo({
 void main() {
   late MockArtistPhotoManageable mockService;
   late ArtistPhotoNotifier notifier;
+  late MockUserProvider mockUserProvider;
 
   setUp(() {
     mockService = MockArtistPhotoManageable();
+    mockUserProvider = MockUserProvider();
+    when(() => mockUserProvider.currentUserId).thenReturn(10);
     if (sl.isRegistered<ArtistPhotoManageable>()) {
       sl.unregister<ArtistPhotoManageable>();
     }
@@ -64,12 +71,15 @@ void main() {
         fallbackLocale: const Locale('ko'),
         path: 'assets/translations',
         useOnlyLangCode: true,
-        child: CustomThemeHolder(
+        child: ChangeNotifierProvider<UserProvider>.value(
+          value: mockUserProvider,
+          child: CustomThemeHolder(
           theme: CustomTheme.light,
           changeTheme: (_) {},
           child: MaterialApp(
             home: PhotoFullscreenViewer(photoId: photoId, notifier: notifier),
           ),
+        ),
         ),
       ),
     );
@@ -160,6 +170,20 @@ void main() {
       await tester.pump();
 
       verify(() => mockService.toggleLike(1, 1)).called(1);
+    });
+
+    testWidgets('비로그인이면 좋아요 탭 시 로그인 안내를 띄우고 toggleLike를 호출하지 않는다', (tester) async {
+      when(() => mockUserProvider.currentUserId).thenReturn(null);
+      when(() => mockService.fetchPhotos(1)).thenAnswer((_) async => [_photo(isLiked: false)]);
+      await notifier.loadPhotos();
+
+      await pump(tester, photoId: 1);
+
+      await tester.tap(find.byIcon(Icons.favorite_border_rounded));
+      await tester.pump();
+
+      expect(find.text('login_required'.tr()), findsOneWidget);
+      verifyNever(() => mockService.toggleLike(any(), any()));
     });
 
     testWidgets('닫기 버튼을 탭하면 화면이 닫힌다', (tester) async {

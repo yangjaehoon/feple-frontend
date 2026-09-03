@@ -4,16 +4,20 @@ import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/festival_setlist_entry.dart';
 import 'package:feple/model/song_model.dart';
+import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/festival_information/s_festival_setlist_fullscreen.dart';
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
 class MockFestivalDetailService extends Mock implements FestivalDetailService {}
+
+class MockUserProvider extends Mock implements UserProvider {}
 
 class FakeUrlLauncherPlatform extends Fake
     with MockPlatformInterfaceMixin
@@ -50,9 +54,12 @@ FestivalSetlistEntry _entry({
 void main() {
   late MockFestivalDetailService mockService;
   late FakeUrlLauncherPlatform fakeLauncher;
+  late MockUserProvider mockUserProvider;
 
   setUp(() {
     mockService = MockFestivalDetailService();
+    mockUserProvider = MockUserProvider();
+    when(() => mockUserProvider.currentUserId).thenReturn(10);
     fakeLauncher = FakeUrlLauncherPlatform();
     UrlLauncherPlatform.instance = fakeLauncher;
     if (sl.isRegistered<FestivalDetailService>()) {
@@ -82,12 +89,15 @@ void main() {
         fallbackLocale: const Locale('ko'),
         path: 'assets/translations',
         useOnlyLangCode: true,
-        child: CustomThemeHolder(
+        child: ChangeNotifierProvider<UserProvider>.value(
+          value: mockUserProvider,
+          child: CustomThemeHolder(
           theme: CustomTheme.light,
           changeTheme: (_) {},
           child: const MaterialApp(
             home: FestivalSetlistFullscreenScreen(festivalId: 1),
           ),
+        ),
         ),
       ),
     );

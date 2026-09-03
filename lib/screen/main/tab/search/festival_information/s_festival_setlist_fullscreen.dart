@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/login_gate.dart';
 import 'package:feple/common/util/url_validator.dart';
 import 'package:feple/common/util/future_refreshable.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
@@ -52,6 +53,7 @@ class _FestivalSetlistFullscreenScreenState
   }
 
   Future<void> _openRequestSheet(FestivalSetlistEntry entry) async {
+    if (!ensureLoggedIn(context)) return;
     await showAppBottomSheet<void>(
       context,
       builder: (_) =>

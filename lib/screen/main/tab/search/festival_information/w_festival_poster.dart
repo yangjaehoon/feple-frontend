@@ -50,12 +50,14 @@ class FestivalPosterState extends State<FestivalPoster>
   @override
   void initState() {
     super.initState();
+    // UserProvider가 없는 컨텍스트(일부 위젯 테스트)에서는 게스트로 보지 않는다(기존 동작).
+    final userProvider = context.read<UserProvider?>();
     _notifier = FestivalPosterNotifier(
       poster: widget.poster,
       certService: sl<CertificationService>(),
       festivalService: sl<FestivalInteractionService>(),
       detailService: sl<FestivalDetailService>(),
-      isGuest: context.read<UserProvider>().currentUserId == null,
+      isGuest: userProvider != null && userProvider.currentUserId == null,
       onError: (key) {
         if (mounted) context.showErrorSnackbar(key.tr());
       },

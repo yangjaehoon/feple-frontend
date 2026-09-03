@@ -90,6 +90,21 @@ class ApiCacheStore {
     _prefs = null;
   }
 
+  /// 로그아웃 시 호출. 이 캐시는 URL만으로 키를 잡아 유저 구분이 없으므로,
+  /// 같은 기기에서 다른 계정으로 재로그인하면(회원탈퇴 후 재가입 포함)
+  /// 이전 계정의 인증·좋아요·팔로우 등 응답이 새 계정에 그대로 노출될 수
+  /// 있다 — 로그아웃 시점에 전부 비워 계정 간 데이터 유출을 막는다.
+  static Future<void> clearAll() async {
+    _mem.clear();
+    try {
+      final prefs = _prefs ?? await SharedPreferences.getInstance();
+      final keys = prefs.getKeys().where((k) => k.startsWith(_prefix)).toList();
+      for (final k in keys) {
+        await prefs.remove(k);
+      }
+    } catch (_) {}
+  }
+
   static Future<void> put(String url, dynamic data) async {
     final ts = DateTime.now().millisecondsSinceEpoch;
     _memPut(url, _Entry(data, ts));

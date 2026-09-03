@@ -360,4 +360,34 @@ void main() {
       expect(ApiCacheStore.getSync('http://api/posts/30'), isNotNull); // 유지
     });
   });
+
+  // ───────────────────────────────────────────────────
+  // E. clearAll — 로그아웃 시 계정 간 캐시 유출 방지
+  // ───────────────────────────────────────────────────
+  group('E. clearAll', () {
+    test('메모리와 SharedPreferences에 저장된 모든 캐시를 삭제한다', () async {
+      await ApiCacheStore.put('http://api/certifications/my', [{'status': 'APPROVED'}]);
+      await ApiCacheStore.put('http://api/festivals/1/liked', true);
+
+      await ApiCacheStore.clearAll();
+
+      expect(ApiCacheStore.getSync('http://api/certifications/my'), isNull);
+      expect(ApiCacheStore.getSync('http://api/festivals/1/liked'), isNull);
+
+      // SharedPreferences에서도 삭제됐는지 메모리 초기화 후 확인
+      ApiCacheStore.clearForTesting();
+      await ApiCacheStore.init();
+      expect(await ApiCacheStore.get('http://api/certifications/my'), isNull);
+    });
+
+    test('_prefs는 유지해 clearAll 이후에도 캐시를 계속 쓸 수 있다', () async {
+      await ApiCacheStore.put('http://api/festivals', ['이전 계정 데이터']);
+
+      await ApiCacheStore.clearAll();
+      // clearForTesting과 달리 _prefs를 null로 만들지 않으므로 재init 없이 바로 put 가능
+      await ApiCacheStore.put('http://api/festivals/new', ['새 계정 데이터']);
+
+      expect(ApiCacheStore.getSync('http://api/festivals/new'), isNotNull);
+    });
+  });
 }

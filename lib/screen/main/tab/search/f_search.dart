@@ -66,7 +66,7 @@ class _SearchFragmentState extends State<SearchFragment> {
       color: colors.backgroundMain,
       child: Column(
         children: [
-          const FepleAppBar('Feple', showSupport: true),
+          const FepleAppBar('Feple'),
           Expanded(
             child: AdaptiveRefreshView(
               onRefresh: _onRefresh,

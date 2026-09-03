@@ -124,7 +124,7 @@ class _FestivalListFragmentState extends State<FestivalListFragment> {
       color: colors.backgroundMain,
       child: Column(
         children: [
-          FepleAppBar('festival_schedule'.tr(), showSupport: true),
+          FepleAppBar('festival_schedule'.tr()),
           Expanded(
             child: _buildRefreshableScroll(
               colors,

@@ -39,6 +39,9 @@ class MainScreenState extends State<MainScreen>
 
   final _showBottomNav = ValueNotifier<bool>(true);
 
+  UserProvider? _userProvider;
+  bool _wasLoggedIn = false;
+
   int get _currentIndex => tabs.indexOf(_currentTab);
 
   // 게스트에게 홈 탭은 로그인 유도 화면이라 로고 탭·뒤로가기 복귀 지점으로
@@ -72,6 +75,31 @@ class MainScreenState extends State<MainScreen>
     );
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final provider = context.read<UserProvider>();
+    if (identical(provider, _userProvider)) return;
+    _userProvider?.removeListener(_handleAuthChanged);
+    _userProvider = provider;
+    _wasLoggedIn = provider.user != null;
+    provider.addListener(_handleAuthChanged);
+  }
+
+  // 로그아웃·세션 만료로 로그인 상태가 풀리면 각 탭의 중첩 Navigator 스택을
+  // 비운다. 로그인 여부와 무관하게 최상위 Consumer가 같은 App 위젯을 반환해
+  // 이 스택이 살아남으므로, 설정 등 계정 전용 화면이 RequireLoginGate의
+  // 로그인 유도 화면 위에 그대로 남는 것을 막는다.
+  void _handleAuthChanged() {
+    final isLoggedIn = _userProvider?.user != null;
+    final loggedOut = _wasLoggedIn && !isLoggedIn;
+    _wasLoggedIn = isLoggedIn;
+    if (!loggedOut || !mounted) return;
+    for (final key in navigatorKeys) {
+      popAllHistory(key);
+    }
+  }
+
   bool _handleScrollNotification(ScrollNotification notification) {
     if (notification.metrics.axis != Axis.vertical) return false;
     if (notification is ScrollUpdateNotification) {
@@ -96,6 +124,7 @@ class MainScreenState extends State<MainScreen>
 
   @override
   void dispose() {
+    _userProvider?.removeListener(_handleAuthChanged);
     _showBottomNav.dispose();
     super.dispose();
   }

@@ -131,10 +131,13 @@ class _PostDetailCardState extends State<PostDetailCard> {
     _content = widget.content;
     _imageUrls = widget.imageUrls;
     _updatedAt = widget.updatedAt;
+    // UserProvider가 없는 컨텍스트(일부 위젯 테스트)에서는 게스트로 보지 않는다(기존 동작).
+    final userProvider = context.read<UserProvider?>();
     _notifier = PostDetailNotifier(
       postId: widget.id,
       initialLikeCount: widget.likeCount,
       initialViewCount: widget.viewCount,
+      isGuest: userProvider != null && userProvider.currentUserId == null,
       onSuccess: (key) {
         _commentController.clear();
         _cancelReply();

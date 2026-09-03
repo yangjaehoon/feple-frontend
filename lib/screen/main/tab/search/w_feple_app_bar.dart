@@ -41,7 +41,13 @@ class _FepleAppBarState extends State<FepleAppBar> with NavigationGuard {
   @override
   void initState() {
     super.initState();
-    _countNotifier.load();
+    // 게스트(비로그인)에게 알림함은 계정 전용 기능이라 벨을 숨긴다(아래 build).
+    // 개수 조회(/notifications/unread-count)도 게스트에겐 401이므로 생략한다.
+    // UserProvider가 없는 컨텍스트(일부 위젯 테스트)는 기존 동작 유지 — 조회한다.
+    final userProvider = context.read<UserProvider?>();
+    if (userProvider == null || userProvider.user != null) {
+      _countNotifier.load();
+    }
   }
 
   Future<void> _openNotifications() async {
@@ -56,6 +62,9 @@ class _FepleAppBarState extends State<FepleAppBar> with NavigationGuard {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     final titleStyle = Theme.of(context).appBarTheme.titleTextStyle;
+    // UserProvider가 없는 컨텍스트(일부 위젯 테스트)에서는 게스트로 보지 않는다(기존 동작).
+    final isGuest =
+        context.select<UserProvider?, bool>((p) => p != null && p.user == null);
     return Container(
       width: double.infinity,
       height: AppDimens.appBarHeight,
@@ -69,10 +78,12 @@ class _FepleAppBarState extends State<FepleAppBar> with NavigationGuard {
           ...widget.extraTrailingActions,
           _buildSupportButton(context),
           _buildSearchButton(context),
-          ListenableBuilder(
-            listenable: _countNotifier,
-            builder: (_, _) => _buildNotificationButton(colors),
-          ),
+          // 알림함은 계정 전용 — 게스트에게는 벨을 숨긴다.
+          if (!isGuest)
+            ListenableBuilder(
+              listenable: _countNotifier,
+              builder: (_, _) => _buildNotificationButton(colors),
+            ),
         ],
       ),
     );
@@ -126,7 +137,9 @@ class _FepleAppBarState extends State<FepleAppBar> with NavigationGuard {
   // 로그인 유저는 설정 화면에 문의 링크가 있으므로 앱바에서는 숨겨 정리한다.
   Widget _buildSupportButton(BuildContext context) {
     if (!widget.showSupport) return const SizedBox.shrink();
-    final isGuest = context.select<UserProvider, bool>((p) => p.user == null);
+    // UserProvider가 없는 컨텍스트(일부 위젯 테스트)에서는 게스트로 보지 않는다(기존 동작).
+    final isGuest =
+        context.select<UserProvider?, bool>((p) => p != null && p.user == null);
     if (!isGuest) return const SizedBox.shrink();
     return IconButton(
       tooltip: 'customer_service'.tr(),

@@ -85,21 +85,27 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
 
   String get _descPrefKey => 'festival_desc_expanded_$festivalId';
 
+  // 비로그인 게스트 여부. 좋아요·참석·내 인증 상태는 계정이 있어야 의미가
+  // 있으므로 게스트면 init()에서 해당 조회를 건너뛴다 (별점 요약·예매 링크·
+  // 설명 펼침 상태는 비계정 정보라 그대로 로드).
+  final bool isGuest;
+
   FestivalPosterNotifier({
     required this.poster,
     required this.certService,
     required this.festivalService,
     required this.detailService,
+    this.isGuest = false,
     this.onError,
   }) : attendingCount = poster.attendingCount;
 
   Future<void> init() async {
     hasInitError = false;
     await Future.wait([
-      loadLikeState(),
-      loadAttendingState(),
+      if (!isGuest) loadLikeState(),
+      if (!isGuest) loadAttendingState(),
       loadDescState(),
-      loadMyCertificationStatus(),
+      if (!isGuest) loadMyCertificationStatus(),
       loadRatingInfo(),
       loadTicketLinks(),
     ]);

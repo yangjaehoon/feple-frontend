@@ -105,10 +105,10 @@ void main() {
   }
 
   group('FepleAppBar 렌더링', () {
-    testWidgets('타이틀과 검색/알림 아이콘을 보여준다 (기본은 고객센터 아이콘 없음)', (tester) async {
+    testWidgets('로그인 상태: 타이틀과 검색/알림 아이콘을 보여준다 (기본은 고객센터 아이콘 없음)', (tester) async {
       when(() => mockCountable.getUnreadCount()).thenAnswer((_) async => 0);
 
-      await pump(tester);
+      await pump(tester, loggedIn: true);
       await tester.pump();
 
       expect(find.text('아티스트'), findsOneWidget);
@@ -116,6 +116,15 @@ void main() {
       expect(find.byIcon(Icons.notifications_rounded), findsOneWidget);
       expect(find.byIcon(Icons.headset_mic_rounded), findsNothing);
       expect(find.byIcon(Icons.arrow_back_ios_new_rounded), findsNothing);
+    });
+
+    testWidgets('비로그인 게스트: 알림 벨을 숨기고 개수 조회도 하지 않는다', (tester) async {
+      await pump(tester);
+      await tester.pump();
+
+      expect(find.byIcon(Icons.search_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.notifications_rounded), findsNothing);
+      verifyNever(() => mockCountable.getUnreadCount());
     });
 
     testWidgets('showBackButton이 true면 뒤로가기 아이콘을 보여준다', (tester) async {
@@ -137,11 +146,11 @@ void main() {
     });
   });
 
-  group('FepleAppBar 알림 배지', () {
+  group('FepleAppBar 알림 배지 (로그인 상태)', () {
     testWidgets('읽지 않은 알림이 없으면 배지를 보여주지 않는다', (tester) async {
       when(() => mockCountable.getUnreadCount()).thenAnswer((_) async => 0);
 
-      await pump(tester);
+      await pump(tester, loggedIn: true);
       await tester.pump();
 
       expect(find.text('0'), findsNothing);
@@ -150,7 +159,7 @@ void main() {
     testWidgets('읽지 않은 알림이 있으면 개수를 보여준다', (tester) async {
       when(() => mockCountable.getUnreadCount()).thenAnswer((_) async => 3);
 
-      await pump(tester);
+      await pump(tester, loggedIn: true);
       await tester.pump();
 
       expect(find.text('3'), findsOneWidget);
@@ -159,7 +168,7 @@ void main() {
     testWidgets('99개를 초과하면 99+로 보여준다', (tester) async {
       when(() => mockCountable.getUnreadCount()).thenAnswer((_) async => 150);
 
-      await pump(tester);
+      await pump(tester, loggedIn: true);
       await tester.pump();
 
       expect(find.text('99+'), findsOneWidget);

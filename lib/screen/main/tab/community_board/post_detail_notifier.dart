@@ -84,10 +84,16 @@ class PostDetailNotifier extends SafeChangeNotifier {
   final void Function(String)? onError;
   final void Function()? onPostDeleted;
 
+  // 비로그인 게스트 여부. 좋아요·스크랩 여부 조회와 조회수 증가(POST, 인증
+  // 필수)는 계정이 있어야 의미가 있으므로 게스트면 생략한다. 글 본문·댓글·
+  // 좋아요/스크랩 "개수"는 비계정 정보라 그대로 로드한다.
+  final bool isGuest;
+
   PostDetailNotifier({
     required this.postId,
     required int initialLikeCount,
     required int initialViewCount,
+    this.isGuest = false,
     this.onSuccess,
     this.onError,
     this.onPostDeleted,
@@ -122,6 +128,8 @@ class PostDetailNotifier extends SafeChangeNotifier {
   }
 
   Future<void> _incrementView() async {
+    // 조회수 증가는 인증 필수 엔드포인트 — 게스트는 호출도, 낙관적 증가도 하지 않는다.
+    if (isGuest) return;
     viewCount++;
     safeNotify();
     try {
@@ -133,11 +141,14 @@ class PostDetailNotifier extends SafeChangeNotifier {
 
   Future<bool> loadPostState() async {
     try {
-      final (counts, isLiked, isScraped) = await (
-        _postService.fetchCounts(postId),
-        _postService.isLiked(postId),
-        _scrapService.isScraped(postId),
-      ).wait;
+      // 개수는 공개 정보라 항상 조회. 좋아요·스크랩 "여부"는 게스트에겐 의미가
+      // 없어 건너뛰고 false로 둔다 (병렬 구조는 유지해 로그인 사용자 지연 없음).
+      final countsF = _postService.fetchCounts(postId);
+      final likedF =
+          isGuest ? Future<bool>.value(false) : _postService.isLiked(postId);
+      final scrapedF =
+          isGuest ? Future<bool>.value(false) : _scrapService.isScraped(postId);
+      final (counts, isLiked, isScraped) = await (countsF, likedF, scrapedF).wait;
       liked = isLiked;
       scraped = isScraped;
       likeCount = counts.likeCount;

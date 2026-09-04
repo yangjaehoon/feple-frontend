@@ -60,8 +60,8 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
     // logout()은 각 정리 단계를 내부에서 개별적으로 try/catch하므로 예외를 던지지 않는다.
     await userProvider.logout();
     // logout() → MainScreen이 각 탭의 중첩 Navigator 스택을 비워 게스트 화면
-    // (홈·커뮤니티는 RequireLoginGate 유도 화면, 마이페이지는 게스트 뷰)을
-    // 노출한다. 여기서는 rootNavigator에 남은 extra 라우트
+    // (홈은 RequireLoginGate 유도 화면, 커뮤니티는 읽기 전용 게시판, 마이페이지는
+    // 게스트 뷰)을 노출한다. 여기서는 rootNavigator에 남은 extra 라우트
     // (rootNavigator:true로 push된 것들)만 정리한다.
     rootNav.popUntil((route) => route.isFirst);
   }

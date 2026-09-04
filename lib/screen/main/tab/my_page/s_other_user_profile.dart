@@ -1,39 +1,29 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
-import 'package:feple/common/constant/app_assets.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/util/login_gate.dart';
-import 'package:feple/common/util/navigate_after_fetch.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_refreshable_center.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
-import 'package:feple/common/widget/w_level_badge.dart';
 import 'package:feple/common/widget/w_report_sheet.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
-import 'package:feple/common/widget/w_surface_card.dart';
-import 'package:feple/common/widget/w_tap_loading_indicator.dart';
-import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/certification_model.dart';
 import 'package:feple/model/user_model.dart';
-import 'package:feple/screen/main/tab/my_page/cert_status_style.dart';
-import 'package:feple/screen/main/tab/my_page/w_certification_ring.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_posts.dart';
-import 'package:feple/screen/main/tab/my_page/w_profile_avatar_ring.dart';
+import 'package:feple/screen/main/tab/my_page/w_other_user_certifications.dart';
+import 'package:feple/screen/main/tab/my_page/w_other_user_link_card.dart';
+import 'package:feple/screen/main/tab/my_page/w_other_user_profile_header.dart';
 import 'package:feple/screen/main/tab/my_page/w_user_diary_feed_sheet.dart';
-import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/service/block_service.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_diary_service.dart';
-import 'package:feple/service/festival_service.dart';
 import 'package:feple/service/report_service.dart';
 import 'package:feple/service/user_activity_service.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:feple/common/util/block_action_helper.dart';
-import 'package:feple/common/util/responsive_size.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -60,7 +50,6 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
   final _userService = sl<UserService>();
   final _activityService = sl<UserActivityService>();
   final _certService = sl<CertificationService>();
-  final _festivalService = sl<FestivalService>();
   final _blockService = sl<BlockService>();
   final _diaryService = sl<FestivalDiaryService>();
   final _reportService = sl<ReportService>();
@@ -71,8 +60,6 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
   bool _hasError = false;
   bool _isBlocked = false;
   bool _isBlockLoading = false;
-  // 인증 카드 탭 → fetchById → 화면 전환까지 아무 피드백 없이 멈춰 보이는 걸 방지
-  int? _navigatingFestivalId;
 
   @override
   void initState() {
@@ -242,341 +229,60 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
   }
 
   Widget _buildBody(AbstractThemeColors colors) {
+    final nickname = _user?.nickname ?? widget.nickname;
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
       child: Column(
         children: [
-          _buildProfileHeader(colors),
+          OtherUserProfileHeader(
+            user: _user,
+            fallbackNickname: widget.nickname,
+            fallbackImageUrl: widget.profileImageUrl,
+          ),
           const SizedBox(height: AppDimens.space8),
-          _buildPostsCard(colors),
-          const SizedBox(height: AppDimens.space8),
-          _buildDiaryCard(colors),
-          const SizedBox(height: AppDimens.space16),
-          _buildCertificationSection(colors),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProfileHeader(AbstractThemeColors colors) {
-    final imageUrl = _user?.profileImageUrl ?? widget.profileImageUrl;
-    final nickname = _user?.nickname ?? widget.nickname;
-    final level = _user?.level;
-    final bio = _user?.bio;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
-      child: Column(
-        children: [
-          _buildProfileImage(imageUrl, nickname, colors),
-          const SizedBox(height: AppDimens.space16),
-          _user == null
-              ? SkeletonBox(width: 120, height: AppDimens.fontSizeDisplay + 4,
-                  borderRadius: BorderRadius.circular(AppDimens.radiusXs))
-              : Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        nickname,
-                        style: TextStyle(
-                          fontSize: AppDimens.fontSizeDisplay,
-                          fontWeight: FontWeight.w800,
-                          color: colors.textTitle,
-                          letterSpacing: -0.5,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+          OtherUserLinkCard(
+            icon: Icons.article_rounded,
+            label: 'posts'.tr(),
+            trailing: _postCount == null
+                ? SkeletonBox(
+                    width: 28,
+                    height: 20,
+                    borderRadius: BorderRadius.circular(AppDimens.radiusXs))
+                : Text(
+                    _postCount!.toDisplayCount(context.locale.languageCode),
+                    style: TextStyle(
+                      fontSize: AppDimens.fontSizeXl,
+                      fontWeight: FontWeight.w800,
+                      color: colors.textTitle,
                     ),
-                    const SizedBox(width: AppDimens.space6),
-                    LevelBadge(authorLevel: level, fontSize: 22),
-                  ],
-                ),
-          if (bio != null && bio.isNotEmpty) ...[
-            const SizedBox(height: AppDimens.space8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                bio,
-                style: TextStyle(
-                  fontSize: AppDimens.fontSizeSm,
-                  color: colors.textSecondary,
-                  height: 1.4,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProfileImage(String? imageUrl, String nickname, AbstractThemeColors colors) {
-    final validImageUrl = isCustomAvatarUrl(imageUrl) ? imageUrl : null;
-    final avatarSize = ResponsiveSize(context).w(110);
-    return ProfileAvatarRing(
-      size: avatarSize,
-      child: validImageUrl != null
-          ? CircleAvatar(
-              radius: (avatarSize - 12) / 2,
-              backgroundImage: CachedNetworkImageProvider(validImageUrl, maxWidth: 144),
-              backgroundColor: colors.backgroundMain,
-            )
-          : CircleAvatar(
-              radius: (avatarSize - 12) / 2,
-              backgroundColor: colors.activate,
-              child: Text(
-                nickname.isNotEmpty ? nickname[0] : '?',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 32,
-                ),
-              ),
-            ),
-    );
-  }
-
-  Widget _buildPostsCard(AbstractThemeColors colors) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: TapScale(
-        onTap: () {
-          final nickname = _user?.nickname ?? widget.nickname;
-          guardedNavigate(() => Navigator.push(
-            context,
-            SlideRoute(
-              builder: (_) => MyPostsView(
-                userId: widget.userId,
-                title: 'user_posts'.tr(args: [nickname]),
-              ),
-            ),
-          ));
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-            border: Border.all(color: colors.listDivider),
-            boxShadow: CardShadows.subtle(colors),
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.article_rounded, color: colors.activate, size: 22),
-              const SizedBox(width: AppDimens.space12),
-              Text(
-                'posts'.tr(),
-                style: TextStyle(
-                  fontSize: AppDimens.fontSizeMd,
-                  fontWeight: FontWeight.w600,
-                  color: colors.textTitle,
-                ),
-              ),
-              const Spacer(),
-              _postCount == null
-                  ? SkeletonBox(width: 28, height: 20,
-                      borderRadius: BorderRadius.circular(AppDimens.radiusXs))
-                  : Text(
-                      _postCount!.toDisplayCount(context.locale.languageCode),
-                      style: TextStyle(
-                        fontSize: AppDimens.fontSizeXl,
-                        fontWeight: FontWeight.w800,
-                        color: colors.textTitle,
-                      ),
-                    ),
-              const SizedBox(width: AppDimens.space8),
-              Icon(Icons.chevron_right_rounded, color: colors.textSecondary, size: 20),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-  Widget _buildDiaryCard(AbstractThemeColors colors) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: TapScale(
-        onTap: () {
-          final nickname = _user?.nickname ?? widget.nickname;
-          showAppBottomSheet(
-            context,
-            builder: (_) => UserDiaryFeedSheet(
-              userId: widget.userId,
-              nickname: nickname,
-              diaryService: _diaryService,
-            ),
-          );
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-            border: Border.all(color: colors.listDivider),
-            boxShadow: CardShadows.subtle(colors),
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.menu_book_outlined, color: colors.activate, size: 22),
-              const SizedBox(width: AppDimens.space12),
-              Text(
-                'festival_diary'.tr(),
-                style: TextStyle(
-                  fontSize: AppDimens.fontSizeMd,
-                  fontWeight: FontWeight.w600,
-                  color: colors.textTitle,
-                ),
-              ),
-              const Spacer(),
-              Icon(Icons.chevron_right_rounded, color: colors.textSecondary, size: 20),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCertificationSection(AbstractThemeColors colors) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
-            children: [
-              Icon(Icons.verified_rounded, color: colors.activate, size: 18),
-              const SizedBox(width: AppDimens.space6),
-              Text(
-                'certification_badge'.tr(),
-                style: TextStyle(
-                  fontSize: AppDimens.fontSizeMd,
-                  fontWeight: FontWeight.w700,
-                  color: colors.textTitle,
-                ),
-              ),
-              if (_certifications != null) ...[
-                const SizedBox(width: AppDimens.space6),
-                Text(
-                  '${_certifications!.length}',
-                  style: TextStyle(
-                    fontSize: AppDimens.fontSizeSm,
-                    fontWeight: FontWeight.w600,
-                    color: colors.textSecondary,
                   ),
-                ),
-              ],
-            ],
+            onTap: () => guardedNavigate(() => Navigator.push(
+                  context,
+                  SlideRoute(
+                    builder: (_) => MyPostsView(
+                      userId: widget.userId,
+                      title: 'user_posts'.tr(args: [nickname]),
+                    ),
+                  ),
+                )),
           ),
-        ),
-        const SizedBox(height: AppDimens.space12),
-        SizedBox(
-          height: ResponsiveSize(context).w(150),
-          child: _certifications == null
-              ? _buildCertSkeleton()
-              : _certifications!.isEmpty
-                  ? _buildCertEmpty(colors)
-                  : _buildCertList(colors),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCertSkeleton() {
-    return ListView.builder(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      itemCount: 3,
-      itemBuilder: (_, _) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: const [
-            SkeletonBox(width: 98, height: 98, borderRadius: BorderRadius.all(Radius.circular(49))),
-            SizedBox(height: AppDimens.space6),
-            SkeletonBox(width: 72, height: 11),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCertEmpty(AbstractThemeColors colors) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.workspace_premium_outlined, size: 32, color: colors.activate.withValues(alpha: 0.4)),
           const SizedBox(height: AppDimens.space8),
-          Text(
-            'no_certification'.tr(),
-            style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCertList(AbstractThemeColors colors) {
-    return ListView.builder(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      itemCount: _certifications!.length,
-      itemBuilder: (_, i) => _buildCertItem(_certifications![i], colors),
-    );
-  }
-
-  Future<void> _navigateToFestival(int festivalId) async {
-    if (_navigatingFestivalId != null) return;
-    await navigateAfterFetch(
-      context,
-      fetch: () => _festivalService.fetchById(festivalId),
-      builder: (festival) => FestivalInformationFragment(poster: festival),
-      setLoading: (v) {
-        if (mounted) {
-          setState(() => _navigatingFestivalId = v ? festivalId : null);
-        }
-      },
-      errorTag: 'OtherUserProfile',
-      awaitNavigation: false,
-    );
-  }
-
-  Widget _buildCertItem(CertificationModel cert, AbstractThemeColors colors) {
-    final isEnglish = context.isEnglish;
-    final ringColor = CertStatus.approved.displayColor(colors);
-    final isLoading = _navigatingFestivalId == cert.festivalId;
-    return TapScale(
-      onTap: isLoading ? null : () => _navigateToFestival(cert.festivalId),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CertificationRing(
-              imageUrl: cert.posterUrl,
-              ringColor: ringColor,
-              overlay: isLoading ? const TapLoadingIndicator() : null,
-            ),
-            const SizedBox(height: AppDimens.space6),
-            SizedBox(
-              width: ResponsiveSize(context).w(106),
-              child: Text(
-                cert.displayFestivalTitle(isEnglish),
-                style: TextStyle(fontSize: AppDimens.fontSizeXxs, fontWeight: FontWeight.w600, color: colors.textTitle),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
+          OtherUserLinkCard(
+            icon: Icons.menu_book_outlined,
+            label: 'festival_diary'.tr(),
+            onTap: () => showAppBottomSheet(
+              context,
+              builder: (_) => UserDiaryFeedSheet(
+                userId: widget.userId,
+                nickname: nickname,
+                diaryService: _diaryService,
               ),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: AppDimens.space16),
+          OtherUserCertifications(certifications: _certifications),
+        ],
       ),
     );
   }

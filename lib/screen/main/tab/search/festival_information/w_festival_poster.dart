@@ -1,7 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:feple/common/widget/w_skeleton_box.dart';
-import 'package:feple/common/widget/w_star_rating_row.dart';
-import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/util/calendar_helper.dart';
@@ -15,17 +12,16 @@ import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
 import 'package:feple/common/util/refresh_coordinator.dart';
-import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import '../../../../../model/poster_cert_state.dart';
 import '../../../../../model/festival_model.dart';
 import 'festival_poster_notifier.dart';
-import 'festival_poster_style.dart';
 import 'w_certification_bottom_sheet.dart';
-import 'w_festival_action_button.dart';
+import 'w_festival_action_buttons_row.dart';
+import 'w_festival_description.dart';
+import 'w_festival_poster_info.dart';
 import 'w_festival_reviews_sheet.dart';
 import 'w_festival_share_card.dart';
 import 'w_ticket_link_sheet.dart';
@@ -160,24 +156,6 @@ class FestivalPosterState extends State<FestivalPoster>
   void _showTicketLinks() =>
       _openSheet(TicketLinkSheet(links: _notifier.ticketLinks));
 
-  VoidCallback? _certButtonTap() => switch (_notifier.certState) {
-    PosterCertState.certified => () => context.showInfoSnackbar(
-      'cert_already_approved'.tr(),
-    ),
-    PosterCertState.pending => () => context.showInfoSnackbar(
-      'cert_pending_notice'.tr(),
-    ),
-    PosterCertState.none => _submitCertification,
-  };
-
-  IconData _certButtonIcon() => _notifier.certState.icon;
-
-  Color _certButtonColor(AbstractThemeColors colors) =>
-      _notifier.certState.color(colors);
-
-  Color? _certButtonBgColor(AbstractThemeColors colors) =>
-      _notifier.certState.bgColor(colors);
-
   Future<void> _submitCertification() async {
     if (!ensureLoggedIn(context)) return;
     await showAppBottomSheet(
@@ -214,20 +192,40 @@ class FestivalPosterState extends State<FestivalPoster>
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _buildInfoRow(colors),
+                    FestivalPosterInfo(
+                      notifier: _notifier,
+                      heroTag: widget.heroTag,
+                      onKakaoMap: _openKakaoMap,
+                      onToggleAttending: () =>
+                          _withLoginAndHaptic(_notifier.toggleAttending),
+                      onShowReviews: _showReviews,
+                    ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                       child: ListenableBuilder(
                         listenable: _notifier.actionButtonsChanges,
-                        builder: (_, _) => _buildActionButtons(colors),
+                        builder: (_, _) => FestivalActionButtonsRow(
+                          liked: _notifier.liked,
+                          isSharing: _isSharing,
+                          certState: _notifier.certState,
+                          ticketLinks: _notifier.ticketLinks,
+                          onToggleLike: () =>
+                              _withLoginAndHaptic(_notifier.toggleLike),
+                          onShare: _shareFestival,
+                          onWeather: _showWeather,
+                          onCalendar: _addToCalendar,
+                          onTicketLinks: _showTicketLinks,
+                          onSubmitCert: _submitCertification,
+                        ),
                       ),
                     ),
                     if (hasDescription)
                       ListenableBuilder(
                         listenable: _notifier,
-                        builder: (_, _) => Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: _buildDescriptionSection(colors),
+                        builder: (_, _) => FestivalDescriptionSection(
+                          description: _notifier.poster.description,
+                          expanded: _notifier.descExpanded,
+                          onToggle: _notifier.toggleDesc,
                         ),
                       ),
                     if (!hasDescription) const SizedBox(height: AppDimens.space8),
@@ -264,79 +262,6 @@ class FestivalPosterState extends State<FestivalPoster>
     ),
   ];
 
-  Widget _buildInfoRow(AbstractThemeColors colors) {
-    // 2:3 비율(120x180 기준) 유지하며 화면 너비에 비례 — SingleChildScrollView
-    // 안이라 오버플로우 위험 없이 캡 없는 ResponsiveSize 사용 가능.
-    final posterWidth = ResponsiveSize(context).w(120);
-    final posterHeight = posterWidth * 1.5;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildPosterThumbnail(colors, posterWidth, posterHeight),
-          const SizedBox(width: AppDimens.space16),
-          Expanded(child: _buildInfoColumn(colors)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRatingBadge() {
-    if (!_notifier.ratingLoaded) return const SizedBox.shrink();
-    if (_notifier.ratingLoadFailed) return const SizedBox.shrink();
-
-    final hasRating = _notifier.ratingCount > 0;
-    final label = hasRating
-        ? 'rating_average_label'.tr(
-            args: [
-              _notifier.averageRating.toStringAsFixed(1),
-              _notifier.ratingCount.toString(),
-            ],
-          )
-        : 'reviews_no_reviews'.tr();
-    final content = hasRating
-        ? Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              StarRatingRow(rating: _notifier.averageRating, size: 18),
-              const SizedBox(width: AppDimens.space4),
-              Text(
-                '(${_notifier.ratingCount})',
-                style: TextStyle(
-                  fontSize: AppDimens.fontSizeXxs,
-                  color: Colors.white.withValues(alpha: 0.65),
-                ),
-              ),
-            ],
-          )
-        : Row(
-            mainAxisSize: MainAxisSize.min,
-            children: List.generate(
-              5,
-              (_) => const Icon(
-                Icons.star_outline_rounded,
-                color: Colors.white60,
-                size: 18,
-              ),
-            ),
-          );
-
-    return Semantics(
-      button: true,
-      label: label,
-      child: GestureDetector(
-        onTap: _showReviews,
-        // 별 아이콘/텍스트만큼만 히트 영역이 생기면 최소 터치 타겟보다 작아져
-        // 탭하기 어려우므로 세로로 최소 44dp를 확보한다.
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: AppDimens.minTouchTarget),
-          child: Align(alignment: Alignment.centerLeft, child: content),
-        ),
-      ),
-    );
-  }
-
   void _showReviews() {
     if (_isSheetOpen) return;
     _isSheetOpen = true;
@@ -359,382 +284,5 @@ class FestivalPosterState extends State<FestivalPoster>
         _notifier.loadRatingInfo();
       }
     });
-  }
-
-  Widget _buildPosterThumbnail(AbstractThemeColors colors, double width, double height) {
-    final child = Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-        boxShadow: CardShadows.elevated(colors),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppDimens.cardRadiusSmall),
-        child: CachedNetworkImage(
-          imageUrl: _notifier.poster.posterUrl,
-          memCacheWidth: 300,
-          fit: BoxFit.cover,
-          placeholder: (context, url) =>
-              const SkeletonBox(height: double.infinity),
-          errorWidget: (_, _, _) => Container(
-            color: colors.surface,
-            child: Icon(
-              Icons.broken_image_rounded,
-              size: 32,
-              color: colors.textSecondary.withValues(alpha: 0.4),
-            ),
-          ),
-        ),
-      ),
-    );
-    if (widget.heroTag == null) return child;
-    return Hero(tag: widget.heroTag!, child: child);
-  }
-
-  Widget _buildInfoColumn(AbstractThemeColors colors) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: AppDimens.space4),
-        Text(
-          _notifier.poster.displayTitle(context.isEnglish),
-          softWrap: true,
-          style: const TextStyle(
-            fontSize: AppDimens.fontSizeTitle,
-            fontWeight: FontWeight.w800,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(height: AppDimens.space8),
-        _buildTagRow(),
-        const SizedBox(height: AppDimens.space8),
-        _buildPosterInfoRow(
-          icon: Icons.calendar_today_rounded,
-          color: colors.accentColor,
-          child: Text(
-            _notifier.poster.endDate.isNotEmpty
-                ? '${_notifier.poster.startDate} ~ ${_notifier.poster.endDate}'
-                : _notifier.poster.startDate,
-            style: const TextStyle(
-              fontSize: AppDimens.fontSizeMd,
-              color: Colors.white,
-            ),
-          ),
-        ),
-        const SizedBox(height: AppDimens.space6),
-        GestureDetector(
-          onTap: _openKakaoMap,
-          child: _buildPosterInfoRow(
-            icon: Icons.location_on_rounded,
-            color: colors.accentColor,
-            child: Text(
-              _notifier.poster.location,
-              softWrap: true,
-              style: const TextStyle(
-                fontSize: AppDimens.fontSizeMd,
-                color: Colors.white,
-                decoration: TextDecoration.underline,
-                decorationColor: Colors.white70,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: AppDimens.space8),
-        _buildInfoColumnBottom(colors),
-      ],
-    );
-  }
-
-  // attending row를 attendingChanges로 개별 구독 — 참석 토글이 다른 정보까지
-  // 리빌드시키지 않게 함. 초기화 에러는 여러 로더가 공통으로 건드리므로 전체
-  // notifier 구독 유지(자주 발생하지 않고 위젯도 가벼움). 평점 배지는 원래
-  // 포스터 썸네일 아래(왼쪽 칸)에 있었는데, 참석예정 바로 아래로 옮겨왔다.
-  Widget _buildInfoColumnBottom(AbstractThemeColors colors) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ListenableBuilder(
-          listenable: _notifier.attendingChanges,
-          builder: (_, _) => _buildAttendingRow(colors),
-        ),
-        ListenableBuilder(
-          listenable: _notifier,
-          builder: (_, _) => _notifier.hasInitError
-              ? Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: _buildInitErrorRow(),
-                )
-              : const SizedBox.shrink(),
-        ),
-        const SizedBox(height: AppDimens.space6),
-        ListenableBuilder(
-          listenable: _notifier,
-          builder: (_, _) => _buildRatingBadge(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPosterInfoRow({
-    required IconData icon,
-    required Color color,
-    required Widget child,
-  }) {
-    return Row(
-      children: [
-        Icon(icon, color: color, size: 15),
-        const SizedBox(width: AppDimens.space6),
-        Expanded(child: child),
-      ],
-    );
-  }
-
-  Widget _buildTagRow() {
-    final tags = <Widget>[];
-
-    for (final genre in _notifier.poster.genres) {
-      final key = genreI18nKey(genre);
-      if (key == null) continue;
-      tags.add(_Tag(label: key.tr()));
-    }
-
-    final age = _notifier.poster.ageRestriction;
-    if (age != null && age != 'NONE') {
-      final key = ageI18nKey(age);
-      if (key != null) {
-        tags.add(_Tag(label: key.tr(), color: ageDisplayColor(age)));
-      }
-    }
-
-    if (tags.isEmpty) return const SizedBox.shrink();
-    return Wrap(spacing: 6, runSpacing: 4, children: tags);
-  }
-
-  Widget _buildAttendingRow(AbstractThemeColors colors) {
-    final count = _notifier.attendingCount;
-    final isAttending = _notifier.attending;
-    return Row(
-      children: [
-        Icon(Icons.people_outline_rounded, color: colors.accentColor, size: 14),
-        const SizedBox(width: 5),
-        Expanded(
-          child: Text(
-            count > 0
-                ? 'attending_count'.tr(args: ['$count'])
-                : 'attend_none'.tr(),
-            style: const TextStyle(
-              fontSize: AppDimens.fontSizeSm,
-              color: Colors.white70,
-            ),
-          ),
-        ),
-        GestureDetector(
-          onTap: () => _withLoginAndHaptic(_notifier.toggleAttending),
-          child: AnimatedContainer(
-            duration: AppDimens.animFast,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-            decoration: BoxDecoration(
-              color: isAttending
-                  ? colors.accentColor.withValues(alpha: 0.85)
-                  : Colors.white.withValues(alpha: 0.18),
-              borderRadius: BorderRadius.circular(AppDimens.cardRadius),
-              border: Border.all(
-                color: isAttending
-                    ? colors.accentColor
-                    : Colors.white.withValues(alpha: 0.45),
-                width: 1,
-              ),
-            ),
-            child: Text(
-              'attend_toggle'.tr(),
-              style: TextStyle(
-                fontSize: AppDimens.fontSizeXs,
-                fontWeight: FontWeight.w600,
-                color: isAttending ? Colors.white : Colors.white70,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildInitErrorRow() {
-    return GestureDetector(
-      onTap: _notifier.retryInit,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(
-            Icons.sync_problem_rounded,
-            size: 13,
-            color: Colors.white54,
-          ),
-          const SizedBox(width: AppDimens.space4),
-          Text(
-            'retry'.tr(),
-            style: const TextStyle(
-              fontSize: AppDimens.fontSizeXxs,
-              color: Colors.white54,
-              decoration: TextDecoration.underline,
-              decorationColor: Colors.white38,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionButtons(AbstractThemeColors colors) {
-    final hasTicketLinks = _notifier.ticketLinks.isNotEmpty;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Expanded(
-          child: FestivalActionButton(
-            onTap: () => _withLoginAndHaptic(_notifier.toggleLike),
-            icon: _notifier.liked
-                ? Icons.favorite_rounded
-                : Icons.favorite_border_rounded,
-            color: _notifier.liked ? colors.likeActiveColor : Colors.white,
-            bgColor: _notifier.liked
-                ? colors.likeActiveColor.withValues(alpha: 0.35)
-                : Colors.white.withValues(alpha: 0.15),
-            label: 'action_like'.tr(),
-          ),
-        ),
-        Expanded(
-          child: FestivalActionButton(
-            onTap: _shareFestival,
-            icon: Icons.share_outlined,
-            label: 'action_share'.tr(),
-            isLoading: _isSharing,
-          ),
-        ),
-        Expanded(
-          child: FestivalActionButton(
-            onTap: _showWeather,
-            icon: Icons.cloud_outlined,
-            label: 'action_weather'.tr(),
-          ),
-        ),
-        Expanded(
-          child: FestivalActionButton(
-            onTap: _addToCalendar,
-            icon: Icons.event_available_rounded,
-            label: 'action_calendar'.tr(),
-          ),
-        ),
-        Expanded(
-          child: FestivalActionButton(
-            onTap: _certButtonTap(),
-            icon: _certButtonIcon(),
-            color: _certButtonColor(colors),
-            bgColor: _certButtonBgColor(colors),
-            label: 'action_cert'.tr(),
-          ),
-        ),
-        if (hasTicketLinks)
-          Expanded(
-            child: FestivalActionButton(
-              onTap: _showTicketLinks,
-              icon: Icons.confirmation_number_outlined,
-              label: 'action_ticket'.tr(),
-            ),
-          ),
-      ],
-    );
-  }
-
-  List<Widget> _buildDescriptionSection(AbstractThemeColors colors) => [
-    Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Divider(height: 1, color: Colors.white.withValues(alpha: 0.15)),
-    ),
-    GestureDetector(
-      onTap: _notifier.toggleDesc,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 10, 16, 4),
-        child: Row(
-          children: [
-            Icon(
-              Icons.info_outline_rounded,
-              color: Colors.white.withValues(alpha: 0.7),
-              size: 16,
-            ),
-            const SizedBox(width: AppDimens.space6),
-            Text(
-              'festival_info'.tr(),
-              style: TextStyle(
-                fontSize: AppDimens.fontSizeSm,
-                fontWeight: FontWeight.w600,
-                color: Colors.white.withValues(alpha: 0.7),
-              ),
-            ),
-            const Spacer(),
-            Icon(
-              _notifier.descExpanded
-                  ? Icons.keyboard_arrow_up_rounded
-                  : Icons.keyboard_arrow_down_rounded,
-              color: Colors.white.withValues(alpha: 0.5),
-              size: 22,
-            ),
-          ],
-        ),
-      ),
-    ),
-    // 접기 애니메이션: Text는 항상 full-width로 레이아웃되고(리플로우 없음),
-    // ClipRect + AnimatedAlign(heightFactor)가 높이만 1→0으로 줄여 위로 밀어 올린다.
-    // (예전엔 AnimatedCrossFade의 secondChild 너비를 full-width로 맞춰 회피했는데,
-    //  두 child가 같은 너비를 보고해야만 동작하는 취약한 방식이었다.)
-    ClipRect(
-      child: AnimatedAlign(
-        alignment: Alignment.topLeft,
-        heightFactor: _notifier.descExpanded ? 1.0 : 0.0,
-        duration: AppDimens.animFast,
-        curve: Curves.easeInOut,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 4, 20, 4),
-          child: Text(
-            _notifier.poster.description,
-            style: TextStyle(
-              fontSize: AppDimens.fontSizeMd,
-              height: 1.6,
-              color: Colors.white.withValues(alpha: 0.85),
-            ),
-          ),
-        ),
-      ),
-    ),
-    const SizedBox(height: AppDimens.space10),
-  ];
-}
-
-class _Tag extends StatelessWidget {
-  final String label;
-  final Color color;
-
-  const _Tag({required this.label, this.color = Colors.white});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.18),
-        borderRadius: BorderRadius.circular(AppDimens.cardRadius),
-        border: Border.all(color: color.withValues(alpha: 0.5), width: 0.8),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: AppDimens.fontSizeXxs,
-          fontWeight: FontWeight.w600,
-          color: color,
-        ),
-      ),
-    );
   }
 }

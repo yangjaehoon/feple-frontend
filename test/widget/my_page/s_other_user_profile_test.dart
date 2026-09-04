@@ -12,6 +12,7 @@ import 'package:feple/model/user_model.dart';
 import 'package:feple/model/user_stats_model.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/my_page/s_other_user_profile.dart';
+import 'package:feple/screen/main/tab/my_page/user_profile_navigation.dart';
 import 'package:feple/service/block_service.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_diary_service.dart';

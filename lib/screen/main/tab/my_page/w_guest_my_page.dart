@@ -59,6 +59,7 @@ class _LoginPromptCard extends StatelessWidget {
       ),
       child: const GuestLoginPrompt(
         icon: Icons.person_outline_rounded,
+        titleKey: 'guest_login_title_mypage',
         messageKey: 'guest_login_required_mypage',
       ),
     );

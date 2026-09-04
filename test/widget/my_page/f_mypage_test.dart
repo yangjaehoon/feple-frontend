@@ -10,6 +10,7 @@ import 'package:feple/model/user_model.dart';
 import 'package:feple/model/user_stats_model.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/my_page/f_mypage.dart';
+import 'package:feple/screen/main/tab/my_page/w_guest_my_page.dart';
 import 'package:feple/screen/main/tab/my_page/w_festival_certification.dart';
 import 'package:feple/screen/main/tab/my_page/w_festival_diary.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_post_comment.dart';
@@ -197,12 +198,21 @@ void main() {
     return provider;
   }
 
-  group('MyPageFragment 로딩', () {
-    testWidgets('로그인 유저 정보가 없으면 로딩 스피너를 보여준다', (tester) async {
+  group('MyPageFragment 게스트', () {
+    testWidgets('비로그인이면 로그인 유도 카드와 공지/문의/약관/방침 항목을 보여준다', (tester) async {
       await pump(tester, withUser: false);
+      await tester.pump();
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.byType(GuestMyPageView), findsOneWidget);
       expect(find.byType(ProfileWidget), findsNothing);
+      // 공지·고객센터·이용약관·개인정보처리방침 (아이콘으로 검증 — 번역 로드 타이밍 무관)
+      expect(find.byIcon(Icons.campaign_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.headset_mic_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.description_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.privacy_tip_rounded), findsOneWidget);
+      expect(find.byType(FilledButton), findsOneWidget); // 로그인 유도 카드의 버튼
+      // 게스트에겐 설정(계정 전용) 버튼을 숨긴다
+      expect(find.byIcon(Icons.settings_rounded), findsNothing);
     });
   });
 

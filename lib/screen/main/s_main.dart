@@ -47,7 +47,7 @@ class MainScreenState extends State<MainScreen>
   // 게스트에게 홈 탭은 로그인 유도 화면이라 로고 탭·뒤로가기 복귀 지점으로
   // 부적절함 — 비계정 탭인 페스티벌 목록으로 대신 보낸다. 로그인 상태는 탭
   // 전환 시점마다 새로 확인해, 게스트로 시작했다가 화면 안에서 로그인해도
-  // (RequireLoginGate 경유) 곧바로 홈으로 정확히 돌아간다.
+  // (게이트나 상단바 로그인 버튼 경유) 곧바로 홈으로 정확히 돌아간다.
   TabItem get _landingTab =>
       Provider.of<UserProvider>(context, listen: false).user == null
           ? TabItem.festivalList

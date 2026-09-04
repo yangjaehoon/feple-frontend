@@ -69,8 +69,9 @@ class _BoardPostListState extends State<BoardPostList>
     return WritePostFab(
       onPressed: () async {
         // 아티스트 게시판 등 게스트도 열람할 수 있는 경로로 재사용되므로
-        // 글쓰기는 로그인 안내로 유도한다 (커뮤니티 탭은 이미 게이트로 막힘).
-        if (!ensureLoggedIn(context)) return;
+        // 글쓰기는 로그인 화면으로 유도한다.
+        if (!await ensureLoggedIn(context)) return;
+        if (!mounted) return;
         await Navigator.push(
           context,
           SlideRoute(

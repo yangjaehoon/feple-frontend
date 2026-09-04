@@ -60,7 +60,8 @@ class _ImageCollectionScreenState extends State<ImageCollectionScreen> {
       tooltip: 'photo_add'.tr(),
       backgroundColor: colors.activate,
       onPressed: () async {
-        if (!ensureLoggedIn(context)) return;
+        if (!await ensureLoggedIn(context)) return;
+        if (!mounted) return;
         final result = await Navigator.push(
           context,
           SlideRoute(

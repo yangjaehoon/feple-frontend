@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/login/s_login.dart';
 import 'package:feple/model/artist_photo.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/artist_page/image_collection/artist_photo_notifier.dart';
@@ -172,7 +173,7 @@ void main() {
       verify(() => mockService.toggleLike(1, 1)).called(1);
     });
 
-    testWidgets('비로그인이면 좋아요 탭 시 로그인 안내를 띄우고 toggleLike를 호출하지 않는다', (tester) async {
+    testWidgets('비로그인이면 좋아요 탭 시 로그인 화면으로 이동하고 toggleLike를 호출하지 않는다', (tester) async {
       when(() => mockUserProvider.currentUserId).thenReturn(null);
       when(() => mockService.fetchPhotos(1)).thenAnswer((_) async => [_photo(isLiked: false)]);
       await notifier.loadPhotos();
@@ -180,9 +181,9 @@ void main() {
       await pump(tester, photoId: 1);
 
       await tester.tap(find.byIcon(Icons.favorite_border_rounded));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
-      expect(find.text('login_required'.tr()), findsOneWidget);
+      expect(find.byType(LoginScreen), findsOneWidget);
       verifyNever(() => mockService.toggleLike(any(), any()));
     });
 

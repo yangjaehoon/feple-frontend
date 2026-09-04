@@ -72,7 +72,8 @@ class CommunityBoardCardState extends State<CommunityBoardCard>
 
   Future<void> _handleWriteTap() async {
     if (!mounted) return;
-    if (!ensureLoggedIn(context)) return;
+    if (!await ensureLoggedIn(context)) return;
+    if (!mounted) return;
     await Navigator.push(
       context,
       SlideRoute(

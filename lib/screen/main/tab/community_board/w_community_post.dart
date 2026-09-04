@@ -314,7 +314,8 @@ class _CommunityPostState extends State<CommunityPost>
         if (_showWriteButton)
           WritePostFab(
             onPressed: () async {
-              if (!ensureLoggedIn(context)) return;
+              if (!await ensureLoggedIn(context)) return;
+              if (!mounted) return;
               await Navigator.push(
                 context,
                 SlideRoute(

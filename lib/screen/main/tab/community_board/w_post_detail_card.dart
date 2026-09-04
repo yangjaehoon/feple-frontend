@@ -192,7 +192,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
       case 'delete':
         await _onDeletePost();
       case 'report':
-        _onReportPost();
+        await _onReportPost();
       case 'block':
         await _onBlockUser();
       case 'share':
@@ -265,21 +265,23 @@ class _PostDetailCardState extends State<PostDetailCard> {
     if (confirmed) await _notifier.deletePost();
   }
 
-  void _onReportPost() {
-    if (!ensureLoggedIn(context)) return;
-    showReportSheet(
+  Future<void> _onReportPost() async {
+    if (!await ensureLoggedIn(context)) return;
+    if (!mounted) return;
+    unawaited(showReportSheet(
       context,
       titleKey: 'report_post',
       onSubmit: (reason, detail) =>
           _reportService.submitReport(widget.id, reason, detail: detail),
       duplicateErrorKey: 'report_duplicate',
-    );
+    ));
   }
 
   Future<void> _onBlockUser() async {
     final authorId = widget.postUserId;
     if (authorId == null) return;
-    if (!ensureLoggedIn(context)) return;
+    if (!await ensureLoggedIn(context)) return;
+    if (!mounted) return;
     final success = await confirmAndToggleBlock(
       context,
       blockService: _blockService,
@@ -348,13 +350,16 @@ class _PostDetailCardState extends State<PostDetailCard> {
               scraped: _notifier.scraped,
               scrapCount: _notifier.scrapCount,
             ),
-            onLikeTap: () {
-              if (!ensureLoggedIn(context)) return;
-              _notifier.toggleLike(userId);
+            onLikeTap: () async {
+              if (!await ensureLoggedIn(context)) return;
+              if (!mounted) return;
+              // 로그인 성공 직후엔 userId가 null이었을 수 있으므로 최신값을 다시 읽는다.
+              unawaited(_notifier.toggleLike(context.read<UserProvider>().currentUserId));
             },
-            onScrapTap: () {
-              if (!ensureLoggedIn(context)) return;
-              _notifier.toggleScrap(userId);
+            onScrapTap: () async {
+              if (!await ensureLoggedIn(context)) return;
+              if (!mounted) return;
+              unawaited(_notifier.toggleScrap(context.read<UserProvider>().currentUserId));
             },
           ),
           const SizedBox(height: AppDimens.space8),
@@ -373,9 +378,10 @@ class _PostDetailCardState extends State<PostDetailCard> {
         rootComments: _notifier.rootComments,
         repliesMap: _notifier.repliesMap,
         currentUserId: userId,
-        onReport: (commentId) {
-          if (!ensureLoggedIn(context)) return;
-          showReportSheet(
+        onReport: (commentId) async {
+          if (!await ensureLoggedIn(context)) return;
+          if (!mounted) return;
+          unawaited(showReportSheet(
             context,
             titleKey: 'report_comment',
             onSubmit: (reason, detail) => _reportService.submitCommentReport(
@@ -384,12 +390,17 @@ class _PostDetailCardState extends State<PostDetailCard> {
               detail: detail,
             ),
             duplicateErrorKey: 'report_comment_duplicate',
-          );
+          ));
         },
         onReply: _setReplyTo,
-        onToggleLike: (commentId) {
-          if (!ensureLoggedIn(context)) return Future.value(false);
-          return _notifier.toggleCommentLike(commentId, userId);
+        onToggleLike: (commentId) async {
+          if (!await ensureLoggedIn(context)) return false;
+          if (!mounted) return false;
+          // 로그인 성공 직후엔 userId가 null이었을 수 있으므로 최신값을 다시 읽는다.
+          return _notifier.toggleCommentLike(
+            commentId,
+            context.read<UserProvider>().currentUserId,
+          );
         },
         onDeleteComment: (commentId) => _notifier.deleteComment(commentId),
         onEditComment: (commentId, currentContent) async {
@@ -438,13 +449,14 @@ class _PostDetailCardState extends State<PostDetailCard> {
       builder: (_, state, _) => CommentInputBar(
         controller: _commentController,
         isSubmitting: state.isSubmitting,
-        onSubmit: (anonymous) {
-          if (!ensureLoggedIn(context)) return;
-          _notifier.submitComment(
+        onSubmit: (anonymous) async {
+          if (!await ensureLoggedIn(context)) return;
+          if (!mounted) return;
+          unawaited(_notifier.submitComment(
             _commentController.text.trim(),
             parentId: _replyToCommentId,
             anonymous: anonymous,
-          );
+          ));
         },
         errorText: state.commentError?.tr(),
         replyToNickname: _replyToNickname,

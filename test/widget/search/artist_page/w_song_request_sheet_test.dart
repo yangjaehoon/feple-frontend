@@ -5,6 +5,7 @@ import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/login/s_login.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_song_request_sheet.dart';
 import 'package:feple/service/song_request_service.dart';
@@ -114,7 +115,7 @@ void main() {
       expect(find.text('song_request_invalid_url'.tr()), findsOneWidget);
     });
 
-    testWidgets('로그인 정보가 없으면 안내 스낵바를 보여주고 제출하지 않는다', (tester) async {
+    testWidgets('로그인 정보가 없으면 로그인 화면으로 이동하고 제출하지 않는다', (tester) async {
       when(() => mockUserProvider.currentUserId).thenReturn(null);
       await pump(tester);
 
@@ -123,9 +124,9 @@ void main() {
         '노래 제목',
       );
       await tester.tap(find.widgetWithText(LoadingButton, 'song_request_submit'.tr()));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
-      expect(find.text('login_required'.tr()), findsOneWidget);
+      expect(find.byType(LoginScreen), findsOneWidget);
       verifyNever(() => mockService.submit(
             artistId: any(named: 'artistId'),
             songTitle: any(named: 'songTitle'),

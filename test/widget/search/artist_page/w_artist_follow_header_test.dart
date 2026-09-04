@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
+import 'package:feple/login/s_login.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/artist_page/artist_follow_notifier.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_artist_follow_header.dart';
@@ -83,14 +84,14 @@ void main() {
   });
 
   group('ArtistFollowHeader 팔로우 토글', () {
-    testWidgets('로그인 정보가 없으면 안내 스낵바를 보여주고 toggle을 호출하지 않는다', (tester) async {
+    testWidgets('로그인 정보가 없으면 로그인 화면으로 이동하고 toggle을 호출하지 않는다', (tester) async {
       when(() => mockUserProvider.currentUserId).thenReturn(null);
       await pump(tester);
 
       await tester.tap(find.text('follow'.tr()));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
-      expect(find.text('login_required'.tr()), findsOneWidget);
+      expect(find.byType(LoginScreen), findsOneWidget);
       verifyNever(() => mockNotifier.toggle());
     });
 

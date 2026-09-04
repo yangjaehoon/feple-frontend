@@ -23,10 +23,11 @@ class SuggestionBanner extends StatelessWidget {
     required this.sheetBuilder,
   });
 
-  void _openSheet(BuildContext context) {
+  Future<void> _openSheet(BuildContext context) async {
     if (ModalRoute.of(context)?.isCurrent != true) return;
-    if (!ensureLoggedIn(context)) return;
-    showAppBottomSheet(context, builder: sheetBuilder);
+    if (!await ensureLoggedIn(context)) return;
+    if (!context.mounted) return;
+    unawaited(showAppBottomSheet(context, builder: sheetBuilder));
   }
 
   @override

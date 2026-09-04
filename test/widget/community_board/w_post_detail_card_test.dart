@@ -3,6 +3,7 @@ import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/common/widget/w_write_post.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/login/s_login.dart';
 import 'package:feple/model/comment_detail.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
@@ -268,7 +269,7 @@ void main() {
   });
 
   group('PostDetailCard 댓글', () {
-    testWidgets('로그인하지 않고 댓글을 제출하면 안내 스낵바를 보여준다', (tester) async {
+    testWidgets('로그인하지 않고 댓글을 제출하면 로그인 화면으로 이동한다', (tester) async {
       when(() => mockUserProvider.currentUserId).thenReturn(null);
 
       await pump(tester);
@@ -276,9 +277,9 @@ void main() {
 
       await tester.enterText(find.byType(TextField), '댓글');
       await tester.tap(find.byIcon(Icons.send_rounded));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
-      expect(find.text('login_required'.tr()), findsOneWidget);
+      expect(find.byType(LoginScreen), findsOneWidget);
     });
 
     testWidgets('로그인 상태로 댓글을 제출하면 submitComment가 호출된다', (tester) async {

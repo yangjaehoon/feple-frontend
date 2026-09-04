@@ -5,6 +5,7 @@ import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/login/s_login.dart';
 import 'package:feple/model/blocked_user_model.dart';
 import 'package:feple/model/certification_model.dart';
 import 'package:feple/model/festival_diary_page.dart';
@@ -334,14 +335,14 @@ void main() {
       await tester.pump();
     }
 
-    testWidgets('비로그인이면 프로필로 이동하지 않고 로그인 안내를 띄운다', (tester) async {
+    testWidgets('비로그인이면 프로필로 이동하지 않고 로그인 화면을 띄운다', (tester) async {
       await pumpTapper(tester, currentUserId: null);
 
       await tester.tap(find.text('tap'));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.byType(OtherUserProfileScreen), findsNothing);
-      expect(find.text('login_required'.tr()), findsOneWidget);
+      expect(find.byType(LoginScreen), findsOneWidget);
     });
 
     testWidgets('로그인 상태면 타인 프로필로 이동한다', (tester) async {

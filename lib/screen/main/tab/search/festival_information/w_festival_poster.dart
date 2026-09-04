@@ -104,9 +104,11 @@ class FestivalPosterState extends State<FestivalPoster>
     fn();
   }
 
-  // 좋아요·참석 등 로그인이 필요한 토글 — 비로그인이면 로그인 안내 후 중단한다.
-  void _withLoginAndHaptic(VoidCallback fn) {
-    if (!ensureLoggedIn(context)) return;
+  // 좋아요·참석 등 로그인이 필요한 토글 — 비로그인이면 로그인 화면으로 유도하고,
+  // 로그인에 성공하면 원래 누르려던 토글을 곧바로 실행한다.
+  Future<void> _withLoginAndHaptic(VoidCallback fn) async {
+    if (!await ensureLoggedIn(context)) return;
+    if (!mounted) return;
     _withHaptic(fn);
   }
 
@@ -157,7 +159,8 @@ class FestivalPosterState extends State<FestivalPoster>
       _openSheet(TicketLinkSheet(links: _notifier.ticketLinks));
 
   Future<void> _submitCertification() async {
-    if (!ensureLoggedIn(context)) return;
+    if (!await ensureLoggedIn(context)) return;
+    if (!mounted) return;
     await showAppBottomSheet(
       context,
       builder: (ctx) => CertificationBottomSheet(

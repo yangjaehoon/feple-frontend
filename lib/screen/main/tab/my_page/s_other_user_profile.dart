@@ -4,6 +4,7 @@ import 'package:feple/common/constant/app_assets.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
+import 'package:feple/common/util/login_gate.dart';
 import 'package:feple/common/util/navigate_after_fetch.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_error_state.dart';
@@ -583,6 +584,9 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
 
 /// 커뮤니티 어디서든 프로필 이미지 탭 시 호출.
 /// 본인이면 이동 없음, 타인이면 [OtherUserProfileScreen]으로 이동.
+/// 타인 프로필 화면은 계정 전용 정보(인증·차단·신고)를 다루므로 비로그인
+/// 게스트에게는 이동 대신 로그인 안내를 띄운다 — 페스티벌 게시판 등 게스트가
+/// 볼 수 있는 글에서 작성자를 탭했을 때 401 에러 화면으로 빠지지 않도록.
 void navigateToUserProfile(
   BuildContext context, {
   required int? userId,
@@ -592,6 +596,7 @@ void navigateToUserProfile(
 }) {
   if (userId == null) return;
   if (userId == currentUserId) return;
+  if (!ensureLoggedIn(context)) return;
   Navigator.push(
     context,
     SlideRoute(

@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/post_cursor_controller.dart';
 import 'package:feple/common/util/app_route.dart';
+import 'package:feple/common/util/login_gate.dart';
 import 'package:feple/common/util/post_cursor_controller_listener.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
@@ -67,6 +68,9 @@ class _BoardPostListState extends State<BoardPostList>
   Widget _buildFab() {
     return WritePostFab(
       onPressed: () async {
+        // 아티스트 게시판 등 게스트도 열람할 수 있는 경로로 재사용되므로
+        // 글쓰기는 로그인 안내로 유도한다 (커뮤니티 탭은 이미 게이트로 막힘).
+        if (!ensureLoggedIn(context)) return;
         await Navigator.push(
           context,
           SlideRoute(

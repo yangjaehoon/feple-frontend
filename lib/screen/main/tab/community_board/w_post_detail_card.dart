@@ -312,6 +312,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
   }
 
   void _onReportPost() {
+    if (!ensureLoggedIn(context)) return;
     showReportSheet(
       context,
       titleKey: 'report_post',
@@ -324,6 +325,7 @@ class _PostDetailCardState extends State<PostDetailCard> {
   Future<void> _onBlockUser() async {
     final authorId = widget.postUserId;
     if (authorId == null) return;
+    if (!ensureLoggedIn(context)) return;
     final success = await confirmAndToggleBlock(
       context,
       blockService: _blockService,
@@ -417,19 +419,24 @@ class _PostDetailCardState extends State<PostDetailCard> {
         rootComments: _notifier.rootComments,
         repliesMap: _notifier.repliesMap,
         currentUserId: userId,
-        onReport: (commentId) => showReportSheet(
-          context,
-          titleKey: 'report_comment',
-          onSubmit: (reason, detail) => _reportService.submitCommentReport(
-            commentId,
-            reason,
-            detail: detail,
-          ),
-          duplicateErrorKey: 'report_comment_duplicate',
-        ),
+        onReport: (commentId) {
+          if (!ensureLoggedIn(context)) return;
+          showReportSheet(
+            context,
+            titleKey: 'report_comment',
+            onSubmit: (reason, detail) => _reportService.submitCommentReport(
+              commentId,
+              reason,
+              detail: detail,
+            ),
+            duplicateErrorKey: 'report_comment_duplicate',
+          );
+        },
         onReply: _setReplyTo,
-        onToggleLike: (commentId) =>
-            _notifier.toggleCommentLike(commentId, userId),
+        onToggleLike: (commentId) {
+          if (!ensureLoggedIn(context)) return Future.value(false);
+          return _notifier.toggleCommentLike(commentId, userId);
+        },
         onDeleteComment: (commentId) => _notifier.deleteComment(commentId),
         onEditComment: (commentId, currentContent) async {
           final result = await _showEditCommentDialog(context, currentContent);

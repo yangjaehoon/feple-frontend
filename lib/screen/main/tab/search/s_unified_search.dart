@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart' show CancelToken;
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -6,14 +5,9 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/debouncer.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/util/request_scope.dart';
-import 'package:feple/common/util/text_highlight.dart';
-import 'package:feple/common/widget/w_animated_list_item.dart';
-import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
-import 'package:feple/common/widget/w_borderless_input_theme.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
-import 'package:feple/common/widget/w_tap_loading_indicator.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/artist_model.dart';
 import 'package:feple/model/festival_preview.dart';
@@ -21,13 +15,14 @@ import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/screen/main/tab/search/recent_search_store.dart';
-import 'package:feple/screen/main/tab/search/search_style.dart';
-import 'package:feple/screen/main/tab/search/w_search_result_tiles.dart';
+import 'package:feple/screen/main/tab/search/w_recent_searches.dart';
+import 'package:feple/screen/main/tab/search/w_search_input_bar.dart';
+import 'package:feple/screen/main/tab/search/w_search_results.dart';
+import 'package:feple/screen/main/tab/search/w_search_suggestions.dart';
 import 'package:feple/service/artist_service.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:feple/service/search_service.dart';
 import 'package:flutter/material.dart';
-import 'package:feple/common/util/responsive_size.dart';
 
 class UnifiedSearchScreen extends StatefulWidget {
   const UnifiedSearchScreen({super.key});
@@ -233,7 +228,13 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
       body: KeyboardDismiss(
         child: Column(
           children: [
-            _buildSearchBar(colors),
+            SearchInputBar(
+              controller: _controller,
+              focusNode: _focusNode,
+              onSubmitted: _search,
+              onSearch: () => _search(_controller.text),
+              onClear: _onClearPressed,
+            ),
             Expanded(
               // 키 입력마다 검색바(TextField)까지 통째로 리빌드되지 않도록, 본문만
               // _controller/_suggestionsNotifier 변경에 반응해서 다시 그림
@@ -248,79 +249,51 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     );
   }
 
-  Widget _buildSearchBar(AbstractThemeColors colors) {
-    return SafeArea(
-      bottom: false,
-      child: Container(
-        height: AppDimens.appBarHeight,
-        color: colors.appBarColor,
-        child: Row(
-          children: [
-            IconButton(
-              tooltip: 'back'.tr(),
-              icon: Icon(Icons.arrow_back_ios_rounded, color: colors.appBarIconColor),
-              onPressed: () => Navigator.pop(context),
-            ),
-            Expanded(
-              // 앱바 위 borderless 검색창 — BorderlessInputTheme 없이는 전역 테마의
-              // OutlineInputBorder가 파란 바탕 위에 옅은 테두리로 남는다.
-              child: BorderlessInputTheme(
-                child: TextField(
-                  controller: _controller,
-                  focusNode: _focusNode,
-                  style: TextStyle(color: colors.appBarIconColor, fontSize: AppDimens.fontSizeXl),
-                  cursorColor: Colors.white70,
-                  decoration: InputDecoration(
-                    hintText: 'search_hint'.tr(),
-                    hintStyle: const TextStyle(color: Colors.white54),
-                    border: InputBorder.none,
-                    filled: false,
-                    // build()가 키 입력마다 재실행되지 않으므로, 지우기 버튼 표시 여부는
-                    // _controller를 직접 구독해서 독립적으로 갱신
-                    suffixIcon: AnimatedBuilder(
-                      animation: _controller,
-                      builder: (context, _) => _buildClearSuffix(),
-                    ),
-                  ),
-                  textInputAction: TextInputAction.search,
-                  onSubmitted: _search,
-                ),
-              ),
-            ),
-            IconButton(
-              tooltip: 'search'.tr(),
-              icon: Icon(Icons.search_rounded, color: colors.appBarIconColor),
-              onPressed: () => _search(_controller.text),
-            ),
-          ],
-        ),
-      ),
-    );
+  void _onClearPressed() {
+    _controller.clear();
+    _suggestionsNotifier.value = [];
+    setState(() {
+      _searched = false;
+      _artists = [];
+      _festivals = [];
+      _posts = [];
+    });
   }
 
-  Widget _buildClearSuffix() {
-    if (_controller.text.isEmpty) return const SizedBox.shrink();
-    return IconButton(
-      tooltip: 'clear'.tr(),
-      icon: const Icon(Icons.clear, color: Colors.white70),
-      onPressed: () {
-        _controller.clear();
-        _suggestionsNotifier.value = [];
-        setState(() {
-          _searched = false;
-          _artists = [];
-          _festivals = [];
-          _posts = [];
-        });
-      },
-    );
+  void _onRecentTap(String keyword) {
+    _controller.text = keyword;
+    _controller.selection =
+        TextSelection.collapsed(offset: keyword.length);
+    _search(keyword);
   }
 
   Widget _buildContent(AbstractThemeColors colors) {
     if (_isLoading) return _buildLoadingSkeleton(colors);
-    if (_searched) return _hasError ? _buildError() : _buildResults(colors);
-    if (_controller.text.isEmpty) return _buildRecentSearches(colors);
-    return _buildSuggestions(colors);
+    if (_searched) {
+      return _hasError
+          ? _buildError()
+          : SearchResultsView(
+              artists: _artists,
+              festivals: _festivals,
+              posts: _posts,
+              keyword: _controller.text.trim(),
+              tabController: _tabController,
+            );
+    }
+    if (_controller.text.isEmpty) {
+      return RecentSearchesView(
+        recentSearches: _recentSearches,
+        onSelect: _onRecentTap,
+        onRemove: _removeRecentSearch,
+        onClearAll: _clearRecentSearches,
+      );
+    }
+    return SearchSuggestionsView(
+      suggestions: _suggestionsNotifier.value,
+      highlightKeyword: _controller.text.trim(),
+      navigatingId: _navigatingSuggestionId,
+      onSelect: _selectSuggestion,
+    );
   }
 
   Widget _buildLoadingSkeleton(AbstractThemeColors colors) {
@@ -349,326 +322,10 @@ class _UnifiedSearchScreenState extends State<UnifiedSearchScreen>
     );
   }
 
-  Widget _buildRecentSearches(AbstractThemeColors colors) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildRecentHeader(colors),
-        if (_recentSearches.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Text(
-              'no_recent_searches'.tr(),
-              style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary.withValues(alpha: 0.6)),
-            ),
-          )
-        else
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.zero,
-              itemCount: _recentSearches.length,
-              itemBuilder: (_, index) {
-                final keyword = _recentSearches[index];
-                return AnimatedListItem(
-                  index: index,
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                    dense: true,
-                    leading: Icon(Icons.history_rounded, size: 18, color: colors.textSecondary),
-                    title: Text(keyword, style: TextStyle(fontSize: AppDimens.fontSizeMd, color: colors.textTitle)),
-                    trailing: IconButton(
-                      tooltip: 'delete'.tr(),
-                      icon: Icon(Icons.close_rounded, size: 16, color: colors.textSecondary),
-                      onPressed: () => _removeRecentSearch(keyword),
-                    ),
-                    onTap: () {
-                      _controller.text = keyword;
-                      _controller.selection = TextSelection.collapsed(offset: keyword.length);
-                      _search(keyword);
-                    },
-                  ),
-                );
-              },
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildRecentHeader(AbstractThemeColors colors) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 8, 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'recent_searches'.tr(),
-            style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w700, color: colors.textSecondary),
-          ),
-          if (_recentSearches.isNotEmpty)
-            TextButton(
-              onPressed: _clearRecentSearches,
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.padded,
-              ),
-              child: Text(
-                'clear_all'.tr(),
-                style: TextStyle(fontSize: AppDimens.fontSizeXs, color: colors.textSecondary),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSuggestions(AbstractThemeColors colors) {
-    final suggestions = _suggestionsNotifier.value;
-    if (suggestions.isEmpty) return const SizedBox.shrink();
-    final artists = suggestions.where((s) => s.type == SearchType.artist).toList();
-    final festivals = suggestions.where((s) => s.type == SearchType.festival).toList();
-    return ListView(
-      padding: const EdgeInsets.only(bottom: 8),
-      children: [
-        if (artists.isNotEmpty) ...[
-          _buildSuggestionGroupHeader('search_artists'.tr(), colors),
-          ..._buildSuggestionTiles(artists, colors),
-        ],
-        if (festivals.isNotEmpty) ...[
-          _buildSuggestionGroupHeader('search_festivals'.tr(), colors),
-          ..._buildSuggestionTiles(festivals, colors),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildSuggestionGroupHeader(String label, AbstractThemeColors colors) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 2),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: AppDimens.fontSizeXs,
-          fontWeight: FontWeight.w700,
-          color: colors.textSecondary,
-          letterSpacing: 0.3,
-        ),
-      ),
-    );
-  }
-
-  List<Widget> _buildSuggestionTiles(List<SearchSuggestion> items, AbstractThemeColors colors) {
-    return List.generate(items.length, (i) {
-      final suggestion = items[i];
-      final isLoading = suggestion.id != null && _navigatingSuggestionId == suggestion.id;
-      return Column(
-        children: [
-          ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-            leading: _buildSuggestionLeading(suggestion, colors),
-            title: buildHighlightedText(
-              suggestion.displayLabel(context.isEnglish),
-              _controller.text.trim(),
-              TextStyle(color: colors.textTitle, fontSize: AppDimens.fontSizeLg),
-              colors.activate,
-            ),
-            trailing: isLoading
-                ? const TapLoadingIndicator()
-                : Icon(Icons.north_west_rounded, size: 16, color: colors.textSecondary),
-            onTap: isLoading ? null : () => _selectSuggestion(suggestion),
-          ),
-          if (i < items.length - 1)
-            Divider(height: 1, thickness: 1, color: colors.listDivider, indent: 72, endIndent: 16),
-        ],
-      );
-    });
-  }
-
-  Widget _buildSuggestionLeading(SearchSuggestion suggestion, AbstractThemeColors colors) {
-    final imageUrl = suggestion.imageUrl;
-    if (imageUrl == null || imageUrl.isEmpty) {
-      return Icon(suggestion.type.icon, color: colors.textSecondary, size: 20);
-    }
-    final size = ResponsiveSize(context).w(40);
-    if (suggestion.type == SearchType.artist) {
-      return CircleAvatar(
-        radius: size / 2,
-        backgroundColor: colors.textSecondary.withValues(alpha: 0.2),
-        backgroundImage: CachedNetworkImageProvider(imageUrl, maxWidth: 80),
-      );
-    } else {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(6),
-        child: CachedNetworkImage(
-          imageUrl: imageUrl,
-          width: size,
-          height: size,
-          memCacheWidth: 80,
-          fit: BoxFit.cover,
-          placeholder: (_, _) => Container(
-            width: size,
-            height: size,
-            color: colors.textSecondary.withValues(alpha: 0.2),
-          ),
-          errorWidget: (_, _, _) => Icon(suggestion.type.icon, color: colors.textSecondary, size: 20),
-        ),
-      );
-    }
-  }
-
   Widget _buildError() {
     return ErrorState(
       message: 'search_error'.tr(),
       onRetry: () => _search(_controller.text),
-    );
-  }
-
-  Widget _buildResults(AbstractThemeColors colors) {
-    final total = _artists.length + _festivals.length + _posts.length;
-    if (total == 0) {
-      return EmptyState(icon: Icons.search_off_rounded, title: 'search_no_result'.tr());
-    }
-
-    final keyword = _controller.text.trim();
-
-    return Column(
-      children: [
-        _buildTabBar(colors),
-        Expanded(
-          child: TabBarView(
-            controller: _tabController,
-            children: [
-              _buildAllTab(colors, keyword),
-              _buildCategoryTab(
-                colors,
-                items: _artists,
-                builder: (d) => SearchArtistTile(data: d, highlightKeyword: keyword),
-                emptyIcon: Icons.person_search_rounded,
-              ),
-              _buildCategoryTab(
-                colors,
-                items: _festivals,
-                builder: (d) => SearchFestivalTile(data: d, highlightKeyword: keyword),
-                emptyIcon: Icons.festival_rounded,
-              ),
-              _buildCategoryTab(
-                colors,
-                items: _posts,
-                builder: (d) => SearchPostTile(data: d, highlightKeyword: keyword),
-                emptyIcon: Icons.article_rounded,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTabBar(AbstractThemeColors colors) {
-    final labels = [
-      'search_all'.tr(),
-      'search_artists'.tr(),
-      'search_festivals'.tr(),
-      'search_posts'.tr(),
-    ];
-    final counts = [null, _artists.length, _festivals.length, _posts.length];
-
-    return TabBar(
-      controller: _tabController,
-      isScrollable: true,
-      tabAlignment: TabAlignment.start,
-      labelColor: colors.activate,
-      unselectedLabelColor: colors.textSecondary,
-      indicatorColor: colors.activate,
-      indicatorWeight: 2,
-      labelStyle: const TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w700),
-      unselectedLabelStyle: const TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w400),
-      tabs: List.generate(labels.length, (i) {
-        final count = counts[i];
-        return Tab(
-          text: count != null && count > 0 ? '${labels[i]} ($count)' : labels[i],
-        );
-      }),
-    );
-  }
-
-  Widget _buildAllTab(AbstractThemeColors colors, String keyword) {
-    final hasArtists = _artists.isNotEmpty;
-    final hasFestivals = _festivals.isNotEmpty;
-    final hasPosts = _posts.isNotEmpty;
-    return ListView(
-      padding: const EdgeInsets.only(bottom: 32),
-      children: [
-        if (hasArtists) ...[
-          _sectionHeader('search_artists'.tr(), _artists.length, colors, isFirst: true),
-          ..._artists.map((d) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: SearchArtistTile(data: d, highlightKeyword: keyword),
-          )),
-        ],
-        if (hasFestivals) ...[
-          _sectionHeader('search_festivals'.tr(), _festivals.length, colors, isFirst: !hasArtists),
-          ..._festivals.map((d) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: SearchFestivalTile(data: d, highlightKeyword: keyword),
-          )),
-        ],
-        if (hasPosts) ...[
-          _sectionHeader('search_posts'.tr(), _posts.length, colors, isFirst: !hasArtists && !hasFestivals),
-          ..._posts.map((d) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: SearchPostTile(data: d, highlightKeyword: keyword),
-          )),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildCategoryTab<T>(
-    AbstractThemeColors colors, {
-    required List<T> items,
-    required Widget Function(T) builder,
-    required IconData emptyIcon,
-  }) {
-    if (items.isEmpty) {
-      return EmptyState(icon: emptyIcon, title: 'search_no_result'.tr());
-    }
-    return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
-      itemCount: items.length,
-      itemBuilder: (_, i) => AnimatedListItem(index: i, child: builder(items[i])),
-      separatorBuilder: (_, _) => Divider(height: 1, color: colors.listDivider),
-    );
-  }
-
-  Widget _sectionHeader(String title, int count, AbstractThemeColors colors, {bool isFirst = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (!isFirst) Divider(height: 1, thickness: 1, color: colors.listDivider),
-        Padding(
-          padding: EdgeInsets.fromLTRB(16, isFirst ? 16 : 20, 16, 8),
-          child: Row(
-            children: [
-              Container(
-                width: 3,
-                height: 18,
-                decoration: BoxDecoration(
-                  color: colors.sectionBarColor,
-                  borderRadius: BorderRadius.circular(AppDimens.barRadius),
-                ),
-              ),
-              const SizedBox(width: AppDimens.space8),
-              Text(title,
-                  style: TextStyle(
-                      fontSize: AppDimens.fontSizeLg, fontWeight: FontWeight.w800, color: colors.textTitle)),
-              const SizedBox(width: AppDimens.space6),
-              Text('($count)', style: TextStyle(fontSize: AppDimens.fontSizeSm, color: colors.textSecondary)),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }

@@ -1,20 +1,19 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
-import 'package:feple/common/util/login_gate.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_error_state.dart';
-import 'package:feple/common/widget/w_expandable_text.dart';
 import 'package:feple/common/widget/w_list_row_skeleton.dart';
-import 'package:feple/common/widget/w_star_rating_row.dart';
 import 'package:feple/model/poster_cert_state.dart';
 import 'package:feple/model/festival_review.dart';
 import 'package:feple/screen/main/tab/my_page/w_rating_sheet.dart';
+import 'package:feple/screen/main/tab/search/festival_information/w_review_card.dart';
+import 'package:feple/screen/main/tab/search/festival_information/w_reviews_empty_state.dart';
+import 'package:feple/screen/main/tab/search/festival_information/w_reviews_my_rating_cta.dart';
+import 'package:feple/screen/main/tab/search/festival_information/w_reviews_summary.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:feple/common/util/responsive_size.dart';
 
 class FestivalReviewsSheet extends StatefulWidget {
   final int festivalId;
@@ -232,19 +231,33 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
         ),
         itemCount: headerCount + reviewCount,
         itemBuilder: (context, index) {
-          if (index == 0) return _buildMyRatingCta(colors);
+          if (index == 0) {
+            return ReviewsMyRatingCta(
+              certState: widget.certState,
+              isSubmittingRating: _isSubmittingRating,
+              myRating: _myRating,
+              onCertTap: _openCertSheet,
+              onRatingTap: _openRatingSheet,
+            );
+          }
           if (_ratingCount > 0) {
             if (index == 1) return Divider(color: colors.divider);
-            if (index == 2) return _buildSummary(colors);
+            if (index == 2) {
+              return ReviewsSummary(
+                averageRating: _averageRating,
+                ratingCount: _ratingCount,
+                distribution: _distribution,
+              );
+            }
             if (index == 3) return Divider(color: colors.divider);
           }
           final reviewIndex = index - headerCount;
-          if (_reviews.isEmpty) return _buildEmpty(colors);
+          if (_reviews.isEmpty) return const ReviewsEmptyState();
           if (reviewIndex < _reviews.length) {
             final review = _reviews[reviewIndex];
             return AnimatedListItem(
               index: reviewIndex,
-              child: _ReviewCard(
+              child: ReviewCard(
                 key: ValueKey(review.reviewId),
                 review: review,
                 colors: colors,
@@ -258,458 +271,6 @@ class _FestivalReviewsSheetState extends State<FestivalReviewsSheet> {
           );
         },
       ),
-    );
-  }
-
-  Widget _buildMyRatingCta(AbstractThemeColors colors) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-      ),
-      child: _buildCtaContent(colors),
-    );
-  }
-
-  Widget _buildCtaContent(AbstractThemeColors colors) =>
-      switch (widget.certState) {
-        PosterCertState.pending => _buildPendingCta(colors),
-        PosterCertState.none => _buildNoCertCta(colors),
-        PosterCertState.certified =>
-          _isSubmittingRating
-              ? _buildLoadingCta(colors)
-              : _buildCertifiedCta(colors),
-      };
-
-  Widget _buildPendingCta(AbstractThemeColors colors) => Row(
-    children: [
-      Icon(Icons.hourglass_top_rounded, color: colors.textSecondary, size: 16),
-      const SizedBox(width: AppDimens.space8),
-      Expanded(
-        child: Text(
-          'reviews_cert_pending'.tr(),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeSm,
-            color: colors.textSecondary,
-          ),
-        ),
-      ),
-    ],
-  );
-
-  Widget _buildNoCertCta(AbstractThemeColors colors) => Row(
-    children: [
-      Icon(
-        Icons.workspace_premium_outlined,
-        color: colors.certRingColor,
-        size: 16,
-      ),
-      const SizedBox(width: AppDimens.space8),
-      Expanded(
-        child: Text(
-          'reviews_cert_prompt'.tr(),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeSm,
-            color: colors.textTitle,
-          ),
-        ),
-      ),
-      const SizedBox(width: AppDimens.space8),
-      TextButton(
-        onPressed: _openCertSheet,
-        style: TextButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        ),
-        child: Text(
-          'reviews_cert_btn'.tr(),
-          style: TextStyle(
-            color: colors.activate,
-            fontWeight: FontWeight.w700,
-            fontSize: AppDimens.fontSizeSm,
-          ),
-        ),
-      ),
-    ],
-  );
-
-  Widget _buildLoadingCta(AbstractThemeColors colors) => SizedBox(
-    height: 24,
-    child: Center(
-      child: CircularProgressIndicator(color: colors.activate, strokeWidth: 2),
-    ),
-  );
-
-  Widget _buildCertifiedCta(AbstractThemeColors colors) => Row(
-    children: [
-      Icon(
-        Icons.workspace_premium_rounded,
-        color: colors.certRingColor,
-        size: 16,
-      ),
-      const SizedBox(width: AppDimens.space8),
-      Text(
-        'reviews_my_rating'.tr(),
-        style: TextStyle(
-          fontSize: AppDimens.fontSizeSm,
-          fontWeight: FontWeight.w600,
-          color: colors.textTitle,
-        ),
-      ),
-      if (_myRating != null) ...[
-        const SizedBox(width: AppDimens.space8),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: List.generate(
-            5,
-            (i) => Icon(
-              i < _myRating! ? Icons.star_rounded : Icons.star_outline_rounded,
-              color: Colors.amber,
-              size: 14,
-            ),
-          ),
-        ),
-      ],
-      const Spacer(),
-      TextButton(
-        onPressed: _openRatingSheet,
-        style: TextButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        ),
-        child: Text(
-          _myRating != null
-              ? 'reviews_edit_rating'.tr()
-              : 'reviews_leave_rating'.tr(),
-          style: TextStyle(
-            color: colors.activate,
-            fontWeight: FontWeight.w700,
-            fontSize: AppDimens.fontSizeSm,
-          ),
-        ),
-      ),
-    ],
-  );
-
-  Widget _buildSummary(AbstractThemeColors colors) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // 왼쪽: 큰 평점 숫자
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                _averageRating.toStringAsFixed(1),
-                style: const TextStyle(
-                  fontSize: 56,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.amber,
-                  height: 1.0,
-                ),
-              ),
-              const SizedBox(height: AppDimens.space6),
-              StarRatingRow(rating: _averageRating, size: 16),
-              const SizedBox(height: AppDimens.space6),
-              Text(
-                'reviews_count'.tr(args: ['$_ratingCount']),
-                style: TextStyle(
-                  fontSize: AppDimens.fontSizeXxs,
-                  color: colors.textSecondary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(width: 28),
-          // 오른쪽: 별점 분포 막대
-          Expanded(child: _buildDistribution(colors)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDistribution(AbstractThemeColors colors) {
-    final total = _distribution.values.fold(0, (a, b) => a + b);
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [5, 4, 3, 2, 1].map((star) {
-        final count = _distribution[star] ?? 0;
-        final ratio = total > 0 ? count / total : 0.0;
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 3),
-          child: Row(
-            children: [
-              const Icon(Icons.star_rounded, color: Colors.amber, size: 11),
-              const SizedBox(width: 3),
-              Text(
-                '$star',
-                style: TextStyle(
-                  fontSize: AppDimens.fontSizeXxs,
-                  color: colors.textSecondary,
-                ),
-              ),
-              const SizedBox(width: AppDimens.space6),
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(AppDimens.barRadius),
-                  child: LinearProgressIndicator(
-                    value: ratio,
-                    minHeight: 6,
-                    backgroundColor: colors.surface,
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      Colors.amber,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: AppDimens.space6),
-              SizedBox(
-                width: 22,
-                child: Text(
-                  '$count',
-                  style: TextStyle(
-                    fontSize: AppDimens.fontSizeXxs,
-                    color: colors.textSecondary,
-                  ),
-                  textAlign: TextAlign.end,
-                ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
-    );
-  }
-
-  Widget _buildEmpty(AbstractThemeColors colors) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(32, 40, 32, 40),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-              5,
-              (_) => const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 3),
-                child: Icon(
-                  Icons.star_outline_rounded,
-                  color: Colors.amber,
-                  size: 32,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: AppDimens.space20),
-          Text(
-            'reviews_no_reviews'.tr(),
-            style: TextStyle(
-              fontSize: AppDimens.fontSizeLg,
-              fontWeight: FontWeight.w700,
-              color: colors.textTitle,
-            ),
-          ),
-          const SizedBox(height: AppDimens.space10),
-          Text(
-            'reviews_empty_hint'.tr(),
-            style: TextStyle(
-              fontSize: AppDimens.fontSizeMd,
-              color: colors.textSecondary,
-              height: 1.6,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ReviewCard extends StatefulWidget {
-  final FestivalReview review;
-  final AbstractThemeColors colors;
-  final CertificationService certService;
-
-  const _ReviewCard({
-    super.key,
-    required this.review,
-    required this.colors,
-    required this.certService,
-  });
-
-  @override
-  State<_ReviewCard> createState() => _ReviewCardState();
-}
-
-class _ReviewCardState extends State<_ReviewCard> {
-  late int _likeCount;
-  late bool _likedByMe;
-  bool _isSubmitting = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _likeCount = widget.review.likeCount;
-    _likedByMe = widget.review.likedByMe;
-  }
-
-  Future<void> _toggleLike() async {
-    if (_isSubmitting) return;
-    if (!ensureLoggedIn(context)) return;
-    unawaited(HapticFeedback.lightImpact());
-    final wasLiked = _likedByMe;
-    setState(() {
-      _isSubmitting = true;
-      _likedByMe = !wasLiked;
-      _likeCount += wasLiked ? -1 : 1;
-    });
-    try {
-      await widget.certService.toggleReviewLike(widget.review.reviewId);
-      if (!mounted) return;
-      setState(() => _isSubmitting = false);
-    } catch (e) {
-      debugPrint('[ReviewCard] like toggle error: $e');
-      if (!mounted) return;
-      setState(() {
-        _likedByMe = wasLiked;
-        _likeCount += wasLiked ? 1 : -1;
-        _isSubmitting = false;
-      });
-      context.showErrorSnackbar('like_failed'.tr());
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = widget.colors;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildAvatar(colors),
-              const SizedBox(width: AppDimens.space10),
-              Expanded(child: _buildReviewContent(colors)),
-            ],
-          ),
-          const SizedBox(height: AppDimens.space8),
-          _buildLikeButton(colors),
-          const SizedBox(height: AppDimens.space10),
-          Divider(color: colors.divider, height: 1),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAvatar(AbstractThemeColors colors) {
-    final nickname = widget.review.nickname;
-    final initial = nickname.isNotEmpty ? nickname[0].toUpperCase() : '?';
-    return CircleAvatar(
-      radius: ResponsiveSize(context).w(19),
-      backgroundColor: colors.surface,
-      child: Text(
-        initial,
-        style: TextStyle(
-          fontSize: AppDimens.fontSizeMd,
-          fontWeight: FontWeight.w700,
-          color: colors.activate,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildReviewContent(AbstractThemeColors colors) {
-    final review = widget.review;
-    final hasReviewText =
-        review.userReview != null && review.userReview!.isNotEmpty;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                review.nickname,
-                style: TextStyle(
-                  fontSize: AppDimens.fontSizeSm,
-                  fontWeight: FontWeight.w600,
-                  color: colors.textTitle,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            if (review.ratedAt != null) ...[
-              const SizedBox(width: AppDimens.space8),
-              Text(
-                review.ratedAt!,
-                style: TextStyle(
-                  fontSize: AppDimens.fontSizeXxs,
-                  color: colors.textSecondary,
-                ),
-              ),
-            ],
-          ],
-        ),
-        const SizedBox(height: 3),
-        StarRatingRow(rating: review.rating.toDouble(), size: 13),
-        if (hasReviewText) ...[
-          const SizedBox(height: AppDimens.space6),
-          ExpandableText(
-            text: review.userReview!,
-            style: TextStyle(
-              fontSize: AppDimens.fontSizeMd,
-              color: colors.textTitle,
-              height: 1.5,
-            ),
-            maxLines: 4,
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildLikeButton(AbstractThemeColors colors) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        GestureDetector(
-          onTap: _toggleLike,
-          behavior: HitTestBehavior.opaque,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  _likedByMe ? Icons.thumb_up_rounded : Icons.thumb_up_outlined,
-                  size: 14,
-                  color: _likedByMe ? colors.activate : colors.textSecondary,
-                ),
-                if (_likeCount > 0) ...[
-                  const SizedBox(width: AppDimens.space4),
-                  Text(
-                    '$_likeCount',
-                    style: TextStyle(
-                      fontSize: AppDimens.fontSizeXxs,
-                      color: _likedByMe
-                          ? colors.activate
-                          : colors.textSecondary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

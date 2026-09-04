@@ -5,6 +5,7 @@ import 'package:feple/injection.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/model/festival_preview_page.dart';
 import 'package:feple/provider/festival_preview_provider.dart';
+import 'package:feple/login/s_login.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/festival_list/f_festival_list.dart';
 import 'package:feple/screen/main/tab/festival_list/w_festival_suggestion_sheet.dart';
@@ -185,7 +186,7 @@ void main() {
   });
 
   group('FestivalListFragment 페스티벌 제안 배너', () {
-    testWidgets('로그인하지 않은 상태에서 탭하면 안내 스낵바를 보여준다', (tester) async {
+    testWidgets('로그인하지 않은 상태에서 탭하면 로그인 화면으로 이동한다', (tester) async {
       await _pump(
         tester,
         festivalPreviewProvider: FestivalPreviewProvider(mockService),
@@ -198,9 +199,9 @@ void main() {
         const Offset(0, -300),
       );
       await tester.tap(find.text('festival_suggestion_banner'.tr()));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
-      expect(find.text('login_required'.tr()), findsOneWidget);
+      expect(find.byType(LoginScreen), findsOneWidget);
     });
 
     testWidgets('로그인한 상태에서 탭하면 제안 바텀시트가 열린다', (tester) async {

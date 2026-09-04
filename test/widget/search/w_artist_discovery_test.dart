@@ -6,6 +6,7 @@ import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/common/widget/w_selectable_chip.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/login/s_login.dart';
 import 'package:feple/model/artist_model.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/search/artist_genre_style.dart';
@@ -207,7 +208,7 @@ void main() {
     // 의존성 트리를 가진 화면 — 이 위젯의 관심사가 아니므로 여기서 깊이 검증하지
     // 않고, 자체 위젯 테스트에서 다룰 대상으로 남겨둔다.
 
-    testWidgets('로그인하지 않은 상태에서 추천 배너를 탭하면 안내 스낵바를 보여준다', (tester) async {
+    testWidgets('로그인하지 않은 상태에서 추천 배너를 탭하면 로그인 화면으로 이동한다', (tester) async {
       when(() => mockArtistService.fetchArtists()).thenAnswer((_) async => []);
 
       await _pump(tester, userId: null);
@@ -216,7 +217,7 @@ void main() {
       await tester.tap(find.text('artist_suggestion_banner'.tr()));
       await tester.pumpAndSettle();
 
-      expect(find.text('login_required'.tr()), findsOneWidget);
+      expect(find.byType(LoginScreen), findsOneWidget);
     });
   });
 

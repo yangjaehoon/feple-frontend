@@ -206,9 +206,10 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget>
     );
   }
 
-  void _likePhoto(int photoId) {
-    if (!ensureLoggedIn(context)) return;
-    _notifier.toggleLike(photoId);
+  Future<void> _likePhoto(int photoId) async {
+    if (!await ensureLoggedIn(context)) return;
+    if (!mounted) return;
+    unawaited(_notifier.toggleLike(photoId));
   }
 
   Widget _buildPhoto(
@@ -402,14 +403,15 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget>
         borderRadius: BorderRadius.all(Radius.circular(AppDimens.shapeDialog)),
       ),
       position: PopupMenuPosition.under,
-      onSelected: (value) {
+      onSelected: (value) async {
         if (value == 'edit') {
           _showEditBottomSheet(photo);
         } else if (value == 'delete') {
-          _confirmAndDelete(photo.photoId);
+          unawaited(_confirmAndDelete(photo.photoId));
         } else if (value == 'report') {
-          if (!ensureLoggedIn(context)) return;
-          showReportSheet(
+          if (!await ensureLoggedIn(context)) return;
+          if (!mounted) return;
+          unawaited(showReportSheet(
             context,
             titleKey: 'report_photo',
             onSubmit: (reason, detail) => _reportService.submitPhotoReport(
@@ -419,7 +421,7 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget>
               detail: detail,
             ),
             duplicateErrorKey: 'report_photo_duplicate',
-          );
+          ));
         }
       },
       itemBuilder: (_) => [

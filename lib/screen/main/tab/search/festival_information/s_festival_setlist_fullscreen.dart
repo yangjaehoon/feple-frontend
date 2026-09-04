@@ -53,7 +53,8 @@ class _FestivalSetlistFullscreenScreenState
   }
 
   Future<void> _openRequestSheet(FestivalSetlistEntry entry) async {
-    if (!ensureLoggedIn(context)) return;
+    if (!await ensureLoggedIn(context)) return;
+    if (!mounted) return;
     await showAppBottomSheet<void>(
       context,
       builder: (_) =>

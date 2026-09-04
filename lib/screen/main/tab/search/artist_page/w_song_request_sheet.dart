@@ -62,7 +62,8 @@ class _SongRequestSheetState extends State<SongRequestSheet> {
 
   Future<void> _submit() async {
     if (_submitting) return;
-    if (!ensureLoggedIn(context)) return;
+    if (!await ensureLoggedIn(context)) return;
+    if (!mounted) return;
     final title = _titleCtrl.text.trim();
     if (title.isEmpty) {
       setState(() => _titleError = 'song_request_title_required'.tr());

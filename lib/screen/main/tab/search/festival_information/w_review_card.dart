@@ -40,7 +40,8 @@ class _ReviewCardState extends State<ReviewCard> {
 
   Future<void> _toggleLike() async {
     if (_isSubmitting) return;
-    if (!ensureLoggedIn(context)) return;
+    if (!await ensureLoggedIn(context)) return;
+    if (!mounted) return;
     unawaited(HapticFeedback.lightImpact());
     final wasLiked = _likedByMe;
     setState(() {

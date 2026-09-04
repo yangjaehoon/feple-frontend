@@ -94,9 +94,10 @@ class _FestivalBoardScreenState extends State<FestivalBoardScreen>
   }
 
   Future<void> _openWrite(int index) async {
-    // 페스티벌 게시판은 게스트도 열람할 수 있으므로, 글쓰기는 로그인 안내
-    // (스낵바 + '로그인' 버튼)로 유도한다 — 앱 전역의 다른 계정 전용 액션과 동일.
-    if (!ensureLoggedIn(context)) return;
+    // 페스티벌 게시판은 게스트도 열람할 수 있으므로, 글쓰기는 로그인 화면으로
+    // 유도한다 — 앱 전역의 다른 계정 전용 액션과 동일.
+    if (!await ensureLoggedIn(context)) return;
+    if (!mounted) return;
     final tab = _tabs[index];
     await Navigator.push(
       context,

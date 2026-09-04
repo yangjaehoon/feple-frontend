@@ -40,9 +40,10 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
 
   void _toggleUi() => setState(() => _uiVisible = !_uiVisible);
 
-  void _handleLike() {
-    if (!ensureLoggedIn(context)) return;
-    widget.notifier.toggleLike(widget.photoId);
+  Future<void> _handleLike() async {
+    if (!await ensureLoggedIn(context)) return;
+    if (!mounted) return;
+    unawaited(widget.notifier.toggleLike(widget.photoId));
   }
 
   void _handleDoubleTap(TapDownDetails details) {

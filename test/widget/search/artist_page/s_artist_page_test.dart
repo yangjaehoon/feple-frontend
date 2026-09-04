@@ -3,6 +3,7 @@ import 'package:feple/common/data/preference/app_preferences.dart';
 import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/login/s_login.dart';
 import 'package:feple/model/artist_schedule_model.dart';
 import 'package:feple/model/follow_status.dart';
 import 'package:feple/model/song_model.dart';
@@ -230,7 +231,7 @@ void main() {
       expect(find.text('follow_done'.tr()), findsOneWidget); // 성공 스낵바
     });
 
-    testWidgets('로그인하지 않은 상태에서 팔로우를 탭하면 안내 스낵바를 보여준다', (tester) async {
+    testWidgets('로그인하지 않은 상태에서 팔로우를 탭하면 로그인 화면으로 이동한다', (tester) async {
       when(() => mockFollowService.getFollowStatus(1))
           .thenAnswer((_) async => FollowStatus(followed: false, followerCount: 100));
       when(() => mockPostService.fetchArtistPosts(1)).thenAnswer((_) async => []);
@@ -241,9 +242,9 @@ void main() {
       await _pump(tester, userId: null);
 
       await tester.tap(find.text('follow'.tr()));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
-      expect(find.text('login_required'.tr()), findsOneWidget);
+      expect(find.byType(LoginScreen), findsOneWidget);
       verifyNever(() => mockFollowService.follow(any()));
     });
   });

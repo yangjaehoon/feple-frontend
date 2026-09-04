@@ -4,6 +4,7 @@ import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/common/widget/w_write_post.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/login/s_login.dart';
 import 'package:feple/model/post_changed_event.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/provider/user_provider.dart';
@@ -109,7 +110,7 @@ void main() {
   });
 
   group('CommunityBoardCard 글쓰기', () {
-    testWidgets('로그인하지 않고 글쓰기를 탭하면 안내 스낵바를 보여준다', (tester) async {
+    testWidgets('로그인하지 않고 글쓰기를 탭하면 로그인 화면으로 이동한다', (tester) async {
       when(() => mockUserProvider.currentUserId).thenReturn(null);
       when(() => mockPostService.fetchPosts('FREE')).thenAnswer((_) async => []);
 
@@ -117,9 +118,9 @@ void main() {
       await tester.pump();
 
       await tester.tap(find.text('write_post'.tr()));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
-      expect(find.text('login_required'.tr()), findsOneWidget);
+      expect(find.byType(LoginScreen), findsOneWidget);
     });
 
     testWidgets('로그인한 상태로 글쓰기를 탭하면 글쓰기 화면으로 이동한다', (tester) async {

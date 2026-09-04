@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/common/widget/w_write_post.dart';
+import 'package:feple/login/s_login.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/model/user_model.dart';
 import 'package:feple/provider/user_provider.dart';
@@ -145,7 +146,7 @@ void main() {
       expect(find.byType(WritePost), findsOneWidget);
     });
 
-    testWidgets('비로그인: 글쓰기 버튼을 탭하면 이동하지 않고 로그인 안내를 띄운다', (tester) async {
+    testWidgets('비로그인: 글쓰기 버튼을 탭하면 이동하지 않고 로그인 화면을 띄운다', (tester) async {
       await _pump(
         tester,
         loggedIn: false,
@@ -154,10 +155,10 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(FloatingActionButton));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.byType(WritePost), findsNothing);
-      expect(find.text('login_required'.tr()), findsOneWidget);
+      expect(find.byType(LoginScreen), findsOneWidget);
     });
   });
 

@@ -46,7 +46,8 @@ class _ArtistFollowHeaderState extends State<ArtistFollowHeader>
   }
 
   Future<void> _toggleFollow() async {
-    if (!ensureLoggedIn(context)) return;
+    if (!await ensureLoggedIn(context)) return;
+    if (!mounted) return;
     try {
       await widget.followNotifier.toggle();
       if (!mounted) return;

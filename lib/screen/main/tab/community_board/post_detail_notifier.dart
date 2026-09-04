@@ -242,27 +242,26 @@ class PostDetailNotifier extends SafeChangeNotifier {
     try {
       await _commentService.updateComment(commentId, newContent);
     } on BannedWordException {
-      if (!isDisposed) {
-        // await 도중 comments가 통째로 교체됐을 수 있으므로 캡처해둔 index가
-        // 아니라 commentId로 다시 찾아서 롤백 (toggleCommentLike와 동일 패턴)
-        final rollbackIndex = comments.indexWhere((c) => c.id == commentId);
-        if (rollbackIndex != -1) _replaceCommentAt(rollbackIndex, originalComment);
-        commentsVersion.value++;
-        safeNotify();
-      }
+      _rollbackComment(commentId, originalComment);
       // commentError는 하단 "새 댓글 작성" 입력창 전용 — 댓글 수정은 별도
       // 다이얼로그(이미 닫힌 상태)에서 일어나므로 스낵바로 알림
       onError?.call('comment_banned_word');
     } catch (e) {
-      if (!isDisposed) {
-        final rollbackIndex = comments.indexWhere((c) => c.id == commentId);
-        if (rollbackIndex != -1) _replaceCommentAt(rollbackIndex, originalComment);
-        commentsVersion.value++;
-        safeNotify();
-      }
+      _rollbackComment(commentId, originalComment);
       debugPrint('updateComment error: $e');
       onError?.call('comment_update_failed');
     }
+  }
+
+  /// 낙관적 수정이 실패했을 때 원래 댓글로 되돌리고 CommentSection을 다시 그린다.
+  /// await 도중 comments가 통째로 교체됐을 수 있으므로 캡처해둔 index가 아니라
+  /// id로 다시 찾는다. dispose 이후엔 아무것도 하지 않는다.
+  void _rollbackComment(int commentId, CommentDetail original) {
+    if (isDisposed) return;
+    final i = comments.indexWhere((c) => c.id == commentId);
+    if (i != -1) _replaceCommentAt(i, original);
+    commentsVersion.value++;
+    safeNotify();
   }
 
   Future<void> deleteComment(int commentId) async {

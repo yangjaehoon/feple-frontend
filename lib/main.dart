@@ -222,8 +222,9 @@ class _MyAppState extends State<MyApp> {
                 final user = userProvider.user;
                 if (user == null) {
                   // 게스트 모드 — 페스티벌 목록·검색 등 비계정 기능은 로그인 없이
-                  // 바로 접근 가능해야 함 (Apple 가이드라인 5.1.1(v)). 계정 기반
-                  // 탭(홈·커뮤니티·마이페이지)은 RequireLoginGate가 개별적으로 막는다.
+                  // 바로 접근 가능해야 함 (Apple 가이드라인 5.1.1(v)). 홈·커뮤니티
+                  // 탭은 RequireLoginGate가, 마이페이지 탭은 MyPageFragment 자체가
+                  // 게스트 뷰(로그인 CTA + 문의·약관·방침)로 처리한다.
                   return const App();
                 } else if (user.ageVerificationRequired) {
                   // 만 14세 미만 커뮤니티 이용 차단 (App Store 심사 5.1.1) — 온보딩·홈

@@ -7,6 +7,7 @@ import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/common/widget/w_adaptive_refresh_view.dart';
 import 'package:feple/screen/main/tab/my_page/w_festival_certification.dart';
 import 'package:feple/screen/main/tab/my_page/w_festival_diary.dart';
+import 'package:feple/screen/main/tab/my_page/w_guest_my_page.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_post_comment.dart';
 import 'package:feple/screen/main/tab/my_page/w_my_song_requests.dart';
 import 'package:feple/screen/main/tab/my_page/w_profile.dart';
@@ -55,10 +56,13 @@ class _MyPageFragmentState extends State<MyPageFragment> with NavigationGuard {
         children: [
           FepleAppBar(
             'Feple',
-            extraTrailingActions: [_buildSettingsButton(context)],
+            // 게스트에겐 설정(계정 전용)을 숨긴다 — 상단바에 이미 로그인 CTA가
+            // 있고, 문의·약관·방침은 아래 GuestMyPageView가 보여준다.
+            extraTrailingActions:
+                userId == null ? const [] : [_buildSettingsButton(context)],
           ),
           if (userId == null)
-            Expanded(child: Center(child: CircularProgressIndicator(color: colors.activate)))
+            const Expanded(child: GuestMyPageView())
           else
             Expanded(
               child: AdaptiveRefreshView(

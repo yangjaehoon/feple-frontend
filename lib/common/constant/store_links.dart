@@ -10,3 +10,7 @@ const String kCustomerServiceUrl = 'https://open.kakao.com/o/guLhbJki';
 /// 개인정보처리방침.
 const String kPrivacyPolicyUrl =
     'https://yangjae.notion.site/feple-privacy?source=copy_link';
+
+/// 이용약관. 현재 노션 문서 하나가 이용약관과 개인정보처리방침을 함께 담고 있어
+/// [kPrivacyPolicyUrl]과 동일하다. 별도 문서로 분리되면 이 값만 교체하면 된다.
+const String kTermsOfServiceUrl = kPrivacyPolicyUrl;

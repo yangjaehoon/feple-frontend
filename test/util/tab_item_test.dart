@@ -22,10 +22,9 @@ void main() {
       expect(TabItem.festivalList.firstPage, isA<FestivalListFragment>());
     });
 
-    test('계정 기반 탭(홈·커뮤니티·마이페이지)은 RequireLoginGate로 감싸 게스트를 막는다', () {
+    test('홈·커뮤니티는 RequireLoginGate로 감싸 게스트를 막는다', () {
       expect(TabItem.communityBoard.firstPage, isA<RequireLoginGate>());
       expect(TabItem.home.firstPage, isA<RequireLoginGate>());
-      expect(TabItem.favorite.firstPage, isA<RequireLoginGate>());
 
       expect(
         (TabItem.communityBoard.firstPage as RequireLoginGate).child,
@@ -35,10 +34,10 @@ void main() {
         (TabItem.home.firstPage as RequireLoginGate).child,
         isA<HomeFragment>(),
       );
-      expect(
-        (TabItem.favorite.firstPage as RequireLoginGate).child,
-        isA<MyPageFragment>(),
-      );
+    });
+
+    test('마이페이지는 게이트로 감싸지 않는다 — MyPageFragment가 직접 게스트 뷰를 그린다', () {
+      expect(TabItem.favorite.firstPage, isA<MyPageFragment>());
     });
   });
 

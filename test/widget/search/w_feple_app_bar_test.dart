@@ -10,31 +10,15 @@ import 'package:feple/service/notification_countable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
 class MockNotificationCountable extends Mock implements NotificationCountable {}
 
 class MockUserProvider extends Mock implements UserProvider {}
 
-class FakeUrlLauncherPlatform extends Fake
-    with MockPlatformInterfaceMixin
-    implements UrlLauncherPlatform {
-  final List<String> launchedUrls = [];
-  bool returnSuccess = true;
-
-  @override
-  Future<bool> launchUrl(String url, LaunchOptions options) async {
-    launchedUrls.add(url);
-    return returnSuccess;
-  }
-}
-
 void main() {
   late MockNotificationCountable mockCountable;
-  late FakeUrlLauncherPlatform fakeLauncher;
   late MockUserProvider mockUserProvider;
 
   setUp(() {
@@ -49,8 +33,6 @@ void main() {
       sl.unregister<NotificationCountNotifier>();
     }
     sl.registerSingleton<NotificationCountNotifier>(NotificationCountNotifier());
-    fakeLauncher = FakeUrlLauncherPlatform();
-    UrlLauncherPlatform.instance = fakeLauncher;
   });
 
   tearDown(() {
@@ -103,7 +85,7 @@ void main() {
   }
 
   group('FepleAppBar 렌더링', () {
-    testWidgets('로그인 상태: 검색 + 알림 아이콘을 보여주고 고객센터 아이콘은 없다', (tester) async {
+    testWidgets('로그인 상태: 검색 + 알림 아이콘을 보여주고 로그인 버튼은 없다', (tester) async {
       when(() => mockCountable.getUnreadCount()).thenAnswer((_) async => 0);
 
       await pump(tester, loggedIn: true);
@@ -112,17 +94,17 @@ void main() {
       expect(find.text('아티스트'), findsOneWidget);
       expect(find.byIcon(Icons.search_rounded), findsOneWidget);
       expect(find.byIcon(Icons.notifications_rounded), findsOneWidget);
-      expect(find.byIcon(Icons.headset_mic_rounded), findsNothing);
+      expect(find.widgetWithText(TextButton, 'login'.tr()), findsNothing);
       expect(find.byIcon(Icons.arrow_back_ios_new_rounded), findsNothing);
     });
 
-    testWidgets('비로그인 게스트: 알림 아이콘 자리에 고객센터 아이콘을 보여주고 개수 조회는 하지 않는다', (tester) async {
+    testWidgets('비로그인 게스트: 알림 아이콘 자리에 로그인 버튼을 보여주고 개수 조회는 하지 않는다', (tester) async {
       await pump(tester);
       await tester.pump();
 
       expect(find.byIcon(Icons.search_rounded), findsOneWidget);
       expect(find.byIcon(Icons.notifications_rounded), findsNothing);
-      expect(find.byIcon(Icons.headset_mic_rounded), findsOneWidget);
+      expect(find.widgetWithText(TextButton, 'login'.tr()), findsOneWidget);
       verifyNever(() => mockCountable.getUnreadCount());
     });
 
@@ -174,29 +156,24 @@ void main() {
     });
   });
 
-  group('FepleAppBar 문의하기', () {
-    // 로그인 화면·설정에 못 들어간 게스트도 이 아이콘으로 카카오톡 문의 채널에
-    // 닿을 수 있어야 한다 (Apple 가이드라인 1.2). 비로그인이면 알림 아이콘 자리를
-    // 고객센터 아이콘이 대신한다.
-    testWidgets('비로그인이면 고객센터 아이콘을 보여주고 탭 시 카카오톡 링크를 연다', (tester) async {
+  group('FepleAppBar 로그인 버튼', () {
+    // 비로그인 게스트는 어느 탭에 있든 상단바에서 바로 로그인할 수 있어야 한다.
+    // (문의·약관·개인정보처리방침은 게스트 마이페이지로 이동)
+    testWidgets('비로그인이면 pill 형태의 로그인 버튼을 보여준다', (tester) async {
       await pump(tester);
       await tester.pump();
 
-      expect(find.byIcon(Icons.headset_mic_rounded), findsOneWidget);
-
-      await tester.tap(find.byIcon(Icons.headset_mic_rounded));
-      await tester.pump();
-
-      expect(fakeLauncher.launchedUrls, ['https://open.kakao.com/o/guLhbJki']);
+      expect(find.widgetWithText(TextButton, 'login'.tr()), findsOneWidget);
+      expect(find.byIcon(Icons.headset_mic_rounded), findsNothing);
     });
 
-    testWidgets('로그인 상태면 고객센터 아이콘 대신 알림 아이콘을 보여준다', (tester) async {
+    testWidgets('로그인 상태면 로그인 버튼 대신 알림 아이콘을 보여준다', (tester) async {
       when(() => mockCountable.getUnreadCount()).thenAnswer((_) async => 0);
 
       await pump(tester, loggedIn: true);
       await tester.pump();
 
-      expect(find.byIcon(Icons.headset_mic_rounded), findsNothing);
+      expect(find.widgetWithText(TextButton, 'login'.tr()), findsNothing);
       expect(find.byIcon(Icons.notifications_rounded), findsOneWidget);
     });
   });

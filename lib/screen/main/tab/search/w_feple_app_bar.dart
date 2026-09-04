@@ -1,6 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/common/constant/store_links.dart';
+import 'package:feple/common/util/login_gate.dart';
 import 'package:feple/screen/main/s_main.dart';
 import 'package:feple/screen/notification/notification_count_notifier.dart';
 import 'package:feple/screen/notification/s_notification.dart';
@@ -11,7 +11,6 @@ import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class FepleAppBar extends StatefulWidget {
   const FepleAppBar(
@@ -72,9 +71,9 @@ class _FepleAppBarState extends State<FepleAppBar> with NavigationGuard {
           ...widget.extraTrailingActions,
           _buildSearchButton(context),
           // 알림함은 계정 전용 — 로그인 유저는 알림 아이콘, 비로그인 게스트는
-          // 같은 자리에 고객센터(카카오톡 문의) 아이콘을 대신 보여준다.
+          // 같은 자리에 로그인 버튼을 보여준다(문의·약관·방침은 게스트 마이페이지에 있다).
           if (isGuest)
-            _buildSupportButton(context)
+            _buildLoginButton(context, colors)
           else
             ListenableBuilder(
               listenable: _countNotifier,
@@ -123,20 +122,31 @@ class _FepleAppBarState extends State<FepleAppBar> with NavigationGuard {
     );
   }
 
-  Future<void> _openSupport(BuildContext context) async {
-    final uri = Uri.parse(kCustomerServiceUrl);
-    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!launched && context.mounted) context.showErrorSnackbar('link_open_failed'.tr());
-  }
-
-  // 비로그인 게스트가 앱 안에서 문의·신고 채널(카카오톡)에 닿을 수 있도록
-  // (Apple 가이드라인 1.2) 알림 아이콘 자리에 대신 노출한다. 호출부(build)가
-  // 게스트일 때만 렌더링하므로 여기서 로그인 여부를 다시 확인하지 않는다.
-  Widget _buildSupportButton(BuildContext context) {
-    return IconButton(
-      tooltip: 'customer_service'.tr(),
-      icon: Icon(Icons.headset_mic_rounded, color: context.appColors.appBarIconColor),
-      onPressed: () => _openSupport(context),
+  // 비로그인 게스트에게 알림 아이콘 자리에 노출하는 로그인 CTA. 아이콘 버튼들과
+  // 구분되도록 강조색 pill로 그린다. 호출부(build)가 게스트일 때만 렌더링한다.
+  Widget _buildLoginButton(BuildContext context, AbstractThemeColors colors) {
+    return Padding(
+      padding: const EdgeInsets.only(right: AppDimens.space8),
+      child: TextButton(
+        onPressed: () => openLoginScreen(context),
+        style: TextButton.styleFrom(
+          backgroundColor: colors.activate,
+          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppDimens.shapeButton),
+          ),
+        ),
+        child: Text(
+          'login'.tr(),
+          style: const TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: AppDimens.fontSizeSm,
+          ),
+        ),
+      ),
     );
   }
 

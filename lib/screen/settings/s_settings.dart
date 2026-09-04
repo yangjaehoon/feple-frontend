@@ -5,7 +5,6 @@ import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/navigation_guard.dart';
-import 'package:feple/common/util/url_validator.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_settings_item.dart';
 import 'package:feple/provider/user_provider.dart';
@@ -19,14 +18,11 @@ import 'package:feple/common/data/preference/prefs.dart';
 import 'package:feple/screen/onboarding/s_onboarding.dart';
 import 'package:flutter/foundation.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/common/constant/store_links.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/festival_cache_service.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -37,24 +33,17 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
   bool _clearingCache = false;
-  String _appVersion = '';
   bool _showCurrentTimeLine = true;
 
   @override
   void initState() {
     super.initState();
-    _loadVersion();
     _showCurrentTimeLine = Prefs.showCurrentTimeLine.get();
   }
 
   void _toggleShowCurrentTimeLine(bool value) {
     setState(() => _showCurrentTimeLine = value);
     Prefs.showCurrentTimeLine.set(value);
-  }
-
-  Future<void> _loadVersion() async {
-    final info = await PackageInfo.fromPlatform();
-    if (mounted) setState(() => _appVersion = info.version);
   }
 
   Future<void> _logout() async {
@@ -70,8 +59,9 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
     final userProvider = context.read<UserProvider>();
     // logout()은 각 정리 단계를 내부에서 개별적으로 try/catch하므로 예외를 던지지 않는다.
     await userProvider.logout();
-    // logout() → MainScreen이 각 탭의 중첩 Navigator 스택을 비워 RequireLoginGate의
-    // 로그인 유도 화면을 노출한다. 여기서는 rootNavigator에 남은 extra 라우트
+    // logout() → MainScreen이 각 탭의 중첩 Navigator 스택을 비워 게스트 화면
+    // (홈·커뮤니티는 RequireLoginGate 유도 화면, 마이페이지는 게스트 뷰)을
+    // 노출한다. 여기서는 rootNavigator에 남은 extra 라우트
     // (rootNavigator:true로 push된 것들)만 정리한다.
     rootNav.popUntil((route) => route.isFirst);
   }
@@ -115,16 +105,6 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
         ),
       ),
     ));
-  }
-
-  Future<void> _openExternalLink(String url) async {
-    if (!isSafeExternalUrl(url)) return;
-    try {
-      final launched = await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-      if (!launched && mounted) context.showErrorSnackbar('link_open_failed'.tr());
-    } catch (_) {
-      if (mounted) context.showErrorSnackbar('link_open_failed'.tr());
-    }
   }
 
   Future<void> _clearCache() async {
@@ -247,23 +227,10 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
   List<Widget> _buildSupportSection(AbstractThemeColors colors) {
     return [
       _SectionHeader(label: 'settings_support'.tr()),
-      SettingsItem(
-        icon: Icons.campaign_outlined,
-        label: 'notices'.tr(),
-        onTap: () => guardedNavigate(() =>
-            Navigator.push(context, SlideRoute(builder: (_) => const NoticeListScreen()))),
-      ),
-      const SettingsItemDivider(),
-      SettingsItem(
-        icon: Icons.headset_mic_rounded,
-        label: 'customer_service'.tr(),
-        onTap: () => _openExternalLink(kCustomerServiceUrl),
-      ),
-      const SettingsItemDivider(),
-      SettingsItem(
-        icon: Icons.privacy_tip_rounded,
-        label: 'privacy_policy'.tr(),
-        onTap: () => _openExternalLink(kPrivacyPolicyUrl),
+      ...supportLinkItems(
+        context,
+        onNotices: () => guardedNavigate(() => Navigator.push(
+            context, SlideRoute(builder: (_) => const NoticeListScreen()))),
       ),
       const SettingsItemDivider(),
       SettingsItem(
@@ -273,7 +240,7 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
             Navigator.push(context, SlideRoute(builder: (_) => const OpensourceScreen()))),
       ),
       const SettingsItemDivider(),
-      _VersionItem(version: _appVersion),
+      const AppVersionRow(),
       // 되돌릴 수 없는 회원탈퇴는 실수로 위 항목들과 헷갈려 눌리지 않도록
       // 얇은 구분선 대신 여백으로 물리적으로 떼어놓는다.
       const SizedBox(height: AppDimens.space20),
@@ -410,44 +377,4 @@ class _LanguageItemState extends State<_LanguageItem> {
     );
   }
 }
-
-class _VersionItem extends StatelessWidget {
-  final String version;
-
-  const _VersionItem({required this.version});
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-    return Container(
-      color: colors.surface,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-      child: Row(
-        children: [
-          Icon(Icons.info_outline_rounded, size: 20, color: colors.activate),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Text(
-              'app_version'.tr(),
-              style: TextStyle(
-                fontSize: AppDimens.fontSizeLg,
-                fontWeight: FontWeight.w500,
-                color: colors.textTitle,
-              ),
-            ),
-          ),
-          Text(
-            version.isEmpty ? '-' : 'v$version',
-            style: TextStyle(
-              fontSize: AppDimens.fontSizeMd,
-              fontWeight: FontWeight.w500,
-              color: colors.textSecondary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 

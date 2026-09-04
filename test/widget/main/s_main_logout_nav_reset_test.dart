@@ -10,7 +10,7 @@ import 'package:feple/model/user_model.dart';
 import 'package:feple/provider/festival_preview_provider.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/s_main.dart';
-import 'package:feple/screen/main/tab/festival_list/f_festival_list.dart';
+import 'package:feple/screen/main/tab/search/f_search.dart';
 import 'package:feple/screen/main/tab/tab_item.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:feple/service/notification_countable.dart';
@@ -117,18 +117,18 @@ void main() {
   testWidgets(
       '로그아웃하면 탭의 중첩 Navigator에 쌓여 있던 화면이 걷힌다',
       (tester) async {
-    // 게스트로 시작 — 랜딩 탭은 비계정 콘텐츠인 페스티벌 목록.
+    // 게스트로 시작 — 랜딩 탭은 비계정 콘텐츠인 검색 탭.
     final userProvider = _FakeUserProvider();
     await _pumpApp(tester, userProvider);
 
-    expect(find.byType(FestivalListFragment), findsOneWidget);
+    expect(find.byType(SearchFragment), findsOneWidget);
 
     // 앱 안에서 로그인 → 설정 등 계정 화면을 현재 탭의 중첩 Navigator에 쌓는다.
     userProvider.setUserForTest(AppUser(id: 1, nickname: '테스터'));
     await tester.pump();
 
     final state = tester.state<MainScreenState>(find.byType(MainScreen));
-    final landingIndex = TabItem.values.indexOf(TabItem.festivalList);
+    final landingIndex = TabItem.values.indexOf(TabItem.search);
     final tabNavigator = state.navigatorKeys[landingIndex].currentState!;
     unawaited(tabNavigator.push(
       MaterialPageRoute(

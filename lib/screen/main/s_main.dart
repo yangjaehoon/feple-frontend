@@ -45,12 +45,13 @@ class MainScreenState extends State<MainScreen>
   int get _currentIndex => tabs.indexOf(_currentTab);
 
   // 게스트에게 홈 탭은 로그인 유도 화면이라 로고 탭·뒤로가기 복귀 지점으로
-  // 부적절함 — 비계정 탭인 페스티벌 목록으로 대신 보낸다. 로그인 상태는 탭
-  // 전환 시점마다 새로 확인해, 게스트로 시작했다가 화면 안에서 로그인해도
-  // (게이트나 상단바 로그인 버튼 경유) 곧바로 홈으로 정확히 돌아간다.
+  // 부적절함 — 비계정 탭 중에서도 스와이퍼+아티스트 발견 등 탐색 콘텐츠가 있는
+  // 검색 탭으로 대신 보낸다(단순 목록뿐인 페스티벌 목록 탭보다 첫인상이 풍부).
+  // 로그인 상태는 탭 전환 시점마다 새로 확인해, 게스트로 시작했다가 화면 안에서
+  // 로그인해도(게이트나 상단바 로그인 버튼 경유) 곧바로 홈으로 정확히 돌아간다.
   TabItem get _landingTab =>
       Provider.of<UserProvider>(context, listen: false).user == null
-          ? TabItem.festivalList
+          ? TabItem.search
           : TabItem.home;
 
   GlobalKey<NavigatorState> get _currentTabNavigationKey =>
@@ -64,7 +65,7 @@ class MainScreenState extends State<MainScreen>
   void initState() {
     super.initState();
     // 게스트는 계정 기반 탭인 홈(팔로우 아티스트/좋아요 페스티벌)이 로그인 유도
-    // 화면으로 막혀 있으므로, 비계정 콘텐츠인 페스티벌 목록 탭으로 시작한다.
+    // 화면으로 막혀 있으므로, 탐색 콘텐츠가 있는 검색 탭으로 시작한다.
     _currentTab = _landingTab;
     _visitedTabs.add(_currentIndex);
     _tabObservers = List.generate(

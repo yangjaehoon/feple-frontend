@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/app_events.dart';
 import 'package:feple/model/post_changed_event.dart';
 import 'package:share_plus/share_plus.dart';
@@ -7,13 +6,10 @@ import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/block_action_helper.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/login_gate.dart';
-import 'package:feple/common/util/popup_menu_item_builder.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
-import 'package:feple/common/widget/w_page_indicator_pill.dart';
 import 'package:feple/common/widget/w_write_post.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/common/widget/w_report_sheet.dart';
-import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/block_service.dart';
 import 'package:feple/service/post_service.dart';
@@ -30,7 +26,9 @@ import 'w_comment_section.dart';
 import 'w_edit_comment_dialog.dart';
 import 'w_like_comment_row.dart';
 import 'w_post_content_section.dart';
+import 'w_post_detail_app_bar.dart';
 import 'w_post_header_section.dart';
+import 'w_post_image_viewer.dart';
 import 'package:feple/common/util/forced_refresh.dart';
 
 class PostDetailCard extends StatefulWidget {
@@ -170,7 +168,8 @@ class _PostDetailCardState extends State<PostDetailCard> {
       PageRouteBuilder(
         opaque: false,
         barrierColor: Colors.black87,
-        pageBuilder: (_, _, _) => _ImageViewer(images: images, initialIndex: initialIndex),
+        pageBuilder: (_, _, _) =>
+            PostImageViewer(images: images, initialIndex: initialIndex),
       ),
     );
   }
@@ -184,51 +183,6 @@ class _PostDetailCardState extends State<PostDetailCard> {
       barrierDismissible: false,
       builder: (ctx) => EditCommentDialog(initialContent: currentContent),
     );
-  }
-
-  List<PopupMenuEntry<String>> _buildMenuItems(
-    bool isOwn,
-    AbstractThemeColors colors,
-  ) {
-    PopupMenuItem<String> item(
-      String value,
-      IconData icon,
-      String label, {
-      bool danger = false,
-    }) => buildPopupMenuItem(
-      value: value,
-      icon: icon,
-      label: label,
-      colors: colors,
-      danger: danger,
-      height: 48,
-      iconSize: 19,
-      spacing: 12,
-      fontSize: AppDimens.fontSizeMd,
-      fontWeight: FontWeight.w500,
-    );
-
-    if (isOwn) {
-      return [
-        item('edit', Icons.edit_outlined, 'edit_post'.tr()),
-        item('share', Icons.share_outlined, 'share'.tr()),
-        const PopupMenuDivider(height: 1),
-        item(
-          'delete',
-          Icons.delete_outline_rounded,
-          'delete_post'.tr(),
-          danger: true,
-        ),
-      ];
-    } else {
-      return [
-        item('share', Icons.share_outlined, 'share'.tr()),
-        const PopupMenuDivider(height: 1),
-        item('report', Icons.flag_outlined, 'report_post'.tr(), danger: true),
-        const PopupMenuDivider(height: 1),
-        item('block', Icons.block_rounded, 'block_user'.tr(), danger: true),
-      ];
-    }
   }
 
   Future<void> _onMenuSelected(String value) async {
@@ -511,22 +465,10 @@ class _PostDetailCardState extends State<PostDetailCard> {
       body: KeyboardDismiss(
         child: Column(
           children: [
-            SecondaryAppBar(
+            PostDetailAppBar(
               title: widget.boardName,
-              actions: [
-                PopupMenuButton<String>(
-                  icon: const Icon(Icons.more_vert),
-                  onSelected: _onMenuSelected,
-                  itemBuilder: (_) => _buildMenuItems(isOwn, colors),
-                  color: colors.surface,
-                  shadowColor: colors.cardShadow.withValues(alpha: 0.18),
-                  elevation: 3,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppDimens.shapeDialog),
-                  ),
-                  position: PopupMenuPosition.under,
-                ),
-              ],
+              isOwn: isOwn,
+              onSelected: _onMenuSelected,
             ),
             Expanded(
               child: Container(
@@ -534,79 +476,6 @@ class _PostDetailCardState extends State<PostDetailCard> {
                 child: _buildScrollContent(colors, userId),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ImageViewer extends StatefulWidget {
-  final List<String> images;
-  final int initialIndex;
-
-  const _ImageViewer({required this.images, required this.initialIndex});
-
-  @override
-  State<_ImageViewer> createState() => _ImageViewerState();
-}
-
-class _ImageViewerState extends State<_ImageViewer> {
-  late final _pageController = PageController(initialPage: widget.initialIndex);
-  late int _currentIndex = widget.initialIndex;
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => Navigator.of(context).pop(),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            PageView.builder(
-              controller: _pageController,
-              itemCount: widget.images.length,
-              onPageChanged: (i) => setState(() => _currentIndex = i),
-              itemBuilder: (_, i) => Center(
-                child: InteractiveViewer(
-                  minScale: 0.5,
-                  maxScale: 4.0,
-                  child: CachedNetworkImage(
-                    imageUrl: widget.images[i],
-                    fadeInDuration: AppDimens.animXFast,
-                    fadeOutDuration: AppDimens.animTapFeedback,
-                    placeholder: (_, _) => const Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.white54,
-                        strokeWidth: 2,
-                      ),
-                    ),
-                    errorWidget: (_, _, _) => const Center(
-                      child: Icon(
-                        Icons.broken_image_rounded,
-                        color: Colors.white38,
-                        size: 56,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            if (widget.images.length > 1)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 32),
-                child: PageIndicatorPill(
-                  currentIndex: _currentIndex,
-                  total: widget.images.length,
-                ),
-              ),
           ],
         ),
       ),

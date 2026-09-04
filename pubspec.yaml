@@ -41,7 +41,7 @@ dependencies:
   http: ^1.3.0
 
   #codegen
-  freezed: ^3.2.5
+  freezed: ^4.0.0
   freezed_annotation: ^3.1.0
 
   #auth (로그인, 보안 저장소)
@@ -100,7 +100,7 @@ dev_dependencies:
   flutter_lints: ^6.0.0
 
   #codegen
-  build_runner: ^2.15.0
+  build_runner: ^2.16.0
   json_serializable: ^6.14.0
   flutter_launcher_icons: ^0.14.3
 

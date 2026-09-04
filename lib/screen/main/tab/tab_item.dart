@@ -20,6 +20,7 @@ enum TabItem {
       'tab_board',
       RequireLoginGate(
         icon: Icons.forum_outlined,
+        titleKey: 'guest_login_title_board',
         messageKey: 'guest_login_required_board',
         child: CommunityBoardFragment(),
       ),
@@ -29,6 +30,7 @@ enum TabItem {
       'tab_home',
       RequireLoginGate(
         icon: Icons.home_outlined,
+        titleKey: 'guest_login_title_home',
         messageKey: 'guest_login_required_home',
         child: HomeFragment(),
       ),

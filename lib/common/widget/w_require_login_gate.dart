@@ -11,27 +11,36 @@ import 'package:provider/provider.dart';
 class RequireLoginGate extends StatelessWidget {
   final Widget child;
   final IconData icon;
+  final String titleKey;
   final String messageKey;
 
   const RequireLoginGate({
     super.key,
     required this.child,
     required this.icon,
+    required this.titleKey,
     required this.messageKey,
   });
 
   @override
   Widget build(BuildContext context) {
     final isLoggedIn = context.select<UserProvider, bool>((p) => p.user != null);
-    return isLoggedIn ? child : _GuestPrompt(icon: icon, messageKey: messageKey);
+    return isLoggedIn
+        ? child
+        : _GuestPrompt(icon: icon, titleKey: titleKey, messageKey: messageKey);
   }
 }
 
 class _GuestPrompt extends StatelessWidget {
   final IconData icon;
+  final String titleKey;
   final String messageKey;
 
-  const _GuestPrompt({required this.icon, required this.messageKey});
+  const _GuestPrompt({
+    required this.icon,
+    required this.titleKey,
+    required this.messageKey,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +49,7 @@ class _GuestPrompt extends StatelessWidget {
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
-          child: GuestLoginPrompt(icon: icon, messageKey: messageKey),
+          child: GuestLoginPrompt(icon: icon, titleKey: titleKey, messageKey: messageKey),
         ),
       ),
     );

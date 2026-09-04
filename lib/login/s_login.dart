@@ -9,6 +9,7 @@ import 'package:feple/common/widget/w_support_link_row.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/login/s_signup.dart';
+import 'package:feple/login/w_form_error_text.dart';
 import 'package:feple/login/s_verify_email.dart';
 import 'package:feple/login/s_forgot_password.dart';
 import 'package:feple/service/auth_service.dart';
@@ -196,27 +197,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
             }
           },
         ),
-        if (_authError != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 6, left: 4),
-            child: Row(
-              children: [
-                Icon(Icons.error_outline_rounded,
-                    color: themeColors.error, size: 14),
-                const SizedBox(width: AppDimens.space4),
-                Expanded(
-                  child: Text(
-                    _authError!,
-                    style: TextStyle(
-                      fontSize: AppDimens.fontSizeXs,
-                      color: themeColors.error,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+        if (_authError != null) FormErrorText(message: _authError!),
       ],
     );
   }

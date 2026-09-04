@@ -3,6 +3,7 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/email_validator.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
+import 'package:feple/login/w_form_error_text.dart';
 import 'package:feple/common/widget/w_icon_circle.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
@@ -125,7 +126,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           _buildHeader(colors),
           SizedBox(height: rs.h(28)),
           _buildEmailField(),
-          if (_errorMessage != null) _buildServerError(colors),
+          if (_errorMessage != null) FormErrorText(message: _errorMessage!),
           SizedBox(height: rs.h(18)),
           LoadingButton(
             label: 'send'.tr(),
@@ -184,28 +185,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           });
         }
       },
-    );
-  }
-
-  Widget _buildServerError(AbstractThemeColors colors) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8, left: 4),
-      child: Row(
-        children: [
-          Icon(Icons.error_outline_rounded, color: colors.error, size: 14),
-          const SizedBox(width: AppDimens.space4),
-          Expanded(
-            child: Text(
-              _errorMessage!,
-              style: TextStyle(
-                fontSize: AppDimens.fontSizeXs,
-                color: colors.error,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 

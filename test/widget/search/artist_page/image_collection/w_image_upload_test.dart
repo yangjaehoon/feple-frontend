@@ -187,9 +187,9 @@ void main() {
       expect(find.byType(ImageUpload), findsNothing);
     });
 
-    testWidgets('업로드 실패(DioException) 시 상세 에러 스낵바를 보여준다', (tester) async {
+    testWidgets('업로드 실패 시 에러 스낵바를 보여주고 화면에 남는다', (tester) async {
       when(() => mockPhotoService.uploadPhoto(any()))
-          .thenThrow(DioException(requestOptions: RequestOptions(path: '/photos')));
+          .thenThrow(Exception('server 500'));
 
       await pump(tester);
       await tester.pump();
@@ -204,8 +204,32 @@ void main() {
       await tester.tap(find.byIcon(Icons.send_rounded));
       await tester.pumpAndSettle();
 
-      expect(find.text('photo_upload_failed_detail'.tr()), findsOneWidget);
+      expect(find.text('photo_upload_failed'.tr()), findsOneWidget);
       expect(find.byType(ImageUpload), findsOneWidget);
+    });
+
+    testWidgets('업로드가 연결 오류로 실패하면 연결 확인 안내를 보여준다', (tester) async {
+      when(() => mockPhotoService.uploadPhoto(any())).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: '/photos'),
+          type: DioExceptionType.connectionError,
+        ),
+      );
+
+      await pump(tester);
+      await tester.pump();
+      await pickImage(tester);
+
+      await tester.enterText(find.byType(TextFormField), '작품 제목');
+      await tester.tap(find.byType(DropdownButtonFormField<PhotoDestination>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('페스티벌').last);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.send_rounded));
+      await tester.pumpAndSettle();
+
+      expect(find.text('connection_error'.tr()), findsOneWidget);
     });
   });
 

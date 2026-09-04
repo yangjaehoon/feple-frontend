@@ -1,7 +1,7 @@
-import 'package:dio/dio.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
+import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/model/photo_destination.dart';
@@ -86,14 +86,11 @@ class _ImageUploadState extends State<ImageUpload> {
       ));
       if (!mounted) return;
       Navigator.pop(context, true);
-    } on DioException catch (e) {
-      debugPrint('photo upload error: status=${e.response?.statusCode} data=${e.response?.data}');
-      if (!mounted) return;
-      context.showErrorSnackbar('photo_upload_failed_detail'.tr());
     } catch (e) {
-      debugPrint('upload error: $e');
+      debugPrint('photo upload error: $e');
       if (!mounted) return;
-      context.showErrorSnackbar('photo_upload_failed'.tr());
+      // 오프라인/타임아웃이면 '연결 확인' 안내, 그 외엔 일반 실패 문구.
+      context.showErrorSnackbar(networkAwareErrorKey(e, 'photo_upload_failed').tr());
     } finally {
       if (mounted) setState(() => isUploading = false);
     }

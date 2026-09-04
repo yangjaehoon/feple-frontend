@@ -43,6 +43,9 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
+  // 삭제 취소(undo) 스낵바가 떠 있는 시간 — 이 안에 undo를 안 누르면 서버에 확정.
+  static const _undoSnackbarDuration = Duration(seconds: 4);
+
   final _scrollController = ScrollController();
   late final NotificationNotifier _notifier;
   int? _navigatingId;
@@ -122,7 +125,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         .showSnackBar(
           SnackBar(
             content: Text('notif_delete_all_dismissed'.tr()),
-            duration: const Duration(seconds: 4),
+            duration: _undoSnackbarDuration,
             persist: false,
             action: SnackBarAction(
               label: 'undo'.tr(),
@@ -339,7 +342,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         .showSnackBar(
           SnackBar(
             content: Text('notification_dismissed'.tr()),
-            duration: const Duration(seconds: 4),
+            duration: _undoSnackbarDuration,
             // Flutter 3.x: action != null이면 persist 기본값이 true → 타이머가 실행되도
             // 스낵바를 닫지 않음. 실행취소 버튼이 있어도 4초 후 자동 닫히도록 명시
             persist: false,

@@ -371,7 +371,6 @@
   "loading": "불러오는 중...",
   "photo_select_required": "사진을 선택해주세요.",
   "photo_upload_failed": "업로드 중 오류가 발생했습니다.",
-  "photo_upload_failed_detail": "사진 업로드에 실패했습니다.",
   "photo_pick_failed": "사진을 불러올 수 없습니다. 갤러리 접근 권한을 확인해주세요.",
   "max_images_exceeded": "사진은 최대 {}장까지 첨부할 수 있어요.",
   "map_open_failed": "지도를 열 수 없습니다.",

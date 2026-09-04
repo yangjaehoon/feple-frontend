@@ -17,19 +17,15 @@ void main() {
   });
 
   group('TabItem.firstPage', () {
-    test('비계정 탭(검색·페스티벌 목록)은 게스트도 바로 접근 가능해 로그인 게이트로 감싸지 않는다', () {
+    test('비계정 탭(검색·페스티벌 목록·커뮤니티 게시판)은 게스트도 바로 접근 가능해 로그인 게이트로 감싸지 않는다', () {
       expect(TabItem.search.firstPage, isA<SearchFragment>());
       expect(TabItem.festivalList.firstPage, isA<FestivalListFragment>());
+      expect(TabItem.communityBoard.firstPage, isA<CommunityBoardFragment>());
     });
 
-    test('홈·커뮤니티는 RequireLoginGate로 감싸 게스트를 막는다', () {
-      expect(TabItem.communityBoard.firstPage, isA<RequireLoginGate>());
+    test('홈은 계정 개인화 데이터뿐이라 RequireLoginGate로 감싸 게스트를 막는다', () {
       expect(TabItem.home.firstPage, isA<RequireLoginGate>());
 
-      expect(
-        (TabItem.communityBoard.firstPage as RequireLoginGate).child,
-        isA<CommunityBoardFragment>(),
-      );
       expect(
         (TabItem.home.firstPage as RequireLoginGate).child,
         isA<HomeFragment>(),

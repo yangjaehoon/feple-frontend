@@ -291,4 +291,71 @@ void main() {
       verify(() => mockDiaryService.getUserPublicDiaries(7, page: 0)).called(1);
     });
   });
+
+  group('navigateToUserProfile 게스트 가드', () {
+    Future<void> pumpTapper(WidgetTester tester, {required int? currentUserId}) async {
+      SharedPreferences.setMockInitialValues({});
+      await EasyLocalization.ensureInitialized();
+      final userProvider = MockUserProvider();
+      when(() => userProvider.currentUserId).thenReturn(currentUserId);
+
+      await tester.pumpWidget(
+        EasyLocalization(
+          supportedLocales: const [Locale('ko'), Locale('en')],
+          startLocale: const Locale('ko'),
+          fallbackLocale: const Locale('ko'),
+          path: 'assets/translations',
+          useOnlyLangCode: true,
+          child: ChangeNotifierProvider<UserProvider>.value(
+            value: userProvider,
+            child: CustomThemeHolder(
+              theme: CustomTheme.light,
+              changeTheme: (_) {},
+              child: MaterialApp(
+                home: Scaffold(
+                  body: Builder(
+                    builder: (context) => ElevatedButton(
+                      onPressed: () => navigateToUserProfile(
+                        context,
+                        userId: 7,
+                        nickname: '상대유저',
+                        currentUserId: currentUserId,
+                      ),
+                      child: const Text('tap'),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+    }
+
+    testWidgets('비로그인이면 프로필로 이동하지 않고 로그인 안내를 띄운다', (tester) async {
+      await pumpTapper(tester, currentUserId: null);
+
+      await tester.tap(find.text('tap'));
+      await tester.pump();
+
+      expect(find.byType(OtherUserProfileScreen), findsNothing);
+      expect(find.text('login_required'.tr()), findsOneWidget);
+    });
+
+    testWidgets('로그인 상태면 타인 프로필로 이동한다', (tester) async {
+      when(() => mockUserService.fetchUser(7))
+          .thenAnswer((_) async => AppUser(id: 7, nickname: '상대유저'));
+      when(() => mockActivityService.fetchStats(7)).thenAnswer((_) async => _stats);
+      when(() => mockCertService.getPublicCertifications(7))
+          .thenAnswer((_) async => []);
+
+      await pumpTapper(tester, currentUserId: 1);
+
+      await tester.tap(find.text('tap'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(OtherUserProfileScreen), findsOneWidget);
+    });
+  });
 }

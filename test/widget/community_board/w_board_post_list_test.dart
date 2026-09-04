@@ -3,10 +3,16 @@ import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/common/widget/w_write_post.dart';
 import 'package:feple/model/post_model.dart';
+import 'package:feple/model/user_model.dart';
+import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/main/tab/community_board/w_board_post_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+class _MockUserProvider extends Mock implements UserProvider {}
 
 Post _post({int id = 1, String title = '글', int? userId = 5, String nickname = '작성자'}) =>
     Post(id: id, title: title, content: '내용', likeCount: 0, nickname: nickname, userId: userId);
@@ -14,6 +20,7 @@ Post _post({int id = 1, String title = '글', int? userId = 5, String nickname =
 Future<void> _pump(
   WidgetTester tester, {
   required Future<PostCursorPage> Function({int? cursor, int size}) fetchPage,
+  bool loggedIn = true,
 }) async {
   SharedPreferences.setMockInitialValues({});
   await EasyLocalization.ensureInitialized();
@@ -22,6 +29,11 @@ Future<void> _pump(
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
 
+  final userProvider = _MockUserProvider();
+  when(() => userProvider.currentUserId).thenReturn(loggedIn ? 1 : null);
+  when(() => userProvider.user)
+      .thenReturn(loggedIn ? AppUser(id: 1, nickname: '나') : null);
+
   await tester.pumpWidget(
     EasyLocalization(
       supportedLocales: const [Locale('ko'), Locale('en')],
@@ -29,15 +41,18 @@ Future<void> _pump(
       fallbackLocale: const Locale('ko'),
       path: 'assets/translations',
       useOnlyLangCode: true,
-      child: CustomThemeHolder(
-        theme: CustomTheme.light,
-        changeTheme: (_) {},
-        child: MaterialApp(
-          home: BoardPostList(
-            boardName: '자유 게시판',
-            fetchPage: fetchPage,
-            writeScreenTitle: '자유 게시판 글쓰기',
-            onSubmitPost: (_) async {},
+      child: ChangeNotifierProvider<UserProvider>.value(
+        value: userProvider,
+        child: CustomThemeHolder(
+          theme: CustomTheme.light,
+          changeTheme: (_) {},
+          child: MaterialApp(
+            home: BoardPostList(
+              boardName: '자유 게시판',
+              fetchPage: fetchPage,
+              writeScreenTitle: '자유 게시판 글쓰기',
+              onSubmitPost: (_) async {},
+            ),
           ),
         ),
       ),
@@ -117,7 +132,7 @@ void main() {
   // PostDetailCard 자체는 별도 테스트 파일에서 다룰 것
 
   group('BoardPostList 글쓰기', () {
-    testWidgets('글쓰기 버튼을 탭하면 글쓰기 화면으로 이동한다', (tester) async {
+    testWidgets('로그인 상태: 글쓰기 버튼을 탭하면 글쓰기 화면으로 이동한다', (tester) async {
       await _pump(
         tester,
         fetchPage: ({cursor, size = 20}) async => const PostCursorPage(content: [], hasNext: false),
@@ -128,6 +143,21 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(WritePost), findsOneWidget);
+    });
+
+    testWidgets('비로그인: 글쓰기 버튼을 탭하면 이동하지 않고 로그인 안내를 띄운다', (tester) async {
+      await _pump(
+        tester,
+        loggedIn: false,
+        fetchPage: ({cursor, size = 20}) async => const PostCursorPage(content: [], hasNext: false),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pump();
+
+      expect(find.byType(WritePost), findsNothing);
+      expect(find.text('login_required'.tr()), findsOneWidget);
     });
   });
 

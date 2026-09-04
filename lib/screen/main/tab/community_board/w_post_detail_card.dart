@@ -19,7 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../provider/user_provider.dart';
-import '../my_page/s_other_user_profile.dart';
+import '../my_page/user_profile_navigation.dart';
 import 'post_detail_notifier.dart';
 import 'w_comment_input_bar.dart';
 import 'w_comment_section.dart';

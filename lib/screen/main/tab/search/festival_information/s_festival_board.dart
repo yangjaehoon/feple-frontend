@@ -15,7 +15,7 @@ import 'package:feple/injection.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
-import 'package:feple/screen/main/tab/my_page/s_other_user_profile.dart';
+import 'package:feple/screen/main/tab/my_page/user_profile_navigation.dart';
 import 'package:feple/service/post_service.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/common/util/forced_refresh.dart';

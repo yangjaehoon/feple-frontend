@@ -680,5 +680,14 @@
   "age_gate_confirm_ok": "Confirm",
   "age_gate_error": "Something went wrong. Please try again in a moment.",
   "age_gate_restricted_title": "Access unavailable",
-  "age_gate_restricted_message": "Users under 14 cannot use the\ncommunity service."
+  "age_gate_restricted_message": "Users under 14 cannot use the\ncommunity service.",
+  "maintenance_title": "Under maintenance",
+  "maintenance_message": "We're making improvements.\nPlease try again in a little while.",
+  "maintenance_retry": "Try again",
+  "force_update_title": "Update required",
+  "force_update_message": "Please update to the latest version\nto keep using the app.",
+  "force_update_action": "Go to update",
+  "recommended_update_title": "A new version is available",
+  "recommended_update_message": "The latest version runs more smoothly.\nUpdate now?",
+  "recommended_update_confirm": "Update"
 }

@@ -34,6 +34,11 @@ class Prefs {
   static final recommendedUpdatePromptedOn =
       StringPreferenceItem('recommendedUpdatePromptedOn', '');
 
+  /// 사용자가 닫은 마지막 공지 배너 문구 그대로 저장한다 — 관리자가 새 문구로
+  /// 바꾸면 값이 달라져 다시 노출되고, 같은 문구는 다시 닫을 때까지 안 뜬다.
+  static final dismissedNoticeMessage =
+      StringPreferenceItem('dismissedNoticeMessage', '');
+
   static final postCreatedCount = IntPreferenceItem('postCreatedCount', 0);
   static final artistFollowedCount = IntPreferenceItem('artistFollowedCount', 0);
   static final reviewRequested = BoolPreferenceItem('reviewRequested', false);

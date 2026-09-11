@@ -680,5 +680,14 @@
   "age_gate_confirm_ok": "확인",
   "age_gate_error": "처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
   "age_gate_restricted_title": "이용할 수 없어요",
-  "age_gate_restricted_message": "만 14세 미만은 커뮤니티 서비스를\n이용할 수 없습니다."
+  "age_gate_restricted_message": "만 14세 미만은 커뮤니티 서비스를\n이용할 수 없습니다.",
+  "maintenance_title": "잠시 점검 중이에요",
+  "maintenance_message": "더 나은 서비스를 위해 점검하고 있어요.\n잠시 후 다시 이용해 주세요.",
+  "maintenance_retry": "다시 시도",
+  "force_update_title": "업데이트가 필요해요",
+  "force_update_message": "원활한 이용을 위해 최신 버전으로\n업데이트해 주세요.",
+  "force_update_action": "업데이트하러 가기",
+  "recommended_update_title": "새 버전이 나왔어요",
+  "recommended_update_message": "최신 버전에서 더 안정적으로 이용할 수 있어요.\n지금 업데이트할까요?",
+  "recommended_update_confirm": "업데이트"
 }

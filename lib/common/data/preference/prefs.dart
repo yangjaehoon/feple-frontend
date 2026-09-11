@@ -29,6 +29,11 @@ class Prefs {
   static PreferenceItem<bool> pendingHomeForceRefreshFor(int userId) =>
       BoolPreferenceItem('pendingHomeForceRefresh_$userId', false);
 
+  /// 권장 업데이트(강제 아님) 안내를 마지막으로 띄운 날짜(`yyyy-MM-dd`).
+  /// 하루 한 번만 띄우기 위한 기록 — 빈 문자열이면 아직 띄운 적 없음.
+  static final recommendedUpdatePromptedOn =
+      StringPreferenceItem('recommendedUpdatePromptedOn', '');
+
   static final postCreatedCount = IntPreferenceItem('postCreatedCount', 0);
   static final artistFollowedCount = IntPreferenceItem('artistFollowedCount', 0);
   static final reviewRequested = BoolPreferenceItem('reviewRequested', false);

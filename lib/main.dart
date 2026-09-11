@@ -26,8 +26,15 @@ import 'network/api_cache_store.dart';
 import 'network/dio_client.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'common/theme/custom_theme_scope.dart';
+import 'common/util/app_version.dart';
+import 'common/util/update_prompt.dart';
 import 'login/s_age_gate.dart';
+import 'model/app_config_model.dart';
+import 'service/app_config_service.dart';
 import 'screen/onboarding/s_onboarding.dart';
+import 'screen/s_force_update.dart';
+import 'screen/s_maintenance.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 void main() async {
   final bindings = WidgetsFlutterBinding.ensureInitialized();
@@ -86,6 +93,12 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool _isBanDialogShowing = false;
+
+  /// 콜드스타트 시 조회한 앱 전역 설정. 조회 실패 시 null → 아무것도 막지 않음.
+  AppConfigModel? _appConfig;
+
+  /// 현재 앱 버전(빌드 번호 없는 "1.2.0"). 강제/권장 업데이트 판단에 쓴다.
+  String? _currentVersion;
 
   void _onOnboardingComplete() {
     setState(() {});
@@ -156,13 +169,122 @@ class _MyAppState extends State<MyApp> {
     try {
       await Future.wait([
         _doAutoLogin(userProvider).timeout(const Duration(seconds: 40)),
+        _loadAppConfig(),
         Future.delayed(const Duration(milliseconds: 500)),
       ]);
     } on TimeoutException {
       log('Auto login timed out');
     } finally {
       FlutterNativeSplash.remove();
+      _maybePromptRecommendedUpdate();
     }
+  }
+
+  /// 앱 전역 설정과 현재 버전을 조회한다. 실패해도 절대 던지지 않는다 —
+  /// 설정을 못 받으면 강제 업데이트·점검 게이트 없이 정상 진입한다.
+  ///
+  /// 설정 조회와 버전 조회는 서로 독립적으로 처리한다 — 버전 조회가 실패해도
+  /// (점검 판단엔 버전이 필요 없으므로) 점검 게이트는 그대로 동작해야 한다.
+  Future<void> _loadAppConfig() async {
+    final config = await _fetchAppConfig();
+    final version = await _readCurrentVersion();
+    if (!mounted) return;
+    setState(() {
+      if (config != null) _appConfig = config;
+      if (version != null) _currentVersion = version;
+    });
+  }
+
+  Future<AppConfigModel?> _fetchAppConfig() async {
+    try {
+      return await sl<AppConfigService>()
+          .fetch()
+          .timeout(const Duration(seconds: 6));
+    } catch (e) {
+      log('App config load failed (ignored): $e');
+      return null;
+    }
+  }
+
+  Future<String?> _readCurrentVersion() async {
+    try {
+      final info =
+          await PackageInfo.fromPlatform().timeout(const Duration(seconds: 6));
+      return info.version;
+    } catch (e) {
+      log('App version lookup failed (ignored): $e');
+      return null;
+    }
+  }
+
+  /// 점검 화면의 "다시 시도" — 설정만 다시 조회한다.
+  Future<void> _reloadAppConfig() async {
+    final config = await _fetchAppConfig();
+    if (config != null && mounted) setState(() => _appConfig = config);
+  }
+
+  void _maybePromptRecommendedUpdate() {
+    if (!mounted) return;
+    final config = _appConfig;
+    final currentVersion = _currentVersion;
+    if (config == null || currentVersion == null) return;
+    // 점검·강제 업데이트 게이트나 나이 확인·온보딩 화면 위에 권장 업데이트
+    // 다이얼로그가 겹치지 않도록, 실제 앱 화면일 때만 띄운다.
+    if (_rootScreen(Provider.of<UserProvider>(context, listen: false)) is! App) {
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final ctx = App.navigatorKey.currentContext;
+      if (ctx == null || !ctx.mounted) return;
+      unawaited(maybePromptRecommendedUpdate(
+        ctx,
+        config: config,
+        currentVersion: currentVersion,
+      ));
+    });
+  }
+
+  /// 점검·강제 업데이트 게이트. 해당하면 그 화면을, 아니면 null을 반환한다.
+  Widget? _appGateScreen() {
+    final config = _appConfig;
+    if (config == null) return null;
+    if (config.maintenance) {
+      return MaintenanceScreen(
+        message: config.maintenanceMessage,
+        onRetry: _reloadAppConfig,
+      );
+    }
+    final currentVersion = _currentVersion;
+    if (currentVersion != null &&
+        isVersionBelow(currentVersion, config.minSupportedVersion)) {
+      return const ForceUpdateScreen();
+    }
+    return null;
+  }
+
+  /// 콜드스타트 이후 루트에 무엇을 보여줄지 한곳에서 결정한다.
+  /// [build]의 `home`과 [_maybePromptRecommendedUpdate]의 화면 판정이 갈라지지
+  /// 않도록 공유한다.
+  Widget _rootScreen(UserProvider userProvider) {
+    // 점검 모드·강제 업데이트는 로그인/게스트 라우팅보다 우선한다.
+    final gate = _appGateScreen();
+    if (gate != null) return gate;
+
+    final user = userProvider.user;
+    if (user == null) {
+      // 게스트 모드 — 페스티벌 목록·검색·커뮤니티 게시판 등 비계정 기능은
+      // 로그인 없이 바로 접근 가능해야 함 (Apple 가이드라인 5.1.1(v)).
+      return const App();
+    }
+    if (user.ageVerificationRequired) {
+      // 만 14세 미만 커뮤니티 이용 차단 (App Store 심사 5.1.1) — 온보딩·홈
+      // 진입 전에 생년월일을 1회 확인한다.
+      return AgeGateScreen(onVerified: _onAgeVerified);
+    }
+    if (!Prefs.isOnboardingCompleted(user.id)) {
+      return OnboardingScreen(userId: user.id, onComplete: _onOnboardingComplete);
+    }
+    return const App();
   }
 
   Future<void> _doAutoLogin(UserProvider userProvider) async {
@@ -217,29 +339,10 @@ class _MyAppState extends State<MyApp> {
             title: 'Feple',
             theme: context.themeType.themeData,
             builder: clampTextScaleBuilder,
+            // 점검·강제 업데이트 게이트와 게스트/나이확인/온보딩 라우팅은
+            // [_rootScreen]에서 한곳에 모아 결정한다.
             home: Consumer<UserProvider>(
-              builder: (context, userProvider, _) {
-                final user = userProvider.user;
-                if (user == null) {
-                  // 게스트 모드 — 페스티벌 목록·검색·커뮤니티 게시판 등 비계정
-                  // 기능은 로그인 없이 바로 접근 가능해야 함 (Apple 가이드라인
-                  // 5.1.1(v)). 계정 개인화 데이터뿐인 홈 탭은 RequireLoginGate가,
-                  // 마이페이지 탭은 MyPageFragment 자체가 게스트 뷰(로그인 CTA +
-                  // 문의·약관·방침)로 처리한다.
-                  return const App();
-                } else if (user.ageVerificationRequired) {
-                  // 만 14세 미만 커뮤니티 이용 차단 (App Store 심사 5.1.1) — 온보딩·홈
-                  // 진입 전에 생년월일을 1회 확인한다.
-                  return AgeGateScreen(onVerified: _onAgeVerified);
-                } else if (!Prefs.isOnboardingCompleted(user.id)) {
-                  return OnboardingScreen(
-                    userId: user.id,
-                    onComplete: _onOnboardingComplete,
-                  );
-                } else {
-                  return const App();
-                }
-              },
+              builder: (context, userProvider, _) => _rootScreen(userProvider),
             ),
             localizationsDelegates: context.localizationDelegates,
             supportedLocales: context.supportedLocales,

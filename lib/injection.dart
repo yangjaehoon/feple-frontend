@@ -10,6 +10,7 @@ import 'service/artist_photo_uploadable.dart';
 import 'service/cache_prefetch_service.dart';
 import 'service/artist_photo_service.dart';
 import 'service/artist_schedule_service.dart';
+import 'service/app_config_service.dart';
 import 'service/artist_service.dart';
 import 'service/auth_service.dart';
 import 'service/certification_service.dart';
@@ -49,6 +50,7 @@ void setupDependencies() {
   sl.registerLazySingleton<FcmTokenService>(() => FcmTokenService(FirebaseMessaging.instance));
   sl.registerLazySingleton<FcmService>(() => FcmService.instance);
 
+  sl.registerLazySingleton<AppConfigService>(() => AppConfigService());
   sl.registerLazySingleton<ArtistFollowService>(() => ArtistFollowService(userService: sl<UserService>()));
   sl.registerLazySingleton<ArtistSuggestionService>(() => ArtistSuggestionService());
   sl.registerLazySingleton<FestivalSuggestionService>(() => FestivalSuggestionService());

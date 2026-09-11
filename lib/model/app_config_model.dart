@@ -5,8 +5,9 @@ import 'json_reader.dart';
 /// 조회에 실패하면 이 모델 없이(null) 진행한다 — 강제 업데이트·점검 게이트를
 /// 걸지 않으므로 네트워크 장애로 사용자가 앱에 못 들어가는 일이 없다.
 ///
-/// 서버는 홈 배너 공지(`noticeMessage`)·기능 스위치(`features`)도 함께 내려주지만,
-/// 그 소비는 후속 작업이라 여기서는 파싱하지 않는다.
+/// 서버는 기능 스위치(`features`)도 함께 내려주지만, 아직 서버에서 끌 만한
+/// 기능이 정해지지 않아 여기서는 파싱하지 않는다 — 실제로 게이트할 기능이
+/// 생기면 그때 필드와 소비처를 함께 추가한다.
 class AppConfigModel {
   /// 이 버전 미만 클라이언트는 강제 업데이트 대상 (세맨틱 버전 "1.2.0").
   final String minSupportedVersion;
@@ -20,11 +21,15 @@ class AppConfigModel {
   /// 점검 안내 문구. null이면 클라이언트 기본 문구를 쓴다.
   final String? maintenanceMessage;
 
+  /// 앱 상단 공지 배너 문구. null·빈 문자열이면 배너 미노출.
+  final String? noticeMessage;
+
   const AppConfigModel({
     required this.minSupportedVersion,
     required this.latestVersion,
     required this.maintenance,
     required this.maintenanceMessage,
+    required this.noticeMessage,
   });
 
   factory AppConfigModel.fromJson(Map<String, dynamic> json) => AppConfigModel(
@@ -32,6 +37,7 @@ class AppConfigModel {
         latestVersion: json.str('latestVersion', '0.0.0'),
         maintenance: json.boolean('maintenance'),
         maintenanceMessage: _blankToNull(json.strOrNull('maintenanceMessage')),
+        noticeMessage: _blankToNull(json.strOrNull('noticeMessage')),
       );
 
   static String? _blankToNull(String? value) =>

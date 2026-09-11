@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
+import 'package:feple/common/widget/w_notice_banner.dart';
 import 'package:feple/common/widget/w_offline_banner.dart';
 import 'package:feple/screen/main/tab/tab_item.dart';
 import 'package:feple/screen/main/tab/w_tab_navigator.dart';
@@ -13,7 +14,10 @@ import '../../common/common.dart';
 import '../../provider/user_provider.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  /// 앱 상단 공지 배너 문구 (`AppConfigModel.noticeMessage`). null이면 미노출.
+  final String? noticeMessage;
+
+  const MainScreen({super.key, this.noticeMessage});
 
   @override
   State<MainScreen> createState() => MainScreenState();
@@ -133,30 +137,33 @@ class MainScreenState extends State<MainScreen>
   @override
   Widget build(BuildContext context) {
     context.locale; // Subscribe to locale changes so bottom nav labels re-translate immediately
-    return OfflineBanner(
-      child: PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (didPop, result) async {
-          if (didPop) return;
-          final navigator = _currentTabNavigationKey.currentState;
-          if (navigator != null && navigator.canPop()) {
-            navigator.pop();
-          } else if (_currentTab != _landingTab) {
-            _changeTab(tabs.indexOf(_landingTab));
-          } else {
-            final confirmed = await showConfirmDialog(
-              context,
-              title: 'exit_app'.tr(),
-              content: 'exit_app_confirm'.tr(),
-              confirmLabel: 'confirm'.tr(),
-            );
-            if (confirmed) unawaited(SystemNavigator.pop());
-          }
-        },
-        child: Scaffold(
-          extendBody: extendBody,
-          body: _buildAnimatedBody(),
-          bottomNavigationBar: _buildAnimatedBottomNav(),
+    return NoticeBanner(
+      message: widget.noticeMessage,
+      child: OfflineBanner(
+        child: PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) async {
+            if (didPop) return;
+            final navigator = _currentTabNavigationKey.currentState;
+            if (navigator != null && navigator.canPop()) {
+              navigator.pop();
+            } else if (_currentTab != _landingTab) {
+              _changeTab(tabs.indexOf(_landingTab));
+            } else {
+              final confirmed = await showConfirmDialog(
+                context,
+                title: 'exit_app'.tr(),
+                content: 'exit_app_confirm'.tr(),
+                confirmLabel: 'confirm'.tr(),
+              );
+              if (confirmed) unawaited(SystemNavigator.pop());
+            }
+          },
+          child: Scaffold(
+            extendBody: extendBody,
+            body: _buildAnimatedBody(),
+            bottomNavigationBar: _buildAnimatedBottomNav(),
+          ),
         ),
       ),
     );

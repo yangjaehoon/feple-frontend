@@ -5,7 +5,10 @@ import 'package:flutter/material.dart';
 class App extends StatefulWidget {
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
-  const App({super.key});
+  /// 앱 상단 공지 배너 문구 (`AppConfigModel.noticeMessage`). null이면 미노출.
+  final String? noticeMessage;
+
+  const App({super.key, this.noticeMessage});
 
   @override
   State<App> createState() => AppState();
@@ -26,7 +29,7 @@ class AppState extends State<App> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return const MainScreen();
+    return MainScreen(noticeMessage: widget.noticeMessage);
   }
 
   @override

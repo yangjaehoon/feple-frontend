@@ -274,7 +274,7 @@ class _MyAppState extends State<MyApp> {
     if (user == null) {
       // 게스트 모드 — 페스티벌 목록·검색·커뮤니티 게시판 등 비계정 기능은
       // 로그인 없이 바로 접근 가능해야 함 (Apple 가이드라인 5.1.1(v)).
-      return const App();
+      return App(noticeMessage: _appConfig?.noticeMessage);
     }
     if (user.ageVerificationRequired) {
       // 만 14세 미만 커뮤니티 이용 차단 (App Store 심사 5.1.1) — 온보딩·홈
@@ -284,7 +284,7 @@ class _MyAppState extends State<MyApp> {
     if (!Prefs.isOnboardingCompleted(user.id)) {
       return OnboardingScreen(userId: user.id, onComplete: _onOnboardingComplete);
     }
-    return const App();
+    return App(noticeMessage: _appConfig?.noticeMessage);
   }
 
   Future<void> _doAutoLogin(UserProvider userProvider) async {

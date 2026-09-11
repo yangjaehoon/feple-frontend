@@ -33,7 +33,8 @@ void main() {
   test('앱 설정을 파싱한다', () async {
     server.enqueue(
       body: '{"minSupportedVersion":"1.2.0","latestVersion":"1.3.0",'
-          '"maintenance":false,"maintenanceMessage":null}',
+          '"maintenance":false,"maintenanceMessage":null,'
+          '"noticeMessage":"Notice"}',
       headers: {'Content-Type': 'application/json'},
     );
 
@@ -43,6 +44,7 @@ void main() {
     expect(config.latestVersion, '1.3.0');
     expect(config.maintenance, isFalse);
     expect(config.maintenanceMessage, isNull);
+    expect(config.noticeMessage, 'Notice');
   });
 
   test('점검 모드 응답을 파싱한다', () async {

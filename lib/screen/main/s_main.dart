@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:collection/collection.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
@@ -223,10 +225,7 @@ class MainScreenState extends State<MainScreen>
 
   Widget _buildBottomNavigationBar(BuildContext context) {
     final colors = context.appColors;
-    final systemBottomInset = MediaQuery.paddingOf(context).bottom;
-    final double bottomInset = systemBottomInset
-        .clamp(AppDimens.bottomNavMinInset, AppDimens.bottomNavMaxInset)
-        .toDouble();
+    final bottomInset = _resolveBottomNavInset(context);
     return Container(
       decoration: BoxDecoration(
         color: colors.bottomNavBg,
@@ -258,6 +257,30 @@ class MainScreenState extends State<MainScreen>
         ),
       ),
     );
+  }
+
+  // 폰 폭에서는 시스템 하단 inset을 (8~20)으로 clamp한다(AppDimens.bottomNavMaxInset
+  // 주석 참고). 그런데 태블릿급 폭(펼친 폴더블 등)에서는 Android가 대화면 태스크바를
+  // 띄우고 이를 60dp 안팎의 navigationBars inset으로 보고하는데, 그대로 20으로
+  // 깎으면 탭바 라벨이 실제로 태스크바에 가려진다. 태블릿급 폭에서만 상한을
+  // 시스템 inset 그대로 따르도록 완화해 이 겹침을 막는다.
+  //
+  // Flutter에는 "이 inset이 태스크바 때문인지"를 구분하는 API가 없어 화면 폭을
+  // 대리 신호로 쓴다 — 그 결과 3버튼 내비게이션을 쓰는 일반 태블릿(inset
+  // ~48dp)도 20 대신 48을 그대로 쓰게 돼 탭바 아래 여백이 좀 더 넓어질 수 있다.
+  // 앱이 세로 고정(android:screenOrientation="portrait" + portraitUp)이라 폰이
+  // 가로로 눕는 경우는 없지만, 데스크톱 모드/자유형 창처럼 폭만 넓은 멀티윈도우
+  // 상태에서도 같은 트레이드오프가 적용된다. 의도된 선택: 여백이 넓어지는 건
+  // 미관상 아쉬운 정도지만, 태스크바가 실제로 탭을 가려 못 누르게 되는 건
+  // 기능 결함이라 후자를 우선한다.
+  double _resolveBottomNavInset(BuildContext context) {
+    final systemBottomInset = MediaQuery.paddingOf(context).bottom;
+    final isTabletWidth =
+        MediaQuery.sizeOf(context).width >= AppDimens.tabletBreakpointWidth;
+    final maxInset = isTabletWidth
+        ? math.max(AppDimens.bottomNavMaxInset, systemBottomInset)
+        : AppDimens.bottomNavMaxInset;
+    return systemBottomInset.clamp(AppDimens.bottomNavMinInset, maxInset).toDouble();
   }
 
   List<NavigationDestination> navigationDestinations() {

@@ -11,12 +11,20 @@ class AppDimens {
   /// 하단 탭바 콘텐츠(아이콘+라벨) 높이.
   /// iOS 네이티브 UITabBar(49) 기준에 M3 라벨 여유를 더한 값.
   static const double bottomNavContentHeight = 54.0;
-  /// 하단 탭바가 흡수하는 시스템 하단 inset의 하한/상한.
+  /// 하단 탭바가 흡수하는 시스템 하단 inset의 하한/상한(폰 폭 기준).
   /// 시스템 값을 그대로 통과시키지 않고 이 범위로 clamp — iOS 홈 인디케이터
   /// 영역(34)을 전부 비워두면 흰 카드 스타일상 여백이 과해 보이고,
   /// 0으로 두면 라벨이 홈 인디케이터에 붙는다.
+  /// [tabletBreakpointWidth] 이상 폭에서는 이 상한을 쓰지 않는다 —
+  /// 펼친 폴더블 등 태블릿급 화면에서 Android가 띄우는 대화면 태스크바가
+  /// navigationBars inset을 60dp 안팎으로 잡는데, 20으로 깎으면 탭바가
+  /// 실제로 태스크바에 가려진다.
   static const double bottomNavMinInset = 8.0;
   static const double bottomNavMaxInset = 20.0;
+
+  // ── Responsive breakpoints ──
+  /// Material 기준 "medium" 폭 — 이 이상을 태블릿급(펼친 폴더블 포함)으로 본다.
+  static const double tabletBreakpointWidth = 600.0;
 
   // ── Cupertino picker (iOS 전용 모달 시트) ──
   static const double cupertinoPickerHeight = 260.0;

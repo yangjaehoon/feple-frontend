@@ -20,33 +20,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class MockFestivalService extends Mock implements FestivalService {}
-
-class MockNotificationCountable extends Mock implements NotificationCountable {}
-
-/// 실제 UserProvider.logout()은 secure storage/FCM 등 플랫폼 채널을 기다려
-/// 위젯 테스트에서 멈추므로, 로그인 상태만 토글하는 최소 페이크를 쓴다.
-/// (MainScreen은 UserProvider 리스너로만 로그아웃을 감지한다.)
-class _FakeUserProvider extends ChangeNotifier implements UserProvider {
-  AppUser? _user;
-
-  @override
-  AppUser? get user => _user;
-
-  @override
-  int? get currentUserId => _user?.id;
-
-  @override
-  String? get currentProfileImageUrl => _user?.profileImageUrl;
-
-  void setUserForTest(AppUser? value) {
-    _user = value;
-    notifyListeners();
-  }
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
+import 's_main_test_fakes.dart';
 
 Future<void> _pumpApp(WidgetTester tester, UserProvider userProvider) async {
   await tester.pumpWidget(
@@ -118,7 +92,7 @@ void main() {
       '로그아웃하면 탭의 중첩 Navigator에 쌓여 있던 화면이 걷힌다',
       (tester) async {
     // 게스트로 시작 — 랜딩 탭은 비계정 콘텐츠인 검색 탭.
-    final userProvider = _FakeUserProvider();
+    final userProvider = FakeUserProvider();
     await _pumpApp(tester, userProvider);
 
     expect(find.byType(SearchFragment), findsOneWidget);

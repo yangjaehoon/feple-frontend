@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/model/festival_preview.dart';
 import 'package:feple/model/photo_destination.dart';
+import 'package:feple/screen/main/tab/search/artist_page/image_collection/photo_category_style.dart';
 import 'package:flutter/material.dart';
 
 /// 사진 업로드/수정 시 페스티벌 또는 프로필·배경 카테고리를 고르는 공용 드롭다운.

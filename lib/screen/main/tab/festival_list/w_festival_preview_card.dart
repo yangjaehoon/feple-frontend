@@ -5,7 +5,7 @@ import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
-import 'package:feple/model/festival_genre_style.dart';
+import 'package:feple/screen/main/tab/search/festival_information/festival_poster_style.dart';
 import 'package:feple/model/festival_preview.dart';
 
 /// 카드에 노출할 장르 태그 최대 개수 — 카드가 작아 3개 이상이면 줄바꿈으로 높이가 넘칠 수 있음.

@@ -1,6 +1,7 @@
 import 'package:feple/model/festival_diary_model.dart';
 
 import 'json_reader.dart';
+import 'spring_page.dart';
 
 /// 페스티벌 상세의 공개 일기 피드 (Spring Page 응답 매핑용)
 class FestivalDiaryPage {
@@ -15,7 +16,7 @@ class FestivalDiaryPage {
           .objectList('content')
           .map(FestivalDiaryModel.fromJson)
           .toList(),
-      hasNext: !json.boolean('last', true),
+      hasNext: springPageHasNext(json),
     );
   }
 }

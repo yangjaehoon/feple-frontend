@@ -1,6 +1,7 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/responsive_size.dart';
+import 'package:feple/common/widget/w_auth_header_text.dart';
 import 'package:feple/common/widget/w_icon_circle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/model/user_model.dart';
@@ -252,16 +253,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     final rs = ResponsiveSize(context);
     return Column(
       children: [
-        Text(
-          'verify_email_title'.tr(),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeDisplay,
-            fontWeight: FontWeight.w800,
-            color: colors.textTitle,
-            letterSpacing: -0.5,
-          ),
-          textAlign: TextAlign.center,
-        ),
+        AuthTitleText('verify_email_title'.tr(), textAlign: TextAlign.center),
         SizedBox(height: rs.h(10)),
         _buildEmailHighlighted(colors),
         SizedBox(height: rs.h(6)),

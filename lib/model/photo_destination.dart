@@ -8,9 +8,9 @@ sealed class PhotoDestination {
   /// 서버에 저장되는 description 문자열
   String get description;
 
-  static const daily = PhotoCategory._('photo_category_daily', '일상 사진');
-  static const sns = PhotoCategory._('photo_category_sns', 'SNS 사진');
-  static const other = PhotoCategory._('photo_category_other', '');
+  static const daily = PhotoCategory._(PhotoCategoryKind.daily, '일상 사진');
+  static const sns = PhotoCategory._(PhotoCategoryKind.sns, 'SNS 사진');
+  static const other = PhotoCategory._(PhotoCategoryKind.other, '');
   static const categories = [daily, sns, other];
 
   factory PhotoDestination.fromDescription(
@@ -40,10 +40,14 @@ class FestivalDestination extends PhotoDestination {
   int get hashCode => festival.id.hashCode;
 }
 
+/// 표시용 라벨(i18n key)은 모델 레이어에 두지 않는다 — `PhotoCategoryStyle`
+/// extension(`lib/screen/main/tab/search/artist_page/image_collection/photo_category_style.dart`) 참조.
+enum PhotoCategoryKind { daily, sns, other }
+
 class PhotoCategory extends PhotoDestination {
-  final String labelKey;
+  final PhotoCategoryKind kind;
   final String _rawDescription;
-  const PhotoCategory._(this.labelKey, this._rawDescription);
+  const PhotoCategory._(this.kind, this._rawDescription);
 
   @override
   String get description => _rawDescription;

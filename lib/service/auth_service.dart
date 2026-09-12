@@ -67,9 +67,9 @@ class AuthService {
 
   Future<app.AppUser> loginWithGoogle() => _googleAuth.login();
 
-  // ── Firebase 에러 메시지 변환 ──
+  // ── Firebase 에러 코드 → i18n 키 변환 (번역은 호출부에서 .tr()) ──
 
-  String firebaseErrorMessage(String code) => _errorTranslator.translate(code);
+  String firebaseErrorKey(String code) => _errorTranslator.translate(code);
 
   // ── 서버 리프레시 토큰 취소 ──
 

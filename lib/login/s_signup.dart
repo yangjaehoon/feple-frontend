@@ -10,6 +10,7 @@ import 'package:feple/common/widget/w_icon_circle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_support_link_row.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
+import 'package:feple/common/widget/w_auth_header_text.dart';
 import 'package:feple/common/widget/w_nickname_field.dart';
 import 'package:feple/login/s_verify_email.dart';
 import 'package:feple/login/w_password_checklist.dart';
@@ -143,7 +144,7 @@ class _SignupScreenState extends State<SignupScreen> {
       );
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
-      final msg = AuthService.instance.firebaseErrorMessage(e.code);
+      final msg = AuthService.instance.firebaseErrorKey(e.code).tr();
       setState(() {
         // 필드를 고치지 않고 바로 재시도하면 onChanged로 지워지지 않으므로,
         // 이전 시도의 에러가 새 에러와 함께 남지 않도록 항상 셋 다 먼저 초기화
@@ -204,7 +205,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       child: AutofillGroup(
                         child: Column(
                           children: [
-                            _buildHeader(themeColors),
+                            _buildHeader(),
                             _buildForm(themeColors),
                             SizedBox(height: rs.h(24)),
                             if (_generalError != null)
@@ -276,30 +277,15 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  Widget _buildHeader(AbstractThemeColors themeColors) {
+  Widget _buildHeader() {
     final rs = ResponsiveSize(context);
     return Column(
       children: [
         const IconCircle(icon: Icons.person_add_rounded, sizeAt390: 76),
         SizedBox(height: rs.h(20)),
-        Text(
-          'signup'.tr(),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeDisplay,
-            fontWeight: FontWeight.w800,
-            color: themeColors.textTitle,
-            letterSpacing: -0.5,
-          ),
-        ),
+        AuthTitleText('signup'.tr()),
         SizedBox(height: rs.h(6)),
-        Text(
-          'signup_subtitle'.tr(),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeMd,
-            color: themeColors.textSecondary,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        AuthSubtitleText('signup_subtitle'.tr()),
         SizedBox(height: rs.h(26)),
       ],
     );

@@ -28,6 +28,8 @@ class EditProfileWidget extends StatefulWidget {
 }
 
 class _EditProfileWidgetState extends State<EditProfileWidget> {
+  static const _nicknameChangeLockDays = 90;
+
   XFile? _pickedImage;
   bool _isSaving = false;
   String _originalNickname = '';
@@ -64,14 +66,14 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
 
   void _initNicknameLock(DateTime? changedAt) {
     if (changedAt == null) return;
-    final nextChange = changedAt.add(const Duration(days: 90));
+    final nextChange = changedAt.add(const Duration(days: _nicknameChangeLockDays));
     final now = DateTime.now();
     if (nextChange.isAfter(now)) {
       final diffHours = nextChange.difference(now).inHours;
       _isNicknameLocked = true;
-      // +23은 시간을 일 단위로 올림 처리(단순 나눗셈이면 1시간 남아도 0일 표시),
-      // 상한 90은 위 90일 잠금 기간과 동일해야 함
-      _nicknameDaysRemaining = ((diffHours + 23) ~/ 24).clamp(1, 90);
+      // +23은 시간을 일 단위로 올림 처리(단순 나눗셈이면 1시간 남아도 0일 표시)
+      _nicknameDaysRemaining =
+          ((diffHours + 23) ~/ 24).clamp(1, _nicknameChangeLockDays);
     }
   }
 

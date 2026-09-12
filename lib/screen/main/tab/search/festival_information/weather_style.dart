@@ -20,4 +20,17 @@ extension WeatherConditionIcon on WeatherModel {
           SkyCode.sunny => '☀️',
         },
       };
+
+  // 강수 형태가 있으면 우선, 없으면 하늘 상태로 아이콘 결정
+  String get conditionKey => switch (ptyCode) {
+        PtyCode.rain => 'weather_rain',
+        PtyCode.rainSnow => 'weather_snow_rain',
+        PtyCode.snow => 'weather_snow',
+        PtyCode.shower => 'weather_shower',
+        PtyCode.none => switch (skyCode) {
+          SkyCode.cloudy => 'weather_cloudy',
+          SkyCode.overcast => 'weather_overcast',
+          SkyCode.sunny => 'weather_sunny',
+        },
+      };
 }

@@ -1,6 +1,7 @@
 import 'package:feple/model/notice_model.dart';
 
 import 'json_reader.dart';
+import 'spring_page.dart';
 
 /// 공지사항 목록 (Spring Page 응답 매핑용)
 class NoticePage {
@@ -12,7 +13,7 @@ class NoticePage {
   factory NoticePage.fromJson(Map<String, dynamic> json) {
     return NoticePage(
       notices: json.objectList('content').map(NoticeModel.fromJson).toList(),
-      hasNext: !json.boolean('last', true),
+      hasNext: springPageHasNext(json),
     );
   }
 }

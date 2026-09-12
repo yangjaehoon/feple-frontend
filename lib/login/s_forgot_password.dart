@@ -1,8 +1,8 @@
 import 'package:feple/common/common.dart';
-import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/email_validator.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
+import 'package:feple/common/widget/w_auth_header_text.dart';
 import 'package:feple/login/w_form_error_text.dart';
 import 'package:feple/common/widget/w_icon_circle.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
@@ -65,7 +65,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         setState(() => _sent = true);
         return;
       }
-      final msg = AuthService.instance.firebaseErrorMessage(e.code);
+      final msg = AuthService.instance.firebaseErrorKey(e.code).tr();
       setState(() {
         if (e.code == 'invalid-email') {
           _emailError = msg;
@@ -123,7 +123,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         children: [
           const IconCircle(icon: Icons.lock_reset_rounded),
           SizedBox(height: rs.h(20)),
-          _buildHeader(colors),
+          _buildHeader(),
           SizedBox(height: rs.h(28)),
           _buildEmailField(),
           if (_errorMessage != null) FormErrorText(message: _errorMessage!),
@@ -139,29 +139,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 
-  Widget _buildHeader(AbstractThemeColors colors) {
+  Widget _buildHeader() {
     final rs = ResponsiveSize(context);
     return Column(
       children: [
-        Text(
-          'reset_password'.tr(),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeDisplay,
-            fontWeight: FontWeight.w800,
-            color: colors.textTitle,
-            letterSpacing: -0.5,
-          ),
-        ),
+        AuthTitleText('reset_password'.tr()),
         SizedBox(height: rs.h(6)),
-        Text(
+        AuthSubtitleText(
           'reset_password_subtitle'.tr(),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeMd,
-            color: colors.textSecondary,
-            fontWeight: FontWeight.w500,
-            height: 1.5,
-          ),
           textAlign: TextAlign.center,
+          height: 1.5,
         ),
       ],
     );
@@ -195,26 +182,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       children: [
         const IconCircle(icon: Icons.mark_email_read_rounded),
         SizedBox(height: rs.h(20)),
-        Text(
-          'password_reset_sent_title'.tr(),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeDisplay,
-            fontWeight: FontWeight.w800,
-            color: colors.textTitle,
-            letterSpacing: -0.5,
-          ),
-          textAlign: TextAlign.center,
-        ),
+        AuthTitleText('password_reset_sent_title'.tr(),
+            textAlign: TextAlign.center),
         SizedBox(height: rs.h(10)),
-        Text(
+        AuthSubtitleText(
           'password_reset_sent_desc'.tr(args: [_emailController.text.trim()]),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeMd,
-            color: colors.textSecondary,
-            fontWeight: FontWeight.w500,
-            height: 1.6,
-          ),
           textAlign: TextAlign.center,
+          height: 1.6,
         ),
         SizedBox(height: rs.h(32)),
         LoadingButton(

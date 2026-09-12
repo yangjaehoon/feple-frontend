@@ -8,6 +8,7 @@ import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/common/widget/w_support_link_row.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
+import 'package:feple/common/widget/w_auth_header_text.dart';
 import 'package:feple/login/s_signup.dart';
 import 'package:feple/login/w_form_error_text.dart';
 import 'package:feple/login/s_verify_email.dart';
@@ -84,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
                     child: AutofillGroup(
                       child: Column(
                         children: [
-                          _buildHeader(themeColors),
+                          _buildHeader(),
                           _buildForm(themeColors),
                           SizedBox(height: rs.h(10)),
                           _buildForgotPassword(themeColors),
@@ -125,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     );
   }
 
-  Widget _buildHeader(AbstractThemeColors themeColors) {
+  Widget _buildHeader() {
     final rs = ResponsiveSize(context);
     final logoSize = rs.w(92);
     return Column(
@@ -140,24 +141,9 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
           ),
         ),
         SizedBox(height: rs.h(18)),
-        Text(
-          'welcome'.tr(),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeDisplay,
-            fontWeight: FontWeight.w800,
-            color: themeColors.textTitle,
-            letterSpacing: -0.5,
-          ),
-        ),
+        AuthTitleText('welcome'.tr()),
         SizedBox(height: rs.h(6)),
-        Text(
-          'login_subtitle'.tr(),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeMd,
-            color: themeColors.textSecondary,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        AuthSubtitleText('login_subtitle'.tr()),
         SizedBox(height: rs.h(22)),
       ],
     );
@@ -387,7 +373,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
       );
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
-      final msg = AuthService.instance.firebaseErrorMessage(e.code);
+      final msg = AuthService.instance.firebaseErrorKey(e.code).tr();
       if (e.code == 'invalid-email') {
         setState(() => _emailError = msg);
       } else {

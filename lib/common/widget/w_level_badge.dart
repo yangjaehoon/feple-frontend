@@ -13,32 +13,23 @@ class LevelBadge extends StatelessWidget {
     this.fontSize = 14,
   });
 
+  static const Map<String, (String emoji, String labelKey)> _levels = {
+    'SEED': ('🌰', 'level_seed'),
+    'SPROUT': ('🌱', 'level_sprout'),
+    'BLOOM': ('🌸', 'level_bloom'),
+    'FESTIVAL': ('🎪', 'level_festival'),
+    'LEGEND': ('👑', 'level_legend'),
+  };
+
   @override
   Widget build(BuildContext context) {
-    final emoji = _emoji(authorLevel);
-    if (emoji == null) return const SizedBox.shrink();
+    final level = _levels[authorLevel];
+    if (level == null) return const SizedBox.shrink();
+    final (emoji, labelKey) = level;
 
     return Tooltip(
-      message: _label(authorLevel),
+      message: labelKey.tr(),
       child: Text(emoji, style: TextStyle(fontSize: fontSize)),
     );
   }
-
-  static String? _emoji(String? level) => switch (level) {
-        'SEED'     => '🌰',
-        'SPROUT'   => '🌱',
-        'BLOOM'    => '🌸',
-        'FESTIVAL' => '🎪',
-        'LEGEND'   => '👑',
-        _          => null,
-      };
-
-  static String _label(String? level) => switch (level) {
-        'SEED'     => 'level_seed'.tr(),
-        'SPROUT'   => 'level_sprout'.tr(),
-        'BLOOM'    => 'level_bloom'.tr(),
-        'FESTIVAL' => 'level_festival'.tr(),
-        'LEGEND'   => 'level_legend'.tr(),
-        _          => '',
-      };
 }

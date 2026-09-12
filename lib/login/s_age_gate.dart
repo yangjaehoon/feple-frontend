@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/responsive_size.dart';
+import 'package:feple/common/widget/w_auth_header_text.dart';
 import 'package:feple/common/widget/w_icon_circle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/provider/user_provider.dart';
@@ -112,26 +113,12 @@ class _AgeGateScreenState extends State<AgeGateScreen> {
       children: [
         const IconCircle(icon: Icons.cake_outlined, sizeAt390: 76),
         SizedBox(height: rs.h(20)),
-        Text(
-          'age_gate_title'.tr(),
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeDisplay,
-            fontWeight: FontWeight.w800,
-            color: colors.textTitle,
-            letterSpacing: -0.5,
-          ),
-        ),
+        AuthTitleText('age_gate_title'.tr(), textAlign: TextAlign.center),
         SizedBox(height: rs.h(10)),
-        Text(
+        AuthSubtitleText(
           'age_gate_subtitle'.tr(),
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeMd,
-            color: colors.textSecondary,
-            height: 1.6,
-            fontWeight: FontWeight.w500,
-          ),
+          height: 1.6,
         ),
         SizedBox(height: rs.h(28)),
         InkWell(
@@ -207,26 +194,13 @@ class _RestrictedView extends StatelessWidget {
       children: [
         const IconCircle(icon: Icons.lock_outline_rounded, sizeAt390: 76),
         SizedBox(height: rs.h(20)),
-        Text(
-          'age_gate_restricted_title'.tr(),
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeDisplay,
-            fontWeight: FontWeight.w800,
-            color: colors.textTitle,
-            letterSpacing: -0.5,
-          ),
-        ),
+        AuthTitleText('age_gate_restricted_title'.tr(),
+            textAlign: TextAlign.center),
         SizedBox(height: rs.h(10)),
-        Text(
+        AuthSubtitleText(
           'age_gate_restricted_message'.tr(),
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeMd,
-            color: colors.textSecondary,
-            height: 1.6,
-            fontWeight: FontWeight.w500,
-          ),
+          height: 1.6,
         ),
         SizedBox(height: rs.h(28)),
         LoadingButton(

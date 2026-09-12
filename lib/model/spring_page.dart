@@ -7,3 +7,6 @@ bool springPageHasMore(Map<String, dynamic>? pageInfo) {
   final totalPages = info.integer('totalPages', 1);
   return pageNumber + 1 < totalPages;
 }
+
+/// Spring Data Page 응답 최상위의 `last` 필드로 다음 페이지 존재 여부를 계산한다.
+bool springPageHasNext(Map<String, dynamic> json) => !json.boolean('last', true);

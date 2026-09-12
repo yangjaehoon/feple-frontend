@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:feple/common/data/preference/prefs.dart';
+import 'package:feple/common/util/silent_failure.dart';
 import 'package:feple/model/withdrawal_reason.dart';
 import 'package:feple/network/api_cache_store.dart';
 import 'package:feple/service/auth_service.dart';
@@ -104,21 +105,21 @@ class UserProvider with ChangeNotifier {
       // 수 초간 반응 없는 것처럼 느껴짐. 단, 토큰 삭제는 리프레시 토큰 취소가
       // TokenStore를 읽어야 하므로 그 이후에 실행해야 함
       await Future.wait([
-        _runCleanupStep('리프레시 토큰 취소', () async {
+        runIgnoringErrors('[UserProvider] 리프레시 토큰 취소 실패', () async {
           final refreshToken = await TokenStore.readRefreshToken();
           if (refreshToken != null) {
             await AuthService.instance.revokeRefreshToken(refreshToken);
           }
         }),
-        _runCleanupStep('FCM 정리', () => FcmService.instance.stop()),
-        _runCleanupStep('signOut', () => AuthService.instance.signOut()),
+        runIgnoringErrors('[UserProvider] FCM 정리 실패', () => FcmService.instance.stop()),
+        runIgnoringErrors('[UserProvider] signOut 실패', () => AuthService.instance.signOut()),
       ]);
       await Future.wait([
-        _runCleanupStep('토큰 삭제', TokenStore.clear),
-        _runCleanupStep('유저 캐시 삭제', TokenStore.deleteUserJson),
+        runIgnoringErrors('[UserProvider] 토큰 삭제 실패', TokenStore.clear),
+        runIgnoringErrors('[UserProvider] 유저 캐시 삭제 실패', TokenStore.deleteUserJson),
         // 같은 기기에서 다른 계정으로 재로그인 시 이전 계정의 캐시된 API
         // 응답(인증 현황·좋아요·팔로우 등)이 새 계정에 노출되는 것을 방지
-        _runCleanupStep('API 응답 캐시 삭제', ApiCacheStore.clearAll),
+        runIgnoringErrors('[UserProvider] API 응답 캐시 삭제 실패', ApiCacheStore.clearAll),
       ]);
       // onboarding 완료 플래그는 유저 단위(onboardingCompleted_{id})라
       // 로그아웃 시 리셋하지 않는다 — 재로그인 시 온보딩 반복 방지
@@ -126,14 +127,6 @@ class UserProvider with ChangeNotifier {
       notifyListeners();
     } finally {
       _isLoggingOut = false;
-    }
-  }
-
-  Future<void> _runCleanupStep(String label, Future<void> Function() step) async {
-    try {
-      await step();
-    } catch (e) {
-      debugPrint('[UserProvider] $label 실패: $e');
     }
   }
 

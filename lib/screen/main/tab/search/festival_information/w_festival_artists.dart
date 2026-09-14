@@ -19,7 +19,7 @@ import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:feple/common/util/bounded_responsive_size.dart';
+import 'package:feple/common/util/responsive_size.dart';
 
 class FestivalArtists extends StatefulWidget {
   final int festivalId;
@@ -135,7 +135,7 @@ class FestivalArtistsState extends State<FestivalArtists>
     }
     final hasMore = displayed.length > _maxVisible;
     final visible = hasMore ? displayed.sublist(0, _maxVisible) : displayed;
-    final rowHeight = boundedResponsiveSize(context, 80);
+    final rowHeight = ResponsiveSize(context).w(80);
     return SizedBox(
       height: rowHeight,
       child: ListView.separated(
@@ -165,13 +165,13 @@ class FestivalArtistsState extends State<FestivalArtists>
         ),
       ),
       child: SizedBox(
-        width: boundedResponsiveSize(context, 64),
+        width: ResponsiveSize(context).w(64),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: boundedResponsiveSize(context, 56),
-              height: boundedResponsiveSize(context, 56),
+              width: ResponsiveSize(context).w(56),
+              height: ResponsiveSize(context).w(56),
               decoration: BoxDecoration(
                 color: colors.backgroundMain,
                 shape: BoxShape.circle,
@@ -217,7 +217,7 @@ class FestivalArtistsState extends State<FestivalArtists>
         ),
       ),
       child: SizedBox(
-        width: boundedResponsiveSize(context, 64),
+        width: ResponsiveSize(context).w(64),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -244,16 +244,16 @@ class FestivalArtistsState extends State<FestivalArtists>
   }
 
   Widget _buildSkeletonRow() {
-    final avatarSize = boundedResponsiveSize(context, 56);
+    final avatarSize = ResponsiveSize(context).w(56);
     return SizedBox(
-      height: boundedResponsiveSize(context, 80),
+      height: ResponsiveSize(context).w(80),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: 4,
         separatorBuilder: (_, _) => const SizedBox(width: AppDimens.space16),
         itemBuilder: (_, _) => SizedBox(
-          width: boundedResponsiveSize(context, 64),
+          width: ResponsiveSize(context).w(64),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

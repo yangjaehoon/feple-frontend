@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/common/util/bounded_responsive_size.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/util/url_validator.dart';
 import 'package:feple/model/song_model.dart';
 import 'package:flutter/material.dart';
@@ -29,9 +29,7 @@ class SongListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    // w_artist_songs.dart의 미리보기 영역은 스크롤 없는 Column이라
-    // boundedResponsiveSize로 태블릿급 너비에서의 오버플로를 막는다.
-    final thumbnailSize = boundedResponsiveSize(context, 52);
+    final thumbnailSize = ResponsiveSize(context).w(52);
     return InkWell(
       onTap: () => _open(context),
       child: Padding(

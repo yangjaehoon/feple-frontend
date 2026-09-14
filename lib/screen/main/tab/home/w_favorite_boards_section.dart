@@ -10,7 +10,7 @@ import 'package:feple/model/favorite_board.dart';
 import 'package:feple/screen/main/tab/home/favorite_board_navigation.dart';
 import 'package:feple/screen/main/tab/home/favorite_boards_prefs_manager.dart';
 import 'package:feple/common/util/app_route.dart';
-import 'package:feple/common/util/bounded_responsive_size.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -139,8 +139,8 @@ class _FavoriteBoardsSectionState extends State<FavoriteBoardsSection> {
               ),
       );
     }
-    // 기준 390px: 리스트 높이 120(0.308) — 가로 ListView.builder라 bounded 사용
-    final listHeight = boundedResponsiveSize(context, 120);
+    // 기준 390px: 리스트 높이 120(0.308) — 가로 ListView.builder라 폭(w) 기준 사용
+    final listHeight = ResponsiveSize(context).w(120);
     return SizedBox(
       height: listHeight,
       child: ListView.builder(
@@ -164,8 +164,8 @@ class _BoardTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    // 기준 390px: 보드 카드 110(0.282) — 가로 ListView.builder라 bounded 사용
-    final cardSize = boundedResponsiveSize(context, 110);
+    // 기준 390px: 보드 카드 110(0.282) — 가로 ListView.builder라 폭(w) 기준 사용
+    final cardSize = ResponsiveSize(context).w(110);
     return TapScale(
       onTap: () {
         // 화면 전환 애니메이션 도중 재탭으로 같은 화면이 중복 push되는 것을 방지

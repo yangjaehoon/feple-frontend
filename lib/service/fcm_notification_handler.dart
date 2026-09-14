@@ -7,7 +7,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 
 class FcmNotificationHandler {
-  static const _channelId = 'feple_high_importance';
+  /// 알림 설정 딥링크(`AppSettingsNavigator`)에서도 동일 채널을 가리켜야 해서 공개.
+  static const channelId = 'feple_high_importance';
   static const _imageDownloadTimeout = Duration(seconds: 5);
 
   final FlutterLocalNotificationsPlugin _plugin;
@@ -17,7 +18,7 @@ class FcmNotificationHandler {
 
   Future<void> initialize() async {
     final channel = AndroidNotificationChannel(
-      _channelId,
+      channelId,
       'fcm_channel_name'.tr(),
       description: 'fcm_channel_desc'.tr(),
       importance: Importance.high,
@@ -45,7 +46,7 @@ class FcmNotificationHandler {
       body: notification.body,
       notificationDetails: NotificationDetails(
         android: AndroidNotificationDetails(
-          _channelId,
+          channelId,
           'fcm_channel_name'.tr(),
           channelDescription: 'fcm_channel_desc'.tr(),
           importance: Importance.high,

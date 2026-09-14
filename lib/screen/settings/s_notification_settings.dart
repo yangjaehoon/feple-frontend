@@ -1,11 +1,15 @@
+import 'package:feple/common/app_events.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/app_settings_navigator.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_permission_off_banner.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_settings_item.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/notification_preference_model.dart';
 import 'package:feple/service/notification_preference_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
@@ -19,11 +23,33 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   NotificationPreferenceModel? _prefs;
   bool _hasError = false;
   bool _saving = false;
+  bool _osNotificationsOff = false;
 
   @override
   void initState() {
     super.initState();
     _loadPrefs();
+    _checkOsPermission();
+    // 설정 앱에서 알림을 켜고 돌아온 경우 배너를 바로 숨기기 위해 재확인
+    AppEvents.appResumed.addListener(_checkOsPermission);
+  }
+
+  @override
+  void dispose() {
+    AppEvents.appResumed.removeListener(_checkOsPermission);
+    super.dispose();
+  }
+
+  Future<void> _checkOsPermission() async {
+    final settings = await FirebaseMessaging.instance.getNotificationSettings();
+    // notDetermined(권한을 아직 요청한 적 없음, 예: 최초 안내에서 '나중에' 선택)도
+    // 실질적으로는 알림이 꺼진 상태 — denied와 동일하게 배너로 안내한다.
+    // provisional(iOS 조용한 알림)은 알림이 켜진 상태라 제외한다.
+    final status = settings.authorizationStatus;
+    if (mounted) {
+      setState(() => _osNotificationsOff = status == AuthorizationStatus.denied ||
+          status == AuthorizationStatus.notDetermined);
+    }
   }
 
   Future<void> _loadPrefs() async {
@@ -82,6 +108,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     return ListView(
       padding: const EdgeInsets.only(top: 16, bottom: 40),
       children: [
+        if (_osNotificationsOff) _buildOsOffBanner(),
         if (_prefs == null)
           const _NotificationSettingsSkeleton()
         else ...[
@@ -121,6 +148,23 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
           ),
         ],
       ],
+    );
+  }
+
+  Widget _buildOsOffBanner() {
+    final colors = context.appColors;
+    return Container(
+      margin: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colors.error.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: PermissionOffBanner(
+        icon: Icons.notifications_off_rounded,
+        message: 'notif_os_off_desc'.tr(),
+        onOpenSettings: AppSettingsNavigator.openNotificationSettings,
+      ),
     );
   }
 

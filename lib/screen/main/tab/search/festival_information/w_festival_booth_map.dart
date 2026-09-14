@@ -1,9 +1,12 @@
+import 'package:feple/common/app_events.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/app_settings_navigator.dart';
 import 'package:feple/common/util/permission_rationale.dart';
 import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_permission_off_banner.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/injection.dart';
@@ -45,12 +48,22 @@ class FestivalBoothMapState extends State<FestivalBoothMap>
   GoogleMapController? _mapController;
   Position? _userPosition;
   Set<Marker> _markers = {};
+  bool _locationPermanentlyDenied = false;
 
   @override
   void initState() {
     super.initState();
     _fetchBooths();
     _getUserLocation();
+    // 설정 앱에서 위치 권한을 켜고 돌아온 경우 지도에 바로 반영하기 위해 재시도
+    AppEvents.appResumed.addListener(_onAppResumed);
+  }
+
+  // 설정 앱에서 돌아온 직후라 사용자 제스처 없이 실행됨 — 권한 안내
+  // 바텀시트(showLocation)를 다시 띄우면 안 되므로 interactive: false로 조용히
+  // 상태만 재확인한다.
+  void _onAppResumed() {
+    if (_locationPermanentlyDenied) _getUserLocation(interactive: false);
   }
 
   // GoogleMap의 initialCameraPosition은 지도가 최초 생성될 때만 반영되고 이후
@@ -92,24 +105,38 @@ class FestivalBoothMapState extends State<FestivalBoothMap>
     }
   }
 
-  Future<void> _getUserLocation() async {
+  // [interactive]가 true일 때만(최초 진입) 권한 안내 바텀시트를 띄우고
+  // 시스템 권한 다이얼로그를 요청한다. false(앱 재개 시 자동 재확인)면
+  // 사용자 제스처 없이 현재 권한 상태만 조용히 확인한다.
+  Future<void> _getUserLocation({bool interactive = true}) async {
     try {
-      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) return;
-
       var permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.deniedForever) return;
+      if (permission == LocationPermission.deniedForever) {
+        if (mounted) setState(() => _locationPermanentlyDenied = true);
+        return;
+      }
 
       if (permission == LocationPermission.denied) {
+        if (!interactive) return;
         if (!mounted) return;
         final proceed = await PermissionRationale.showLocation(context);
         if (!proceed) return;
         permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied ||
-            permission == LocationPermission.deniedForever) {
+        if (permission == LocationPermission.deniedForever) {
+          if (mounted) setState(() => _locationPermanentlyDenied = true);
+          return;
+        }
+        if (permission == LocationPermission.denied) {
           return;
         }
       }
+
+      // 권한 자체는 정상이니 배너(권한 문제 안내)는 내린다 — 기기 위치
+      // 서비스가 꺼져 있어도 그건 별개 상태라 이 배너로 안내할 대상이 아니다.
+      if (mounted) setState(() => _locationPermanentlyDenied = false);
+
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return;
 
       final pos = await Geolocator.getCurrentPosition(
           locationSettings:
@@ -161,6 +188,7 @@ class FestivalBoothMapState extends State<FestivalBoothMap>
 
   @override
   void dispose() {
+    AppEvents.appResumed.removeListener(_onAppResumed);
     _mapController?.dispose();
     super.dispose();
   }
@@ -232,7 +260,26 @@ class FestivalBoothMapState extends State<FestivalBoothMap>
       );
     }
     // 부스가 없어도 페스티벌 위치를 중심으로 지도는 보여준다 (마커만 없음)
-    return _buildMap();
+    return Column(
+      children: [
+        if (_locationPermanentlyDenied) _buildLocationDeniedBanner(),
+        _buildMap(),
+      ],
+    );
+  }
+
+  Widget _buildLocationDeniedBanner() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      color: context.appColors.error.withValues(alpha: 0.08),
+      child: PermissionOffBanner(
+        icon: Icons.location_off_rounded,
+        message: 'booth_map_location_denied'.tr(),
+        onOpenSettings: AppSettingsNavigator.openLocationSettings,
+        fontSize: 12,
+      ),
+    );
   }
 
   Widget _buildSkeleton() {

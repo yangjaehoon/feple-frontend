@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
-import 'package:feple/common/util/bounded_responsive_size.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:flutter/material.dart';
 
 class ArtistCircleImage extends StatelessWidget {
@@ -17,8 +17,6 @@ class ArtistCircleImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    // w_festival_artists.dart의 가로 스크롤 행에서 쓰이므로 boundedResponsiveSize로
-    // 태블릿급 너비에서 항목이 과도하게 넓어지는 걸 막는다(위젯 테스트로 재현·확인).
     if (!isFollowed) return _buildPlainImage(context, colors);
     return _buildFollowedImage(context, colors);
   }
@@ -49,7 +47,7 @@ class ArtistCircleImage extends StatelessWidget {
   }
 
   Widget _buildPlainImage(BuildContext context, AbstractThemeColors colors) {
-    final size = boundedResponsiveSize(context, 56);
+    final size = ResponsiveSize(context).w(56);
     return Container(
       width: size,
       height: size,
@@ -69,7 +67,7 @@ class ArtistCircleImage extends StatelessWidget {
   }
 
   Widget _buildFollowedImage(BuildContext context, AbstractThemeColors colors) {
-    final size = boundedResponsiveSize(context, 56);
+    final size = ResponsiveSize(context).w(56);
     return Container(
       width: size,
       height: size,
@@ -89,7 +87,7 @@ class ArtistCircleImage extends StatelessWidget {
         ),
         padding: const EdgeInsets.all(1.5),
         child: ClipOval(
-          child: _buildAvatarContent(colors, boundedResponsiveSize(context, 48)),
+          child: _buildAvatarContent(colors, ResponsiveSize(context).w(48)),
         ),
       ),
     );

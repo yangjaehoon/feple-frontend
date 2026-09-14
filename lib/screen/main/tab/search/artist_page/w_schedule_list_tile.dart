@@ -11,7 +11,7 @@ import 'package:feple/screen/main/tab/search/artist_page/festival_navigation.dar
 import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
 import 'package:feple/screen/main/tab/search/artist_page/w_event_type_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:feple/common/util/bounded_responsive_size.dart';
+import 'package:feple/common/util/responsive_size.dart';
 
 class ScheduleListTile extends StatefulWidget {
   final ArtistScheduleModel item;
@@ -100,10 +100,8 @@ class _ScheduleListTileState extends State<ScheduleListTile>
   Widget _buildPoster(BuildContext context, AbstractThemeColors colors) {
     final typeConfig = item.eventType.config(colors);
     final hasPoster = item.posterUrl != null && item.posterUrl!.isNotEmpty;
-    // w_artist_schedule.dart의 미리보기 영역은 스크롤 없는 Column이라
-    // boundedResponsiveSize로 태블릿급 너비에서의 오버플로를 막는다.
-    final posterWidth = boundedResponsiveSize(context, 42);
-    final posterHeight = boundedResponsiveSize(context, 63);
+    final posterWidth = ResponsiveSize(context).w(42);
+    final posterHeight = ResponsiveSize(context).w(63);
     return GestureDetector(
       onTap: _loading ? null : _navigateToFestival,
       child: Padding(
@@ -205,7 +203,7 @@ class _ScheduleListTileState extends State<ScheduleListTile>
   }
 
   Widget _buildCoArtists(BuildContext context, AbstractThemeColors colors) {
-    final avatarSize = boundedResponsiveSize(context, 26);
+    final avatarSize = ResponsiveSize(context).w(26);
     return SizedBox(
       height: 48,
       child: ListView.builder(

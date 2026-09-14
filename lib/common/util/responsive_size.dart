@@ -3,6 +3,13 @@ import 'package:flutter/material.dart';
 /// 화면 크기에 비례하는 반응형 유틸리티
 ///
 /// 기준 디자인: 390 x 844 (iPhone 14 기준)
+///
+/// 펼친 폴더블 등 태블릿급 화면에서는 계산에 쓰는 화면 크기 자체를
+/// [_maxWidthBasis]×[_maxHeightBasis](가장 큰 폰 기준, 480×~1038)로 클램프한다 —
+/// 그 이상 커지면 패딩·폰트·카드가 디자인 의도보다 비례 이상으로 확대되는
+/// 문제가 있었다(갤럭시 Z Fold 실측으로 확인). 두 상한의 비율을 기준 디자인과
+/// 동일하게 맞춰 가로/세로 스케일이 서로 다른 배율로 벌어지지 않게 한다.
+///
 /// 사용법:
 /// ```dart
 /// final rs = ResponsiveSize(context);
@@ -15,12 +22,17 @@ class ResponsiveSize {
   static const double _designWidth = 390;
   static const double _designHeight = 844;
 
+  static const double _maxWidthBasis = 480;
+  static const double _maxHeightBasis = _maxWidthBasis * _designHeight / _designWidth;
+
   final double screenWidth;
   final double screenHeight;
 
   ResponsiveSize(BuildContext context)
-      : screenWidth = MediaQuery.sizeOf(context).width,
-        screenHeight = MediaQuery.sizeOf(context).height;
+      : screenWidth = _clampBasis(MediaQuery.sizeOf(context).width, _maxWidthBasis),
+        screenHeight = _clampBasis(MediaQuery.sizeOf(context).height, _maxHeightBasis);
+
+  static double _clampBasis(double value, double max) => value < max ? value : max;
 
   /// 너비 기반 비율 (패딩, 마진, 아이콘 크기 등)
   double w(double value) => value * screenWidth / _designWidth;

@@ -5,6 +5,7 @@ import 'package:feple/common/theme/custom_theme.dart';
 import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/navigation_guard.dart';
+import 'package:feple/common/util/quick_action_handler.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_settings_item.dart';
 import 'package:feple/provider/user_provider.dart';
@@ -373,6 +374,8 @@ class _LanguageItemState extends State<_LanguageItem> {
         if (value == null) return;
         setState(() => _selected = value);
         await context.setLocale(value.locale);
+        // 홈 화면 바로가기 라벨은 등록 시점 언어로 고정되므로 새 언어로 다시 등록
+        await sl<QuickActionHandler>().register();
       },
     );
   }

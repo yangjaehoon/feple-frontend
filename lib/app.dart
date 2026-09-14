@@ -29,7 +29,7 @@ class AppState extends State<App> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return MainScreen(noticeMessage: widget.noticeMessage);
+    return MainScreen(key: MainScreen.mainScreenKey, noticeMessage: widget.noticeMessage);
   }
 
   @override

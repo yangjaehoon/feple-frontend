@@ -16,6 +16,12 @@ import '../../common/common.dart';
 import '../../provider/user_provider.dart';
 
 class MainScreen extends StatefulWidget {
+  /// 위젯 트리 밖(홈 화면 바로가기 등 네이티브 콜백)에서 [MainScreenState]에
+  /// 접근하기 위한 키. `AppState.build()`에서만 붙인다 — 위젯 트리 안에서는
+  /// `context.findAncestorStateOfType<MainScreenState>()`를 대신 쓸 것.
+  static final GlobalKey<MainScreenState> mainScreenKey =
+      GlobalKey<MainScreenState>();
+
   /// 앱 상단 공지 배너 문구 (`AppConfigModel.noticeMessage`). null이면 미노출.
   final String? noticeMessage;
 
@@ -298,6 +304,13 @@ class MainScreenState extends State<MainScreen>
     final homeIndex = tabs.indexOf(_landingTab);
     popAllHistory(navigatorKeys[homeIndex]);
     _changeTab(homeIndex);
+  }
+
+  /// 홈 화면 바로가기(Quick Actions) 등 위젯 트리 밖에서 특정 탭으로 전환한다.
+  void switchToTab(TabItem tab) {
+    final index = tabs.indexOf(tab);
+    popAllHistory(navigatorKeys[index]);
+    _changeTab(index);
   }
 
   void _changeTab(int index) {

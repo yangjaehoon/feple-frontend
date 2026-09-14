@@ -19,6 +19,16 @@
 					<string>com.googleusercontent.apps.680735056504-j01e6ljl3e7mpsbgoubeb2pfbvv5n3r6</string>
 				</array>
 			</dict>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<!-- 공유 딥링크(feple://festival/123 등). 도메인이 생기면
+					     Associated Domains(applinks:) 기반 Universal Links로 전환한다. -->
+					<string>feple</string>
+				</array>
+			</dict>
 		</array>
 		<key>GIDClientID</key>
 		<string>680735056504-j01e6ljl3e7mpsbgoubeb2pfbvv5n3r6.apps.googleusercontent.com</string>

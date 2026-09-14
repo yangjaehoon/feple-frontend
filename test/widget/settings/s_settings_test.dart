@@ -13,6 +13,7 @@ import 'package:feple/screen/settings/s_settings.dart';
 import 'package:feple/service/artist_follow_service.dart';
 import 'package:feple/service/artist_service.dart';
 import 'package:feple/service/block_service.dart';
+import 'package:feple/service/fcm_service.dart';
 import 'package:feple/service/festival_cache_service.dart';
 import 'package:feple/service/notification_preference_service.dart';
 import 'package:feple/service/user_service.dart';
@@ -28,6 +29,7 @@ class MockFestivalCacheService extends Mock implements FestivalCacheService {}
 class MockBlockService extends Mock implements BlockService {}
 class MockNotificationPreferenceService extends Mock
     implements NotificationPreferenceService {}
+class MockFcmService extends Mock implements FcmService {}
 class MockUserService extends Mock implements UserService {}
 class MockArtistService extends Mock implements ArtistService {}
 class MockArtistFollowService extends Mock implements ArtistFollowService {}
@@ -112,6 +114,10 @@ void main() {
       sl.unregister<NotificationPreferenceService>();
     }
     sl.registerSingleton<NotificationPreferenceService>(MockNotificationPreferenceService());
+    if (sl.isRegistered<FcmService>()) sl.unregister<FcmService>();
+    final mockFcmService = MockFcmService();
+    when(() => mockFcmService.isOsNotificationsOff()).thenAnswer((_) async => false);
+    sl.registerSingleton<FcmService>(mockFcmService);
     if (sl.isRegistered<UserService>()) sl.unregister<UserService>();
     sl.registerSingleton<UserService>(MockUserService());
     if (sl.isRegistered<ArtistService>()) sl.unregister<ArtistService>();
@@ -126,6 +132,7 @@ void main() {
       () => sl.unregister<FestivalCacheService>(),
       () => sl.unregister<BlockService>(),
       () => sl.unregister<NotificationPreferenceService>(),
+      () => sl.unregister<FcmService>(),
       () => sl.unregister<UserService>(),
       () => sl.unregister<ArtistService>(),
       () => sl.unregister<ArtistFollowService>(),

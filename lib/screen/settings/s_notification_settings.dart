@@ -1,10 +1,14 @@
+import 'package:feple/common/app_events.dart';
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/app_settings_navigator.dart';
 import 'package:feple/common/widget/w_error_state.dart';
+import 'package:feple/common/widget/w_permission_off_banner.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_settings_item.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/notification_preference_model.dart';
+import 'package:feple/service/fcm_service.dart';
 import 'package:feple/service/notification_preference_service.dart';
 import 'package:flutter/material.dart';
 
@@ -19,11 +23,26 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   NotificationPreferenceModel? _prefs;
   bool _hasError = false;
   bool _saving = false;
+  bool _osNotificationsOff = false;
 
   @override
   void initState() {
     super.initState();
     _loadPrefs();
+    _checkOsPermission();
+    // 설정 앱에서 알림을 켜고 돌아온 경우 배너를 바로 숨기기 위해 재확인
+    AppEvents.appResumed.addListener(_checkOsPermission);
+  }
+
+  @override
+  void dispose() {
+    AppEvents.appResumed.removeListener(_checkOsPermission);
+    super.dispose();
+  }
+
+  Future<void> _checkOsPermission() async {
+    final isOff = await sl<FcmService>().isOsNotificationsOff();
+    if (mounted) setState(() => _osNotificationsOff = isOff);
   }
 
   Future<void> _loadPrefs() async {
@@ -82,6 +101,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     return ListView(
       padding: const EdgeInsets.only(top: 16, bottom: 40),
       children: [
+        if (_osNotificationsOff) _buildOsOffBanner(),
         if (_prefs == null)
           const _NotificationSettingsSkeleton()
         else ...[
@@ -121,6 +141,23 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
           ),
         ],
       ],
+    );
+  }
+
+  Widget _buildOsOffBanner() {
+    final colors = context.appColors;
+    return Container(
+      margin: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colors.error.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: PermissionOffBanner(
+        icon: Icons.notifications_off_rounded,
+        message: 'notif_os_off_desc'.tr(),
+        onOpenSettings: AppSettingsNavigator.openNotificationSettings,
+      ),
     );
   }
 

@@ -8,7 +8,6 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/app_alert_dialog.dart';
 import 'package:feple/common/util/deep_link_handler.dart';
-import 'package:feple/common/util/quick_action_handler.dart';
 import 'package:feple/common/widget/w_text_scale_clamp.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/provider/user_provider.dart';
@@ -120,9 +119,11 @@ class _MyAppState extends State<MyApp> {
     // 딥링크는 로그인/온보딩 상태와 무관하게 동작해야 하므로 App(로그인 완료
     // 후에만 생성됨)이 아니라 유일한 MaterialApp을 갖는 이 위젯에서 초기화한다.
     // Navigator가 첫 프레임에 아직 마운트되지 않았을 수 있어 post-frame으로 미룬다.
+    // (QuickActionHandler.register()는 '.tr()'을 쓰는데 이 시점엔 EasyLocalization
+    // 번역 로딩이 아직 안 끝나 원본 키가 그대로 나가는 문제가 실측으로 확인돼
+    // app.dart의 AppState.initState()로 옮겼다 — 그쪽은 Localizations 하위라 안전함)
     WidgetsBinding.instance
         .addPostFrameCallback((_) => sl<DeepLinkHandler>().init());
-    unawaited(sl<QuickActionHandler>().register());
   }
 
   @override

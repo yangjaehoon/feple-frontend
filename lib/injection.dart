@@ -1,6 +1,8 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get_it/get_it.dart';
 
+import 'common/util/deep_link_handler.dart';
+import 'common/util/quick_action_handler.dart';
 import 'common/util/sharer.dart';
 
 import 'service/artist_follow_service.dart';
@@ -49,6 +51,8 @@ void setupDependencies() {
   sl.registerLazySingleton<FcmNavigationHandler>(() => FcmNavigationHandler());
   sl.registerLazySingleton<FcmTokenService>(() => FcmTokenService(FirebaseMessaging.instance));
   sl.registerLazySingleton<FcmService>(() => FcmService.instance);
+  sl.registerLazySingleton<QuickActionHandler>(() => QuickActionHandler());
+  sl.registerLazySingleton<DeepLinkHandler>(() => DeepLinkHandler());
 
   sl.registerLazySingleton<AppConfigService>(() => AppConfigService());
   sl.registerLazySingleton<ArtistFollowService>(() => ArtistFollowService(userService: sl<UserService>()));

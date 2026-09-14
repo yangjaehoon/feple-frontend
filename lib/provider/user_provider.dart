@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:feple/common/data/preference/prefs.dart';
 import 'package:feple/common/util/silent_failure.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/model/withdrawal_reason.dart';
 import 'package:feple/network/api_cache_store.dart';
+import 'package:feple/screen/notification/notification_count_notifier.dart';
 import 'package:feple/service/auth_service.dart';
 import 'package:feple/service/fcm_service.dart';
 import 'package:feple/service/user_service.dart';
@@ -125,6 +127,9 @@ class UserProvider with ChangeNotifier {
       // 로그아웃 시 리셋하지 않는다 — 재로그인 시 온보딩 반복 방지
       _user = null;
       notifyListeners();
+      // 로그아웃 후에도 이전 계정의 안 읽은 알림 배지가 아이콘에 남아있지
+      // 않도록 초기화
+      sl<NotificationCountNotifier>().clear();
     } finally {
       _isLoggingOut = false;
     }

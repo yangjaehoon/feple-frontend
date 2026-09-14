@@ -4,6 +4,7 @@ import 'package:feple/common/util/share_helper.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/model/artist_model.dart';
 import 'package:feple/model/artist_schedule_model.dart';
+import 'package:feple/model/content_type.dart';
 import 'package:feple/model/festival_artist_item.dart';
 import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/model/followed_artist.dart';
@@ -102,7 +103,9 @@ class _ArtistScreenState extends State<ArtistScreen> {
   Future<void> _shareArtist(String displayName) async {
     if (_isSharing) return;
     setState(() => _isSharing = true);
-    final text = '${'artist_share_text'.tr(args: [displayName])}\n$kAppDownloadUrl';
+    final deepLink = ContentType.artist.deepLink(widget.artistId);
+    final text =
+        '${'artist_share_text'.tr(args: [displayName])}\n$deepLink\n$kAppDownloadUrl';
     final imageUrl = widget.profileImageUrl;
     try {
       final ok = await shareContent(

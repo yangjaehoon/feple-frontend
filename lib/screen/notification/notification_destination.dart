@@ -1,4 +1,5 @@
 import 'package:feple/injection.dart';
+import 'package:feple/model/content_type.dart';
 import 'package:feple/model/notification_type.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
@@ -18,19 +19,33 @@ Future<Widget?> resolveNotificationDestination(
   if (type == null || referenceId == null) return null;
 
   if (type.hasFestivalNavigation) {
-    final festival = await sl<FestivalService>().fetchById(referenceId);
-    return FestivalInformationFragment(poster: festival);
+    return resolveContentDestination(ContentType.festival, referenceId);
   }
   if (type.isCommentType) {
-    final post = await sl<PostService>().fetchPost(referenceId);
-    return PostDetailCard.fromPost(
-      boardName: post.boardDisplayName,
-      post: post,
-    );
+    return resolveContentDestination(ContentType.post, referenceId);
   }
   if (type.isArtistNavigationType) {
-    final artist = await sl<ArtistService>().fetchArtistById(referenceId);
-    return ArtistScreen.fromArtist(artist);
+    return resolveContentDestination(ContentType.artist, referenceId);
   }
   return null;
+}
+
+/// (콘텐츠 종류 + ID) → 이동할 화면. 알림뿐 아니라 공유 딥링크(`feple://festival/123`
+/// 등, `DeepLinkHandler`)도 같은 분기표를 타도록 [resolveNotificationDestination]에서
+/// 분리했다.
+Future<Widget> resolveContentDestination(ContentType type, int id) async {
+  switch (type) {
+    case ContentType.festival:
+      final festival = await sl<FestivalService>().fetchById(id);
+      return FestivalInformationFragment(poster: festival);
+    case ContentType.post:
+      final post = await sl<PostService>().fetchPost(id);
+      return PostDetailCard.fromPost(
+        boardName: post.boardDisplayName,
+        post: post,
+      );
+    case ContentType.artist:
+      final artist = await sl<ArtistService>().fetchArtistById(id);
+      return ArtistScreen.fromArtist(artist);
+  }
 }

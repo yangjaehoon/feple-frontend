@@ -8,6 +8,7 @@ import 'package:feple/common/util/share_helper.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/constant/store_links.dart';
 import 'package:feple/injection.dart';
+import 'package:feple/model/content_type.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/service/festival_detail_service.dart';
 import 'package:feple/service/festival_interaction_service.dart';
@@ -118,9 +119,10 @@ class FestivalPosterState extends State<FestivalPoster>
     if (_isSharing) return;
     setState(() => _isSharing = true);
     final isEnglish = context.isEnglish;
+    final deepLink = ContentType.festival.deepLink(_notifier.poster.id);
     final text =
         '${_notifier.poster.displayTitle(isEnglish)}\n${_notifier.poster.location}\n${_notifier.poster.startDate}'
-        '\n\n${'share_festival_cta'.tr()}\n$kAppDownloadUrl';
+        '\n\n${'share_festival_cta'.tr()}\n$deepLink\n$kAppDownloadUrl';
     try {
       final ok = await shareContent(
         context,

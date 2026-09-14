@@ -6,6 +6,7 @@ import 'package:feple/common/theme/custom_theme_holder.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/notification_preference_model.dart';
 import 'package:feple/screen/settings/s_notification_settings.dart';
+import 'package:feple/service/fcm_service.dart';
 import 'package:feple/service/notification_preference_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,6 +15,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class MockNotificationPreferenceService extends Mock
     implements NotificationPreferenceService {}
+
+class MockFcmService extends Mock implements FcmService {}
 
 const _allEnabled = NotificationPreferenceModel(
   certEnabled: true,
@@ -49,6 +52,7 @@ void main() {
   setUpAll(() => registerFallbackValue(_allEnabled));
 
   late MockNotificationPreferenceService mockService;
+  late MockFcmService mockFcmService;
 
   setUp(() {
     mockService = MockNotificationPreferenceService();
@@ -56,12 +60,18 @@ void main() {
       sl.unregister<NotificationPreferenceService>();
     }
     sl.registerSingleton<NotificationPreferenceService>(mockService);
+
+    mockFcmService = MockFcmService();
+    when(() => mockFcmService.isOsNotificationsOff()).thenAnswer((_) async => false);
+    if (sl.isRegistered<FcmService>()) sl.unregister<FcmService>();
+    sl.registerSingleton<FcmService>(mockFcmService);
   });
 
   tearDown(() {
     if (sl.isRegistered<NotificationPreferenceService>()) {
       sl.unregister<NotificationPreferenceService>();
     }
+    if (sl.isRegistered<FcmService>()) sl.unregister<FcmService>();
   });
 
   group('NotificationSettingsScreen 로딩', () {
@@ -138,6 +148,29 @@ void main() {
       final switches = tester.widgetList<Switch>(find.byType(Switch)).toList();
       expect(switches.first.value, true); // 롤백됨
       expect(find.text('save_failed'.tr()), findsOneWidget);
+    });
+  });
+
+  group('NotificationSettingsScreen OS 알림 배너', () {
+    testWidgets('OS 알림이 꺼져 있으면 배너를 보여준다', (tester) async {
+      when(() => mockService.getPreferences()).thenAnswer((_) async => _allEnabled);
+      when(() => mockFcmService.isOsNotificationsOff()).thenAnswer((_) async => true);
+
+      await _pump(tester);
+      await tester.pumpAndSettle();
+
+      expect(find.text('notif_os_off_desc'.tr()), findsOneWidget);
+      expect(find.text('perm_settings_open'.tr()), findsOneWidget);
+    });
+
+    testWidgets('OS 알림이 켜져 있으면 배너를 보여주지 않는다', (tester) async {
+      when(() => mockService.getPreferences()).thenAnswer((_) async => _allEnabled);
+      when(() => mockFcmService.isOsNotificationsOff()).thenAnswer((_) async => false);
+
+      await _pump(tester);
+      await tester.pumpAndSettle();
+
+      expect(find.text('notif_os_off_desc'.tr()), findsNothing);
     });
   });
 

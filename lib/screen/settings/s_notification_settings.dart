@@ -8,8 +8,8 @@ import 'package:feple/common/widget/w_settings_item.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/notification_preference_model.dart';
+import 'package:feple/service/fcm_service.dart';
 import 'package:feple/service/notification_preference_service.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
@@ -41,15 +41,8 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   }
 
   Future<void> _checkOsPermission() async {
-    final settings = await FirebaseMessaging.instance.getNotificationSettings();
-    // notDetermined(권한을 아직 요청한 적 없음, 예: 최초 안내에서 '나중에' 선택)도
-    // 실질적으로는 알림이 꺼진 상태 — denied와 동일하게 배너로 안내한다.
-    // provisional(iOS 조용한 알림)은 알림이 켜진 상태라 제외한다.
-    final status = settings.authorizationStatus;
-    if (mounted) {
-      setState(() => _osNotificationsOff = status == AuthorizationStatus.denied ||
-          status == AuthorizationStatus.notDetermined);
-    }
+    final isOff = await sl<FcmService>().isOsNotificationsOff();
+    if (mounted) setState(() => _osNotificationsOff = isOff);
   }
 
   Future<void> _loadPrefs() async {

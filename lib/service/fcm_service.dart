@@ -94,6 +94,17 @@ class FcmService {
 
   String _currentLanguage() => currentLanguage.locale.languageCode;
 
+  /// 기기 알림이 실질적으로 꺼져 있는지 여부.
+  /// denied(거부)와 notDetermined(최초 안내에서 '나중에' 선택 등 아직 결정 안 됨)는
+  /// 알림이 안 오는 상태라 true. provisional(iOS 조용한 알림)은 알림이 켜진
+  /// 상태로 간주해 false.
+  Future<bool> isOsNotificationsOff() async {
+    final settings = await _messaging.getNotificationSettings();
+    final status = settings.authorizationStatus;
+    return status == AuthorizationStatus.denied ||
+        status == AuthorizationStatus.notDetermined;
+  }
+
   // 로그아웃 시 호출 — 서버 토큰 삭제와 구독 해제는 서로 무관해 병렬 실행
   // JWT가 아직 유효한 시점에 호출해야 함 (TokenStore.clear() 전)
   Future<void> stop() async {

@@ -15,12 +15,16 @@ class AppDimens {
   /// 시스템 값을 그대로 통과시키지 않고 이 범위로 clamp — iOS 홈 인디케이터
   /// 영역(34)을 전부 비워두면 흰 카드 스타일상 여백이 과해 보이고,
   /// 0으로 두면 라벨이 홈 인디케이터에 붙는다.
+  /// 상한은 Android 제스처 내비게이션의 실제 시스템 inset(24dp, Pixel 8
+  /// 에뮬레이터 dumpsys window displays로 실측)보다 낮아서는 안 된다 —
+  /// 20으로 뒀을 때 라벨 하단 몇 px가 불투명한 제스처 바 밑으로 가려지는
+  /// 실제 클리핑이 발생했다(2026-09-16 에뮬레이터 시각 검증으로 발견).
   /// [tabletBreakpointWidth] 이상 폭에서는 이 상한을 쓰지 않는다 —
   /// 펼친 폴더블 등 태블릿급 화면에서 Android가 띄우는 대화면 태스크바가
-  /// navigationBars inset을 60dp 안팎으로 잡는데, 20으로 깎으면 탭바가
+  /// navigationBars inset을 60dp 안팎으로 잡는데, 그대로 깎으면 탭바가
   /// 실제로 태스크바에 가려진다.
   static const double bottomNavMinInset = 8.0;
-  static const double bottomNavMaxInset = 20.0;
+  static const double bottomNavMaxInset = 24.0;
 
   // ── Responsive breakpoints ──
   /// Material 기준 "medium" 폭 — 이 이상을 태블릿급(펼친 폴더블 포함)으로 본다.

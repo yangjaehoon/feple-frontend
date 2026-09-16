@@ -111,7 +111,7 @@ void main() {
   });
 
   group('하단 탭바 시스템 inset 처리', () {
-    testWidgets('폰 폭에서는 큰 시스템 inset도 상한(20)으로 clamp한다', (tester) async {
+    testWidgets('폰 폭에서는 큰 시스템 inset도 상한(bottomNavMaxInset)으로 clamp한다', (tester) async {
       await _pumpMainScreen(tester, screenWidth: 390, systemBottomInset: 60);
 
       expect(_renderedBottomInset(tester), AppDimens.bottomNavMaxInset);

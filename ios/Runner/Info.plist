@@ -30,6 +30,13 @@
 				</array>
 			</dict>
 		</array>
+		<!-- Flutter 기본 딥링킹(네임드 라우트로 자동 push)을 끈다 — 이 앱은 네임드
+		     라우트를 쓰지 않고 딥링크를 app_links(DeepLinkHandler)로 직접 처리하는데,
+		     이 키가 없으면(기본값 true) FlutterAppDelegate가 들어오는 URL을 Flutter
+		     자체 라우트로도 push 시도해 불필요한 예외가 함께 발생한다(Android에서
+		     flutter_deeplinking_enabled=false로 동일 문제를 고치며 실측 확인). -->
+		<key>FlutterDeepLinkingEnabled</key>
+		<false/>
 		<key>GIDClientID</key>
 		<string>680735056504-j01e6ljl3e7mpsbgoubeb2pfbvv5n3r6.apps.googleusercontent.com</string>
 		<key>GMSApiKey</key>

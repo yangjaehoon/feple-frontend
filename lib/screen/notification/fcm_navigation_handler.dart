@@ -22,12 +22,12 @@ class FcmNavigationHandler {
     try {
       final screen = await resolveNotificationDestination(type, linkId);
       if (screen != null) {
-        unawaited(nav.push(SlideRoute(builder: (_) => screen)));
+        unawaited(nav.push(rootNavigatorRoute(screen)));
         return;
       }
     } catch (e) {
       debugPrint('[FCM Nav] 알림 이동 실패: $e');
     }
-    unawaited(nav.push(SlideRoute(builder: (_) => const NotificationScreen())));
+    unawaited(nav.push(rootNavigatorRoute(const NotificationScreen())));
   }
 }

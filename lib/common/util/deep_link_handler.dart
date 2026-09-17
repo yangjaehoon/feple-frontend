@@ -45,7 +45,7 @@ class DeepLinkHandler {
 
     try {
       final screen = await resolveContentDestination(type, id);
-      unawaited(nav.push(SlideRoute(builder: (_) => screen)));
+      unawaited(nav.push(rootNavigatorRoute(screen)));
     } catch (e) {
       debugPrint('[DeepLink] 이동 실패: $e');
     }

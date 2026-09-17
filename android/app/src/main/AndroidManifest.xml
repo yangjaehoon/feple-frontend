@@ -85,6 +85,15 @@
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
+            <!-- Flutter 기본 딥링킹(네임드 라우트로 자동 push)을 끈다 — 이 앱은
+                 네임드 라우트를 쓰지 않고 딥링크를 app_links(DeepLinkHandler)로
+                 직접 처리하는데, 이 플래그가 없으면(기본값 true) FlutterActivity가
+                 들어오는 Intent를 Flutter 자체 라우트로도 push 시도해 매번
+                 "No Material widget found"(알 수 없는 라우트) 예외가 조용히
+                 함께 발생했다(에뮬레이터 실측으로 발견). -->
+            <meta-data
+                android:name="flutter_deeplinking_enabled"
+                android:value="false" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

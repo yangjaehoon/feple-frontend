@@ -92,12 +92,15 @@ class _CommentInputBarState extends State<CommentInputBar> {
     );
   }
 
+  /// 체크박스를 직접 눌러도, 옆 라벨을 눌러도 같은 피드백을 주도록 한 곳에 모은다.
+  void _toggleAnonymous([bool? value]) {
+    HapticFeedback.lightImpact();
+    setState(() => _anonymous = value ?? !_anonymous);
+  }
+
   Widget _buildAnonymousToggle(AbstractThemeColors colors) {
     return GestureDetector(
-      onTap: () {
-        HapticFeedback.lightImpact();
-        setState(() => _anonymous = !_anonymous);
-      },
+      onTap: _toggleAnonymous,
       child: Padding(
         padding: const EdgeInsets.only(bottom: 4),
         child: Row(
@@ -105,7 +108,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
           children: [
             Checkbox(
               value: _anonymous,
-              onChanged: (v) => setState(() => _anonymous = v ?? false),
+              onChanged: (v) => _toggleAnonymous(v ?? false),
               visualDensity: VisualDensity.compact,
               activeColor: colors.activate,
             ),

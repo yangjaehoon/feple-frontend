@@ -15,13 +15,12 @@ import 'package:feple/common/util/write_post_submit_handler.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
-import 'package:feple/common/widget/w_list_row_skeleton.dart';
 import 'package:feple/common/widget/w_refreshable_center.dart';
-import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/screen/main/tab/community_board/board_search_controller.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
+import 'package:feple/screen/main/tab/community_board/w_post_skeleton_list.dart';
 import 'package:feple/screen/main/tab/my_page/user_profile_navigation.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/post_service.dart';
@@ -143,42 +142,14 @@ class _CommunityPostState extends State<CommunityPost>
         ),
       ),
     );
-  }
-
-  Widget _buildSkeletonList() {
-    return ListView.separated(
-      padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottomLarge),
-      itemCount: 8,
-      itemBuilder: (_, _) => Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppDimens.paddingHorizontal,
-          vertical: 10,
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  SkeletonBox(height: 15),
-                  SizedBox(height: AppDimens.space6),
-                  SkeletonBox(width: 100, height: 11),
-                ],
-              ),
-            ),
-            const SizedBox(width: AppDimens.space16),
-            const SkeletonBox(width: 60, height: 13),
-          ],
-        ),
-      ),
-      separatorBuilder: (_, _) =>
-          const Divider(height: 1, thickness: 1, indent: 16, endIndent: 16),
-    );
+    // 여기서 _controller.refresh()를 부르지 말 것 — refresh()는 커서 없이 1페이지만
+    // 받아 _posts를 통째로 덮어쓰므로, 무한스크롤로 쌓아둔 페이지와 스크롤 위치가
+    // 날아간다. 좋아요·스크랩 수 동기화는 해당 항목만 patch하는 수단이 생긴 뒤에.
   }
 
   Widget _buildList(AbstractThemeColors colors) {
     if (_search.isSearching && !_search.isActive) {
-      return const ListRowSkeleton(showLeading: false);
+      return const PostSkeletonList();
     }
     if (_search.isActive) {
       return _buildSearchResults(colors);
@@ -194,7 +165,7 @@ class _CommunityPostState extends State<CommunityPost>
 
   Widget _buildSearchResults(AbstractThemeColors colors) {
     if (_search.isSearching) {
-      return const ListRowSkeleton(showLeading: false);
+      return const PostSkeletonList();
     }
     final displayPosts = _search.results!;
     if (displayPosts.isEmpty) {
@@ -438,7 +409,7 @@ class _CommunityPostState extends State<CommunityPost>
                 color: colors.activate,
                 onRefresh: () => withForcedRefresh(_controller.refresh),
                 child: _controller.isLoading
-                    ? _buildSkeletonList()
+                    ? const PostSkeletonList()
                     : _buildList(colors),
               ),
             ),

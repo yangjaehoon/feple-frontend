@@ -8,12 +8,12 @@ import 'package:flutter/material.dart';
 
 /// 스크랩·좋아요 목록처럼 "게시글 한 건 → 상세로 이동" 형태의 목록 타일.
 /// 상세에서 돌아오면 좋아요·스크랩이 바뀌었을 수 있어 [onReturn]으로 목록을 갱신한다.
-class PostListTile extends StatelessWidget {
+class SavedPostTile extends StatelessWidget {
   final Post post;
   final IconData leadingIcon;
   final VoidCallback onReturn;
 
-  const PostListTile({
+  const SavedPostTile({
     super.key,
     required this.post,
     required this.leadingIcon,

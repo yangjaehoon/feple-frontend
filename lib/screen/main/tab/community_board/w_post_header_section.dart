@@ -68,8 +68,10 @@ class PostHeaderSection extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
         ),
-        InlineBadge(userRole: userRole, certified: certified, size: 14),
+        // 익명 글에서는 인증·역할 배지도 가린다 — InlineBadge는 anonymous를
+        // 모르므로 호출부가 막아야 한다(댓글의 _CommentTile도 동일 처리).
         if (!anonymous) ...[
+          InlineBadge(userRole: userRole, certified: certified, size: 14),
           const SizedBox(width: 5),
           LevelBadge(authorLevel: authorLevel, fontSize: 10),
         ],

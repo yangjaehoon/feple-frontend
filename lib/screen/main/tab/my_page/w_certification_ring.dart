@@ -22,6 +22,11 @@ class CertificationRing extends StatelessWidget {
     this.overlay,
   });
 
+  /// 링의 실제 렌더 지름 — 반지름 44/390 + 안쪽 padding 2*2 + 바깥 padding 3*2.
+  /// 로딩 스켈레톤을 이 크기로 맞춰야 콘텐츠 전환 시 레이아웃이 튀지 않는다.
+  static double diameter(BuildContext context) =>
+      ResponsiveSize(context).w(88) + 10;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;

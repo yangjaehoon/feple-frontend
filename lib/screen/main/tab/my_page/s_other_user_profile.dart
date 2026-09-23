@@ -102,11 +102,15 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
       requireConfirm: willBlock,
     );
     if (!mounted) return;
-    if (success) {
-      setState(() => _isBlocked = willBlock);
-      if (willBlock) Navigator.pop(context);
+    // 차단에 성공하면 이 화면을 떠나므로 상태를 갱신할 필요가 없다
+    if (success && willBlock) {
+      Navigator.pop(context);
+      return;
     }
-    setState(() => _isBlockLoading = false);
+    setState(() {
+      if (success) _isBlocked = willBlock;
+      _isBlockLoading = false;
+    });
   }
 
   @override
@@ -157,36 +161,38 @@ class _OtherUserProfileScreenState extends State<OtherUserProfileScreen> with Na
 
   void _showBlockMenu() {
     final colors = context.appColors;
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: colors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius:
-            BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildMenuTile(
-              ctx,
-              icon: Icon(Icons.flag_outlined, color: colors.textTitle),
-              title: Text('report_user'.tr()),
-              onSelected: _showReportSheet,
-            ),
-            _buildMenuTile(
-              ctx,
-              icon: Icon(Icons.block_rounded, color: colors.error),
-              title: Text(
-                'block'.tr(),
-                style: TextStyle(
-                  color: colors.error,
-                  fontWeight: FontWeight.w500,
-                ),
+    showAppBottomSheet<void>(
+      context,
+      builder: (ctx) => Material(
+        color: colors.surface,
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(AppDimens.shapeSheet),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildMenuTile(
+                ctx,
+                icon: Icon(Icons.flag_outlined, color: colors.textTitle),
+                title: Text('report_user'.tr()),
+                onSelected: _showReportSheet,
               ),
-              onSelected: _toggleBlock,
-            ),
-          ],
+              _buildMenuTile(
+                ctx,
+                icon: Icon(Icons.block_rounded, color: colors.error),
+                title: Text(
+                  'block'.tr(),
+                  style: TextStyle(
+                    color: colors.error,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                onSelected: _toggleBlock,
+              ),
+            ],
+          ),
         ),
       ),
     );

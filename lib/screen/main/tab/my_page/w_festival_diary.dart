@@ -9,6 +9,7 @@ import 'package:feple/injection.dart';
 import 'package:feple/model/festival_diary_model.dart';
 import 'package:feple/screen/main/tab/home/w_home_section_header.dart';
 import 'package:feple/screen/main/tab/my_page/s_festival_diary_list.dart';
+import 'package:feple/screen/main/tab/my_page/w_section_empty_state.dart';
 import 'package:feple/screen/main/tab/my_page/w_section_see_all_button.dart';
 import 'package:feple/service/festival_diary_service.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +52,8 @@ class FestivalDiaryWidgetState extends State<FestivalDiaryWidget>
 
   Future<void> _openList() async {
     await Navigator.push(context, SlideRoute(builder: (_) => const FestivalDiaryListScreen()));
-    unawaited(_load());
+    // 목록 화면에 머무는 동안 이 위젯이 사라졌을 수 있다(로그아웃 등)
+    if (mounted) unawaited(_load());
   }
 
   @override
@@ -73,7 +75,7 @@ class FestivalDiaryWidgetState extends State<FestivalDiaryWidget>
             child: _isLoading
                 ? _buildSkeletonList()
                 : _diaries == null || _diaries!.isEmpty
-                    ? _buildEmptyState(colors)
+                    ? _buildEmptyState()
                     : _buildDiaryList(colors),
           ),
       ],
@@ -100,37 +102,13 @@ class FestivalDiaryWidgetState extends State<FestivalDiaryWidget>
     );
   }
 
-  Widget _buildEmptyState(AbstractThemeColors colors) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.menu_book_outlined, size: 32, color: colors.activate.withValues(alpha: 0.5)),
-          const SizedBox(height: AppDimens.space8),
-          Text(
-            'diary_no_history'.tr(),
-            style: TextStyle(fontSize: AppDimens.fontSizeSm, fontWeight: FontWeight.w600, color: colors.textTitle),
-          ),
-          const SizedBox(height: 3),
-          Text(
-            'diary_no_history_hint'.tr(),
-            style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary, height: 1.4),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppDimens.space10),
-          FilledButton.icon(
-            onPressed: _openList,
-            icon: const Icon(Icons.add_rounded, size: 14),
-            label: Text('diary_write'.tr(), style: const TextStyle(fontSize: AppDimens.fontSizeXs)),
-            style: FilledButton.styleFrom(
-              backgroundColor: colors.activate,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.padded,
-            ),
-          ),
-        ],
-      ),
+  Widget _buildEmptyState() {
+    return SectionEmptyState(
+      icon: Icons.menu_book_outlined,
+      title: 'diary_no_history'.tr(),
+      hint: 'diary_no_history_hint'.tr(),
+      ctaLabel: 'diary_write'.tr(),
+      onCta: _openList,
     );
   }
 

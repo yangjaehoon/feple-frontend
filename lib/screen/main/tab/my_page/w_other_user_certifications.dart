@@ -81,6 +81,7 @@ class _OtherUserCertificationsState extends State<OtherUserCertifications> {
   }
 
   Widget _buildSkeleton() {
+    final ringSize = CertificationRing.diameter(context);
     return ListView.builder(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -89,13 +90,14 @@ class _OtherUserCertificationsState extends State<OtherUserCertifications> {
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: const [
+          children: [
             SkeletonBox(
-                width: 98,
-                height: 98,
-                borderRadius: BorderRadius.all(Radius.circular(49))),
-            SizedBox(height: AppDimens.space6),
-            SkeletonBox(width: 72, height: 11),
+              width: ringSize,
+              height: ringSize,
+              borderRadius: BorderRadius.circular(ringSize / 2),
+            ),
+            const SizedBox(height: AppDimens.space6),
+            const SkeletonBox(width: 72, height: 11),
           ],
         ),
       ),

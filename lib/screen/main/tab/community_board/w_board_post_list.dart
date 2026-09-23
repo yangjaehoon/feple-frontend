@@ -9,13 +9,13 @@ import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_error_state.dart';
 import 'package:feple/common/widget/w_refreshable_center.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
-import 'package:feple/common/widget/w_list_row_skeleton.dart';
 import 'package:feple/common/widget/w_write_post_fab.dart';
 import 'package:feple/common/widget/w_write_post.dart';
 import 'package:feple/model/post_draft.dart';
 import 'package:feple/model/post_model.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_detail_card.dart';
 import 'package:feple/screen/main/tab/community_board/w_post_list_tile.dart';
+import 'package:feple/screen/main/tab/community_board/w_post_skeleton_list.dart';
 import 'package:feple/screen/main/tab/my_page/user_profile_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/common/util/forced_refresh.dart';
@@ -103,12 +103,7 @@ class _BoardPostListState extends State<BoardPostList>
 
   Widget _buildContent(AbstractThemeColors colors) {
     if (_controller.isLoading) {
-      return const ListRowSkeleton(
-        showLeading: false,
-        showStatRow: true,
-        divided: true,
-        itemCount: 6,
-      );
+      return const PostSkeletonList(itemCount: 6);
     }
     if (_controller.hasError) {
       return RefreshableCenter(

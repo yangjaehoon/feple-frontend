@@ -103,6 +103,9 @@ class CommunityBoardCardState extends State<CommunityBoardCard>
           builder: (_) => CommunityPost(boardName: widget.boardName, boardType: widget.serviceBoardType),
         ),
       )),
+      // 복귀 시 refresh()를 부르지 말 것 — FutureRefreshable.refresh()는 future를
+      // 교체해 AsyncContentBuilder가 waiting 상태로 돌아가므로, 글을 열었다 닫을
+      // 때마다 목록이 스켈레톤으로 깜빡인다(게다가 SWR 캐시까지 우회한다).
       onPostTap: (context, post) => guardedNavigate(() => Navigator.of(context, rootNavigator: true).push(
         SlideRoute(
           builder: (_) => PostDetailCard.fromPost(

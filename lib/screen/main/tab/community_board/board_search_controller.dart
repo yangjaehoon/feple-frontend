@@ -34,7 +34,11 @@ class BoardSearchController extends SafeChangeNotifier {
     _debounce.cancel();
     final requestId = ++_requestId;
     if (keyword.trim().isEmpty) {
+      // 검색 중(_isSearching=true)에 키보드로 검색어를 전부 지우면 여기로 들어온다.
+      // 이 플래그를 내리지 않으면 목록이 스켈레톤에 갇힌 채 복구되지 않는다
+      // (앞선 요청이 도착해도 requestId가 달라 무시되므로).
       _results = null;
+      _isSearching = false;
       safeNotify();
       return;
     }

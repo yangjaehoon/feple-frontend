@@ -52,6 +52,23 @@ void main() {
       expect(find.byIcon(Icons.local_activity_rounded), findsNothing);
     });
 
+    testWidgets('anonymous면 역할·인증 배지를 모두 숨긴다', (tester) async {
+      await pumpCommonWidget(
+        tester,
+        const ProfileAvatar(
+          nickname: '테스터',
+          userRole: 'ADMIN',
+          certified: true,
+          anonymous: true,
+        ),
+      );
+
+      // 배지만으로 작성자가 특정되면 익명 글/댓글의 익명성이 깨진다
+      expect(find.byIcon(Icons.shield_rounded), findsNothing);
+      expect(find.byIcon(Icons.verified_rounded), findsNothing);
+      expect(find.byIcon(Icons.local_activity_rounded), findsNothing);
+    });
+
     testWidgets('userRole=ADMIN이면 shield 배지가 오버레이된다', (tester) async {
       await pumpCommonWidget(
         tester,

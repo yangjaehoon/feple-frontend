@@ -20,12 +20,21 @@ class PostStatRow extends StatelessWidget {
     this.compact = true,
   });
 
-  double get _heartSize => compact ? 16 : 18;
-  double get _starSize => compact ? 16 : 18;
-  double get _commentSize => compact ? 15 : 16;
-  double get _fontSize => compact ? 13 : 14;
+  // AppDimens의 iconSize* 는 이 행의 아이콘 크기와 맞는 값이 없어 여기서만 쓰는
+  // 상수로 둔다. 하트·별은 같은 크기, 댓글 아이콘만 1px 작다(외곽선 두께 차이 보정).
+  static const _iconSizeCompact = 16.0;
+  static const _iconSizeLarge = 18.0;
+  static const _commentIconSizeCompact = 15.0;
+  static const _commentIconSizeLarge = 16.0;
+
+  double get _heartSize => compact ? _iconSizeCompact : _iconSizeLarge;
+  double get _starSize => compact ? _iconSizeCompact : _iconSizeLarge;
+  double get _commentSize =>
+      compact ? _commentIconSizeCompact : _commentIconSizeLarge;
+  double get _fontSize =>
+      compact ? AppDimens.fontSizeSm : AppDimens.fontSizeMd;
   FontWeight get _fontWeight => compact ? FontWeight.normal : FontWeight.w600;
-  double get _spacing => compact ? 8 : 10;
+  double get _spacing => compact ? AppDimens.space8 : AppDimens.space10;
 
   @override
   Widget build(BuildContext context) {

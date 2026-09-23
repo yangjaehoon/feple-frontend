@@ -117,6 +117,9 @@ class CommentSection extends StatelessWidget {
 
 /// 개별 댓글 타일
 class _CommentTile extends StatelessWidget {
+  static const _avatarPaddingReply = 11.0;
+  static const _avatarPaddingRoot = 8.0;
+
   final CommentDetail comment;
   final bool isOwn;
   final bool isReply;
@@ -155,7 +158,11 @@ class _CommentTile extends StatelessWidget {
             child: GestureDetector(
               onTap: onAuthorTap,
               child: Padding(
-                padding: EdgeInsets.all(isReply ? 11.0 : 8.0),
+                // 답글 아바타는 루트보다 작지만(radius 13 vs 16) 패딩으로 전체
+                // 지름을 맞춰 본문 시작선이 어긋나지 않게 한다.
+                padding: EdgeInsets.all(
+                  isReply ? _avatarPaddingReply : _avatarPaddingRoot,
+                ),
                 child: ProfileAvatar(
                   imageUrl: comment.anonymous ? null : comment.profileImageUrl,
                   nickname: comment.nickname,

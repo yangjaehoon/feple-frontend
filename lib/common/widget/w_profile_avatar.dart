@@ -88,7 +88,11 @@ class ProfileAvatar extends StatelessWidget {
       child: _buildAvatar(context, colors),
     );
 
-    final style = roleBadgeStyleFor(userRole: userRole, certified: certified);
+    // 익명이면 역할·인증 배지도 숨긴다 — 이미지만 기본 아바타로 바꾸고 배지를
+    // 남기면 ARTIST/ADMIN·인증 배지만으로 작성자가 특정돼 익명성이 깨진다.
+    final style = anonymous
+        ? null
+        : roleBadgeStyleFor(userRole: userRole, certified: certified);
     if (style == null) return avatar;
 
     return _buildWithBadge(avatar, style);

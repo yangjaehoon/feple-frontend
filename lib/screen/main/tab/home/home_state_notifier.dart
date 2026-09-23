@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/data/preference/item/preference_item.dart';
 import 'package:feple/common/data/preference/prefs.dart';
 import 'package:feple/common/safe_change_notifier.dart';
@@ -31,6 +32,12 @@ class HomeStateNotifier extends SafeChangeNotifier {
   List<FavoriteBoard>? boards;
   bool hasError = false;
   Object? error;
+
+  // 이미 표시 중인 데이터가 있어 화면을 에러로 덮지 않는 경우에도 갱신 실패는
+  // 알려야 한다 — UI가 스낵바로 표시한 뒤 clearRefreshError()로 비우는 일회성 값.
+  String? _refreshError;
+  String? get refreshError => _refreshError;
+  void clearRefreshError() => _refreshError = null;
 
   final _staleness = StaleTracker(const Duration(minutes: 5));
 
@@ -83,12 +90,15 @@ class HomeStateNotifier extends SafeChangeNotifier {
   /// 네트워크 결과를 기다린다. [forceNetwork] true면 유저 데이터 fetch만 SWR
   /// 메모리 캐시를 건너뛰고 실제 네트워크로 나간다 — 프리패치·스냅샷 저장 등
   /// 부수 호출까지 강제되지 않도록 강제 스코프를 fetch 구간으로만 한정한다.
-  Future<void> loadData({
+  /// 성공 여부를 돌려준다 — refresh()가 "화면은 그대로 두되 실패는 알릴지"를
+  /// 판단하는 데 쓴다(실패해도 캐시 데이터가 있으면 hasError를 세우지 않으므로
+  /// 상태 필드만으로는 구분할 수 없다).
+  Future<bool> loadData({
     bool skipCachedRender = false,
     bool forceNetwork = false,
   }) async {
     final id = userId;
-    if (id == null) return;
+    if (id == null) return false;
 
     hasError = false;
 
@@ -112,7 +122,7 @@ class HomeStateNotifier extends SafeChangeNotifier {
           ? withForcedRefresh(fetchUserData)
           : fetchUserData());
       // 비동기 완료 시점에 userId가 바뀌었으면 다른 init() 호출 중 — 결과 버림
-      if (userId != id) return;
+      if (userId != id) return false;
       artists = fetchedArtists;
       festivals = fetchedFestivals;
       boards = _buildBoards(fetchedArtists, fetchedFestivals);
@@ -125,15 +135,19 @@ class HomeStateNotifier extends SafeChangeNotifier {
       // ignore: unawaited_futures
       _prefetchService.prefetchForFestivals(fetchedFestivals);
     } catch (e) {
-      if (userId != id) return;
+      if (userId != id) return false;
       debugPrint('[Home] 데이터 로드 실패: $e');
-      // 캐시에서 이미 표시 중이면 에러 표시 안 함
+      // 캐시에서 이미 표시 중이면 화면을 에러로 덮지 않는다. 이 경우의 실패 알림은
+      // refresh()가 담당한다 — 사용자가 직접 당긴 새로고침일 때만 알려야 해서.
       if (artists == null) {
         hasError = true;
         error = e;
       }
+      safeNotify();
+      return false;
     }
     safeNotify();
+    return true;
   }
 
   // 프리패치된 캐시가 있으면 즉시 렌더링 후 notify
@@ -155,7 +169,22 @@ class HomeStateNotifier extends SafeChangeNotifier {
   Future<void> refresh({bool force = false}) async {
     if (!force && !_staleness.isStale && artists != null) return;
     hasError = false;
-    await loadData(forceNetwork: force);
+    bool succeeded;
+    try {
+      succeeded = await loadData(forceNetwork: force);
+    } catch (e) {
+      // loadData의 try는 네트워크 fetch 구간만 감싸므로 순서 로드·캐시 조회
+      // (SharedPreferences)에서 난 예외는 여기까지 올라온다.
+      debugPrint('[Home] 새로고침 실패: $e');
+      succeeded = false;
+    }
+    // 화면이 이미 데이터를 보여주고 있어 에러로 덮지 않은 실패는, 사용자가 직접
+    // 당긴 새로고침(force)일 때만 스낵바로 알린다 — 앱 복귀 시 자동 갱신은 홈이
+    // 보이지 않는 탭일 수도 있어 엉뚱한 화면 위에 스낵바가 뜬다.
+    if (force && !succeeded && !hasError) {
+      _refreshError = 'err_fetch_data'.tr();
+      safeNotify();
+    }
   }
 
   Future<void> refreshFestivals() async {

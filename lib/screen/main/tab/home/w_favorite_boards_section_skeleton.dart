@@ -1,4 +1,5 @@
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:flutter/material.dart';
 
@@ -7,15 +8,19 @@ class FavoriteBoardsSectionSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    // 기준 390px: 카드 110(0.282), 리스트 높이 120(0.308)
-    final cardSize = screenWidth * 0.282;
-    final listHeight = screenWidth * 0.308;
+    // 실제 콘텐츠(_BoardTile / FavoriteBoardsSection)와 같은 ResponsiveSize로
+    // 계산해야 한다 — MediaQuery 폭에 직접 비례시키면 태블릿·폴더블에서
+    // ResponsiveSize의 상한 클램프가 빠져 스켈레톤만 커지고 전환 시 튄다.
+    final rs = ResponsiveSize(context);
+    final cardSize = rs.w(110);
+    final listHeight = rs.w(120);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 8, 8),
+          // HomeSectionHeader와 동일한 padding — 다르면 로딩에서 콘텐츠로 바뀔 때
+          // 제목이 가로로 밀린다.
+          padding: const EdgeInsets.fromLTRB(16, 16, 8, 8),
           child: Row(
             children: [
               SkeletonBox(

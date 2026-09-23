@@ -7,10 +7,10 @@ import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/followed_artist.dart';
 import 'package:feple/model/order_utils.dart';
 import 'package:feple/screen/main/tab/home/reorder_settings_flow.dart';
+import 'package:feple/screen/main/tab/home/w_reorder_screen_app_bar.dart';
 import 'package:feple/screen/main/tab/home/w_reorder_sheet.dart';
 import 'package:feple/screen/main/tab/search/artist_page/s_artist_page.dart';
 import 'package:feple/screen/main/tab/search/w_artist_card.dart';
-import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 class FollowedArtistsByGenreScreen extends StatefulWidget {
@@ -33,7 +33,7 @@ class _FollowedArtistsByGenreScreenState
     with NavigationGuard, ReorderSettingsFlow<FollowedArtistsByGenreScreen> {
   String? _selectedGenre;
   late List<FollowedArtist> _artists;
-  late List<String> _genres;
+  late final List<String> _genres;
 
   @override
   void initState() {
@@ -68,10 +68,8 @@ class _FollowedArtistsByGenreScreenState
 
   @override
   void applyReorder(List<int> newOrder) {
-    setState(() {
-      _artists = reorderById(_artists, newOrder, (a) => a.id);
-      _genres = _computeGenres();
-    });
+    // _genres는 정렬된 집합이라 순서 변경으로는 바뀌지 않아 재계산하지 않는다
+    setState(() => _artists = reorderById(_artists, newOrder, (a) => a.id));
   }
 
   @override
@@ -82,30 +80,9 @@ class _FollowedArtistsByGenreScreenState
 
     return Scaffold(
       backgroundColor: colors.backgroundMain,
-      appBar: AppBar(
-        backgroundColor: colors.surface,
-        elevation: 0,
-        leading: IconButton(
-          tooltip: 'back'.tr(),
-          icon: Icon(Icons.arrow_back_ios_rounded, color: colors.textTitle, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          'followed_artists'.tr(),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeXxl,
-            fontWeight: FontWeight.w700,
-            color: colors.textTitle,
-          ),
-        ),
-        actions: [
-          if (widget.onSaveOrder != null)
-            IconButton(
-              tooltip: 'settings'.tr(),
-              icon: Icon(Icons.settings_rounded, color: colors.textSecondary, size: 20),
-              onPressed: openReorderSettings,
-            ),
-        ],
+      appBar: ReorderScreenAppBar(
+        title: 'followed_artists'.tr(),
+        onOpenSettings: widget.onSaveOrder != null ? openReorderSettings : null,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -198,28 +198,26 @@ class _ArtistItem extends StatelessWidget {
           shape: BoxShape.circle,
           color: colors.surface,
         ),
-        child: CircleAvatar(
-          radius: ResponsiveSize(context).w(32),
-          backgroundColor: colors.backgroundMain,
-          backgroundImage:
-              (artist.profileImageUrl != null &&
-                  artist.profileImageUrl!.isNotEmpty)
-              ? CachedNetworkImageProvider(
-                  artist.profileImageUrl!,
-                  maxWidth: 150,
-                )
-              : null,
-          child:
-              (artist.profileImageUrl == null ||
-                  artist.profileImageUrl!.isEmpty)
-              ? Icon(
-                  Icons.person_rounded,
-                  size: 28,
-                  color: colors.textSecondary,
-                )
-              : null,
-        ),
+        child: _buildCircleAvatar(context, colors),
       ),
+    );
+  }
+
+  Widget _buildCircleAvatar(BuildContext context, AbstractThemeColors colors) {
+    // isCustomAvatarUrl(사용자 기본 아바타 URL 판별)은 여기 쓰지 않는다 —
+    // 아티스트 이미지에 적용하면 "전체보기"의 ArtistCard는 같은 URL을 그대로
+    // 그리므로 같은 아티스트가 화면마다 다르게 보인다.
+    final url = artist.profileImageUrl;
+    final imageUrl = (url != null && url.isNotEmpty) ? url : null;
+    return CircleAvatar(
+      radius: ResponsiveSize(context).w(32),
+      backgroundColor: colors.backgroundMain,
+      backgroundImage: imageUrl != null
+          ? CachedNetworkImageProvider(imageUrl, maxWidth: 150)
+          : null,
+      child: imageUrl == null
+          ? Icon(Icons.person_rounded, size: 28, color: colors.textSecondary)
+          : null,
     );
   }
 

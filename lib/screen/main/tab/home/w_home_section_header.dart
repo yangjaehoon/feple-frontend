@@ -51,7 +51,6 @@ class HomeSectionHeader extends StatelessWidget {
               onPressed: onExpand,
             ),
           ] else if (trailing != null) ...[
-            const Spacer(),
             trailing!,
             const SizedBox(width: AppDimens.space12),
           ],

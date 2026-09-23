@@ -71,7 +71,7 @@ class _FestivalListFragmentState extends State<FestivalListFragment> {
 
   void _onAppResumed() {
     if (!mounted) return;
-    context.read<FestivalPreviewProvider>().refresh();
+    _festivalPreviewProvider?.refresh();
   }
 
   void _onScroll() {
@@ -79,7 +79,10 @@ class _FestivalListFragmentState extends State<FestivalListFragment> {
     final pixels = _scrollController.position.pixels;
     final show = pixels > AppDimens.scrollToTopThreshold;
     if (show != _showScrollToTop) setState(() => _showScrollToTop = show);
-    final provider = context.read<FestivalPreviewProvider>();
+    // 스크롤 콜백은 프레임마다 불리므로 didChangeDependencies에서 잡아둔
+    // 인스턴스를 쓴다 — 매번 context.read로 InheritedWidget을 훑지 않도록.
+    final provider = _festivalPreviewProvider;
+    if (provider == null) return;
     if (!provider.hasMore || provider.isLoadingMore || provider.isLoading) return;
     if (pixels >= _scrollController.position.maxScrollExtent - AppDimens.loadMoreTriggerDistance) {
       provider.fetchNext();
@@ -401,16 +404,16 @@ class _LoadMoreIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<FestivalPreviewProvider>(
-      builder: (_, p, _) {
-        if (p.isLoadingMore) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            child: Center(child: CircularProgressIndicator(color: context.appColors.activate)),
-          );
-        }
-        return const SizedBox.shrink();
-      },
+    // isLoadingMore만 구독 — 목록·필터 변경으로는 리빌드되지 않게 한다
+    final isLoadingMore = context.select<FestivalPreviewProvider, bool>(
+      (p) => p.isLoadingMore,
+    );
+    if (!isLoadingMore) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Center(
+        child: CircularProgressIndicator(color: context.appColors.activate),
+      ),
     );
   }
 }

@@ -83,7 +83,7 @@ class ProfileWidgetState extends State<ProfileWidget>
             children: [
               Flexible(child: _buildNicknameText(user, colors)),
               const SizedBox(width: AppDimens.space6),
-              _buildLevelBadge(user, colors),
+              LevelBadge(authorLevel: user.level, fontSize: 22),
             ],
           ),
           if (user.bio != null && user.bio!.isNotEmpty) ...[
@@ -152,14 +152,16 @@ class ProfileWidgetState extends State<ProfileWidget>
 
   Widget _buildProfileImage(AppUser user, AbstractThemeColors colors) {
     final avatarSize = ResponsiveSize(context).w(110);
+    // 서버가 내려주는 기본 로고 URL은 커스텀 사진이 아니므로 기본 아바타로 대체
+    final imageUrl =
+        isCustomAvatarUrl(user.profileImageUrl) ? user.profileImageUrl : null;
     return ProfileAvatarRing(
       size: avatarSize,
       child: CircleAvatar(
         radius: (avatarSize - 12) / 2,
-        backgroundImage: (user.profileImageUrl != null &&
-                user.profileImageUrl!.isNotEmpty)
-            ? CachedNetworkImageProvider(user.profileImageUrl!,
-                maxWidth: 144) as ImageProvider
+        backgroundImage: imageUrl != null
+            ? CachedNetworkImageProvider(imageUrl, maxWidth: 144)
+                as ImageProvider
             : const AssetImage(AppAssets.defaultAvatar),
         backgroundColor: colors.backgroundMain,
       ),
@@ -178,10 +180,6 @@ class ProfileWidgetState extends State<ProfileWidget>
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
     );
-  }
-
-  Widget _buildLevelBadge(AppUser user, AbstractThemeColors colors) {
-    return LevelBadge(authorLevel: user.level, fontSize: 22);
   }
 
   Widget _buildActionButton(

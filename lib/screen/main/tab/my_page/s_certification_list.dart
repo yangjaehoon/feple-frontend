@@ -6,8 +6,6 @@ import 'package:feple/common/util/navigate_after_fetch.dart';
 import 'package:feple/common/util/navigation_guard.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
-import 'package:feple/common/widget/w_error_state.dart';
-import 'package:feple/common/widget/w_refreshable_center.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_status_filter_chip.dart';
@@ -26,7 +24,6 @@ import 'filtered_status_list_state.dart';
 import 'w_rating_sheet.dart';
 import 'w_status_badge.dart';
 import 'w_submit_certification_sheet.dart';
-import 'package:feple/common/util/forced_refresh.dart';
 
 class CertificationListScreen extends StatefulWidget {
   const CertificationListScreen({super.key});
@@ -54,9 +51,6 @@ class _CertificationListScreenState extends State<CertificationListScreen>
     super.initState();
     loadItems();
   }
-
-  /// 에러·빈 상태를 RefreshIndicator가 감지할 수 있도록 스크롤 가능하게 감쌉니다.
-  Widget _buildScrollable(Widget child) => RefreshableCenter(child: child);
 
   Widget _buildSkeleton(AbstractThemeColors colors) {
     return ListView.separated(
@@ -133,39 +127,31 @@ class _CertificationListScreenState extends State<CertificationListScreen>
   }
 
   Widget _buildBody(AbstractThemeColors colors) {
-    final displayed = filteredItems;
-    return RefreshIndicator(
-      onRefresh: () => withForcedRefresh(refreshItems),
-      color: colors.activate,
-      child: isLoadingItems
-          ? _buildSkeleton(colors)
-          : hasLoadError
-          ? _buildScrollable(ErrorState.network(loadError!, onRetry: loadItems))
-          : displayed.isEmpty
-          ? _buildScrollable(
-              EmptyState(
-                icon: Icons.verified_outlined,
-                title: 'cert_no_history'.tr(),
-                subtitle: filter == null ? 'cert_no_history_hint'.tr() : null,
-              ),
-            )
-          : ListView.separated(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-              itemCount: displayed.length,
-              separatorBuilder: (_, _) => const SizedBox(height: AppDimens.space10),
-              itemBuilder: (context, index) {
-                final cert = displayed[index];
-                return AnimatedListItem(
-                  index: index,
-                  child: _CertCard(
-                    key: ValueKey(cert.id),
-                    cert: cert,
-                    certService: _certService,
-                  ),
-                );
-              },
+    return buildFilteredBody(
+      colors: colors,
+      skeleton: _buildSkeleton(colors),
+      emptyState: EmptyState(
+        icon: Icons.verified_outlined,
+        title: 'cert_no_history'.tr(),
+        subtitle: filter == null ? 'cert_no_history_hint'.tr() : null,
+      ),
+      listBuilder: (displayed) => ListView.separated(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+        itemCount: displayed.length,
+        separatorBuilder: (_, _) => const SizedBox(height: AppDimens.space10),
+        itemBuilder: (context, index) {
+          final cert = displayed[index];
+          return AnimatedListItem(
+            index: index,
+            child: _CertCard(
+              key: ValueKey(cert.id),
+              cert: cert,
+              certService: _certService,
             ),
+          );
+        },
+      ),
     );
   }
 

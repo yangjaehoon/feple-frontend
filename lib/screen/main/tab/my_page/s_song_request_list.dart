@@ -1,8 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
-import 'package:feple/common/widget/w_error_state.dart';
-import 'package:feple/common/widget/w_refreshable_center.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/common/widget/w_status_filter_chip.dart';
@@ -16,7 +14,6 @@ import 'package:feple/service/song_request_service.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:feple/common/util/forced_refresh.dart';
 
 class SongRequestListScreen extends StatefulWidget {
   const SongRequestListScreen({super.key});
@@ -48,8 +45,6 @@ class _SongRequestListScreenState extends State<SongRequestListScreen>
       loadItems();
     }
   }
-
-  Widget _buildScrollable(Widget child) => RefreshableCenter(child: child);
 
   Widget _buildSkeleton(AbstractThemeColors colors) {
     return ListView.separated(
@@ -100,35 +95,26 @@ class _SongRequestListScreenState extends State<SongRequestListScreen>
   }
 
   Widget _buildBody(AbstractThemeColors colors) {
-    final displayed = filteredItems;
-    return RefreshIndicator(
-      onRefresh: () => withForcedRefresh(refreshItems),
-      color: colors.activate,
-      child: isLoadingItems
-          ? _buildSkeleton(colors)
-          : hasLoadError
-          ? _buildScrollable(ErrorState.network(loadError!, onRetry: loadItems))
-          : displayed.isEmpty
-          ? _buildScrollable(
-              EmptyState(
-                icon: Icons.music_off_rounded,
-                title: 'song_request_no_history'.tr(),
-                subtitle: filter == null
-                    ? 'song_request_no_history_hint'.tr()
-                    : null,
-              ),
-            )
-          : ListView.separated(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-              itemCount: displayed.length,
-              separatorBuilder: (_, _) =>
-                  Divider(height: 1, color: colors.listDivider),
-              itemBuilder: (_, index) => AnimatedListItem(
-                index: index,
-                child: SongRequestItem(req: displayed[index]),
-              ),
-            ),
+    return buildFilteredBody(
+      colors: colors,
+      skeleton: _buildSkeleton(colors),
+      emptyState: EmptyState(
+        icon: Icons.music_off_rounded,
+        title: 'song_request_no_history'.tr(),
+        subtitle:
+            filter == null ? 'song_request_no_history_hint'.tr() : null,
+      ),
+      listBuilder: (displayed) => ListView.separated(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+        itemCount: displayed.length,
+        separatorBuilder: (_, _) =>
+            Divider(height: 1, color: colors.listDivider),
+        itemBuilder: (_, index) => AnimatedListItem(
+          index: index,
+          child: SongRequestItem(req: displayed[index]),
+        ),
+      ),
     );
   }
 

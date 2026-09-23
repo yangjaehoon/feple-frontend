@@ -1,4 +1,5 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/widget/w_animated_list_item.dart';
@@ -50,7 +51,7 @@ class _FestivalDiaryListScreenState extends State<FestivalDiaryListScreen> {
   Future<void> _openWriteScreen({FestivalDiaryModel? existing}) async {
     final result = await Navigator.push<bool>(
       context,
-      MaterialPageRoute(builder: (_) => WriteFestivalDiaryScreen(existing: existing)),
+      SlideRoute(builder: (_) => WriteFestivalDiaryScreen(existing: existing)),
     );
     if (result == true) unawaited(_load());
   }
@@ -255,10 +256,15 @@ class _DiaryCard extends StatelessWidget {
               ),
               InkWell(
                 onTap: onDelete,
-                child: Icon(
-                  Icons.delete_outline_rounded,
-                  size: 18,
-                  color: colors.textSecondary,
+                borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+                // 아이콘 크기 그대로면 터치 영역이 18px라 누르기 어렵다
+                child: Padding(
+                  padding: const EdgeInsets.all(AppDimens.space8),
+                  child: Icon(
+                    Icons.delete_outline_rounded,
+                    size: 18,
+                    color: colors.textSecondary,
+                  ),
                 ),
               ),
             ],

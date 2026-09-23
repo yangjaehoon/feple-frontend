@@ -2,18 +2,16 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
-import 'package:feple/common/util/debouncer.dart';
 import 'package:feple/common/util/dio_error_helper.dart';
 import 'package:feple/common/widget/app_input_border.dart';
 import 'package:feple/common/widget/w_app_network_image.dart';
-import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
-import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
 import 'package:feple/common/widget/w_secondary_app_bar.dart';
 import 'package:feple/common/widget/w_skeleton_box.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/model/festival_diary_model.dart';
 import 'package:feple/model/festival_model.dart';
+import 'package:feple/screen/main/tab/my_page/w_festival_search_sheet.dart';
 import 'package:feple/service/festival_diary_service.dart';
 import 'package:feple/service/festival_service.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +36,18 @@ class _WriteFestivalDiaryScreenState extends State<WriteFestivalDiaryScreen> {
   final List<Uint8List> _selectedImages = [];
 
   bool get _isEditMode => widget.existing != null;
+
+  bool get _isDirty {
+    final content = _contentController.text.trim();
+    if (_isEditMode) {
+      return content != widget.existing!.content.trim() ||
+          _visibility != widget.existing!.visibility;
+    }
+    return content.isNotEmpty ||
+        _selectedFestival != null ||
+        _selectedImages.isNotEmpty ||
+        _visibility != DiaryVisibility.private_;
+  }
 
   FestivalModel? _selectedFestival;
   List<FestivalModel> _festivals = [];
@@ -76,7 +86,7 @@ class _WriteFestivalDiaryScreenState extends State<WriteFestivalDiaryScreen> {
   Future<void> _showFestivalSearchSheet() async {
     final result = await showAppBottomSheet<FestivalModel>(
       context,
-      builder: (_) => _DiaryFestivalSearchSheet(festivals: _festivals),
+      builder: (_) => FestivalSearchSheet(festivals: _festivals),
     );
     if (mounted && result != null) setState(() => _selectedFestival = result);
   }
@@ -303,6 +313,7 @@ class _WriteFestivalDiaryScreenState extends State<WriteFestivalDiaryScreen> {
   Future<void> _onPopInvoked(bool didPop) async {
     if (didPop) return;
     if (_isSubmitting) return;
+    if (!_isDirty) { Navigator.of(context).pop(); return; }
     final ctx = context;
     final confirmed = await showConfirmDialog(
       ctx,
@@ -364,104 +375,6 @@ class _WriteFestivalDiaryScreenState extends State<WriteFestivalDiaryScreen> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _DiaryFestivalSearchSheet extends StatefulWidget {
-  final List<FestivalModel> festivals;
-
-  const _DiaryFestivalSearchSheet({required this.festivals});
-
-  @override
-  State<_DiaryFestivalSearchSheet> createState() => _DiaryFestivalSearchSheetState();
-}
-
-class _DiaryFestivalSearchSheetState extends State<_DiaryFestivalSearchSheet> {
-  late List<FestivalModel> _filtered;
-  final _searchCtrl = TextEditingController();
-  final _debounce = Debouncer(AppDimens.debounceLocalFilter);
-
-  @override
-  void initState() {
-    super.initState();
-    _filtered = widget.festivals;
-  }
-
-  @override
-  void dispose() {
-    _debounce.dispose();
-    _searchCtrl.dispose();
-    super.dispose();
-  }
-
-  void _onSearch(String query) {
-    _debounce.run(() {
-      if (mounted) {
-        setState(() {
-          _filtered = widget.festivals
-              .where((f) =>
-                  f.title.toLowerCase().contains(query.toLowerCase()) ||
-                  f.titleEn.toLowerCase().contains(query.toLowerCase()))
-              .toList();
-        });
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-    return DraggableScrollableSheet(
-      initialChildSize: 0.7,
-      maxChildSize: 0.9,
-      minChildSize: 0.4,
-      expand: false,
-      builder: (ctx, scrollCtrl) {
-        return Material(
-          color: colors.backgroundMain,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimens.shapeSheet)),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: [
-              const SizedBox(height: AppDimens.space12),
-              const BottomSheetHandle(),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                child: TextField(
-                  controller: _searchCtrl,
-                  autofocus: true,
-                  onChanged: _onSearch,
-                  decoration: InputDecoration(
-                    hintText: 'festival_search_hint'.tr(),
-                    prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny)),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: _filtered.isEmpty
-                    ? EmptyState(icon: Icons.search_off_rounded, title: 'search_no_result'.tr())
-                    : ListView.builder(
-                        controller: scrollCtrl,
-                        itemCount: _filtered.length,
-                        itemBuilder: (_, index) {
-                          final festival = _filtered[index];
-                          return ListTile(
-                            title: Text(
-                              festival.displayTitle(context.isEnglish),
-                              style: const TextStyle(fontSize: AppDimens.fontSizeMd),
-                            ),
-                            onTap: () => Navigator.pop(ctx, festival),
-                          );
-                        },
-                      ),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 }

@@ -24,8 +24,8 @@ void main() {
       expect(SongRequestStatus.approved.displayColor(colors), colors.activate);
     });
 
-    test('거절은 errorRed를 반환한다', () {
-      expect(SongRequestStatus.rejected.displayColor(colors), AppColors.errorRed);
+    test('거절은 테마 error 색을 반환한다', () {
+      expect(SongRequestStatus.rejected.displayColor(colors), colors.error);
     });
   });
 }

@@ -145,17 +145,42 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
       context.showSuccessSnackbar('profile_updated'.tr());
       Navigator.of(context).pop();
     } on BannedWordException {
+      await _resyncAfterPartialSave(userProvider, user.id);
       if (!mounted) return;
       setState(() => _bioError = 'bio_banned_word'.tr());
     } catch (e) {
-      // 일부 항목이 이미 저장됐을 수 있으므로 서버 상태와 동기화
-      try { await userProvider.fetchUser(user.id); } catch (_) {}
+      await _resyncAfterPartialSave(userProvider, user.id);
       if (!mounted) return;
       debugPrint('profile save error: $e');
       context.showErrorSnackbar(networkAwareErrorKey(e, 'save_failed').tr());
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
+  }
+
+  /// 항목별 엔드포인트를 병렬 호출하므로 일부만 저장된 채 실패할 수 있다.
+  /// 서버 상태를 다시 읽고 화면의 "원본" 기준값까지 맞춰야, 이미 저장된 닉네임이
+  /// 미저장인 것처럼 보이거나(뒤로가기 시 변경사항 삭제 확인창) 서버에서 시작된
+  /// 닉네임 변경 잠금이 화면에 반영되지 않는 문제를 막을 수 있다.
+  Future<void> _resyncAfterPartialSave(
+    UserProvider userProvider,
+    int userId,
+  ) async {
+    try {
+      await userProvider.fetchUser(userId);
+    } catch (_) {
+      return;
+    }
+    final refreshed = userProvider.user;
+    if (refreshed == null || !mounted) return;
+    setState(() {
+      _originalNickname = refreshed.nickname;
+      _originalBio = refreshed.bio ?? '';
+      _lockedNicknameController.text = refreshed.nickname;
+      _isNicknameLocked = false;
+      _nicknameDaysRemaining = 0;
+      _initNicknameLock(refreshed.nicknameChangedAt);
+    });
   }
 
   Future<void> _onPopInvoked(bool didPop) async {
@@ -240,6 +265,9 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
 
   Widget _buildAvatarRing(String? profileImageUrl, AbstractThemeColors colors) {
     final avatarSize = ResponsiveSize(context).w(110);
+    // 서버가 내려주는 기본 로고 URL은 커스텀 사진이 아니므로 기본 아바타로 대체
+    final imageUrl =
+        isCustomAvatarUrl(profileImageUrl) ? profileImageUrl : null;
     return ProfileAvatarRing(
       size: avatarSize,
       child: CircleAvatar(
@@ -247,8 +275,8 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
         backgroundColor: colors.backgroundMain,
         backgroundImage: _pickedImage != null
             ? FileImage(File(_pickedImage!.path)) as ImageProvider
-            : (profileImageUrl != null && profileImageUrl.isNotEmpty)
-                ? CachedNetworkImageProvider(profileImageUrl, maxWidth: 144) as ImageProvider
+            : imageUrl != null
+                ? CachedNetworkImageProvider(imageUrl, maxWidth: 144) as ImageProvider
                 : const AssetImage(AppAssets.defaultAvatar),
       ),
     );

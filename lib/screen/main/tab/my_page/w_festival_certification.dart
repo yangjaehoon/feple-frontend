@@ -10,6 +10,7 @@ import 'package:feple/model/certification_model.dart';
 import 'package:feple/screen/main/tab/my_page/cert_status_style.dart';
 import 'package:feple/screen/main/tab/my_page/s_certification_list.dart';
 import 'package:feple/screen/main/tab/my_page/w_certification_ring.dart';
+import 'package:feple/screen/main/tab/my_page/w_section_empty_state.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/common/util/app_route.dart';
@@ -55,7 +56,8 @@ class FestivalCertificationWidgetState extends State<FestivalCertificationWidget
       context,
       SlideRoute(builder: (_) => const CertificationListScreen()),
     );
-    unawaited(_load()); // 돌아왔을 때 목록 새로고침
+    // 상세에 머무는 동안 이 위젯이 사라졌을 수 있다(로그아웃 등)
+    if (mounted) unawaited(_load()); // 돌아왔을 때 목록 새로고침
   }
 
   @override
@@ -79,26 +81,20 @@ class FestivalCertificationWidgetState extends State<FestivalCertificationWidget
             child: _isLoading
                 ? _buildSkeletonList()
                 : _certifications == null || _certifications!.isEmpty
-                    ? _buildEmptyState(colors)
+                    ? _buildEmptyState()
                     : _buildCertList(colors),
           ),
       ],
     );
   }
 
-  // CertificationRing 실제 렌더 크기(반지름 44/390 + 안쪽 padding 2*2 + 바깥
-  // padding 3*2)와 일치시켜 로딩→콘텐츠 전환 시 크기가 튀지 않게 한다.
-  double _certRingSize(BuildContext context) =>
-      ResponsiveSize(context).w(88) + 10; // 반지름 44/390 * 2 + padding(2*2 + 3*2)
-
   Widget _buildSkeletonList() {
+    final ringSize = CertificationRing.diameter(context);
     return ListView.builder(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       itemCount: 3,
-      itemBuilder: (_, _) {
-        final ringSize = _certRingSize(context);
-        return Padding(
+      itemBuilder: (_, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -114,57 +110,17 @@ class FestivalCertificationWidgetState extends State<FestivalCertificationWidget
             const SkeletonBox(width: 48, height: 10, borderRadius: BorderRadius.all(Radius.circular(20))),
           ],
         ),
-        );
-      },
+      ),
     );
   }
 
-  Widget _buildEmptyState(AbstractThemeColors colors) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.workspace_premium_outlined,
-            size: 32,
-            color: colors.activate.withValues(alpha: 0.5),
-          ),
-          const SizedBox(height: AppDimens.space8),
-          Text(
-            'cert_no_history'.tr(),
-            style: TextStyle(
-              fontSize: AppDimens.fontSizeSm,
-              fontWeight: FontWeight.w600,
-              color: colors.textTitle,
-            ),
-          ),
-          const SizedBox(height: 3),
-          Text(
-            'cert_no_history_hint'.tr(),
-            style: TextStyle(
-              fontSize: AppDimens.fontSizeXxs,
-              color: colors.textSecondary,
-              height: 1.4,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppDimens.space10),
-          FilledButton.icon(
-            onPressed: _openDetail,
-            icon: const Icon(Icons.add_rounded, size: 14),
-            label: Text(
-              'cert_submit'.tr(),
-              style: const TextStyle(fontSize: AppDimens.fontSizeXs),
-            ),
-            style: FilledButton.styleFrom(
-              backgroundColor: colors.activate,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.padded,
-            ),
-          ),
-        ],
-      ),
+  Widget _buildEmptyState() {
+    return SectionEmptyState(
+      icon: Icons.workspace_premium_outlined,
+      title: 'cert_no_history'.tr(),
+      hint: 'cert_no_history_hint'.tr(),
+      ctaLabel: 'cert_submit'.tr(),
+      onCta: _openDetail,
     );
   }
 
@@ -172,7 +128,6 @@ class FestivalCertificationWidgetState extends State<FestivalCertificationWidget
     // 승인된 것만 보여주면 대기중/거절만 있는 경우 "제출 이력이 없다"는
     // 빈 상태로 잘못 보임 — 상세 화면과 동일하게 모든 상태를 표시
     final certs = _certifications!;
-    if (certs.isEmpty) return _buildEmptyState(colors);
     return ListView.builder(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 12),

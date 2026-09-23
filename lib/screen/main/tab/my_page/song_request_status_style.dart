@@ -12,6 +12,6 @@ extension SongRequestStatusStyle on SongRequestStatus {
   Color displayColor(AbstractThemeColors colors) => switch (this) {
     SongRequestStatus.pending  => colors.textSecondary,
     SongRequestStatus.approved => colors.activate,
-    SongRequestStatus.rejected => AppColors.errorRed,
+    SongRequestStatus.rejected => colors.error,
   };
 }

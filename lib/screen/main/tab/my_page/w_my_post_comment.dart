@@ -18,6 +18,9 @@ import 'package:feple/common/util/refresh_coordinator.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
+/// 인증·게시글·댓글·스크랩·좋아요 5개 통계 카드
+const _statCardCount = 5;
+
 class MyPostCommentView extends StatefulWidget {
   final int userId;
   const MyPostCommentView({super.key, required this.userId});
@@ -132,42 +135,17 @@ class MyPostCommentViewState extends State<MyPostCommentView>
   Widget _buildSkeleton() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: const Row(
+      child: Row(
         children: [
-          Expanded(
-            child: SkeletonBox(
-              height: 90,
-              borderRadius: BorderRadius.all(Radius.circular(16)),
+          for (int i = 0; i < _statCardCount; i++) ...[
+            if (i > 0) const SizedBox(width: AppDimens.space6),
+            const Expanded(
+              child: SkeletonBox(
+                height: 90,
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+              ),
             ),
-          ),
-          SizedBox(width: AppDimens.space6),
-          Expanded(
-            child: SkeletonBox(
-              height: 90,
-              borderRadius: BorderRadius.all(Radius.circular(16)),
-            ),
-          ),
-          SizedBox(width: AppDimens.space6),
-          Expanded(
-            child: SkeletonBox(
-              height: 90,
-              borderRadius: BorderRadius.all(Radius.circular(16)),
-            ),
-          ),
-          SizedBox(width: AppDimens.space6),
-          Expanded(
-            child: SkeletonBox(
-              height: 90,
-              borderRadius: BorderRadius.all(Radius.circular(16)),
-            ),
-          ),
-          SizedBox(width: AppDimens.space6),
-          Expanded(
-            child: SkeletonBox(
-              height: 90,
-              borderRadius: BorderRadius.all(Radius.circular(16)),
-            ),
-          ),
+          ],
         ],
       ),
     );

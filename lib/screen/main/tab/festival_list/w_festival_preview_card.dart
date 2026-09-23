@@ -3,6 +3,7 @@ import 'package:feple/common/widget/w_app_network_image.dart';
 import 'package:feple/common/widget/w_day_badge.dart';
 import 'package:feple/common/widget/w_surface_card.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/responsive_size.dart';
 import 'package:flutter/material.dart';
 
 import 'package:feple/screen/main/tab/search/festival_information/festival_poster_style.dart';
@@ -17,13 +18,22 @@ class FestivalPreviewCard extends StatelessWidget {
 
   const FestivalPreviewCard({super.key, required this.festival, this.heroTag});
 
+  /// 기준 390px: 카드 높이 140, 포스터 높이 120. 로딩 스켈레톤이 같은 값을 써야
+  /// 전환 시 높이가 튀지 않으므로 static으로 노출한다. MediaQuery 폭에 직접
+  /// 비례시키지 않는 이유는 ResponsiveSize의 대화면 상한 클램프를 그대로 따르기 위함.
+  static double cardHeightOf(BuildContext context) =>
+      ResponsiveSize(context).w(140);
+  static double posterHeightOf(BuildContext context) =>
+      ResponsiveSize(context).w(120);
+
+  /// 포스터 가로세로 비율(2:3) — 너비는 높이로부터 계산된다.
+  static const double posterAspectRatio = 2 / 3;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    // 기준 390px: 카드 높이 140(0.359), 포스터 높이 120(0.308)
-    final cardHeight = screenWidth * 0.359;
-    final posterHeight = screenWidth * 0.308;
+    final cardHeight = cardHeightOf(context);
+    final posterHeight = posterHeightOf(context);
 
     return SurfaceCard(
       child: SizedBox(
@@ -39,12 +49,11 @@ class FestivalPreviewCard extends StatelessWidget {
   }
 
   Widget _buildPoster(double posterHeight) {
-    // aspect ratio 2:3 → 너비는 posterHeight * (2/3)으로 자동 계산됨
-    final posterWidth = posterHeight * 2 / 3;
+    final posterWidth = posterHeight * posterAspectRatio;
     final inner = ClipRRect(
       borderRadius: BorderRadius.circular(AppDimens.cardRadiusTiny),
       child: AspectRatio(
-        aspectRatio: 2 / 3,
+        aspectRatio: posterAspectRatio,
         child: Stack(
           fit: StackFit.expand,
           children: [

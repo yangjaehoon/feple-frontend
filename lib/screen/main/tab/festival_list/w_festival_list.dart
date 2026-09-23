@@ -117,12 +117,10 @@ class _FestivalListSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    // FestivalPreviewCard와 동일한 비율 사용
-    final cardHeight = screenWidth * 0.359;
-    final posterHeight = screenWidth * 0.308;
-    // aspect ratio 2:3 → posterWidth = posterHeight * (2/3)
-    final posterWidth = posterHeight * 2 / 3;
+    // 실제 카드와 같은 계산을 써야 로딩→콘텐츠 전환 시 높이가 튀지 않는다
+    final cardHeight = FestivalPreviewCard.cardHeightOf(context);
+    final posterHeight = FestivalPreviewCard.posterHeightOf(context);
+    final posterWidth = posterHeight * FestivalPreviewCard.posterAspectRatio;
     return Column(
       children: List.generate(4, (_) {
         return Container(

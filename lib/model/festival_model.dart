@@ -2,6 +2,7 @@ import 'package:feple/common/util/festival_date_utils.dart';
 
 import 'json_reader.dart';
 import 'localized_text.dart';
+import 'package:feple/model/festival_preview.dart';
 
 class FestivalModel {
   final int id;
@@ -55,6 +56,24 @@ class FestivalModel {
         'ageRestriction': ageRestriction,
         'attendingCount': attendingCount,
       };
+
+  /// [FestivalPreview.toModel]의 역방향 — 상세용 모델을 목록 카드가 쓰는
+  /// 미리보기 타입으로 변환한다.
+  FestivalPreview toPreview() => FestivalPreview(
+        id: id,
+        title: title,
+        titleEn: titleEn,
+        description: description,
+        location: location,
+        posterUrl: posterUrl,
+        startDate: startDate,
+        endDate: endDate,
+        genres: genres,
+        ageRestriction: ageRestriction,
+        latitude: latitude,
+        longitude: longitude,
+        attendingCount: attendingCount,
+      );
 
   factory FestivalModel.fromJson(Map<String, dynamic> json) {
     return FestivalModel(

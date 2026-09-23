@@ -2,6 +2,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/screen/main/tab/home/s_followed_artists_by_genre.dart';
 import 'package:feple/screen/main/tab/home/s_liked_festivals.dart';
+import 'package:feple/model/followed_artist.dart';
 import 'package:feple/screen/main/tab/home/home_state_notifier.dart';
 import 'package:feple/screen/main/tab/home/w_favorite_boards_section_skeleton.dart';
 import 'package:feple/screen/main/tab/home/w_favorite_boards_section.dart';
@@ -41,6 +42,18 @@ class _HomeFragmentState extends State<HomeFragment> {
     AppEvents.artistFollowChanged.addListener(_onArtistFollowChanged);
     AppEvents.appResumed.addListener(_onAppResumed);
     _scrollController.addListener(_onScroll);
+    _notifier.addListener(_onNotifierChanged);
+  }
+
+  /// 화면을 에러로 덮지 않는 갱신 실패(이미 표시 중인 데이터가 있는 경우)를
+  /// 스낵바로 알린다 — 다른 목록 화면들과 동일한 처리.
+  void _onNotifierChanged() {
+    // mounted를 먼저 확인한다 — 일회성 메시지라 소비 후 버리면 영영 못 보여준다
+    if (!mounted) return;
+    final err = _notifier.refreshError;
+    if (err == null) return;
+    _notifier.clearRefreshError();
+    context.showErrorSnackbar(err);
   }
 
   void _onScroll() {
@@ -65,6 +78,7 @@ class _HomeFragmentState extends State<HomeFragment> {
     AppEvents.appResumed.removeListener(_onAppResumed);
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    _notifier.removeListener(_onNotifierChanged);
     _notifier.dispose();
     super.dispose();
   }
@@ -97,14 +111,9 @@ class _HomeFragmentState extends State<HomeFragment> {
     );
   }
 
-  Future<void> _onRefresh(BuildContext context) async {
-    try {
-      await _notifier.refresh(force: true);
-    } catch (_) {
-      if (!context.mounted) return;
-      context.showErrorSnackbar('refresh_failed'.tr());
-    }
-  }
+  // 실패는 refresh()가 던지는 게 아니라 notifier의 refreshError로 전달된다
+  // (_onNotifierChanged에서 스낵바 표시).
+  Future<void> _onRefresh() => _notifier.refresh(force: true);
 
   Widget _buildBody(AbstractThemeColors colors) {
     return ListenableBuilder(
@@ -117,7 +126,7 @@ class _HomeFragmentState extends State<HomeFragment> {
         }
         return AdaptiveRefreshView(
           indicatorColor: colors.activate,
-          onRefresh: () => _onRefresh(context),
+          onRefresh: _onRefresh,
           controller: _scrollController,
           padding: const EdgeInsets.only(bottom: AppDimens.scrollPaddingBottom),
           child: _buildScrollContent(context, colors),
@@ -194,6 +203,21 @@ class _HomeFragmentState extends State<HomeFragment> {
     );
   }
 
+  void _openFollowedArtists(
+    BuildContext context,
+    List<FollowedArtist> artists,
+  ) {
+    Navigator.push(
+      context,
+      SlideRoute(
+        builder: (_) => FollowedArtistsByGenreScreen(
+          artists: artists,
+          onSaveOrder: _notifier.saveArtistOrder,
+        ),
+      ),
+    );
+  }
+
   Widget _buildArtistsSection(BuildContext context) {
     final orderedArtists = _notifier.orderedArtists;
     return Column(
@@ -202,15 +226,7 @@ class _HomeFragmentState extends State<HomeFragment> {
         HomeSectionHeader(
           title: 'followed_artists'.tr(),
           onExpand: (_notifier.artists?.isNotEmpty ?? false)
-              ? () => Navigator.push(
-                  context,
-                  SlideRoute(
-                    builder: (_) => FollowedArtistsByGenreScreen(
-                      artists: orderedArtists ?? [],
-                      onSaveOrder: _notifier.saveArtistOrder,
-                    ),
-                  ),
-                )
+              ? () => _openFollowedArtists(context, orderedArtists ?? [])
               : null,
         ),
         HomeArtistsSection(
@@ -220,15 +236,7 @@ class _HomeFragmentState extends State<HomeFragment> {
           onShowMore:
               (orderedArtists != null &&
                   orderedArtists.length > HomeArtistsSection.maxPreview)
-              ? () => Navigator.push(
-                  context,
-                  SlideRoute(
-                    builder: (_) => FollowedArtistsByGenreScreen(
-                      artists: orderedArtists,
-                      onSaveOrder: _notifier.saveArtistOrder,
-                    ),
-                  ),
-                )
+              ? () => _openFollowedArtists(context, orderedArtists)
               : null,
           onTap: (artist) => Navigator.push(
             context,

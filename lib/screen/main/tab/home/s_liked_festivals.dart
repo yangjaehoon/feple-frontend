@@ -5,31 +5,15 @@ import 'package:feple/common/widget/w_animated_list_item.dart';
 import 'package:feple/common/widget/w_empty_state.dart';
 import 'package:feple/common/widget/w_tap_scale.dart';
 import 'package:feple/model/festival_model.dart';
-import 'package:feple/model/festival_preview.dart';
 import 'package:feple/model/order_utils.dart';
 import 'package:feple/screen/main/tab/festival_list/w_festival_preview_card.dart';
 import 'package:feple/screen/main/tab/home/reorder_settings_flow.dart';
+import 'package:feple/screen/main/tab/home/w_reorder_screen_app_bar.dart';
 import 'package:feple/screen/main/tab/home/w_reorder_sheet.dart';
 import 'package:feple/screen/main/tab/search/festival_information/f_festival_information.dart';
 import 'package:feple/screen/onboarding/s_festival_pick.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
-
-FestivalPreview _asPreview(FestivalModel f) => FestivalPreview(
-      id: f.id,
-      title: f.title,
-      titleEn: f.titleEn,
-      description: f.description,
-      location: f.location,
-      posterUrl: f.posterUrl,
-      startDate: f.startDate,
-      endDate: f.endDate,
-      genres: f.genres,
-      ageRestriction: f.ageRestriction,
-      latitude: f.latitude,
-      longitude: f.longitude,
-      attendingCount: f.attendingCount,
-    );
 
 class LikedFestivalsScreen extends StatefulWidget {
   const LikedFestivalsScreen({
@@ -122,30 +106,12 @@ class _LikedFestivalsScreenState extends State<LikedFestivalsScreen>
 
     return Scaffold(
       backgroundColor: colors.backgroundMain,
-      appBar: AppBar(
-        backgroundColor: colors.surface,
-        elevation: 0,
-        leading: IconButton(
-          tooltip: 'back'.tr(),
-          icon: Icon(Icons.arrow_back_ios_rounded, color: colors.textTitle, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          'liked_festivals'.tr(),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeXxl,
-            fontWeight: FontWeight.w700,
-            color: colors.textTitle,
-          ),
-        ),
-        actions: [
-          if (widget.onSaveOrder != null && !_showEnded)
-            IconButton(
-              tooltip: 'settings'.tr(),
-              icon: Icon(Icons.settings_rounded, color: colors.textSecondary, size: 20),
-              onPressed: openReorderSettings,
-            ),
-        ],
+      appBar: ReorderScreenAppBar(
+        title: 'liked_festivals'.tr(),
+        // 종료된 페스티벌 탭에서는 재정렬 대상이 없다
+        onOpenSettings: (widget.onSaveOrder != null && !_showEnded)
+            ? openReorderSettings
+            : null,
       ),
       body: Column(
         children: [
@@ -207,7 +173,7 @@ class _LikedFestivalsScreenState extends State<LikedFestivalsScreen>
               context,
               SlideRoute(builder: (_) => FestivalInformationFragment(poster: festival)),
             )),
-            child: FestivalPreviewCard(festival: _asPreview(festival)),
+            child: FestivalPreviewCard(festival: festival.toPreview()),
           ),
         );
       },

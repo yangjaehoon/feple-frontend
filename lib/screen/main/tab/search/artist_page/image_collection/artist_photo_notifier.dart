@@ -12,8 +12,10 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
   final int artistId;
   final _photoService = sl<ArtistPhotoManageable>();
 
-  List<ArtistPhoto> _photos = [];
-  List<ArtistPhoto> get photos => List.unmodifiable(_photos);
+  // 불변 리스트를 그대로 들고 있다가 반환한다 — getter에서 매번
+  // List.unmodifiable()로 감싸면 build마다 사진 수만큼 복사가 일어난다.
+  List<ArtistPhoto> _photos = const [];
+  List<ArtistPhoto> get photos => _photos;
   bool isLoading = true;
   String? errorKey;
 
@@ -28,12 +30,18 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
 
   ArtistPhotoNotifier({required this.artistId});
 
+  List<ArtistPhoto> _replacedAt(int index, ArtistPhoto photo) {
+    final next = List<ArtistPhoto>.from(_photos);
+    next[index] = photo;
+    return List.unmodifiable(next);
+  }
+
   Future<void> loadPhotos() async {
     isLoading = true;
     errorKey = null;
     safeNotify();
     try {
-      _photos = await _photoService.fetchPhotos(artistId);
+      _photos = List.unmodifiable(await _photoService.fetchPhotos(artistId));
     } catch (e) {
       debugPrint('load photos error: $e');
       errorKey = networkAwareErrorKey(e, 'err_fetch_data');
@@ -50,11 +58,14 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
       if (index == -1) return;
       unawaited(HapticFeedback.lightImpact());
       final original = _photos[index];
-      _photos[index] = original.copyWith(
-        likeCount: original.isLiked
-            ? original.likeCount - 1
-            : original.likeCount + 1,
-        isLiked: !original.isLiked,
+      _photos = _replacedAt(
+        index,
+        original.copyWith(
+          likeCount: original.isLiked
+              ? original.likeCount - 1
+              : original.likeCount + 1,
+          isLiked: !original.isLiked,
+        ),
       );
       safeNotify();
       try {
@@ -63,7 +74,7 @@ class ArtistPhotoNotifier extends SafeChangeNotifier {
         // await 도중 loadPhotos()로 _photos가 통째로 교체됐을 수 있으므로
         // 캡처해둔 index가 아니라 photoId로 다시 찾아서 롤백
         final rollbackIndex = _photos.indexWhere((p) => p.photoId == photoId);
-        if (rollbackIndex != -1) _photos[rollbackIndex] = original;
+        if (rollbackIndex != -1) _photos = _replacedAt(rollbackIndex, original);
         errorKey = 'like_failed';
         safeNotify();
         debugPrint('toggle like error: $e');

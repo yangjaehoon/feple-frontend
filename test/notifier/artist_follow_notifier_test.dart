@@ -43,6 +43,21 @@ void main() {
       expect(notifier.followCount, 150);
     });
 
+    test('실패 후 재시도가 성공하면 initFailed가 해제된다', () async {
+      when(() => mockService.getFollowStatus(42)).thenThrow(Exception('network'));
+      await notifier.init();
+      expect(notifier.initFailed, isTrue);
+
+      // initFailed가 남아 있으면 팔로우 버튼이 계속 비활성으로 보인다
+      when(() => mockService.getFollowStatus(42)).thenAnswer(
+        (_) async => FollowStatus(followed: true, followerCount: 150),
+      );
+      await notifier.init();
+
+      expect(notifier.initFailed, isFalse);
+      expect(notifier.isFollowed, isTrue);
+    });
+
     test('서비스 예외 시 상태 유지 (크래시 없음)', () async {
       when(() => mockService.getFollowStatus(42)).thenThrow(Exception('network'));
 

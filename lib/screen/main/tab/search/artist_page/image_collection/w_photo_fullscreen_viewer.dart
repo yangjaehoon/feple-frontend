@@ -25,6 +25,7 @@ class PhotoFullscreenViewer extends StatefulWidget {
 
 class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
   bool _uiVisible = true;
+  bool _popScheduled = false;
   final _transformController = TransformationController();
 
   // 좋아요 상태는 로컬로 복제하지 않고 notifier를 그대로 구독 —
@@ -66,10 +67,15 @@ class _PhotoFullscreenViewerState extends State<PhotoFullscreenViewer> {
       builder: (context, _) {
         final photo = _photo;
         if (photo == null) {
-          // 보는 도중 다른 화면에서 삭제된 경우 — 다음 프레임에 닫기
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) Navigator.pop(context);
-          });
+          // 보는 도중 다른 화면에서 삭제된 경우 — 다음 프레임에 닫기.
+          // 플래그로 한 번만 예약한다: notifier가 다시 알리면 build가 또 돌아
+          // 콜백이 중복 등록되고, 그러면 이 화면 뒤의 화면까지 닫힐 수 있다.
+          if (!_popScheduled) {
+            _popScheduled = true;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) Navigator.pop(context);
+            });
+          }
           return const SizedBox.shrink();
         }
         return AnnotatedRegion<SystemUiOverlayStyle>(

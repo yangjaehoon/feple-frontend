@@ -216,12 +216,13 @@ class _ScheduleListTileState extends State<ScheduleListTile>
             child: Tooltip(
               message: coArtist.displayName(context.isEnglish),
               child: GestureDetector(
-                onTap: () => Navigator.push(
+                // 같은 파일의 포스터 탭과 마찬가지로 전환 중 재탭을 막는다
+                onTap: () => guardedNavigate(() => Navigator.push(
                   context,
                   SlideRoute(
                     builder: (_) => ArtistScreen.fromCoArtist(coArtist),
                   ),
-                ),
+                )),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 11),
                   child: SizedBox(

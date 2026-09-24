@@ -1,4 +1,5 @@
 import 'package:feple/common/data/preference/prefs.dart';
+import 'package:flutter/foundation.dart';
 
 /// 최근 검색어 목록 영속성 — AppPreferences(SharedPreferences 래퍼) 기반.
 /// add/remove/clear가 겹쳐 호출되면 서로 stale한 스냅샷을 기준으로 저장해
@@ -32,11 +33,23 @@ class RecentSearchStore {
     return _enqueue([], (list) {});
   }
 
-  Future<List<String>> _enqueue(List<String> current, void Function(List<String>) mutate) {
+  Future<List<String>> _enqueue(
+    List<String> current,
+    void Function(List<String>) mutate,
+  ) async {
     final list = List<String>.from(current);
     mutate(list);
-    final completer = _queue.then((_) => Prefs.recentSearches.set(list));
-    _queue = completer;
-    return completer.then((_) => list);
+    // 저장 실패를 큐에 그대로 남기면 두 가지가 한꺼번에 깨진다: 이후의 모든
+    // add/remove/clear가 같은 에러를 물려받아 최근 검색 기능이 영구히 죽고,
+    // 호출자(_search)가 로딩 상태를 세운 뒤 await하다 예외를 맞아 화면이
+    // 스켈레톤에 갇힌다. 큐는 항상 정상 완료로 유지하고 실패는 로그만 남긴다 —
+    // 영속화는 실패해도 화면에 보이는 목록은 그대로 쓸 수 있다.
+    _queue = _queue
+        .then((_) => Prefs.recentSearches.set(list))
+        .catchError((Object e) {
+          debugPrint('[RecentSearchStore] 최근 검색어 저장 실패: $e');
+        });
+    await _queue;
+    return list;
   }
 }

@@ -24,16 +24,14 @@ class _SearchFragmentState extends State<SearchFragment> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     // dispose()에서 context.read()로 다시 조회하면, 트리 해체(예: 로그아웃) 중
-    // 이미 deactivate된 ancestor를 조회하려다 예외가 발생할 수 있어 미리 저장해둠
-    _festivalPreviewProvider = context.read<FestivalPreviewProvider>();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _festivalPreviewProvider?.addListener(_onProviderChange);
-    });
+    // 이미 deactivate된 ancestor를 조회하려다 예외가 발생할 수 있어 미리 저장해둠.
+    // 리스너 등록도 여기서 — provider 인스턴스가 바뀔 때 재구독해야 정확하다.
+    final provider = context.read<FestivalPreviewProvider>();
+    if (!identical(provider, _festivalPreviewProvider)) {
+      _festivalPreviewProvider?.removeListener(_onProviderChange);
+      _festivalPreviewProvider = provider;
+      _festivalPreviewProvider!.addListener(_onProviderChange);
+    }
   }
 
   @override
@@ -52,8 +50,9 @@ class _SearchFragmentState extends State<SearchFragment> {
   }
 
   Future<void> _onRefresh() async {
+    final provider = _festivalPreviewProvider;
     await Future.wait([
-      context.read<FestivalPreviewProvider>().refresh(force: true),
+      if (provider != null) provider.refresh(force: true),
       _refresh.refreshAll(),
     ]);
   }

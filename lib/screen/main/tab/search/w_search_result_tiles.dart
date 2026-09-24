@@ -12,6 +12,11 @@ import 'package:feple/common/util/text_highlight.dart';
 import 'package:flutter/material.dart';
 import 'package:feple/common/util/responsive_size.dart';
 
+/// 전환 애니메이션 도중 재탭으로 같은 화면이 중복 push되는 것을 막는다.
+/// 타일들이 StatelessWidget이라 NavigationGuard mixin을 쓸 수 없어 함수로 둔다.
+bool _canNavigate(BuildContext context) =>
+    ModalRoute.of(context)?.isCurrent == true;
+
 class SearchArtistTile extends StatelessWidget {
   final Artist data;
   final String? highlightKeyword;
@@ -44,7 +49,7 @@ class SearchArtistTile extends StatelessWidget {
         style: TextStyle(fontSize: AppDimens.fontSizeXxs, color: colors.textSecondary),
       ),
       onTap: () {
-        if (ModalRoute.of(context)?.isCurrent != true) return;
+        if (!_canNavigate(context)) return;
         Navigator.push(context, SlideRoute(
           builder: (_) => ArtistScreen.fromArtist(data),
         ));
@@ -94,7 +99,7 @@ class SearchFestivalTile extends StatelessWidget {
         style: TextStyle(color: colors.textSecondary, fontSize: AppDimens.fontSizeXs),
       ),
       onTap: () {
-        if (ModalRoute.of(context)?.isCurrent != true) return;
+        if (!_canNavigate(context)) return;
         Navigator.push(context, SlideRoute(
           builder: (_) => FestivalInformationFragment(poster: data.toModel()),
         ));
@@ -162,7 +167,7 @@ class SearchPostTile extends StatelessWidget {
         ],
       ),
       onTap: () {
-        if (ModalRoute.of(context)?.isCurrent != true) return;
+        if (!_canNavigate(context)) return;
         Navigator.of(context, rootNavigator: true).push(SlideRoute(
           builder: (_) => PostDetailCard.fromPost(
             boardName: data.boardDisplayName,

@@ -26,6 +26,11 @@ class FestivalListSwiperWidget extends StatefulWidget {
 class _FestivalListSwiperWidgetState extends State<FestivalListSwiperWidget>
     with NavigationGuard {
   int _currentPage = 0;
+  // 자동 추가 로드를 시도했던 시점의 목록 길이 — 같은 목록 상태에서는 다시
+  // 시도하지 않는다. 단순 bool 플래그로는 부족하다: 요청이 실패하면
+  // isLoadingMore가 false로 돌아오고 hasMore는 true로 남아 같은 조건이 계속
+  // 성립하므로, 오프라인에서 무한 요청 루프와 에러 스낵바 연타가 된다.
+  int _autoAdvancedAtCount = -1;
 
   void _onPageChanged(int newPage) {
     setState(() => _currentPage = newPage);
@@ -165,7 +170,9 @@ class _FestivalListSwiperWidgetState extends State<FestivalListSwiperWidget>
       // 지금까지 불러온 페이지가 전부 종료된 축제뿐이어도, 서버에 더 있으면(hasMore) 이어서
       // 가져온다 — 그렇지 않으면 정렬이 조금만 어긋나도 캐러셀이 통째로 비어 보일 수 있다.
       if (hasMore) {
-        if (!isLoadingMore) {
+        // 새 페이지를 실제로 받아 길이가 늘어난 경우에만 다음 시도가 열린다
+        if (!isLoadingMore && _autoAdvancedAtCount != allItems.length) {
+          _autoAdvancedAtCount = allItems.length;
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) context.read<FestivalPreviewProvider>().fetchNext();
           });

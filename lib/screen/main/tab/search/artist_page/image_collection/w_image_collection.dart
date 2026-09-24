@@ -196,6 +196,8 @@ class ImageCollectionWidgetState extends State<ImageCollectionWidget>
   }
 
   void _openFullscreen(ArtistPhoto photo) {
+    // 전체화면 뷰어는 화면 전환이 아니라 모달에 가까워 SlideRoute(수평 슬라이드)
+    // 대신 fullscreenDialog(아래에서 위로)를 쓴다 — 의도된 예외.
     Navigator.push(
       context,
       MaterialPageRoute(

@@ -38,6 +38,10 @@ class ArtistDiscoverySectionState extends State<ArtistDiscoverySection>
   final _followService = sl<ArtistFollowService>();
 
   Set<int> _followedIds = {};
+  // 새로고침하면 FutureBuilder가 waiting으로 돌아가 스켈레톤을 그리고,
+  // 그 과정에서 _ArtistContent 엘리먼트가 파괴된다 — 선택한 장르를 그 안에
+  // 두면 당겨서 새로고침할 때마다 필터가 "전체"로 초기화된다.
+  String? _selectedGenre;
 
   @override
   Future<List<Artist>> fetchData() => _artistService.fetchArtists();
@@ -87,8 +91,16 @@ class ArtistDiscoverySectionState extends State<ArtistDiscoverySection>
         if (snapshot.hasError) {
           return ErrorState.network(snapshot.error!, onRetry: refresh);
         }
+        final artists = snapshot.data ?? [];
+        final genres = _sortGenresByPriority(extractArtistGenres(artists));
+        // 새로고침으로 그 장르의 아티스트가 모두 사라졌으면 전체로 되돌린다
+        final selected =
+            genres.contains(_selectedGenre) ? _selectedGenre : null;
         return _ArtistContent(
-          allArtists: snapshot.data ?? [],
+          allArtists: artists,
+          genres: genres,
+          selectedGenre: selected,
+          onGenreChanged: (genre) => setState(() => _selectedGenre = genre),
           followedIds: _followedIds,
           onRefreshFollowedIds: _loadFollowedIds,
         );
@@ -168,15 +180,19 @@ class ArtistDiscoverySectionState extends State<ArtistDiscoverySection>
   }
 }
 
-// Owns _selectedGenre so genre chip taps only rebuild this widget,
-// not the FutureBuilder in ArtistDiscoverySectionState.
 class _ArtistContent extends StatefulWidget {
   final List<Artist> allArtists;
+  final List<String> genres;
+  final String? selectedGenre;
+  final ValueChanged<String?> onGenreChanged;
   final Set<int> followedIds;
   final VoidCallback onRefreshFollowedIds;
 
   const _ArtistContent({
     required this.allArtists,
+    required this.genres,
+    required this.selectedGenre,
+    required this.onGenreChanged,
     required this.followedIds,
     required this.onRefreshFollowedIds,
   });
@@ -195,32 +211,14 @@ List<String> _sortGenresByPriority(List<String> genres) {
 }
 
 class _ArtistContentState extends State<_ArtistContent> with NavigationGuard {
-  String? _selectedGenre;
-  late List<String> _genres;
-
-  @override
-  void initState() {
-    super.initState();
-    _genres = _sortGenresByPriority(extractArtistGenres(widget.allArtists));
-  }
-
-  @override
-  void didUpdateWidget(_ArtistContent oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (!identical(oldWidget.allArtists, widget.allArtists)) {
-      _genres = _sortGenresByPriority(extractArtistGenres(widget.allArtists));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
-    final artists = _selectedGenre == null
+    final selected = widget.selectedGenre;
+    final artists = selected == null
         ? widget.allArtists
-        : widget.allArtists
-              .where((a) => a.genres.contains(_selectedGenre))
-              .toList();
-    return _buildContent(artists, _genres, colors);
+        : widget.allArtists.where((a) => a.genres.contains(selected)).toList();
+    return _buildContent(artists, widget.genres, colors);
   }
 
   Future<void> _navigateToArtist(Artist artist) => guardedNavigate(
@@ -250,10 +248,10 @@ class _ArtistContentState extends State<_ArtistContent> with NavigationGuard {
   Widget _buildGenreChips(List<String> genres) {
     return SelectableChipRow<String>(
       values: genres,
-      selected: _selectedGenre,
+      selected: widget.selectedGenre,
       allLabel: 'filter_all'.tr(),
       labelOf: artistGenreLabel,
-      onChanged: (genre) => setState(() => _selectedGenre = genre),
+      onChanged: widget.onGenreChanged,
     );
   }
 

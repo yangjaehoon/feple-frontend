@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:feple/common/util/responsive_size.dart';
 
 import 'package:feple/common/util/certification_submit_helper.dart';
@@ -6,6 +5,7 @@ import 'package:feple/common/widget/w_loading_button.dart';
 import 'package:feple/service/certification_service.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../../common/common.dart';
@@ -38,15 +38,20 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
   bool _submitting = false;
 
   Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final picked = await picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: _maxImageDimension.toDouble(),
-      maxHeight: _maxImageDimension.toDouble(),
-    );
-    if (picked == null || !mounted) return;
-    final bytes = await picked.readAsBytes();
-    if (mounted) setState(() => _imageBytes = bytes);
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: _maxImageDimension.toDouble(),
+        maxHeight: _maxImageDimension.toDouble(),
+      );
+      if (picked == null || !mounted) return;
+      final bytes = await picked.readAsBytes();
+      if (mounted) setState(() => _imageBytes = bytes);
+    } on PlatformException catch (e) {
+      debugPrint('image pick error: $e');
+      if (mounted) context.showErrorSnackbar('photo_pick_failed'.tr());
+    }
   }
 
   Future<void> _submit() async {
@@ -63,6 +68,7 @@ class _CertificationBottomSheetState extends State<CertificationBottomSheet> {
     if (success) {
       context.showSuccessSnackbar('cert_submit_success'.tr());
       Navigator.pop(context);
+      return; // 닫히는 시트의 상태를 갱신할 필요 없음
     }
     setState(() => _submitting = false);
   }

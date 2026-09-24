@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/util/bottom_sheet_helper.dart';
+import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/login_gate.dart';
 import 'package:feple/common/util/url_validator.dart';
@@ -57,6 +58,11 @@ class _FestivalSetlistFullscreenScreenState
     if (!mounted) return;
     await showAppBottomSheet<void>(
       context,
+      // 드래그로 닫으면 Navigator.pop이 직접 불려 시트의 PopScope를 우회한다 —
+      // 작성 중이던 요청 내용이 확인 없이 사라지므로 아티스트 곡 신청 시트와
+      // 동일하게 드래그·배리어 닫기를 막고 버튼 경로만 남긴다.
+      isDismissible: false,
+      enableDrag: false,
       builder: (_) =>
           SetlistRequestSheet(festivalId: widget.festivalId, entry: entry),
     );
@@ -415,6 +421,9 @@ class SetlistRequestSheet extends StatefulWidget {
 class _SetlistRequestSheetState extends State<SetlistRequestSheet> {
   final _controller = TextEditingController();
   bool _submitting = false;
+  String? _messageError;
+
+  bool get _isDirty => _controller.text.trim().isNotEmpty;
 
   @override
   void dispose() {
@@ -422,11 +431,34 @@ class _SetlistRequestSheetState extends State<SetlistRequestSheet> {
     super.dispose();
   }
 
+  Future<void> _handleClose() async {
+    if (_submitting) return;
+    if (!_isDirty) {
+      Navigator.pop(context);
+      return;
+    }
+    final ctx = context;
+    final confirmed = await showConfirmDialog(
+      ctx,
+      title: 'discard_changes'.tr(),
+      content: 'discard_changes_msg'.tr(),
+      confirmLabel: 'discard'.tr(),
+    );
+    if (confirmed && ctx.mounted) Navigator.pop(ctx);
+  }
+
   Future<void> _submit() async {
     if (_submitting) return;
     final message = _controller.text.trim();
-    if (message.isEmpty) return;
-    setState(() => _submitting = true);
+    // 그냥 return하면 버튼을 눌러도 아무 일도 일어나지 않아 고장으로 보인다
+    if (message.isEmpty) {
+      setState(() => _messageError = 'setlist_request_required'.tr());
+      return;
+    }
+    setState(() {
+      _messageError = null;
+      _submitting = true;
+    });
     try {
       await sl<FestivalDetailService>().submitSetlistRequest(
         festivalId: widget.festivalId,
@@ -449,7 +481,13 @@ class _SetlistRequestSheetState extends State<SetlistRequestSheet> {
   Widget build(BuildContext context) {
     final colors = context.appColors;
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
-    return Material(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        _handleClose();
+      },
+      child: Material(
       color: colors.surface,
       borderRadius: const BorderRadius.vertical(
         top: Radius.circular(AppDimens.shapeSheet),
@@ -468,6 +506,7 @@ class _SetlistRequestSheetState extends State<SetlistRequestSheet> {
           _buildFooter(colors),
           SizedBox(height: bottomInset),
         ],
+      ),
       ),
     );
   }
@@ -507,8 +546,12 @@ class _SetlistRequestSheetState extends State<SetlistRequestSheet> {
       controller: _controller,
       maxLines: 6,
       maxLength: 500,
+      onChanged: (_) {
+        if (_messageError != null) setState(() => _messageError = null);
+      },
       decoration: InputDecoration(
         hintText: 'setlist_request_hint'.tr(),
+        errorText: _messageError,
         hintStyle: TextStyle(
           color: colors.textSecondary,
           fontSize: AppDimens.fontSizeSm,
@@ -544,7 +587,7 @@ class _SetlistRequestSheetState extends State<SetlistRequestSheet> {
           children: [
             Expanded(
               child: OutlinedButton(
-                onPressed: _submitting ? null : () => Navigator.pop(context),
+                onPressed: _submitting ? null : _handleClose,
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(color: colors.activate),
                   foregroundColor: colors.activate,

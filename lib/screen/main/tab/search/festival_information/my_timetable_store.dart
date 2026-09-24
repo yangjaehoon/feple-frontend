@@ -32,11 +32,19 @@ class MyTimetableStore {
     }
   }
 
-  Future<void> save(Map<String, List<MyTimetableEntry>> entriesByDate) async {
-    final prefs = await SharedPreferences.getInstance();
-    final encoded = jsonEncode(
-      entriesByDate.map((k, v) => MapEntry(k, v.map((e) => e.toJson()).toList())),
-    );
-    await prefs.setString(_prefKey, encoded);
+  /// 저장 성공 여부를 돌려준다 — 호출부는 화면 상태를 이미 낙관적으로 갱신한
+  /// 뒤라 예외를 던지면 UI 콜백에서 unhandled async error가 된다.
+  Future<bool> save(Map<String, List<MyTimetableEntry>> entriesByDate) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final encoded = jsonEncode(
+        entriesByDate.map((k, v) => MapEntry(k, v.map((e) => e.toJson()).toList())),
+      );
+      await prefs.setString(_prefKey, encoded);
+      return true;
+    } catch (e) {
+      debugPrint('[Timetable] save user entries failed: $e');
+      return false;
+    }
   }
 }

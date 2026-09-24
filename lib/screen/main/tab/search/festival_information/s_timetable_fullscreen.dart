@@ -50,7 +50,12 @@ class _TimetableFullscreenScreenState extends State<TimetableFullscreenScreen> {
     if (mounted) setState(() => _userEntriesMap.addAll(loaded));
   }
 
-  Future<void> _saveEntries() => _store.save(_userEntriesMap);
+  /// 화면은 이미 낙관적으로 갱신된 뒤라, 저장 실패를 조용히 넘기면 사용자는
+  /// 저장된 줄 알다가 앱을 다시 켰을 때 일정이 사라진 것을 보게 된다.
+  Future<void> _saveEntries() async {
+    final saved = await _store.save(_userEntriesMap);
+    if (!saved && mounted) context.showErrorSnackbar('save_failed'.tr());
+  }
 
   List<MyTimetableEntry> get _currentUserEntries =>
       _userEntriesMap[_selectedDate ?? ''] ?? [];

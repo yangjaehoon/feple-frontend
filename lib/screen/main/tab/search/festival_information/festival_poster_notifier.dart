@@ -101,10 +101,10 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
 
   Future<void> init() async {
     hasInitError = false;
+    loadDescState(); // 동기 — SharedPreferences 캐시에서 바로 읽는다
     await Future.wait([
       if (!isGuest) loadLikeState(),
       if (!isGuest) loadAttendingState(),
-      loadDescState(),
       if (!isGuest) loadMyCertificationStatus(),
       loadRatingInfo(),
       loadTicketLinks(),
@@ -139,7 +139,7 @@ class FestivalPosterNotifier extends SafeChangeNotifier {
 
   // defaultValue는 descExpanded의 초기값(true)과 동일 — 저장된 값이 없으면
   // 필드를 건드리지 않는 것과 같은 결과가 되도록 맞춤
-  Future<void> loadDescState() async {
+  void loadDescState() {
     descExpanded = BoolPreferenceItem(_descPrefKey, true).get();
     safeNotify();
   }

@@ -415,6 +415,7 @@
   "setlist_request_submit": "Submit Request",
   "setlist_request_sent": "Your request has been sent.",
   "setlist_request_failed": "Failed to send request.",
+  "setlist_request_required": "Please enter your request.",
   "total_songs": "{} songs",
   "view_all": "View All",
   "no_participating_artists": "No participating artists.",

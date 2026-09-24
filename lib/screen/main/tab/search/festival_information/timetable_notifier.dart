@@ -59,7 +59,8 @@ class TimetableNotifier extends SafeChangeNotifier {
   Future<void> _refreshFollowedNames() async {
     try {
       followedNames = await _safeFollowedNames();
-      _cachedRange = computeTimetableRange(entries, selectedDate);
+      // range는 entries/selectedDate만으로 계산되므로 followedNames 변경으로
+      // 다시 만들 필요가 없다 — 하이라이트는 화면이 followedNames를 직접 본다
       safeNotify();
     } catch (e) {
       debugPrint('[Timetable] follow refresh error: $e');

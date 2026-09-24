@@ -415,6 +415,7 @@
   "setlist_request_submit": "요청 보내기",
   "setlist_request_sent": "수정 요청을 보냈습니다.",
   "setlist_request_failed": "요청 전송에 실패했습니다.",
+  "setlist_request_required": "요청 내용을 입력해주세요.",
   "total_songs": "{}곡",
   "view_all": "전체 보기",
   "no_participating_artists": "참여 아티스트가 없습니다.",

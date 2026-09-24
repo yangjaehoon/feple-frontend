@@ -17,6 +17,7 @@ import 'package:feple/provider/user_provider.dart';
 import 'package:feple/service/user_service.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -85,12 +86,17 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
   }
 
   Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final picked = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 90,
-    );
-    if (picked != null && mounted) setState(() => _pickedImage = picked);
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 90,
+      );
+      if (picked != null && mounted) setState(() => _pickedImage = picked);
+    } on PlatformException catch (e) {
+      debugPrint('image pick error: $e');
+      if (mounted) context.showErrorSnackbar('photo_pick_failed'.tr());
+    }
   }
 
   Future<void> _save() async {

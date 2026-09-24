@@ -1,5 +1,6 @@
 import 'package:feple/common/common.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
+import 'package:feple/common/util/bottom_sheet_helper.dart';
 import 'package:feple/common/widget/w_bottom_sheet_handle.dart';
 import 'package:feple/common/widget/w_icon_circle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
@@ -15,10 +16,10 @@ class PermissionRationale {
       _show(context, _location);
 
   static Future<bool> _show(BuildContext context, _Config config) async {
-    final result = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+    // 앱의 다른 시트와 열림·닫힘 애니메이션을 맞추기 위해 공용 헬퍼를 쓴다
+    // (showModalBottomSheet를 직접 부르면 sheetAnimationStyle이 빠진다).
+    final result = await showAppBottomSheet<bool>(
+      context,
       builder: (_) => _PermissionSheet(config: config),
     );
     return result ?? false;

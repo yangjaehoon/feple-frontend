@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/safe_change_notifier.dart';
 import 'package:feple/common/stale_tracker.dart';
@@ -43,7 +45,9 @@ class NotificationNotifier extends SafeChangeNotifier {
   @visibleForTesting
   static void resetPendingDeletesForTest() => _pendingDeleteIds.clear();
 
-  List<NotificationModel> get items => List.unmodifiable(_items);
+  // UnmodifiableListView는 복사가 아니라 래퍼라 build마다 만들어도 O(1)이다
+  // (List.unmodifiable은 매번 알림 수만큼 복사본을 만든다).
+  List<NotificationModel> get items => UnmodifiableListView(_items);
   bool get hasUnread => _items.any((n) => !n.read);
 
   // AppBar의 "모두 읽음" 아이콘·필터 칩 선택 상태는 리스트 전체와 무관하게
@@ -94,6 +98,8 @@ class NotificationNotifier extends SafeChangeNotifier {
     }
   }
 
+  /// 실패 시 예외를 그대로 던진다 — 당겨서 새로고침 호출부가 스낵바로 알린다.
+  /// 반면 앱 복귀 같은 자동 갱신 경로는 [refreshSilently]를 써야 한다.
   Future<void> refresh({bool force = false}) async {
     if (!force && _items.isNotEmpty && !_staleness.isStale) return;
     final result = await _service.fetchPage(0, filter: filter);
@@ -103,6 +109,17 @@ class NotificationNotifier extends SafeChangeNotifier {
     hasError = false;
     _staleness.markLoaded();
     _notify();
+  }
+
+  /// 사용자가 요청하지 않은 자동 갱신용 — 실패해도 기존 목록을 그대로 두고
+  /// 조용히 넘어간다. 그냥 refresh()를 부르면 예외가 리스너 콜백 밖으로
+  /// 빠져나가 unhandled async error가 된다.
+  Future<void> refreshSilently() async {
+    try {
+      await refresh();
+    } catch (e) {
+      debugPrint('[Notification] 자동 갱신 실패: $e');
+    }
   }
 
   Future<void> loadMore() async {

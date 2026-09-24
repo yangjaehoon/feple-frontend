@@ -42,9 +42,18 @@ class _SettingsScreenState extends State<SettingsScreen> with NavigationGuard {
     _showCurrentTimeLine = Prefs.showCurrentTimeLine.get();
   }
 
-  void _toggleShowCurrentTimeLine(bool value) {
+  Future<void> _toggleShowCurrentTimeLine(bool value) async {
     setState(() => _showCurrentTimeLine = value);
-    Prefs.showCurrentTimeLine.set(value);
+    try {
+      await Prefs.showCurrentTimeLine.set(value);
+    } catch (e) {
+      // 화면만 새 값으로 두면 저장된 값을 읽는 타임테이블과 어긋난 채 세션이
+      // 유지되고, 재실행 시 설명 없이 되돌아간다 — 스위치도 함께 복원한다
+      debugPrint('[Settings] 현재 시각선 설정 저장 실패: $e');
+      if (!mounted) return;
+      setState(() => _showCurrentTimeLine = !value);
+      context.showErrorSnackbar('save_failed'.tr());
+    }
   }
 
   Future<void> _logout() async {

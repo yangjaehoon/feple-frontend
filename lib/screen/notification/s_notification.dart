@@ -78,7 +78,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
     if (mounted) context.showErrorSnackbar(deleteError);
   }
 
-  void _onAppResumed() => _notifier.refresh();
+  // refresh()는 실패 시 예외를 던지므로 자동 갱신 경로에서 그대로
+  // 부르면 리스너 콜백 밖으로 빠져나가 unhandled async error가 된다
+  void _onAppResumed() => unawaited(_notifier.refreshSilently());
 
   void _onScroll() {
     final pixels = _scrollController.position.pixels;

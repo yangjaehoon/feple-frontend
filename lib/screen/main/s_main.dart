@@ -19,7 +19,7 @@ import '../../provider/user_provider.dart';
 
 class MainScreen extends StatefulWidget {
   /// 위젯 트리 밖(홈 화면 바로가기 등 네이티브 콜백)에서 [MainScreenState]에
-  /// 접근하기 위한 키. `AppState.build()`에서만 붙인다 — 위젯 트리 안에서는
+  /// 접근하기 위한 키. `App`의 `build()`에서만 붙인다 — 위젯 트리 안에서는
   /// `context.findAncestorStateOfType<MainScreenState>()`를 대신 쓸 것.
   static final GlobalKey<MainScreenState> mainScreenKey =
       GlobalKey<MainScreenState>();

@@ -43,9 +43,11 @@ class QuickActionHandler {
   }
 
   void _handleAction(String type) {
-    // MainScreen(App 위젯)은 로그인·온보딩 완료 후에만 존재 — 그 전에 바로가기를
-    // 탭하면 currentState가 null이라 조용히 무시된다(딥링크와 달리 로그인/온보딩
-    // 중간에 탭 전환을 끼워 넣을 자연스러운 지점이 없음).
+    // 게스트도 App → MainScreen 트리를 그대로 쓰므로 비로그인 상태에서도
+    // 동작한다(Android 에뮬레이터에서 콜드·웜 스타트 모두 실측 확인).
+    // 다만 나이확인·온보딩·점검 게이트 화면은 App 자체를 대체해서 그동안에는
+    // currentState가 null이라 조용히 무시된다 — 딥링크와 달리 그 흐름 중간에
+    // 탭 전환을 끼워 넣을 자연스러운 지점이 없다.
     final mainState = MainScreen.mainScreenKey.currentState;
     if (mainState == null) return;
     switch (type) {

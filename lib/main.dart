@@ -1,41 +1,41 @@
 import 'dart:developer';
 import 'dart:ui';
 
-import 'package:flutter/foundation.dart' show kDebugMode;
-
+import 'package:dio/dio.dart' show DioException;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:feple/common/common.dart';
-import 'package:feple/common/util/app_alert_dialog.dart';
-import 'package:feple/common/util/deep_link_handler.dart';
-import 'package:feple/common/widget/w_text_scale_clamp.dart';
-import 'package:feple/injection.dart';
-import 'package:feple/provider/user_provider.dart';
-import 'package:feple/service/festival_cache_service.dart';
-import 'package:feple/service/user_service.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
-import 'package:provider/provider.dart';
-import 'app.dart';
-import 'auth/keys.dart';
-import 'auth/token_store.dart';
-import 'common/data/preference/app_preferences.dart';
-import 'common/data/preference/prefs.dart';
-import 'package:dio/dio.dart' show DioException;
-import 'network/api_cache_store.dart';
-import 'network/dio_client.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'common/theme/custom_theme_scope.dart';
-import 'common/util/app_version.dart';
-import 'common/util/update_prompt.dart';
-import 'login/s_age_gate.dart';
-import 'model/app_config_model.dart';
-import 'service/app_config_service.dart';
-import 'screen/onboarding/s_onboarding.dart';
-import 'screen/s_force_update.dart';
-import 'screen/s_maintenance.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:provider/provider.dart';
+
+import 'package:feple/app.dart';
+import 'package:feple/auth/keys.dart';
+import 'package:feple/auth/token_store.dart';
+import 'package:feple/common/common.dart';
+import 'package:feple/common/data/preference/app_preferences.dart';
+import 'package:feple/common/data/preference/prefs.dart';
+import 'package:feple/common/theme/custom_theme_scope.dart';
+import 'package:feple/common/util/app_alert_dialog.dart';
+import 'package:feple/common/util/app_version.dart';
+import 'package:feple/common/util/deep_link_handler.dart';
+import 'package:feple/common/util/update_prompt.dart';
+import 'package:feple/common/widget/w_text_scale_clamp.dart';
+import 'package:feple/injection.dart';
+import 'package:feple/login/s_age_gate.dart';
+import 'package:feple/model/app_config_model.dart';
+import 'package:feple/network/api_cache_store.dart';
+import 'package:feple/network/dio_client.dart';
+import 'package:feple/provider/user_provider.dart';
+import 'package:feple/screen/onboarding/s_onboarding.dart';
+import 'package:feple/screen/s_force_update.dart';
+import 'package:feple/screen/s_maintenance.dart';
+import 'package:feple/service/app_config_service.dart';
+import 'package:feple/service/festival_cache_service.dart';
+import 'package:feple/service/user_service.dart';
 
 void main() async {
   final bindings = WidgetsFlutterBinding.ensureInitialized();
@@ -85,6 +85,11 @@ void main() async {
   );
 }
 
+/// 콜드스타트 이후 루트에 올 화면의 종류. 판정([_MyAppState._rootDestination])과
+/// 위젯 생성([_MyAppState._buildRootScreen])을 분리해, 화면 종류만 알면 되는
+/// 호출부가 위젯을 만들지 않고도 판단할 수 있게 한다.
+enum _RootDestination { maintenance, forceUpdate, ageGate, onboarding, app }
+
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -101,6 +106,9 @@ class _MyAppState extends State<MyApp> {
   /// 현재 앱 버전(빌드 번호 없는 "1.2.0"). 강제/권장 업데이트 판단에 쓴다.
   String? _currentVersion;
 
+  /// 온보딩 완료 여부는 `Prefs`(SharedPreferences)에 저장되고 [_rootDestination]이
+  /// build 중에 읽는다 — 알려주는 notifier가 없어서 **이 setState가 유일한 갱신
+  /// 수단**이다. 빈 setState라고 지우면 온보딩을 마쳐도 화면이 넘어가지 않는다.
   void _onOnboardingComplete() {
     setState(() {});
   }
@@ -134,6 +142,9 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
+  /// 온보딩 쪽([_onOnboardingComplete])과 달리 여기엔 setState가 필요 없다 —
+  /// `markAgeVerified()`와 `fetchUser()`가 모두 `notifyListeners()`를 부르므로
+  /// `home`의 `Consumer<UserProvider>`가 알아서 다시 빌드한다.
   Future<void> _onAgeVerified() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     // 먼저 플래그를 내려 게이트를 확실히 벗어난 뒤, 최신 프로필로 재동기화한다.
@@ -146,7 +157,6 @@ class _MyAppState extends State<MyApp> {
         log('Age-verified user refetch failed: $e');
       }
     }
-    if (mounted) setState(() {});
   }
 
   Future<void> _showBanDialog(UserProvider userProvider) async {
@@ -202,9 +212,10 @@ class _MyAppState extends State<MyApp> {
   ///
   /// 설정 조회와 버전 조회는 서로 독립적으로 처리한다 — 버전 조회가 실패해도
   /// (점검 판단엔 버전이 필요 없으므로) 점검 게이트는 그대로 동작해야 한다.
+  /// 둘 다 스플래시를 붙잡으므로 순차가 아니라 병렬로 기다린다.
   Future<void> _loadAppConfig() async {
-    final config = await _fetchAppConfig();
-    final version = await _readCurrentVersion();
+    final (config, version) =
+        await (_fetchAppConfig(), _readCurrentVersion()).wait;
     if (!mounted) return;
     setState(() {
       if (config != null) _appConfig = config;
@@ -247,9 +258,9 @@ class _MyAppState extends State<MyApp> {
     if (config == null || currentVersion == null) return;
     // 점검·강제 업데이트 게이트나 나이 확인·온보딩 화면 위에 권장 업데이트
     // 다이얼로그가 겹치지 않도록, 실제 앱 화면일 때만 띄운다.
-    if (_rootScreen(Provider.of<UserProvider>(context, listen: false)) is! App) {
-      return;
-    }
+    final destination =
+        _rootDestination(Provider.of<UserProvider>(context, listen: false));
+    if (destination != _RootDestination.app) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final ctx = App.navigatorKey.currentContext;
       if (ctx == null || !ctx.mounted) return;
@@ -261,47 +272,56 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  /// 점검·강제 업데이트 게이트. 해당하면 그 화면을, 아니면 null을 반환한다.
-  Widget? _appGateScreen() {
-    final config = _appConfig;
-    if (config == null) return null;
-    if (config.maintenance) {
-      return MaintenanceScreen(
-        message: config.maintenanceMessage,
-        onRetry: _reloadAppConfig,
-      );
-    }
-    final currentVersion = _currentVersion;
-    if (currentVersion != null &&
-        isVersionBelow(currentVersion, config.minSupportedVersion)) {
-      return const ForceUpdateScreen();
-    }
-    return null;
-  }
-
   /// 콜드스타트 이후 루트에 무엇을 보여줄지 한곳에서 결정한다.
   /// [build]의 `home`과 [_maybePromptRecommendedUpdate]의 화면 판정이 갈라지지
-  /// 않도록 공유한다.
-  Widget _rootScreen(UserProvider userProvider) {
+  /// 않도록 공유한다 — 판정만 하고 위젯은 만들지 않으므로, 화면 종류만
+  /// 알고 싶은 호출부가 화면 위젯을 통째로 만들었다 버리지 않아도 된다.
+  _RootDestination _rootDestination(UserProvider userProvider) {
     // 점검 모드·강제 업데이트는 로그인/게스트 라우팅보다 우선한다.
-    final gate = _appGateScreen();
-    if (gate != null) return gate;
+    final config = _appConfig;
+    if (config != null) {
+      if (config.maintenance) return _RootDestination.maintenance;
+      final currentVersion = _currentVersion;
+      if (currentVersion != null &&
+          isVersionBelow(currentVersion, config.minSupportedVersion)) {
+        return _RootDestination.forceUpdate;
+      }
+    }
 
     final user = userProvider.user;
-    if (user == null) {
-      // 게스트 모드 — 페스티벌 목록·검색·커뮤니티 게시판 등 비계정 기능은
-      // 로그인 없이 바로 접근 가능해야 함 (Apple 가이드라인 5.1.1(v)).
-      return App(noticeMessage: _appConfig?.noticeMessage);
-    }
-    if (user.ageVerificationRequired) {
-      // 만 14세 미만 커뮤니티 이용 차단 (App Store 심사 5.1.1) — 온보딩·홈
-      // 진입 전에 생년월일을 1회 확인한다.
-      return AgeGateScreen(onVerified: _onAgeVerified);
-    }
+    // 게스트 모드 — 페스티벌 목록·검색·커뮤니티 게시판 등 비계정 기능은
+    // 로그인 없이 바로 접근 가능해야 함 (Apple 가이드라인 5.1.1(v)).
+    if (user == null) return _RootDestination.app;
+    // 만 14세 미만 커뮤니티 이용 차단 (App Store 심사 5.1.1) — 온보딩·홈
+    // 진입 전에 생년월일을 1회 확인한다.
+    if (user.ageVerificationRequired) return _RootDestination.ageGate;
     if (!Prefs.isOnboardingCompleted(user.id)) {
-      return OnboardingScreen(userId: user.id, onComplete: _onOnboardingComplete);
+      return _RootDestination.onboarding;
     }
-    return App(noticeMessage: _appConfig?.noticeMessage);
+    return _RootDestination.app;
+  }
+
+  Widget _buildRootScreen(UserProvider userProvider) {
+    final user = userProvider.user;
+    return switch (_rootDestination(userProvider)) {
+      _RootDestination.maintenance => MaintenanceScreen(
+          message: _appConfig?.maintenanceMessage,
+          onRetry: _reloadAppConfig,
+        ),
+      _RootDestination.forceUpdate => const ForceUpdateScreen(),
+      _RootDestination.ageGate => AgeGateScreen(onVerified: _onAgeVerified),
+      _RootDestination.onboarding when user != null => OnboardingScreen(
+          userId: user.id,
+          onComplete: _onOnboardingComplete,
+        ),
+      // onboarding은 user != null일 때만 나오지만(위 [_rootDestination]),
+      // `!` 대신 게스트 화면으로 폴백해 둔다 — 나중에 판정 순서가 바뀌어도
+      // 널 역참조로 죽지 않게. 분기를 빠뜨리면 컴파일이 막히도록 열거형 값을
+      // 전부 명시한다.
+      _RootDestination.onboarding ||
+      _RootDestination.app =>
+        App(noticeMessage: _appConfig?.noticeMessage),
+    };
   }
 
   Future<void> _doAutoLogin(UserProvider userProvider) async {
@@ -357,9 +377,10 @@ class _MyAppState extends State<MyApp> {
             theme: context.themeType.themeData,
             builder: clampTextScaleBuilder,
             // 점검·강제 업데이트 게이트와 게스트/나이확인/온보딩 라우팅은
-            // [_rootScreen]에서 한곳에 모아 결정한다.
+            // [_rootDestination]에서 한곳에 모아 결정한다.
             home: Consumer<UserProvider>(
-              builder: (context, userProvider, _) => _rootScreen(userProvider),
+              builder: (context, userProvider, _) =>
+                  _buildRootScreen(userProvider),
             ),
             localizationsDelegates: context.localizationDelegates,
             supportedLocales: context.supportedLocales,

@@ -5,8 +5,10 @@ import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/widget/w_notice_banner.dart';
 import 'package:feple/common/widget/w_offline_banner.dart';
+import 'package:feple/injection.dart';
 import 'package:feple/screen/main/tab/tab_item.dart';
 import 'package:feple/screen/main/tab/w_tab_navigator.dart';
+import 'package:feple/screen/notification/notification_count_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -54,6 +56,10 @@ class MainScreenState extends State<MainScreen>
   UserProvider? _userProvider;
   bool _wasLoggedIn = false;
 
+  /// 사용자가 탭을 직접 골랐는지. 뒤늦게 끝난 자동 로그인이 사용자가 고른
+  /// 탭을 덮어쓰지 않도록 [_applyLoginTransition]이 본다.
+  bool _userChoseTab = false;
+
   int get _currentIndex => tabs.indexOf(_currentTab);
 
   // 게스트에게 홈 탭은 로그인 유도 화면이라 로고 탭·뒤로가기 복귀 지점으로
@@ -99,18 +105,52 @@ class MainScreenState extends State<MainScreen>
     provider.addListener(_handleAuthChanged);
   }
 
-  // 로그아웃·세션 만료로 로그인 상태가 풀리면 각 탭의 중첩 Navigator 스택을
-  // 비운다. 로그인 여부와 무관하게 최상위 Consumer가 같은 App 위젯을 반환해
-  // 이 스택이 살아남으므로, 설정 등 계정 전용 화면이 RequireLoginGate의
-  // 로그인 유도 화면 위에 그대로 남는 것을 막는다.
+  // 최상위 Consumer가 로그인 여부와 무관하게 같은 App 위젯을 반환하므로 이
+  // State는 로그인·로그아웃을 가로질러 살아남는다. 그래서 양방향 전이를 여기서
+  // 직접 처리해야 한다 — 하위 위젯의 initState는 다시 실행되지 않는다.
   void _handleAuthChanged() {
     final isLoggedIn = _userProvider?.user != null;
-    final loggedOut = _wasLoggedIn && !isLoggedIn;
+    final wasLoggedIn = _wasLoggedIn;
     _wasLoggedIn = isLoggedIn;
-    if (!loggedOut || !mounted) return;
+    if (!mounted || wasLoggedIn == isLoggedIn) return;
+    if (isLoggedIn) {
+      _applyLoginTransition();
+    } else {
+      _applyLogoutTransition();
+    }
+  }
+
+  void _applyLogoutTransition() {
+    // 각 탭의 중첩 Navigator 스택을 비운다 — 설정 등 계정 전용 화면이
+    // RequireLoginGate의 로그인 유도 화면 위에 그대로 남는 것을 막는다.
     for (final key in navigatorKeys) {
       popAllHistory(key);
     }
+    // 홈 탭은 게스트에게 로그인 유도 화면뿐이라, 거기 머물면 로그아웃 직후
+    // 아무것도 못 보는 화면에 갇힌다. 나머지 탭은 게스트용 내용이 있으므로
+    // (마이페이지도 로그인 CTA + 고객센터·약관) 보고 있던 탭을 유지한다.
+    if (_currentTab != TabItem.home) return;
+    _userChoseTab = false;
+    _changeTab(tabs.indexOf(_landingTab));
+  }
+
+  /// 콜드스타트에선 위젯 트리가 자동 로그인보다 **먼저** 빌드된다(네이티브
+  /// 스플래시는 화면을 덮을 뿐 트리를 막지 않는다). 그래서 [initState]와
+  /// 앱바의 `initState`가 모두 게스트 기준으로 돌아가고, 로그인이 끝나도
+  /// 엘리먼트가 재사용되어 다시 실행되지 않는다. 그 시점에 굳어버린 값을
+  /// 여기서 한 번 보정한다.
+  void _applyLoginTransition() {
+    // 아무도 안 부르면 로그인 사용자가 알림함에 들어갔다 나오기 전까지 벨
+    // 배지와 앱 아이콘 배지가 0으로 남는다.
+    unawaited(sl<NotificationCountNotifier>().load());
+    // 사용자가 직접 고른 탭이거나 탭 안에서 상세 화면까지 들어갔다면 보고 있던
+    // 화면을 빼앗지 않는다 — 게스트용 시작 탭 그대로일 때만 옮긴다.
+    // (탭 방문 이력으로는 판별할 수 없다: 검색 바로가기로 들어오면 게스트
+    //  기본 탭과 같은 탭이라 이력이 늘지 않는다.)
+    if (_userChoseTab) return;
+    if (_currentTabNavigationKey.currentState?.canPop() ?? false) return;
+    final landingTab = _landingTab;
+    if (landingTab != _currentTab) _changeTab(tabs.indexOf(landingTab));
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
@@ -300,6 +340,9 @@ class MainScreenState extends State<MainScreen>
     return tabs.map((tab) => tab.toNavigationDestination()).toList();
   }
 
+  /// 로고 탭 — 특정 탭이 아니라 "시작 탭으로"라는 뜻이라 [_userChoseTab]을
+  /// 켜지 않는다. 게스트일 땐 시작 탭이 검색이므로, 여기서 플래그를 켜면
+  /// 로그인 직후 정작 요청한 홈으로 못 가고 검색에 남는다.
   void goHome() {
     final homeIndex = tabs.indexOf(_landingTab);
     popAllHistory(navigatorKeys[homeIndex]);
@@ -310,6 +353,7 @@ class MainScreenState extends State<MainScreen>
   void switchToTab(TabItem tab) {
     final index = tabs.indexOf(tab);
     popAllHistory(navigatorKeys[index]);
+    _userChoseTab = true;
     _changeTab(index);
   }
 
@@ -323,6 +367,7 @@ class MainScreenState extends State<MainScreen>
 
   void _handleOnTapNavigationBarItem(int index) {
     HapticFeedback.selectionClick();
+    _userChoseTab = true;
     if (tabs[index] == _currentTab) {
       popAllHistory(navigatorKeys[index]);
     }

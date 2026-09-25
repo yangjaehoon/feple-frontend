@@ -13,7 +13,6 @@ import 'package:feple/screen/main/s_main.dart';
 import 'package:feple/screen/main/tab/search/f_search.dart';
 import 'package:feple/screen/main/tab/tab_item.dart';
 import 'package:feple/service/festival_service.dart';
-import 'package:feple/service/notification_countable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -79,13 +78,7 @@ void main() {
     if (sl.isRegistered<FestivalService>()) sl.unregister<FestivalService>();
     sl.registerSingleton<FestivalService>(mockFestivalService);
 
-    final mockNotificationCountable = MockNotificationCountable();
-    when(() => mockNotificationCountable.getUnreadCount())
-        .thenAnswer((_) async => 0);
-    if (sl.isRegistered<NotificationCountable>()) {
-      sl.unregister<NotificationCountable>();
-    }
-    sl.registerSingleton<NotificationCountable>(mockNotificationCountable);
+    registerMainScreenTabMocks();
   });
 
   testWidgets(
@@ -97,12 +90,13 @@ void main() {
 
     expect(find.byType(SearchFragment), findsOneWidget);
 
-    // 앱 안에서 로그인 → 설정 등 계정 화면을 현재 탭의 중첩 Navigator에 쌓는다.
+    // 앱 안에서 로그인 → 로그인 사용자의 시작 탭(홈)으로 옮겨간다. 그 뒤
+    // 설정 등 계정 화면을 현재 탭의 중첩 Navigator에 쌓는다.
     userProvider.setUserForTest(AppUser(id: 1, nickname: '테스터'));
     await tester.pump();
 
     final state = tester.state<MainScreenState>(find.byType(MainScreen));
-    final landingIndex = TabItem.values.indexOf(TabItem.search);
+    final landingIndex = TabItem.values.indexOf(TabItem.home);
     final tabNavigator = state.navigatorKeys[landingIndex].currentState!;
     unawaited(tabNavigator.push(
       MaterialPageRoute(

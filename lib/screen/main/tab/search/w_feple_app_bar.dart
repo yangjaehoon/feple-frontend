@@ -48,7 +48,9 @@ class _FepleAppBarState extends State<FepleAppBar> with NavigationGuard {
       context,
       SlideRoute(builder: (_) => const NotificationScreen()),
     );
-    unawaited(_countNotifier.load());
+    // 방금 읽음 처리를 했으니, 그 이전에 시작된 요청의 결과를 그대로 쓰면
+    // 읽은 알림이 아직 안 읽음으로 남는다.
+    unawaited(_countNotifier.load(force: true));
   }
 
   @override

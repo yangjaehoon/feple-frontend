@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:feple/injection.dart';
 import 'package:feple/screen/notification/notification_count_notifier.dart';
 import 'package:feple/service/notification_countable.dart';
@@ -56,6 +58,65 @@ void main() {
       await expectLater(notifier.load(), completes);
 
       expect(notifier.count, 0);
+    });
+
+    // 여러 탭의 앱바가 같은 프레임에 붙거나, 로그인 전이 보정과 새로 뜬 탭의
+    // 앱바가 겹치면 같은 조회가 동시에 두 번 나간다.
+    test('진행 중인 조회가 있으면 요청을 새로 보내지 않는다', () async {
+      final gate = Completer<int>();
+      when(() => mockService.getUnreadCount()).thenAnswer((_) => gate.future);
+
+      final first = notifier.load();
+      final second = notifier.load();
+      gate.complete(4);
+      await Future.wait([first, second]);
+
+      verify(() => mockService.getUnreadCount()).called(1);
+      expect(notifier.count, 4);
+    });
+
+    test('앞선 조회가 끝난 뒤의 load는 다시 요청한다', () async {
+      when(() => mockService.getUnreadCount()).thenAnswer((_) async => 1);
+
+      await notifier.load();
+      await notifier.load();
+
+      verify(() => mockService.getUnreadCount()).called(2);
+    });
+
+    // 읽음 처리 직후의 갱신은 그 이전에 시작된 요청에 합류하면 안 된다.
+    test('force는 진행 중인 조회를 기다리지 않고 새로 요청한다', () async {
+      final stale = Completer<int>();
+      when(() => mockService.getUnreadCount()).thenAnswer((_) => stale.future);
+      final first = notifier.load();
+
+      when(() => mockService.getUnreadCount()).thenAnswer((_) async => 0);
+      await notifier.load(force: true);
+      expect(notifier.count, 0);
+
+      // 버려진 요청이 뒤늦게 끝나도 최신 값을 덮어쓰지 않는다.
+      stale.complete(9);
+      await first;
+      expect(notifier.count, 0);
+      verify(() => mockService.getUnreadCount()).called(2);
+    });
+
+    test('조회 도중 clear되면 다음 load가 죽은 요청에 합류하지 않는다', () async {
+      final stale = Completer<int>();
+      when(() => mockService.getUnreadCount()).thenAnswer((_) => stale.future);
+      final first = notifier.load();
+
+      // 로그아웃 — 진행 중이던 요청의 결과는 버려진다.
+      notifier.clear();
+
+      // 같은 기기에서 바로 다시 로그인.
+      when(() => mockService.getUnreadCount()).thenAnswer((_) async => 6);
+      await notifier.load();
+
+      expect(notifier.count, 6, reason: '죽은 요청에 합류하면 0으로 굳는다');
+      stale.complete(9);
+      await first;
+      expect(notifier.count, 6);
     });
   });
 

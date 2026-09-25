@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 import 'package:feple/app.dart';
@@ -20,15 +19,14 @@ import 'package:feple/common/data/preference/app_preferences.dart';
 import 'package:feple/common/data/preference/prefs.dart';
 import 'package:feple/common/theme/custom_theme_scope.dart';
 import 'package:feple/common/util/app_alert_dialog.dart';
-import 'package:feple/common/util/app_version.dart';
 import 'package:feple/common/util/deep_link_handler.dart';
 import 'package:feple/common/util/update_prompt.dart';
 import 'package:feple/common/widget/w_text_scale_clamp.dart';
 import 'package:feple/injection.dart';
 import 'package:feple/login/s_age_gate.dart';
-import 'package:feple/model/app_config_model.dart';
 import 'package:feple/network/api_cache_store.dart';
 import 'package:feple/network/dio_client.dart';
+import 'package:feple/provider/app_config_controller.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/onboarding/s_onboarding.dart';
 import 'package:feple/screen/s_force_update.dart';
@@ -78,6 +76,8 @@ void main() async {
         providers: [
           ChangeNotifierProvider<UserProvider>(
               create: (_) => UserProvider(sl<UserService>())),
+          ChangeNotifierProvider<AppConfigController>(
+              create: (_) => AppConfigController(sl<AppConfigService>())),
         ],
         child: const MyApp(),
       ),
@@ -100,11 +100,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   bool _isBanDialogShowing = false;
 
-  /// 콜드스타트 시 조회한 앱 전역 설정. 조회 실패 시 null → 아무것도 막지 않음.
-  AppConfigModel? _appConfig;
-
-  /// 현재 앱 버전(빌드 번호 없는 "1.2.0"). 강제/권장 업데이트 판단에 쓴다.
-  String? _currentVersion;
+  late final AppConfigController _appConfig;
 
   /// 온보딩 완료 여부는 `Prefs`(SharedPreferences)에 저장되고 [_rootDestination]이
   /// build 중에 읽는다 — 알려주는 notifier가 없어서 **이 setState가 유일한 갱신
@@ -119,6 +115,10 @@ class _MyAppState extends State<MyApp> {
     // Provider.of(listen: false)는 initState에서 안전 — post-frame으로 미루면
     // 첫 프레임 동안 401/ban 응답에 핸들러가 안 붙어 있는 창이 생긴다.
     final userProvider = Provider.of<UserProvider>(context, listen: false);
+    // 필드 이니셜라이저(late final)로 두면 "최초 읽기" 시점에 조회가 일어나
+    // 나중에 dispose()에서 처음 건드리는 코드가 생기면 조상 조회가 실패한다.
+    // initState에서 확실히 잡아둔다.
+    _appConfig = Provider.of<AppConfigController>(context, listen: false);
     DioClient.onSessionExpired = () => userProvider.logout();
     DioClient.onUserBanned = () => _showBanDialog(userProvider);
     DioClient.onAgeVerificationRequired = () async =>
@@ -144,7 +144,7 @@ class _MyAppState extends State<MyApp> {
 
   /// 온보딩 쪽([_onOnboardingComplete])과 달리 여기엔 setState가 필요 없다 —
   /// `markAgeVerified()`와 `fetchUser()`가 모두 `notifyListeners()`를 부르므로
-  /// `home`의 `Consumer<UserProvider>`가 알아서 다시 빌드한다.
+  /// `home`의 `Consumer2`가 알아서 다시 빌드한다.
   Future<void> _onAgeVerified() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     // 먼저 플래그를 내려 게이트를 확실히 벗어난 뒤, 최신 프로필로 재동기화한다.
@@ -196,7 +196,7 @@ class _MyAppState extends State<MyApp> {
     try {
       await Future.wait([
         _doAutoLogin(userProvider).timeout(const Duration(seconds: 40)),
-        _loadAppConfig(),
+        _appConfig.load(),
         Future.delayed(const Duration(milliseconds: 500)),
       ]);
     } on TimeoutException {
@@ -207,54 +207,10 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  /// 앱 전역 설정과 현재 버전을 조회한다. 실패해도 절대 던지지 않는다 —
-  /// 설정을 못 받으면 강제 업데이트·점검 게이트 없이 정상 진입한다.
-  ///
-  /// 설정 조회와 버전 조회는 서로 독립적으로 처리한다 — 버전 조회가 실패해도
-  /// (점검 판단엔 버전이 필요 없으므로) 점검 게이트는 그대로 동작해야 한다.
-  /// 둘 다 스플래시를 붙잡으므로 순차가 아니라 병렬로 기다린다.
-  Future<void> _loadAppConfig() async {
-    final (config, version) =
-        await (_fetchAppConfig(), _readCurrentVersion()).wait;
-    if (!mounted) return;
-    setState(() {
-      if (config != null) _appConfig = config;
-      if (version != null) _currentVersion = version;
-    });
-  }
-
-  Future<AppConfigModel?> _fetchAppConfig() async {
-    try {
-      return await sl<AppConfigService>()
-          .fetch()
-          .timeout(const Duration(seconds: 6));
-    } catch (e) {
-      log('App config load failed (ignored): $e');
-      return null;
-    }
-  }
-
-  Future<String?> _readCurrentVersion() async {
-    try {
-      final info =
-          await PackageInfo.fromPlatform().timeout(const Duration(seconds: 6));
-      return info.version;
-    } catch (e) {
-      log('App version lookup failed (ignored): $e');
-      return null;
-    }
-  }
-
-  /// 점검 화면의 "다시 시도" — 설정만 다시 조회한다.
-  Future<void> _reloadAppConfig() async {
-    final config = await _fetchAppConfig();
-    if (config != null && mounted) setState(() => _appConfig = config);
-  }
-
   void _maybePromptRecommendedUpdate() {
     if (!mounted) return;
-    final config = _appConfig;
-    final currentVersion = _currentVersion;
+    final config = _appConfig.config;
+    final currentVersion = _appConfig.currentVersion;
     if (config == null || currentVersion == null) return;
     // 점검·강제 업데이트 게이트나 나이 확인·온보딩 화면 위에 권장 업데이트
     // 다이얼로그가 겹치지 않도록, 실제 앱 화면일 때만 띄운다.
@@ -278,15 +234,8 @@ class _MyAppState extends State<MyApp> {
   /// 알고 싶은 호출부가 화면 위젯을 통째로 만들었다 버리지 않아도 된다.
   _RootDestination _rootDestination(UserProvider userProvider) {
     // 점검 모드·강제 업데이트는 로그인/게스트 라우팅보다 우선한다.
-    final config = _appConfig;
-    if (config != null) {
-      if (config.maintenance) return _RootDestination.maintenance;
-      final currentVersion = _currentVersion;
-      if (currentVersion != null &&
-          isVersionBelow(currentVersion, config.minSupportedVersion)) {
-        return _RootDestination.forceUpdate;
-      }
-    }
+    if (_appConfig.isUnderMaintenance) return _RootDestination.maintenance;
+    if (_appConfig.requiresForceUpdate) return _RootDestination.forceUpdate;
 
     final user = userProvider.user;
     // 게스트 모드 — 페스티벌 목록·검색·커뮤니티 게시판 등 비계정 기능은
@@ -305,8 +254,8 @@ class _MyAppState extends State<MyApp> {
     final user = userProvider.user;
     return switch (_rootDestination(userProvider)) {
       _RootDestination.maintenance => MaintenanceScreen(
-          message: _appConfig?.maintenanceMessage,
-          onRetry: _reloadAppConfig,
+          message: _appConfig.maintenanceMessage,
+          onRetry: _appConfig.reload,
         ),
       _RootDestination.forceUpdate => const ForceUpdateScreen(),
       _RootDestination.ageGate => AgeGateScreen(onVerified: _onAgeVerified),
@@ -320,7 +269,7 @@ class _MyAppState extends State<MyApp> {
       // 전부 명시한다.
       _RootDestination.onboarding ||
       _RootDestination.app =>
-        App(noticeMessage: _appConfig?.noticeMessage),
+        App(noticeMessage: _appConfig.noticeMessage),
     };
   }
 
@@ -377,9 +326,11 @@ class _MyAppState extends State<MyApp> {
             theme: context.themeType.themeData,
             builder: clampTextScaleBuilder,
             // 점검·강제 업데이트 게이트와 게스트/나이확인/온보딩 라우팅은
-            // [_rootDestination]에서 한곳에 모아 결정한다.
-            home: Consumer<UserProvider>(
-              builder: (context, userProvider, _) =>
+            // [_rootDestination]에서 한곳에 모아 결정한다. 두 Provider를 모두
+            // 구독해야 한다 — 설정이 뒤늦게 도착하면(점검 시작/해제) 게이트
+            // 화면도 다시 판정해야 하기 때문.
+            home: Consumer2<UserProvider, AppConfigController>(
+              builder: (context, userProvider, _, _) =>
                   _buildRootScreen(userProvider),
             ),
             localizationsDelegates: context.localizationDelegates,

@@ -14,6 +14,7 @@ import 'package:feple/common/widget/w_auth_header_text.dart';
 import 'package:feple/common/widget/w_nickname_field.dart';
 import 'package:feple/login/s_verify_email.dart';
 import 'package:feple/login/w_password_checklist.dart';
+import 'package:feple/model/auth_flow_result.dart';
 import 'package:feple/model/nickname_check_result.dart';
 import 'package:feple/service/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -136,12 +137,16 @@ class _SignupScreenState extends State<SignupScreen> {
       await AuthService.instance.registerWithEmail(email, password, nickname);
       if (!mounted) return;
 
-      await Navigator.push(
+      final result = await Navigator.push<AuthFlowResult>(
         context,
-        SlideRoute(
+        SlideRoute<AuthFlowResult>(
           builder: (_) => VerifyEmailScreen(email: email, deleteOnCancel: true),
         ),
       );
+      // 인증 완료(로그인 가능)든 취소(계정 삭제)든 이 화면은 볼 일이 없다 —
+      // 결과를 LoginScreen에 그대로 넘기고 함께 닫는다. 뒤로가기(null)면
+      // 미인증 계정을 그대로 둔 것이므로 가입 폼을 유지한다.
+      if (result != null && mounted) popRouteWithResult(context, result);
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       final msg = AuthService.instance.firebaseErrorKey(e.code).tr();

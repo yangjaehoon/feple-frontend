@@ -1,16 +1,14 @@
 import 'package:feple/common/common.dart';
+import 'package:feple/common/util/app_route.dart';
 import 'package:feple/common/util/confirm_dialog.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_auth_header_text.dart';
 import 'package:feple/common/widget/w_icon_circle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
-import 'package:feple/model/user_model.dart';
-import 'package:feple/provider/user_provider.dart';
+import 'package:feple/model/auth_flow_result.dart';
 import 'package:feple/service/auth_service.dart';
-import 'package:feple/service/fcm_service.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
   final String email;
@@ -141,7 +139,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
       }
       _completed = true;
       _pollTimer?.cancel();
-      await _navigateToApp(user);
+      _returnResult(AuthFlowResult.verified(user));
     } catch (e) {
       debugPrint('[VerifyEmail] completeVerifiedLogin 실패: $e');
       if (!silent && mounted) _showNotYetVerified();
@@ -152,14 +150,13 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
 
   Future<void> _onVerifyTapped() => _tryComplete(silent: false);
 
-  Future<void> _navigateToApp(AppUser user) async {
-    // setUser 전에 스택 정리 — LoginScreen→SignupScreen→VerifyEmailScreen가 쌓인 상태에서
-    // setUser만 호출하면 Consumer가 home을 교체해도 위 라우트들이 남아 화면이 안 바뀜
-    final userProvider = context.read<UserProvider>();
-    Navigator.of(context).popUntil((route) => route.isFirst);
-    await userProvider.setUser(user);
-    unawaited(FcmService.instance.initWithRationale());
-  }
+  /// 결과를 push한 쪽에 넘기고 이 화면만 닫는다. setUser·스택 정리를 여기서
+  /// 직접 하지 않는 이유는 [AuthFlowResult] 주석 참고.
+  ///
+  /// 폴링이 백그라운드에서 인증 완료를 감지하는 시점에 취소 확인 다이얼로그가
+  /// 떠 있을 수 있어, 최상단이 아니라 **이 화면**을 닫아야 한다.
+  void _returnResult(AuthFlowResult result) =>
+      popRouteWithResult(context, result);
 
   Future<void> _onResendTapped() async {
     setState(() => _isResending = true);
@@ -196,7 +193,9 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     setState(() => _isCanceling = true);
     try {
       await _deleteAccountOrSignOut();
-      if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
+      // 계정을 지웠거나 로그아웃했으니 인증 흐름은 여기서 끝 — 가입 폼으로
+      // 돌아갈 이유가 없으므로, 중간 화면까지 함께 닫히도록 결과를 넘긴다.
+      if (mounted) _returnResult(const AuthFlowResult.aborted());
     } catch (e) {
       debugPrint('[VerifyEmail] 취소 처리 실패: $e');
     } finally {

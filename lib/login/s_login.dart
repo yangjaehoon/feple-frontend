@@ -24,6 +24,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:feple/common/theme/custom_theme.dart';
+import 'package:feple/model/auth_flow_result.dart';
 import 'package:feple/model/user_model.dart';
 import '../provider/user_provider.dart';
 
@@ -37,6 +38,8 @@ const _googleLogoSvg = '''
 </svg>
 ''';
 
+enum _LoginMethod { email, kakao, apple, google }
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -47,10 +50,10 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  bool _isEmailLoading = false;
-  bool _isKakaoLoading = false;
-  bool _isAppleLoading = false;
-  bool _isGoogleLoading = false;
+  /// 진행 중인 로그인 수단(없으면 null). 수단별 bool을 따로 두면 "나머지가 로딩
+  /// 중" 조건을 버튼마다 나열해야 해서 하나가 빠지기 쉽다(구글 추가 때 이메일
+  /// 버튼의 dim 조건이 빠져 있었음).
+  _LoginMethod? _loadingMethod;
   String? _emailError;
   String? _passwordError;   // 빈 필드 → 빨간 테두리
   String? _authError;       // 인증 실패 → 텍스트만, 테두리 없음
@@ -85,29 +88,18 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
                     child: AutofillGroup(
                       child: Column(
                         children: [
-                          _buildHeader(),
-                          _buildForm(themeColors),
+                          _buildHeader(rs),
+                          _buildForm(rs),
                           SizedBox(height: rs.h(10)),
                           _buildForgotPassword(themeColors),
                           SizedBox(height: rs.h(14)),
-                          IgnorePointer(
-                            ignoring: _isAnyLoading,
-                            child: Opacity(
-                              opacity: (_isKakaoLoading || _isAppleLoading) ? 0.5 : 1.0,
-                              child: LoadingButton(
-                                label: 'login'.tr(),
-                                onPressed: _loginWithEmail,
-                                isLoading: _isEmailLoading,
-                                backgroundColor: themeColors.activate,
-                              ),
-                            ),
-                          ),
+                          _buildEmailLoginButton(themeColors),
                           SizedBox(height: rs.h(14)),
                           _buildOrDivider(themeColors),
                           SizedBox(height: rs.h(14)),
                           _buildSocialLoginRow(),
                           SizedBox(height: rs.h(14)),
-                          _buildSignupRow(context, themeColors),
+                          _buildSignupRow(themeColors),
                         ],
                       ),
                     ),
@@ -126,8 +118,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     );
   }
 
-  Widget _buildHeader() {
-    final rs = ResponsiveSize(context);
+  Widget _buildHeader(ResponsiveSize rs) {
     final logoSize = rs.w(92);
     return Column(
       children: [
@@ -149,8 +140,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     );
   }
 
-  Widget _buildForm(AbstractThemeColors themeColors) {
-    final rs = ResponsiveSize(context);
+  Widget _buildForm(ResponsiveSize rs) {
     return Column(
       children: [
         AppTextField(
@@ -161,8 +151,12 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
           keyboardType: TextInputType.emailAddress,
           autofillHints: const [AutofillHints.username, AutofillHints.email],
           errorText: _emailError,
+          // 인증 실패 문구도 함께 지운다 — 아이디를 고쳐 다시 시도하는 흐름에서
+          // 이전 실패 메시지가 남아 있으면 새 시도의 결과처럼 보인다.
           onChanged: (_) {
-            if (_emailError != null) setState(() => _emailError = null);
+            if (_emailError != null || _authError != null) {
+              setState(() { _emailError = null; _authError = null; });
+            }
           },
           onSubmitted: (_) => FocusScope.of(context).nextFocus(),
         ),
@@ -192,7 +186,9 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     return Align(
       alignment: Alignment.centerRight,
       child: TextButton(
-        onPressed: _showForgotPasswordDialog,
+        // 로그인 진행 중엔 막는다 — 소셜 시트가 닫힌 뒤 토큰 교환이 끝나기 전에
+        // 다른 화면이 올라가면 로그인 완료 시 그 화면이 닫힌다.
+        onPressed: _isAnyLoading ? null : _openForgotPassword,
         style: TextButton.styleFrom(
           foregroundColor: themeColors.activate,
           padding: EdgeInsets.zero,
@@ -227,8 +223,29 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     );
   }
 
-  bool get _isAnyLoading =>
-      _isEmailLoading || _isKakaoLoading || _isAppleLoading || _isGoogleLoading;
+  bool get _isAnyLoading => _loadingMethod != null;
+
+  bool _isLoading(_LoginMethod method) => _loadingMethod == method;
+
+  /// 다른 수단이 진행 중 — 이 버튼은 흐리게 표시하고 탭을 막는다.
+  bool _isOtherLoading(_LoginMethod method) =>
+      _isAnyLoading && _loadingMethod != method;
+
+  Widget _buildEmailLoginButton(AbstractThemeColors themeColors) {
+    const method = _LoginMethod.email;
+    return IgnorePointer(
+      ignoring: _isAnyLoading,
+      child: Opacity(
+        opacity: _isOtherLoading(method) ? 0.5 : 1.0,
+        child: LoadingButton(
+          label: 'login'.tr(),
+          onPressed: _loginWithEmail,
+          isLoading: _isLoading(method),
+          backgroundColor: themeColors.activate,
+        ),
+      ),
+    );
+  }
 
   Widget _buildSocialLoginRow() {
     return Row(
@@ -248,11 +265,11 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
   }
 
   Widget _buildKakaoIconButton() {
+    const method = _LoginMethod.kakao;
     return _SocialIconButton(
       label: 'kakao_login_btn'.tr(),
-      isLoading: _isKakaoLoading,
-      dimmed: _isEmailLoading || _isAppleLoading || _isGoogleLoading,
-      disabled: _isAnyLoading,
+      isLoading: _isLoading(method),
+      otherLoading: _isOtherLoading(method),
       backgroundColor: AppColors.kakaoYellow,
       indicatorColor: AppColors.kakaoText,
       onPressed: signInWithKakao,
@@ -267,13 +284,13 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
   }
 
   Widget _buildAppleIconButton() {
+    const method = _LoginMethod.apple;
     final isDark = context.themeType == CustomTheme.dark;
     final fg = isDark ? Colors.black : Colors.white;
     return _SocialIconButton(
       label: 'apple_login_btn'.tr(),
-      isLoading: _isAppleLoading,
-      dimmed: _isEmailLoading || _isKakaoLoading || _isGoogleLoading,
-      disabled: _isAnyLoading,
+      isLoading: _isLoading(method),
+      otherLoading: _isOtherLoading(method),
       backgroundColor: isDark ? Colors.white : Colors.black,
       indicatorColor: fg,
       onPressed: signInWithApple,
@@ -282,12 +299,12 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
   }
 
   Widget _buildGoogleIconButton() {
+    const method = _LoginMethod.google;
     final themeColors = context.appColors;
     return _SocialIconButton(
       label: 'google_login_btn'.tr(),
-      isLoading: _isGoogleLoading,
-      dimmed: _isEmailLoading || _isKakaoLoading || _isAppleLoading,
-      disabled: _isAnyLoading,
+      isLoading: _isLoading(method),
+      otherLoading: _isOtherLoading(method),
       backgroundColor: Colors.white,
       borderColor: themeColors.divider,
       indicatorColor: Colors.black54,
@@ -297,7 +314,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     );
   }
 
-  Widget _buildSignupRow(BuildContext context, AbstractThemeColors themeColors) {
+  Widget _buildSignupRow(AbstractThemeColors themeColors) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -306,8 +323,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
           style: TextStyle(color: themeColors.textSecondary, fontSize: AppDimens.fontSizeMd),
         ),
         TextButton(
-          onPressed: () => guardedNavigate(() =>
-              Navigator.push(context, SlideRoute(builder: (_) => const SignupScreen()))),
+          onPressed: _isAnyLoading ? null : _openSignup,
           style: TextButton.styleFrom(
             foregroundColor: themeColors.activate,
             padding: EdgeInsets.zero,
@@ -329,18 +345,26 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     _authError = null;
   }
 
+  /// 소셜 로그인처럼 async gap 뒤라 `context.read`가 불가능한 경로는 미리 캡처한
+  /// [userProvider]를 넘긴다.
   Future<void> _completeLogin(UserProvider userProvider, AppUser user) async {
+    // 자동완성 컨텍스트를 닫아 OS 비밀번호 관리자가 저장·갱신을 제안할 수 있게
+    // 한다 — AutofillGroup만 선언하고 이걸 호출하지 않으면 힌트가 반쪽이 된다.
+    TextInput.finishAutofillContext();
     await userProvider.setUser(user);
     unawaited(FcmService.instance.initWithRationale());
-    // 게스트 둘러보기 중 ensureLoggedIn/RequireLoginGate가 이 화면을 push했다면,
-    // 로그인 완료 후 뒤에 있던 (이제 로그인된) 화면이 드러나도록 pop한다.
-    // pop 결과 true는 ensureLoggedIn 호출부가 원래 하려던 동작을 이어서
-    // 실행하는 신호로 쓰인다. main.dart의 root Consumer<UserProvider>가 이
-    // 화면을 home으로 직접 보여준 최초 진입 경로에서는 canPop이 false라
-    // 기존 동작에 영향 없음.
-    if (mounted && Navigator.canPop(context)) {
-      Navigator.pop(context, true);
-    }
+    _popToLoginCaller();
+  }
+
+  /// 로그인 완료 후 뒤에 있던 (이제 로그인된) 화면이 드러나도록 이 화면을 닫는다.
+  /// pop 결과 `true`는 `openLoginScreen` 호출부가 원래 하려던 동작을 이어서
+  /// 실행하는 신호로 쓰인다(의도 보존).
+  ///
+  /// 이 화면은 항상 `openLoginScreen`으로 루트 네비게이터에 push되므로 실제로는
+  /// 늘 pop 대상이 있다.
+  void _popToLoginCaller() {
+    if (!mounted) return;
+    popRouteWithResult(context, true);
   }
 
   Future<void> _handleLoginSuccess(AppUser user) async {
@@ -349,6 +373,12 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
   }
 
   Future<void> _loginWithEmail() async {
+    // 비밀번호 필드의 onSubmitted(키보드 '완료')는 버튼을 감싼 IgnorePointer
+    // 밖이고 AppTextField에는 enabled가 없어 로딩 중에도 다시 들어올 수 있다.
+    // 토큰 교환이 두 번 일어나면 백엔드가 유저당 리프레시 토큰을 1개만 유지하므로
+    // 나중에 저장된 쪽이 이미 무효화된 토큰일 수 있다(로그인 직후 세션 끊김).
+    if (_isAnyLoading) return;
+
     final email = emailController.text.trim();
     final password = passwordController.text;
 
@@ -359,18 +389,12 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
       return;
     }
 
-    setState(() { _isEmailLoading = true; _clearErrors(); });
+    setState(() { _loadingMethod = _LoginMethod.email; _clearErrors(); });
     try {
       final user = await AuthService.instance.loginWithEmail(email, password);
       await _handleLoginSuccess(user);
     } on EmailNotVerifiedException {
-      if (!mounted) return;
-      await Navigator.push(
-        context,
-        SlideRoute(
-          builder: (_) => VerifyEmailScreen(email: emailController.text.trim()),
-        ),
-      );
+      await _openVerifyEmail(email);
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       final msg = AuthService.instance.firebaseErrorKey(e.code).tr();
@@ -380,94 +404,125 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
         setState(() => _authError = msg);
       }
     } on AgeRestrictedException {
-      // 만 14세 미만으로 계정이 이미 파기된 사용자의 재로그인 시도 — 최초
-      // 나이확인 거부와 동일한 안내 문구를 보여준다 (일반 로그인 실패와 구분).
-      if (mounted) setState(() => _authError = 'age_gate_restricted_message'.tr());
+      _showAgeRestrictedMessage();
     } catch (e) {
-      debugPrint('[Auth] 이메일 로그인 실패: $e');
-      if (mounted) setState(() => _authError = 'login_failed'.tr());
+      _showLoginFailure(_LoginMethod.email, e);
     } finally {
-      if (mounted) setState(() => _isEmailLoading = false);
+      if (mounted) setState(() => _loadingMethod = null);
     }
   }
 
-  Future<void> _showForgotPasswordDialog() async {
-    await Navigator.push(
-      context,
-      SlideRoute(
-        builder: (_) => ForgotPasswordScreen(
-          initialEmail: emailController.text.trim(),
+  /// 미인증 계정 — 인증 화면으로 보내고, 인증까지 끝난 사용자를 받아오면 로그인을
+  /// 마무리한다. 인증 화면이 올라가 있는 동안 이 화면을 로딩 상태로 잡아두지
+  /// 않는다(뒤로가기로 돌아오면 버튼이 계속 돌고 있는 것처럼 보인다).
+  Future<void> _openVerifyEmail(String email) async {
+    if (!mounted) return;
+    setState(() => _loadingMethod = null);
+    await _pushAuthFlow(VerifyEmailScreen(email: email));
+  }
+
+  Future<void> _openSignup() =>
+      guardedNavigate(() => _pushAuthFlow(const SignupScreen()));
+
+  Future<void> _openForgotPassword() => guardedNavigate(() => Navigator.push(
+        context,
+        SlideRoute(
+          builder: (_) => ForgotPasswordScreen(
+            initialEmail: emailController.text.trim(),
+          ),
         ),
-      ),
+      ));
+
+  /// 인증 흐름 화면(가입·이메일 인증)을 push하고, 인증까지 끝난 사용자를 돌려받으면
+  /// 로그인을 마무리한다 — 스택 정리를 중간 화면에 맡기지 않는 이유는
+  /// [AuthFlowResult] 주석 참고.
+  Future<void> _pushAuthFlow(Widget screen) async {
+    final result = await Navigator.push<AuthFlowResult>(
+      context,
+      SlideRoute<AuthFlowResult>(builder: (_) => screen),
     );
+    final user = result?.user;
+    if (user == null) return;
+    try {
+      await _handleLoginSuccess(user);
+    } catch (e) {
+      // 이 호출은 버튼 콜백에서 fire-and-forget으로 시작돼 예외를 받아줄 곳이
+      // 없다 — 소셜 경로(_runSocialLogin)와 같은 문구로 화면에 표시한다.
+      _showLoginFailure(_LoginMethod.email, e);
+    }
+  }
+
+  /// 만 14세 미만으로 계정이 이미 파기된 사용자의 재로그인 시도 — 최초 나이확인
+  /// 거부와 동일한 안내 문구를 보여준다 (일반 로그인 실패와 구분).
+  void _showAgeRestrictedMessage() {
+    if (mounted) setState(() => _authError = 'age_gate_restricted_message'.tr());
+  }
+
+  void _showLoginFailure(_LoginMethod method, Object error) {
+    debugPrint('[Auth] ${method.name} 로그인 실패: $error');
+    if (mounted) setState(() => _authError = 'login_failed'.tr());
   }
 
   /// 소셜 로그인 3종(Apple/Google/Kakao)의 공통 흐름: 로딩 체크 → provider
   /// 캡처 → 로그인 → 취소 예외는 무시, 그 외 실패는 공통 에러 표시.
   Future<void> _runSocialLogin({
-    required String label,
+    required _LoginMethod method,
     required Future<AppUser> Function() login,
-    required void Function(bool loading) setLoading,
     required bool Function(Object error) isCanceled,
   }) async {
     if (_isAnyLoading) return;
     // async gap 전에 캡처 — OAuth 시트/브라우저 복귀 시 mounted가 false일 수 있음
     final userProvider = context.read<UserProvider>();
     setState(() {
-      setLoading(true);
+      _loadingMethod = method;
       _clearErrors();
     });
     try {
       final user = await login();
       await _completeLogin(userProvider, user);
     } on AgeRestrictedException {
-      // 만 14세 미만으로 계정이 이미 파기된 사용자의 재로그인 시도 — 최초
-      // 나이확인 거부와 동일한 안내 문구를 보여준다 (일반 로그인 실패와 구분).
-      if (mounted) setState(() => _authError = 'age_gate_restricted_message'.tr());
+      _showAgeRestrictedMessage();
     } catch (e) {
-      debugPrint('[Auth] $label 로그인 실패: $e');
-      if (!isCanceled(e) && mounted) {
-        setState(() => _authError = 'login_failed'.tr());
+      if (isCanceled(e)) {
+        debugPrint('[Auth] ${method.name} 로그인 취소');
+      } else {
+        _showLoginFailure(method, e);
       }
     } finally {
-      if (mounted) setState(() => setLoading(false));
+      if (mounted) setState(() => _loadingMethod = null);
     }
   }
 
   Future<void> signInWithApple() => _runSocialLogin(
-    label: 'Apple',
+    method: _LoginMethod.apple,
     login: AuthService.instance.loginWithApple,
-    setLoading: (v) => _isAppleLoading = v,
     isCanceled: (e) =>
         e is SignInWithAppleAuthorizationException &&
         e.code == AuthorizationErrorCode.canceled,
   );
 
   Future<void> signInWithGoogle() => _runSocialLogin(
-    label: 'Google',
+    method: _LoginMethod.google,
     login: AuthService.instance.loginWithGoogle,
-    setLoading: (v) => _isGoogleLoading = v,
     isCanceled: (e) =>
         e is GoogleSignInException &&
         e.code == GoogleSignInExceptionCode.canceled,
   );
 
   Future<void> signInWithKakao() => _runSocialLogin(
-    label: '카카오',
+    method: _LoginMethod.kakao,
     login: AuthService.instance.loginWithKakao,
-    setLoading: (v) => _isKakaoLoading = v,
     isCanceled: (e) => e is PlatformException && e.code == 'CANCELED',
   );
 }
 
-/// 소셜 로그인 원형 아이콘 버튼. [dimmed]는 다른 소셜 버튼이 로딩 중일 때
-/// 이 버튼을 흐리게 표시, [disabled]는 어떤 로그인이든 진행 중이면 탭을 막는다.
+/// 소셜 로그인 원형 아이콘 버튼. [otherLoading]은 다른 수단의 로그인이 진행
+/// 중이라는 뜻으로, 이 버튼을 흐리게 표시하고 탭을 막는다.
 class _SocialIconButton extends StatelessWidget {
   const _SocialIconButton({
     required this.label,
     required this.isLoading,
-    required this.dimmed,
-    required this.disabled,
+    required this.otherLoading,
     required this.backgroundColor,
     required this.indicatorColor,
     required this.onPressed,
@@ -477,8 +532,7 @@ class _SocialIconButton extends StatelessWidget {
 
   final String label;
   final bool isLoading;
-  final bool dimmed;
-  final bool disabled;
+  final bool otherLoading;
   final Color backgroundColor;
   final Color? borderColor;
   final Color indicatorColor;
@@ -487,15 +541,17 @@ class _SocialIconButton extends StatelessWidget {
 
   static const _size = 50.0;
 
+  bool get _disabled => isLoading || otherLoading;
+
   @override
   Widget build(BuildContext context) {
     return Semantics(
       label: label,
       button: true,
       child: IgnorePointer(
-        ignoring: disabled,
+        ignoring: _disabled,
         child: Opacity(
-          opacity: dimmed ? 0.5 : 1.0,
+          opacity: otherLoading ? 0.5 : 1.0,
           child: Material(
             color: backgroundColor,
             shape: CircleBorder(

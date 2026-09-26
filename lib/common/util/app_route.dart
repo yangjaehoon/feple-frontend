@@ -27,6 +27,25 @@ class SlideRoute<T> extends PageRoute<T> with CupertinoRouteTransitionMixin<T> {
   bool get maintainState => true;
 }
 
+/// [context]가 속한 라우트를 [result]와 함께 닫는다.
+///
+/// `Navigator.pop`은 **최상단** 라우트를 닫는다 — 비동기 작업이 끝나기를 기다리는
+/// 사이에 확인 다이얼로그(취소 확인·밴 안내)나 딥링크/FCM 화면이 위로 올라와
+/// 있으면 내 화면이 아니라 그쪽이 닫히고, 그 라우트가 기대하는 결과 타입과 맞지
+/// 않는 값이 전달돼 `didPop`에서 TypeError까지 난다. 위에 쌓인 라우트를 먼저
+/// 걷어낸 뒤 내 라우트를 닫는다.
+///
+/// 닫으면 빈 스택이 되는 최초 라우트면 아무것도 하지 않는다.
+void popRouteWithResult<T>(BuildContext context, T result) {
+  final navigator = Navigator.of(context);
+  final route = ModalRoute.of(context);
+  if (route == null || route.isFirst) return;
+  if (!route.isCurrent) {
+    navigator.popUntil((candidate) => candidate == route);
+  }
+  navigator.pop(result);
+}
+
 /// [App.navigatorKey](최상위 루트 Navigator) 위로 화면을 push할 때 쓴다.
 ///
 /// 탭 내부 네비게이션(각 탭의 중첩 Navigator)과 달리 루트 Navigator는

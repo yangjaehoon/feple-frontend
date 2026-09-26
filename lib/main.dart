@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'dart:ui';
 
-import 'package:dio/dio.dart' show DioException;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
@@ -13,12 +12,12 @@ import 'package:provider/provider.dart';
 
 import 'package:feple/app.dart';
 import 'package:feple/auth/keys.dart';
-import 'package:feple/auth/token_store.dart';
+import 'package:feple/auth/session_bootstrapper.dart';
 import 'package:feple/common/common.dart';
 import 'package:feple/common/data/preference/app_preferences.dart';
 import 'package:feple/common/data/preference/prefs.dart';
 import 'package:feple/common/theme/custom_theme_scope.dart';
-import 'package:feple/common/util/app_alert_dialog.dart';
+import 'package:feple/common/util/ban_dialog.dart';
 import 'package:feple/common/util/deep_link_handler.dart';
 import 'package:feple/common/util/update_prompt.dart';
 import 'package:feple/common/widget/w_text_scale_clamp.dart';
@@ -29,16 +28,16 @@ import 'package:feple/network/dio_client.dart';
 import 'package:feple/provider/app_config_controller.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/screen/onboarding/s_onboarding.dart';
+import 'package:feple/screen/s_bootstrap_failure.dart';
 import 'package:feple/screen/s_force_update.dart';
 import 'package:feple/screen/s_maintenance.dart';
 import 'package:feple/service/app_config_service.dart';
-import 'package:feple/service/festival_cache_service.dart';
 import 'package:feple/service/user_service.dart';
 
 Future<void> main() async {
   final bindings = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: bindings);
-  runApp(await _bootstrap() ? _appRoot() : const _BootstrapFailureApp());
+  runApp(await _bootstrap() ? _appRoot() : const BootstrapFailureApp());
 }
 
 /// 앱이 뜨기 전에 끝나야 하는 초기화. 성공하면 true.
@@ -133,68 +132,6 @@ Widget _appRoot() {
   );
 }
 
-/// 초기화가 실패했을 때만 뜨는 최소 안내 화면. 예전에는 이 경우 네이티브 런치
-/// 화면에 그대로 갇혔다.
-///
-/// 테마·Provider·번역 무엇에도 기대지 않는다 — 초기화가 실패했다는 건 그것들이
-/// 준비되지 않았을 수 있다는 뜻이다. 그래서 문구도 `.tr()` 대신 플랫폼 로케일만
-/// 보고 고른다(`EasyLocalization` 자체가 실패했으면 `.tr()`은 원본 키를 낸다).
-///
-/// **재시도 버튼은 일부러 두지 않았다.** [_bootstrap]은 한 번만 실행할 수 있다 —
-/// `setupDependencies()`는 GetIt에 같은 타입을 다시 등록하면 던지고,
-/// `AppPreferences._prefs`는 `late final`이라 두 번째 대입에서 던진다. 즉
-/// 눌러도 항상 실패하는 버튼이 되므로, 앱을 완전히 종료 후 재실행하라고
-/// 안내하는 편이 정직하다.
-class _BootstrapFailureApp extends StatefulWidget {
-  const _BootstrapFailureApp();
-
-  @override
-  State<_BootstrapFailureApp> createState() => _BootstrapFailureAppState();
-}
-
-class _BootstrapFailureAppState extends State<_BootstrapFailureApp> {
-  @override
-  void initState() {
-    super.initState();
-    // 정상 경로에서는 _tryAutoLogin의 finally가 지우지만 여기까지 왔다면
-    // 그 코드는 실행되지 않는다 — 직접 지우지 않으면 스플래시가 남는다.
-    FlutterNativeSplash.remove();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final isKorean = PlatformDispatcher.instance.locale.languageCode == 'ko';
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.error_outline_rounded,
-                    size: 48, color: Color(0xFF9E9E9E)),
-                const SizedBox(height: 16),
-                Text(
-                  isKorean
-                      ? '앱을 시작하지 못했습니다.\n앱을 완전히 종료한 뒤 다시 실행해 주세요.'
-                      : "Couldn't start the app.\n"
-                          'Please close it completely and open it again.',
-                  textAlign: TextAlign.center,
-                  style:
-                      const TextStyle(fontSize: 15, color: Color(0xFF424242)),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 /// 콜드스타트 이후 루트에 올 화면의 종류. 판정([_MyAppState._rootDestination])과
 /// 위젯 생성([_MyAppState._buildRootScreen])을 분리해, 화면 종류만 알면 되는
 /// 호출부가 위젯을 만들지 않고도 판단할 수 있게 한다.
@@ -208,9 +145,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool _isBanDialogShowing = false;
-
   late final AppConfigController _appConfig;
+  late final SessionBootstrapper _session;
 
   /// 온보딩 완료 여부는 `Prefs`(SharedPreferences)에 저장되고 [_rootDestination]이
   /// build 중에 읽는다 — 알려주는 notifier가 없어서 **이 setState가 유일한 갱신
@@ -229,11 +165,12 @@ class _MyAppState extends State<MyApp> {
     // 나중에 dispose()에서 처음 건드리는 코드가 생기면 조상 조회가 실패한다.
     // initState에서 확실히 잡아둔다.
     _appConfig = Provider.of<AppConfigController>(context, listen: false);
+    _session = SessionBootstrapper(userProvider);
     DioClient.onSessionExpired = () => userProvider.logout();
-    DioClient.onUserBanned = () => _showBanDialog(userProvider);
+    DioClient.onUserBanned = () => showBanDialog(userProvider);
     DioClient.onAgeVerificationRequired = () async =>
         userProvider.markAgeVerificationRequired();
-    unawaited(_tryAutoLogin(userProvider));
+    unawaited(_startSession());
     // 딥링크는 로그인/온보딩 상태와 무관하게 동작해야 하는데 App은 나이확인·
     // 온보딩·점검 게이트 화면에서는 트리에 없다 — 그래서 App이 아니라 유일한
     // MaterialApp을 갖는 이 위젯에서 초기화한다.
@@ -269,49 +206,14 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  Future<void> _showBanDialog(UserProvider userProvider) async {
-    if (_isBanDialogShowing) return;
-    _isBanDialogShowing = true;
-    try {
-      final ctx = App.navigatorKey.currentContext;
-      if (ctx != null && ctx.mounted) {
-        await showDialog<void>(
-          context: ctx,
-          barrierDismissible: false,
-          builder: (dialogCtx) => buildAppAlertDialog(
-            dialogCtx,
-            title: 'account_banned_title'.tr(),
-            content: 'account_banned_message'.tr(),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(dialogCtx).pop(),
-                child: Text('confirm'.tr()),
-              ),
-            ],
-          ),
-        );
-      }
-    } finally {
-      _isBanDialogShowing = false;
-      if (userProvider.user != null) {
-        await userProvider.logout();
-      }
-    }
-  }
-
-  /// 스플래시가 기다리는 것은 "이 사람이 누구인가"까지다.
-  ///
-  /// 토큰이 있으면 `userProvider.ready`(보안 스토리지의 캐시 로드) 시점에
-  /// 이미 유저가 들어와 있다 — 네트워크 갱신은 그 프로필을 최신화할 뿐이라
-  /// 붙잡아둘 이유가 없다. 예전에는 이 갱신까지 기다리느라 응답 없는
-  /// 네트워크에서 최대 40초 동안 로고만 보였다.
-  ///
-  /// 앱 설정은 계속 기다린다 — 점검·강제 업데이트 판정을 진입 후로 미루면
-  /// 앱을 보여줬다가 점검 화면으로 갈아치우게 된다(자체 6초 상한).
-  Future<void> _tryAutoLogin(UserProvider userProvider) async {
+  /// 스플래시는 "이 사람이 누구인가"가 확정될 때까지만 잡아둔다
+  /// ([SessionBootstrapper] 참고). 앱 설정은 계속 기다린다 — 점검·강제
+  /// 업데이트 판정을 진입 후로 미루면 앱을 보여줬다가 점검 화면으로
+  /// 갈아치우게 된다(자체 6초 상한).
+  Future<void> _startSession() async {
     try {
       await Future.wait([
-        _resolveIdentity(userProvider),
+        _session.resolveIdentity(),
         _appConfig.load(),
         // 최소 500ms 표시: 로그인이 빨리 끝나도 브랜드 인상을 위해 대기
         Future.delayed(const Duration(milliseconds: 500)),
@@ -319,82 +221,6 @@ class _MyAppState extends State<MyApp> {
     } finally {
       FlutterNativeSplash.remove();
       _maybePromptRecommendedUpdate();
-    }
-  }
-
-  /// 캐시로 신원이 확정되면 갱신은 백그라운드로 넘기고 바로 반환한다.
-  Future<void> _resolveIdentity(UserProvider userProvider) async {
-    // 생성자의 캐시 로드가 먼저 끝나도록 기다린 뒤 네트워크로 갱신 —
-    // 두 경로가 _user를 번갈아 쓰며 화면이 깜빡이는 경합 제거
-    await userProvider.ready;
-    final String? token;
-    try {
-      token = await TokenStore.readAccessToken();
-    } catch (e) {
-      log('Auto login skipped (token read failed): $e');
-      return;
-    }
-    // 토큰이 없으면 게스트 — 갱신할 것도 기다릴 것도 없다.
-    if (token == null) return;
-
-    // 토큰은 있는데 캐시가 비었다면(캐시 JSON 파싱 실패 등) 아직 이 사람이
-    // 누구인지 모른다. 그대로 진입시키면 게스트 화면을 보여줬다가 뒤늦게
-    // 나이확인·온보딩으로 갈아치우게 되므로 이때만 예전처럼 기다린다.
-    // 스플래시가 떠 있는 동안이라 죽은 토큰을 정리해도 사용자가 겪는 변화가 없다.
-    if (userProvider.user == null) {
-      await _refreshIdentity(userProvider, token, mayClearSession: true);
-      return;
-    }
-    // 캐시로 신원이 확정됐으면 갱신은 백그라운드로 넘기고 바로 반환한다.
-    unawaited(_refreshIdentity(userProvider, token, mayClearSession: false));
-  }
-
-  /// 프로필 갱신과 홈 데이터 프리페치. 늦게 온 결과가 그 사이의 인증 변화를
-  /// 덮어쓰지 않도록 `UserProvider`의 인증 세대가 걸러준다.
-  ///
-  /// [mayClearSession]은 "실패했을 때 세션을 끊어도 되는가"다. 스플래시가 떠
-  /// 있는 동안(기다리는 분기)에만 true다 — 사용자가 이미 앱을 쓰고 있는데
-  /// 배경 갱신이 아무 안내 없이 게스트로 떨어뜨리면 안 되고, 죽은 토큰은
-  /// 어차피 다음 요청에서 `DioClient`가 401로 처리한다.
-  Future<void> _refreshIdentity(
-    UserProvider userProvider,
-    String token, {
-    required bool mayClearSession,
-  }) async {
-    // connect(5s) + receive(12s) + 갱신 재시도(20s) + 여유 = 40s 상한
-    // _plainDio 타임아웃 없음으로 인한 무한 대기 방지
-    final generation = userProvider.authGeneration;
-    try {
-      await userProvider
-          .fetchUserFromToken(token, clearDeadToken: mayClearSession)
-          .timeout(const Duration(seconds: 40));
-      // 로그인 성공 시 홈 데이터를 미리 캐싱 (최대 2초 대기)
-      // → HomeFragment 진입 시 스켈레톤 없이 즉시 표시
-      final userId = userProvider.currentUserId;
-      if (userId != null) {
-        await _prefetchHomeData(userId)
-            .timeout(const Duration(seconds: 2), onTimeout: () {});
-      }
-    } on TimeoutException {
-      log('Auto login timed out');
-    } on DioException catch (e) {
-      if (e.response == null) {
-        // 오프라인 — 서버 미도달, 토큰 유효성 확인 불가 → 캐시 user 유지
-        log('Auto login failed (offline): ${e.type}');
-      } else {
-        // 서버 도달했으나 오류(5xx 등) — 401/403/404는 fetchUserFromToken이 이미 정리
-        // 5xx는 서버 오류이므로 토큰 유지, 이후 API 호출 시 DioClient가 401 처리
-        log('Auto login failed (server ${e.response?.statusCode})');
-      }
-    } catch (e) {
-      // 응답 파싱 실패 등 예상치 못한 오류 — 죽은 토큰 정리
-      log('Auto login failed (unexpected): $e');
-      if (!mayClearSession) return;
-      // 그 사이 사용자가 직접 로그인·로그아웃했다면 건드리면 안 된다.
-      if (userProvider.authGeneration != generation) return;
-      try {
-        await userProvider.logout().timeout(const Duration(seconds: 8));
-      } catch (_) {}
     }
   }
 
@@ -506,22 +332,4 @@ void _configureImageCache() {
   PaintingBinding.instance.imageCache
     ..maximumSize = maxImages
     ..maximumSizeBytes = maxBytes;
-}
-
-// 스플래시 중 홈 데이터를 FestivalCacheService에 저장
-// HomeStateNotifier가 캐시 우선 표시 전략으로 즉시 렌더링할 수 있게 함
-Future<void> _prefetchHomeData(int userId) async {
-  try {
-    final (artists, festivals) = await (
-      sl<UserService>().fetchFollowingArtists(userId),
-      sl<UserService>().fetchLikedFestivals(userId),
-    ).wait;
-    await Future.wait([
-      sl<FestivalCacheService>().saveHomeArtists(userId, artists),
-      sl<FestivalCacheService>().saveHomeFestivals(userId, festivals),
-    ]);
-    log('Home pre-fetch: ${artists.length} artists, ${festivals.length} festivals');
-  } catch (e) {
-    log('Home pre-fetch failed (ignored): $e');
-  }
 }

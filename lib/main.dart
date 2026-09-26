@@ -35,27 +35,75 @@ import 'package:feple/service/app_config_service.dart';
 import 'package:feple/service/festival_cache_service.dart';
 import 'package:feple/service/user_service.dart';
 
-void main() async {
+Future<void> main() async {
   final bindings = WidgetsFlutterBinding.ensureInitialized();
-  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  setupDependencies();
-  _configureImageCache();
   FlutterNativeSplash.preserve(widgetsBinding: bindings);
+  runApp(await _bootstrap() ? _appRoot() : const _BootstrapFailureApp());
+}
 
-  // 서로 의존관계 없는 초기화라 병렬로 실행 — 콜드스타트 시간을 합이 아닌
-  // 가장 느린 것 하나의 시간으로 줄임. google-services.json이 Android에서
-  // 자동 초기화하므로 이미 초기화된 경우 Firebase.initializeApp()은 생략.
-  await Future.wait([
-    if (Firebase.apps.isEmpty) Firebase.initializeApp().then((_) {}),
-    EasyLocalization.ensureInitialized(),
-    AppPreferences.init(),
-    ApiCacheStore.init(),
-    KakaoSdk.init(
-      nativeAppKey: kakaoNativeAppKey,
-      javaScriptAppKey: kakaoJsAppKey,
-    ),
-  ]);
+/// 앱이 뜨기 전에 끝나야 하는 초기화. 성공하면 true.
+///
+/// 여기서 던지는 예외를 그냥 두면 `runApp`에 도달하지 못하고, Flutter가
+/// 프레임을 한 번도 그리지 않아 **네이티브 런치 화면이 영원히 남는다** —
+/// 에러도 재시도 수단도 없이 앱이 멈춘 것처럼 보인다. 그래서 전부 잡아서
+/// 호출부가 안내 화면을 띄울 수 있게 한다.
+Future<bool> _bootstrap() async {
+  Future<void>? platformInit;
+  try {
+    await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    setupDependencies();
+    _configureImageCache();
 
+    // 서로 의존관계 없는 초기화라 병렬로 실행 — 콜드스타트 시간을 합이 아닌
+    // 가장 느린 것 하나의 시간으로 줄인다. Firebase를 기다리는 동안 같이 돈다.
+    platformInit = Future.wait([
+      EasyLocalization.ensureInitialized(),
+      AppPreferences.init(),
+      ApiCacheStore.init(),
+      KakaoSdk.init(
+        nativeAppKey: kakaoNativeAppKey,
+        javaScriptAppKey: kakaoJsAppKey,
+      ),
+    ]);
+
+    // 크래시 리포팅은 **가능한 한 이르게** 붙인다 — 시작 자체가 실패하는
+    // 크래시야말로 가장 알아야 하는데, 초기화를 다 마친 뒤에 붙이면 그게
+    // 정확히 사각지대가 된다. Firebase가 먼저 서야 하므로 그것만 앞세운다.
+    // google-services.json이 Android에서 자동 초기화하므로 이미 초기화된
+    // 경우 Firebase.initializeApp()은 생략.
+    if (Firebase.apps.isEmpty) await Firebase.initializeApp();
+    // 텔레메트리 설정 실패가 앱 시작을 막아서는 안 된다 — 멀쩡한 앱을 두고
+    // "시작하지 못했습니다"를 띄우게 된다.
+    try {
+      await _initCrashReporting();
+    } catch (e) {
+      log('Crash reporting setup failed (ignored): $e');
+    }
+    await platformInit;
+    return true;
+  } catch (e, stack) {
+    // Firebase 초기화에서 던졌다면 platformInit은 await된 적이 없다. 그대로
+    // 두면 미관측 비동기 에러가 되고, 핸들러가 이미 붙어 있으면 진짜 원인과
+    // 무관한 크래시로 한 번 더 기록된다.
+    unawaited(platformInit?.catchError((Object _) {}) ?? Future<void>.value());
+    log('App bootstrap failed: $e');
+    unawaited(_recordBootstrapError(e, stack));
+    return false;
+  }
+}
+
+/// 실패 안내 화면을 늦추지 않도록 기다리지 않는다 — 이 경로는 아직 네이티브
+/// 런치 화면이 떠 있는 상태라 무엇도 오래 붙잡으면 안 된다. Firebase가 서기
+/// 전에 실패했다면 기록할 곳 자체가 없으므로 그것까지 삼킨다.
+Future<void> _recordBootstrapError(Object error, StackTrace stack) async {
+  try {
+    await FirebaseCrashlytics.instance
+        .recordError(error, stack, reason: 'app bootstrap', fatal: true)
+        .timeout(const Duration(seconds: 3));
+  } catch (_) {}
+}
+
+Future<void> _initCrashReporting() async {
   // 디버그 빌드의 크래시/에러는 Crashlytics로 보내지 않음 — 개발 중 발생하는
   // 예외가 운영 대시보드를 오염시키는 것을 방지
   await FirebaseCrashlytics.instance
@@ -65,24 +113,86 @@ void main() async {
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     return true;
   };
+}
 
-  runApp(
-    EasyLocalization(
-      supportedLocales: const [Locale('ko'), Locale('en')],
-      fallbackLocale: const Locale('ko'),
-      path: 'assets/translations',
-      useOnlyLangCode: true,
-      child: MultiProvider(
-        providers: [
-          ChangeNotifierProvider<UserProvider>(
-              create: (_) => UserProvider(sl<UserService>())),
-          ChangeNotifierProvider<AppConfigController>(
-              create: (_) => AppConfigController(sl<AppConfigService>())),
-        ],
-        child: const MyApp(),
-      ),
+Widget _appRoot() {
+  return EasyLocalization(
+    supportedLocales: const [Locale('ko'), Locale('en')],
+    fallbackLocale: const Locale('ko'),
+    path: 'assets/translations',
+    useOnlyLangCode: true,
+    child: MultiProvider(
+      providers: [
+        ChangeNotifierProvider<UserProvider>(
+            create: (_) => UserProvider(sl<UserService>())),
+        ChangeNotifierProvider<AppConfigController>(
+            create: (_) => AppConfigController(sl<AppConfigService>())),
+      ],
+      child: const MyApp(),
     ),
   );
+}
+
+/// 초기화가 실패했을 때만 뜨는 최소 안내 화면. 예전에는 이 경우 네이티브 런치
+/// 화면에 그대로 갇혔다.
+///
+/// 테마·Provider·번역 무엇에도 기대지 않는다 — 초기화가 실패했다는 건 그것들이
+/// 준비되지 않았을 수 있다는 뜻이다. 그래서 문구도 `.tr()` 대신 플랫폼 로케일만
+/// 보고 고른다(`EasyLocalization` 자체가 실패했으면 `.tr()`은 원본 키를 낸다).
+///
+/// **재시도 버튼은 일부러 두지 않았다.** [_bootstrap]은 한 번만 실행할 수 있다 —
+/// `setupDependencies()`는 GetIt에 같은 타입을 다시 등록하면 던지고,
+/// `AppPreferences._prefs`는 `late final`이라 두 번째 대입에서 던진다. 즉
+/// 눌러도 항상 실패하는 버튼이 되므로, 앱을 완전히 종료 후 재실행하라고
+/// 안내하는 편이 정직하다.
+class _BootstrapFailureApp extends StatefulWidget {
+  const _BootstrapFailureApp();
+
+  @override
+  State<_BootstrapFailureApp> createState() => _BootstrapFailureAppState();
+}
+
+class _BootstrapFailureAppState extends State<_BootstrapFailureApp> {
+  @override
+  void initState() {
+    super.initState();
+    // 정상 경로에서는 _tryAutoLogin의 finally가 지우지만 여기까지 왔다면
+    // 그 코드는 실행되지 않는다 — 직접 지우지 않으면 스플래시가 남는다.
+    FlutterNativeSplash.remove();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isKorean = PlatformDispatcher.instance.locale.languageCode == 'ko';
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.error_outline_rounded,
+                    size: 48, color: Color(0xFF9E9E9E)),
+                const SizedBox(height: 16),
+                Text(
+                  isKorean
+                      ? '앱을 시작하지 못했습니다.\n앱을 완전히 종료한 뒤 다시 실행해 주세요.'
+                      : "Couldn't start the app.\n"
+                          'Please close it completely and open it again.',
+                  textAlign: TextAlign.center,
+                  style:
+                      const TextStyle(fontSize: 15, color: Color(0xFF424242)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 /// 콜드스타트 이후 루트에 올 화면의 종류. 판정([_MyAppState._rootDestination])과
@@ -192,6 +302,13 @@ class _MyAppState extends State<MyApp> {
   Future<void> _tryAutoLogin(UserProvider userProvider) async {
     // connect(5s) + receive(12s) + 갱신 재시도(20s) + 여유 = 40s 상한
     // _plainDio 타임아웃 없음으로 인한 무한 대기 방지
+    //
+    // 스플래시를 먼저 걷고 자동 로그인을 백그라운드로 돌리고 싶어지지만,
+    // `.timeout()`은 진행 중인 요청을 취소하지 못해서 위험하다 — 뒤늦게
+    // 도착한 결과가 (1) 루트 화면을 나이확인·온보딩으로 갈아치워 사용자가
+    // 보던 탭과 네비게이터 스택을 통째로 날리고, (2) 그 사이 사용자가 직접
+    // 한 로그인을 낡은 토큰의 401로 덮어써 세션을 끊는다. 짧게 줄이려면
+    // 먼저 UserProvider에 "이 결과는 버린다"는 취소 수단이 있어야 한다.
     // 최소 500ms 표시: 로그인이 빨리 끝나도 브랜드 인상을 위해 대기
     try {
       await Future.wait([

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
@@ -363,6 +364,77 @@ void main() {
 
       expect(await TokenStore.readAccessToken(), isNull);
       expect(await TokenStore.readRefreshToken(), isNull);
+    });
+  });
+
+  // ───────────────────────────────────────────────────
+  // F. 인증 세대 — 늦게 온 자동 로그인 갱신 폐기
+  // ───────────────────────────────────────────────────
+  group('F. 인증 세대', () {
+    test('갱신 도중 수동 로그인하면 늦게 온 성공 결과를 버린다', () async {
+      _storage[_kAccessToken] = _testToken;
+      final provider = await make();
+      final slow = Completer<AppUser>();
+      when(() => mockService.fetchUserFromToken(_testToken))
+          .thenAnswer((_) => slow.future);
+
+      final inFlight = provider.fetchUserFromToken(_testToken);
+      // 그 사이 사용자가 직접 다른 계정으로 로그인.
+      await provider.setUser(_user(id: 7, nickname: '새 계정'));
+      slow.complete(_user(id: 42, nickname: '낡은 계정'));
+      await inFlight;
+
+      expect(provider.user?.id, 7, reason: '낡은 갱신이 새 세션을 덮어쓰면 안 된다');
+    });
+
+    // 가장 위험한 경로 — 낡은 토큰의 401 정리가 방금 만든 세션을 끊는다.
+    test('갱신 도중 수동 로그인하면 늦게 온 401로 토큰을 지우지 않는다', () async {
+      _storage[_kAccessToken] = _testToken;
+      final provider = await make();
+      final slow = Completer<AppUser>();
+      when(() => mockService.fetchUserFromToken(_testToken))
+          .thenAnswer((_) => slow.future);
+
+      final inFlight = provider.fetchUserFromToken(_testToken);
+      await provider.setUser(_user(id: 7, nickname: '새 계정'));
+      await TokenStore.saveAccessToken('freshToken');
+      slow.completeError(DioException(
+        requestOptions: RequestOptions(path: '/users/me'),
+        response: Response(
+            requestOptions: RequestOptions(path: '/users/me'), statusCode: 401),
+      ));
+      await expectLater(inFlight, throwsA(isA<DioException>()));
+
+      expect(provider.user?.id, 7);
+      expect(await TokenStore.readAccessToken(), 'freshToken',
+          reason: '낡은 401이 새 토큰을 지우면 로그인한 사용자가 튕긴다');
+    });
+
+    test('인증 상태가 그대로면 401 정리는 평소대로 동작한다', () async {
+      _storage[_kAccessToken] = _testToken;
+      final provider = await make();
+      when(() => mockService.fetchUserFromToken(_testToken)).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: '/users/me'),
+          response: Response(
+              requestOptions: RequestOptions(path: '/users/me'),
+              statusCode: 401),
+        ),
+      );
+
+      await expectLater(provider.fetchUserFromToken(_testToken),
+          throwsA(isA<DioException>()));
+
+      expect(provider.user, isNull);
+      expect(await TokenStore.readAccessToken(), isNull);
+    });
+
+    test('setUser와 logout이 세대를 올린다', () async {
+      final provider = await make();
+      final start = provider.authGeneration;
+
+      await provider.setUser(_user());
+      expect(provider.authGeneration, greaterThan(start));
     });
   });
 }

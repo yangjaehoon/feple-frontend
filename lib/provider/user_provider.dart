@@ -24,6 +24,16 @@ class UserProvider with ChangeNotifier {
 
   late final Future<void> _initialLoad;
 
+  /// 인증 세대. 수동 로그인([setUser])·로그아웃([logout])처럼 **사용자가
+  /// 의도한** 인증 변화마다 올린다.
+  ///
+  /// 자동 로그인의 프로필 갱신([fetchUserFromToken])은 느린 네트워크에서
+  /// 수십 초가 걸릴 수 있는데, 그 사이 사용자가 직접 로그인/로그아웃하면
+  /// 뒤늦게 도착한 결과가 그걸 덮어쓴다 — 특히 낡은 토큰의 401 정리가
+  /// 방금 만든 세션을 끊어버린다. 응답 시점에 세대가 달라졌으면 버린다.
+  int _authGeneration = 0;
+  int get authGeneration => _authGeneration;
+
   UserProvider(this._userService) {
     _initialLoad = _loadFromSecureStorage();
   }
@@ -99,6 +109,8 @@ class UserProvider with ChangeNotifier {
   Future<void> logout() async {
     if (_isLoggingOut) return;
     _isLoggingOut = true;
+    // 진행 중인 자동 로그인 갱신이 뒤늦게 돌아와 로그아웃을 되돌리지 못하게.
+    _authGeneration++;
     try {
       // 각 정리 단계가 실패해도 나머지 단계는 계속 진행 — 하나라도 예외가
       // 전파되면 _user가 초기화되지 않아 로그아웃이 로컬 화면에 반영되지 않음
@@ -142,7 +154,12 @@ class UserProvider with ChangeNotifier {
     await logout();
   }
 
-  Future<void> setUser(AppUser me) => _applyUser(me);
+  /// 로그인 화면이 인증을 마친 뒤 호출한다. 이 시점부터 이전 토큰으로
+  /// 진행 중이던 자동 로그인 갱신 결과는 무효다.
+  Future<void> setUser(AppUser me) {
+    _authGeneration++;
+    return _applyUser(me);
+  }
 
   /// 서버가 나이 확인 미완료(403 AGE_VERIFICATION_REQUIRED)를 응답했을 때 —
   /// 현재 유저에 플래그를 세워 루트 라우팅이 나이 확인 화면을 띄우게 한다.
@@ -169,12 +186,18 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> fetchUserFromToken(String token) async {
+    final generation = _authGeneration;
     try {
-      await _applyUser(await _userService.fetchUserFromToken(token));
+      final me = await _userService.fetchUserFromToken(token);
+      if (_isStale(generation)) return;
+      await _applyUser(me);
     } on DioException catch (e) {
       final status = e.response?.statusCode;
-      if (status == 401 || status == 403 || status == 404) {
-        // 401/403: 토큰 만료·무효, 404: 계정 삭제 → 죽은 토큰 정리
+      // 401/403: 토큰 만료·무효, 404: 계정 삭제 → 죽은 토큰 정리.
+      // 단 그 사이 사용자가 직접 로그인했다면 이 토큰은 이미 남의 것이다 —
+      // 정리하면 방금 만든 세션을 끊는다.
+      if (!_isStale(generation) &&
+          (status == 401 || status == 403 || status == 404)) {
         _user = null;
         await TokenStore.clear();
         notifyListeners();
@@ -182,5 +205,11 @@ class UserProvider with ChangeNotifier {
       // 그 외(5xx, 네트워크 오류 등)는 오프라인 모드로 기존 user 유지
       rethrow;
     }
+  }
+
+  bool _isStale(int generation) {
+    if (generation == _authGeneration) return false;
+    debugPrint('[UserProvider] 자동 로그인 결과 폐기 — 그 사이 인증 상태가 바뀜');
+    return true;
   }
 }

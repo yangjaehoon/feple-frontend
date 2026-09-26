@@ -34,7 +34,10 @@ flutter_native_splash:
   # parameters from above. If the image_dark parameter is specified, color_dark or
   # background_image_dark must be specified.  color_dark and background_image_dark cannot both be
   # set.
-  #color_dark: "#042a49"
+  # 다크 모드에서도 같은 배경을 쓴다. 명시하지 않으면 Android 11 이하 야간
+  # 리소스만 패키지 기본값(#121212)으로 생성돼, Android 12+와 배경색이
+  # 어긋난다(같은 앱·같은 설정인데 OS 버전에 따라 런치 화면 색이 달라짐).
+  color_dark: "#3FA9F5"
   #background_image_dark: "assets/dark-background.png"
   #image_dark: assets/splash-invert.png
   #branding_dark: assets/dart_dark.png

@@ -113,6 +113,10 @@ void main() {
       const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
       null,
     );
+    sl.unregister<UserService>();
+    sl.unregister<FestivalCacheService>();
+    sl.unregister<NotificationCountable>();
+    sl.unregister<NotificationCountNotifier>();
   });
 
   Future<(UserProvider, SessionBootstrapper)> make() async {
@@ -225,6 +229,25 @@ void main() {
       const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
       (call) async => throw PlatformException(code: 'storage broken'),
     );
+
+    await expectLater(bootstrapper.resolveIdentity(), completes);
+  });
+
+  // 처음부터 스토리지가 망가져 UserProvider.ready 자체가 에러로 끝나는 경우.
+  // 여기서 던지면 unawaited 경로라 멀쩡히 뜬 앱이 치명적 크래시로 기록된다.
+  test('캐시 로드(ready)가 실패해도 던지지 않는다', () async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+      const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
+      (call) async {
+        // 토큰은 없다고 답해 캐시 정리 경로로 보낸 뒤, 그 삭제를 실패시킨다.
+        if (call.method == 'read') return null;
+        throw PlatformException(code: 'storage broken');
+      },
+    );
+    final provider = UserProvider(mockService);
+    await _pump();
+    final bootstrapper = SessionBootstrapper(provider);
 
     await expectLater(bootstrapper.resolveIdentity(), completes);
   });

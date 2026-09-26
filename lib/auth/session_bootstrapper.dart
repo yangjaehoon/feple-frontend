@@ -23,8 +23,15 @@ class SessionBootstrapper {
   /// 절대 던지지 않는다 — 시작 경로에서 예외가 올라가면 스플래시가 남는다.
   Future<void> resolveIdentity() async {
     // 생성자의 캐시 로드가 먼저 끝나도록 기다린 뒤 네트워크로 갱신 —
-    // 두 경로가 _user를 번갈아 쓰며 화면이 깜빡이는 경합 제거
-    await _userProvider.ready;
+    // 두 경로가 _user를 번갈아 쓰며 화면이 깜빡이는 경합 제거.
+    // 캐시 로드가 실패해도(보안 스토리지 손상 등) 여기서 던지면 안 된다 —
+    // unawaited로 불리는 경로라 그대로 올라가면 앱은 멀쩡히 떴는데
+    // Crashlytics에 치명적 크래시로 기록된다. 토큰으로 다시 시도한다.
+    try {
+      await _userProvider.ready;
+    } catch (e) {
+      log('Cached user load failed: $e');
+    }
     final String? token;
     try {
       token = await TokenStore.readAccessToken();

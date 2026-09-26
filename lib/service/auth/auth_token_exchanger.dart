@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import '../../auth/token_store.dart';
 import '../../common/exception/age_restricted_exception.dart';
 import '../../common/exception/auth_exchange_exception.dart';
+import '../../common/util/response_parsing.dart';
 import '../../model/user_model.dart' as app;
 import '../../network/dio_client.dart';
 
@@ -30,43 +31,49 @@ class AuthTokenExchanger {
   }
 
   /// 인증 제공자로 토큰을 교환하고 응답을 파싱. 실패 시 로그 남기고 공통 예외로 통일.
+  /// user 파싱이 토큰 저장보다 먼저 실행되어야 한다 — 응답에 accessToken은 있지만
+  /// user 객체가 없거나 깨진 경우, 토큰을 먼저 저장해버리면 로그인은 실패로 보이는데
+  /// TokenStore에는 유효한 JWT가 남아 이후 API 호출에 그대로 붙는 상태가 된다.
   Future<app.AppUser> _exchange({
     required String providerLabel,
     required Future<Response> Function() request,
   }) async {
     try {
       final response = await request();
-      final data = response.data;
-      if (data is! Map<String, dynamic>) {
-        throw AuthExchangeException('$providerLabel: response is not a JSON object');
-      }
+      final data = extractJsonMap(response.data);
+      final user = _parseUser(data);
       await _saveTokens(data);
-      return _parseUser(data);
+      return user;
     } on AuthExchangeException {
       rethrow;
     } on DioException catch (e) {
-      debugPrint('[Auth] $providerLabel 서버 교환 실패: [${e.type.name}] ${e.response?.statusCode}');
-      final respBody = e.response?.data;
-      if (respBody is Map<String, dynamic>) {
-        debugPrint('[Auth] $providerLabel 서버 메시지: ${respBody['message']}');
-      }
-      // 만 14세 미만으로 계정이 이미 파기된 사용자가 같은 계정으로 재로그인을
-      // 시도하는 경우 — submitBirthDate()와 동일하게 구체적인 예외로 변환해,
-      // 재로그인도 나이확인 최초 거부와 같은 안내 문구를 보여줄 수 있게 한다.
-      if (e.response?.statusCode == 403 &&
-          respBody is Map &&
-          respBody['code'] == 'AGE_RESTRICTED') {
-        throw AgeRestrictedException();
-      }
-      throw AuthExchangeException(
-        '$providerLabel: server exchange failed (${e.response?.statusCode ?? e.type.name})',
-      );
+      throw _translateDioError(providerLabel, e);
     } catch (e) {
-      // 응답 파싱 단계(_saveTokens/_parseUser)의 예상치 못한 필드 누락·타입 불일치도
-      // DioException과 동일하게 공통 예외로 통일 — raw exception이 그대로 새어나가지 않도록
+      // 응답 파싱 단계(extractJsonMap/_parseUser/_saveTokens)의 예상치 못한 필드 누락·
+      // 타입 불일치도 DioException과 동일하게 공통 예외로 통일 — raw exception이 그대로
+      // 새어나가지 않도록
       debugPrint('[Auth] $providerLabel 응답 처리 실패: $e');
       throw AuthExchangeException('$providerLabel: response processing failed');
     }
+  }
+
+  /// 만 14세 미만으로 계정이 이미 파기된 사용자가 같은 계정으로 재로그인을
+  /// 시도하는 경우 — submitBirthDate()와 동일하게 구체적인 예외로 변환해,
+  /// 재로그인도 나이확인 최초 거부와 같은 안내 문구를 보여줄 수 있게 한다.
+  Exception _translateDioError(String providerLabel, DioException e) {
+    debugPrint('[Auth] $providerLabel 서버 교환 실패: [${e.type.name}] ${e.response?.statusCode}');
+    final respBody = e.response?.data;
+    if (respBody is Map<String, dynamic>) {
+      debugPrint('[Auth] $providerLabel 서버 메시지: ${respBody['message']}');
+    }
+    if (e.response?.statusCode == 403 &&
+        respBody is Map &&
+        respBody['code'] == 'AGE_RESTRICTED') {
+      return AgeRestrictedException();
+    }
+    return AuthExchangeException(
+      '$providerLabel: server exchange failed (${e.response?.statusCode ?? e.type.name})',
+    );
   }
 
   /// 나이 확인 게이트 — 생년월일 제출. 만 14세 이상이면 정상 반환,

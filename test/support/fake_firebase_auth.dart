@@ -58,6 +58,7 @@ class FakeUserPlatform extends Fake
   final String _uid;
   bool _isEmailVerified;
   bool deleteThrows;
+  bool sendEmailVerificationThrows = false;
   int sendEmailVerificationCallCount = 0;
   int reloadCallCount = 0;
   Map<String, String?>? lastUpdatedProfile;
@@ -73,6 +74,7 @@ class FakeUserPlatform extends Fake
   @override
   Future<void> sendEmailVerification([ActionCodeSettings? actionCodeSettings]) async {
     sendEmailVerificationCallCount++;
+    if (sendEmailVerificationThrows) throw Exception('sendEmailVerification failed');
   }
 
   @override

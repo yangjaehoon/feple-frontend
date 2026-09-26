@@ -49,9 +49,10 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   // 폴링과 수동 "인증 완료 확인" 탭이 동시에 completeVerifiedLogin()을 호출하면
   // /auth/firebase 토큰 교환이 두 번 일어남 — 백엔드는 유저당 리프레시 토큰을
   // 1개만 유지하므로 두 응답 중 나중에 TokenStore에 저장되는 쪽이 서버가 이미
-  // 무효화한 토큰일 수 있어 로그인 직후 세션이 깨질 수 있음. _isVerifying(버튼
-  // 로딩 표시)과 별개로 이 플래그로 두 경로를 상호 배제한다.
-  bool _isCheckingVerification = false;
+  // 무효화한 토큰일 수 있어 로그인 직후 세션이 깨질 수 있음. 이미 진행 중인 확인이
+  // 있으면 새로 호출하지 않고 이 Future에 편승(await)해 같은 결과를 공유한다 —
+  // 수동 탭이 폴링과 겹쳐도 조용히 무시되지 않고 로딩 표시 후 실제 결과를 반영한다.
+  Future<void>? _inFlightCheck;
   String? _errorMessage;
 
   bool get _busy => _isVerifying || _isCanceling || _isChangingEmail || _isResending;
@@ -102,14 +103,40 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   }
 
   Future<void> _tryComplete({bool silent = false}) async {
-    if (_isCheckingVerification) return;
-    _isCheckingVerification = true;
+    // 이미 폴링 틱이 진행 중일 때 온 또 다른 폴링 틱은 기존 동작대로 건너뛴다.
+    if (_inFlightCheck != null) {
+      if (silent) return;
+      await _awaitSharedCheck(_inFlightCheck!);
+      return;
+    }
+
     if (!silent) setState(() { _isVerifying = true; _errorMessage = null; });
+    final check = _completeVerification(silent: silent);
+    _inFlightCheck = check;
+    try {
+      await check;
+    } finally {
+      _inFlightCheck = null;
+      if (!silent && mounted) setState(() => _isVerifying = false);
+    }
+  }
+
+  /// 수동 탭이 진행 중인 폴링과 겹친 경우 — 새로 호출하지 않고 그 결과를 기다렸다가
+  /// 그대로 반영한다(조용히 무시되지 않도록).
+  Future<void> _awaitSharedCheck(Future<void> shared) async {
+    setState(() { _isVerifying = true; _errorMessage = null; });
+    await shared;
+    if (!mounted) return;
+    if (!_completed) _showNotYetVerified();
+    setState(() => _isVerifying = false);
+  }
+
+  Future<void> _completeVerification({required bool silent}) async {
     try {
       final user = await AuthService.instance.completeVerifiedLogin();
       if (!mounted) return;
       if (user == null) {
-        if (!silent) setState(() => _errorMessage = 'verify_email_not_yet'.tr());
+        if (!silent) _showNotYetVerified();
         return;
       }
       _completed = true;
@@ -117,14 +144,11 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
       await _navigateToApp(user);
     } catch (e) {
       debugPrint('[VerifyEmail] completeVerifiedLogin 실패: $e');
-      if (!silent && mounted) {
-        setState(() => _errorMessage = 'verify_email_not_yet'.tr());
-      }
-    } finally {
-      _isCheckingVerification = false;
-      if (!silent && mounted) setState(() => _isVerifying = false);
+      if (!silent && mounted) _showNotYetVerified();
     }
   }
+
+  void _showNotYetVerified() => setState(() => _errorMessage = 'verify_email_not_yet'.tr());
 
   Future<void> _onVerifyTapped() => _tryComplete(silent: false);
 

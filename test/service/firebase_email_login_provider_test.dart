@@ -92,6 +92,20 @@ void main() {
       );
       expect(fakeAuth.signOutCallCount, 1);
     });
+
+    test('인증메일 발송 단계에서 실패하면 계정은 지우지 않고 예외만 재전파한다', () async {
+      final user = FakeUserPlatform()..sendEmailVerificationThrows = true;
+      fakeAuth.onCreateUserWithEmailAndPassword = (email, password) async {
+        return FakeUserCredentialPlatform(user);
+      };
+
+      await expectLater(
+        provider.register('test@example.com', 'password', '닉네임'),
+        throwsA(isA<Exception>()),
+      );
+      expect(user.lastUpdatedProfile, {'displayName': '닉네임'});
+      expect(fakeAuth.signOutCallCount, 0);
+    });
   });
 
   group('FirebaseEmailLoginProvider.resendVerificationEmail', () {

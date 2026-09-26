@@ -10,7 +10,7 @@ import 'auth_token_exchanger.dart';
 import 'firebase_id_token.dart';
 
 const _nonceCharset =
-    '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-._';
 
 /// Firebase가 Apple ID 토큰의 재생 공격을 막기 위해 요구하는 raw nonce 생성.
 String _generateNonce([int length = 32]) {

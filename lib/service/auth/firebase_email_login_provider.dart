@@ -44,18 +44,33 @@ class FirebaseEmailLoginProvider {
     try {
       // 닉네임을 Firebase displayName에 저장 (이메일 인증 후 첫 로그인 시 백엔드에서 사용)
       await firebaseUser.updateDisplayName(nickname);
+    } catch (e) {
+      await _rollbackFailedRegistration(firebaseUser, e);
+      rethrow;
+    }
+    try {
       await firebaseUser.sendEmailVerification();
       // signOut 제거 — VerifyEmailPage에서 Firebase 세션 사용
     } catch (e) {
-      // 실패 시 Firebase 계정 롤백
-      try {
-        await firebaseUser.delete();
-      } catch (deleteError) {
-        debugPrint('[Auth] 계정 롤백 실패: $deleteError');
-      }
-      await FirebaseAuth.instance.signOut();
+      // 계정은 지우지 않는다 — 네트워크 순단 등 일시적 실패로 계정을 지우면 같은 이메일로
+      // 재시도할 때마다 같은 이유로 또 지워지는 루프에 빠질 수 있다. 다만 실패를 삼키면
+      // 호출자(SignupScreen)가 성공으로 오인해 인증메일이 오지 않은 VerifyEmailScreen으로
+      // 넘어가 60초 재전송 쿨다운에 갇히므로, 계정만 보존하고 실패는 그대로 알린다 —
+      // 재시도 시 이미 존재하는 계정이라 실패하면 로그인 화면에서 재로그인하면
+      // login()이 인증메일을 다시 보낸다.
+      debugPrint('[Auth] 인증메일 발송 실패: $e');
       rethrow;
     }
+  }
+
+  Future<void> _rollbackFailedRegistration(User firebaseUser, Object error) async {
+    debugPrint('[Auth] 회원가입 실패, 계정 롤백: $error');
+    try {
+      await firebaseUser.delete();
+    } catch (deleteError) {
+      debugPrint('[Auth] 계정 롤백 실패: $deleteError');
+    }
+    await FirebaseAuth.instance.signOut();
   }
 
   Future<void> resendVerificationEmail() async {

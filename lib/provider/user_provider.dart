@@ -47,6 +47,9 @@ class UserProvider with ChangeNotifier {
   /// "네트워크로 갱신했는데 오프라인 캐시는 옛날 정보" 상태를 방지한다.
   Future<void> _applyUser(AppUser me) async {
     _user = me;
+    // 여기까지 온 값이 현재 진실이다 — 이전에 출발해 아직 안 돌아온 조회는
+    // 이 시점 기준으로 낡았다([_authGeneration]).
+    _authGeneration++;
     notifyListeners();
     try {
       await TokenStore.saveUserJson(jsonEncode(me.toJson()));
@@ -155,11 +158,8 @@ class UserProvider with ChangeNotifier {
   }
 
   /// 로그인 화면이 인증을 마친 뒤 호출한다. 이 시점부터 이전 토큰으로
-  /// 진행 중이던 자동 로그인 갱신 결과는 무효다.
-  Future<void> setUser(AppUser me) {
-    _authGeneration++;
-    return _applyUser(me);
-  }
+  /// 진행 중이던 자동 로그인 갱신 결과는 무효다([_applyUser]가 세대를 올린다).
+  Future<void> setUser(AppUser me) => _applyUser(me);
 
   /// 서버가 나이 확인 미완료(403 AGE_VERIFICATION_REQUIRED)를 응답했을 때 —
   /// 현재 유저에 플래그를 세워 루트 라우팅이 나이 확인 화면을 띄우게 한다.
@@ -167,6 +167,9 @@ class UserProvider with ChangeNotifier {
     final me = _user;
     if (me != null && !me.ageVerificationRequired) {
       _user = me.copyWith(ageVerificationRequired: true);
+      // 이전에 출발한 조회가 낡은 프로필(플래그 false)을 들고 뒤늦게 도착해
+      // 방금 세운 게이트를 풀어버리지 않도록.
+      _authGeneration++;
       notifyListeners();
     }
   }
@@ -177,6 +180,10 @@ class UserProvider with ChangeNotifier {
     final me = _user;
     if (me == null || !me.ageVerificationRequired) return;
     _user = me.copyWith(ageVerificationRequired: false);
+    // 스플래시가 걷힌 뒤에도 자동 로그인 갱신이 돌고 있을 수 있다. 그게
+    // 제출 이전 스냅샷(플래그 true)을 들고 오면 방금 통과한 게이트로 즉시
+    // 되돌아가므로, 여기서 세대를 올려 그 결과를 무효화한다.
+    _authGeneration++;
     notifyListeners();
     try {
       await TokenStore.saveUserJson(jsonEncode(_user!.toJson()));
@@ -185,7 +192,12 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchUserFromToken(String token) async {
+  /// [clearDeadToken]이 false면 401/403/404를 받아도 세션을 건드리지 않는다.
+  /// 사용자가 이미 앱을 쓰고 있는 동안(스플래시가 걷힌 뒤) 백그라운드 갱신이
+  /// 돌아온 경우에 쓴다 — 죽은 토큰은 다음 요청에서 `DioClient`가 401로
+  /// 처리하므로, 여기서 아무 안내 없이 로그아웃시킬 이유가 없다.
+  Future<void> fetchUserFromToken(String token,
+      {bool clearDeadToken = true}) async {
     final generation = _authGeneration;
     try {
       final me = await _userService.fetchUserFromToken(token);
@@ -196,7 +208,8 @@ class UserProvider with ChangeNotifier {
       // 401/403: 토큰 만료·무효, 404: 계정 삭제 → 죽은 토큰 정리.
       // 단 그 사이 사용자가 직접 로그인했다면 이 토큰은 이미 남의 것이다 —
       // 정리하면 방금 만든 세션을 끊는다.
-      if (!_isStale(generation) &&
+      if (clearDeadToken &&
+          !_isStale(generation) &&
           (status == 401 || status == 403 || status == 404)) {
         _user = null;
         await TokenStore.clear();

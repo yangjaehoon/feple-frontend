@@ -337,26 +337,36 @@ class _MyAppState extends State<MyApp> {
     // 토큰이 없으면 게스트 — 갱신할 것도 기다릴 것도 없다.
     if (token == null) return;
 
-    final refresh = _refreshIdentity(userProvider, token);
     // 토큰은 있는데 캐시가 비었다면(캐시 JSON 파싱 실패 등) 아직 이 사람이
     // 누구인지 모른다. 그대로 진입시키면 게스트 화면을 보여줬다가 뒤늦게
     // 나이확인·온보딩으로 갈아치우게 되므로 이때만 예전처럼 기다린다.
+    // 스플래시가 떠 있는 동안이라 죽은 토큰을 정리해도 사용자가 겪는 변화가 없다.
     if (userProvider.user == null) {
-      await refresh;
+      await _refreshIdentity(userProvider, token, mayClearSession: true);
       return;
     }
-    unawaited(refresh);
+    // 캐시로 신원이 확정됐으면 갱신은 백그라운드로 넘기고 바로 반환한다.
+    unawaited(_refreshIdentity(userProvider, token, mayClearSession: false));
   }
 
-  /// 프로필 갱신과 홈 데이터 프리페치. 스플래시가 걷힌 뒤에도 이어질 수 있어
-  /// 늦게 온 결과는 `UserProvider`의 인증 세대가 걸러준다.
-  Future<void> _refreshIdentity(UserProvider userProvider, String token) async {
+  /// 프로필 갱신과 홈 데이터 프리페치. 늦게 온 결과가 그 사이의 인증 변화를
+  /// 덮어쓰지 않도록 `UserProvider`의 인증 세대가 걸러준다.
+  ///
+  /// [mayClearSession]은 "실패했을 때 세션을 끊어도 되는가"다. 스플래시가 떠
+  /// 있는 동안(기다리는 분기)에만 true다 — 사용자가 이미 앱을 쓰고 있는데
+  /// 배경 갱신이 아무 안내 없이 게스트로 떨어뜨리면 안 되고, 죽은 토큰은
+  /// 어차피 다음 요청에서 `DioClient`가 401로 처리한다.
+  Future<void> _refreshIdentity(
+    UserProvider userProvider,
+    String token, {
+    required bool mayClearSession,
+  }) async {
     // connect(5s) + receive(12s) + 갱신 재시도(20s) + 여유 = 40s 상한
     // _plainDio 타임아웃 없음으로 인한 무한 대기 방지
     final generation = userProvider.authGeneration;
     try {
       await userProvider
-          .fetchUserFromToken(token)
+          .fetchUserFromToken(token, clearDeadToken: mayClearSession)
           .timeout(const Duration(seconds: 40));
       // 로그인 성공 시 홈 데이터를 미리 캐싱 (최대 2초 대기)
       // → HomeFragment 진입 시 스켈레톤 없이 즉시 표시
@@ -379,6 +389,7 @@ class _MyAppState extends State<MyApp> {
     } catch (e) {
       // 응답 파싱 실패 등 예상치 못한 오류 — 죽은 토큰 정리
       log('Auto login failed (unexpected): $e');
+      if (!mayClearSession) return;
       // 그 사이 사용자가 직접 로그인·로그아웃했다면 건드리면 안 된다.
       if (userProvider.authGeneration != generation) return;
       try {

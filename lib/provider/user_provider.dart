@@ -79,7 +79,13 @@ class UserProvider with ChangeNotifier {
       return;
     }
     if (token == null) {
-      await TokenStore.deleteUserJson();
+      // 여기서 던지면 _initialLoad(=ready)가 에러로 끝나고, 그걸 기다리는
+      // 콜드스타트 경로가 통째로 터진다 — 캐시 정리 실패는 로그만 남긴다.
+      try {
+        await TokenStore.deleteUserJson();
+      } catch (e) {
+        debugPrint('[UserProvider] 유저 캐시 삭제 실패: $e');
+      }
       return;
     }
 

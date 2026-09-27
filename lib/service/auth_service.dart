@@ -47,6 +47,14 @@ class AuthService {
 
   Future<void> resendVerificationEmail() => _emailAuth.resendVerificationEmail();
 
+  /// 현재 Firebase 세션이 [email]의 미인증 계정인지 (가입 재시도 판별용).
+  bool isUnverifiedSessionFor(String email) =>
+      _emailAuth.isUnverifiedSessionFor(email);
+
+  /// 미인증 계정으로 가입을 재시도한 경우의 복구 — 닉네임 갱신 + 인증메일 재발송.
+  Future<void> resumeUnverifiedSignup(String nickname) =>
+      _emailAuth.resumeUnverifiedSignup(nickname);
+
   // ── 나이 확인 게이트 ──
 
   /// 생년월일 제출. 만 14세 미만이면 [AgeRestrictedException]을 던진다.

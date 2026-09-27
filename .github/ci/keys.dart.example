@@ -1,0 +1,5 @@
+// CI 전용 더미 — 시크릿에 접근할 수 없는 워크플로(Dependabot PR 등)에서
+// lib/auth/keys.dart 자리에 복사된다. 실제 키가 아니다. 카카오 SDK 초기화는
+// main.dart에서만 일어나 analyze/test 경로에는 포함되지 않는다.
+const String kakaoNativeAppKey = '00000000000000000000000000000000';
+const String kakaoJsAppKey = '00000000000000000000000000000000';

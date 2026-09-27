@@ -15,6 +15,11 @@ bool _loginFlowActive = false;
 // 전, 같은 배치에서 ensureLoggedIn/openLoginScreen이 중복 호출되는" 경우다.
 void _beginLoginFlow() {
   _loginFlowActive = true;
+  // addPostFrameCallback은 콜백만 큐에 넣고 프레임을 스케줄하지 않는다. 지금까지는
+  // 바로 뒤의 Navigator.push가 프레임을 유발해 우연히 풀렸는데, 그 push가 예외로
+  // 죽으면 콜백이 영구히 대기해 앱 전체의 로그인 게이트가 잠긴다(모든 게이트 동작이
+  // 조용히 무반응). 프레임을 명시적으로 요청해 해제를 보장한다.
+  WidgetsBinding.instance.ensureVisualUpdate();
   WidgetsBinding.instance.addPostFrameCallback((_) => _loginFlowActive = false);
 }
 
@@ -27,6 +32,14 @@ void _beginLoginFlow() {
 Future<bool> openLoginScreen(BuildContext context) async {
   if (_loginFlowActive) return false;
   _beginLoginFlow();
+  return _pushLoginScreen(context);
+}
+
+/// 가드를 거치지 않는 실제 push — 이미 진입 지점에서 가드를 통과한 흐름이 쓴다.
+/// [ensureLoggedIn]이 [openLoginScreen]을 호출하면 사용자가 [로그인]을 누른 뒤에
+/// 가드를 한 번 더 통과해야 해서, 그 사이 다른 게이트 호출이 가드를 다시 세우면
+/// 로그인 화면이 열리지 않고 원래 동작이 조용히 버려진다.
+Future<bool> _pushLoginScreen(BuildContext context) async {
   final loggedIn = await Navigator.of(context, rootNavigator: true).push<bool>(
     MaterialPageRoute(builder: (_) => const LoginScreen()),
   );
@@ -40,7 +53,12 @@ Future<bool> openLoginScreen(BuildContext context) async {
 /// 연다 — 게스트가 무심코 누른 버튼에 맥락 없이 로그인 화면이 덮이는 것을 막는다.
 /// 로그인에 성공하면 `true`를 반환해 호출부가 원래 하려던 동작을 곧바로 이어서
 /// 실행할 수 있게 한다(의도 보존). [취소]하거나 로그인 없이 뒤로 가면 `false`.
-/// 호출부는 `if (!await ensureLoggedIn(context)) return;` 형태로 쓴다.
+/// 호출부는 아래 형태로 쓴다 — 확인 다이얼로그와 로그인 화면을 거치는 동안 몇 초가
+/// 지날 수 있어, 돌아온 뒤 `context`를 쓰기 전에 위젯 생존 확인이 필요하다.
+/// ```dart
+/// if (!await ensureLoggedIn(context)) return;
+/// if (!mounted) return;            // State 밖이면 `if (!context.mounted) return;`
+/// ```
 Future<bool> ensureLoggedIn(BuildContext context) async {
   if (context.read<UserProvider>().currentUserId != null) return true;
   if (_loginFlowActive) return false;
@@ -55,6 +73,10 @@ Future<bool> ensureLoggedIn(BuildContext context) async {
     confirmKey: const Key('login_gate_confirm'),
   );
   if (!confirmed || !context.mounted) return false;
+  // 다이얼로그가 열려 있는 동안 자동 로그인이 끝났을 수 있다(콜드스타트에서 트리는
+  // 갱신 전에 이미 조작 가능하다) — 이미 로그인된 사용자에게 로그인 화면을 띄우는
+  // 대신 원래 하려던 동작을 이어가게 한다.
+  if (context.read<UserProvider>().currentUserId != null) return true;
 
-  return openLoginScreen(context);
+  return _pushLoginScreen(context);
 }

@@ -1,0 +1,4 @@
+// CI 전용 더미 — 시크릿에 접근할 수 없는 워크플로(Dependabot PR 등)에서
+// lib/config.dart 자리에 복사된다. analyze/test는 실제 서버를 타지 않으며,
+// 서비스 테스트는 DioClient.dio.options.baseUrl을 로컬 테스트 서버로 덮어쓴다.
+const String baseUrl = 'http://localhost:8080';

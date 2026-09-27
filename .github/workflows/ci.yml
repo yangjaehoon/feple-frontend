@@ -22,13 +22,14 @@ jobs:
           channel: stable
           cache: true
 
+      # 시크릿에 접근할 수 없는 컨텍스트(Dependabot·포크 PR)에서만 커밋된 더미로
+      # 대체한다. 시크릿을 쓸 수 있는데 값이 비어 있으면 스크립트가 실패시킨다.
       - name: Restore secret files
         env:
           KEYS_DART: ${{ secrets.KEYS_DART }}
           CONFIG_DART: ${{ secrets.CONFIG_DART }}
-        run: |
-          echo "$KEYS_DART" > lib/auth/keys.dart
-          echo "$CONFIG_DART" > lib/config.dart
+          ALLOW_DUMMY: ${{ github.actor == 'dependabot[bot]' || github.event.pull_request.head.repo.fork }}
+        run: bash .github/ci/restore_secret_files.sh
 
       - run: flutter pub get
 
@@ -46,13 +47,14 @@ jobs:
           channel: stable
           cache: true
 
+      # 시크릿에 접근할 수 없는 컨텍스트(Dependabot·포크 PR)에서만 커밋된 더미로
+      # 대체한다. 시크릿을 쓸 수 있는데 값이 비어 있으면 스크립트가 실패시킨다.
       - name: Restore secret files
         env:
           KEYS_DART: ${{ secrets.KEYS_DART }}
           CONFIG_DART: ${{ secrets.CONFIG_DART }}
-        run: |
-          echo "$KEYS_DART" > lib/auth/keys.dart
-          echo "$CONFIG_DART" > lib/config.dart
+          ALLOW_DUMMY: ${{ github.actor == 'dependabot[bot]' || github.event.pull_request.head.repo.fork }}
+        run: bash .github/ci/restore_secret_files.sh
 
       - run: flutter pub get
 

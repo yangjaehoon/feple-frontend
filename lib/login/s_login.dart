@@ -21,6 +21,8 @@ import 'package:feple/common/util/navigation_guard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart'
+    show AuthErrorCause, KakaoAuthException;
 import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:feple/common/theme/custom_theme.dart';
@@ -345,8 +347,11 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     _authError = null;
   }
 
-  /// 소셜 로그인처럼 async gap 뒤라 `context.read`가 불가능한 경로는 미리 캡처한
-  /// [userProvider]를 넘긴다.
+  /// [userProvider]는 호출부가 async gap **전에** 캡처해 넘긴다. 토큰 교환이
+  /// 끝난 시점엔 이 State가 이미 unmount일 수 있는데(교환 중 뒤로가기·엣지
+  /// 스와이프로 이탈), 거기서 로그인을 중단하면 AuthTokenExchanger가 이미 저장한
+  /// JWT만 남아 "토큰은 유효한데 앱은 게스트"인 상태가 콜드스타트까지 이어진다.
+  /// 그래서 mounted 여부와 무관하게 setUser까지 끝낸다.
   Future<void> _completeLogin(UserProvider userProvider, AppUser user) async {
     // 자동완성 컨텍스트를 닫아 OS 비밀번호 관리자가 저장·갱신을 제안할 수 있게
     // 한다 — AutofillGroup만 선언하고 이걸 호출하지 않으면 힌트가 반쪽이 된다.
@@ -367,11 +372,6 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     popRouteWithResult(context, true);
   }
 
-  Future<void> _handleLoginSuccess(AppUser user) async {
-    if (!mounted) return;
-    await _completeLogin(context.read<UserProvider>(), user);
-  }
-
   Future<void> _loginWithEmail() async {
     // 비밀번호 필드의 onSubmitted(키보드 '완료')는 버튼을 감싼 IgnorePointer
     // 밖이고 AppTextField에는 enabled가 없어 로딩 중에도 다시 들어올 수 있다.
@@ -390,11 +390,13 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     }
 
     setState(() { _loadingMethod = _LoginMethod.email; _clearErrors(); });
+    // 서버 왕복 전에 캡처 — 교환 중 화면을 닫아도 로그인을 마무리한다([_completeLogin]).
+    final userProvider = context.read<UserProvider>();
     try {
       final user = await AuthService.instance.loginWithEmail(email, password);
-      await _handleLoginSuccess(user);
-    } on EmailNotVerifiedException {
-      await _openVerifyEmail(email);
+      await _completeLogin(userProvider, user);
+    } on EmailNotVerifiedException catch (e) {
+      await _openVerifyEmail(email, verificationEmailSent: e.verificationEmailSent);
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       final msg = AuthService.instance.firebaseErrorKey(e.code).tr();
@@ -415,10 +417,16 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
   /// 미인증 계정 — 인증 화면으로 보내고, 인증까지 끝난 사용자를 받아오면 로그인을
   /// 마무리한다. 인증 화면이 올라가 있는 동안 이 화면을 로딩 상태로 잡아두지
   /// 않는다(뒤로가기로 돌아오면 버튼이 계속 돌고 있는 것처럼 보인다).
-  Future<void> _openVerifyEmail(String email) async {
+  Future<void> _openVerifyEmail(
+    String email, {
+    required bool verificationEmailSent,
+  }) async {
     if (!mounted) return;
     setState(() => _loadingMethod = null);
-    await _pushAuthFlow(VerifyEmailScreen(email: email));
+    await _pushAuthFlow(VerifyEmailScreen(
+      email: email,
+      verificationEmailSent: verificationEmailSent,
+    ));
   }
 
   Future<void> _openSignup() =>
@@ -437,6 +445,9 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
   /// 로그인을 마무리한다 — 스택 정리를 중간 화면에 맡기지 않는 이유는
   /// [AuthFlowResult] 주석 참고.
   Future<void> _pushAuthFlow(Widget screen) async {
+    // push 전에 캡처 — 인증 화면에서 돌아온 뒤엔 이 State가 살아 있지 않을 수
+    // 있다([_completeLogin]).
+    final userProvider = context.read<UserProvider>();
     final result = await Navigator.push<AuthFlowResult>(
       context,
       SlideRoute<AuthFlowResult>(builder: (_) => screen),
@@ -444,7 +455,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     final user = result?.user;
     if (user == null) return;
     try {
-      await _handleLoginSuccess(user);
+      await _completeLogin(userProvider, user);
     } catch (e) {
       // 이 호출은 버튼 콜백에서 fire-and-forget으로 시작돼 예외를 받아줄 곳이
       // 없다 — 소셜 경로(_runSocialLogin)와 같은 문구로 화면에 표시한다.
@@ -509,10 +520,16 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
         e.code == GoogleSignInExceptionCode.canceled,
   );
 
+  /// 카카오톡 앱/커스텀탭을 그냥 닫으면 `PlatformException(CANCELED)`, 웹 로그인
+  /// 동의 화면에서 [취소]를 누르면 리다이렉트에 `error=access_denied`가 실려
+  /// `KakaoAuthException`이 온다 — 둘 다 사용자가 그만둔 것이므로 에러 문구를
+  /// 띄우지 않는다.
   Future<void> signInWithKakao() => _runSocialLogin(
     method: _LoginMethod.kakao,
     login: AuthService.instance.loginWithKakao,
-    isCanceled: (e) => e is PlatformException && e.code == 'CANCELED',
+    isCanceled: (e) =>
+        (e is PlatformException && e.code == 'CANCELED') ||
+        (e is KakaoAuthException && e.error == AuthErrorCause.accessDenied),
   );
 }
 

@@ -218,30 +218,45 @@ class _SignupScreenState extends State<SignupScreen> {
   /// 인증 화면으로 보내면 "메일을 보냈습니다"와 60초 재전송 쿨다운을 띄우게 되므로
   /// 먼저 재발송한다(닉네임을 바꿔 재시도했을 수 있어 displayName도 함께 갱신).
   ///
+  /// 재발송이 실패해도(`too-many-requests` 등) 가입 폼에 묶어두지 않는다 —
+  /// 인증 완료 폴링과 "인증 완료, 계속하기" 버튼이 인증 화면에만 있어서,
+  /// 여기서 멈추면 메일함의 링크로 인증을 마쳐도 앱에서 이어갈 길이 없다.
+  ///
   /// 자동완성 컨텍스트는 닫지 않는다 — 계정 비밀번호는 기존 것이 유지되므로 방금
   /// 입력한 값을 저장하면 실제 비밀번호와 어긋난다. 취소 시 계정도 지우지 않는다 —
   /// 이 세션이 이번 가입에서 만들어진 것인지 알 수 없다(로그인 화면에서 미인증
   /// 계정으로 로그인해도 세션이 유지된다).
   Future<void> _resumeUnverifiedSignup(String email, String nickname) async {
+    var verificationEmailSent = true;
     try {
       await AuthService.instance.resumeUnverifiedSignup(nickname);
     } catch (e) {
       debugPrint('[Signup] 미인증 계정 인증메일 재발송 실패: $e');
-      if (mounted) setState(() => _generalError = 'unknown_error'.tr());
-      return;
+      verificationEmailSent = false;
     }
     if (!mounted) return;
-    await _pushVerifyEmail(email, deleteOnCancel: false);
+    await _pushVerifyEmail(
+      email,
+      deleteOnCancel: false,
+      verificationEmailSent: verificationEmailSent,
+    );
   }
 
   /// 인증 화면을 띄우고, 결과를 받으면 LoginScreen까지 그대로 넘기며 함께 닫는다.
   /// 뒤로가기(null)면 미인증 계정을 그대로 둔 것이므로 가입 폼을 유지한다.
-  Future<void> _pushVerifyEmail(String email, {required bool deleteOnCancel}) async {
+  Future<void> _pushVerifyEmail(
+    String email, {
+    required bool deleteOnCancel,
+    bool verificationEmailSent = true,
+  }) async {
     final result = await Navigator.push<AuthFlowResult>(
       context,
       SlideRoute<AuthFlowResult>(
-        builder: (_) =>
-            VerifyEmailScreen(email: email, deleteOnCancel: deleteOnCancel),
+        builder: (_) => VerifyEmailScreen(
+          email: email,
+          deleteOnCancel: deleteOnCancel,
+          verificationEmailSent: verificationEmailSent,
+        ),
       ),
     );
     if (result != null && mounted) popRouteWithResult(context, result);

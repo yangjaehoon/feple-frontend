@@ -23,14 +23,32 @@ class FirebaseEmailLoginProvider {
 
     // 이메일 인증 확인 — signOut 없이 세션 유지, VerifyEmailPage에서 처리
     if (!user.emailVerified) {
-      await user.sendEmailVerification();
-      throw EmailNotVerifiedException();
+      throw EmailNotVerifiedException(
+        verificationEmailSent: await _trySendVerificationEmail(user),
+      );
     }
 
     // force: true — 이메일 인증 후 세션이 재사용될 때 캐시된 토큰의
     // email_verified 클레임이 false일 수 있으므로 항상 최신 토큰 요청
     final idToken = await requireFirebaseIdToken(user, forceRefresh: true);
     return _tokenExchanger.exchangeFirebaseToken(idToken);
+  }
+
+  /// 미인증 계정의 인증메일 재발송 — 실패해도 던지지 않고 성공 여부만 돌려준다.
+  ///
+  /// 발송 실패(예: `too-many-requests`)를 그대로 올리면 로그인 화면이 그 에러만
+  /// 띄우고 끝나, 인증 완료 폴링과 "인증 완료, 계속하기" 버튼이 있는
+  /// `VerifyEmailScreen`에 들어갈 수 없다 — 메일함의 링크로 인증을 마쳐도 앱에서
+  /// 이어갈 경로가 사라진다. 그래서 흐름은 그대로 두고, 발송 실패 사실만
+  /// [EmailNotVerifiedException]에 실어 화면이 재발송을 안내하게 한다.
+  Future<bool> _trySendVerificationEmail(User user) async {
+    try {
+      await user.sendEmailVerification();
+      return true;
+    } catch (e) {
+      debugPrint('[Auth] 미인증 계정 인증메일 발송 실패: $e');
+      return false;
+    }
   }
 
   Future<void> register(String email, String password, String nickname) async {
@@ -107,9 +125,15 @@ class FirebaseEmailLoginProvider {
     await user.sendEmailVerification();
   }
 
+  /// 세션이 없으면 던진다 — 조용히 성공으로 반환하면 호출 화면이 "보냈습니다"로
+  /// 문구를 바꾸고 재전송 쿨다운까지 시작해, 실제로는 아무 메일도 나가지 않은 것을
+  /// 사용자가 알 수 없다.
   Future<void> resendVerificationEmail() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user != null) await user.sendEmailVerification();
+    if (user == null) {
+      throw AuthExchangeException('no session to resend verification email');
+    }
+    await user.sendEmailVerification();
   }
 
   Future<void> cancelUnverifiedSignup() async {

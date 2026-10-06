@@ -26,6 +26,28 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     });
 
+    testWidgets('verificationEmailSent=false면 발송 실패 문구와 재발송 안내가 보인다', (tester) async {
+      await pumpLoginScreen(
+        tester,
+        const VerifyEmailScreen(
+          email: 'user@example.com',
+          verificationEmailSent: false,
+        ),
+      );
+
+      expect(
+        find.text('verify_email_send_failed_to'.tr(args: ['user@example.com'])),
+        findsOneWidget,
+      );
+      expect(find.text('verify_email_send_failed_hint'.tr()), findsOneWidget);
+      expect(
+        find.text('verify_email_sent_to'.tr(args: ['user@example.com'])),
+        findsNothing,
+      );
+
+      await tester.pumpWidget(const SizedBox());
+    });
+
     testWidgets('deleteOnCancel=true면 이메일 변경 링크가 함께 보인다', (tester) async {
       await pumpLoginScreen(
         tester,

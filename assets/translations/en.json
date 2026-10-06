@@ -255,6 +255,8 @@
   "verification_email_resent": "Verification email has been resent.",
   "verify_email_title": "Check your email",
   "verify_email_sent_to": "A verification email has been sent to\n{}.",
+  "verify_email_send_failed_to": "We couldn't send a verification email to\n{}.",
+  "verify_email_send_failed_hint": "Please tap \"Resend verification email\" below.\nIf you already verified, tap \"I've verified, continue\".",
   "verify_email_instruction": "Click the verification link in the email,\nthen tap the button below.",
   "verify_email_done_btn": "I've verified, continue",
   "verify_email_resend": "Resend verification email",

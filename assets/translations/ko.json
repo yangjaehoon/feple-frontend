@@ -255,6 +255,8 @@
   "verification_email_resent": "인증 이메일을 재발송했습니다.",
   "verify_email_title": "이메일을 확인해주세요",
   "verify_email_sent_to": "{}로\n인증 이메일을 보냈습니다.",
+  "verify_email_send_failed_to": "{}로\n인증 이메일을 보내지 못했습니다.",
+  "verify_email_send_failed_hint": "아래 '인증 이메일 재발송'을 눌러주세요.\n이미 인증을 마쳤다면 '인증 완료, 계속하기'를 누르면 됩니다.",
   "verify_email_instruction": "이메일의 인증 링크를 클릭한 후\n아래 버튼을 눌러주세요.",
   "verify_email_done_btn": "인증 완료, 계속하기",
   "verify_email_resend": "인증 이메일 재발송",

@@ -17,10 +17,16 @@ class VerifyEmailScreen extends StatefulWidget {
   /// false: 기존 미인증 계정 — 취소 시 signOut만
   final bool deleteOnCancel;
 
+  /// 이 화면에 오기 전에 인증 메일이 실제로 발송됐는지. false면 "보냈습니다"
+  /// 대신 발송 실패를 알리고 재발송을 안내한다 — 발송에 실패해도 이 화면까지는
+  /// 와야 쿨다운 뒤 재발송·인증 완료 확인을 할 수 있다.
+  final bool verificationEmailSent;
+
   const VerifyEmailScreen({
     super.key,
     required this.email,
     this.deleteOnCancel = false,
+    this.verificationEmailSent = true,
   });
 
   @override
@@ -44,6 +50,8 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   bool _isCanceling = false;
   bool _isChangingEmail = false;
   bool _isResending = false;
+  /// 재발송이 성공하면 뒤집힌다 — 그때부터는 "보냈습니다" 문구가 맞다.
+  late bool _emailSent;
   // 폴링과 수동 "인증 완료 확인" 탭이 동시에 completeVerifiedLogin()을 호출하면
   // /auth/firebase 토큰 교환이 두 번 일어남 — 백엔드는 유저당 리프레시 토큰을
   // 1개만 유지하므로 두 응답 중 나중에 TokenStore에 저장되는 쪽이 서버가 이미
@@ -58,7 +66,14 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   @override
   void initState() {
     super.initState();
-    _startResendCooldown();
+    _emailSent = widget.verificationEmailSent;
+    if (_emailSent) {
+      _startResendCooldown();
+    } else {
+      // 나간 메일이 없으니 쿨다운으로 잠그지 않는다 — 안내가 가리키는 재발송
+      // 버튼이 60초간 비활성이면 복구할 방법이 없다.
+      _errorMessage = 'verify_email_send_failed_hint'.tr();
+    }
     _startPolling();
   }
 
@@ -164,6 +179,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
       await AuthService.instance.resendVerificationEmail();
       if (!mounted) return;
       _startResendCooldown();
+      setState(() { _emailSent = true; _errorMessage = null; });
       context.showSuccessSnackbar('verification_email_resent'.tr());
     } catch (e) {
       debugPrint('[VerifyEmail] 재발송 실패: $e');
@@ -279,23 +295,28 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
         AuthTitleText('verify_email_title'.tr(), textAlign: TextAlign.center),
         SizedBox(height: rs.h(10)),
         _buildEmailHighlighted(colors),
-        SizedBox(height: rs.h(6)),
-        Text(
-          'verify_email_instruction'.tr(),
-          style: TextStyle(
-            fontSize: AppDimens.fontSizeSm,
-            color: colors.textSecondary,
-            height: 1.6,
+        // 발송 실패 상태에서는 "메일의 링크를 클릭하라"는 안내가 거짓이 된다 —
+        // 그때 할 일은 _errorMessage의 재발송 안내가 담당한다.
+        if (_emailSent) ...[
+          SizedBox(height: rs.h(6)),
+          Text(
+            'verify_email_instruction'.tr(),
+            style: TextStyle(
+              fontSize: AppDimens.fontSizeSm,
+              color: colors.textSecondary,
+              height: 1.6,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
-        ),
+        ],
       ],
     );
   }
 
   // 이메일 주소를 bold + textTitle 색상으로 강조
   Widget _buildEmailHighlighted(AbstractThemeColors colors) {
-    final translated = 'verify_email_sent_to'.tr(args: [widget.email]);
+    final translated = (_emailSent ? 'verify_email_sent_to' : 'verify_email_send_failed_to')
+        .tr(args: [widget.email]);
     final emailIdx = translated.indexOf(widget.email);
     final baseStyle = TextStyle(
       fontSize: AppDimens.fontSizeMd,

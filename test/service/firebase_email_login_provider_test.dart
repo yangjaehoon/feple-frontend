@@ -1,3 +1,4 @@
+import 'package:feple/common/exception/auth_exchange_exception.dart';
 import 'package:feple/common/exception/email_not_verified_exception.dart';
 import 'package:feple/model/user_model.dart' as app;
 import 'package:feple/service/auth/auth_token_exchanger.dart';
@@ -59,7 +60,32 @@ void main() {
 
       await expectLater(
         provider.login('test@example.com', 'password'),
-        throwsA(isA<EmailNotVerifiedException>()),
+        throwsA(isA<EmailNotVerifiedException>().having(
+          (e) => e.verificationEmailSent,
+          'verificationEmailSent',
+          isTrue,
+        )),
+      );
+      expect(user.sendEmailVerificationCallCount, 1);
+      verifyNever(() => mockExchanger.exchangeFirebaseToken(any()));
+    });
+
+    // 발송 실패를 그대로 올리면 로그인 화면이 그 에러만 띄우고 끝나 인증 화면에
+    // 들어갈 수 없다 — 흐름은 유지하고 발송 실패 사실만 예외에 실어 보낸다.
+    test('인증메일 발송이 실패해도 발송 여부만 알리고 같은 예외를 던진다', () async {
+      final user = FakeUserPlatform(isEmailVerified: false)
+        ..sendEmailVerificationThrows = true;
+      fakeAuth.onSignInWithEmailAndPassword = (email, password) async {
+        return FakeUserCredentialPlatform(user);
+      };
+
+      await expectLater(
+        provider.login('test@example.com', 'password'),
+        throwsA(isA<EmailNotVerifiedException>().having(
+          (e) => e.verificationEmailSent,
+          'verificationEmailSent',
+          isFalse,
+        )),
       );
       expect(user.sendEmailVerificationCallCount, 1);
       verifyNever(() => mockExchanger.exchangeFirebaseToken(any()));
@@ -109,10 +135,14 @@ void main() {
   });
 
   group('FirebaseEmailLoginProvider.resendVerificationEmail', () {
-    test('로그인 상태가 아니면 아무것도 하지 않는다', () async {
+    // 조용히 성공하면 인증 화면이 "보냈습니다"로 바뀌고 쿨다운까지 시작된다.
+    test('로그인 상태가 아니면 예외를 던진다', () async {
       fakeAuth.currentUser = null;
 
-      await expectLater(provider.resendVerificationEmail(), completes);
+      await expectLater(
+        provider.resendVerificationEmail(),
+        throwsA(isA<AuthExchangeException>()),
+      );
     });
 
     test('로그인 상태면 인증메일을 재전송한다', () async {

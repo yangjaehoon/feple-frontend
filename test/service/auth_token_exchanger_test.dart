@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:feple/common/exception/age_restricted_exception.dart';
+import 'package:feple/common/exception/user_banned_exception.dart';
 import 'package:feple/network/dio_client.dart';
 import 'package:feple/service/auth/auth_token_exchanger.dart';
 import 'package:flutter/services.dart';
@@ -64,6 +65,24 @@ void main() {
         exchanger.exchangeFirebaseToken('restricted-token'),
         throwsA(isA<AgeRestrictedException>()),
       );
+    });
+
+    test('403 USER_BANNED면 UserBannedException을 던지고 정지 다이얼로그 콜백은 부르지 않는다', () async {
+      var bannedCalls = 0;
+      DioClient.onUserBanned = () async => bannedCalls++;
+      addTearDown(() => DioClient.onUserBanned = null);
+      server.enqueue(
+        httpCode: 403,
+        body: '{"code":"USER_BANNED","message":"banned"}',
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      await expectLater(
+        exchanger.exchangeFirebaseToken('banned-token'),
+        throwsA(isA<UserBannedException>()),
+      );
+      // 로그인 화면이 문구로 안내하므로 인터셉터 다이얼로그와 겹치지 않아야 한다.
+      expect(bannedCalls, 0);
     });
   });
 

@@ -407,6 +407,8 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
       }
     } on AgeRestrictedException {
       _showAgeRestrictedMessage();
+    } on UserBannedException {
+      _showBannedMessage();
     } catch (e) {
       _showLoginFailure(_LoginMethod.email, e);
     } finally {
@@ -469,6 +471,14 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     if (mounted) setState(() => _authError = 'age_gate_restricted_message'.tr());
   }
 
+  /// 정지된 계정의 로그인 시도 — 일반 실패와 구분해 정지 사실을 알린다.
+  /// 서버 교환만 거부됐을 뿐 Firebase·Google·카카오 SDK 세션은 살아 있으므로
+  /// 함께 정리한다(남겨두면 다음 시도가 캐시된 계정을 조용히 재사용한다).
+  void _showBannedMessage() {
+    unawaited(AuthService.instance.signOut());
+    if (mounted) setState(() => _authError = 'account_banned_message'.tr());
+  }
+
   void _showLoginFailure(_LoginMethod method, Object error) {
     debugPrint('[Auth] ${method.name} 로그인 실패: $error');
     if (mounted) setState(() => _authError = 'login_failed'.tr());
@@ -493,6 +503,8 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
       await _completeLogin(userProvider, user);
     } on AgeRestrictedException {
       _showAgeRestrictedMessage();
+    } on UserBannedException {
+      _showBannedMessage();
     } catch (e) {
       if (isCanceled(e)) {
         debugPrint('[Auth] ${method.name} 로그인 취소');

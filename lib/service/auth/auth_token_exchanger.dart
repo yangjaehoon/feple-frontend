@@ -4,8 +4,10 @@ import 'package:flutter/foundation.dart';
 import '../../auth/token_store.dart';
 import '../../common/exception/age_restricted_exception.dart';
 import '../../common/exception/auth_exchange_exception.dart';
+import '../../common/exception/user_banned_exception.dart';
 import '../../common/util/response_parsing.dart';
 import '../../model/user_model.dart' as app;
+import '../../network/api_error_code.dart';
 import '../../network/dio_client.dart';
 
 /// Firebase/카카오 등 외부 인증 토큰을 앱 자체 JWT로 교환하고 저장하는 로직.
@@ -16,7 +18,11 @@ class AuthTokenExchanger {
     if (nickname != null) body['nickname'] = nickname;
     return _exchange(
       providerLabel: 'Firebase',
-      request: () => DioClient.dio.post('/auth/firebase', data: body),
+      request: () => DioClient.dio.post(
+        '/auth/firebase',
+        data: body,
+        options: _handlesUserBan(),
+      ),
     );
   }
 
@@ -25,10 +31,17 @@ class AuthTokenExchanger {
       providerLabel: '카카오',
       request: () => DioClient.dio.post(
         '/auth/kakao',
-        options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+        options: _handlesUserBan(
+          headers: {'Authorization': 'Bearer $accessToken'},
+        ),
       ),
     );
   }
+
+  /// 로그인 교환 요청 옵션 — 정지 응답은 [UserBannedException]으로 바꿔 로그인
+  /// 화면이 안내하므로, 인터셉터의 전역 정지 다이얼로그는 끈다.
+  Options _handlesUserBan({Map<String, dynamic>? headers}) =>
+      Options(headers: headers, extra: {handlesUserBanExtraKey: true});
 
   /// 인증 제공자로 토큰을 교환하고 응답을 파싱. 실패 시 로그 남기고 공통 예외로 통일.
   /// user 파싱이 토큰 저장보다 먼저 실행되어야 한다 — 응답에 accessToken은 있지만
@@ -66,10 +79,13 @@ class AuthTokenExchanger {
     if (respBody is Map<String, dynamic>) {
       debugPrint('[Auth] $providerLabel 서버 메시지: ${respBody['message']}');
     }
-    if (e.response?.statusCode == 403 &&
-        respBody is Map &&
-        respBody['code'] == 'AGE_RESTRICTED') {
-      return AgeRestrictedException();
+    if (e.response?.statusCode == 403) {
+      if (ApiErrorCode.matches(respBody, ApiErrorCode.ageRestricted)) {
+        return AgeRestrictedException();
+      }
+      if (ApiErrorCode.matches(respBody, ApiErrorCode.userBanned)) {
+        return UserBannedException();
+      }
     }
     return AuthExchangeException(
       '$providerLabel: server exchange failed (${e.response?.statusCode ?? e.type.name})',
@@ -94,8 +110,7 @@ class AuthTokenExchanger {
     } on DioException catch (e) {
       final data = e.response?.data;
       if (e.response?.statusCode == 403 &&
-          data is Map &&
-          data['code'] == 'AGE_RESTRICTED') {
+          ApiErrorCode.matches(data, ApiErrorCode.ageRestricted)) {
         throw AgeRestrictedException();
       }
       debugPrint(
@@ -119,6 +134,8 @@ class AuthTokenExchanger {
     await TokenStore.saveAccessToken(json['accessToken'] as String);
     final refreshToken = json['refreshToken'] as String?;
     if (refreshToken != null) await TokenStore.saveRefreshToken(refreshToken);
+    // 새 세션 시작 — 이전 세션의 만료 정리 가드가 남아 있으면 이 세션의 토큰 갱신이 막힌다.
+    DioClient.markSessionStarted();
   }
 
   app.AppUser _parseUser(Map<String, dynamic> json) {

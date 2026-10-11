@@ -53,6 +53,7 @@ void main() {
     ApiCacheStore.clearForTesting();
     DioClient.resetForTesting();
     DioClient.onSessionExpired = null;
+    DioClient.onUserBanned = null;
     secureStore
       ..clear()
       ..['accessToken'] = 'old-access'
@@ -112,5 +113,89 @@ void main() {
     expect(res.data['ok'], true);
     expect(secureStore['accessToken'], 'new-access');
     expect(secureStore['refreshToken'], 'new-refresh');
+  });
+
+  test('갱신 요청이 429면 세션을 유지한다 (IP 단위 요청 한도는 토큰 만료가 아님)', () async {
+    server.enqueue(httpCode: 401);
+    server.enqueue(httpCode: 429); // /auth/refresh — 요청 한도 초과
+    var sessionExpiredCalls = 0;
+    DioClient.onSessionExpired = () async => sessionExpiredCalls++;
+
+    await expectLater(
+      DioClient.dio.get('/protected-d'),
+      throwsA(isA<DioException>()),
+    );
+
+    expect(sessionExpiredCalls, 0);
+    expect(secureStore['refreshToken'], 'valid-refresh');
+  });
+
+  test('세션 만료 뒤 새 세션이 시작되면 다시 토큰을 갱신한다', () async {
+    // 1) 첫 세션 만료
+    server.enqueue(httpCode: 401);
+    server.enqueue(httpCode: 401); // /auth/refresh — 거부
+    DioClient.onSessionExpired = () async {};
+    await expectLater(
+      DioClient.dio.get('/protected-e'),
+      throwsA(isA<DioException>()),
+    );
+
+    // 2) 재로그인 — 새 토큰 저장 + 가드 해제
+    secureStore
+      ..['accessToken'] = 'relogin-access'
+      ..['refreshToken'] = 'relogin-refresh';
+    DioClient.markSessionStarted();
+
+    // 3) 새 세션의 액세스 토큰 만료 → 갱신 후 재시도돼야 한다
+    server.enqueue(httpCode: 401);
+    server.enqueue(
+      body: '{"accessToken":"new-access","refreshToken":"new-refresh"}',
+      headers: jsonHeaders(),
+    );
+    server.enqueue(body: '{"ok":true}', headers: jsonHeaders());
+
+    final res = await DioClient.dio.get('/protected-f');
+
+    expect(res.data['ok'], true);
+    expect(secureStore['accessToken'], 'new-access');
+  });
+
+  test('403 USER_BANNED면 onUserBanned를 호출한다', () async {
+    server.enqueue(
+      httpCode: 403,
+      body: '{"code":"USER_BANNED","error":"Forbidden"}',
+      headers: jsonHeaders(),
+    );
+    var bannedCalls = 0;
+    DioClient.onUserBanned = () async => bannedCalls++;
+
+    await expectLater(
+      DioClient.dio.get('/protected-g'),
+      throwsA(isA<DioException>()),
+    );
+
+    expect(bannedCalls, 1);
+  });
+
+  test('갱신 요청이 403 USER_BANNED면 만료 대신 정지 안내로 끝낸다', () async {
+    server.enqueue(httpCode: 401);
+    server.enqueue(
+      httpCode: 403,
+      body: '{"code":"USER_BANNED"}',
+      headers: jsonHeaders(),
+    ); // /auth/refresh — 정지 계정
+    var sessionExpiredCalls = 0;
+    var bannedCalls = 0;
+    DioClient.onSessionExpired = () async => sessionExpiredCalls++;
+    DioClient.onUserBanned = () async => bannedCalls++;
+
+    await expectLater(
+      DioClient.dio.get('/protected-h'),
+      throwsA(isA<DioException>()),
+    );
+
+    expect(bannedCalls, 1);
+    expect(sessionExpiredCalls, 0);
+    expect(secureStore['refreshToken'], isNull);
   });
 }

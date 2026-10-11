@@ -5,6 +5,7 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
 export 'package:feple/common/exception/email_not_verified_exception.dart';
 export 'package:feple/common/exception/age_restricted_exception.dart';
+export 'package:feple/common/exception/user_banned_exception.dart';
 
 import '../model/user_model.dart' as app;
 import 'auth/apple_login_provider.dart';

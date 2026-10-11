@@ -7,6 +7,7 @@ import '../common/util/request_scope.dart';
 import '../common/util/response_parsing.dart';
 import '../config.dart' as app_config;
 import 'api_cache_store.dart';
+import 'api_error_code.dart';
 import 'performance_interceptor.dart';
 
 extension ResponseListExt on Response {
@@ -26,15 +27,25 @@ bool _isNetworkError(DioException e) {
           e.type == DioExceptionType.unknown);
 }
 
-/// refresh 요청 실패가 "일시적"인지(타임아웃·연결오류·서버 5xx) 판단한다.
-/// 일시적 실패는 refresh 토큰이 여전히 유효할 수 있으므로 세션을 유지한다.
+const _httpTooManyRequests = 429;
+
+/// refresh 요청 실패가 "일시적"인지(타임아웃·연결오류·요청 한도 초과·서버 5xx)
+/// 판단한다. 일시적 실패는 refresh 토큰이 여전히 유효할 수 있으므로 세션을 유지한다.
+/// 429는 토큰과 무관한 IP 단위 제한이다 — 공유 IP(CGNAT)에 사람이 몰리는 현장에서
+/// 만료로 취급하면 멀쩡한 사용자가 강제 로그아웃된다.
 bool _isTransientRefreshFailure(DioException e) {
   if (_isNetworkError(e)) return true;
   final status = e.response?.statusCode;
-  return status != null && status >= 500;
+  return status != null &&
+      (status == _httpTooManyRequests || status >= 500);
 }
 
-enum _RefreshResultKind { refreshed, transientFailure, sessionExpired }
+/// 서버가 계정 정지를 알리는 응답인지. 보호된 엔드포인트(JwtAuthenticationFilter)와
+/// 로그인·갱신(UserBannedException) 모두 `code: USER_BANNED`로 내려온다.
+bool _isUserBannedResponse(Object? data) =>
+    ApiErrorCode.matches(data, ApiErrorCode.userBanned);
+
+enum _RefreshResultKind { refreshed, transientFailure, sessionExpired, userBanned }
 
 /// 401 → 토큰 갱신 시도의 결과. 대기 중이던 다른 401 요청들에도 이 값이 전달된다.
 class _RefreshResult {
@@ -45,6 +56,9 @@ class _RefreshResult {
         token = null;
   const _RefreshResult.sessionExpired()
       : kind = _RefreshResultKind.sessionExpired,
+        token = null;
+  const _RefreshResult.userBanned()
+      : kind = _RefreshResultKind.userBanned,
         token = null;
 
   final _RefreshResultKind kind;
@@ -76,7 +90,7 @@ class DioClient {
   /// 다음 로그인 시도(예: 자동 로그인 직후 사용자가 바로 재로그인)와 경쟁하지 않음
   static Future<void> Function()? onSessionExpired;
 
-  /// 계정 정지(403 banned) 시 호출 → 안내 다이얼로그 표시 후 로그아웃.
+  /// 계정 정지(403 USER_BANNED) 시 호출 → 안내 다이얼로그 표시 후 로그아웃.
   /// [onSessionExpired]와 마찬가지로 비동기 정리(다이얼로그 + 로그아웃)를
   /// 포함하므로 완료를 기다릴 수 있도록 Future 반환 타입으로 통일.
   static Future<void> Function()? onUserBanned;
@@ -99,9 +113,15 @@ class DioClient {
 
   // 리프레시 토큰까지 무효일 때의 세션 정리(토큰 삭제 + 로그인 화면 이동)를
   // 동시 다발 401에 대해 한 번만 수행하기 위한 in-flight 가드.
-  // 이후 토큰 갱신이 다시 성공하면 null로 되돌려, 재로그인 후의 세션 만료도
-  // 정상 처리되게 한다.
+  // 가드가 걸려 있는 동안엔 갱신 자체를 건너뛰므로, 새 세션이 시작될 때
+  // [markSessionStarted]로 반드시 풀어야 한다 — 안 풀면 재로그인한 세션의
+  // 액세스 토큰이 만료된 뒤 401이 갱신 없이 그대로 새어 나간다.
   static Future<void>? _sessionExpiryInFlight;
+
+  /// 로그인으로 새 토큰을 저장했을 때 호출 — 이전 세션의 만료 정리 가드를 해제한다.
+  static void markSessionStarted() {
+    _sessionExpiryInFlight = null;
+  }
 
   @visibleForTesting
   static void resetForTesting({String? plainDioBaseUrl}) {
@@ -115,10 +135,13 @@ class DioClient {
 
   /// 리프레시 토큰까지 만료됐을 때의 정리. [_sessionExpiryInFlight]로 감싸
   /// 동시 요청들이 이 정리를 중복 실행하지 않도록 한다.
-  static Future<void> _handleSessionExpiry() async {
+  ///
+  /// [banned]면 정지 안내([onUserBanned], 로그아웃 포함)로 끝낸다 — 갱신 단계에서
+  /// 정지가 드러난 경우 아무 설명 없이 로그인 화면으로 떨어뜨리지 않기 위해.
+  static Future<void> _handleSessionExpiry({bool banned = false}) async {
     try {
       await TokenStore.clear();
-      await onSessionExpired?.call();
+      await (banned ? onUserBanned : onSessionExpired)?.call();
     } catch (e) {
       // 정리 실패 시 다음 401에서 재시도할 수 있도록 가드를 해제한다.
       _sessionExpiryInFlight = null;
@@ -230,9 +253,14 @@ class _AuthAndSwrInterceptor extends Interceptor {
   void onError(DioException error, ErrorInterceptorHandler handler) async {
     if (error.response?.statusCode == 403) {
       final data = error.response?.data;
-      if (data is Map && data['error'] == 'banned') {
-        await DioClient.onUserBanned?.call();
-      } else if (data is Map && data['code'] == 'AGE_VERIFICATION_REQUIRED') {
+      if (_isUserBannedResponse(data)) {
+        // 호출부가 직접 안내하는 요청(로그인 토큰 교환)이면 다이얼로그를 띄우지
+        // 않는다 — 같은 안내가 두 번 나온다.
+        if (error.requestOptions.extra[handlesUserBanExtraKey] != true) {
+          await DioClient.onUserBanned?.call();
+        }
+      } else if (ApiErrorCode.matches(
+          data, ApiErrorCode.ageVerificationRequired)) {
         await DioClient.onAgeVerificationRequired?.call();
       }
       return handler.next(error);
@@ -276,10 +304,13 @@ class _AuthAndSwrInterceptor extends Interceptor {
           ? const _RefreshResult.sessionExpired()
           : _RefreshResult.refreshed(token);
     } on DioException catch (e) {
-      // 타임아웃·연결오류·5xx는 세션 유지, 그 외(401/400 등)는 만료로 간주
+      // 타임아웃·연결오류·429·5xx는 세션 유지, 정지는 안내 후 로그아웃,
+      // 그 외(401/400 등)는 만료로 간주
       result = _isTransientRefreshFailure(e)
           ? const _RefreshResult.transientFailure()
-          : const _RefreshResult.sessionExpired();
+          : _isUserBannedResponse(e.response?.data)
+              ? const _RefreshResult.userBanned()
+              : const _RefreshResult.sessionExpired();
     } catch (_) {
       // accessToken 누락 등 예상 못 한 응답 형태 — 만료로 간주
       result = const _RefreshResult.sessionExpired();
@@ -314,6 +345,10 @@ class _AuthAndSwrInterceptor extends Interceptor {
       case _RefreshResultKind.sessionExpired:
         await (DioClient._sessionExpiryInFlight ??=
             DioClient._handleSessionExpiry());
+        handler.next(error);
+      case _RefreshResultKind.userBanned:
+        await (DioClient._sessionExpiryInFlight ??=
+            DioClient._handleSessionExpiry(banned: true));
         handler.next(error);
     }
   }

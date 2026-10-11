@@ -43,9 +43,7 @@ class GoogleLoginProvider {
     final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
     final firebaseIdToken = await requireFirebaseIdToken(userCredential.user);
 
-    return _tokenExchanger.exchangeFirebaseToken(
-      firebaseIdToken,
-      nickname: account.displayName,
-    );
+    // Google 이름은 Firebase가 displayName으로 옮겨 ID 토큰의 name 클레임에 실린다.
+    return _tokenExchanger.exchangeFirebaseToken(firebaseIdToken);
   }
 }

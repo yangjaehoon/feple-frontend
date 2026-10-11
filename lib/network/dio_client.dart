@@ -118,6 +118,22 @@ class DioClient {
   // 액세스 토큰이 만료된 뒤 401이 갱신 없이 그대로 새어 나간다.
   static Future<void>? _sessionExpiryInFlight;
 
+  /// 갱신이 429를 받은 뒤 다시 시도하지 않고 기다리는 시간. 서버 갱신 버킷
+  /// (TokenRefreshRateLimiter, 10분 30회)이 토큰 하나를 다시 채우는 간격과 맞춘다.
+  @visibleForTesting
+  static Duration refreshRateLimitCooldown = const Duration(seconds: 20);
+
+  // 갱신이 429를 받으면 [refreshRateLimitCooldown] 동안 갱신을 다시 시도하지 않는다.
+  // 요청 한도는 IP 단위라, 401마다 곧장 다시 갱신하면 이미 찬 버킷을 계속 두드려 한도가
+  // 풀리지 않는다. 세션과 무관한 제한이라 재로그인([markSessionStarted])으로 풀지 않는다.
+  // 기기 시계 변경에 흔들리지 않도록 경과 시간(Stopwatch)으로 잰다.
+  static Stopwatch? _sinceRefreshRateLimited;
+
+  static bool get _isRefreshCoolingDown {
+    final elapsed = _sinceRefreshRateLimited?.elapsed;
+    return elapsed != null && elapsed < refreshRateLimitCooldown;
+  }
+
   /// 로그인으로 새 토큰을 저장했을 때 호출 — 이전 세션의 만료 정리 가드를 해제한다.
   static void markSessionStarted() {
     _sessionExpiryInFlight = null;
@@ -128,6 +144,8 @@ class DioClient {
     _isRefreshing = false;
     _refreshWaiters.clear();
     _sessionExpiryInFlight = null;
+    _sinceRefreshRateLimited = null;
+    refreshRateLimitCooldown = const Duration(seconds: 20);
     if (plainDioBaseUrl != null) {
       _plainDio.options.baseUrl = plainDioBaseUrl;
     }
@@ -288,6 +306,11 @@ class _AuthAndSwrInterceptor extends Interceptor {
       return handler.next(error);
     }
 
+    // 요청 한도 초과 직후엔 갱신을 건너뛰고 세션을 유지한 채 원래 401을 전파한다.
+    if (DioClient._isRefreshCoolingDown) {
+      return handler.next(error);
+    }
+
     // refresh 진행 중이면 완료될 때까지 대기 후 같은 결과를 공유
     if (DioClient._isRefreshing) {
       final completer = Completer<_RefreshResult>();
@@ -304,6 +327,9 @@ class _AuthAndSwrInterceptor extends Interceptor {
           ? const _RefreshResult.sessionExpired()
           : _RefreshResult.refreshed(token);
     } on DioException catch (e) {
+      if (e.response?.statusCode == _httpTooManyRequests) {
+        DioClient._sinceRefreshRateLimited = Stopwatch()..start();
+      }
       // 타임아웃·연결오류·429·5xx는 세션 유지, 정지는 안내 후 로그아웃,
       // 그 외(401/400 등)는 만료로 간주
       result = _isTransientRefreshFailure(e)

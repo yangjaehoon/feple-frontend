@@ -13,14 +13,14 @@ import '../../network/dio_client.dart';
 /// Firebase/카카오 등 외부 인증 토큰을 앱 자체 JWT로 교환하고 저장하는 로직.
 /// 어느 로그인 제공자를 쓰든 공통으로 필요한 서버 왕복이라 별도로 분리함.
 class AuthTokenExchanger {
-  Future<app.AppUser> exchangeFirebaseToken(String idToken, {String? nickname}) {
-    final body = <String, dynamic>{'idToken': idToken};
-    if (nickname != null) body['nickname'] = nickname;
+  /// 신규 가입 닉네임은 서버가 ID 토큰의 `name` 클레임(= Firebase `displayName`)에서
+  /// 만든다 — 요청 본문으로 따로 보내지 않는다.
+  Future<app.AppUser> exchangeFirebaseToken(String idToken) {
     return _exchange(
       providerLabel: 'Firebase',
       request: () => DioClient.dio.post(
         '/auth/firebase',
-        data: body,
+        data: {'idToken': idToken},
         options: _handlesUserBan(),
       ),
     );

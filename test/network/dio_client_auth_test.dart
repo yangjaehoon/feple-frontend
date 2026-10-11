@@ -198,4 +198,54 @@ void main() {
     expect(sessionExpiredCalls, 0);
     expect(secureStore['refreshToken'], isNull);
   });
+
+  test('갱신이 429를 받으면 대기 시간 동안 갱신을 다시 시도하지 않는다', () async {
+    server.enqueue(httpCode: 401);
+    server.enqueue(httpCode: 429); // /auth/refresh
+    server.enqueue(httpCode: 401); // 대기 중의 다음 요청 — 갱신 없이 그대로 전파돼야 함
+    var sessionExpiredCalls = 0;
+    DioClient.onSessionExpired = () async => sessionExpiredCalls++;
+
+    await expectLater(
+      DioClient.dio.get('/protected-i'),
+      throwsA(isA<DioException>()),
+    );
+    final requestsBefore = server.requestCount;
+
+    await expectLater(
+      DioClient.dio.get('/protected-j'),
+      throwsA(isA<DioException>().having(
+        (e) => e.response?.statusCode,
+        'statusCode',
+        401,
+      )),
+    );
+
+    // 원래 요청 1건만 나가고 /auth/refresh는 다시 호출되지 않는다.
+    expect(server.requestCount - requestsBefore, 1);
+    expect(sessionExpiredCalls, 0);
+    expect(secureStore['refreshToken'], 'valid-refresh');
+  });
+
+  test('429 대기 시간이 지나면 다시 갱신한다', () async {
+    DioClient.refreshRateLimitCooldown = Duration.zero;
+    server.enqueue(httpCode: 401);
+    server.enqueue(httpCode: 429); // /auth/refresh
+    await expectLater(
+      DioClient.dio.get('/protected-k'),
+      throwsA(isA<DioException>()),
+    );
+
+    server.enqueue(httpCode: 401);
+    server.enqueue(
+      body: '{"accessToken":"new-access","refreshToken":"new-refresh"}',
+      headers: jsonHeaders(),
+    );
+    server.enqueue(body: '{"ok":true}', headers: jsonHeaders());
+
+    final res = await DioClient.dio.get('/protected-l');
+
+    expect(res.data['ok'], true);
+    expect(secureStore['accessToken'], 'new-access');
+  });
 }

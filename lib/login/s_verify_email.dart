@@ -5,6 +5,8 @@ import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_auth_header_text.dart';
 import 'package:feple/common/widget/w_icon_circle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
+import 'package:feple/login/w_auth_back_app_bar.dart';
+import 'package:feple/login/w_centered_error_text.dart';
 import 'package:feple/model/auth_flow_result.dart';
 import 'package:feple/service/auth_service.dart';
 import 'package:feple/common/constant/app_dimensions.dart';
@@ -33,6 +35,8 @@ class VerifyEmailScreen extends StatefulWidget {
   State<VerifyEmailScreen> createState() => _VerifyEmailScreenState();
 }
 
+enum _VerifyAction { verifying, canceling, changingEmail, resending }
+
 class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   static const _resendCooldownSecs = 60;
   // 인증 완료 폴링 간격(초) — 점점 늘려 마지막은 30초. 상한 이후로는 마지막 값 유지.
@@ -46,10 +50,9 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   DateTime? _pollStartedAt;
   bool _completed = false;
   int _cooldown = 0;
-  bool _isVerifying = false;
-  bool _isCanceling = false;
-  bool _isChangingEmail = false;
-  bool _isResending = false;
+  /// 진행 중인 사용자 동작(없으면 null). 동작마다 bool을 두면 "다른 동작 진행 중"
+  /// 조건을 버튼마다 나열해야 해서 하나가 빠지기 쉽다(로그인 화면 `_LoginMethod`와 같은 이유).
+  _VerifyAction? _action;
   /// 재발송이 성공하면 뒤집힌다 — 그때부터는 "보냈습니다" 문구가 맞다.
   late bool _emailSent;
   // 폴링과 수동 "인증 완료 확인" 탭이 동시에 completeVerifiedLogin()을 호출하면
@@ -61,7 +64,9 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   Future<void>? _inFlightCheck;
   String? _errorMessage;
 
-  bool get _busy => _isVerifying || _isCanceling || _isChangingEmail || _isResending;
+  bool get _busy => _action != null;
+
+  void _setAction(_VerifyAction? action) => setState(() => _action = action);
 
   @override
   void initState() {
@@ -123,25 +128,25 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
       return;
     }
 
-    if (!silent) setState(() { _isVerifying = true; _errorMessage = null; });
+    if (!silent) setState(() { _action = _VerifyAction.verifying; _errorMessage = null; });
     final check = _completeVerification(silent: silent);
     _inFlightCheck = check;
     try {
       await check;
     } finally {
       _inFlightCheck = null;
-      if (!silent && mounted) setState(() => _isVerifying = false);
+      if (!silent && mounted) _setAction(null);
     }
   }
 
   /// 수동 탭이 진행 중인 폴링과 겹친 경우 — 새로 호출하지 않고 그 결과를 기다렸다가
   /// 그대로 반영한다(조용히 무시되지 않도록).
   Future<void> _awaitSharedCheck(Future<void> shared) async {
-    setState(() { _isVerifying = true; _errorMessage = null; });
+    setState(() { _action = _VerifyAction.verifying; _errorMessage = null; });
     await shared;
     if (!mounted) return;
     if (!_completed) _showNotYetVerified();
-    setState(() => _isVerifying = false);
+    _setAction(null);
   }
 
   Future<void> _completeVerification({required bool silent}) async {
@@ -174,7 +179,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
       popRouteWithResult(context, result);
 
   Future<void> _onResendTapped() async {
-    setState(() => _isResending = true);
+    _setAction(_VerifyAction.resending);
     try {
       await AuthService.instance.resendVerificationEmail();
       if (!mounted) return;
@@ -185,7 +190,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
       debugPrint('[VerifyEmail] 재발송 실패: $e');
       if (mounted) context.showErrorSnackbar('unknown_error'.tr());
     } finally {
-      if (mounted) setState(() => _isResending = false);
+      if (mounted) _setAction(null);
     }
   }
 
@@ -206,7 +211,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
       confirmLabel: 'verify_email_cancel_confirm'.tr(),
     );
     if (!confirmed || !mounted) return;
-    setState(() => _isCanceling = true);
+    _setAction(_VerifyAction.canceling);
     try {
       await _deleteAccountOrSignOut();
       // 계정을 지웠거나 로그아웃했으니 인증 흐름은 여기서 끝 — 가입 폼으로
@@ -215,20 +220,23 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     } catch (e) {
       debugPrint('[VerifyEmail] 취소 처리 실패: $e');
     } finally {
-      if (mounted) setState(() => _isCanceling = false);
+      if (mounted) _setAction(null);
     }
   }
 
-  // 이메일 오타 시: 계정 삭제 후 회원가입 화면으로 복귀 (확인 없이 바로 진행)
+  // 이메일 오타 시: 계정 삭제 후 회원가입 화면으로 복귀 (확인 없이 바로 진행).
+  // 결과 없이(null) 닫아 가입 폼이 그대로 남게 한다.
   Future<void> _onChangeEmailTapped() async {
-    setState(() => _isChangingEmail = true);
+    _setAction(_VerifyAction.changingEmail);
     try {
       await _deleteAccountOrSignOut();
-      if (mounted) Navigator.pop(context);
+      // 삭제를 기다리는 사이 딥링크·FCM 화면이 위에 올라올 수 있다 — 최상단이 아니라
+      // 이 화면을 닫는다([_returnResult]와 같은 이유).
+      if (mounted) popRouteWithResult<AuthFlowResult?>(context, null);
     } catch (e) {
       debugPrint('[VerifyEmail] 이메일 변경 처리 실패: $e');
     } finally {
-      if (mounted) setState(() => _isChangingEmail = false);
+      if (mounted) _setAction(null);
     }
   }
 
@@ -240,23 +248,10 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     final rs = ResponsiveSize(context);
     return Scaffold(
       backgroundColor: colors.backgroundMain,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        // 계정을 지우지 않고 그냥 이전 화면(가입 폼)으로 돌아가는 안전한 경로 —
-        // "취소"/"이메일 변경"은 계정을 삭제하는 반면, 이 버튼은 나중에 다시
-        // 인증을 완료할 수 있도록 미인증 계정을 그대로 둔다.
-        leading: IconButton(
-          tooltip: 'back'.tr(),
-          icon: Icon(
-            Icons.arrow_back_ios_rounded,
-            color: colors.textTitle,
-            size: 20,
-          ),
-          onPressed: _busy ? null : () => Navigator.pop(context),
-        ),
-      ),
+      // 계정을 지우지 않고 그냥 이전 화면(가입 폼)으로 돌아가는 안전한 경로 —
+      // "취소"/"이메일 변경"은 계정을 삭제하는 반면, 이 버튼은 나중에 다시
+      // 인증을 완료할 수 있도록 미인증 계정을 그대로 둔다.
+      appBar: AuthBackAppBar(onBack: _busy ? null : () => Navigator.pop(context)),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -268,11 +263,15 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                 SizedBox(height: rs.h(20)),
                 _buildTextSection(colors),
                 SizedBox(height: rs.h(28)),
-                if (_errorMessage != null) _buildError(colors),
+                if (_errorMessage != null)
+                  CenteredErrorText(
+                    message: _errorMessage!,
+                    padding: const EdgeInsets.only(bottom: AppDimens.space16),
+                  ),
                 LoadingButton(
                   label: 'verify_email_done_btn'.tr(),
                   onPressed: _busy ? null : _onVerifyTapped,
-                  isLoading: _isVerifying,
+                  isLoading: _action == _VerifyAction.verifying,
                   backgroundColor: colors.activate,
                 ),
                 SizedBox(height: rs.h(10)),
@@ -345,21 +344,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     );
   }
 
-  Widget _buildError(AbstractThemeColors colors) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Text(
-        _errorMessage!,
-        style: TextStyle(
-          fontSize: AppDimens.fontSizeSm,
-          color: colors.error,
-          fontWeight: FontWeight.w500,
-        ),
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
-
   Widget _buildResendButton(AbstractThemeColors colors) {
     final canResend = _cooldown <= 0 && !_busy;
     return OutlinedButton(
@@ -397,7 +381,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
           _buildTextLoadingButton(
             label: 'verify_email_change_email'.tr(),
             onPressed: _busy ? null : _onChangeEmailTapped,
-            isLoading: _isChangingEmail,
+            isLoading: _action == _VerifyAction.changingEmail,
             colors: colors,
           ),
         ],
@@ -409,7 +393,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     return _buildTextLoadingButton(
       label: 'verify_email_cancel'.tr(),
       onPressed: _busy ? null : _onCancelTapped,
-      isLoading: _isCanceling,
+      isLoading: _action == _VerifyAction.canceling,
       colors: colors,
     );
   }

@@ -21,7 +21,7 @@ class FirebaseEmailLoginProvider {
       throw AuthExchangeException('email sign-in returned no user');
     }
 
-    // 이메일 인증 확인 — signOut 없이 세션 유지, VerifyEmailPage에서 처리
+    // 미인증이면 signOut하지 않고 세션을 유지한다 — VerifyEmailScreen이 이 세션으로 인증 완료를 확인한다.
     if (!user.emailVerified) {
       throw EmailNotVerifiedException(
         verificationEmailSent: await _trySendVerificationEmail(user),
@@ -67,8 +67,8 @@ class FirebaseEmailLoginProvider {
       rethrow;
     }
     try {
+      // signOut하지 않는다 — VerifyEmailScreen이 이 세션으로 인증 완료를 확인한다.
       await firebaseUser.sendEmailVerification();
-      // signOut 제거 — VerifyEmailPage에서 Firebase 세션 사용
     } catch (e) {
       // 계정은 지우지 않는다 — 네트워크 순단 등 일시적 실패로 계정을 지우면 같은 이메일로
       // 재시도할 때마다 같은 이유로 또 지워지는 루프에 빠질 수 있다. 다만 실패를 삼키면

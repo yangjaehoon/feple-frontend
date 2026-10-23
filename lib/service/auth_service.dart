@@ -8,6 +8,7 @@ export 'package:feple/common/exception/age_restricted_exception.dart';
 export 'package:feple/common/exception/user_banned_exception.dart';
 
 import '../model/user_model.dart' as app;
+import 'auth/age_verification_client.dart';
 import 'auth/apple_login_provider.dart';
 import 'auth/auth_token_exchanger.dart';
 import 'auth/firebase_email_login_provider.dart';
@@ -17,12 +18,13 @@ import 'auth/kakao_login_provider.dart';
 
 /// 인증 관련 비즈니스 로직을 UI에서 분리한 파사드.
 /// 실제 제공자별 로직(이메일/카카오/Apple/Google)은 auth/ 하위 각 Provider가 담당하고,
-/// 이 클래스는 login.dart / signup.dart 등에서 쓰는 단일 진입점 역할만 함.
+/// 이 클래스는 로그인·가입 화면(s_login.dart / s_signup.dart 등)에서 쓰는 단일 진입점 역할만 함.
 class AuthService {
   factory AuthService._() => AuthService._withExchanger(AuthTokenExchanger());
 
   AuthService._withExchanger(AuthTokenExchanger tokenExchanger)
       : _tokenExchanger = tokenExchanger,
+        _ageVerification = AgeVerificationClient(),
         _errorTranslator = FirebaseErrorTranslator(),
         _emailAuth = FirebaseEmailLoginProvider(tokenExchanger),
         _kakaoAuth = KakaoLoginProvider(tokenExchanger),
@@ -32,6 +34,7 @@ class AuthService {
   static final instance = AuthService._();
 
   final AuthTokenExchanger _tokenExchanger;
+  final AgeVerificationClient _ageVerification;
   final FirebaseErrorTranslator _errorTranslator;
   final FirebaseEmailLoginProvider _emailAuth;
   final KakaoLoginProvider _kakaoAuth;
@@ -60,7 +63,7 @@ class AuthService {
 
   /// 생년월일 제출. 만 14세 미만이면 [AgeRestrictedException]을 던진다.
   Future<void> submitBirthDate(DateTime birthDate) =>
-      _tokenExchanger.submitBirthDate(birthDate);
+      _ageVerification.submitBirthDate(birthDate);
 
   Future<void> cancelUnverifiedSignup() => _emailAuth.cancelUnverifiedSignup();
 

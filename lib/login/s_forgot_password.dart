@@ -3,6 +3,7 @@ import 'package:feple/common/util/email_validator.dart';
 import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/common/widget/w_auth_header_text.dart';
+import 'package:feple/login/w_auth_back_app_bar.dart';
 import 'package:feple/login/w_form_error_text.dart';
 import 'package:feple/common/widget/w_icon_circle.dart';
 import 'package:feple/common/widget/w_keyboard_dismiss.dart';
@@ -88,20 +89,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     final rs = ResponsiveSize(context);
     return Scaffold(
       backgroundColor: colors.backgroundMain,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        leading: IconButton(
-          tooltip: 'back'.tr(),
-          icon: Icon(
-            Icons.arrow_back_ios_rounded,
-            color: colors.textTitle,
-            size: 20,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
+      appBar: AuthBackAppBar(onBack: () => Navigator.pop(context)),
       body: KeyboardDismiss(
         child: SafeArea(
           child: Center(

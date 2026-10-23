@@ -5,6 +5,7 @@ import 'package:feple/common/util/responsive_size.dart';
 import 'package:feple/common/widget/w_auth_header_text.dart';
 import 'package:feple/common/widget/w_icon_circle.dart';
 import 'package:feple/common/widget/w_loading_button.dart';
+import 'package:feple/login/w_centered_error_text.dart';
 import 'package:feple/provider/user_provider.dart';
 import 'package:feple/service/auth_service.dart';
 import 'package:flutter/material.dart';
@@ -155,15 +156,7 @@ class _AgeGateScreenState extends State<AgeGateScreen> {
         ),
         if (_error != null) ...[
           SizedBox(height: rs.h(12)),
-          Text(
-            _error!,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: AppDimens.fontSizeSm,
-              color: colors.error,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
+          CenteredErrorText(message: _error!),
         ],
         SizedBox(height: rs.h(24)),
         AnimatedOpacity(

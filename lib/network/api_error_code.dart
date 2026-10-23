@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+
 /// 서버 `ErrorResponse.code` 값 중 클라이언트가 분기에 쓰는 것들.
 /// 백엔드 `ErrorCode` enum 이름과 같아야 한다.
 abstract final class ApiErrorCode {
@@ -8,6 +10,10 @@ abstract final class ApiErrorCode {
   /// 응답 본문의 `code`가 [code]인지.
   static bool matches(Object? responseData, String code) =>
       responseData is Map && responseData['code'] == code;
+
+  /// 403 응답이고 본문의 `code`가 [code]인지.
+  static bool isForbiddenWith(DioException error, String code) =>
+      error.response?.statusCode == 403 && matches(error.response?.data, code);
 }
 
 /// 정지 응답을 호출부가 직접 처리하는 요청에 붙이는 `RequestOptions.extra` 키 —

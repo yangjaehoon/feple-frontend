@@ -70,56 +70,23 @@ class AuthTokenExchanger {
     }
   }
 
-  /// 만 14세 미만으로 계정이 이미 파기된 사용자가 같은 계정으로 재로그인을
-  /// 시도하는 경우 — submitBirthDate()와 동일하게 구체적인 예외로 변환해,
-  /// 재로그인도 나이확인 최초 거부와 같은 안내 문구를 보여줄 수 있게 한다.
+  /// 정지·나이 제한(만 14세 미만으로 이미 파기된 계정의 재로그인) 응답은 구체적인
+  /// 예외로 바꿔 로그인 화면이 각각의 안내 문구를 보여주게 한다. 그 외는 공통 예외로 통일.
   Exception _translateDioError(String providerLabel, DioException e) {
     debugPrint('[Auth] $providerLabel 서버 교환 실패: [${e.type.name}] ${e.response?.statusCode}');
     final respBody = e.response?.data;
     if (respBody is Map<String, dynamic>) {
       debugPrint('[Auth] $providerLabel 서버 메시지: ${respBody['message']}');
     }
-    if (e.response?.statusCode == 403) {
-      if (ApiErrorCode.matches(respBody, ApiErrorCode.ageRestricted)) {
-        return AgeRestrictedException();
-      }
-      if (ApiErrorCode.matches(respBody, ApiErrorCode.userBanned)) {
-        return UserBannedException();
-      }
+    if (ApiErrorCode.isForbiddenWith(e, ApiErrorCode.ageRestricted)) {
+      return AgeRestrictedException();
+    }
+    if (ApiErrorCode.isForbiddenWith(e, ApiErrorCode.userBanned)) {
+      return UserBannedException();
     }
     return AuthExchangeException(
       '$providerLabel: server exchange failed (${e.response?.statusCode ?? e.type.name})',
     );
-  }
-
-  /// 나이 확인 게이트 — 생년월일 제출. 만 14세 이상이면 정상 반환,
-  /// 미만이면 서버가 계정을 파기하고 [AgeRestrictedException]을 던진다.
-  /// JwtAuthenticationFilter가 `/auth/**`를 건너뛰므로 액세스 토큰을 헤더로 직접 넘긴다.
-  Future<void> submitBirthDate(DateTime birthDate) async {
-    final token = await TokenStore.readAccessToken();
-    if (token == null) {
-      throw AuthExchangeException('age-verification: no access token');
-    }
-    final iso = birthDate.toIso8601String().split('T').first; // yyyy-MM-dd
-    try {
-      await DioClient.dio.post(
-        '/auth/age-verification',
-        data: {'birthDate': iso},
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
-      );
-    } on DioException catch (e) {
-      final data = e.response?.data;
-      if (e.response?.statusCode == 403 &&
-          ApiErrorCode.matches(data, ApiErrorCode.ageRestricted)) {
-        throw AgeRestrictedException();
-      }
-      debugPrint(
-        '[Auth] 나이 확인 실패: [${e.type.name}] ${e.response?.statusCode}',
-      );
-      throw AuthExchangeException(
-        'age-verification failed (${e.response?.statusCode ?? e.type.name})',
-      );
-    }
   }
 
   Future<void> revokeRefreshToken(String refreshToken) async {

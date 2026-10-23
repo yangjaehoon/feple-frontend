@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../common/exception/auth_exchange_exception.dart';
 import '../../model/user_model.dart' as app;
 import 'auth_token_exchanger.dart';
 import 'firebase_id_token.dart';
@@ -36,7 +37,7 @@ class GoogleLoginProvider {
     final account = await GoogleSignIn.instance.authenticate();
     final idToken = account.authentication.idToken;
     if (idToken == null) {
-      throw StateError('Google ID token missing');
+      throw AuthExchangeException('Google ID token missing');
     }
 
     final credential = GoogleAuthProvider.credential(idToken: idToken);

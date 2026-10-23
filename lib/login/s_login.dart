@@ -10,6 +10,7 @@ import 'package:feple/common/common.dart';
 import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/common/widget/w_auth_header_text.dart';
 import 'package:feple/login/s_signup.dart';
+import 'package:feple/login/w_auth_link_button.dart';
 import 'package:feple/login/w_form_error_text.dart';
 import 'package:feple/login/s_verify_email.dart';
 import 'package:feple/login/s_forgot_password.dart';
@@ -93,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
                           _buildHeader(rs),
                           _buildForm(rs),
                           SizedBox(height: rs.h(10)),
-                          _buildForgotPassword(themeColors),
+                          _buildForgotPassword(),
                           SizedBox(height: rs.h(14)),
                           _buildEmailLoginButton(themeColors),
                           SizedBox(height: rs.h(14)),
@@ -184,23 +185,15 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     );
   }
 
-  Widget _buildForgotPassword(AbstractThemeColors themeColors) {
+  Widget _buildForgotPassword() {
     return Align(
       alignment: Alignment.centerRight,
-      child: TextButton(
+      child: AuthLinkButton(
+        label: 'forgot_password'.tr(),
         // 로그인 진행 중엔 막는다 — 소셜 시트가 닫힌 뒤 토큰 교환이 끝나기 전에
         // 다른 화면이 올라가면 로그인 완료 시 그 화면이 닫힌다.
         onPressed: _isAnyLoading ? null : _openForgotPassword,
-        style: TextButton.styleFrom(
-          foregroundColor: themeColors.activate,
-          padding: EdgeInsets.zero,
-          minimumSize: Size.zero,
-          tapTargetSize: MaterialTapTargetSize.padded,
-        ),
-        child: Text(
-          'forgot_password'.tr(),
-          style: const TextStyle(fontSize: AppDimens.fontSizeMd, fontWeight: FontWeight.w500),
-        ),
+        fontWeight: FontWeight.w500,
       ),
     );
   }
@@ -324,18 +317,9 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
           'not_member_yet'.tr(),
           style: TextStyle(color: themeColors.textSecondary, fontSize: AppDimens.fontSizeMd),
         ),
-        TextButton(
+        AuthLinkButton(
+          label: 'signup'.tr(),
           onPressed: _isAnyLoading ? null : _openSignup,
-          style: TextButton.styleFrom(
-            foregroundColor: themeColors.activate,
-            padding: EdgeInsets.zero,
-            minimumSize: Size.zero,
-            tapTargetSize: MaterialTapTargetSize.padded,
-          ),
-          child: Text(
-            'signup'.tr(),
-            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: AppDimens.fontSizeMd),
-          ),
         ),
       ],
     );
@@ -377,43 +361,53 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     // 밖이고 AppTextField에는 enabled가 없어 로딩 중에도 다시 들어올 수 있다.
     // 토큰 교환이 두 번 일어나면 백엔드가 유저당 리프레시 토큰을 1개만 유지하므로
     // 나중에 저장된 쪽이 이미 무효화된 토큰일 수 있다(로그인 직후 세션 끊김).
+    // 검증 문구가 로딩 중에 바뀌지 않도록 [_runLogin]보다 먼저 막는다.
     if (_isAnyLoading) return;
 
     final email = emailController.text.trim();
     final password = passwordController.text;
+    if (!_validateEmailForm(email, password)) return;
 
+    await _runLogin(
+      method: _LoginMethod.email,
+      login: () => AuthService.instance.loginWithEmail(email, password),
+      handleError: (e) => _handleEmailLoginError(email, e),
+    );
+  }
+
+  /// 빈 비밀번호·이메일 형식 오류를 필드에 표시한다. 통과하면 true.
+  bool _validateEmailForm(String email, String password) {
     final emailErr = EmailValidator.validate(email);
     final passwordErr = password.isEmpty ? 'enter_password'.tr() : null;
-    if (emailErr != null || passwordErr != null) {
-      setState(() { _emailError = emailErr; _passwordError = passwordErr; });
-      return;
-    }
+    if (emailErr == null && passwordErr == null) return true;
+    setState(() { _emailError = emailErr; _passwordError = passwordErr; });
+    return false;
+  }
 
-    setState(() { _loadingMethod = _LoginMethod.email; _clearErrors(); });
-    // 서버 왕복 전에 캡처 — 교환 중 화면을 닫아도 로그인을 마무리한다([_completeLogin]).
-    final userProvider = context.read<UserProvider>();
-    try {
-      final user = await AuthService.instance.loginWithEmail(email, password);
-      await _completeLogin(userProvider, user);
-    } on EmailNotVerifiedException catch (e) {
-      await _openVerifyEmail(email, verificationEmailSent: e.verificationEmailSent);
-    } on FirebaseAuthException catch (e) {
-      if (!mounted) return;
-      final msg = AuthService.instance.firebaseErrorKey(e.code).tr();
-      if (e.code == 'invalid-email') {
-        setState(() => _emailError = msg);
-      } else {
-        setState(() => _authError = msg);
-      }
-    } on AgeRestrictedException {
-      _showAgeRestrictedMessage();
-    } on UserBannedException {
-      _showBannedMessage();
-    } catch (e) {
-      _showLoginFailure(_LoginMethod.email, e);
-    } finally {
-      if (mounted) setState(() => _loadingMethod = null);
+  /// 이메일 로그인에만 있는 실패 — 미인증 계정은 인증 화면으로, Firebase 인증 오류는
+  /// 해당 문구로. 처리했으면 true.
+  Future<bool> _handleEmailLoginError(String email, Object error) async {
+    if (error is EmailNotVerifiedException) {
+      await _openVerifyEmail(email, verificationEmailSent: error.verificationEmailSent);
+      return true;
     }
+    if (error is FirebaseAuthException) {
+      _showFirebaseError(error);
+      return true;
+    }
+    return false;
+  }
+
+  void _showFirebaseError(FirebaseAuthException error) {
+    if (!mounted) return;
+    final msg = AuthService.instance.firebaseErrorKey(error.code).tr();
+    setState(() {
+      if (error.code == 'invalid-email') {
+        _emailError = msg;
+      } else {
+        _authError = msg;
+      }
+    });
   }
 
   /// 미인증 계정 — 인증 화면으로 보내고, 인증까지 끝난 사용자를 받아오면 로그인을
@@ -484,12 +478,13 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     if (mounted) setState(() => _authError = 'login_failed'.tr());
   }
 
-  /// 소셜 로그인 3종(Apple/Google/Kakao)의 공통 흐름: 로딩 체크 → provider
-  /// 캡처 → 로그인 → 취소 예외는 무시, 그 외 실패는 공통 에러 표시.
-  Future<void> _runSocialLogin({
+  /// 로그인 수단 공통 흐름: 중복 진입 차단 → provider 캡처 → 로그인 → 마무리.
+  /// 나이 제한·정지는 공통으로 안내하고, 수단별 실패는 [handleError]에 먼저 맡긴다 —
+  /// 처리하지 않은(false) 실패만 공통 실패 문구로 보여준다.
+  Future<void> _runLogin({
     required _LoginMethod method,
     required Future<AppUser> Function() login,
-    required bool Function(Object error) isCanceled,
+    required FutureOr<bool> Function(Object error) handleError,
   }) async {
     if (_isAnyLoading) return;
     // async gap 전에 캡처 — OAuth 시트/브라우저 복귀 시 mounted가 false일 수 있음
@@ -506,14 +501,27 @@ class _LoginScreenState extends State<LoginScreen> with NavigationGuard {
     } on UserBannedException {
       _showBannedMessage();
     } catch (e) {
-      if (isCanceled(e)) {
-        debugPrint('[Auth] ${method.name} 로그인 취소');
-      } else {
-        _showLoginFailure(method, e);
-      }
+      if (!await handleError(e)) _showLoginFailure(method, e);
     } finally {
       if (mounted) setState(() => _loadingMethod = null);
     }
+  }
+
+  /// 소셜 로그인 3종(Apple/Google/Kakao) — 사용자가 그만둔 경우(취소)는 오류 문구 없이 끝낸다.
+  Future<void> _runSocialLogin({
+    required _LoginMethod method,
+    required Future<AppUser> Function() login,
+    required bool Function(Object error) isCanceled,
+  }) {
+    return _runLogin(
+      method: method,
+      login: login,
+      handleError: (e) {
+        if (!isCanceled(e)) return false;
+        debugPrint('[Auth] ${method.name} 로그인 취소');
+        return true;
+      },
+    );
   }
 
   Future<void> signInWithApple() => _runSocialLogin(

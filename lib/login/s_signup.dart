@@ -13,6 +13,9 @@ import 'package:feple/common/widget/w_app_text_field.dart';
 import 'package:feple/common/widget/w_auth_header_text.dart';
 import 'package:feple/common/widget/w_nickname_field.dart';
 import 'package:feple/login/s_verify_email.dart';
+import 'package:feple/login/w_auth_back_app_bar.dart';
+import 'package:feple/login/w_auth_link_button.dart';
+import 'package:feple/login/w_centered_error_text.dart';
 import 'package:feple/login/w_password_checklist.dart';
 import 'package:feple/model/auth_flow_result.dart';
 import 'package:feple/model/nickname_check_result.dart';
@@ -93,51 +96,44 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   bool _validateInput() {
-    final email = emailController.text.trim();
-    final password = passwordController.text;
-    final nicknameState = _nicknameKey.currentState;
-    final nickname = nicknameState?.currentNickname ?? '';
-
-    String? emailError;
-    String? passwordError;
-    bool hasError = false;
-
-    emailError = EmailValidator.validate(email);
-    if (emailError != null) hasError = true;
-    if (password.isEmpty) {
-      passwordError = 'enter_password'.tr();
-      hasError = true;
-    } else {
-      final pwError = PasswordValidator.validate(password);
-      if (pwError != null) {
-        passwordError = pwError;
-        hasError = true;
-      }
-    }
-    if (nickname.isEmpty) {
-      nicknameState?.showError('enter_nickname'.tr());
-      hasError = true;
-    } else if (!NicknameCheckResult.isValidLength(nickname)) {
-      nicknameState?.showError('nickname_length_error'.tr());
-      hasError = true;
-    } else if (nicknameState?.available == null ||
-        nicknameState?.lastCheckedNickname != nickname) {
-      nicknameState?.showError('nickname_check_req'.tr());
-      hasError = true;
-    } else if (nicknameState?.available == false) {
-      // 문구를 덮어쓰지 않는다 — NicknameField가 이미 구체적인 이유(중복·형식·
-      // 금칙어)를 띄워놨고, 일반 문구로 바꾸면 무엇을 고쳐야 하는지 사라진다.
-      hasError = true;
-    }
-
-    if (hasError) {
+    final emailError = EmailValidator.validate(emailController.text.trim());
+    final passwordError = _validatePassword(passwordController.text);
+    // 닉네임 검증을 앞에 둔다 — 이메일·비밀번호 오류가 있어도 닉네임 오류는 함께 표시돼야 한다.
+    final nicknameValid = _validateNickname();
+    final valid = nicknameValid && emailError == null && passwordError == null;
+    if (!valid) {
       setState(() {
         _emailError = emailError;
         _passwordError = passwordError;
         _generalError = null;
       });
     }
-    return !hasError;
+    return valid;
+  }
+
+  String? _validatePassword(String password) =>
+      password.isEmpty ? 'enter_password'.tr() : PasswordValidator.validate(password);
+
+  /// 닉네임 오류는 NicknameField가 직접 표시한다. 통과하면 true.
+  bool _validateNickname() {
+    final nicknameState = _nicknameKey.currentState;
+    final nickname = nicknameState?.currentNickname ?? '';
+    if (nickname.isEmpty) {
+      nicknameState?.showError('enter_nickname'.tr());
+      return false;
+    }
+    if (!NicknameCheckResult.isValidLength(nickname)) {
+      nicknameState?.showError('nickname_length_error'.tr());
+      return false;
+    }
+    if (nicknameState?.available == null ||
+        nicknameState?.lastCheckedNickname != nickname) {
+      nicknameState?.showError('nickname_check_req'.tr());
+      return false;
+    }
+    // 사용 불가면 문구를 덮어쓰지 않는다 — NicknameField가 이미 구체적인 이유(중복·형식·
+    // 금칙어)를 띄워놨고, 일반 문구로 바꾸면 무엇을 고쳐야 하는지 사라진다.
+    return nicknameState?.available != false;
   }
 
   Future<void> _register() async {
@@ -169,21 +165,7 @@ class _SignupScreenState extends State<SignupScreen> {
         await _resumeUnverifiedSignup(email, nickname);
         return;
       }
-      final msg = AuthService.instance.firebaseErrorKey(e.code).tr();
-      setState(() {
-        _clearErrors();
-        switch (e.code) {
-          case 'email-already-in-use':
-          case 'invalid-email':
-            _emailError = msg;
-            break;
-          case 'weak-password':
-            _passwordError = msg;
-            break;
-          default:
-            _generalError = msg;
-        }
-      });
+      _showFirebaseError(e);
     } catch (e) {
       debugPrint('[Signup] unexpected error: $e');
       if (!mounted) return;
@@ -200,6 +182,24 @@ class _SignupScreenState extends State<SignupScreen> {
     _emailError = null;
     _passwordError = null;
     _generalError = null;
+  }
+
+  /// Firebase 가입 오류를 해당 필드(이메일·비밀번호) 또는 폼 공통 문구로 표시한다.
+  void _showFirebaseError(FirebaseAuthException error) {
+    if (!mounted) return;
+    final msg = AuthService.instance.firebaseErrorKey(error.code).tr();
+    setState(() {
+      _clearErrors();
+      switch (error.code) {
+        case 'email-already-in-use':
+        case 'invalid-email':
+          _emailError = msg;
+        case 'weak-password':
+          _passwordError = msg;
+        default:
+          _generalError = msg;
+      }
+    });
   }
 
   /// 방금 만든 계정 → 인증 화면.
@@ -276,7 +276,7 @@ class _SignupScreenState extends State<SignupScreen> {
       },
       child: Scaffold(
         backgroundColor: themeColors.backgroundMain,
-        appBar: _buildAppBar(themeColors),
+        appBar: AuthBackAppBar(onBack: _confirmExit),
         body: KeyboardDismiss(
           child: SafeArea(
             child: Column(
@@ -295,7 +295,10 @@ class _SignupScreenState extends State<SignupScreen> {
                             _buildForm(),
                             SizedBox(height: rs.h(24)),
                             if (_generalError != null)
-                              _buildGeneralError(themeColors),
+                              CenteredErrorText(
+                                message: _generalError!,
+                                padding: const EdgeInsets.only(bottom: AppDimens.space12),
+                              ),
                             _buildSubmitButton(themeColors),
                             SizedBox(height: rs.h(20)),
                             _buildLoginLink(themeColors),
@@ -314,38 +317,6 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar(AbstractThemeColors colors) {
-    return AppBar(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      scrolledUnderElevation: 0,
-      leading: IconButton(
-        tooltip: 'back'.tr(),
-        icon: Icon(
-          Icons.arrow_back_ios_rounded,
-          color: colors.textTitle,
-          size: 20,
-        ),
-        onPressed: _confirmExit,
-      ),
-    );
-  }
-
-  Widget _buildGeneralError(AbstractThemeColors colors) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Text(
-        _generalError!,
-        style: TextStyle(
-          fontSize: AppDimens.fontSizeSm,
-          color: colors.error,
-          fontWeight: FontWeight.w500,
-        ),
-        textAlign: TextAlign.center,
       ),
     );
   }
@@ -443,22 +414,7 @@ class _SignupScreenState extends State<SignupScreen> {
             fontSize: AppDimens.fontSizeMd,
           ),
         ),
-        TextButton(
-          onPressed: _confirmExit,
-          style: TextButton.styleFrom(
-            foregroundColor: themeColors.activate,
-            padding: EdgeInsets.zero,
-            minimumSize: Size.zero,
-            tapTargetSize: MaterialTapTargetSize.padded,
-          ),
-          child: Text(
-            'login'.tr(),
-            style: const TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: AppDimens.fontSizeMd,
-            ),
-          ),
-        ),
+        AuthLinkButton(label: 'login'.tr(), onPressed: _confirmExit),
       ],
     );
   }

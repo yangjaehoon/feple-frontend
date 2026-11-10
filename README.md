@@ -6,7 +6,9 @@
 
 **서버 코드** [feple-backend](https://github.com/yangjaehoon/feple-backend)
 
-<!-- 스크린샷: 앱 화면 3~4장을 docs/screenshots/에 넣고 여기에 추가 -->
+| 홈 | 탐색 | 페스티벌 상세 | 아티스트 |
+|:---:|:---:|:---:|:---:|
+| <img src="docs/screenshots/home.jpg" alt="홈 화면" width="200"> | <img src="docs/screenshots/discover.jpg" alt="탐색 화면" width="200"> | <img src="docs/screenshots/festival-detail.jpg" alt="페스티벌 상세 화면" width="200"> | <img src="docs/screenshots/artist.jpg" alt="아티스트 화면" width="200"> |
 
 ## 핵심 문제 해결
 

@@ -1,8 +1,51 @@
 # FEPLE Frontend
 
-페스티벌을 좋아하는 사람들의 커뮤니티 앱 **FEPLE**의 Flutter 클라이언트입니다.
+페스티벌 정보와 라인업을 보고 팬끼리 소통하는 커뮤니티 앱 **FEPLE**의 Flutter 클라이언트입니다.
 
-## 주요 기능
+**다운로드** [App Store](https://apps.apple.com/kr/app/feple/id6804336803) · [Google Play](https://play.google.com/store/apps/details?id=com.dobino.feple)
+
+**서버 코드** [feple-backend](https://github.com/yangjaehoon/feple-backend)
+
+<!-- 스크린샷: 앱 화면 3~4장을 docs/screenshots/에 넣고 여기에 추가 -->
+
+## 핵심 문제 해결
+
+| 문제 | 원인과 해결 | 근거 |
+|------|------|------|
+| 로그인 사용자가 앱을 새로 실행하면 게스트 탭으로 진입하고 알림 개수가 비어 있음 | 위젯 트리가 자동 로그인보다 먼저 빌드돼 게스트 기준 초기값이 고정됨. 인증 전환을 양방향으로 처리하고, 사용자가 직접 고른 탭은 유지 | [PR #70](https://github.com/yangjaehoon/feple-frontend/pull/70) |
+| 응답 없는 네트워크에서 최대 40초 동안 스플래시만 표시 | 자동 로그인의 네트워크 갱신까지 기다린 것이 원인. 캐시로 사용자를 확정하면 바로 진입하고, 갱신은 백그라운드로 분리 | [PR #76](https://github.com/yangjaehoon/feple-frontend/pull/76) |
+| 온보딩에서 페스티벌 일괄 등록이 간헐적으로 실패 | 전체 병렬 요청이 서버의 DB 데드락 조건을 만듦. 3개씩 묶어 요청하고 서버 쪽 토글과 함께 수정 | [수정 커밋](https://github.com/yangjaehoon/feple-frontend/commit/10553f8) |
+
+## 아키텍처
+
+```mermaid
+flowchart LR
+    UI[화면 / 위젯] --> Notifier[Provider<br/>ChangeNotifier]
+    Notifier --> Service[Service 계층<br/>GetIt DI]
+    Service --> Dio[DioClient<br/>JWT 첨부, 401 갱신]
+    Service --> Cache[(API 캐시)]
+    Dio --> API[feple-backend]
+    Token[(TokenStore<br/>Secure Storage)] --> Dio
+```
+
+## 기술 스택
+
+| 분류 | 기술 |
+|------|------|
+| 프레임워크 | Flutter 3.44 (Android / iOS) |
+| 상태관리 / DI | Provider, GetIt |
+| 네트워크 | Dio, Connectivity Plus |
+| 인증 | Firebase Auth, Kakao SDK, Sign in with Apple |
+| 알림 / 모니터링 | Firebase Messaging, Crashlytics, Performance |
+| 지도 / 다국어 | Google Maps, Easy Localization |
+| 코드 생성 | Freezed, JSON Serializable |
+
+## CI
+
+`push`와 PR마다 GitHub Actions가 `flutter analyze`와 `flutter test`(커버리지 하한선 포함)를 실행하며, 통과해야 `main`에 병합됩니다.
+
+<details>
+<summary><strong>주요 기능 전체 보기</strong></summary>
 
 - **페스티벌 탐색** — 목록 조회, 장르·지역 필터링, 상세 정보, 좋아요, 공기질(AQI)·날씨 확인, 평점·리뷰
 - **타임테이블** — 공연 시간표 조회 및 스테이지별 일정 확인
@@ -22,24 +65,10 @@
 - **오프라인 대응** — 네트워크 끊김 배너, API 응답 캐시·프리페치
 - **다국어** — 한국어 / 영어 지원
 
-## 기술 스택
+</details>
 
-| 분류 | 기술 |
-|------|------|
-| 프레임워크 | Flutter 3.x (Android / iOS) |
-| 상태관리 | Provider |
-| 네트워크 | Dio (JWT 자동 첨부 + 401 토큰 갱신 인터셉터), Connectivity Plus |
-| 인증 | Firebase Auth, Kakao SDK, Sign in with Apple |
-| 지도 | Google Maps, Geolocator |
-| 푸시 알림 | Firebase Messaging, Flutter Local Notifications |
-| 모니터링 | Firebase Crashlytics, Firebase Performance |
-| 스토리지 | flutter_secure_storage (토큰), SharedPreferences |
-| 이미지 | CachedNetworkImage, Flutter Image Compress, Image Picker |
-| 다국어 | Easy Localization |
-| DI | GetIt |
-| 코드 생성 | Freezed, JSON Serializable, Retrofit Generator |
-
-## 프로젝트 구조
+<details>
+<summary><strong>프로젝트 구조</strong></summary>
 
 ```
 lib/
@@ -80,9 +109,12 @@ lib/
     └── onboarding/                 # 온보딩
 ```
 
-## 설정
+</details>
 
-### 필수 파일 (git 미추적)
+<details>
+<summary><strong>로컬 실행 방법</strong></summary>
+
+필수 파일 (git 미추적):
 
 | 파일 | 용도 |
 |------|------|
@@ -91,8 +123,6 @@ lib/
 | `lib/auth/secrets.json` | Kakao REST API 키 등 |
 
 `web/index.html` 내 Google Maps API 키도 로컬에서 직접 입력합니다.
-
-### 실행
 
 ```bash
 flutter pub get
@@ -104,6 +134,4 @@ flutter build appbundle --release   # Play Store (AAB)
 flutter build ipa --release         # App Store
 ```
 
-## 백엔드
-
-백엔드 레포지토리: [feple-backend](https://github.com/yangjaehoon/feple-backend)
+</details>
